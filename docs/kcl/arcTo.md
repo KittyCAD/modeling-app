@@ -31,7 +31,7 @@ arcTo(data: ArcToData, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 ```js
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> arcTo({ end: [10, 0], interior: [5, 5] }, %)
+  |> arcTo({ end = [10, 0], interior = [5, 5] }, %)
   |> close(%)
 example = extrude(10, exampleSketch)
 ```

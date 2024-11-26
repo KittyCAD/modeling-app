@@ -13,6 +13,8 @@ use crate::{
     ExecState, ExecutorContext, KclError, SourceRange,
 };
 
+pub type KclObjectFields = HashMap<String, KclValue>;
+
 /// Any KCL value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -49,7 +51,7 @@ pub enum KclValue {
         meta: Vec<Metadata>,
     },
     Object {
-        value: HashMap<String, KclValue>,
+        value: KclObjectFields,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -273,20 +275,21 @@ impl KclValue {
 
     pub(crate) fn as_usize(&self) -> Option<usize> {
         match self {
-            KclValue::Int { value, .. } => Some(*value as usize),
+            KclValue::Int { value, .. } if *value > 0 => Some(*value as usize),
+            KclValue::Number { value, .. } => crate::try_f64_to_usize(*value),
             _ => None,
         }
     }
 
     pub fn as_int(&self) -> Option<i64> {
-        if let KclValue::Int { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
+        match self {
+            KclValue::Int { value, .. } => Some(*value),
+            KclValue::Number { value, .. } => crate::try_f64_to_i64(*value),
+            _ => None,
         }
     }
 
-    pub fn as_object(&self) -> Option<&HashMap<String, KclValue>> {
+    pub fn as_object(&self) -> Option<&KclObjectFields> {
         if let KclValue::Object { value, meta: _ } = &self {
             Some(value)
         } else {
@@ -294,7 +297,7 @@ impl KclValue {
         }
     }
 
-    pub fn into_object(self) -> Option<HashMap<String, KclValue>> {
+    pub fn into_object(self) -> Option<KclObjectFields> {
         if let KclValue::Object { value, meta: _ } = self {
             Some(value)
         } else {

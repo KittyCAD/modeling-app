@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing add_lots.kcl
 snapshot_kind: text
 ---
@@ -49,7 +50,7 @@ snapshot_kind: text
                       "start": 29,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 2
+                      "value": 2.0
                     },
                     "start": 25,
                     "type": "BinaryExpression",

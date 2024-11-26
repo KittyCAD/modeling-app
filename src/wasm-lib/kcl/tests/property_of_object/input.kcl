@@ -1,7 +1,7 @@
 // This tests evaluating properties of objects.
 
 
-obj = { foo: 1, bar: 0 }
+obj = { foo = 1, bar = 0 }
 
 // Test: the property is a literal.
 
@@ -24,7 +24,7 @@ assertGreaterThanOrEq(one_b, 1, "Computed property lookup")
 // Test: multiple literal properties.
 
 
-obj2 = { inner: obj }
+obj2 = { inner = obj }
 
 one_c = obj2.inner["foo"]
 

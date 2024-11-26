@@ -35,9 +35,9 @@ exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> arc({
-       angleStart: 0,
-       angleEnd: 280,
-       radius: 16
+       angleStart = 0,
+       angleEnd = 280,
+       radius = 16
      }, %)
   |> close(%)
 example = extrude(10, exampleSketch)

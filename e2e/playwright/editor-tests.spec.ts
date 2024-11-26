@@ -568,7 +568,7 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
     await page.keyboard.type(`extrusion = startSketchOn('XY')
-    |> circle({ center: [0, 0], radius: dia/2 }, %)
+    |> circle({ center = [0, 0], radius = dia/2 }, %)
   |> hole(squareHole(length, width, height), %)
   |> extrude(height, %)`)
 
@@ -604,8 +604,8 @@ test.describe('Editor tests', () => {
   |> line([0, -10], %)
   |> close(%)
   |> revolve({
-  axis: revolveAxis,
-  angle: 90
+  axis = revolveAxis,
+  angle = 90
   }, %)
       `
       )

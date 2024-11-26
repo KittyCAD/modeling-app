@@ -1,6 +1,6 @@
 //! Standard library patterns.
 
-use std::{cmp::Ordering, collections::HashMap};
+use std::cmp::Ordering;
 
 use anyhow::Result;
 use derive_docs::stdlib;
@@ -22,7 +22,8 @@ use crate::{
         ExecState, Geometries, Geometry, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid, SolidSet, SourceRange,
     },
     function_param::FunctionParam,
-    std::{types::Uint, Args},
+    kcl_value::KclObjectFields,
+    std::Args,
 };
 
 use super::args::Arg;
@@ -38,7 +39,7 @@ pub struct LinearPattern2dData {
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
     /// If instances is 1, this has no effect.
-    pub instances: Uint,
+    pub instances: u32,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
     /// The axis of the pattern. This is a 2D vector.
@@ -54,36 +55,11 @@ pub struct LinearPattern3dData {
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
     /// If instances is 1, this has no effect.
-    pub instances: Uint,
+    pub instances: u32,
     /// The distance between each repetition. This can also be referred to as spacing.
     pub distance: f64,
     /// The axis of the pattern.
     pub axis: [f64; 3],
-}
-
-pub enum LinearPattern {
-    TwoD(LinearPattern2dData),
-}
-
-impl LinearPattern {
-    pub fn axis(&self) -> [f64; 3] {
-        match self {
-            LinearPattern::TwoD(lp) => [lp.axis[0], lp.axis[1], 0.0],
-        }
-    }
-
-    fn repetitions(&self) -> RepetitionsNeeded {
-        let n = match self {
-            LinearPattern::TwoD(lp) => lp.instances.u32(),
-        };
-        RepetitionsNeeded::from(n)
-    }
-
-    pub fn distance(&self) -> f64 {
-        match self {
-            LinearPattern::TwoD(lp) => lp.distance,
-        }
-    }
 }
 
 /// Repeat some 3D solid, changing each repetition slightly.
@@ -172,12 +148,12 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// ```no_run
 /// // Each instance will be shifted along the X axis.
 /// fn transform = (id) => {
-///   return { translate: [4 * id, 0, 0] }
+///   return { translate = [4 * id, 0, 0] }
 /// }
 ///
 /// // Sketch 4 cylinders.
 /// const sketch001 = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(5, %)
 ///   |> patternTransform(4, transform, %)
 /// ```
@@ -190,7 +166,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// const sketch001 = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 2 }, %)
+///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(5, %)
 ///   |> patternTransform(4, transform, %)
 /// ```
@@ -217,13 +193,13 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// fn transform = (i) => {
 ///   return {
 ///     // Move down each time.
-///     translate: [0, 0, -i * width],
+///     translate = [0, 0, -i * width],
 ///     // Make the cube longer, wider and flatter each time.
-///     scale: [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
+///     scale = [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
 ///     // Turn by 15 degrees each time.
-///     rotation: {
-///       angle: 15 * i,
-///       origin: "local",
+///     rotation = {
+///       angle = 15 * i,
+///       origin = "local",
 ///     }
 ///   }
 /// }
@@ -255,11 +231,11 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// let width = 20
 /// fn transform = (i) => {
 ///   return {
-///     translate: [0, 0, -i * width],
-///     rotation: {
-///       angle: 90 * i,
+///     translate = [0, 0, -i * width],
+///     rotation = {
+///       angle = 90 * i,
 ///       // Rotate around the overall scene's origin.
-///       origin: "global",
+///       origin = "global",
 ///     }
 ///   }
 /// }
@@ -277,14 +253,14 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// fn transform = (replicaId) => {
 ///   let scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
 ///   return {
-///     translate: [0, 0, replicaId * 10],
-///     scale: [scale, scale, 0],
+///     translate = [0, 0, replicaId * 10],
+///     scale = [scale, scale, 0],
 ///   }
 /// }
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer = () => {
 ///   return startSketchOn("XY") // or some other plane idk
-///     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
+///     |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
 ///     |> extrude(h, %)
 /// }
 /// // The vase is 100 layers tall.
@@ -486,7 +462,7 @@ async fn make_transform<'a, T: GeometryTrait>(
 }
 
 fn transform_from_obj_fields<T: GeometryTrait>(
-    transform: HashMap<String, KclValue>,
+    transform: KclObjectFields,
     source_ranges: Vec<SourceRange>,
 ) -> Result<Transform, KclError> {
     // Apply defaults to the transform.
@@ -715,11 +691,11 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 1 }, %)
+///   |> circle({ center = [0, 0], radius = 1 }, %)
 ///   |> patternLinear2d({
-///        axis: [1, 0],
-///        instances: 7,
-///        distance: 4
+///        axis = [1, 0],
+///        instances = 7,
+///        distance = 4
 ///      }, %)
 ///
 /// const example = extrude(1, exampleSketch)
@@ -733,33 +709,21 @@ async fn inner_pattern_linear_2d(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Box<Sketch>>, KclError> {
-    let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
-
-    if args.ctx.context_type == crate::executor::ContextType::Mock {
-        return Ok(starting_sketches);
-    }
-
-    let mut sketches = Vec::new();
-    for sketch in starting_sketches.iter() {
-        let geometries = pattern_linear(
-            LinearPattern::TwoD(data.clone()),
-            Geometry::Sketch(sketch.clone()),
-            exec_state,
-            args.clone(),
-        )
-        .await?;
-
-        let Geometries::Sketches(new_sketches) = geometries else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a vec of sketches".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-
-        sketches.extend(new_sketches);
-    }
-
-    Ok(sketches)
+    let axis = data.axis;
+    let [x, y] = axis;
+    let axis_len = f64::sqrt(x * x + y * y);
+    let normalized_axis = kcmc::shared::Point2d::from([x / axis_len, y / axis_len]);
+    let transforms: Vec<_> = (1..data.instances)
+        .map(|i| {
+            let d = data.distance * (i as f64);
+            let translate = (normalized_axis * d).with_z(0.0).map(LengthUnit);
+            vec![Transform {
+                translate,
+                ..Default::default()
+            }]
+        })
+        .collect();
+    execute_pattern_transform(transforms, sketch_set, exec_state, &args).await
 }
 
 /// A linear pattern on a 3D model.
@@ -792,9 +756,9 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// const example = extrude(1, exampleSketch)
 ///   |> patternLinear3d({
-///        axis: [1, 0, 1],
-///        instances: 7,
-///       distance: 6
+///       axis = [1, 0, 1],
+///       instances = 7,
+///       distance = 6
 ///     }, %)
 /// ```
 #[stdlib {
@@ -810,7 +774,7 @@ async fn inner_pattern_linear_3d(
     let [x, y, z] = axis;
     let axis_len = f64::sqrt(x * x + y * y + z * z);
     let normalized_axis = kcmc::shared::Point3d::from([x / axis_len, y / axis_len, z / axis_len]);
-    let transforms: Vec<_> = (1..data.instances.u64())
+    let transforms: Vec<_> = (1..data.instances)
         .map(|i| {
             let d = data.distance * (i as f64);
             let translate = (normalized_axis * d).map(LengthUnit);
@@ -823,73 +787,6 @@ async fn inner_pattern_linear_3d(
     execute_pattern_transform(transforms, solid_set, exec_state, &args).await
 }
 
-async fn pattern_linear(
-    data: LinearPattern,
-    geometry: Geometry,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Geometries, KclError> {
-    let id = exec_state.id_generator.next_uuid();
-
-    let num_repetitions = match data.repetitions() {
-        RepetitionsNeeded::More(n) => n,
-        RepetitionsNeeded::None => {
-            return Ok(Geometries::from(geometry));
-        }
-        RepetitionsNeeded::Invalid => {
-            return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![args.source_range],
-                message: MUST_HAVE_ONE_INSTANCE.to_owned(),
-            }));
-        }
-    };
-
-    let resp = args
-        .send_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::EntityLinearPattern {
-                axis: kcmc::shared::Point3d::from(data.axis()),
-                entity_id: geometry.id(),
-                num_repetitions,
-                spacing: LengthUnit(data.distance()),
-            }),
-        )
-        .await?;
-
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::EntityLinearPattern(pattern_info),
-    } = &resp
-    else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("EntityLinearPattern response was not as expected: {:?}", resp),
-            source_ranges: vec![args.source_range],
-        }));
-    };
-
-    let geometries = match geometry {
-        Geometry::Sketch(sketch) => {
-            let mut geometries = vec![sketch.clone()];
-            for id in pattern_info.entity_ids.iter() {
-                let mut new_sketch = sketch.clone();
-                new_sketch.id = *id;
-                geometries.push(new_sketch);
-            }
-            Geometries::Sketches(geometries)
-        }
-        Geometry::Solid(solid) => {
-            let mut geometries = vec![solid.clone()];
-            for id in pattern_info.entity_ids.iter() {
-                let mut new_solid = solid.clone();
-                new_solid.id = *id;
-                geometries.push(new_solid);
-            }
-            Geometries::Solids(geometries)
-        }
-    };
-
-    Ok(geometries)
-}
-
 /// Data for a circular pattern on a 2D sketch.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -899,7 +796,7 @@ pub struct CircularPattern2dData {
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
     /// If instances is 1, this has no effect.
-    pub instances: Uint,
+    pub instances: u32,
     /// The center about which to make the pattern. This is a 2D vector.
     pub center: [f64; 2],
     /// The arc angle (in degrees) to place the repetitions. Must be greater than 0.
@@ -917,7 +814,7 @@ pub struct CircularPattern3dData {
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.
     /// If instances is 1, this has no effect.
-    pub instances: Uint,
+    pub instances: u32,
     /// The axis around which to make the pattern. This is a 3D vector.
     pub axis: [f64; 3],
     /// The center about which to make the pattern. This is a 3D vector.
@@ -969,8 +866,8 @@ impl CircularPattern {
 
     fn repetitions(&self) -> RepetitionsNeeded {
         let n = match self {
-            CircularPattern::TwoD(lp) => lp.instances.u32(),
-            CircularPattern::ThreeD(lp) => lp.instances.u32(),
+            CircularPattern::TwoD(lp) => lp.instances,
+            CircularPattern::ThreeD(lp) => lp.instances,
         };
         RepetitionsNeeded::from(n)
     }
@@ -1011,10 +908,10 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 ///   |> line([0, -5], %)
 ///   |> close(%)
 ///   |> patternCircular2d({
-///        center: [0, 0],
-///        instances: 13,
-///        arcDegrees: 360,
-///        rotateDuplicates: true
+///        center = [0, 0],
+///        instances = 13,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
 ///      }, %)
 ///
 /// const example = extrude(1, exampleSketch)
@@ -1072,15 +969,15 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn('XZ')
-///   |> circle({ center: [0, 0], radius: 1 }, %)
+///   |> circle({ center = [0, 0], radius = 1 }, %)
 ///
 /// const example = extrude(-5, exampleSketch)
 ///   |> patternCircular3d({
-///        axis: [1, -1, 0],
-///        center: [10, -20, 0],
-///        instances: 11,
-///        arcDegrees: 360,
-///        rotateDuplicates: true
+///        axis = [1, -1, 0],
+///        center = [10, -20, 0],
+///        instances = 11,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
 ///      }, %)
 /// ```
 #[stdlib {

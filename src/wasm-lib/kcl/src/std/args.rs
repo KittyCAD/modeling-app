@@ -1,4 +1,4 @@
-use std::{any::type_name, collections::HashMap, num::NonZeroU32};
+use std::{any::type_name, num::NonZeroU32};
 
 use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
@@ -11,7 +11,8 @@ use crate::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
         SolidSet, SourceRange, TagIdentifier,
     },
-    std::{shapes::SketchOrSurface, sketch::FaceTag, types::Uint, FnAsArg},
+    kcl_value::KclObjectFields,
+    std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
 };
 
 use super::shapes::PolygonType;
@@ -921,7 +922,6 @@ impl<'a> FromKclValue<'a> for super::patterns::CircularPattern3dData {
         let_field_of!(obj, instances);
         let_field_of!(obj, arc_degrees "arcDegrees");
         let_field_of!(obj, rotate_duplicates "rotateDuplicates");
-        let instances = Uint::new(instances);
         let_field_of!(obj, axis);
         let_field_of!(obj, center);
         Some(Self {
@@ -940,7 +940,6 @@ impl<'a> FromKclValue<'a> for super::patterns::CircularPattern2dData {
         let_field_of!(obj, instances);
         let_field_of!(obj, arc_degrees "arcDegrees");
         let_field_of!(obj, rotate_duplicates "rotateDuplicates");
-        let instances = Uint::new(instances);
         let_field_of!(obj, center);
         Some(Self {
             instances,
@@ -956,7 +955,6 @@ impl<'a> FromKclValue<'a> for super::patterns::LinearPattern3dData {
         let obj = arg.as_object()?;
         let_field_of!(obj, distance);
         let_field_of!(obj, instances);
-        let instances = Uint::new(instances);
         let_field_of!(obj, axis);
         Some(Self {
             instances,
@@ -971,7 +969,6 @@ impl<'a> FromKclValue<'a> for super::patterns::LinearPattern2dData {
         let obj = arg.as_object()?;
         let_field_of!(obj, distance);
         let_field_of!(obj, instances);
-        let instances = Uint::new(instances);
         let_field_of!(obj, axis);
         Some(Self {
             instances,
@@ -1173,7 +1170,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         }
         // Case 2: custom plane
         let obj = arg.as_object()?;
-        let_field_of!(obj, plane, &std::collections::HashMap<String, KclValue>);
+        let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
         let x_axis = plane
             .get("xAxis")
@@ -1363,7 +1360,7 @@ impl<'a> FromKclValue<'a> for super::revolve::AxisAndOrigin {
         }
         // Case 2: custom planes.
         let obj = arg.as_object()?;
-        let_field_of!(obj, custom, &HashMap<String, KclValue>);
+        let_field_of!(obj, custom, &KclObjectFields);
         let_field_of!(custom, origin);
         let_field_of!(custom, axis);
         Some(Self::Custom { axis, origin })
@@ -1414,15 +1411,16 @@ impl<'a> FromKclValue<'a> for super::sketch::AngledLineData {
 
 impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Int { value, meta: _ } = arg else {
-            return None;
-        };
-        Some(*value)
+        match arg {
+            KclValue::Number { value, meta: _ } => crate::try_f64_to_i64(*value),
+            KclValue::Int { value, meta: _ } => Some(*value),
+            _ => None,
+        }
     }
 }
 
 impl<'a> FromKclValue<'a> for &'a str {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<&'a str> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::String { value, meta: _ } = arg else {
             return None;
         };
@@ -1430,8 +1428,8 @@ impl<'a> FromKclValue<'a> for &'a str {
     }
 }
 
-impl<'a> FromKclValue<'a> for &'a HashMap<String, KclValue> {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<&'a HashMap<String, KclValue>> {
+impl<'a> FromKclValue<'a> for &'a KclObjectFields {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Object { value, meta: _ } = arg else {
             return None;
         };
@@ -1450,10 +1448,11 @@ impl<'a> FromKclValue<'a> for uuid::Uuid {
 
 impl<'a> FromKclValue<'a> for u32 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Int { value, meta: _ } = arg else {
-            return None;
-        };
-        Some(*value as u32)
+        match arg {
+            KclValue::Number { value, meta: _ } => crate::try_f64_to_u32(*value),
+            KclValue::Int { value, meta: _ } => Some(*value as u32),
+            _ => None,
+        }
     }
 }
 
@@ -1465,10 +1464,11 @@ impl<'a> FromKclValue<'a> for NonZeroU32 {
 
 impl<'a> FromKclValue<'a> for u64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Int { value, meta: _ } = arg else {
-            return None;
-        };
-        Some(*value as u64)
+        match arg {
+            KclValue::Number { value, meta: _ } => crate::try_f64_to_u64(*value),
+            KclValue::Int { value, meta: _ } => Some(*value as u64),
+            _ => None,
+        }
     }
 }
 impl<'a> FromKclValue<'a> for f64 {

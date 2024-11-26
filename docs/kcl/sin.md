@@ -34,8 +34,8 @@ sin(num: number) -> number
 exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> angledLine({
-       angle: 50,
-       length: 15 / sin(toDegrees(135))
+       angle = 50,
+       length = 15 / sin(toDegrees(135))
      }, %)
   |> yLineTo(0, %)
   |> close(%)

@@ -3,4 +3,11 @@ source: kcl/src/simulation_tests.rs
 description: Error from executing object_prop_not_found.kcl
 snapshot_kind: text
 ---
-undefined value: KclErrorDetails { source_ranges: [SourceRange([15, 25, 0])], message: "Property 'age' not found in object" }
+KCL UndefinedValue error
+
+  × undefined value: Property 'age' not found in object
+   ╭─[2:5]
+ 1 │ obj = {  }
+ 2 │ k = obj["age"]
+   ·     ──────────
+   ╰────

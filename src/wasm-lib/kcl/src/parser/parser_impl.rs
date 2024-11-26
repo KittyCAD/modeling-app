@@ -15,7 +15,7 @@ use crate::{
         CallExpression, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression,
         Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator,
         UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
     },
     errors::{KclError, KclErrorDetails},
@@ -49,7 +49,6 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
 #[derive(Debug, Clone, Default)]
 pub(crate) struct ParseContext {
     pub errors: Vec<ParseError>,
-    #[allow(dead_code)]
     pub warnings: Vec<ParseError>,
 }
 
@@ -75,14 +74,34 @@ impl ParseContext {
 
     /// Add an error to the current `ParseContext`, panics if there is none.
     fn err(e: ParseError) {
+        // TODO follow warnings replacement with errors
         CTXT.with_borrow_mut(|ctxt| ctxt.as_mut().unwrap().errors.push(e));
     }
 
     /// Add a warning to the current `ParseContext`, panics if there is none.
-    #[allow(dead_code)]
     fn warn(mut e: ParseError) {
         e.severity = error::Severity::Warning;
-        CTXT.with_borrow_mut(|ctxt| ctxt.as_mut().unwrap().warnings.push(e));
+        CTXT.with_borrow_mut(|ctxt| {
+            // Avoid duplicating warnings. This is possible since the parser can try one path, find
+            // a warning, then backtrack and decide not to take that path and try another. This can
+            // happen 'high up the stack', so it's impossible to fix where the warnings are generated.
+            // Ideally we would pass warnings up the call stack rather than use a context object or
+            // have some way to mark warnings as speculative or committed, but I don't think Winnow
+            // is flexible enough for that (or at least, not without significant changes to the
+            // parser).
+            let warnings = &mut ctxt.as_mut().unwrap().warnings;
+            for w in warnings.iter_mut().rev() {
+                if w.source_range == e.source_range {
+                    *w = e;
+                    return;
+                }
+
+                if w.source_range.start() > e.source_range.end() {
+                    break;
+                }
+            }
+            warnings.push(e);
+        });
     }
 }
 
@@ -122,11 +141,8 @@ fn expected(what: &'static str) -> StrContext {
 fn program(i: TokenSlice) -> PResult<Node<Program>> {
     let shebang = opt(shebang).parse_next(i)?;
     let mut out: Node<Program> = function_body.parse_next(i)?;
+    out.shebang = shebang;
 
-    // Add the shebang to the non-code meta.
-    if let Some(shebang) = shebang {
-        out.non_code_meta.start_nodes.insert(0, shebang);
-    }
     // Match original parser behaviour, for now.
     // Once this is merged and stable, consider changing this as I think it's more accurate
     // without the -1.
@@ -352,9 +368,6 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                if let Ok(x) = token.value.parse::<u64>() {
-                    return Ok((LiteralValue::IInteger(x as i64), token));
-                }
                 let x: f64 = token.value.parse().map_err(|_| {
                     KclError::Syntax(KclErrorDetails {
                         source_ranges: token.as_source_ranges(),
@@ -362,7 +375,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
                     })
                 })?;
 
-                Ok((LiteralValue::Fractional(x), token))
+                Ok((LiteralValue::Number(x), token))
             }
             _ => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -517,7 +530,7 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
 
 /// A shebang is a line at the start of a file that starts with `#!`.
 /// If the shebang is present it takes up the whole line.
-fn shebang(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
+fn shebang(i: TokenSlice) -> PResult<Node<Shebang>> {
     // Parse the hash and the bang.
     hash.parse_next(i)?;
     bang.parse_next(i)?;
@@ -540,23 +553,11 @@ fn shebang(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
     opt(whitespace).parse_next(i)?;
 
     Ok(Node::new(
-        NonCodeNode {
-            value: NonCodeValue::Shebang {
-                value: format!("#!{}", value),
-            },
-            digest: None,
-        },
+        Shebang::new(format!("#!{}", value)),
         0,
         tokens.last().unwrap().end,
         tokens.first().unwrap().module_id,
     ))
-}
-
-/// Parse the = operator.
-fn equals(i: TokenSlice) -> PResult<Token> {
-    one_of((TokenType::Operator, "="))
-        .context(expected("the equals operator, ="))
-        .parse_next(i)
 }
 
 #[allow(clippy::large_enum_variant)]
@@ -692,11 +693,12 @@ fn object_property_same_key_and_val(i: TokenSlice) -> PResult<Node<ObjectPropert
 }
 
 fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
-    colon
+    // Temporarily accept both `:` and `=` for compatibility.
+    let sep = alt((colon, equals))
         .context(expected(
-            "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
+            "`=`, which separates the property's key from the value you're setting it to, e.g. 'height = 4'",
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
@@ -705,7 +707,8 @@ fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
             "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
         ))
         .parse_next(i)?;
-    Ok(Node {
+
+    let result = Node {
         start: key.start,
         end: expr.end(),
         module_id: key.module_id,
@@ -714,7 +717,18 @@ fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
             value: expr,
             digest: None,
         },
-    })
+    };
+
+    if sep.token_type == TokenType::Colon {
+        ParseContext::warn(ParseError::with_suggestion(
+            sep.into(),
+            Some(result.as_source_range()),
+            "Using `:` to initialize objects is deprecated, prefer using `=`.",
+            Some(" ="),
+        ));
+    }
+
+    Ok(result)
 }
 
 /// Match something that separates properties of an object.
@@ -1057,7 +1071,6 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
                 // There's an empty line between the body item and the comment,
                 // This means the comment is a NewLineBlockComment!
                 let value = match nc.inner.value {
-                    NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::NewLineBlockComment { value, style },
                     // Other variants don't need to change.
@@ -1078,7 +1091,6 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
                 // There's no newline between the body item and comment,
                 // so if this is a comment, it must be inline with code.
                 let value = match nc.inner.value {
-                    NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::InlineComment { value, style },
                     // Other variants don't need to change.
@@ -1278,6 +1290,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
         Program {
             body,
             non_code_meta,
+            shebang: None,
             digest: None,
         },
         start.0,
@@ -1928,9 +1941,14 @@ fn double_period(i: TokenSlice) -> PResult<Token> {
     .parse_next(i)
 }
 
-fn colon(i: TokenSlice) -> PResult<()> {
-    TokenType::Colon.parse_from(i)?;
-    Ok(())
+fn colon(i: TokenSlice) -> PResult<Token> {
+    TokenType::Colon.parse_from(i)
+}
+
+fn equals(i: TokenSlice) -> PResult<Token> {
+    one_of((TokenType::Operator, "="))
+        .context(expected("the equals operator, ="))
+        .parse_next(i)
 }
 
 fn question_mark(i: TokenSlice) -> PResult<()> {
@@ -2124,6 +2142,23 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
         }
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
+
+    // This should really be done with resolved names, but we don't have warning support there
+    // so we'll hack this in here.
+    if fn_name.name == "int" {
+        assert_eq!(args.len(), 1);
+        let mut arg_str = args[0].recast(&crate::FormatOptions::default(), 0, false);
+        if arg_str.contains('.') && !arg_str.ends_with(".0") {
+            arg_str = format!("round({arg_str})");
+        }
+        ParseContext::warn(ParseError::with_suggestion(
+            SourceRange::new(fn_name.start, end, fn_name.module_id),
+            None,
+            "`int` function is deprecated. You may not need it at all. If you need to round, consider `round`, `ceil`, or `floor`.",
+            Some(arg_str),
+        ));
+    }
+
     Ok(Node {
         start: fn_name.start,
         end,
@@ -2261,7 +2296,7 @@ mod tests {
     #[test]
     fn test_comments_in_function2() {
         let test_program = r#"() => {
-  const yo = { a: { b: { c: '123' } } } /* block
+  const yo = { a = { b = { c = '123' } } } /* block
 comment */
 }"#;
         let tokens = crate::token::lexer(test_program, ModuleId::default()).unwrap();
@@ -2375,6 +2410,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                                 )],
                                 digest: None,
                             },
+                            shebang: None,
                             digest: None,
                         },
                         7,
@@ -2420,7 +2456,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn many_comments() {
         let test_program = r#"// this is a comment
-  const yo = { a: { b: { c: '123' } } } /* block
+  const yo = { a = { b = { c = '123' } } } /* block
   comment */
 
   const key = 'c'
@@ -2457,8 +2493,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                         },
                         digest: None,
                     },
-                    60,
-                    82,
+                    63,
+                    85,
                     module_id,
                 ),
                 Node::new(
@@ -2466,8 +2502,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: NonCodeValue::NewLine,
                         digest: None,
                     },
-                    82,
-                    86,
+                    85,
+                    89,
                     module_id,
                 )
             ]),
@@ -2483,8 +2519,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                     },
                     digest: None,
                 },
-                103,
-                129,
+                106,
+                132,
                 module_id,
             )]),
             non_code_meta.non_code_nodes.get(&1),
@@ -2860,7 +2896,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     fn test_pipes_on_pipes() {
         let test_program = include_str!("../../../tests/executor/inputs/pipes_on_pipes.kcl");
         let tokens = crate::token::lexer(test_program, ModuleId::default()).unwrap();
-        let _actual = program.parse(&tokens).unwrap();
+        let _ = run_parser(&mut &*tokens).unwrap();
     }
 
     #[test]
@@ -3112,6 +3148,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     4,
                     module_id,
                 ))],
+                shebang: None,
                 non_code_meta: NonCodeMeta::default(),
                 digest: None,
             },
@@ -3128,6 +3165,14 @@ const mySk1 = startSketchAt([0, 0])"#;
         let some_program_string = r#""#;
         let result = crate::parser::top_level_parse(some_program_string);
         assert!(result.is_ok());
+    }
+
+    #[track_caller]
+    fn assert_no_err(p: &str) -> (Node<Program>, ParseContext) {
+        let result = crate::parser::top_level_parse(p);
+        let result = result.0.unwrap();
+        assert!(result.1.errors.is_empty());
+        (result.0.unwrap(), result.1)
     }
 
     #[track_caller]
@@ -3660,6 +3705,28 @@ let myBox = box([0,0], -3, -16, -10)
 "#;
         assert_err(some_program_string, "Unexpected token: |>", [57, 59]);
     }
+
+    #[test]
+    fn warn_object_expr() {
+        let some_program_string = "{ foo: bar }";
+        let (_, ctxt) = assert_no_err(some_program_string);
+        assert_eq!(ctxt.warnings.len(), 1);
+        assert_eq!(
+            ctxt.warnings[0].apply_suggestion(some_program_string).unwrap(),
+            "{ foo = bar }"
+        )
+    }
+
+    #[test]
+    fn warn_fn_int() {
+        let some_program_string = r#"int(1.0)
+int(42.3)"#;
+        let (_, ctxt) = assert_no_err(some_program_string);
+        assert_eq!(ctxt.warnings.len(), 2);
+        let replaced = ctxt.warnings[1].apply_suggestion(some_program_string).unwrap();
+        let replaced = ctxt.warnings[0].apply_suggestion(&replaced).unwrap();
+        assert_eq!(replaced, "1.0\nround(42.3)");
+    }
 }
 
 #[cfg(test)]
@@ -3675,11 +3742,14 @@ mod snapshot_math_tests {
             fn $func_name() {
                 let module_id = crate::ast::types::ModuleId::default();
                 let tokens = crate::token::lexer($test_kcl_program, module_id).unwrap();
+                ParseContext::init();
+
                 let actual = match binary_expression.parse(&tokens) {
                     Ok(x) => x,
                     Err(_e) => panic!("could not parse test"),
                 };
                 insta::assert_json_snapshot!(actual);
+                let _ = ParseContext::take();
             }
         };
     }
@@ -3711,6 +3781,7 @@ mod snapshot_tests {
                 let module_id = crate::ast::types::ModuleId::default();
                 let tokens = crate::token::lexer($test_kcl_program, module_id).unwrap();
                 print_tokens(&tokens);
+                ParseContext::init();
                 let actual = match program.parse(&tokens) {
                     Ok(x) => x,
                     Err(e) => panic!("could not parse test: {e:?}"),
@@ -3720,6 +3791,7 @@ mod snapshot_tests {
                 settings.bind(|| {
                     insta::assert_json_snapshot!(actual);
                 });
+                let _ = ParseContext::take();
             }
         };
     }

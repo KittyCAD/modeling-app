@@ -1,5 +1,6 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3649
 expression: actual
 snapshot_kind: text
 ---
@@ -27,7 +28,7 @@ snapshot_kind: text
                         "start": 33,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0
+                        "value": 0.0
                       },
                       {
                         "end": 37,
@@ -35,7 +36,7 @@ snapshot_kind: text
                         "start": 36,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0
+                        "value": 0.0
                       }
                     ],
                     "end": 38,
@@ -66,7 +67,7 @@ snapshot_kind: text
                         "start": 53,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0
+                        "value": 0.0
                       },
                       {
                         "end": 58,
@@ -74,7 +75,7 @@ snapshot_kind: text
                         "start": 56,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 10
+                        "value": 10.0
                       }
                     ],
                     "end": 59,
@@ -112,7 +113,7 @@ snapshot_kind: text
                           "start": 87,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 5
+                          "value": 5.0
                         },
                         "end": 88,
                         "operator": "-",
@@ -126,7 +127,7 @@ snapshot_kind: text
                         "start": 90,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 5
+                        "value": 5.0
                       }
                     ],
                     "end": 92,
@@ -163,7 +164,7 @@ snapshot_kind: text
                         "start": 110,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 5
+                        "value": 5.0
                       },
                       {
                         "argument": {
@@ -172,7 +173,7 @@ snapshot_kind: text
                           "start": 114,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 15
+                          "value": 15.0
                         },
                         "end": 116,
                         "operator": "-",
@@ -213,7 +214,7 @@ snapshot_kind: text
                     "start": 137,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 10
+                    "value": 10.0
                   },
                   {
                     "end": 142,

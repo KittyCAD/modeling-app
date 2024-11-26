@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing import_cycle1.kcl
 snapshot_kind: text
 ---
@@ -65,7 +66,7 @@ snapshot_kind: text
                         "start": 78,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1
+                        "value": 1.0
                       },
                       "start": 70,
                       "type": "BinaryExpression",

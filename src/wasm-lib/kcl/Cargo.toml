@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.24"
+version = "0.2.26"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -33,6 +33,7 @@ kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = "1.5.0"
 measurements = "0.11.0"
+miette = "7.2.0"
 mime_guess = "2.0.5"
 parse-display = "0.9.1"
 pyo3 = { version = "0.22.6", optional = true }
@@ -55,7 +56,7 @@ zip = { version = "2.0.0", default-features = false }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 js-sys = { version = "0.3.72" }
-tokio = { version = "1.40.0", features = ["sync", "time"] }
+tokio = { version = "1.41.1", features = ["sync", "time"] }
 tower-lsp = { version = "0.20.0", default-features = false, features = ["runtime-agnostic"] }
 wasm-bindgen = "0.2.91"
 wasm-bindgen-futures = "0.4.44"
@@ -64,7 +65,7 @@ web-sys = { version = "0.3.72", features = ["console"] }
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 approx = "0.5"
 bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }
-tokio = { version = "1.39.3", features = ["full"] }
+tokio = { version = "1.41.1", features = ["full"] }
 tokio-tungstenite = { version = "0.24.0", features = ["rustls-tls-native-roots"] }
 tower-lsp = { version = "0.20.0", features = ["proposed"] }
 
@@ -89,8 +90,9 @@ iai = "0.1"
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 insta = { version = "1.41.1", features = ["json", "filters", "redactions"] }
 itertools = "0.13.0"
+miette = { version = "7.2.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
-tokio = { version = "1.40.0", features = ["rt-multi-thread", "macros", "time"] }
+tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.0"
 
 [[bench]]

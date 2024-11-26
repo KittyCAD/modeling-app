@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing sketch_on_face_circle_tagged.kcl
 snapshot_kind: text
 ---
@@ -105,7 +106,7 @@ snapshot_kind: text
                                     "start": 98,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   },
                                   {
                                     "end": 106,
@@ -156,7 +157,7 @@ snapshot_kind: text
                                     "start": 132,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   }
                                 ],
                                 "end": 134,
@@ -193,7 +194,7 @@ snapshot_kind: text
                                     "start": 152,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   },
                                   {
                                     "argument": {
@@ -362,7 +363,7 @@ snapshot_kind: text
                 "id": "[uuid]",
                 "sourceRange": [
                   289,
-                  340,
+                  342,
                   0
                 ]
               },
@@ -372,18 +373,18 @@ snapshot_kind: text
                 0.0
               ],
               "from": [
-                0.0,
+                5.0,
                 0.0
               ],
               "radius": 5.0,
               "tag": {
-                "end": 339,
-                "start": 330,
+                "end": 341,
+                "start": 332,
                 "type": "TagDeclarator",
                 "value": "myCircle"
               },
               "to": [
-                0.0,
+                5.0,
                 0.0
               ],
               "type": "Circle"
@@ -393,12 +394,12 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 289,
-                340,
+                342,
                 0
               ],
               "tag": {
-                "end": 339,
-                "start": 330,
+                "end": 341,
+                "start": 332,
                 "type": "TagDeclarator",
                 "value": "myCircle"
               },
@@ -408,8 +409,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                330,
-                339,
+                332,
+                341,
                 0
               ]
             }
@@ -628,12 +629,12 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 289,
-                340,
+                342,
                 0
               ],
               "tag": {
-                "end": 339,
-                "start": 330,
+                "end": 341,
+                "start": 332,
                 "type": "TagDeclarator",
                 "value": "myCircle"
               },
@@ -649,7 +650,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     289,
-                    340,
+                    342,
                     0
                   ]
                 },
@@ -659,18 +660,18 @@ snapshot_kind: text
                   0.0
                 ],
                 "from": [
-                  0.0,
+                  5.0,
                   0.0
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "end": 339,
-                  "start": 330,
+                  "end": 341,
+                  "start": 332,
                   "type": "TagDeclarator",
                   "value": "myCircle"
                 },
                 "to": [
-                  0.0,
+                  5.0,
                   0.0
                 ],
                 "type": "Circle"
@@ -921,7 +922,7 @@ snapshot_kind: text
                 "id": "[uuid]",
                 "sourceRange": [
                   289,
-                  340,
+                  342,
                   0
                 ]
               }
@@ -939,7 +940,7 @@ snapshot_kind: text
                       "id": "[uuid]",
                       "sourceRange": [
                         289,
-                        340,
+                        342,
                         0
                       ]
                     },
@@ -949,18 +950,18 @@ snapshot_kind: text
                       0.0
                     ],
                     "from": [
-                      0.0,
+                      5.0,
                       0.0
                     ],
                     "radius": 5.0,
                     "tag": {
-                      "end": 339,
-                      "start": 330,
+                      "end": 341,
+                      "start": 332,
                       "type": "TagDeclarator",
                       "value": "myCircle"
                     },
                     "to": [
-                      0.0,
+                      5.0,
                       0.0
                     ],
                     "type": "Circle"
@@ -970,12 +971,12 @@ snapshot_kind: text
                     "id": "[uuid]",
                     "sourceRange": [
                       289,
-                      340,
+                      342,
                       0
                     ],
                     "tag": {
-                      "end": 339,
-                      "start": 330,
+                      "end": 341,
+                      "start": 332,
                       "type": "TagDeclarator",
                       "value": "myCircle"
                     },
@@ -985,8 +986,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      330,
-                      339,
+                      332,
+                      341,
                       0
                     ]
                   }
@@ -997,7 +998,7 @@ snapshot_kind: text
               {
                 "sourceRange": [
                   289,
-                  340,
+                  342,
                   0
                 ]
               }
@@ -1010,7 +1011,7 @@ snapshot_kind: text
             {
               "sourceRange": [
                 289,
-                340,
+                342,
                 0
               ]
             }

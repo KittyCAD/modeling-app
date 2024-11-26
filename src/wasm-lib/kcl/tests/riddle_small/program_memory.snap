@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing riddle_small.kcl
 snapshot_kind: text
 ---
@@ -8,8 +9,8 @@ snapshot_kind: text
     {
       "bindings": {
         "ANSWER": {
-          "type": "Int",
-          "value": 41803,
+          "type": "Number",
+          "value": 41803.0,
           "__meta": [
             {
               "sourceRange": [
@@ -377,7 +378,7 @@ snapshot_kind: text
                         "start": 55,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 12345
+                        "value": 12345.0
                       },
                       "start": 42,
                       "type": "BinaryExpression",
@@ -390,7 +391,7 @@ snapshot_kind: text
                       "start": 64,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 214748
+                      "value": 214748.0
                     },
                     "start": 42,
                     "type": "BinaryExpression",
@@ -426,8 +427,8 @@ snapshot_kind: text
               {
                 "bindings": {
                   "ANSWER": {
-                    "type": "Int",
-                    "value": 41803,
+                    "type": "Number",
+                    "value": 41803.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -476,8 +477,8 @@ snapshot_kind: text
           ]
         },
         "xs": {
-          "type": "Int",
-          "value": 205804,
+          "type": "Number",
+          "value": 205804.0,
           "__meta": [
             {
               "sourceRange": [
@@ -489,8 +490,8 @@ snapshot_kind: text
           ]
         },
         "ys": {
-          "type": "Int",
-          "value": 71816,
+          "type": "Number",
+          "value": 71816.0,
           "__meta": [
             {
               "sourceRange": [

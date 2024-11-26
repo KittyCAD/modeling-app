@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing if_else.kcl
 snapshot_kind: text
 ---
@@ -49,7 +50,7 @@ snapshot_kind: text
                           "start": 85,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 4
+                          "value": 4.0
                         },
                         "start": 85,
                         "type": "ExpressionStatement",
@@ -73,7 +74,7 @@ snapshot_kind: text
                       "start": 98,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 5
+                      "value": 5.0
                     },
                     "start": 98,
                     "type": "ExpressionStatement",
@@ -94,7 +95,7 @@ snapshot_kind: text
                       "start": 64,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 3
+                      "value": 3.0
                     },
                     "start": 64,
                     "type": "ExpressionStatement",
@@ -134,7 +135,7 @@ snapshot_kind: text
               "start": 117,
               "type": "Literal",
               "type": "Literal",
-              "value": 3
+              "value": 3.0
             },
             {
               "end": 125,
@@ -212,7 +213,7 @@ snapshot_kind: text
                           "start": 199,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 4
+                          "value": 4.0
                         },
                         "start": 199,
                         "type": "ExpressionStatement",
@@ -236,7 +237,7 @@ snapshot_kind: text
                       "start": 212,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 5
+                      "value": 5.0
                     },
                     "start": 212,
                     "type": "ExpressionStatement",
@@ -257,7 +258,7 @@ snapshot_kind: text
                       "start": 178,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 3
+                      "value": 3.0
                     },
                     "start": 178,
                     "type": "ExpressionStatement",
@@ -297,7 +298,7 @@ snapshot_kind: text
               "start": 231,
               "type": "Literal",
               "type": "Literal",
-              "value": 4
+              "value": 4.0
             },
             {
               "end": 239,
@@ -375,7 +376,7 @@ snapshot_kind: text
                           "start": 319,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 4
+                          "value": 4.0
                         },
                         "start": 319,
                         "type": "ExpressionStatement",
@@ -399,7 +400,7 @@ snapshot_kind: text
                       "start": 332,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 5
+                      "value": 5.0
                     },
                     "start": 332,
                     "type": "ExpressionStatement",
@@ -420,7 +421,7 @@ snapshot_kind: text
                       "start": 297,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 3
+                      "value": 3.0
                     },
                     "start": 297,
                     "type": "ExpressionStatement",
@@ -460,7 +461,7 @@ snapshot_kind: text
               "start": 351,
               "type": "Literal",
               "type": "Literal",
-              "value": 5
+              "value": 5.0
             },
             {
               "end": 359,

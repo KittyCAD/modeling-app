@@ -34,7 +34,7 @@ use crate::{
     fs::{FileManager, FileSystem},
     settings::types::UnitLength,
     std::{args::Arg, StdLib},
-    Program,
+    ExecError, Program,
 };
 
 /// State for executing a program.
@@ -824,10 +824,27 @@ impl SketchSurface {
     }
 }
 
-pub struct GetTangentialInfoFromPathsResult {
-    pub center_or_tangent_point: [f64; 2],
-    pub is_center: bool,
-    pub ccw: bool,
+#[derive(Debug, Clone)]
+pub(crate) enum GetTangentialInfoFromPathsResult {
+    PreviousPoint([f64; 2]),
+    Arc { center: [f64; 2], ccw: bool },
+    Circle { center: [f64; 2], ccw: bool, radius: f64 },
+}
+
+impl GetTangentialInfoFromPathsResult {
+    pub(crate) fn tan_previous_point(&self, last_arc_end: crate::std::utils::Coords2d) -> [f64; 2] {
+        match self {
+            GetTangentialInfoFromPathsResult::PreviousPoint(p) => *p,
+            GetTangentialInfoFromPathsResult::Arc { center, ccw, .. } => {
+                crate::std::utils::get_tangent_point_from_previous_arc(*center, *ccw, last_arc_end)
+            }
+            // The circle always starts at 0 degrees, so a suitable tangent
+            // point is either directly above or below.
+            GetTangentialInfoFromPathsResult::Circle {
+                center, radius, ccw, ..
+            } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
+        }
+    }
 }
 
 impl Sketch {
@@ -863,32 +880,9 @@ impl Sketch {
 
     pub(crate) fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
         let Some(path) = self.latest_path() else {
-            return GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: self.start.to,
-                is_center: false,
-                ccw: false,
-            };
+            return GetTangentialInfoFromPathsResult::PreviousPoint(self.start.to);
         };
-        match path {
-            Path::TangentialArc { center, ccw, .. } => GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: *center,
-                is_center: true,
-                ccw: *ccw,
-            },
-            Path::TangentialArcTo { center, ccw, .. } => GetTangentialInfoFromPathsResult {
-                center_or_tangent_point: *center,
-                is_center: true,
-                ccw: *ccw,
-            },
-            _ => {
-                let base = path.get_base();
-                GetTangentialInfoFromPathsResult {
-                    center_or_tangent_point: base.from,
-                    is_center: false,
-                    ccw: false,
-                }
-            }
-        }
+        path.get_tangential_info()
     }
 }
 
@@ -1023,6 +1017,20 @@ pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 3]);
 impl From<[usize; 3]> for SourceRange {
     fn from(value: [usize; 3]) -> Self {
         Self(value)
+    }
+}
+
+impl From<&SourceRange> for miette::SourceSpan {
+    fn from(source_range: &SourceRange) -> Self {
+        let length = source_range.end() - source_range.start();
+        let start = miette::SourceOffset::from(source_range.start());
+        Self::new(start, length)
+    }
+}
+
+impl From<SourceRange> for miette::SourceSpan {
+    fn from(source_range: SourceRange) -> Self {
+        Self::from(&source_range)
     }
 }
 
@@ -1275,7 +1283,7 @@ pub enum Path {
         /// the arc's radius
         radius: f64,
         /// arc's direction
-        // Maybe this one's not needed since it's a full revolution?
+        /// This is used to compute the tangential angle.
         ccw: bool,
     },
     /// A path that is horizontal.
@@ -1307,6 +1315,8 @@ pub enum Path {
         center: [f64; 2],
         /// Radius of the circle that this arc is drawn on.
         radius: f64,
+        /// True if the arc is counterclockwise.
+        ccw: bool,
     },
 }
 
@@ -1428,6 +1438,28 @@ impl Path {
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
+        }
+    }
+
+    pub(crate) fn get_tangential_info(&self) -> GetTangentialInfoFromPathsResult {
+        match self {
+            Path::TangentialArc { center, ccw, .. }
+            | Path::TangentialArcTo { center, ccw, .. }
+            | Path::Arc { center, ccw, .. } => GetTangentialInfoFromPathsResult::Arc {
+                center: *center,
+                ccw: *ccw,
+            },
+            Path::Circle {
+                center, ccw, radius, ..
+            } => GetTangentialInfoFromPathsResult::Circle {
+                center: *center,
+                ccw: *ccw,
+                radius: *radius,
+            },
+            Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
+                let base = self.get_base();
+                GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
+            }
         }
     }
 }
@@ -2161,12 +2193,16 @@ impl ExecutorContext {
         &self,
         program: &Program,
         exec_state: &mut ExecState,
-    ) -> Result<TakeSnapshot> {
+    ) -> std::result::Result<TakeSnapshot, ExecError> {
         self.execute_and_prepare(program, exec_state).await
     }
 
     /// Execute the program, return the interpreter and outputs.
-    pub async fn execute_and_prepare(&self, program: &Program, exec_state: &mut ExecState) -> Result<TakeSnapshot> {
+    pub async fn execute_and_prepare(
+        &self,
+        program: &Program,
+        exec_state: &mut ExecState,
+    ) -> std::result::Result<TakeSnapshot, ExecError> {
         self.run(program, exec_state).await?;
 
         // Zoom to fit.
@@ -2198,7 +2234,9 @@ impl ExecutorContext {
             modeling_response: OkModelingCmdResponse::TakeSnapshot(contents),
         } = resp
         else {
-            anyhow::bail!("Unexpected response from engine: {:?}", resp);
+            return Err(ExecError::BadPng(format!(
+                "Instead of a TakeSnapshot response, the engine returned {resp:?}"
+            )));
         };
         Ok(contents)
     }
@@ -2821,7 +2859,7 @@ let notNull = !myNull
         assert_eq!(
             parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: integer".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
                 source_ranges: vec![SourceRange([14, 16, 0])],
             })
         );
@@ -2844,7 +2882,7 @@ let notMember = !obj.a
         assert_eq!(
             parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: integer".to_owned(),
+                message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
                 source_ranges: vec![SourceRange([36, 42, 0])],
             })
         );
@@ -3153,6 +3191,7 @@ let w = f() + f()
                     inner: crate::ast::types::Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        shebang: None,
                         digest: None,
                     },
                     start: 0,
