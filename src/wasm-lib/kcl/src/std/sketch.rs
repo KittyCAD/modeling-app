@@ -28,9 +28,6 @@ use crate::{
     },
 };
 
-type KPoint3D = kcmc::shared::Point3d<LengthUnit>;
-type KPoint3D2 = kcmc::shared::Point3d<f64>;
-
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1116,129 +1113,47 @@ async fn make_sketch_plane_from_orientation(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Plane>, KclError> {
-    let mut plane = Plane::from_plane_data(data.clone(), exec_state);
+    let plane = Plane::from_plane_data(data.clone(), exec_state);
 
-    plane.id = match data {
-        PlaneData::XY => {
-            let id = exec_state.id_generator.next_uuid();
+    // Create the plane on the fly.
+    let clobber = false;
+    let size = LengthUnit(60.0);
+    let hide = Some(true);
+    match data {
+        PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
             args.batch_modeling_cmd(
-                id,
+                plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
-                    clobber: false,
-                    origin: KPoint3D { x: LengthUnit(0.0), y: LengthUnit(0.0), z: LengthUnit(0.0) },
-                    size: LengthUnit(60.0),
-                    x_axis: KPoint3D2 { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: KPoint3D2 { x: 0.0, y: 1.0, z: 0.0 },
-                    hide: Some(true),
+                    clobber,
+                    origin: plane.origin.into(),
+                    size,
+                    x_axis: plane.x_axis.into(),
+                    y_axis: plane.y_axis.into(),
+                    hide,
                 }),
             )
             .await?;
-            id
-        },
-        PlaneData::NegXY => {
-            let id = exec_state.id_generator.next_uuid();
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber: false,
-                    origin: KPoint3D { x: LengthUnit(0.0), y: LengthUnit(0.0), z: LengthUnit(0.0) },
-                    size: LengthUnit(60.0),
-                    x_axis: KPoint3D2 { x: -1.0, y: 0.0, z: 0.0 },
-                    y_axis: KPoint3D2 { x: 0.0, y: 1.0, z: 0.0 },
-                    hide: Some(true),
-                }),
-            )
-            .await?;
-            id
-        },
-        PlaneData::XZ => {
-            let id = exec_state.id_generator.next_uuid();
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber: false,
-                    origin: KPoint3D { x: LengthUnit(0.0), y: LengthUnit(0.0), z: LengthUnit(0.0) },
-                    size: LengthUnit(60.0),
-                    x_axis: KPoint3D2 { x: 1.0, y: 0.0, z: 0.0 },
-                    y_axis: KPoint3D2 { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                }),
-            )
-            .await?;
-            id
-        },
-        PlaneData::NegXZ => {
-            let id = exec_state.id_generator.next_uuid();
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber: false,
-                    origin: KPoint3D { x: LengthUnit(0.0), y: LengthUnit(0.0), z: LengthUnit(0.0) },
-                    size: LengthUnit(60.0),
-                    x_axis: KPoint3D2 { x: -1.0, y: 0.0, z: 0.0 },
-                    y_axis: KPoint3D2 { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                }),
-            )
-            .await?;
-            id
-        },
-        PlaneData::YZ => {
-            let id = exec_state.id_generator.next_uuid();
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber: false,
-                    origin: KPoint3D { x: LengthUnit(0.0), y: LengthUnit(0.0), z: LengthUnit(0.0) },
-                    size: LengthUnit(60.0),
-                    x_axis: KPoint3D2 { x: 0.0, y: 1.0, z: 0.0 },
-                    y_axis: KPoint3D2 { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                }),
-            )
-            .await?;
-            id
-        },
-        PlaneData::NegYZ => {
-            let id = exec_state.id_generator.next_uuid();
-            args.batch_modeling_cmd(
-                id,
-                ModelingCmd::from(mcmd::MakePlane {
-                    clobber: false,
-                    origin: KPoint3D { x: LengthUnit(0.0), y: LengthUnit(0.0), z: LengthUnit(0.0) },
-                    size: LengthUnit(60.0),
-                    x_axis: KPoint3D2 { x: 0.0, y: -1.0, z: 0.0 },
-                    y_axis: KPoint3D2 { x: 0.0, y: 0.0, z: 1.0 },
-                    hide: Some(true),
-                }),
-            )
-            .await?;
-            id
-        },
+        }
         PlaneData::Plane {
             origin,
             x_axis,
             y_axis,
             z_axis: _,
         } => {
-            // Create the custom plane on the fly.
-            let id = exec_state.id_generator.next_uuid();
             args.batch_modeling_cmd(
-                id,
+                plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
-                    clobber: false,
+                    clobber,
                     origin: (*origin).into(),
-                    size: LengthUnit(60.0),
+                    size,
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
-                    hide: Some(true),
+                    hide,
                 }),
             )
             .await?;
-
-            id
         }
-    };
+    }
 
     Ok(Box::new(plane))
 }
