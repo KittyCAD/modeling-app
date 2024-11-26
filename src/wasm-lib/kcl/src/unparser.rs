@@ -13,6 +13,13 @@ use crate::{
 impl Program {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
+
+        let result = self
+            .shebang
+            .as_ref()
+            .map(|sh| format!("{}\n\n", sh.inner.content))
+            .unwrap_or_default();
+
         let result = self
             .body
             .iter()
@@ -38,7 +45,7 @@ impl Program {
                 }
             })
             .enumerate()
-            .fold(String::new(), |mut output, (index, recast_str)| {
+            .fold(result, |mut output, (index, recast_str)| {
                 let start_string = if index == 0 {
                     // We need to indent.
                     if self.non_code_meta.start_nodes.is_empty() {
@@ -107,7 +114,7 @@ impl NonCodeValue {
     fn should_cause_array_newline(&self) -> bool {
         match self {
             Self::InlineComment { .. } => false,
-            Self::Shebang { .. } | Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
+            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
         }
     }
 }

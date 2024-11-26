@@ -123,6 +123,7 @@ describe('Testing addSketchTo', () => {
     const result = addSketchTo(
       {
         body: [],
+        shebang: null,
         start: 0,
         end: 0,
         moduleId: 0,

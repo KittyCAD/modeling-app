@@ -37,6 +37,7 @@ interface ExecuteArgs {
 export class KclManager {
   private _ast: Node<Program> = {
     body: [],
+    shebang: null,
     start: 0,
     end: 0,
     moduleId: 0,
@@ -204,6 +205,7 @@ export class KclManager {
   clearAst() {
     this._ast = {
       body: [],
+      shebang: null,
       start: 0,
       end: 0,
       moduleId: 0,
