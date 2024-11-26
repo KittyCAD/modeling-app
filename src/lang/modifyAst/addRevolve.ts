@@ -21,22 +21,23 @@ import {
 } from 'lang/modifyAst'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { mutateAstWithTagForSketchSegment } from 'lang/modifyAst/addFillet'
+import { pathToFileURL } from 'url'
 export function revolveSketch(
   ast: Node<Program>,
-  pathToNode: PathToNode,
+  pathToSketchNode: PathToNode,
   shouldPipe = false,
   angle: Expr = createLiteral(4),
   axis: Selections
 ):
   | {
       modifiedAst: Node<Program>
-      pathToNode: PathToNode
+      pathToSketchNode: PathToNode
       pathToRevolveArg: PathToNode
     }
   | Error {
   const clonedAst = structuredClone(ast)
-  const _node1 = getNodeFromPath(clonedAst, pathToNode)
-  if (err(_node1)) return _node1
+  const sketchNode = getNodeFromPath(clonedAst, pathToSketchNode)
+  if (err(sketchNode)) return sketchNode
 
   // testing code
   const pathToAxisSelection = getNodePathFromSourceRange(
@@ -73,12 +74,12 @@ export function revolveSketch(
   console.log('my tag!', tag)
 
   /* Original Code */
-  const { node: sketchExpression } = _node1
+  const { node: sketchExpression } = sketchNode
 
   // determine if sketchExpression is in a pipeExpression or not
   const _node2 = getNodeFromPath<PipeExpression>(
     clonedAst,
-    pathToNode,
+    pathToSketchNode,
     'PipeExpression'
   )
   if (err(_node2)) return _node2
@@ -88,7 +89,7 @@ export function revolveSketch(
 
   const _node3 = getNodeFromPath<VariableDeclarator>(
     clonedAst,
-    pathToNode,
+    pathToSketchNode,
     'VariableDeclarator'
   )
   if (err(_node3)) return _node3
@@ -121,7 +122,7 @@ export function revolveSketch(
 
     return {
       modifiedAst: clonedAst,
-      pathToNode,
+      pathToSketchNode,
       pathToRevolveArg,
     }
   }
@@ -148,7 +149,7 @@ export function revolveSketch(
   ]
   return {
     modifiedAst: clonedAst,
-    pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
+    pathToSketchNode: [...pathToSketchNode.slice(0, -1), [-1, 'index']],
     pathToRevolveArg,
   }
 }

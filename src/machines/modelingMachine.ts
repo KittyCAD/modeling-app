@@ -658,6 +658,8 @@ export const modelingMachine = setup({
           newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
           ast.body = newBody
         }
+
+        // This is the selection of the sketch that will be revolved
         const pathToNode = getNodePathFromSourceRange(
           ast,
           selection.graphSelections[0]?.codeRef.range
