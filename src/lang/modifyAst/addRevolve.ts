@@ -20,7 +20,10 @@ import {
   createVariableDeclaration,
 } from 'lang/modifyAst'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { mutateAstWithTagForSketchSegment } from 'lang/modifyAst/addFillet'
+import {
+  mutateAstWithTagForSketchSegment,
+  getEdgeTagCall,
+} from 'lang/modifyAst/addFillet'
 export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,
@@ -51,17 +54,10 @@ export function revolveSketch(
   )
   if (err(lineNode)) return lineNode
 
-  console.log('axis node path', pathToAxisSelection)
-  console.log('line call expression', lineNode)
-  console.log('axis selection from artifact graph', axis.graphSelections[0])
-
   // TODO Kevin: What if |> close(%)?
   // TODO Kevin: What if opposite edge
   // TODO Kevin: What if the edge isn't planar to the sketch?
-
   // TODO Kevin: add a tag.
-  // This adds a tag, need to find a tag if one already exists.
-  // Does this mutate brick something?
   const tagResult = mutateAstWithTagForSketchSegment(
     clonedAst,
     pathToAxisSelection
@@ -98,7 +94,7 @@ export function revolveSketch(
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
-      axis: createIdentifier(tag),
+      axis: getEdgeTagCall(tag, axis?.graphSelections[0]?.artifact),
     }),
     createIdentifier(sketchVariableDeclarator.id.name),
   ])

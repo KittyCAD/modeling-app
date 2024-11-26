@@ -294,7 +294,7 @@ export function mutateAstWithTagForSketchSegment(
   return { modifiedAst: astClone, tag }
 }
 
-function getEdgeTagCall(
+export function getEdgeTagCall(
   tag: string,
   artifact: Artifact
 ): Node<Identifier | CallExpression> {
