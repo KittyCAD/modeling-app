@@ -317,6 +317,7 @@ export const ModelingMachineProvider = ({
                 })
               })
             }
+
             let selections: Selections = {
               graphSelections: [],
               otherSelections: [],
@@ -375,7 +376,10 @@ export const ModelingMachineProvider = ({
               }
             }
 
-            if (setSelections.selectionType === 'otherSelection') {
+            if (
+              setSelections.selectionType === 'axisSelection' ||
+              setSelections.selectionType === 'defaultPlaneSelection'
+            ) {
               if (editorManager.isShiftDown) {
                 selections = {
                   graphSelections: selectionRanges.graphSelections,
@@ -387,20 +391,11 @@ export const ModelingMachineProvider = ({
                   otherSelections: [setSelections.selection],
                 }
               }
-              const { engineEvents, updateSceneObjectColors } =
-                handleSelectionBatch({
-                  selections: selections,
-                })
-              engineEvents &&
-                engineEvents.forEach((event) => {
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  engineCommandManager.sendSceneCommand(event)
-                })
-              updateSceneObjectColors()
               return {
                 selectionRanges: selections,
               }
             }
+
             if (setSelections.selectionType === 'completeSelection') {
               editorManager.selectRange(setSelections.selection)
               if (!sketchDetails)

@@ -551,3 +551,53 @@ test(`Verify axis, origin, and horizontal snapping`, async ({
     )
   })
 })
+
+test(`Offset plane point-and-click`, async ({
+  app,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  await app.initialise()
+
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 700, y: 150 }
+  const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const expectedOutput = `plane001 = offsetPlane('XZ', 5)`
+
+  await test.step(`Look for the blue of the XZ plane`, async () => {
+    await scene.expectPixelColor([50, 51, 96], testPoint, 15)
+  })
+  await test.step(`Go through the command bar flow`, async () => {
+    await toolbar.offsetPlaneButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'plane',
+      currentArgValue: '',
+      headerArguments: { Plane: '', Distance: '' },
+      highlightedHeaderArg: 'plane',
+      commandName: 'Offset plane',
+    })
+    await clickOnXzPlane()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'distance',
+      currentArgValue: '5',
+      headerArguments: { Plane: '1 plane', Distance: '' },
+      highlightedHeaderArg: 'distance',
+      commandName: 'Offset plane',
+    })
+    await cmdBar.progressCmdBar()
+  })
+
+  await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+    await editor.expectEditor.toContain(expectedOutput)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [expectedOutput],
+      highlightedCode: '',
+    })
+    await scene.expectPixelColor([74, 74, 74], testPoint, 15)
+  })
+})

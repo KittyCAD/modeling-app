@@ -22,7 +22,7 @@ import {
 import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
-import { Axis } from 'lib/selections'
+import { Axis, NonCodeSelection } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
@@ -654,7 +654,7 @@ export class SceneInfra {
       await this.onClickCallback({ mouseEvent, intersects })
     }
   }
-  updateOtherSelectionColors = (otherSelections: Axis[]) => {
+  updateOtherSelectionColors = (otherSelections: NonCodeSelection[]) => {
     const axisGroup = this.scene.children.find(
       ({ userData }) => userData?.type === AXIS_GROUP
     )
