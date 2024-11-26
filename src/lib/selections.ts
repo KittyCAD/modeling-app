@@ -21,6 +21,7 @@ import {
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
 import {
+  DefaultPlaneStr,
   getParentGroup,
   SEGMENT_BODIES_PLUS_PROFILE_START,
 } from 'clientSideScene/sceneEntities'
@@ -46,6 +47,10 @@ export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
 export type Axis = 'y-axis' | 'x-axis' | 'z-axis'
+export type DefaultPlaneSelection = {
+  name: DefaultPlaneStr
+  id: string
+}
 
 /** @deprecated Use {@link Artifact} instead. */
 type Selection__old =
@@ -72,9 +77,11 @@ type Selection__old =
       // TODO this is a temporary measure that well be made redundant with: https://github.com/KittyCAD/modeling-app/pull/3836
       secondaryRange: SourceRange
     }
+export type NonCodeSelection = Axis | DefaultPlaneSelection
+
 /** @deprecated Use {@link Selection} instead. */
 export type Selections__old = {
-  otherSelections: Axis[]
+  otherSelections: NonCodeSelection[]
   codeBasedSelections: Selection__old[]
 }
 export interface Selection {
@@ -82,7 +89,7 @@ export interface Selection {
   codeRef: CodeRef
 }
 export type Selections = {
-  otherSelections: Array<Axis>
+  otherSelections: Array<NonCodeSelection>
   graphSelections: Array<Selection>
 }
 
@@ -172,11 +179,31 @@ export async function getEventForSelectWithPoint({
     return {
       type: 'Set selection',
       data: {
-        selectionType: 'otherSelection',
+        selectionType: 'axisSelection',
         selection: X_AXIS_UUID === data.entity_id ? 'x-axis' : 'y-axis',
       },
     }
   }
+
+  // Check for default plane selection
+  const foundDefaultPlane =
+    engineCommandManager.defaultPlanes !== null &&
+    Object.entries(engineCommandManager.defaultPlanes).find(
+      ([, plane]) => plane === data.entity_id
+    )
+  if (foundDefaultPlane) {
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'defaultPlaneSelection',
+        selection: {
+          name: foundDefaultPlane[0] as DefaultPlaneStr,
+          id: data.entity_id,
+        },
+      },
+    }
+  }
+
   let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
   const codeRefs = getCodeRefsByArtifactId(
     data.entity_id,
@@ -207,7 +234,7 @@ export function getEventForSegmentSelection(
     return {
       type: 'Set selection',
       data: {
-        selectionType: 'otherSelection',
+        selectionType: 'axisSelection',
         selection: obj?.userData?.type === X_AXIS ? 'x-axis' : 'y-axis',
       },
     }
@@ -272,7 +299,6 @@ export function handleSelectionBatch({
 }): {
   engineEvents: Models['WebSocketRequest_type'][]
   codeMirrorSelection: EditorSelection
-  otherSelections: Axis[]
   updateSceneObjectColors: () => void
 } {
   const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
@@ -303,7 +329,6 @@ export function handleSelectionBatch({
         ranges,
         selections.graphSelections.length - 1
       ),
-      otherSelections: selections.otherSelections,
       updateSceneObjectColors: () =>
         updateSceneObjectColors(selections.graphSelections),
     }
@@ -314,7 +339,6 @@ export function handleSelectionBatch({
       0
     ),
     engineEvents,
-    otherSelections: selections.otherSelections,
     updateSceneObjectColors: () =>
       updateSceneObjectColors(selections.graphSelections),
   }
@@ -536,7 +560,8 @@ export function canSweepSelection(selection: Selections) {
 }
 
 // This accounts for non-geometry selections under "other"
-export type ResolvedSelectionType = [Artifact['type'] | 'other', number]
+export type ResolvedSelectionType = Artifact['type'] | 'other'
+export type SelectionCountsByType = Map<ResolvedSelectionType, number>
 
 /**
  * In the future, I'd like this function to properly return the type of each selected entity based on
@@ -545,28 +570,48 @@ export type ResolvedSelectionType = [Artifact['type'] | 'other', number]
  * @param selection
  * @returns
  */
-export function getSelectionType(
+export function getSelectionCountByType(
   selection?: Selections
-): ResolvedSelectionType[] {
-  if (!selection) return []
-  const selectionsWithArtifacts = selection.graphSelections.filter(
-    (s) => !!s.artifact
+): SelectionCountsByType | 'none' {
+  const selectionsByType: SelectionCountsByType = new Map()
+  if (
+    !selection ||
+    (!selection.graphSelections.length && !selection.otherSelections.length)
   )
-  const firstSelection = selectionsWithArtifacts[0]
-  const firstSelectionType = firstSelection?.artifact?.type
-  if (!firstSelectionType) return []
-  const selectionsWithSameType = selectionsWithArtifacts.filter(
-    (s) => s.artifact?.type === firstSelection.artifact?.type
-  )
-  return [[firstSelectionType, selectionsWithSameType.length]]
+    return 'none'
+
+  function incrementOrInitializeSelectionType(type: ResolvedSelectionType) {
+    const count = selectionsByType.get(type) || 0
+    selectionsByType.set(type, count + 1)
+  }
+
+  selection.otherSelections.forEach((selection) => {
+    if (typeof selection === 'string') {
+      incrementOrInitializeSelectionType('other')
+    } else if ('name' in selection) {
+      incrementOrInitializeSelectionType('plane')
+    }
+  })
+
+  selection.graphSelections.forEach((selection) => {
+    if (!selection.artifact) {
+      incrementOrInitializeSelectionType('other')
+      return
+    }
+    incrementOrInitializeSelectionType(selection.artifact.type)
+  })
+
+  return selectionsByType
 }
 
 export function getSelectionTypeDisplayText(
   selection?: Selections
 ): string | null {
-  const selectionsByType = getSelectionType(selection)
+  const selectionsByType = getSelectionCountByType(selection)
+  if (selectionsByType === 'none') return null
 
-  return (selectionsByType as Exclude<typeof selectionsByType, 'none'>)
+  return selectionsByType
+    .entries()
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
@@ -575,16 +620,17 @@ export function getSelectionTypeDisplayText(
           .replace('solid2D', 'face')
           .replace('segment', 'face')}${count > 1 ? 's' : ''}`
     )
+    .toArray()
     .join(', ')
 }
 
 export function canSubmitSelectionArg(
-  selectionsByType: 'none' | ResolvedSelectionType[],
+  selectionsByType: 'none' | Map<ResolvedSelectionType, number>,
   argument: CommandArgument<unknown> & { inputType: 'selection' }
 ) {
   return (
     selectionsByType !== 'none' &&
-    selectionsByType.every(([type, count]) => {
+    selectionsByType.entries().every(([type, count]) => {
       const foundIndex = argument.selectionTypes.findIndex((s) => s === type)
       return (
         foundIndex !== -1 &&

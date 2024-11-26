@@ -86,83 +86,6 @@ pub enum KclValue {
     },
 }
 
-impl KclValue {
-    pub(crate) fn metadata(&self) -> Vec<Metadata> {
-        match self {
-            KclValue::Uuid { value: _, meta } => meta.clone(),
-            KclValue::Bool { value: _, meta } => meta.clone(),
-            KclValue::Number { value: _, meta } => meta.clone(),
-            KclValue::Int { value: _, meta } => meta.clone(),
-            KclValue::String { value: _, meta } => meta.clone(),
-            KclValue::Array { value: _, meta } => meta.clone(),
-            KclValue::Object { value: _, meta } => meta.clone(),
-            KclValue::TagIdentifier(x) => x.meta.clone(),
-            KclValue::TagDeclarator(x) => vec![x.metadata()],
-            KclValue::Plane(x) => x.meta.clone(),
-            KclValue::Face(x) => x.meta.clone(),
-            KclValue::Sketch { value } => value.meta.clone(),
-            KclValue::Sketches { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
-            KclValue::Solid(x) => x.meta.clone(),
-            KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
-            KclValue::ImportedGeometry(x) => x.meta.clone(),
-            KclValue::Function { meta, .. } => meta.clone(),
-            KclValue::KclNone { meta, .. } => meta.clone(),
-        }
-    }
-
-    pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
-        match self {
-            KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
-            KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
-            KclValue::Array { value, .. } => {
-                let solids: Vec<_> = value
-                    .iter()
-                    .enumerate()
-                    .map(|(i, v)| {
-                        v.as_solid().map(|v| v.to_owned()).map(Box::new).ok_or_else(|| {
-                            anyhow::anyhow!(
-                                "expected this array to only contain solids, but element {i} was actually {}",
-                                v.human_friendly_type()
-                            )
-                        })
-                    })
-                    .collect::<Result<_, _>>()?;
-                Ok(SolidSet::Solids(solids))
-            }
-            _ => anyhow::bail!("Not a solid or solids: {:?}", self),
-        }
-    }
-
-    /// Human readable type name used in error messages.  Should not be relied
-    /// on for program logic.
-    pub(crate) fn human_friendly_type(&self) -> &'static str {
-        match self {
-            KclValue::Uuid { .. } => "Unique ID (uuid)",
-            KclValue::TagDeclarator(_) => "TagDeclarator",
-            KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::Solid(_) => "Solid",
-            KclValue::Solids { .. } => "Solids",
-            KclValue::Sketch { .. } => "Sketch",
-            KclValue::Sketches { .. } => "Sketches",
-            KclValue::ImportedGeometry(_) => "ImportedGeometry",
-            KclValue::Function { .. } => "Function",
-            KclValue::Plane(_) => "Plane",
-            KclValue::Face(_) => "Face",
-            KclValue::Bool { .. } => "boolean (true/false value)",
-            KclValue::Number { .. } => "number",
-            KclValue::Int { .. } => "integer",
-            KclValue::String { .. } => "string (text)",
-            KclValue::Array { .. } => "array (list)",
-            KclValue::Object { .. } => "object",
-            KclValue::KclNone { .. } => "None",
-        }
-    }
-
-    pub(crate) fn is_function(&self) -> bool {
-        matches!(self, KclValue::Function { .. })
-    }
-}
-
 impl From<SketchSet> for KclValue {
     fn from(sg: SketchSet) -> Self {
         match sg {
@@ -251,8 +174,82 @@ impl From<&KclValue> for Vec<SourceRange> {
 }
 
 impl KclValue {
+    pub(crate) fn metadata(&self) -> Vec<Metadata> {
+        match self {
+            KclValue::Uuid { value: _, meta } => meta.clone(),
+            KclValue::Bool { value: _, meta } => meta.clone(),
+            KclValue::Number { value: _, meta } => meta.clone(),
+            KclValue::Int { value: _, meta } => meta.clone(),
+            KclValue::String { value: _, meta } => meta.clone(),
+            KclValue::Array { value: _, meta } => meta.clone(),
+            KclValue::Object { value: _, meta } => meta.clone(),
+            KclValue::TagIdentifier(x) => x.meta.clone(),
+            KclValue::TagDeclarator(x) => vec![x.metadata()],
+            KclValue::Plane(x) => x.meta.clone(),
+            KclValue::Face(x) => x.meta.clone(),
+            KclValue::Sketch { value } => value.meta.clone(),
+            KclValue::Sketches { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
+            KclValue::Solid(x) => x.meta.clone(),
+            KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
+            KclValue::ImportedGeometry(x) => x.meta.clone(),
+            KclValue::Function { meta, .. } => meta.clone(),
+            KclValue::KclNone { meta, .. } => meta.clone(),
+        }
+    }
+
+    pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
+        match self {
+            KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
+            KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
+            KclValue::Array { value, .. } => {
+                let solids: Vec<_> = value
+                    .iter()
+                    .enumerate()
+                    .map(|(i, v)| {
+                        v.as_solid().map(|v| v.to_owned()).map(Box::new).ok_or_else(|| {
+                            anyhow::anyhow!(
+                                "expected this array to only contain solids, but element {i} was actually {}",
+                                v.human_friendly_type()
+                            )
+                        })
+                    })
+                    .collect::<Result<_, _>>()?;
+                Ok(SolidSet::Solids(solids))
+            }
+            _ => anyhow::bail!("Not a solid or solids: {:?}", self),
+        }
+    }
+
+    /// Human readable type name used in error messages.  Should not be relied
+    /// on for program logic.
+    pub(crate) fn human_friendly_type(&self) -> &'static str {
+        match self {
+            KclValue::Uuid { .. } => "Unique ID (uuid)",
+            KclValue::TagDeclarator(_) => "TagDeclarator",
+            KclValue::TagIdentifier(_) => "TagIdentifier",
+            KclValue::Solid(_) => "Solid",
+            KclValue::Solids { .. } => "Solids",
+            KclValue::Sketch { .. } => "Sketch",
+            KclValue::Sketches { .. } => "Sketches",
+            KclValue::ImportedGeometry(_) => "ImportedGeometry",
+            KclValue::Function { .. } => "Function",
+            KclValue::Plane(_) => "Plane",
+            KclValue::Face(_) => "Face",
+            KclValue::Bool { .. } => "boolean (true/false value)",
+            KclValue::Number { .. } => "number",
+            KclValue::Int { .. } => "integer",
+            KclValue::String { .. } => "string (text)",
+            KclValue::Array { .. } => "array (list)",
+            KclValue::Object { .. } => "object",
+            KclValue::KclNone { .. } => "None",
+        }
+    }
+
+    pub(crate) fn is_function(&self) -> bool {
+        matches!(self, KclValue::Function { .. })
+    }
     /// Put the number into a KCL value.
-    pub fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
+    pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
         Self::Number { value: f, meta }
     }
 
