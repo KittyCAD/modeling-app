@@ -18,6 +18,7 @@ use crate::{
         ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator,
         UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
     },
+    docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
     parser::{
@@ -2091,55 +2092,65 @@ fn binding_name(i: TokenSlice) -> PResult<Node<Identifier>> {
         .parse_next(i)
 }
 
+fn typecheck_all(std_fn: Box<dyn StdLibFn>, args: &[Expr]) -> PResult<()> {
+    // Type check the arguments.
+    for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
+        let Some(arg) = &args.get(i) else {
+            // The executor checks the number of arguments, so we don't need to check it here.
+            continue;
+        };
+        typecheck(spec_arg, arg)?;
+    }
+    Ok(())
+}
+
+fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
+    match spec_arg.type_.as_ref() {
+        "TagNode" => match &arg {
+            Expr::Identifier(_) => {
+                // These are fine since we want someone to be able to map a variable to a tag declarator.
+            }
+            Expr::TagDeclarator(tag) => {
+                // TODO: Remove this check. It should be redundant.
+                tag.clone()
+                    .into_valid_binding_name()
+                    .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
+            }
+            e => {
+                return Err(ErrMode::Cut(
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![SourceRange::from(*arg)],
+                        message: format!("Expected a tag declarator like `$name`, found {:?}", e),
+                    })
+                    .into(),
+                ));
+            }
+        },
+        "TagIdentifier" => match &arg {
+            Expr::Identifier(_) => {}
+            Expr::MemberExpression(_) => {}
+            e => {
+                return Err(ErrMode::Cut(
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![SourceRange::from(*arg)],
+                        message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                    })
+                    .into(),
+                ));
+            }
+        },
+        _ => {}
+    }
+    Ok(())
+}
+
 fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
     let fn_name = identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
-        // Type check the arguments.
-        for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
-            let Some(arg) = &args.get(i) else {
-                // The executor checks the number of arguments, so we don't need to check it here.
-                continue;
-            };
-            match spec_arg.type_.as_ref() {
-                "TagNode" => match &arg {
-                    Expr::Identifier(_) => {
-                        // These are fine since we want someone to be able to map a variable to a tag declarator.
-                    }
-                    Expr::TagDeclarator(tag) => {
-                        // TODO: Remove this check. It should be redundant.
-                        tag.clone()
-                            .into_valid_binding_name()
-                            .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
-                    }
-                    e => {
-                        return Err(ErrMode::Cut(
-                            KclError::Syntax(KclErrorDetails {
-                                source_ranges: vec![SourceRange::from(*arg)],
-                                message: format!("Expected a tag declarator like `$name`, found {:?}", e),
-                            })
-                            .into(),
-                        ));
-                    }
-                },
-                "TagIdentifier" => match &arg {
-                    Expr::Identifier(_) => {}
-                    Expr::MemberExpression(_) => {}
-                    e => {
-                        return Err(ErrMode::Cut(
-                            KclError::Syntax(KclErrorDetails {
-                                source_ranges: vec![SourceRange::from(*arg)],
-                                message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
-                            })
-                            .into(),
-                        ));
-                    }
-                },
-                _ => {}
-            }
-        }
+        typecheck_all(std_fn, &args)?;
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
