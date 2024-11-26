@@ -24,9 +24,11 @@ pub struct ContextError<C = StrContext> {
 #[derive(Debug, Clone)]
 pub(crate) struct ParseError {
     pub source_range: SourceRange,
+    #[allow(dead_code)]
+    pub context_range: Option<SourceRange>,
     pub message: String,
     #[allow(dead_code)]
-    pub suggestion: String,
+    pub suggestion: Option<String>,
     pub severity: Severity,
 }
 
@@ -34,24 +36,37 @@ impl ParseError {
     pub(super) fn err(source_range: SourceRange, message: impl ToString) -> ParseError {
         ParseError {
             source_range,
+            context_range: None,
             message: message.to_string(),
-            suggestion: String::new(),
+            suggestion: None,
             severity: Severity::Error,
         }
     }
 
-    #[allow(dead_code)]
     pub(super) fn with_suggestion(
         source_range: SourceRange,
+        context_range: Option<SourceRange>,
         message: impl ToString,
-        suggestion: impl ToString,
+        suggestion: Option<impl ToString>,
     ) -> ParseError {
         ParseError {
             source_range,
+            context_range,
             message: message.to_string(),
-            suggestion: suggestion.to_string(),
+            suggestion: suggestion.map(|s| s.to_string()),
             severity: Severity::Error,
         }
+    }
+
+    #[cfg(test)]
+    pub fn apply_suggestion(&self, src: &str) -> Option<String> {
+        let suggestion = self.suggestion.as_ref()?;
+        Some(format!(
+            "{}{}{}",
+            &src[0..self.source_range.start()],
+            suggestion,
+            &src[self.source_range.end()..]
+        ))
     }
 }
 
@@ -73,6 +88,8 @@ pub(crate) enum Severity {
 
 /// Helper enum for the below conversion of Winnow errors into either a parse error or an unexpected
 /// error.
+// TODO we should optimise the size of SourceRange and thus ParseError
+#[allow(clippy::large_enum_variant)]
 pub(super) enum ErrorKind {
     Parse(ParseError),
     Internal(KclError),

@@ -117,8 +117,12 @@ impl<T> Node<T> {
         })
     }
 
+    pub fn as_source_range(&self) -> SourceRange {
+        SourceRange([self.start, self.end, self.module_id.as_usize()])
+    }
+
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
-        vec![SourceRange([self.start, self.end, self.module_id.as_usize()])]
+        vec![self.as_source_range()]
     }
 }
 
