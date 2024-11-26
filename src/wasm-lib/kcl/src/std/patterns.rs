@@ -1,6 +1,6 @@
 //! Standard library patterns.
 
-use std::{cmp::Ordering, collections::HashMap};
+use std::cmp::Ordering;
 
 use anyhow::Result;
 use derive_docs::stdlib;
@@ -22,6 +22,7 @@ use crate::{
         ExecState, Geometries, Geometry, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid, SolidSet, SourceRange,
     },
     function_param::FunctionParam,
+    kcl_value::KclObjectFields,
     std::Args,
 };
 
@@ -461,7 +462,7 @@ async fn make_transform<'a, T: GeometryTrait>(
 }
 
 fn transform_from_obj_fields<T: GeometryTrait>(
-    transform: HashMap<String, KclValue>,
+    transform: KclObjectFields,
     source_ranges: Vec<SourceRange>,
 ) -> Result<Transform, KclError> {
     // Apply defaults to the transform.
