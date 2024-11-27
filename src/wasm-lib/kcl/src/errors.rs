@@ -177,7 +177,7 @@ impl KclError {
         }
     }
 
-    pub fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
+    pub(crate) fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
         let mut new = self.clone();
         match &mut new {
             KclError::Lexical(e) => e.source_ranges = source_ranges,
@@ -197,7 +197,7 @@ impl KclError {
         new
     }
 
-    pub fn add_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
+    pub(crate) fn add_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
         let mut new = self.clone();
         match &mut new {
             KclError::Lexical(e) => e.source_ranges.extend(source_ranges),

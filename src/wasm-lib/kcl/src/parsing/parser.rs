@@ -21,7 +21,7 @@ use crate::{
             ReturnStatement, Shebang, TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration,
             VariableDeclarator, VariableKind,
         },
-        error::{self, ContextError, ParseError},
+        error::{self, CompilationError, ContextError, ParseError},
         math::BinaryExpressionToken,
         token::{Token, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
@@ -45,7 +45,7 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
 
     let result = program.parse(i).save_err();
     let ctxt = ParseContext::take();
-    result.map(|o| (o, ctxt)).into()
+    result.map(|o| (o, ctxt.errors)).into()
 }
 
 /// Context built up while parsing a program.
@@ -53,16 +53,12 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
 /// When returned from parsing contains the errors and warnings from the current parse.
 #[derive(Debug, Clone, Default)]
 pub(crate) struct ParseContext {
-    pub errors: Vec<ParseError>,
-    pub warnings: Vec<ParseError>,
+    pub errors: Vec<CompilationError>,
 }
 
 impl ParseContext {
     fn new() -> Self {
-        ParseContext {
-            errors: Vec::new(),
-            warnings: Vec::new(),
-        }
+        ParseContext { errors: Vec::new() }
     }
 
     /// Set a new `ParseContext` in thread-local storage. Panics if one already exists.
@@ -78,35 +74,34 @@ impl ParseContext {
     }
 
     /// Add an error to the current `ParseContext`, panics if there is none.
-    fn err(e: ParseError) {
-        // TODO follow warnings replacement with errors
-        CTXT.with_borrow_mut(|ctxt| ctxt.as_mut().unwrap().errors.push(e));
-    }
-
-    /// Add a warning to the current `ParseContext`, panics if there is none.
-    fn warn(mut e: ParseError) {
-        e.severity = error::Severity::Warning;
+    fn err(err: CompilationError) {
         CTXT.with_borrow_mut(|ctxt| {
-            // Avoid duplicating warnings. This is possible since the parser can try one path, find
+            // Avoid duplicating errors. This is possible since the parser can try one path, find
             // a warning, then backtrack and decide not to take that path and try another. This can
-            // happen 'high up the stack', so it's impossible to fix where the warnings are generated.
-            // Ideally we would pass warnings up the call stack rather than use a context object or
-            // have some way to mark warnings as speculative or committed, but I don't think Winnow
+            // happen 'high up the stack', so it's impossible to fix where the errors are generated.
+            // Ideally we would pass errors up the call stack rather than use a context object or
+            // have some way to mark errors as speculative or committed, but I don't think Winnow
             // is flexible enough for that (or at least, not without significant changes to the
             // parser).
-            let warnings = &mut ctxt.as_mut().unwrap().warnings;
-            for w in warnings.iter_mut().rev() {
-                if w.source_range == e.source_range {
-                    *w = e;
+            let errors = &mut ctxt.as_mut().unwrap().errors;
+            for e in errors.iter_mut().rev() {
+                if e.source_range == err.source_range {
+                    *e = err;
                     return;
                 }
 
-                if w.source_range.start() > e.source_range.end() {
+                if e.source_range.start() > err.source_range.end() {
                     break;
                 }
             }
-            warnings.push(e);
+            errors.push(err);
         });
+    }
+
+    /// Add a warning to the current `ParseContext`, panics if there is none.
+    fn warn(mut e: CompilationError) {
+        e.severity = error::Severity::Warning;
+        Self::err(e);
     }
 }
 
@@ -726,11 +721,12 @@ fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
     };
 
     if sep.token_type == TokenType::Colon {
-        ParseContext::warn(ParseError::with_suggestion(
+        ParseContext::warn(CompilationError::with_suggestion(
             sep.into(),
             Some(result.as_source_range()),
             "Using `:` to initialize objects is deprecated, prefer using `=`.",
             Some(" ="),
+            error::Tag::Deprecated,
         ));
     }
 
@@ -998,11 +994,12 @@ fn function_decl(i: TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
     );
 
     let has_arrow = if let Some(arrow) = arrow {
-        ParseContext::warn(ParseError::with_suggestion(
+        ParseContext::warn(CompilationError::with_suggestion(
             arrow.as_source_range(),
             Some(result.as_source_range()),
             "Unnecessary `=>` in function declaration",
             Some(""),
+            error::Tag::Unnecessary,
         ));
         true
     } else {
@@ -1605,11 +1602,12 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
 
         if let Some(t) = eq {
             let ctxt_end = val.as_ref().map(|e| e.end()).unwrap_or(t.end);
-            ParseContext::warn(ParseError::with_suggestion(
+            ParseContext::warn(CompilationError::with_suggestion(
                 t.as_source_range(),
                 Some(SourceRange::new(id.start, ctxt_end, module_id)),
                 "Unnecessary `=` in function declaration",
                 Some(""),
+                error::Tag::Unnecessary,
             ));
         }
 
@@ -2239,11 +2237,12 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
         if arg_str.contains('.') && !arg_str.ends_with(".0") {
             arg_str = format!("round({arg_str})");
         }
-        ParseContext::warn(ParseError::with_suggestion(
+        ParseContext::warn(CompilationError::with_suggestion(
             SourceRange::new(fn_name.start, end, fn_name.module_id),
             None,
             "`int` function is deprecated. You may not need it at all. If you need to round, consider `round`, `ceil`, or `floor`.",
             Some(arg_str),
+            error::Tag::Deprecated,
         ));
     }
 
@@ -2338,7 +2337,7 @@ mod tests {
         let tokens = crate::parsing::token::lexer("fn firstPrime(", ModuleId::default()).unwrap();
         let last = tokens.last().unwrap();
         let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
-        let err = err.unwrap_parse_error();
+        let err = err.unwrap_compile_error();
         assert_eq!(vec![err.source_range], last.as_source_ranges());
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
@@ -2349,11 +2348,8 @@ mod tests {
     fn weird_program_just_a_pipe() {
         let tokens = crate::parsing::token::lexer("|", ModuleId::default()).unwrap();
         let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
-        let err = err.unwrap_parse_error();
-        assert_eq!(
-            vec![err.source_range],
-            vec![SourceRange::new(0, 1, ModuleId::default())]
-        );
+        let err = err.unwrap_compile_error();
+        assert_eq!(vec![err.source_range], vec![SourceRange([0, 1, 0])]);
         assert_eq!(err.message, "Unexpected token: |");
     }
 
@@ -3288,10 +3284,10 @@ const mySk1 = startSketchAt([0, 0])"#;
     }
 
     #[track_caller]
-    fn assert_no_err(p: &str) -> (Node<Program>, ParseContext) {
+    fn assert_no_err(p: &str) -> (Node<Program>, Vec<CompilationError>) {
         let result = crate::parsing::top_level_parse(p);
         let result = result.0.unwrap();
-        assert!(result.1.errors.is_empty(), "found: {:#?}", result.1.errors);
+        assert!(result.1.is_empty(), "found: {:#?}", result.1);
         (result.0.unwrap(), result.1)
     }
 
@@ -3860,22 +3856,19 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn warn_object_expr() {
         let some_program_string = "{ foo: bar }";
-        let (_, ctxt) = assert_no_err(some_program_string);
-        assert_eq!(ctxt.warnings.len(), 1);
-        assert_eq!(
-            ctxt.warnings[0].apply_suggestion(some_program_string).unwrap(),
-            "{ foo = bar }"
-        )
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1);
+        assert_eq!(errs[0].apply_suggestion(some_program_string).unwrap(), "{ foo = bar }")
     }
 
     #[test]
     fn warn_fn_int() {
         let some_program_string = r#"int(1.0)
 int(42.3)"#;
-        let (_, ctxt) = assert_no_err(some_program_string);
-        assert_eq!(ctxt.warnings.len(), 2);
-        let replaced = ctxt.warnings[1].apply_suggestion(some_program_string).unwrap();
-        let replaced = ctxt.warnings[0].apply_suggestion(&replaced).unwrap();
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2);
+        let replaced = errs[1].apply_suggestion(some_program_string).unwrap();
+        let replaced = errs[0].apply_suggestion(&replaced).unwrap();
         assert_eq!(replaced, "1.0\nround(42.3)");
     }
 
@@ -3884,10 +3877,10 @@ int(42.3)"#;
         let some_program_string = r#"fn foo = () => {
     return 0
 }"#;
-        let (_, ctxt) = assert_no_err(some_program_string);
-        assert_eq!(ctxt.warnings.len(), 2);
-        let replaced = ctxt.warnings[0].apply_suggestion(some_program_string).unwrap();
-        let replaced = ctxt.warnings[1].apply_suggestion(&replaced).unwrap();
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2);
+        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
+        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
         // Note the whitespace here is bad, but we're just testing the suggestion spans really. In
         // real life we might reformat after applying suggestions.
         assert_eq!(

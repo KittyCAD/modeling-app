@@ -8,7 +8,7 @@ use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
 async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, ModuleId, uuid::Uuid)> {
-    let program = Program::parse(code)?;
+    let program = Program::parse_no_errs(code)?;
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
     let mut exec_state = ExecState::default();
     ctx.run(&program, &mut exec_state).await?;

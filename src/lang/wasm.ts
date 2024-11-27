@@ -17,7 +17,7 @@ import init, {
   default_project_settings,
   base64_decode,
 } from '../wasm-lib/pkg/wasm_lib'
-import { KCLError } from './errors'
+import { KCLError, KCLSyntaxError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
 import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
@@ -41,6 +41,7 @@ import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/Prog
 import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -127,8 +128,15 @@ export const parse = (code: string | Error): Node<Program> | Error => {
   if (err(code)) return code
 
   try {
-    const program: Node<Program> = parse_wasm(code)
-    return program
+    const parsed: [Node<Program>, CompilationError[]] = parse_wasm(code)
+    // TODO handle warnings and multiple errors properly
+    if (parsed[1]) {
+      return new KCLSyntaxError(
+        parsed[1][0].message,
+        rangeTypeFix([parsed[1][0].source_range])
+      )
+    }
+    return parsed[0]
   } catch (e: any) {
     // throw e
     const parsed: RustKclError = JSON.parse(e.toString())

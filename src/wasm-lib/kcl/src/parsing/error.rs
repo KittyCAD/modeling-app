@@ -1,8 +1,11 @@
+use serde::{Deserialize, Serialize};
+use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, DiagnosticTag};
 use winnow::{error::StrContext, stream::Stream};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     parsing::token::Token,
+    lsp::IntoDiagnostic,
     SourceRange,
 };
 
@@ -21,25 +24,26 @@ pub struct ContextError<C = StrContext> {
 /// In contrast to Winnow errors which may not be an actual error but just an attempted parse which
 /// didn't work out, these are errors which are always a result of incorrect user code and which should
 /// be presented to the user.
-#[derive(Debug, Clone)]
-pub(crate) struct ParseError {
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub struct CompilationError {
     pub source_range: SourceRange,
-    #[allow(dead_code)]
     pub context_range: Option<SourceRange>,
     pub message: String,
-    #[allow(dead_code)]
     pub suggestion: Option<String>,
     pub severity: Severity,
+    pub tag: Tag,
 }
 
-impl ParseError {
-    pub(super) fn err(source_range: SourceRange, message: impl ToString) -> ParseError {
-        ParseError {
+impl CompilationError {
+    pub(super) fn err(source_range: SourceRange, message: impl ToString) -> CompilationError {
+        CompilationError {
             source_range,
             context_range: None,
             message: message.to_string(),
             suggestion: None,
             severity: Severity::Error,
+            tag: Tag::None,
         }
     }
 
@@ -48,13 +52,15 @@ impl ParseError {
         context_range: Option<SourceRange>,
         message: impl ToString,
         suggestion: Option<impl ToString>,
-    ) -> ParseError {
-        ParseError {
+        tag: Tag,
+    ) -> CompilationError {
+        CompilationError {
             source_range,
             context_range,
             message: message.to_string(),
             suggestion: suggestion.map(|s| s.to_string()),
             severity: Severity::Error,
+            tag,
         }
     }
 
@@ -70,36 +76,86 @@ impl ParseError {
     }
 }
 
-impl From<ParseError> for KclError {
-    fn from(err: ParseError) -> Self {
-        KclError::Syntax(KclErrorDetails {
-            source_ranges: vec![err.source_range],
-            message: err.message,
-        })
+impl IntoDiagnostic for CompilationError {
+    fn to_lsp_diagnostic(&self, code: &str) -> Diagnostic {
+        let edit = self.suggestion.as_ref().map(|text| {
+            serde_json::to_value(tower_lsp::lsp_types::TextEdit {
+                range: self.source_range.to_lsp_range(code),
+                new_text: text.clone(),
+            })
+            .unwrap()
+        });
+
+        Diagnostic {
+            range: self.source_range.to_lsp_range(code),
+            severity: Some(self.severity()),
+            code: None,
+            code_description: None,
+            source: Some("kcl".to_string()),
+            message: self.message.clone(),
+            related_information: None,
+            tags: self.tag.to_lsp_tags(),
+            data: edit,
+        }
+    }
+
+    fn severity(&self) -> DiagnosticSeverity {
+        match self.severity {
+            Severity::Warning => DiagnosticSeverity::WARNING,
+            _ => DiagnosticSeverity::ERROR,
+        }
     }
 }
 
-#[derive(Debug, Clone)]
-pub(crate) enum Severity {
-    #[allow(dead_code)]
+impl From<CompilationError> for KclErrorDetails {
+    fn from(err: CompilationError) -> Self {
+        KclErrorDetails {
+            source_ranges: vec![err.source_range],
+            message: err.message,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub enum Severity {
     Warning,
     Error,
+    Fatal,
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub enum Tag {
+    Deprecated,
+    Unnecessary,
+    None,
+}
+
+impl Tag {
+    fn to_lsp_tags(self) -> Option<Vec<DiagnosticTag>> {
+        match self {
+            Tag::Deprecated => Some(vec![DiagnosticTag::DEPRECATED]),
+            Tag::Unnecessary => Some(vec![DiagnosticTag::UNNECESSARY]),
+            Tag::None => None,
+        }
+    }
 }
 
 /// Helper enum for the below conversion of Winnow errors into either a parse error or an unexpected
 /// error.
-// TODO we should optimise the size of SourceRange and thus ParseError
+// TODO we should optimise the size of SourceRange and thus CompilationError
 #[allow(clippy::large_enum_variant)]
 pub(super) enum ErrorKind {
-    Parse(ParseError),
+    Parse(CompilationError),
     Internal(KclError),
 }
 
 impl ErrorKind {
     #[cfg(test)]
-    pub fn unwrap_parse_error(self) -> ParseError {
+    pub fn unwrap_compile_error(self) -> CompilationError {
         match self {
-            ErrorKind::Parse(parse_error) => parse_error,
+            ErrorKind::Parse(e) => e,
             ErrorKind::Internal(_) => panic!(),
         }
     }
@@ -108,14 +164,14 @@ impl ErrorKind {
 impl From<winnow::error::ParseError<&[Token], ContextError>> for ErrorKind {
     fn from(err: winnow::error::ParseError<&[Token], ContextError>) -> Self {
         let Some(last_token) = err.input().last() else {
-            return ErrorKind::Parse(ParseError::err(Default::default(), "file is empty"));
+            return ErrorKind::Parse(CompilationError::err(Default::default(), "file is empty"));
         };
 
         let (input, offset, err) = (err.input().to_vec(), err.offset(), err.into_inner());
 
         if let Some(e) = err.cause {
             return match e {
-                KclError::Syntax(details) => ErrorKind::Parse(ParseError::err(
+                KclError::Syntax(details) => ErrorKind::Parse(CompilationError::err(
                     details.source_ranges.into_iter().next().unwrap(),
                     details.message,
                 )),
@@ -126,7 +182,7 @@ impl From<winnow::error::ParseError<&[Token], ContextError>> for ErrorKind {
         // See docs on `offset`.
         if offset >= input.len() {
             let context = err.context.first();
-            return ErrorKind::Parse(ParseError::err(
+            return ErrorKind::Parse(CompilationError::err(
                 last_token.as_source_range(),
                 match context {
                     Some(what) => format!("Unexpected end of file. The compiler {what}"),
@@ -138,7 +194,7 @@ impl From<winnow::error::ParseError<&[Token], ContextError>> for ErrorKind {
         let bad_token = &input[offset];
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
-        ErrorKind::Parse(ParseError::err(
+        ErrorKind::Parse(CompilationError::err(
             bad_token.as_source_range(),
             format!("Unexpected token: {}", bad_token.value),
         ))

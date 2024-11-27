@@ -1,4 +1,4 @@
-use parser::ParseContext;
+pub use error::CompilationError;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -86,7 +86,7 @@ pub fn parse_tokens(tokens: Vec<Token>) -> ParseResult {
 /// - if there are no errors, then the Option will be Some
 /// - if the Option is None, then there will be at least one error in the ParseContext.
 #[derive(Debug, Clone)]
-pub(crate) struct ParseResult(pub Result<(Option<Node<Program>>, ParseContext), KclError>);
+pub(crate) struct ParseResult(pub Result<(Option<Node<Program>>, Vec<CompilationError>), KclError>);
 
 impl ParseResult {
     #[cfg(test)]
@@ -101,23 +101,28 @@ impl ParseResult {
     #[cfg(test)]
     pub fn is_ok(&self) -> bool {
         match &self.0 {
-            Ok((p, pc)) => p.is_some() && pc.errors.is_empty(),
+            Ok((p, errs)) => p.is_some() && errs.is_empty(),
             Err(_) => false,
         }
     }
 
     #[cfg(test)]
     #[track_caller]
+<<<<<<< HEAD:src/wasm-lib/kcl/src/parsing/mod.rs
     pub fn unwrap_errs(&self) -> &[error::ParseError] {
         &self.0.as_ref().unwrap().1.errors
+=======
+    pub fn unwrap_errs(&self) -> &[parser_impl::error::CompilationError] {
+        &self.0.as_ref().unwrap().1
+>>>>>>> e13bf1b6 (Send multiple errors and warnings to the frontend and LSP):src/wasm-lib/kcl/src/parser.rs
     }
 
     /// Treat parsing errors as an Error.
     pub fn parse_errs_as_err(self) -> Result<Node<Program>, KclError> {
         let (p, errs) = self.0?;
-        if !errs.errors.is_empty() {
-            // TODO could summarise all errors rather than just the first one.
-            return Err(errs.errors.into_iter().next().unwrap().into());
+
+        if !errs.is_empty() {
+            return Err(KclError::Syntax(errs[0].clone().into()));
         }
         match p {
             Some(p) => Ok(p),
@@ -126,21 +131,21 @@ impl ParseResult {
     }
 }
 
-impl From<Result<(Option<Node<Program>>, ParseContext), KclError>> for ParseResult {
-    fn from(r: Result<(Option<Node<Program>>, ParseContext), KclError>) -> ParseResult {
+impl From<Result<(Option<Node<Program>>, Vec<CompilationError>), KclError>> for ParseResult {
+    fn from(r: Result<(Option<Node<Program>>, Vec<CompilationError>), KclError>) -> ParseResult {
         ParseResult(r)
     }
 }
 
-impl From<(Option<Node<Program>>, ParseContext)> for ParseResult {
-    fn from(p: (Option<Node<Program>>, ParseContext)) -> ParseResult {
+impl From<(Option<Node<Program>>, Vec<CompilationError>)> for ParseResult {
+    fn from(p: (Option<Node<Program>>, Vec<CompilationError>)) -> ParseResult {
         ParseResult(Ok(p))
     }
 }
 
 impl From<Node<Program>> for ParseResult {
     fn from(p: Node<Program>) -> ParseResult {
-        ParseResult(Ok((Some(p), ParseContext::default())))
+        ParseResult(Ok((Some(p), vec![])))
     }
 }
 

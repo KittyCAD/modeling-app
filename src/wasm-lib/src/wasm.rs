@@ -162,10 +162,10 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
 pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let program = Program::parse(js).map_err(String::from)?;
+    let (program, errs) = Program::parse(js).map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
-    JsValue::from_serde(&program).map_err(|e| e.to_string())
+    JsValue::from_serde(&(program, errs)).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for recast

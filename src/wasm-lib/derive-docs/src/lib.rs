@@ -182,7 +182,7 @@ fn do_stdlib_inner(
         quote! {
             let code_blocks = vec![#(#cb),*];
             code_blocks.iter().map(|cb| {
-                let program = crate::Program::parse(cb).unwrap();
+                let program = crate::Program::parse_no_errs(cb).unwrap();
 
                 let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
@@ -769,7 +769,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
     quote! {
         #[tokio::test(flavor = "multi_thread")]
         async fn #test_name_mock() {
-            let program = crate::Program::parse(#code_block).unwrap();
+            let program = crate::Program::parse_no_errs(#code_block).unwrap();
             let ctx = crate::executor::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
                 fs: std::sync::Arc::new(crate::fs::FileManager::new()),

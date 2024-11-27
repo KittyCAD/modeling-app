@@ -11,6 +11,7 @@ export class KCLError extends Error {
   kind: ExtractKind<RustKclError> | 'name'
   sourceRanges: [number, number, number][]
   msg: string
+
   constructor(
     kind: ExtractKind<RustKclError> | 'name',
     msg: string,

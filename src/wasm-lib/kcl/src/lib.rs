@@ -90,6 +90,7 @@ pub use lsp::{
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
+pub use parser::CompilationError;
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::{ModuleId, SourceRange};
 
@@ -134,11 +135,24 @@ pub use lsp::test_util::copilot_lsp_server;
 pub use lsp::test_util::kcl_lsp_server;
 
 impl Program {
-    pub fn parse(input: &str) -> Result<Program, KclError> {
+    pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationError>), KclError> {
         let module_id = ModuleId::default();
+        let tokens = token::lexer(input, module_id)?;
+        let (ast, errs) = parser::parse_tokens(tokens).0?;
+
+        Ok((ast.map(|ast| Program { ast }), errs))
+    }
+
+    pub fn parse_no_errs(input: &str) -> Result<Program, KclError> {
+        let module_id = ModuleId::default();
+<<<<<<< HEAD
         let tokens = parsing::token::lexer(input, module_id)?;
         // TODO handle parsing errors properly
         let ast = parsing::parse_tokens(tokens).parse_errs_as_err()?;
+=======
+        let tokens = token::lexer(input, module_id)?;
+        let ast = parser::parse_tokens(tokens).parse_errs_as_err()?;
+>>>>>>> e13bf1b6 (Send multiple errors and warnings to the frontend and LSP)
 
         Ok(Program { ast })
     }
