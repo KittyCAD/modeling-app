@@ -580,8 +580,7 @@ openSketch = startSketchOn('XY')
   const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
     scene.makeMouseHelpers(
       pointOnPathAfterSketching.x,
-      pointOnPathAfterSketching.y,
-      { delay: 10 }
+      pointOnPathAfterSketching.y
     )
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(

@@ -95,8 +95,7 @@ export class SceneFixture {
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
-            () =>
-              this.page.mouse.dblclick(x, y),
+            () => this.page.mouse.dblclick(x, y),
             clickParams.pixelDiff
           )
         }
