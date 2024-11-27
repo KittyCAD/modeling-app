@@ -24,6 +24,7 @@ use crate::{
         math::BinaryExpressionToken, parser_impl::error::ContextError, PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
     token::{Token, TokenType},
+    unparser::ExprContext,
 };
 
 pub(crate) mod error;
@@ -940,12 +941,26 @@ fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
     ))
 }
 
+fn function_expr(i: TokenSlice) -> PResult<Expr> {
+    let fn_tok = opt(fun).parse_next(i)?;
+    ignore_whitespace(i);
+    let (result, has_arrow) = function_decl.parse_next(i)?;
+    if fn_tok.is_none() && !has_arrow {
+        let err = KclError::Syntax(KclErrorDetails {
+            source_ranges: result.as_source_ranges(),
+            message: "Anonymous function requires `fn` before `(`".to_owned(),
+        });
+        return Err(ErrMode::Cut(err.into()));
+    }
+    Ok(Expr::FunctionExpression(Box::new(result)))
+}
+
 // Looks like
 // (arg0, arg1) {
 //     const x = arg0 + arg1;
 //     return x
 // }
-fn function_expression(i: TokenSlice) -> PResult<Node<FunctionExpression>> {
+fn function_decl(i: TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
     fn return_type(i: TokenSlice) -> PResult<FnArgType> {
         colon(i)?;
         ignore_whitespace(i);
@@ -977,16 +992,19 @@ fn function_expression(i: TokenSlice) -> PResult<Node<FunctionExpression>> {
         open.module_id,
     );
 
-    if let Some(arrow) = arrow {
+    let has_arrow = if let Some(arrow) = arrow {
         ParseContext::warn(ParseError::with_suggestion(
             arrow.as_source_range(),
             Some(result.as_source_range()),
             "Unnecessary `=>` in function declaration",
             Some(""),
         ));
-    }
+        true
+    } else {
+        false
+    };
 
-    Ok(result)
+    Ok((result, has_arrow))
 }
 
 /// E.g. `person.name`
@@ -1495,7 +1513,7 @@ fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
-        function_expression.map(Box::new).map(Expr::FunctionExpression),
+        function_expr,
         if_expr.map(Expr::IfExpression),
         unnecessarily_bracketed,
     ))
@@ -1573,8 +1591,8 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
         let eq = opt(equals).parse_next(i)?;
         ignore_whitespace(i);
 
-        let val = function_expression
-            .map(Box::new)
+        let val = function_decl
+            .map(|t| Box::new(t.0))
             .map(Expr::FunctionExpression)
             .context(expected("a KCL function expression, like () { return 1 }"))
             .parse_next(i);
@@ -1982,6 +2000,17 @@ fn question_mark(i: TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+fn fun(i: TokenSlice) -> PResult<Token> {
+    any.try_map(|token: Token| match token.token_type {
+        TokenType::Keyword if token.value == "fn" => Ok(token),
+        _ => Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: token.as_source_ranges(),
+            message: format!("expected 'fn', found {}", token.value.as_str(),),
+        })),
+    })
+    .parse_next(i)
+}
+
 /// Parse a comma, optionally followed by some whitespace.
 fn comma_sep(i: TokenSlice) -> PResult<()> {
     (opt(whitespace), comma, opt(whitespace))
@@ -2172,7 +2201,7 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
     // so we'll hack this in here.
     if fn_name.name == "int" {
         assert_eq!(args.len(), 1);
-        let mut arg_str = args[0].recast(&crate::FormatOptions::default(), 0, false);
+        let mut arg_str = args[0].recast(&crate::FormatOptions::default(), 0, ExprContext::Other);
         if arg_str.contains('.') && !arg_str.ends_with(".0") {
             arg_str = format!("round({arg_str})");
         }
@@ -2308,7 +2337,7 @@ mod tests {
         }"#;
         let tokens = crate::token::lexer(test_program, ModuleId::default()).unwrap();
         let mut slice = tokens.as_slice();
-        let expr = function_expression.parse_next(&mut slice).unwrap();
+        let expr = function_decl.map(|t| t.0).parse_next(&mut slice).unwrap();
         assert_eq!(expr.params, vec![]);
         let comment_start = expr.body.non_code_meta.start_nodes.first().unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
@@ -2326,7 +2355,7 @@ comment */
 }"#;
         let tokens = crate::token::lexer(test_program, ModuleId::default()).unwrap();
         let mut slice = tokens.as_slice();
-        let expr = function_expression.parse_next(&mut slice).unwrap();
+        let expr = function_decl.map(|t| t.0).parse_next(&mut slice).unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         assert_eq!(comment0.value(), "block\ncomment");
     }
@@ -2384,7 +2413,7 @@ const mySk1 = startSketchAt([0, 0])"#;
           }"#;
         let tokens = crate::token::lexer(test_program, ModuleId::default()).unwrap();
         let mut slice = tokens.as_slice();
-        let _expr = function_expression.parse_next(&mut slice).unwrap();
+        let _expr = function_decl.parse_next(&mut slice).unwrap();
     }
 
     #[test]
@@ -2396,7 +2425,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let module_id = ModuleId::from_usize(1);
         let tokens = crate::token::lexer(test_program, module_id).unwrap();
         let mut slice = tokens.as_slice();
-        let expr = function_expression.parse_next(&mut slice).unwrap();
+        let expr = function_decl.map(|t| t.0).parse_next(&mut slice).unwrap();
         assert_eq!(
             expr,
             Node::new(
@@ -2882,7 +2911,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let test_fn = "(let) => { return 1 }";
         let module_id = ModuleId::from_usize(2);
         let tokens = crate::token::lexer(test_fn, module_id).unwrap();
-        let err = function_expression.parse(&tokens).unwrap_err().into_inner();
+        let err = function_decl.parse(&tokens).unwrap_err().into_inner();
         let cause = err.cause.unwrap();
         // This is the token `let`
         assert_eq!(cause.source_ranges(), vec![SourceRange([1, 4, 2])]);
@@ -2960,7 +2989,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         }";
 
         let tokens = crate::token::lexer(input, ModuleId::default()).unwrap();
-        let actual = function_expression.parse(&tokens);
+        let actual = function_decl.parse(&tokens);
         assert!(actual.is_ok(), "could not parse test function");
     }
 
@@ -3279,6 +3308,16 @@ const height = [obj["a"] - 1, 0]"#;
         let code = r#"const obj = { a: 1, b: 2 }
 const height = [obj["a"] -1, 0]"#;
         crate::parser::top_level_parse(code).unwrap();
+    }
+
+    #[test]
+    fn test_anon_fn() {
+        crate::parser::top_level_parse("foo(42, fn(x) { return x + 1 })").unwrap();
+    }
+
+    #[test]
+    fn test_anon_fn_no_fn() {
+        assert_err_contains("foo(42, (x) { return x + 1 })", "Anonymous function requires `fn`");
     }
 
     #[test]

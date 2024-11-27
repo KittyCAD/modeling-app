@@ -644,7 +644,7 @@ pub enum Expr {
 
 impl Expr {
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
-        let recasted = self.recast(&FormatOptions::default(), 0, false);
+        let recasted = self.recast(&FormatOptions::default(), 0, crate::unparser::ExprContext::Other);
         // If the code only has one line then we don't need to fold it.
         if recasted.lines().count() <= 1 {
             return None;

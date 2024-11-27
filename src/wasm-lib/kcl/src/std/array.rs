@@ -31,7 +31,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `[f(a), f(b), f(c)]`
 /// ```no_run
 /// const r = 10 // radius
-/// fn drawCircle = (id) => {
+/// fn drawCircle(id) {
 ///   return startSketchOn("XY")
 ///     |> circle({ center: [id * 2 * r, 0], radius: r}, %)
 /// }
@@ -49,7 +49,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// // Call `map`, using an anonymous function instead of a named one.
 /// const circles = map(
 ///   [1..3],
-///   (id) => {
+///   fn(id) {
 ///     return startSketchOn("XY")
 ///       |> circle({ center: [id * 2 * r, 0], radius: r}, %)
 ///   }
@@ -149,7 +149,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   // Use a `reduce` to draw the remaining decagon sides.
 ///   // For each number in the array 1..10, run the given function,
 ///   // which takes a partially-sketched decagon and adds one more edge to it.
-///   fullDecagon = reduce([1..10], startOfDecagonSketch, (i, partialDecagon) => {
+///   fullDecagon = reduce([1..10], startOfDecagonSketch, fn(i, partialDecagon) {
 ///       // Draw one edge of the decagon.
 ///       let x = cos(stepAngle * i) * radius
 ///       let y = sin(stepAngle * i) * radius
