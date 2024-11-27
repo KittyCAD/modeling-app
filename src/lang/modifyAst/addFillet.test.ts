@@ -25,7 +25,6 @@ import { err } from 'lib/trap'
 import { Selections } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
-import { KclCommandValue } from 'lib/commandTypes'
 import { isOverlap } from 'lib/utils'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
 

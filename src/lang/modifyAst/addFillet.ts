@@ -491,13 +491,13 @@ function getPathToEdgeTreatmentParameterLiteral(
 function getParameterNameAndValue(
   parameters: EdgeTreatmentParameters
 ): { parameterName: string; parameterValue: Expr } | Error {
-  if (parameters.type == EdgeTreatmentType.Fillet) {
+  if (parameters.type === EdgeTreatmentType.Fillet) {
     const parameterValue =
       'variableName' in parameters.radius
         ? parameters.radius.variableIdentifierAst
         : parameters.radius.valueAst
     return { parameterName: 'radius', parameterValue }
-  } else if (parameters.type == EdgeTreatmentType.Chamfer) {
+  } else if (parameters.type === EdgeTreatmentType.Chamfer) {
     const parameterValue =
       'variableName' in parameters.length
         ? parameters.length.variableIdentifierAst
