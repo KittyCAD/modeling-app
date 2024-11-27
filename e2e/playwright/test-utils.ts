@@ -696,10 +696,7 @@ export const makeTemplate: (
 const PLAYWRIGHT_DOWNLOAD_DIR = 'downloads-during-playwright'
 
 export const getPlaywrightDownloadDir = (page: Page) => {
-  return path.resolve(
-    page.TEST_SETTINGS_FILE_KEY,
-    PLAYWRIGHT_DOWNLOAD_DIR
-  )
+  return path.resolve(page.TEST_SETTINGS_FILE_KEY, PLAYWRIGHT_DOWNLOAD_DIR)
 }
 
 const moveDownloadedFileTo = async (page: Page, toLocation: string) => {
