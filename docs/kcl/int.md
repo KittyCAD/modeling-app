@@ -37,7 +37,7 @@ assertEqual(n, 3, 0.0001, "5/2 = 2.5, rounded up makes 3")
 startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 2 }, %)
   |> extrude(5, %)
-  |> patternTransform(n, (id) => {
+  |> patternTransform(n, fn(id) {
     return { translate = [4 * id, 0, 0] }
   }, %)
 ```

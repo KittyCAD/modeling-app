@@ -644,7 +644,7 @@ pub enum Expr {
 
 impl Expr {
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
-        let recasted = self.recast(&FormatOptions::default(), 0, false);
+        let recasted = self.recast(&FormatOptions::default(), 0, crate::unparser::ExprContext::Other);
         // If the code only has one line then we don't need to fold it.
         if recasted.lines().count() <= 1 {
             return None;
@@ -3069,9 +3069,9 @@ ghi("things")
             folding_ranges[1].collapsed_text,
             Some("startSketchOn('XY')".to_string())
         );
-        assert_eq!(folding_ranges[2].start_line, 390);
+        assert_eq!(folding_ranges[2].start_line, 384);
         assert_eq!(folding_ranges[2].end_line, 403);
-        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi = (x) => {".to_string()));
+        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
     }
 
     #[test]
@@ -3270,7 +3270,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_return_type_on_functions() {
-        let some_program_string = r#"fn thing = () => {thing: number, things: string[], more?: string} {
+        let some_program_string = r#"fn thing(): {thing: number, things: string[], more?: string} {
     return 1
 }"#;
         let module_id = ModuleId::default();
@@ -3296,8 +3296,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "thing".to_owned(),
                                 digest: None
                             },
+                            13,
                             18,
-                            23,
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
@@ -3310,8 +3310,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "things".to_owned(),
                                 digest: None
                             },
-                            33,
-                            39,
+                            28,
+                            34,
                             module_id,
                         ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
@@ -3324,8 +3324,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "more".to_owned(),
                                 digest: None
                             },
-                            51,
-                            55,
+                            46,
+                            50,
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),

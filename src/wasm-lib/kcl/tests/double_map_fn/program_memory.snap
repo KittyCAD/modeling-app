@@ -1,8 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
 description: Program memory after executing double_map_fn.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -35,50 +33,50 @@ snapshot_kind: text
               "body": [
                 {
                   "argument": {
-                    "end": 38,
+                    "end": 32,
                     "left": {
-                      "end": 34,
+                      "end": 28,
                       "name": "i",
-                      "start": 33,
+                      "start": 27,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
                     "operator": "+",
                     "right": {
-                      "end": 38,
+                      "end": 32,
                       "raw": "1",
-                      "start": 37,
+                      "start": 31,
                       "type": "Literal",
                       "type": "Literal",
                       "value": 1.0
                     },
-                    "start": 33,
+                    "start": 27,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 38,
-                  "start": 26,
+                  "end": 32,
+                  "start": 20,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 40,
-              "start": 22
+              "end": 34,
+              "start": 16
             },
-            "end": 40,
+            "end": 34,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 17,
+                  "end": 14,
                   "name": "i",
-                  "start": 16,
+                  "start": 13,
                   "type": "Identifier"
                 },
                 "optional": false
               }
             ],
-            "start": 15,
+            "start": 12,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -115,8 +113,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                15,
-                40,
+                12,
+                34,
                 0
               ]
             }
@@ -131,8 +129,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
+                    41,
                     47,
-                    53,
                     0
                   ]
                 }
@@ -144,8 +142,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
+                    41,
                     47,
-                    53,
                     0
                   ]
                 }
@@ -157,8 +155,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
+                    41,
                     47,
-                    53,
                     0
                   ]
                 }
@@ -168,8 +166,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
+                41,
                 47,
-                53,
                 0
               ]
             }
@@ -184,22 +182,22 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
+                    41,
                     47,
-                    53,
                     0
                   ]
                 },
                 {
                   "sourceRange": [
-                    37,
-                    38,
+                    31,
+                    32,
                     0
                   ]
                 },
                 {
                   "sourceRange": [
-                    37,
-                    38,
+                    31,
+                    32,
                     0
                   ]
                 }
@@ -211,22 +209,22 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
+                    41,
                     47,
-                    53,
                     0
                   ]
                 },
                 {
                   "sourceRange": [
-                    37,
-                    38,
+                    31,
+                    32,
                     0
                   ]
                 },
                 {
                   "sourceRange": [
-                    37,
-                    38,
+                    31,
+                    32,
                     0
                   ]
                 }
@@ -238,22 +236,22 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
+                    41,
                     47,
-                    53,
                     0
                   ]
                 },
                 {
                   "sourceRange": [
-                    37,
-                    38,
+                    31,
+                    32,
                     0
                   ]
                 },
                 {
                   "sourceRange": [
-                    37,
-                    38,
+                    31,
+                    32,
                     0
                   ]
                 }
@@ -263,8 +261,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                90,
-                107,
+                84,
+                101,
                 0
               ]
             }

@@ -1,4 +1,4 @@
-fn box = (h, l, w) => {
+fn box(h, l, w) {
   myBox = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line([0, l], %)
