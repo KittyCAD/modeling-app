@@ -1,15 +1,14 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing riddle_small.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
     {
       "bindings": {
         "ANSWER": {
-          "type": "Int",
-          "value": 41803,
+          "type": "Number",
+          "value": 41803.0,
           "__meta": [
             {
               "sourceRange": [
@@ -46,8 +45,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                102,
-                104,
+                96,
+                98,
                 0
               ]
             },
@@ -60,29 +59,29 @@ snapshot_kind: text
             },
             {
               "sourceRange": [
+                73,
                 79,
-                85,
                 0
               ]
             },
             {
               "sourceRange": [
-                55,
-                60,
+                49,
+                54,
                 0
               ]
             },
             {
               "sourceRange": [
+                58,
                 64,
-                70,
                 0
               ]
             },
             {
               "sourceRange": [
-                116,
-                118,
+                110,
+                112,
                 0
               ]
             }
@@ -94,8 +93,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                125,
-                127,
+                119,
+                121,
                 0
               ]
             },
@@ -108,29 +107,29 @@ snapshot_kind: text
             },
             {
               "sourceRange": [
-                91,
-                96,
+                85,
+                90,
                 0
               ]
             },
             {
               "sourceRange": [
-                55,
-                60,
+                49,
+                54,
                 0
               ]
             },
             {
               "sourceRange": [
+                58,
                 64,
-                70,
                 0
               ]
             },
             {
               "sourceRange": [
-                139,
-                141,
+                133,
+                135,
                 0
               ]
             }
@@ -145,8 +144,19 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                205,
+                199,
+                214,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
                 220,
+                236,
                 0
               ],
               "tag": null,
@@ -156,8 +166,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                226,
                 242,
+                258,
                 0
               ],
               "tag": null,
@@ -167,19 +177,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                248,
                 264,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                270,
-                278,
+                272,
                 0
               ],
               "tag": null,
@@ -194,19 +193,39 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    205,
+                    199,
+                    214,
+                    0
+                  ]
+                },
+                "from": [
+                  -26.0,
+                  34.0
+                ],
+                "tag": null,
+                "to": [
+                  -25.0,
+                  34.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
                     220,
+                    236,
                     0
                   ]
                 },
                 "from": [
-                  -26.0,
+                  -25.0,
                   34.0
                 ],
                 "tag": null,
                 "to": [
                   -25.0,
-                  34.0
+                  33.0
                 ],
                 "type": "ToPoint"
               },
@@ -214,28 +233,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    226,
                     242,
-                    0
-                  ]
-                },
-                "from": [
-                  -25.0,
-                  34.0
-                ],
-                "tag": null,
-                "to": [
-                  -25.0,
-                  33.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    248,
-                    264,
+                    258,
                     0
                   ]
                 },
@@ -254,8 +253,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    270,
-                    278,
+                    264,
+                    272,
                     0
                   ]
                 },
@@ -310,8 +309,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  172,
-                  199,
+                  166,
+                  193,
                   0
                 ]
               }
@@ -319,8 +318,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  172,
-                  199,
+                  166,
+                  193,
                   0
                 ]
               }
@@ -332,8 +331,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                172,
-                199,
+                166,
+                193,
                 0
               ]
             }
@@ -346,79 +345,79 @@ snapshot_kind: text
               "body": [
                 {
                   "argument": {
-                    "end": 70,
+                    "end": 64,
                     "left": {
-                      "end": 60,
+                      "end": 54,
                       "left": {
-                        "end": 52,
+                        "end": 46,
                         "left": {
-                          "end": 48,
+                          "end": 42,
                           "name": "ANSWER",
-                          "start": 42,
+                          "start": 36,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "*",
                         "right": {
-                          "end": 52,
+                          "end": 46,
                           "name": "s",
-                          "start": 51,
+                          "start": 45,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 42,
+                        "start": 36,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 60,
+                        "end": 54,
                         "raw": "12345",
-                        "start": 55,
+                        "start": 49,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 12345
+                        "value": 12345.0
                       },
-                      "start": 42,
+                      "start": 36,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     "operator": "%",
                     "right": {
-                      "end": 70,
+                      "end": 64,
                       "raw": "214748",
-                      "start": 64,
+                      "start": 58,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 214748
+                      "value": 214748.0
                     },
-                    "start": 42,
+                    "start": 36,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 70,
-                  "start": 34,
+                  "end": 64,
+                  "start": 28,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 72,
-              "start": 30
+              "end": 66,
+              "start": 24
             },
-            "end": 72,
+            "end": 66,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 25,
+                  "end": 22,
                   "name": "s",
-                  "start": 24,
+                  "start": 21,
                   "type": "Identifier"
                 },
                 "optional": false
               }
             ],
-            "start": 23,
+            "start": 20,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -426,8 +425,8 @@ snapshot_kind: text
               {
                 "bindings": {
                   "ANSWER": {
-                    "type": "Int",
-                    "value": 41803,
+                    "type": "Number",
+                    "value": 41803.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -468,34 +467,34 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                23,
-                72,
+                20,
+                66,
                 0
               ]
             }
           ]
         },
         "xs": {
-          "type": "Int",
-          "value": 205804,
+          "type": "Number",
+          "value": 205804.0,
           "__meta": [
             {
               "sourceRange": [
+                73,
                 79,
-                85,
                 0
               ]
             }
           ]
         },
         "ys": {
-          "type": "Int",
-          "value": 71816,
+          "type": "Number",
+          "value": 71816.0,
           "__meta": [
             {
               "sourceRange": [
-                91,
-                96,
+                85,
+                90,
                 0
               ]
             }

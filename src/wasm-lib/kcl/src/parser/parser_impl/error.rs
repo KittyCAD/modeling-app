@@ -1,12 +1,9 @@
-use winnow::{
-    error::{ErrorKind, ParseError, StrContext},
-    stream::Stream,
-};
+use winnow::{error::StrContext, stream::Stream};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
-    token::{Input, Token},
+    token::Token,
 };
 
 /// Accumulate context while backtracking errors
@@ -19,69 +16,132 @@ pub struct ContextError<C = StrContext> {
     pub cause: Option<KclError>,
 }
 
-impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
-    fn from(err: ParseError<Input<'_>, winnow::error::ContextError>) -> Self {
-        let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
-        let module_id = err.input().state.module_id;
+/// An error which occurred during parsing.
+///
+/// In contrast to Winnow errors which may not be an actual error but just an attempted parse which
+/// didn't work out, these are errors which are always a result of incorrect user code and which should
+/// be presented to the user.
+#[derive(Debug, Clone)]
+pub(crate) struct ParseError {
+    pub source_range: SourceRange,
+    #[allow(dead_code)]
+    pub context_range: Option<SourceRange>,
+    pub message: String,
+    #[allow(dead_code)]
+    pub suggestion: Option<String>,
+    pub severity: Severity,
+}
 
-        if offset >= input.len() {
-            // From the winnow docs:
-            //
-            // This is an offset, not an index, and may point to
-            // the end of input (input.len()) on eof errors.
-
-            return KclError::Lexical(KclErrorDetails {
-                source_ranges: vec![SourceRange([offset, offset, module_id.as_usize()])],
-                message: "unexpected EOF while parsing".to_string(),
-            });
+impl ParseError {
+    pub(super) fn err(source_range: SourceRange, message: impl ToString) -> ParseError {
+        ParseError {
+            source_range,
+            context_range: None,
+            message: message.to_string(),
+            suggestion: None,
+            severity: Severity::Error,
         }
+    }
 
-        // TODO: Add the Winnow tokenizer context to the error.
-        // See https://github.com/KittyCAD/modeling-app/issues/784
-        let bad_token = &input[offset];
-        // TODO: Add the Winnow parser context to the error.
-        // See https://github.com/KittyCAD/modeling-app/issues/784
-        KclError::Lexical(KclErrorDetails {
-            source_ranges: vec![SourceRange([offset, offset + 1, module_id.as_usize()])],
-            message: format!("found unknown token '{}'", bad_token),
+    pub(super) fn with_suggestion(
+        source_range: SourceRange,
+        context_range: Option<SourceRange>,
+        message: impl ToString,
+        suggestion: Option<impl ToString>,
+    ) -> ParseError {
+        ParseError {
+            source_range,
+            context_range,
+            message: message.to_string(),
+            suggestion: suggestion.map(|s| s.to_string()),
+            severity: Severity::Error,
+        }
+    }
+
+    #[cfg(test)]
+    pub fn apply_suggestion(&self, src: &str) -> Option<String> {
+        let suggestion = self.suggestion.as_ref()?;
+        Some(format!(
+            "{}{}{}",
+            &src[0..self.source_range.start()],
+            suggestion,
+            &src[self.source_range.end()..]
+        ))
+    }
+}
+
+impl From<ParseError> for KclError {
+    fn from(err: ParseError) -> Self {
+        KclError::Syntax(KclErrorDetails {
+            source_ranges: vec![err.source_range],
+            message: err.message,
         })
     }
 }
 
-impl From<ParseError<&[Token], ContextError>> for KclError {
-    fn from(err: ParseError<&[Token], ContextError>) -> Self {
+#[derive(Debug, Clone)]
+pub(crate) enum Severity {
+    #[allow(dead_code)]
+    Warning,
+    Error,
+}
+
+/// Helper enum for the below conversion of Winnow errors into either a parse error or an unexpected
+/// error.
+// TODO we should optimise the size of SourceRange and thus ParseError
+#[allow(clippy::large_enum_variant)]
+pub(super) enum ErrorKind {
+    Parse(ParseError),
+    Internal(KclError),
+}
+
+impl ErrorKind {
+    #[cfg(test)]
+    pub fn unwrap_parse_error(self) -> ParseError {
+        match self {
+            ErrorKind::Parse(parse_error) => parse_error,
+            ErrorKind::Internal(_) => panic!(),
+        }
+    }
+}
+
+impl From<winnow::error::ParseError<&[Token], ContextError>> for ErrorKind {
+    fn from(err: winnow::error::ParseError<&[Token], ContextError>) -> Self {
         let Some(last_token) = err.input().last() else {
-            return KclError::Syntax(KclErrorDetails {
-                source_ranges: Default::default(),
-                message: "file is empty".to_owned(),
-            });
+            return ErrorKind::Parse(ParseError::err(Default::default(), "file is empty"));
         };
 
         let (input, offset, err) = (err.input().to_vec(), err.offset(), err.into_inner());
 
         if let Some(e) = err.cause {
-            return e;
+            return match e {
+                KclError::Syntax(details) => ErrorKind::Parse(ParseError::err(
+                    details.source_ranges.into_iter().next().unwrap(),
+                    details.message,
+                )),
+                e => ErrorKind::Internal(e),
+            };
         }
 
         // See docs on `offset`.
         if offset >= input.len() {
             let context = err.context.first();
-            return KclError::Syntax(KclErrorDetails {
-                source_ranges: last_token.as_source_ranges(),
-                message: match context {
+            return ErrorKind::Parse(ParseError::err(
+                last_token.as_source_range(),
+                match context {
                     Some(what) => format!("Unexpected end of file. The compiler {what}"),
                     None => "Unexpected end of file while still parsing".to_owned(),
                 },
-            });
+            ));
         }
 
         let bad_token = &input[offset];
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
-        KclError::Syntax(KclErrorDetails {
-            source_ranges: bad_token.as_source_ranges(),
-            message: format!("Unexpected token: {}", bad_token.value),
-        })
+        ErrorKind::Parse(ParseError::err(
+            bad_token.as_source_range(),
+            format!("Unexpected token: {}", bad_token.value),
+        ))
     }
 }
 
@@ -108,12 +168,17 @@ where
     I: Stream,
 {
     #[inline]
-    fn from_error_kind(_input: &I, _kind: ErrorKind) -> Self {
+    fn from_error_kind(_input: &I, _kind: winnow::error::ErrorKind) -> Self {
         Self::default()
     }
 
     #[inline]
-    fn append(self, _input: &I, _input_checkpoint: &<I as Stream>::Checkpoint, _kind: ErrorKind) -> Self {
+    fn append(
+        self,
+        _input: &I,
+        _input_checkpoint: &<I as Stream>::Checkpoint,
+        _kind: winnow::error::ErrorKind,
+    ) -> Self {
         self
     }
 
@@ -136,7 +201,7 @@ where
 
 impl<C, I> winnow::error::FromExternalError<I, KclError> for ContextError<C> {
     #[inline]
-    fn from_external_error(_input: &I, _kind: ErrorKind, e: KclError) -> Self {
+    fn from_external_error(_input: &I, _kind: winnow::error::ErrorKind, e: KclError) -> Self {
         let mut err = Self::default();
         {
             err.cause = Some(e);

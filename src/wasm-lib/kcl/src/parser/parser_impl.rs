@@ -1,4 +1,4 @@
-use std::{collections::HashMap, str::FromStr};
+use std::{cell::RefCell, collections::HashMap, str::FromStr};
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, terminated},
@@ -8,31 +8,132 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
+use self::error::ParseError;
 use crate::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
         CallExpression, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive, FnArgType, FunctionExpression,
         Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, TagDeclarator,
+        ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator,
         UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
     },
+    docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
     executor::SourceRange,
     parser::{
         math::BinaryExpressionToken, parser_impl::error::ContextError, PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
     token::{Token, TokenType},
+    unparser::ExprContext,
 };
 
-mod error;
+pub(crate) mod error;
+
+thread_local! {
+    /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
+    static CTXT: RefCell<Option<ParseContext>> = const { RefCell::new(None) };
+}
+
+pub type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
+
+pub fn run_parser(i: TokenSlice) -> super::ParseResult {
+    ParseContext::init();
+
+    let result = program.parse(i).save_err();
+    let ctxt = ParseContext::take();
+    result.map(|o| (o, ctxt)).into()
+}
+
+/// Context built up while parsing a program.
+///
+/// When returned from parsing contains the errors and warnings from the current parse.
+#[derive(Debug, Clone, Default)]
+pub(crate) struct ParseContext {
+    pub errors: Vec<ParseError>,
+    pub warnings: Vec<ParseError>,
+}
+
+impl ParseContext {
+    fn new() -> Self {
+        ParseContext {
+            errors: Vec::new(),
+            warnings: Vec::new(),
+        }
+    }
+
+    /// Set a new `ParseContext` in thread-local storage. Panics if one already exists.
+    fn init() {
+        assert!(CTXT.with_borrow(|ctxt| ctxt.is_none()));
+        CTXT.with_borrow_mut(|ctxt| *ctxt = Some(ParseContext::new()));
+    }
+
+    /// Take the current `ParseContext` from thread-local storage, leaving `None`. Panics if a `ParseContext`
+    /// is not present.
+    fn take() -> ParseContext {
+        CTXT.with_borrow_mut(|ctxt| ctxt.take()).unwrap()
+    }
+
+    /// Add an error to the current `ParseContext`, panics if there is none.
+    fn err(e: ParseError) {
+        // TODO follow warnings replacement with errors
+        CTXT.with_borrow_mut(|ctxt| ctxt.as_mut().unwrap().errors.push(e));
+    }
+
+    /// Add a warning to the current `ParseContext`, panics if there is none.
+    fn warn(mut e: ParseError) {
+        e.severity = error::Severity::Warning;
+        CTXT.with_borrow_mut(|ctxt| {
+            // Avoid duplicating warnings. This is possible since the parser can try one path, find
+            // a warning, then backtrack and decide not to take that path and try another. This can
+            // happen 'high up the stack', so it's impossible to fix where the warnings are generated.
+            // Ideally we would pass warnings up the call stack rather than use a context object or
+            // have some way to mark warnings as speculative or committed, but I don't think Winnow
+            // is flexible enough for that (or at least, not without significant changes to the
+            // parser).
+            let warnings = &mut ctxt.as_mut().unwrap().warnings;
+            for w in warnings.iter_mut().rev() {
+                if w.source_range == e.source_range {
+                    *w = e;
+                    return;
+                }
+
+                if w.source_range.start() > e.source_range.end() {
+                    break;
+                }
+            }
+            warnings.push(e);
+        });
+    }
+}
 
 type PResult<O, E = error::ContextError> = winnow::prelude::PResult<O, E>;
 
-type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
+/// Helper trait for dealing with PResults and the `ParseContext`.
+trait PResultEx {
+    type O;
 
-pub fn run_parser(i: TokenSlice) -> Result<Node<Program>, KclError> {
-    program.parse(i).map_err(KclError::from)
+    /// If self is Ok, then returns it wrapped in `Ok(Some())`.
+    /// If self is a parsing error, saves it to the current `ParseContext` and returns `Ok(None)`.
+    /// If self is some other kind of error, then returns it.
+    fn save_err(self) -> Result<Option<Self::O>, KclError>;
+}
+
+impl<O, E: Into<error::ErrorKind>> PResultEx for Result<O, E> {
+    type O = O;
+
+    fn save_err(self) -> Result<Option<O>, KclError> {
+        match self {
+            Ok(o) => Ok(Some(o)),
+            Err(e) => match e.into() {
+                error::ErrorKind::Parse(e) => {
+                    ParseContext::err(e);
+                    Ok(None)
+                }
+                error::ErrorKind::Internal(e) => Err(e),
+            },
+        }
+    }
 }
 
 fn expected(what: &'static str) -> StrContext {
@@ -41,12 +142,9 @@ fn expected(what: &'static str) -> StrContext {
 
 fn program(i: TokenSlice) -> PResult<Node<Program>> {
     let shebang = opt(shebang).parse_next(i)?;
-    let mut out = function_body.parse_next(i)?;
+    let mut out: Node<Program> = function_body.parse_next(i)?;
+    out.shebang = shebang;
 
-    // Add the shebang to the non-code meta.
-    if let Some(shebang) = shebang {
-        out.non_code_meta.start_nodes.insert(0, shebang);
-    }
     // Match original parser behaviour, for now.
     // Once this is merged and stable, consider changing this as I think it's more accurate
     // without the -1.
@@ -272,9 +370,6 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                if let Ok(x) = token.value.parse::<u64>() {
-                    return Ok((LiteralValue::IInteger(x as i64), token));
-                }
                 let x: f64 = token.value.parse().map_err(|_| {
                     KclError::Syntax(KclErrorDetails {
                         source_ranges: token.as_source_ranges(),
@@ -282,7 +377,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
                     })
                 })?;
 
-                Ok((LiteralValue::Fractional(x), token))
+                Ok((LiteralValue::Number(x), token))
             }
             _ => Err(KclError::Syntax(KclErrorDetails {
                 source_ranges: token.as_source_ranges(),
@@ -437,7 +532,7 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
 
 /// A shebang is a line at the start of a file that starts with `#!`.
 /// If the shebang is present it takes up the whole line.
-fn shebang(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
+fn shebang(i: TokenSlice) -> PResult<Node<Shebang>> {
     // Parse the hash and the bang.
     hash.parse_next(i)?;
     bang.parse_next(i)?;
@@ -460,23 +555,11 @@ fn shebang(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
     opt(whitespace).parse_next(i)?;
 
     Ok(Node::new(
-        NonCodeNode {
-            value: NonCodeValue::Shebang {
-                value: format!("#!{}", value),
-            },
-            digest: None,
-        },
+        Shebang::new(format!("#!{}", value)),
         0,
         tokens.last().unwrap().end,
         tokens.first().unwrap().module_id,
     ))
-}
-
-/// Parse the = operator.
-fn equals(i: TokenSlice) -> PResult<Token> {
-    one_of((TokenType::Operator, "="))
-        .context(expected("the equals operator, ="))
-        .parse_next(i)
 }
 
 #[allow(clippy::large_enum_variant)]
@@ -612,11 +695,12 @@ fn object_property_same_key_and_val(i: TokenSlice) -> PResult<Node<ObjectPropert
 }
 
 fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
-    colon
+    // Temporarily accept both `:` and `=` for compatibility.
+    let sep = alt((colon, equals))
         .context(expected(
-            "a colon, which separates the property's key from the value you're setting it to, e.g. 'height: 4'",
+            "`=`, which separates the property's key from the value you're setting it to, e.g. 'height = 4'",
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
@@ -625,7 +709,8 @@ fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
             "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
         ))
         .parse_next(i)?;
-    Ok(Node {
+
+    let result = Node {
         start: key.start,
         end: expr.end(),
         module_id: key.module_id,
@@ -634,7 +719,18 @@ fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
             value: expr,
             digest: None,
         },
-    })
+    };
+
+    if sep.token_type == TokenType::Colon {
+        ParseContext::warn(ParseError::with_suggestion(
+            sep.into(),
+            Some(result.as_source_range()),
+            "Using `:` to initialize objects is deprecated, prefer using `=`.",
+            Some(" ="),
+        ));
+    }
+
+    Ok(result)
 }
 
 /// Match something that separates properties of an object.
@@ -846,26 +942,46 @@ fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
     ))
 }
 
+fn function_expr(i: TokenSlice) -> PResult<Expr> {
+    let fn_tok = opt(fun).parse_next(i)?;
+    ignore_whitespace(i);
+    let (result, has_arrow) = function_decl.parse_next(i)?;
+    if fn_tok.is_none() && !has_arrow {
+        let err = KclError::Syntax(KclErrorDetails {
+            source_ranges: result.as_source_ranges(),
+            message: "Anonymous function requires `fn` before `(`".to_owned(),
+        });
+        return Err(ErrMode::Cut(err.into()));
+    }
+    Ok(Expr::FunctionExpression(Box::new(result)))
+}
+
 // Looks like
-// (arg0, arg1) => {
+// (arg0, arg1) {
 //     const x = arg0 + arg1;
 //     return x
 // }
-fn function_expression(i: TokenSlice) -> PResult<Node<FunctionExpression>> {
+fn function_decl(i: TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
+    fn return_type(i: TokenSlice) -> PResult<FnArgType> {
+        colon(i)?;
+        ignore_whitespace(i);
+        argument_type(i)
+    }
+
     let open = open_paren(i)?;
     let start = open.start;
     let params = parameters(i)?;
     close_paren(i)?;
     ignore_whitespace(i);
-    big_arrow(i)?;
+    let arrow = opt(big_arrow).parse_next(i)?;
     ignore_whitespace(i);
-    // Optional type arguments.
-    let return_type = opt(argument_type).parse_next(i)?;
+    // Optional return type.
+    let return_type = opt(return_type).parse_next(i)?;
     ignore_whitespace(i);
     open_brace(i)?;
     let body = function_body(i)?;
     let end = close_brace(i)?.end;
-    Ok(Node::new(
+    let result = Node::new(
         FunctionExpression {
             params,
             body,
@@ -875,7 +991,21 @@ fn function_expression(i: TokenSlice) -> PResult<Node<FunctionExpression>> {
         start,
         end,
         open.module_id,
-    ))
+    );
+
+    let has_arrow = if let Some(arrow) = arrow {
+        ParseContext::warn(ParseError::with_suggestion(
+            arrow.as_source_range(),
+            Some(result.as_source_range()),
+            "Unnecessary `=>` in function declaration",
+            Some(""),
+        ));
+        true
+    } else {
+        false
+    };
+
+    Ok((result, has_arrow))
 }
 
 /// E.g. `person.name`
@@ -977,7 +1107,6 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
                 // There's an empty line between the body item and the comment,
                 // This means the comment is a NewLineBlockComment!
                 let value = match nc.inner.value {
-                    NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::NewLineBlockComment { value, style },
                     // Other variants don't need to change.
@@ -998,7 +1127,6 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
                 // There's no newline between the body item and comment,
                 // so if this is a comment, it must be inline with code.
                 let value = match nc.inner.value {
-                    NonCodeValue::Shebang { value } => NonCodeValue::Shebang { value },
                     // Change block comments to inline, as discussed above
                     NonCodeValue::BlockComment { value, style } => NonCodeValue::InlineComment { value, style },
                     // Other variants don't need to change.
@@ -1198,6 +1326,7 @@ pub fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
         Program {
             body,
             non_code_meta,
+            shebang: None,
             digest: None,
         },
         start.0,
@@ -1385,7 +1514,7 @@ fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
-        function_expression.map(Box::new).map(Expr::FunctionExpression),
+        function_expr,
         if_expr.map(Expr::IfExpression),
         unnecessarily_bracketed,
     ))
@@ -1450,6 +1579,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     let (kind, mut start, dec_end, module_id) = if let Some((kind, token)) = &decl_token {
         (*kind, token.start, token.end, token.module_id)
     } else {
+        // TODO warn on const
         (VariableKind::Const, id.start, id.end, id.module_id)
     };
     if let Some(token) = visibility_token {
@@ -1457,24 +1587,32 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     }
 
     ignore_whitespace(i);
-    equals(i)?;
-    // After this point, the parser is DEFINITELY parsing a variable declaration, because
-    // `fn`, `let`, `const` etc are all unambiguous. If you've parsed one of those tokens --
-    // and we certainly have because `kind` was parsed above -- then the following tokens
-    // MUST continue the variable declaration, otherwise the program is invalid.
-    //
-    // This means, from here until this function returns, any errors should be ErrMode::Cut,
-    // not ErrMode::Backtrack. Because the parser is definitely parsing a variable declaration.
-    // If there's an error, there's no point backtracking -- instead the parser should fail.
-    ignore_whitespace(i);
 
     let val = if kind == VariableKind::Fn {
-        function_expression
-            .map(Box::new)
+        let eq = opt(equals).parse_next(i)?;
+        ignore_whitespace(i);
+
+        let val = function_decl
+            .map(|t| Box::new(t.0))
             .map(Expr::FunctionExpression)
-            .context(expected("a KCL function expression, like () => { return 1 }"))
-            .parse_next(i)
+            .context(expected("a KCL function expression, like () { return 1 }"))
+            .parse_next(i);
+
+        if let Some(t) = eq {
+            let ctxt_end = val.as_ref().map(|e| e.end()).unwrap_or(t.end);
+            ParseContext::warn(ParseError::with_suggestion(
+                t.as_source_range(),
+                Some(SourceRange([id.start, ctxt_end, module_id.as_usize()])),
+                "Unnecessary `=` in function declaration",
+                Some(""),
+            ));
+        }
+
+        val
     } else {
+        equals(i)?;
+        ignore_whitespace(i);
+
         expression
             .try_map(|val| {
                 // Function bodies can be used if and only if declaring a function.
@@ -1848,14 +1986,30 @@ fn double_period(i: TokenSlice) -> PResult<Token> {
     .parse_next(i)
 }
 
-fn colon(i: TokenSlice) -> PResult<()> {
-    TokenType::Colon.parse_from(i)?;
-    Ok(())
+fn colon(i: TokenSlice) -> PResult<Token> {
+    TokenType::Colon.parse_from(i)
+}
+
+fn equals(i: TokenSlice) -> PResult<Token> {
+    one_of((TokenType::Operator, "="))
+        .context(expected("the equals operator, ="))
+        .parse_next(i)
 }
 
 fn question_mark(i: TokenSlice) -> PResult<()> {
     TokenType::QuestionMark.parse_from(i)?;
     Ok(())
+}
+
+fn fun(i: TokenSlice) -> PResult<Token> {
+    any.try_map(|token: Token| match token.token_type {
+        TokenType::Keyword if token.value == "fn" => Ok(token),
+        _ => Err(KclError::Syntax(KclErrorDetails {
+            source_ranges: token.as_source_ranges(),
+            message: format!("expected 'fn', found {}", token.value.as_str(),),
+        })),
+    })
+    .parse_next(i)
 }
 
 /// Parse a comma, optionally followed by some whitespace.
@@ -1881,6 +2035,7 @@ fn arguments(i: TokenSlice) -> PResult<Vec<Expr>> {
 fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
     let type_ = alt((
         // Object types
+        // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
         (open_brace, parameters, close_brace).map(|(_, params, _)| Ok(FnArgType::Object { properties: params })),
         // Array types
         (one_of(TokenType::Type), open_bracket, close_bracket).map(|(token, _, _)| {
@@ -1911,13 +2066,11 @@ fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
 }
 
 fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<FnArgType>, bool)> {
-    let (arg_name, optional, _, _, _, type_) = (
+    let (arg_name, optional, _, type_) = (
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
         opt(whitespace),
-        opt(colon),
-        opt(whitespace),
-        opt(argument_type),
+        opt((colon, opt(whitespace), argument_type).map(|tup| tup.2)),
     )
         .parse_next(i)?;
     Ok((arg_name, type_, optional.is_some()))
@@ -1993,57 +2146,84 @@ fn binding_name(i: TokenSlice) -> PResult<Node<Identifier>> {
         .parse_next(i)
 }
 
+fn typecheck_all(std_fn: Box<dyn StdLibFn>, args: &[Expr]) -> PResult<()> {
+    // Type check the arguments.
+    for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
+        let Some(arg) = &args.get(i) else {
+            // The executor checks the number of arguments, so we don't need to check it here.
+            continue;
+        };
+        typecheck(spec_arg, arg)?;
+    }
+    Ok(())
+}
+
+fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
+    match spec_arg.type_.as_ref() {
+        "TagNode" => match &arg {
+            Expr::Identifier(_) => {
+                // These are fine since we want someone to be able to map a variable to a tag declarator.
+            }
+            Expr::TagDeclarator(tag) => {
+                // TODO: Remove this check. It should be redundant.
+                tag.clone()
+                    .into_valid_binding_name()
+                    .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
+            }
+            e => {
+                return Err(ErrMode::Cut(
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![SourceRange::from(*arg)],
+                        message: format!("Expected a tag declarator like `$name`, found {:?}", e),
+                    })
+                    .into(),
+                ));
+            }
+        },
+        "TagIdentifier" => match &arg {
+            Expr::Identifier(_) => {}
+            Expr::MemberExpression(_) => {}
+            e => {
+                return Err(ErrMode::Cut(
+                    KclError::Syntax(KclErrorDetails {
+                        source_ranges: vec![SourceRange::from(*arg)],
+                        message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                    })
+                    .into(),
+                ));
+            }
+        },
+        _ => {}
+    }
+    Ok(())
+}
+
 fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
     let fn_name = identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
-        // Type check the arguments.
-        for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
-            let Some(arg) = &args.get(i) else {
-                // The executor checks the number of arguments, so we don't need to check it here.
-                continue;
-            };
-            match spec_arg.type_.as_ref() {
-                "TagNode" => match &arg {
-                    Expr::Identifier(_) => {
-                        // These are fine since we want someone to be able to map a variable to a tag declarator.
-                    }
-                    Expr::TagDeclarator(tag) => {
-                        // TODO: Remove this check. It should be redundant.
-                        tag.clone()
-                            .into_valid_binding_name()
-                            .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
-                    }
-                    e => {
-                        return Err(ErrMode::Cut(
-                            KclError::Syntax(KclErrorDetails {
-                                source_ranges: vec![SourceRange::from(*arg)],
-                                message: format!("Expected a tag declarator like `$name`, found {:?}", e),
-                            })
-                            .into(),
-                        ));
-                    }
-                },
-                "TagIdentifier" => match &arg {
-                    Expr::Identifier(_) => {}
-                    Expr::MemberExpression(_) => {}
-                    e => {
-                        return Err(ErrMode::Cut(
-                            KclError::Syntax(KclErrorDetails {
-                                source_ranges: vec![SourceRange::from(*arg)],
-                                message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
-                            })
-                            .into(),
-                        ));
-                    }
-                },
-                _ => {}
-            }
-        }
+        typecheck_all(std_fn, &args)?;
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
+
+    // This should really be done with resolved names, but we don't have warning support there
+    // so we'll hack this in here.
+    if fn_name.name == "int" {
+        assert_eq!(args.len(), 1);
+        let mut arg_str = args[0].recast(&crate::FormatOptions::default(), 0, ExprContext::Other);
+        if arg_str.contains('.') && !arg_str.ends_with(".0") {
+            arg_str = format!("round({arg_str})");
+        }
+        ParseContext::warn(ParseError::with_suggestion(
+            SourceRange::new(fn_name.start, end, fn_name.module_id),
+            None,
+            "`int` function is deprecated. You may not need it at all. If you need to round, consider `round`, `ceil`, or `floor`.",
+            Some(arg_str),
+        ));
+    }
+
     Ok(Node {
         start: fn_name.start,
         end,
@@ -2069,16 +2249,16 @@ mod tests {
         // Try to use it as a variable name.
         let code = format!(r#"{} = 0"#, word);
         let result = crate::parser::top_level_parse(code.as_str());
-        let err = result.unwrap_err();
+        let err = &result.unwrap_errs()[0];
         // Which token causes the error may change.  In "return = 0", for
         // example, "return" is the problem.
         assert!(
-            err.message().starts_with("Unexpected token: ")
+            err.message.starts_with("Unexpected token: ")
                 || err
-                    .message()
+                    .message
                     .starts_with("Cannot assign a variable to a reserved keyword: "),
             "Error message is: {}",
-            err.message(),
+            err.message,
         );
     }
 
@@ -2106,21 +2286,23 @@ mod tests {
 
     #[test]
     fn weird_program_unclosed_paren() {
-        let tokens = crate::token::lexer("fn firstPrime=(", ModuleId::default()).unwrap();
+        let tokens = crate::token::lexer("fn firstPrime(", ModuleId::default()).unwrap();
         let last = tokens.last().unwrap();
-        let err: KclError = program.parse(&tokens).unwrap_err().into();
-        assert_eq!(err.source_ranges(), last.as_source_ranges());
+        let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
+        let err = err.unwrap_parse_error();
+        assert_eq!(vec![err.source_range], last.as_source_ranges());
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
-        assert_eq!(err.message(), "Unexpected end of file. The compiler expected )");
+        assert_eq!(err.message, "Unexpected end of file. The compiler expected )");
     }
 
     #[test]
     fn weird_program_just_a_pipe() {
         let tokens = crate::token::lexer("|", ModuleId::default()).unwrap();
-        let err: KclError = program.parse(&tokens).unwrap_err().into();
-        assert_eq!(err.source_ranges(), vec![SourceRange([0, 1, 0])]);
-        assert_eq!(err.message(), "Unexpected token: |");
+        let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
+        let err = err.unwrap_parse_error();
+        assert_eq!(vec![err.source_range], vec![SourceRange([0, 1, 0])]);
+        assert_eq!(err.message, "Unexpected token: |");
     }
 
     #[test]
@@ -2156,7 +2338,7 @@ mod tests {
 
     #[test]
     fn test_comments_in_function1() {
-        let test_program = r#"() => {
+        let test_program = r#"() {
             // comment 0
             const a = 1
             // comment 1
@@ -2166,7 +2348,7 @@ mod tests {
         }"#;
         let tokens = crate::token::lexer(test_program, ModuleId::default()).unwrap();
         let mut slice = tokens.as_slice();
-        let expr = function_expression.parse_next(&mut slice).unwrap();
+        let expr = function_decl.map(|t| t.0).parse_next(&mut slice).unwrap();
         assert_eq!(expr.params, vec![]);
         let comment_start = expr.body.non_code_meta.start_nodes.first().unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
@@ -2178,13 +2360,13 @@ mod tests {
 
     #[test]
     fn test_comments_in_function2() {
-        let test_program = r#"() => {
-  const yo = { a: { b: { c: '123' } } } /* block
+        let test_program = r#"() {
+  const yo = { a = { b = { c = '123' } } } /* block
 comment */
 }"#;
         let tokens = crate::token::lexer(test_program, ModuleId::default()).unwrap();
         let mut slice = tokens.as_slice();
-        let expr = function_expression.parse_next(&mut slice).unwrap();
+        let expr = function_decl.map(|t| t.0).parse_next(&mut slice).unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         assert_eq!(comment0.value(), "block\ncomment");
     }
@@ -2236,25 +2418,25 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_whitespace_in_function() {
-        let test_program = r#"() => {
+        let test_program = r#"() {
             return sg
             return sg
           }"#;
         let tokens = crate::token::lexer(test_program, ModuleId::default()).unwrap();
         let mut slice = tokens.as_slice();
-        let _expr = function_expression.parse_next(&mut slice).unwrap();
+        let _expr = function_decl.parse_next(&mut slice).unwrap();
     }
 
     #[test]
     fn test_empty_lines_in_function() {
-        let test_program = "() => {
+        let test_program = "() {
 
                 return 2
             }";
         let module_id = ModuleId::from_usize(1);
         let tokens = crate::token::lexer(test_program, module_id).unwrap();
         let mut slice = tokens.as_slice();
-        let expr = function_expression.parse_next(&mut slice).unwrap();
+        let expr = function_decl.map(|t| t.0).parse_next(&mut slice).unwrap();
         assert_eq!(
             expr,
             Node::new(
@@ -2270,14 +2452,14 @@ const mySk1 = startSketchAt([0, 0])"#;
                                             raw: "2".to_owned(),
                                             digest: None,
                                         },
-                                        32,
-                                        33,
+                                        29,
+                                        30,
                                         module_id,
                                     ))),
                                     digest: None,
                                 },
-                                25,
-                                33,
+                                22,
+                                30,
                                 module_id,
                             ))],
                             non_code_meta: NonCodeMeta {
@@ -2287,23 +2469,24 @@ const mySk1 = startSketchAt([0, 0])"#;
                                         value: NonCodeValue::NewLine,
                                         digest: None
                                     },
-                                    7,
-                                    25,
+                                    4,
+                                    22,
                                     module_id,
                                 )],
                                 digest: None,
                             },
+                            shebang: None,
                             digest: None,
                         },
-                        7,
-                        47,
+                        4,
+                        44,
                         module_id,
                     ),
                     return_type: None,
                     digest: None,
                 },
                 0,
-                47,
+                44,
                 module_id,
             )
         );
@@ -2338,7 +2521,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn many_comments() {
         let test_program = r#"// this is a comment
-  const yo = { a: { b: { c: '123' } } } /* block
+  const yo = { a = { b = { c = '123' } } } /* block
   comment */
 
   const key = 'c'
@@ -2375,8 +2558,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                         },
                         digest: None,
                     },
-                    60,
-                    82,
+                    63,
+                    85,
                     module_id,
                 ),
                 Node::new(
@@ -2384,8 +2567,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: NonCodeValue::NewLine,
                         digest: None,
                     },
-                    82,
-                    86,
+                    85,
+                    89,
                     module_id,
                 )
             ]),
@@ -2401,8 +2584,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                     },
                     digest: None,
                 },
-                103,
-                129,
+                106,
+                132,
                 module_id,
             )]),
             non_code_meta.non_code_nodes.get(&1),
@@ -2739,7 +2922,7 @@ const mySk1 = startSketchAt([0, 0])"#;
         let test_fn = "(let) => { return 1 }";
         let module_id = ModuleId::from_usize(2);
         let tokens = crate::token::lexer(test_fn, module_id).unwrap();
-        let err = function_expression.parse(&tokens).unwrap_err().into_inner();
+        let err = function_decl.parse(&tokens).unwrap_err().into_inner();
         let cause = err.cause.unwrap();
         // This is the token `let`
         assert_eq!(cause.source_ranges(), vec![SourceRange([1, 4, 2])]);
@@ -2778,7 +2961,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     fn test_pipes_on_pipes() {
         let test_program = include_str!("../../../tests/executor/inputs/pipes_on_pipes.kcl");
         let tokens = crate::token::lexer(test_program, ModuleId::default()).unwrap();
-        let _actual = program.parse(&tokens).unwrap();
+        let _ = run_parser(&mut &*tokens).unwrap();
     }
 
     #[test]
@@ -2812,12 +2995,12 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_user_function() {
-        let input = "() => {
+        let input = "() {
             return 2
         }";
 
         let tokens = crate::token::lexer(input, ModuleId::default()).unwrap();
-        let actual = function_expression.parse(&tokens);
+        let actual = function_decl.parse(&tokens);
         assert!(actual.is_ok(), "could not parse test function");
     }
 
@@ -3030,6 +3213,7 @@ const mySk1 = startSketchAt([0, 0])"#;
                     4,
                     module_id,
                 ))],
+                shebang: None,
                 non_code_meta: NonCodeMeta::default(),
                 digest: None,
             },
@@ -3048,15 +3232,37 @@ const mySk1 = startSketchAt([0, 0])"#;
         assert!(result.is_ok());
     }
 
+    #[track_caller]
+    fn assert_no_err(p: &str) -> (Node<Program>, ParseContext) {
+        let result = crate::parser::top_level_parse(p);
+        let result = result.0.unwrap();
+        assert!(result.1.errors.is_empty(), "found: {:#?}", result.1.errors);
+        (result.0.unwrap(), result.1)
+    }
+
+    #[track_caller]
+    fn assert_err(p: &str, msg: &str, src: [usize; 2]) {
+        let result = crate::parser::top_level_parse(p);
+        let err = &result.unwrap_errs()[0];
+        assert_eq!(err.message, msg);
+        assert_eq!(&err.source_range.0[..2], &src);
+    }
+
+    #[track_caller]
+    fn assert_err_contains(p: &str, expected: &str) {
+        let result = crate::parser::top_level_parse(p);
+        let err = &result.unwrap_errs()[0].message;
+        assert!(err.contains(expected), "actual='{err}'");
+    }
+
     #[test]
     fn test_parse_half_pipe_small() {
-        let code = "const secondExtrude = startSketchOn('XY')
+        assert_err_contains(
+            "const secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |";
-        let result = crate::parser::top_level_parse(code);
-        assert!(result.is_err());
-        let actual = result.err().unwrap().to_string();
-        assert!(actual.contains("Unexpected token: |"), "actual={actual:?}");
+  |",
+            "Unexpected token: |",
+        );
     }
 
     #[test]
@@ -3116,6 +3322,16 @@ const height = [obj["a"] -1, 0]"#;
     }
 
     #[test]
+    fn test_anon_fn() {
+        crate::parser::top_level_parse("foo(42, fn(x) { return x + 1 })").unwrap();
+    }
+
+    #[test]
+    fn test_anon_fn_no_fn() {
+        assert_err_contains("foo(42, (x) { return x + 1 })", "Anonymous function requires `fn`");
+    }
+
+    #[test]
     fn test_parse_half_pipe() {
         let code = "const height = 10
 
@@ -3130,41 +3346,29 @@ const firstExtrude = startSketchOn('XY')
 const secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |";
-        let result = crate::parser::top_level_parse(code);
-        assert!(result.is_err());
-        assert!(result.err().unwrap().to_string().contains("Unexpected token: |"));
+        assert_err_contains(code, "Unexpected token: |");
     }
 
     #[test]
     fn test_parse_greater_bang() {
-        let module_id = ModuleId::default();
-        let err = crate::parser::parse_str(">!", module_id).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([0, 1, 0])], message: "Unexpected token: >" }"#
-        );
+        assert_err(">!", "Unexpected token: >", [0, 1]);
     }
 
     #[test]
     fn test_parse_z_percent_parens() {
-        let module_id = ModuleId::default();
-        let err = crate::parser::parse_str("z%)", module_id).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([1, 2, 0])], message: "Unexpected token: %" }"#
-        );
+        assert_err("z%)", "Unexpected token: %", [1, 2]);
     }
 
     #[test]
     fn test_parse_parens_unicode() {
-        let module_id = ModuleId::default();
-        let err = crate::parser::parse_str("(ޜ", module_id).unwrap_err();
+        let result = crate::parser::top_level_parse("(ޜ");
+        let KclError::Lexical(details) = result.0.unwrap_err() else {
+            panic!();
+        };
         // TODO: Better errors when program cannot tokenize.
         // https://github.com/KittyCAD/modeling-app/issues/696
-        assert_eq!(
-            err.to_string(),
-            r#"lexical: KclErrorDetails { source_ranges: [SourceRange([1, 2, 0])], message: "found unknown token 'ޜ'" }"#
-        );
+        assert_eq!(details.message, "found unknown token 'ޜ'");
+        assert_eq!(&details.source_ranges[0].0[..2], &[1, 2]);
     }
 
     #[test]
@@ -3183,61 +3387,46 @@ const bracket = [-leg2 + thickness, 0]
             r#"
 z(-[["#,
         )
-        .unwrap_err();
+        .unwrap_errs();
     }
 
     #[test]
     fn test_parse_weird_new_line_function() {
-        let err = crate::parser::top_level_parse(
+        assert_err(
             r#"z
- (--#"#,
-        )
-        .unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 4, 0])], message: "Unexpected token: (" }"#
+(--#"#,
+            "Unexpected token: (",
+            [2, 3],
         );
     }
 
     #[test]
     fn test_parse_weird_lots_of_fancy_brackets() {
-        let err = crate::parser::top_level_parse(r#"zz({{{{{{{{)iegAng{{{{{{{##"#).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([2, 3, 0])], message: "Unexpected token: (" }"#
-        );
+        assert_err(r#"zz({{{{{{{{)iegAng{{{{{{{##"#, "Unexpected token: (", [2, 3]);
     }
 
     #[test]
     fn test_parse_weird_close_before_open() {
-        let err = crate::parser::top_level_parse(
+        assert_err_contains(
             r#"fn)n
 e
 ["#,
-        )
-        .unwrap_err();
-        assert!(err
-            .to_string()
-            .contains("expected whitespace, found ')' which is brace"));
+            "expected whitespace, found ')' which is brace",
+        );
     }
 
     #[test]
     fn test_parse_weird_close_before_nada() {
-        let err = crate::parser::top_level_parse(r#"fn)n-"#).unwrap_err();
-        assert!(err
-            .to_string()
-            .contains("expected whitespace, found ')' which is brace"));
+        assert_err_contains(r#"fn)n-"#, "expected whitespace, found ')' which is brace");
     }
 
     #[test]
     fn test_parse_weird_lots_of_slashes() {
-        let err = crate::parser::top_level_parse(
+        assert_err_contains(
             r#"J///////////o//+///////////P++++*++++++P///////˟
 ++4"#,
-        )
-        .unwrap_err();
-        let actual = err.to_string();
-        assert!(actual.contains("Unexpected token: +"), "actual={actual:?}");
+            "Unexpected token: +",
+        );
     }
 
     #[test]
@@ -3324,62 +3513,53 @@ e
 
     #[test]
     fn test_error_keyword_in_variable() {
-        let err = crate::parser::top_level_parse(r#"const let = "thing""#).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([6, 9, 0])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        assert_err(
+            r#"const let = "thing""#,
+            "Cannot assign a variable to a reserved keyword: let",
+            [6, 9],
         );
     }
 
     #[test]
     fn test_error_keyword_in_fn_name() {
-        let err = crate::parser::top_level_parse(r#"fn let = () {}"#).unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6, 0])], message: "Cannot assign a variable to a reserved keyword: let" }"#
+        assert_err(
+            r#"fn let = () {}"#,
+            "Cannot assign a variable to a reserved keyword: let",
+            [3, 6],
         );
     }
 
     #[test]
     fn test_error_stdlib_in_fn_name() {
-        let err = crate::parser::top_level_parse(
+        assert_err(
             r#"fn cos = () => {
             return 1
         }"#,
-        )
-        .unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([3, 6, 0])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
+            "Cannot assign a variable to a reserved keyword: cos",
+            [3, 6],
         );
     }
 
     #[test]
     fn test_error_keyword_in_fn_args() {
-        let err = crate::parser::top_level_parse(
+        assert_err(
             r#"fn thing = (let) => {
     return 1
 }"#,
+            "Cannot assign a variable to a reserved keyword: let",
+            [12, 15],
         )
-        .unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15, 0])], message: "Cannot assign a variable to a reserved keyword: let" }"#
-        );
     }
 
     #[test]
     fn test_error_stdlib_in_fn_args() {
-        let err = crate::parser::top_level_parse(
+        assert_err(
             r#"fn thing = (cos) => {
     return 1
 }"#,
+            "Cannot assign a variable to a reserved keyword: cos",
+            [12, 15],
         )
-        .unwrap_err();
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([12, 15, 0])], message: "Cannot assign a variable to a reserved keyword: cos" }"#
-        );
     }
 
     #[test]
@@ -3470,7 +3650,7 @@ e
 
     #[test]
     fn test_keyword_ok_in_fn_args_return() {
-        let some_program_string = r#"fn thing = (param) => {
+        let some_program_string = r#"fn thing(param) {
     return true
 }
 
@@ -3491,28 +3671,20 @@ thing(false)
 "#,
                 name
             );
-            let err = crate::parser::top_level_parse(&some_program_string).unwrap_err();
-            assert_eq!(
-                err.to_string(),
-                format!(
-                    r#"syntax: KclErrorDetails {{ source_ranges: [SourceRange([0, {}, 0])], message: "Expected a `fn` variable kind, found: `const`" }}"#,
-                    name.len(),
-                )
+            assert_err(
+                &some_program_string,
+                "Expected a `fn` variable kind, found: `const`",
+                [0, name.len()],
             );
         }
     }
 
     #[test]
     fn test_error_define_var_as_function() {
-        let some_program_string = r#"fn thing = "thing""#;
-        let err = crate::parser::top_level_parse(some_program_string).unwrap_err();
         // TODO: https://github.com/KittyCAD/modeling-app/issues/784
         // Improve this error message.
         // It should say that the compiler is expecting a function expression on the RHS.
-        assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([11, 18, 0])], message: "Unexpected token: \"thing\"" }"#
-        );
+        assert_err(r#"fn thing = "thing""#, "Unexpected token: \"thing\"", [11, 18]);
     }
 
     #[test]
@@ -3525,7 +3697,7 @@ thing(false)
     |> line([-5.09, 12.33], %)
     asdasd
 "#;
-        crate::parser::top_level_parse(test_program).unwrap_err();
+        crate::parser::top_level_parse(test_program).unwrap_errs();
     }
 
     #[test]
@@ -3573,16 +3745,80 @@ let myBox = box([0,0], -3, -16, -10)
 "#;
         crate::parser::top_level_parse(some_program_string).unwrap();
     }
+
     #[test]
     fn must_use_percent_in_pipeline_fn() {
         let some_program_string = r#"
         foo()
             |> bar(2)
         "#;
-        let err = crate::parser::top_level_parse(some_program_string).unwrap_err();
+        assert_err(
+            some_program_string,
+            "All expressions in a pipeline must use the % (substitution operator)",
+            [30, 36],
+        );
+    }
+
+    #[test]
+    fn test_parse_tag_named_std_lib() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $xLine)
+"#;
+        assert_err(
+            some_program_string,
+            "Cannot assign a tag to a reserved keyword: xLine",
+            [76, 82],
+        );
+    }
+
+    #[test]
+    fn test_parse_empty_tag() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $)
+"#;
+        assert_err(some_program_string, "Unexpected token: |>", [57, 59]);
+    }
+
+    #[test]
+    fn warn_object_expr() {
+        let some_program_string = "{ foo: bar }";
+        let (_, ctxt) = assert_no_err(some_program_string);
+        assert_eq!(ctxt.warnings.len(), 1);
         assert_eq!(
-            err.to_string(),
-            r#"syntax: KclErrorDetails { source_ranges: [SourceRange([30, 36, 0])], message: "All expressions in a pipeline must use the % (substitution operator)" }"#
+            ctxt.warnings[0].apply_suggestion(some_program_string).unwrap(),
+            "{ foo = bar }"
+        )
+    }
+
+    #[test]
+    fn warn_fn_int() {
+        let some_program_string = r#"int(1.0)
+int(42.3)"#;
+        let (_, ctxt) = assert_no_err(some_program_string);
+        assert_eq!(ctxt.warnings.len(), 2);
+        let replaced = ctxt.warnings[1].apply_suggestion(some_program_string).unwrap();
+        let replaced = ctxt.warnings[0].apply_suggestion(&replaced).unwrap();
+        assert_eq!(replaced, "1.0\nround(42.3)");
+    }
+
+    #[test]
+    fn warn_fn_decl() {
+        let some_program_string = r#"fn foo = () => {
+    return 0
+}"#;
+        let (_, ctxt) = assert_no_err(some_program_string);
+        assert_eq!(ctxt.warnings.len(), 2);
+        let replaced = ctxt.warnings[0].apply_suggestion(some_program_string).unwrap();
+        let replaced = ctxt.warnings[1].apply_suggestion(&replaced).unwrap();
+        // Note the whitespace here is bad, but we're just testing the suggestion spans really. In
+        // real life we might reformat after applying suggestions.
+        assert_eq!(
+            replaced,
+            r#"fn foo  ()  {
+    return 0
+}"#
         );
     }
 }
@@ -3600,11 +3836,14 @@ mod snapshot_math_tests {
             fn $func_name() {
                 let module_id = crate::ast::types::ModuleId::default();
                 let tokens = crate::token::lexer($test_kcl_program, module_id).unwrap();
+                ParseContext::init();
+
                 let actual = match binary_expression.parse(&tokens) {
                     Ok(x) => x,
                     Err(_e) => panic!("could not parse test"),
                 };
                 insta::assert_json_snapshot!(actual);
+                let _ = ParseContext::take();
             }
         };
     }
@@ -3636,6 +3875,7 @@ mod snapshot_tests {
                 let module_id = crate::ast::types::ModuleId::default();
                 let tokens = crate::token::lexer($test_kcl_program, module_id).unwrap();
                 print_tokens(&tokens);
+                ParseContext::init();
                 let actual = match program.parse(&tokens) {
                     Ok(x) => x,
                     Err(e) => panic!("could not parse test: {e:?}"),
@@ -3645,6 +3885,7 @@ mod snapshot_tests {
                 settings.bind(|| {
                     insta::assert_json_snapshot!(actual);
                 });
+                let _ = ParseContext::take();
             }
         };
     }

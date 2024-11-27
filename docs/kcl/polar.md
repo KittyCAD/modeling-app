@@ -29,7 +29,7 @@ polar(data: PolarCoordsData) -> [number]
 ```js
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line(polar({ angle: 30, length: 5 }), %, $thing)
+  |> line(polar({ angle = 30, length = 5 }), %, $thing)
   |> line([0, 5], %)
   |> line([segEndX(thing), 0], %)
   |> line([-20, 10], %)

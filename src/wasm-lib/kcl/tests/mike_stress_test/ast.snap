@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 52
 description: Result of parsing mike_stress_test.kcl
 snapshot_kind: text
 ---
@@ -51835,7 +51836,7 @@ snapshot_kind: text
                       "start": 74110,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 5
+                      "value": 5.0
                     },
                     {
                       "end": 74114,

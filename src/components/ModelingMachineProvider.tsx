@@ -43,12 +43,12 @@ import {
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
-  Selections,
   canSweepSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeBetweenCharacters,
   isSketchPipe,
+  Selections,
   updateSelections,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
@@ -317,8 +317,9 @@ export const ModelingMachineProvider = ({
                 })
               })
             }
+
             let selections: Selections = {
-              codeBasedSelections: [],
+              graphSelections: [],
               otherSelections: [],
             }
             if (setSelections.selectionType === 'singleCodeCursor') {
@@ -328,7 +329,7 @@ export const ModelingMachineProvider = ({
                 !editorManager.isShiftDown
               ) {
                 selections = {
-                  codeBasedSelections: [],
+                  graphSelections: [],
                   otherSelections: [],
                 }
               } else if (
@@ -336,13 +337,13 @@ export const ModelingMachineProvider = ({
                 !editorManager.isShiftDown
               ) {
                 selections = {
-                  codeBasedSelections: [setSelections.selection],
+                  graphSelections: [setSelections.selection],
                   otherSelections: [],
                 }
               } else if (setSelections.selection && editorManager.isShiftDown) {
                 selections = {
-                  codeBasedSelections: [
-                    ...selectionRanges.codeBasedSelections,
+                  graphSelections: [
+                    ...selectionRanges.graphSelections,
                     setSelections.selection,
                   ],
                   otherSelections: selectionRanges.otherSelections,
@@ -375,32 +376,26 @@ export const ModelingMachineProvider = ({
               }
             }
 
-            if (setSelections.selectionType === 'otherSelection') {
+            if (
+              setSelections.selectionType === 'axisSelection' ||
+              setSelections.selectionType === 'defaultPlaneSelection'
+            ) {
               if (editorManager.isShiftDown) {
                 selections = {
-                  codeBasedSelections: selectionRanges.codeBasedSelections,
+                  graphSelections: selectionRanges.graphSelections,
                   otherSelections: [setSelections.selection],
                 }
               } else {
                 selections = {
-                  codeBasedSelections: [],
+                  graphSelections: [],
                   otherSelections: [setSelections.selection],
                 }
               }
-              const { engineEvents, updateSceneObjectColors } =
-                handleSelectionBatch({
-                  selections,
-                })
-              engineEvents &&
-                engineEvents.forEach((event) => {
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  engineCommandManager.sendSceneCommand(event)
-                })
-              updateSceneObjectColors()
               return {
                 selectionRanges: selections,
               }
             }
+
             if (setSelections.selectionType === 'completeSelection') {
               editorManager.selectRange(setSelections.selection)
               if (!sketchDetails)
@@ -558,7 +553,7 @@ export const ModelingMachineProvider = ({
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
           const hasNoSelection =
-            selectionRanges.codeBasedSelections.length === 0 ||
+            selectionRanges.graphSelections.length === 0 ||
             isRangeBetweenCharacters(selectionRanges) ||
             isSelectionLastLine(selectionRanges, codeManager.code)
 
@@ -570,23 +565,26 @@ export const ModelingMachineProvider = ({
           }
           if (!isSketchPipe(selectionRanges)) return false
 
-          return canSweepSelection(selectionRanges)
+          const canSweep = canSweepSelection(selectionRanges)
+          if (err(canSweep)) return false
+          return canSweep
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
           if (!commandBarState.matches('Closed')) return false
-          if (selectionRanges.codeBasedSelections.length <= 0) return false
+          if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
         'has valid edge treatment selection': ({
-          context: { selectionRanges },
-        }) =>
-          hasValidEdgeTreatmentSelection({
+          context: { selectionRanges } 
+        }) => {
+          return hasValidEdgeTreatmentSelection({
             selectionRanges,
             ast: kclManager.ast,
             code: codeManager.code,
-          }),
+          })
+        },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
@@ -693,7 +691,8 @@ export const ModelingMachineProvider = ({
         }),
         'animate-to-sketch': fromPromise(
           async ({ input: { selectionRanges } }) => {
-            const sourceRange = selectionRanges.codeBasedSelections[0].range
+            const sourceRange =
+              selectionRanges.graphSelections[0]?.codeRef?.range
             const sketchPathToNode = getNodePathFromSourceRange(
               kclManager.ast,
               sourceRange
@@ -715,6 +714,7 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
+
         'Get horizontal info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
             const { modifiedAst, pathToNodeMap } =
@@ -850,7 +850,9 @@ export const ModelingMachineProvider = ({
         'Get length info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
             const { modifiedAst, pathToNodeMap } =
-              await applyConstraintAngleLength({ selectionRanges })
+              await applyConstraintAngleLength({
+                selectionRanges,
+              })
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))

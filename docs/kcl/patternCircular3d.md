@@ -29,15 +29,15 @@ patternCircular3d(data: CircularPattern3dData, solid_set: SolidSet) -> [Solid]
 
 ```js
 exampleSketch = startSketchOn('XZ')
-  |> circle({ center: [0, 0], radius: 1 }, %)
+  |> circle({ center = [0, 0], radius = 1 }, %)
 
 example = extrude(-5, exampleSketch)
   |> patternCircular3d({
-       axis: [1, -1, 0],
-       center: [10, -20, 0],
-       instances: 11,
-       arcDegrees: 360,
-       rotateDuplicates: true
+       axis = [1, -1, 0],
+       center = [10, -20, 0],
+       instances = 11,
+       arcDegrees = 360,
+       rotateDuplicates = true
      }, %)
 ```
 

@@ -40,6 +40,10 @@ export type ModelingCommandSchema = {
     selection: Selections
     radius: KclCommandValue
   }
+  'Offset plane': {
+    plane: Selections
+    distance: KclCommandValue
+  }
   'change tool': {
     tool: SketchTool
   }
@@ -233,8 +237,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        // TODO: These are products of an extrude
-        selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
+        selectionTypes: ['solid2D', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -265,7 +268,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['extrude-wall', 'start-cap', 'end-cap'],
+        selectionTypes: ['solid2D', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -277,27 +280,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Offset plane': {
+    description: 'Offset a plane.',
+    icon: 'plane',
+    args: {
+      plane: {
+        inputType: 'selection',
+        selectionTypes: ['plane'],
+        multiple: false,
+        required: true,
+        skip: true,
+      },
+      distance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
   Fillet: {
     description: 'Fillet edge',
     icon: 'fillet',
+    status: 'development',
     needsReview: true,
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: [
-          'default',
-          'line-end',
-          'line-mid',
-          'extrude-wall',
-          'solid2D',
-          'start-cap',
-          'end-cap',
-          'point',
-          'edge',
-          'line',
-          'arc',
-          'all',
-        ],
+        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: true,
         required: true,
         skip: false,

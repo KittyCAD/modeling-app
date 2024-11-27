@@ -12,11 +12,11 @@ sketch001 = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
   |> close(%)
 extrude001 = extrude(100, sketch001)
-  |> fillet({ radius: 20, tags: [seg01] }, %)
-  |> chamfer({ length: 50, tags: [seg02] }, %, $seg04)
+  |> fillet({ radius = 20, tags = [seg01] }, %)
+  |> chamfer({ length = 50, tags = [seg02] }, %, $seg04)
   |> chamfer({
-       length: 50,
-       tags: [getOppositeEdge(seg01)]
+       length = 50,
+       tags = [getOppositeEdge(seg01)]
      }, %, $seg03)
 
 sketch003 = startSketchOn(extrude001, seg04)

@@ -6,6 +6,6 @@ part001 = startSketchOn('XY')
   |> close(%, $thing3)
   |> extrude(10, %)
   |> fillet({
-       radius: 2,
-       tags: [getNextAdjacentEdge(thing3)]
+       radius = 2,
+       tags = [getNextAdjacentEdge(thing3)]
      }, %)

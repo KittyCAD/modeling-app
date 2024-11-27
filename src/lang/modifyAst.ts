@@ -1,5 +1,5 @@
-import { Selection } from 'lib/selections'
 import { err, reportRejection, trap } from 'lib/trap'
+import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -528,6 +528,45 @@ export function sketchOnExtrudedFace(
 }
 
 /**
+ * Append an offset plane to the AST
+ */
+export function addOffsetPlane({
+  node,
+  defaultPlane,
+  offset,
+}: {
+  node: Node<Program>
+  defaultPlane: DefaultPlaneStr
+  offset: Expr
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const newPlaneName = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
+
+  const newPlane = createVariableDeclaration(
+    newPlaneName,
+    createCallExpressionStdLib('offsetPlane', [
+      createLiteral(defaultPlane.toUpperCase()),
+      offset,
+    ])
+  )
+
+  modifiedAst.body.push(newPlane)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    ['0', 'index'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
  * Modify the AST to create a new sketch using the variable declaration
  * of an offset plane. The new sketch just has to come after the offset
  * plane declaration.
@@ -836,7 +875,7 @@ export function createBinaryExpressionWithUnary([left, right]: [
 
 export function giveSketchFnCallTag(
   ast: Node<Program>,
-  range: Selection['range'],
+  range: SourceRange,
   tag?: string
 ):
   | {
@@ -910,7 +949,7 @@ export function moveValueIntoNewVariablePath(
 export function moveValueIntoNewVariable(
   ast: Node<Program>,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  sourceRange: SourceRange,
   variableName: string
 ): {
   modifiedAst: Node<Program>
@@ -1035,18 +1074,15 @@ export async function deleteFromSelection(
     ({} as any)
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
-  const range = selection.range
-  const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    path,
+    selection?.codeRef?.pathToNode,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
   if (
-    (selection.type === 'extrude-wall' ||
-      selection.type === 'end-cap' ||
-      selection.type === 'start-cap') &&
+    (selection?.artifact?.type === 'wall' ||
+      selection?.artifact?.type === 'cap') &&
     varDec.node.init.type === 'PipeExpression'
   ) {
     const varDecName = varDec.node.id.name
@@ -1126,7 +1162,6 @@ export async function deleteFromSelection(
               sketchName
             )
             if (err(sketchToPreserve)) return sketchToPreserve
-            console.log('sketchName', sketchName)
             // Can't kick off multiple requests at once as getFaceDetails
             // is three engine calls in one and they conflict
             const faceDetails = await getFaceDetails(sketchToPreserve.on.id)

@@ -11,7 +11,7 @@ use crate::{
         BodyType, ExecState, ExecutorContext, KclValue, Metadata, SourceRange, StatementKind, TagEngineInfo,
         TagIdentifier,
     },
-    std::FunctionKind,
+    std::{args::Arg, FunctionKind},
 };
 use async_recursion::async_recursion;
 
@@ -95,7 +95,7 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (KclValue::Array { value: arr, meta: _ }, Property::Number(index)) => {
+            (KclValue::Array { value: arr, meta: _ }, Property::UInt(index)) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -361,16 +361,17 @@ impl Node<CallExpression> {
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let fn_name = &self.callee.name;
 
-        let mut fn_args: Vec<KclValue> = Vec::with_capacity(self.arguments.len());
+        let mut fn_args: Vec<Arg> = Vec::with_capacity(self.arguments.len());
 
-        for arg in &self.arguments {
+        for arg_expr in &self.arguments {
             let metadata = Metadata {
-                source_range: SourceRange::from(arg),
+                source_range: SourceRange::from(arg_expr),
             };
-            let result = ctx
-                .execute_expr(arg, exec_state, &metadata, StatementKind::Expression)
+            let value = ctx
+                .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
                 .await?;
-            fn_args.push(result);
+            let arg = Arg::new(value, SourceRange::from(arg_expr));
+            fn_args.push(arg);
         }
 
         match ctx.stdlib.get_either(&self.callee.name) {
@@ -470,14 +471,18 @@ impl Node<CallExpression> {
                 for (index, param) in required_params.iter().enumerate() {
                     fn_memory.add(
                         &param.identifier.name,
-                        fn_args.get(index).unwrap().clone(),
+                        fn_args.get(index).unwrap().value.clone(),
                         param.identifier.clone().into(),
                     )?;
                 }
                 // Add the optional arguments to the memory.
                 for (index, param) in optional_params.iter().enumerate() {
                     if let Some(arg) = fn_args.get(index + required_params.len()) {
-                        fn_memory.add(&param.identifier.name, arg.clone(), param.identifier.clone().into())?;
+                        fn_memory.add(
+                            &param.identifier.name,
+                            arg.value.clone(),
+                            param.identifier.clone().into(),
+                        )?;
                     } else {
                         fn_memory.add(
                             &param.identifier.name,
@@ -742,7 +747,7 @@ impl Node<IfExpression> {
 
 #[derive(Debug)]
 enum Property {
-    Number(usize),
+    UInt(usize),
     String(String),
 }
 
@@ -770,9 +775,9 @@ impl Property {
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::IInteger(x) => {
-                        if let Ok(x) = u64::try_from(x) {
-                            Ok(Property::Number(x.try_into().unwrap()))
+                    LiteralValue::Number(x) => {
+                        if let Some(x) = crate::try_f64_to_usize(x) {
+                            Ok(Property::UInt(x))
                         } else {
                             Err(KclError::Semantic(KclErrorDetails {
                                 source_ranges: property_sr,
@@ -783,7 +788,7 @@ impl Property {
                     LiteralValue::String(s) => Ok(Property::String(s)),
                     _ => Err(KclError::Semantic(KclErrorDetails {
                         source_ranges: vec![sr],
-                        message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
+                        message: "Only strings or numbers (>= 0) can be properties/indexes".to_owned(),
                     })),
                 }
             }
@@ -802,7 +807,7 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
         KclValue::Int { value:num, meta: _ } => {
             let maybe_int: Result<usize, _> = (*num).try_into();
             if let Ok(uint) = maybe_int {
-                Ok(Property::Number(uint))
+                Ok(Property::UInt(uint))
             }
             else {
                 make_err(format!("'{num}' is negative, so you can't index an array with it"))
@@ -816,7 +821,7 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
             let nearest_int = num.round();
             let delta = num-nearest_int;
             if delta < FLOAT_TO_INT_MAX_DELTA {
-                Ok(Property::Number(nearest_int as usize))
+                Ok(Property::UInt(nearest_int as usize))
             } else {
                 make_err(format!("'{num}' is not an integer, so you can't index an array with it"))
             }
@@ -830,7 +835,7 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
 impl Property {
     fn type_name(&self) -> &'static str {
         match self {
-            Property::Number(_) => "number",
+            Property::UInt(_) => "number",
             Property::String(_) => "string",
         }
     }

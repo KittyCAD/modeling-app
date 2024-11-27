@@ -203,7 +203,7 @@ fn bad_gateway(msg: String) -> Response<Body> {
     resp
 }
 
-fn kcl_err(err: anyhow::Error) -> Response<Body> {
+fn kcl_err(err: impl std::fmt::Display) -> Response<Body> {
     eprintln!("\tBad KCL");
     bad_gateway(format!("{err}"))
 }

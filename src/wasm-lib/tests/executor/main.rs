@@ -30,42 +30,6 @@ async fn kcl_test_fillet_duplicate_tags() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_with_function_sketch() {
-    let code = kcl_input!("function_sketch");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("function_sketch", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_with_function_sketch_with_position() {
-    let code = kcl_input!("function_sketch_with_position");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("function_sketch_with_position", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_with_angled_line() {
-    let code = kcl_input!("angled_line");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("angled_line", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_parametric_example() {
-    let code = kcl_input!("parametric");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("parametric", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_parametric_with_tan_arc_example() {
-    let code = kcl_input!("parametric_with_tan_arc");
-    let result = execute_and_snapshot(code, UnitLength::Mm).await.unwrap();
-    assert_out("parametric_with_tan_arc", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_execute_engine_error_return() {
     let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
@@ -866,7 +830,7 @@ part = rectShape([0, 0], 20, 20)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([863, 912, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)" }"#,
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([870, 874, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)" }"#,
     );
 }
 
@@ -1351,7 +1315,7 @@ secondSketch = startSketchOn(part001, '')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([260, 286, 0])], message: "Argument at index 1 was supposed to be type Option<kcl_lib::std::sketch::FaceTag> but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([283, 285, 0])], message: "Argument at index 1 was supposed to be type Option<kcl_lib::std::sketch::FaceTag> but found string (text)" }"#
     );
 }
 
@@ -1983,7 +1947,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([37, 61, 0]), SourceRange([65, 88, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([51, 60, 0]), SourceRange([65, 88, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
     );
 }
 
@@ -2004,7 +1968,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([89, 114, 0]), SourceRange([126, 155, 0]), SourceRange([159, 182, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([103, 113, 0]), SourceRange([126, 155, 0]), SourceRange([159, 182, 0])], message: "Argument at index 0 was supposed to be type kcl_lib::std::sketch::SketchData but found string (text)" }"#
     );
 }
 

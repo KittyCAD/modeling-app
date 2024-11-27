@@ -3,7 +3,6 @@ use insta::rounded_redaction;
 use crate::{
     ast::types::{ModuleId, Node, Program},
     errors::KclError,
-    token::Token,
 };
 
 /// Deserialize the data from a snapshot.
@@ -43,24 +42,12 @@ fn read(filename: &'static str, test_name: &str) -> String {
     std::fs::read_to_string(format!("tests/{test_name}/{filename}")).unwrap()
 }
 
-fn tokenize(test_name: &str) {
-    let input = read("input.kcl", test_name);
-    let token_res = crate::token::lexer(&input, ModuleId::default());
-
-    assert_snapshot(test_name, "Result of tokenizing", || {
-        insta::assert_json_snapshot!("tokens", token_res);
-    });
-}
-
 fn parse(test_name: &str) {
-    let input = read("tokens.snap", test_name);
-    let tokens: Result<Vec<Token>, KclError> = get(&input);
-    let Ok(tokens) = tokens else {
-        return;
-    };
+    let input = read("input.kcl", test_name);
+    let tokens = crate::token::lexer(&input, ModuleId::default()).unwrap();
 
     // Parse the tokens into an AST.
-    let parse_res = crate::parser::parse_tokens(tokens);
+    let parse_res = Result::<_, KclError>::Ok(crate::parser::parse_tokens(tokens).unwrap());
     assert_snapshot(test_name, "Result of parsing", || {
         insta::assert_json_snapshot!("ast", parse_res);
     });
@@ -74,6 +61,9 @@ fn unparse(test_name: &str) {
     };
     // Check recasting the AST produces the original string.
     let actual = ast.recast(&Default::default(), 0);
+    if matches!(std::env::var("EXPECTORATE").as_deref(), Ok("overwrite")) {
+        std::fs::write(format!("tests/{test_name}/input.kcl"), &actual).unwrap();
+    }
     let expected = read("input.kcl", test_name);
     pretty_assertions::assert_eq!(
         actual,
@@ -109,21 +99,36 @@ async fn execute(test_name: &str, render_to_png: bool) {
             });
         }
         Err(e) => {
-            assert_snapshot(test_name, "Error from executing", || {
-                insta::assert_snapshot!("execution_error", e);
-            });
+            match e {
+                crate::errors::ExecError::Kcl(error) => {
+                    // Snapshot the KCL error with a fancy graphical report.
+                    // This looks like a Cargo compile error, with arrows pointing
+                    // to source code, underlines, etc.
+                    let report = crate::errors::Report {
+                        error,
+                        filename: format!("{test_name}.kcl"),
+                        kcl_source: read("input.kcl", test_name),
+                    };
+                    let report = miette::Report::new(report);
+                    let report = format!("{:?}", report);
+
+                    assert_snapshot(test_name, "Error from executing", || {
+                        insta::assert_snapshot!("execution_error", report);
+                    });
+                }
+                e => {
+                    // These kinds of errors aren't expected to occur. We don't
+                    // snapshot them because they indicate there's something wrong
+                    // with the Rust test, not with the KCL code being tested.
+                    panic!("{e}")
+                }
+            };
         }
     }
 }
 
 mod cube {
     const TEST_NAME: &str = "cube";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -146,12 +151,6 @@ mod cube {
 mod helix_ccw {
     const TEST_NAME: &str = "helix_ccw";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -172,12 +171,6 @@ mod helix_ccw {
 }
 mod double_map_fn {
     const TEST_NAME: &str = "double_map_fn";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -200,12 +193,6 @@ mod double_map_fn {
 mod property_of_object {
     const TEST_NAME: &str = "property_of_object";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -226,12 +213,6 @@ mod property_of_object {
 }
 mod index_of_array {
     const TEST_NAME: &str = "index_of_array";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -254,12 +235,6 @@ mod index_of_array {
 mod comparisons {
     const TEST_NAME: &str = "comparisons";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -280,12 +255,6 @@ mod comparisons {
 }
 mod array_range_expr {
     const TEST_NAME: &str = "array_range_expr";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -308,12 +277,6 @@ mod array_range_expr {
 mod array_range_negative_expr {
     const TEST_NAME: &str = "array_range_negative_expr";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -334,12 +297,6 @@ mod array_range_negative_expr {
 }
 mod sketch_in_object {
     const TEST_NAME: &str = "sketch_in_object";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -362,12 +319,6 @@ mod sketch_in_object {
 mod if_else {
     const TEST_NAME: &str = "if_else";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -389,11 +340,29 @@ mod if_else {
 mod add_lots {
     const TEST_NAME: &str = "add_lots";
 
-    /// Test tokenizing KCL.
+    /// Test parsing KCL.
     #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
+    fn parse() {
+        super::parse(TEST_NAME)
     }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod argument_error {
+    //! The argument error points to the problematic argument in the call site,
+    //! not the function definition that the variable points to.
+
+    const TEST_NAME: &str = "argument_error";
 
     /// Test parsing KCL.
     #[test]
@@ -416,12 +385,6 @@ mod add_lots {
 mod array_elem_push {
     const TEST_NAME: &str = "array_elem_push";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -442,12 +405,6 @@ mod array_elem_push {
 }
 mod invalid_index_str {
     const TEST_NAME: &str = "invalid_index_str";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -470,12 +427,6 @@ mod invalid_index_str {
 mod invalid_index_negative {
     const TEST_NAME: &str = "invalid_index_negative";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -496,12 +447,6 @@ mod invalid_index_negative {
 }
 mod invalid_index_fractional {
     const TEST_NAME: &str = "invalid_index_fractional";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -524,12 +469,6 @@ mod invalid_index_fractional {
 mod invalid_member_object {
     const TEST_NAME: &str = "invalid_member_object";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -550,12 +489,6 @@ mod invalid_member_object {
 }
 mod invalid_member_object_prop {
     const TEST_NAME: &str = "invalid_member_object_prop";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -578,12 +511,6 @@ mod invalid_member_object_prop {
 mod non_string_key_of_object {
     const TEST_NAME: &str = "non_string_key_of_object";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -604,12 +531,6 @@ mod non_string_key_of_object {
 }
 mod array_index_oob {
     const TEST_NAME: &str = "array_index_oob";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -632,12 +553,6 @@ mod array_index_oob {
 mod object_prop_not_found {
     const TEST_NAME: &str = "object_prop_not_found";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -658,12 +573,6 @@ mod object_prop_not_found {
 }
 mod pipe_substitution_inside_function_called_from_pipeline {
     const TEST_NAME: &str = "pipe_substitution_inside_function_called_from_pipeline";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -686,12 +595,6 @@ mod pipe_substitution_inside_function_called_from_pipeline {
 mod comparisons_multiple {
     const TEST_NAME: &str = "comparisons_multiple";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -712,12 +615,6 @@ mod comparisons_multiple {
 }
 mod import_cycle1 {
     const TEST_NAME: &str = "import_cycle1";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -740,12 +637,6 @@ mod import_cycle1 {
 mod import_constant {
     const TEST_NAME: &str = "import_constant";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -766,12 +657,6 @@ mod import_constant {
 }
 mod import_side_effect {
     const TEST_NAME: &str = "import_side_effect";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -794,12 +679,6 @@ mod import_side_effect {
 mod array_elem_push_fail {
     const TEST_NAME: &str = "array_elem_push_fail";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -820,12 +699,6 @@ mod array_elem_push_fail {
 }
 mod sketch_on_face {
     const TEST_NAME: &str = "sketch_on_face";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -848,12 +721,6 @@ mod sketch_on_face {
 mod poop_chute {
     const TEST_NAME: &str = "poop_chute";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -874,12 +741,6 @@ mod poop_chute {
 }
 mod neg_xz_plane {
     const TEST_NAME: &str = "neg_xz_plane";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -902,12 +763,6 @@ mod neg_xz_plane {
 mod xz_plane {
     const TEST_NAME: &str = "xz_plane";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -928,12 +783,6 @@ mod xz_plane {
 }
 mod sketch_on_face_after_fillets_referencing_face {
     const TEST_NAME: &str = "sketch_on_face_after_fillets_referencing_face";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -956,12 +805,6 @@ mod sketch_on_face_after_fillets_referencing_face {
 mod circular_pattern3d_a_pattern {
     const TEST_NAME: &str = "circular_pattern3d_a_pattern";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -982,12 +825,6 @@ mod circular_pattern3d_a_pattern {
 }
 mod linear_pattern3d_a_pattern {
     const TEST_NAME: &str = "linear_pattern3d_a_pattern";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1010,12 +847,6 @@ mod linear_pattern3d_a_pattern {
 mod tangential_arc {
     const TEST_NAME: &str = "tangential_arc";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1036,12 +867,6 @@ mod tangential_arc {
 }
 mod big_number_angle_to_match_length_x {
     const TEST_NAME: &str = "big_number_angle_to_match_length_x";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1064,12 +889,6 @@ mod big_number_angle_to_match_length_x {
 mod big_number_angle_to_match_length_y {
     const TEST_NAME: &str = "big_number_angle_to_match_length_y";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1090,12 +909,6 @@ mod big_number_angle_to_match_length_y {
 }
 mod sketch_on_face_circle_tagged {
     const TEST_NAME: &str = "sketch_on_face_circle_tagged";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1118,12 +931,6 @@ mod sketch_on_face_circle_tagged {
 mod basic_fillet_cube_start {
     const TEST_NAME: &str = "basic_fillet_cube_start";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1144,12 +951,6 @@ mod basic_fillet_cube_start {
 }
 mod basic_fillet_cube_next_adjacent {
     const TEST_NAME: &str = "basic_fillet_cube_next_adjacent";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1172,12 +973,6 @@ mod basic_fillet_cube_next_adjacent {
 mod basic_fillet_cube_previous_adjacent {
     const TEST_NAME: &str = "basic_fillet_cube_previous_adjacent";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1198,12 +993,6 @@ mod basic_fillet_cube_previous_adjacent {
 }
 mod basic_fillet_cube_end {
     const TEST_NAME: &str = "basic_fillet_cube_end";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1226,12 +1015,6 @@ mod basic_fillet_cube_end {
 mod basic_fillet_cube_close_opposite {
     const TEST_NAME: &str = "basic_fillet_cube_close_opposite";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1252,12 +1035,6 @@ mod basic_fillet_cube_close_opposite {
 }
 mod sketch_on_face_end {
     const TEST_NAME: &str = "sketch_on_face_end";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1280,12 +1057,6 @@ mod sketch_on_face_end {
 mod sketch_on_face_start {
     const TEST_NAME: &str = "sketch_on_face_start";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1306,12 +1077,6 @@ mod sketch_on_face_start {
 }
 mod sketch_on_face_end_negative_extrude {
     const TEST_NAME: &str = "sketch_on_face_end_negative_extrude";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1334,12 +1099,6 @@ mod sketch_on_face_end_negative_extrude {
 mod mike_stress_test {
     const TEST_NAME: &str = "mike_stress_test";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1360,12 +1119,6 @@ mod mike_stress_test {
 }
 mod pentagon_fillet_sugar {
     const TEST_NAME: &str = "pentagon_fillet_sugar";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1388,12 +1141,6 @@ mod pentagon_fillet_sugar {
 mod pipe_as_arg {
     const TEST_NAME: &str = "pipe_as_arg";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1414,12 +1161,6 @@ mod pipe_as_arg {
 }
 mod computed_var {
     const TEST_NAME: &str = "computed_var";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1442,12 +1183,6 @@ mod computed_var {
 mod riddle_small {
     const TEST_NAME: &str = "riddle_small";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1468,12 +1203,6 @@ mod riddle_small {
 }
 mod tan_arc_x_line {
     const TEST_NAME: &str = "tan_arc_x_line";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1496,12 +1225,6 @@ mod tan_arc_x_line {
 mod fillet_and_shell {
     const TEST_NAME: &str = "fillet-and-shell";
 
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
-
     /// Test parsing KCL.
     #[test]
     fn parse() {
@@ -1522,12 +1245,6 @@ mod fillet_and_shell {
 }
 mod sketch_on_chamfer_two_times {
     const TEST_NAME: &str = "sketch-on-chamfer-two-times";
-
-    /// Test tokenizing KCL.
-    #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
-    }
 
     /// Test parsing KCL.
     #[test]
@@ -1550,11 +1267,152 @@ mod sketch_on_chamfer_two_times {
 mod sketch_on_chamfer_two_times_different_order {
     const TEST_NAME: &str = "sketch-on-chamfer-two-times-different-order";
 
-    /// Test tokenizing KCL.
+    /// Test parsing KCL.
     #[test]
-    fn tokenize() {
-        super::tokenize(TEST_NAME)
+    fn parse() {
+        super::parse(TEST_NAME)
     }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod parametric_with_tan_arc {
+    const TEST_NAME: &str = "parametric_with_tan_arc";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod parametric {
+    const TEST_NAME: &str = "parametric";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod angled_line {
+    const TEST_NAME: &str = "angled_line";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod function_sketch_with_position {
+    const TEST_NAME: &str = "function_sketch_with_position";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod function_sketch {
+    const TEST_NAME: &str = "function_sketch";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod i_shape {
+    const TEST_NAME: &str = "i_shape";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod kittycad_svg {
+    const TEST_NAME: &str = "kittycad_svg";
 
     /// Test parsing KCL.
     #[test]

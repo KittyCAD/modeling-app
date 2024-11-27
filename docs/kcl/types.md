@@ -41,7 +41,7 @@ If you want to get a value from an array you can use the index like so:
 An object is defined with `{}` braces. Here is an example object:
 
 ```
-myObj = {a: 0, b: "thing"}
+myObj = { a = 0, b = "thing" }
 ```
 
 We support two different ways of getting properties from objects, you can call
@@ -90,12 +90,12 @@ startSketchOn('XZ')
   |> startProfileAt(origin, %)
   |> angledLine([0, 191.26], %, $rectangleSegmentA001)
   |> angledLine([
-       segAng(rectangleSegmentA001, %) - 90,
+       segAng(rectangleSegmentA001) - 90,
        196.99
      ], %, $rectangleSegmentB001)
   |> angledLine([
-       segAng(rectangleSegmentA001, %),
-       -segLen(rectangleSegmentA001, %)
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
@@ -120,18 +120,18 @@ However if the code was written like this:
 ```
 fn rect = (origin) => {
   return startSketchOn('XZ')
-  |> startProfileAt(origin, %)
-  |> angledLine([0, 191.26], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001, %) - 90,
-       196.99
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001, %),
-       -segLen(rectangleSegmentA001, %)
-     ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+    |> startProfileAt(origin, %)
+    |> angledLine([0, 191.26], %, $rectangleSegmentA001)
+    |> angledLine([
+         segAng(rectangleSegmentA001) - 90,
+         196.99
+       ], %, $rectangleSegmentB001)
+    |> angledLine([
+         segAng(rectangleSegmentA001),
+         -segLen(rectangleSegmentA001)
+       ], %, $rectangleSegmentC001)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
 }
 
 rect([0, 0])
@@ -148,26 +148,29 @@ For example the following code works.
 ```
 fn rect = (origin) => {
   return startSketchOn('XZ')
-  |> startProfileAt(origin, %)
-  |> angledLine([0, 191.26], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001, %) - 90,
-       196.99
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001, %),
-       -segLen(rectangleSegmentA001, %)
-     ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+    |> startProfileAt(origin, %)
+    |> angledLine([0, 191.26], %, $rectangleSegmentA001)
+    |> angledLine([
+         segAng(rectangleSegmentA001) - 90,
+         196.99
+       ], %, $rectangleSegmentB001)
+    |> angledLine([
+         segAng(rectangleSegmentA001),
+         -segLen(rectangleSegmentA001)
+       ], %, $rectangleSegmentC001)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
 }
 
 rect([0, 0])
 myRect = rect([20, 0])
 
-myRect 
+myRect
   |> extrude(10, %)
-  |> fillet({radius: 0.5, tags: [myRect.tags.rectangleSegmentA001]}, %)
+  |> fillet({
+       radius = 0.5,
+       tags = [myRect.tags.rectangleSegmentA001]
+     }, %)
 ```
 
 See how we use the tag `rectangleSegmentA001` in the `fillet` function outside

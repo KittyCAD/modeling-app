@@ -1,24 +1,29 @@
 import { useSelector } from '@xstate/react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useKclContext } from 'lang/KclProvider'
+import { Artifact } from 'lang/std/artifactGraph'
 import { CommandArgument } from 'lib/commandTypes'
 import {
-  Selection,
   canSubmitSelectionArg,
-  getSelectionType,
+  getSelectionCountByType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
+import { reportRejection } from 'lib/trap'
+import { toSync } from 'lib/utils'
 import { modelingMachine } from 'machines/modelingMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
 
-const semanticEntityNames: { [key: string]: Array<Selection['type']> } = {
-  face: ['extrude-wall', 'start-cap', 'end-cap'],
-  edge: ['edge', 'line', 'arc'],
-  point: ['point', 'line-end', 'line-mid'],
+const semanticEntityNames: {
+  [key: string]: Array<Artifact['type'] | 'defaultPlane'>
+} = {
+  face: ['wall', 'cap', 'solid2D'],
+  edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
+  point: [],
+  plane: ['defaultPlane'],
 }
 
-function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
+function getSemanticSelectionType(selectionType: Array<Artifact['type']>) {
   const semanticSelectionType = new Set()
   selectionType.forEach((type) => {
     Object.entries(semanticEntityNames).forEach(([entity, entityTypes]) => {
@@ -43,17 +48,13 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
-  const { code } = useKclContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const { commandBarState, commandBarSend } = useCommandsContext()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
-    const selectionRangeEnd = selection?.codeBasedSelections[0]?.range[1]
-    return !selectionRangeEnd || selectionRangeEnd === code.length
-      ? 'none'
-      : getSelectionType(selection)
-  }, [selection, code])
+    return getSelectionCountByType(selection)
+  }, [selection])
   const canSubmitSelection = useMemo<boolean>(
     () => canSubmitSelectionArg(selectionsByType, arg),
     [selectionsByType]
@@ -62,6 +63,30 @@ function CommandBarSelectionInput({
   useEffect(() => {
     inputRef.current?.focus()
   }, [selection, inputRef])
+
+  // Show the default planes if the selection type is 'plane'
+  useEffect(() => {
+    if (arg.selectionTypes.includes('plane') && !canSubmitSelection) {
+      toSync(() => {
+        return Promise.all([
+          kclManager.showPlanes(),
+          kclManager.setSelectionFilter(['plane', 'object']),
+        ])
+      }, reportRejection)()
+    }
+
+    return () => {
+      toSync(() => {
+        const promises = [
+          new Promise(() => kclManager.defaultSelectionFilter()),
+        ]
+        if (!kclManager._isAstEmpty(kclManager.ast)) {
+          promises.push(kclManager.hidePlanes())
+        }
+        return Promise.all(promises)
+      }, reportRejection)()
+    }
+  }, [])
 
   // Fast-forward through this arg if it's marked as skippable
   // and we have a valid selection already
@@ -105,11 +130,15 @@ function CommandBarSelectionInput({
             {arg.warningMessage}
           </p>
         )}
+        <span data-testid="cmd-bar-arg-name" className="sr-only">
+          {arg.name}
+        </span>
         <input
           id="selection"
           name="selection"
           ref={inputRef}
           required
+          data-testid="cmd-bar-arg-value"
           placeholder="Select an entity with your mouse"
           className="absolute inset-0 w-full h-full opacity-0 cursor-default"
           onKeyDown={(event) => {

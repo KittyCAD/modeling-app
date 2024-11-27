@@ -1,6 +1,9 @@
 use derive_docs::stdlib;
 
-use super::{args::FromArgs, Args, FnAsArg};
+use super::{
+    args::{Arg, FromArgs},
+    Args, FnAsArg,
+};
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExecState, KclValue, SourceRange},
@@ -28,7 +31,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `[f(a), f(b), f(c)]`
 /// ```no_run
 /// const r = 10 // radius
-/// fn drawCircle = (id) => {
+/// fn drawCircle(id) {
 ///   return startSketchOn("XY")
 ///     |> circle({ center: [id * 2 * r, 0], radius: r}, %)
 /// }
@@ -46,7 +49,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// // Call `map`, using an anonymous function instead of a named one.
 /// const circles = map(
 ///   [1..3],
-///   (id) => {
+///   fn(id) {
 ///     return startSketchOn("XY")
 ///       |> circle({ center: [id * 2 * r, 0], radius: r}, %)
 ///   }
@@ -75,7 +78,7 @@ async fn call_map_closure<'a>(
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
-    let output = map_fn.call(exec_state, vec![input]).await?;
+    let output = map_fn.call(exec_state, vec![Arg::synthetic(input)]).await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
@@ -146,7 +149,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   // Use a `reduce` to draw the remaining decagon sides.
 ///   // For each number in the array 1..10, run the given function,
 ///   // which takes a partially-sketched decagon and adds one more edge to it.
-///   fullDecagon = reduce([1..10], startOfDecagonSketch, (i, partialDecagon) => {
+///   fullDecagon = reduce([1..10], startOfDecagonSketch, fn(i, partialDecagon) {
 ///       // Draw one edge of the decagon.
 ///       let x = cos(stepAngle * i) * radius
 ///       let y = sin(stepAngle * i) * radius
@@ -202,7 +205,7 @@ async fn call_reduce_closure<'a>(
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
-    let reduce_fn_args = vec![elem, start];
+    let reduce_fn_args = vec![Arg::synthetic(elem), Arg::synthetic(start)];
     let transform_fn_return = reduce_fn.call(exec_state, reduce_fn_args).await?;
 
     // Unpack the returned transform object.

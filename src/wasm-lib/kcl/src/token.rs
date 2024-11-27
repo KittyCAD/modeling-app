@@ -5,7 +5,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
-use winnow::stream::ContainsToken;
+use winnow::{error::ParseError, stream::ContainsToken};
 
 use crate::{
     ast::types::{ItemVisibility, ModuleId, VariableKind},
@@ -21,9 +21,8 @@ pub use tokeniser::Input;
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 /// The types of tokens.
-#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, JsonSchema, FromStr, Display)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
-#[ts(export)]
 #[serde(rename_all = "camelCase")]
 #[display(style = "camelCase")]
 pub enum TokenType {
@@ -156,9 +155,8 @@ impl TokenType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
 #[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[ts(export)]
 pub struct Token {
     #[serde(rename = "type")]
     pub token_type: TokenType,
@@ -251,7 +249,36 @@ impl From<&Token> for SourceRange {
 }
 
 pub fn lexer(s: &str, module_id: ModuleId) -> Result<Vec<Token>, KclError> {
-    tokeniser::lexer(s, module_id).map_err(From::from)
+    tokeniser::lex(s, module_id).map_err(From::from)
+}
+
+impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
+    fn from(err: ParseError<Input<'_>, winnow::error::ContextError>) -> Self {
+        let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
+        let module_id = err.input().state.module_id;
+
+        if offset >= input.len() {
+            // From the winnow docs:
+            //
+            // This is an offset, not an index, and may point to
+            // the end of input (input.len()) on eof errors.
+
+            return KclError::Lexical(crate::errors::KclErrorDetails {
+                source_ranges: vec![SourceRange([offset, offset, module_id.as_usize()])],
+                message: "unexpected EOF while parsing".to_string(),
+            });
+        }
+
+        // TODO: Add the Winnow tokenizer context to the error.
+        // See https://github.com/KittyCAD/modeling-app/issues/784
+        let bad_token = &input[offset];
+        // TODO: Add the Winnow parser context to the error.
+        // See https://github.com/KittyCAD/modeling-app/issues/784
+        KclError::Lexical(crate::errors::KclErrorDetails {
+            source_ranges: vec![SourceRange([offset, offset + 1, module_id.as_usize()])],
+            message: format!("found unknown token '{}'", bad_token),
+        })
+    }
 }
 
 #[cfg(test)]
