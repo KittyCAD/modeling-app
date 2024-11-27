@@ -139,9 +139,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'loft',
-        onClick: () => console.error('Loft not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Loft', groupId: 'modeling' },
+          }),
+        disabled: (state) => !state.can({ type: 'Extrude' }),
         icon: 'loft',
-        status: 'kcl-only',
+        status: 'available',
         title: 'Loft',
         hotkey: 'L',
         description:

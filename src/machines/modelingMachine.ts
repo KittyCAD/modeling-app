@@ -252,6 +252,7 @@ export type ModelingMachineEvent =
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
@@ -691,6 +692,39 @@ export const modelingMachine = setup({
 
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: [pathToRevolveArg],
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.graphSelections[0]?.codeRef.range,
+            type: 'path',
+          },
+        })
+
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
+        if (updatedAst?.selections) {
+          editorManager.selectRange(updatedAst?.selections)
+        }
+      })().catch(reportRejection)
+    },
+    'AST loft': ({ context: { store }, event }) => {
+      if (event.type !== 'Loft') return
+      ;(async () => {
+        if (!event.data) return
+        const { selection } = event.data
+        let ast = kclManager.ast
+        const pathToNode = getNodePathFromSourceRange(
+          ast,
+          selection.graphSelections[0]?.codeRef.range
+        )
+        const loftSketchesRes = loftSketches(
+          ast,
+          pathToNode,
+        )
+        if (trap(loftSketchesRes)) return
+        const { modifiedAst, pathToLoftArg } = loftSketchesRes 
+
+        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+          focusPath: [pathToLoftArg],
           zoomToFit: true,
           zoomOnRangeAndType: {
             range: selection.graphSelections[0]?.codeRef.range,
@@ -1558,6 +1592,13 @@ export const modelingMachine = setup({
           target: 'idle',
           guard: 'has valid sweep selection',
           actions: ['AST revolve'],
+          reenter: false,
+        },
+
+        Loft: {
+          target: 'idle',
+          guard: 'has valid sweep selection',
+          actions: ['AST loft'],
           reenter: false,
         },
 
