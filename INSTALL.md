@@ -1,6 +1,6 @@
 # Setting Up Zoo Modeling App
 
-Compared to other CAD software, getting Zoo Modeling App up and running is quick and straighforward across platforms. It's about 100MB to download and is quick to install.
+Compared to other CAD software, getting Zoo Modeling App up and running is quick and straightforward across platforms. It's about 100MB to download and is quick to install.
 
 ## Windows
 
