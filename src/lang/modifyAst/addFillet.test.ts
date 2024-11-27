@@ -10,10 +10,14 @@ import {
   VariableDeclarator,
 } from '../wasm'
 import {
+  EdgeTreatmentType,
   getPathToExtrudeForSegmentSelection,
-  hasValidFilletSelection,
-  isTagUsedInFillet,
-  modifyAstCloneWithFilletAndTag,
+  hasValidEdgeTreatmentSelection,
+  isTagUsedInEdgeTreatment,
+  modifyAstCloneWithEdgeTreatmentAndTag,
+  FilletParameters,
+  ChamferParameters,
+  EdgeTreatmentParameters,
 } from './addFillet'
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
@@ -21,7 +25,6 @@ import { err } from 'lib/trap'
 import { Selections } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
-import { KclCommandValue } from 'lib/commandTypes'
 
 beforeAll(async () => {
   await initPromise
@@ -252,10 +255,10 @@ extrude003 = extrude(-15, sketch003)`
   })
 })
 
-const runModifyAstCloneWithFilletAndTag = async (
+const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   code: string,
   selectionSnippets: Array<string>,
-  radiusValue: number,
+  parameters: EdgeTreatmentParameters,
   expectedCode: string
 ) => {
   // ast
@@ -280,18 +283,15 @@ const runModifyAstCloneWithFilletAndTag = async (
     otherSelections: [],
   }
 
-  // radius
-  const radius: KclCommandValue = {
-    valueAst: createLiteral(radiusValue),
-    valueText: radiusValue.toString(),
-    valueCalculated: radiusValue.toString(),
-  }
-
   // executeAst
   await kclManager.executeAst({ ast })
 
-  // apply fillet to selection
-  const result = modifyAstCloneWithFilletAndTag(ast, selection, radius)
+  // apply edge treatment to seleciton
+  const result = modifyAstCloneWithEdgeTreatmentAndTag(
+    ast,
+    selection,
+    parameters
+  )
   if (err(result)) {
     return result
   }
@@ -301,9 +301,42 @@ const runModifyAstCloneWithFilletAndTag = async (
 
   expect(newCode).toContain(expectedCode)
 }
-describe('Testing applyFilletToSelection', () => {
-  it('should add a fillet to a specific segment', async () => {
-    const code = `sketch001 = startSketchOn('XY')
+const createFilletParameters = (radiusValue: number): FilletParameters => ({
+  type: EdgeTreatmentType.Fillet,
+  radius: {
+    valueAst: createLiteral(radiusValue),
+    valueText: radiusValue.toString(),
+    valueCalculated: radiusValue.toString(),
+  },
+})
+const createChamferParameters = (lengthValue: number): ChamferParameters => ({
+  type: EdgeTreatmentType.Chamfer,
+  length: {
+    valueAst: createLiteral(lengthValue),
+    valueText: lengthValue.toString(),
+    valueCalculated: lengthValue.toString(),
+  },
+})
+// Iterate tests over all edge treatment types
+Object.values(EdgeTreatmentType).forEach(
+  (edgeTreatmentType: EdgeTreatmentType) => {
+    // create parameters based on the edge treatment type
+    let parameterName: string
+    let parameters: EdgeTreatmentParameters
+    if (edgeTreatmentType === EdgeTreatmentType.Fillet) {
+      parameterName = 'radius'
+      parameters = createFilletParameters(3)
+    } else if (edgeTreatmentType === EdgeTreatmentType.Chamfer) {
+      parameterName = 'length'
+      parameters = createChamferParameters(3)
+    } else {
+      // Handle future edge treatments
+      return new Error(`Unsupported edge treatment type: ${edgeTreatmentType}`)
+    }
+    // run tests
+    describe(`Testing modifyAstCloneWithEdgeTreatmentAndTag with ${edgeTreatmentType}s`, () => {
+      it(`should add a ${edgeTreatmentType} to a specific segment`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
   |> line([0, -20], %)
@@ -311,9 +344,8 @@ describe('Testing applyFilletToSelection', () => {
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)`
-    const segmentSnippets = ['line([0, -20], %)']
-    const radiusValue = 3
-    const expectedCode = `sketch001 = startSketchOn('XY')
+        const segmentSnippets = ['line([0, -20], %)']
+        const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
   |> line([0, -20], %, $seg01)
@@ -321,17 +353,17 @@ extrude001 = extrude(-15, sketch001)`
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg01] }, %)`
+  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg01] }, %)`
 
-    await runModifyAstCloneWithFilletAndTag(
-      code,
-      segmentSnippets,
-      radiusValue,
-      expectedCode
-    )
-  })
-  it('should add a fillet to the sketch pipe', async () => {
-    const code = `sketch001 = startSketchOn('XY')
+        await runModifyAstCloneWithEdgeTreatmentAndTag(
+          code,
+          segmentSnippets,
+          parameters,
+          expectedCode
+        )
+      })
+      it(`should add a ${edgeTreatmentType} to the sketch pipe`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
   |> line([0, -20], %)
@@ -339,9 +371,8 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
   |> extrude(-15, %)`
-    const segmentSnippets = ['line([0, -20], %)']
-    const radiusValue = 3
-    const expectedCode = `sketch001 = startSketchOn('XY')
+        const segmentSnippets = ['line([0, -20], %)']
+        const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
   |> line([0, -20], %, $seg01)
@@ -349,17 +380,17 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
   |> extrude(-15, %)
-  |> fillet({ radius: 3, tags: [seg01] }, %)`
+  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg01] }, %)`
 
-    await runModifyAstCloneWithFilletAndTag(
-      code,
-      segmentSnippets,
-      radiusValue,
-      expectedCode
-    )
-  })
-  it('should add a fillet to an already tagged segment', async () => {
-    const code = `sketch001 = startSketchOn('XY')
+        await runModifyAstCloneWithEdgeTreatmentAndTag(
+          code,
+          segmentSnippets,
+          parameters,
+          expectedCode
+        )
+      })
+      it(`should add a ${edgeTreatmentType} to an already tagged segment`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
   |> line([0, -20], %, $seg01)
@@ -367,9 +398,8 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)`
-    const segmentSnippets = ['line([0, -20], %, $seg01)']
-    const radiusValue = 3
-    const expectedCode = `sketch001 = startSketchOn('XY')
+        const segmentSnippets = ['line([0, -20], %, $seg01)']
+        const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
   |> line([0, -20], %, $seg01)
@@ -377,17 +407,17 @@ extrude001 = extrude(-15, sketch001)`
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg01] }, %)`
+  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg01] }, %)`
 
-    await runModifyAstCloneWithFilletAndTag(
-      code,
-      segmentSnippets,
-      radiusValue,
-      expectedCode
-    )
-  })
-  it('should add a fillet with existing tag on other segment', async () => {
-    const code = `sketch001 = startSketchOn('XY')
+        await runModifyAstCloneWithEdgeTreatmentAndTag(
+          code,
+          segmentSnippets,
+          parameters,
+          expectedCode
+        )
+      })
+      it(`should add a ${edgeTreatmentType} with existing tag on other segment`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
   |> line([0, -20], %)
@@ -395,9 +425,8 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)`
-    const segmentSnippets = ['line([-20, 0], %)']
-    const radiusValue = 3
-    const expectedCode = `sketch001 = startSketchOn('XY')
+        const segmentSnippets = ['line([-20, 0], %)']
+        const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
   |> line([0, -20], %)
@@ -405,17 +434,17 @@ extrude001 = extrude(-15, sketch001)`
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg02] }, %)`
+  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg02] }, %)`
 
-    await runModifyAstCloneWithFilletAndTag(
-      code,
-      segmentSnippets,
-      radiusValue,
-      expectedCode
-    )
-  })
-  it('should add a fillet with existing fillet on other segment', async () => {
-    const code = `sketch001 = startSketchOn('XY')
+        await runModifyAstCloneWithEdgeTreatmentAndTag(
+          code,
+          segmentSnippets,
+          parameters,
+          expectedCode
+        )
+      })
+      it(`should add a ${edgeTreatmentType} with existing fillet on other segment`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
   |> line([0, -20], %)
@@ -424,9 +453,8 @@ extrude001 = extrude(-15, sketch001)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
   |> fillet({ radius: 5, tags: [seg01] }, %)`
-    const segmentSnippets = ['line([-20, 0], %)']
-    const radiusValue = 3
-    const expectedCode = `sketch001 = startSketchOn('XY')
+        const segmentSnippets = ['line([-20, 0], %)']
+        const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
   |> line([0, -20], %)
@@ -435,27 +463,27 @@ extrude001 = extrude(-15, sketch001)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
   |> fillet({ radius: 5, tags: [seg01] }, %)
-  |> fillet({ radius: 3, tags: [seg02] }, %)`
+  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg02] }, %)`
 
-    await runModifyAstCloneWithFilletAndTag(
-      code,
-      segmentSnippets,
-      radiusValue,
-      expectedCode
-    )
-  })
-  it('should add a fillet to two segments of a single extrusion', async () => {
-    const code = `sketch001 = startSketchOn('XY')
+        await runModifyAstCloneWithEdgeTreatmentAndTag(
+          code,
+          segmentSnippets,
+          parameters,
+          expectedCode
+        )
+      })
+      it(`should add a ${edgeTreatmentType} with existing chamfer on other segment`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
+  |> line([20, 0], %, $seg01)
   |> line([0, -20], %)
   |> line([-20, 0], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
-extrude001 = extrude(-15, sketch001)`
-    const segmentSnippets = ['line([20, 0], %)', 'line([-20, 0], %)']
-    const radiusValue = 3
-    const expectedCode = `sketch001 = startSketchOn('XY')
+extrude001 = extrude(-15, sketch001)
+  |> chamfer({ length: 5, tags: [seg01] }, %)`
+        const segmentSnippets = ['line([-20, 0], %)']
+        const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
   |> line([0, -20], %)
@@ -463,17 +491,45 @@ extrude001 = extrude(-15, sketch001)`
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg01, seg02] }, %)`
+  |> chamfer({ length: 5, tags: [seg01] }, %)
+  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg02] }, %)`
 
-    await runModifyAstCloneWithFilletAndTag(
-      code,
-      segmentSnippets,
-      radiusValue,
-      expectedCode
-    )
-  })
-  it('should add fillets to two bodies', async () => {
-    const code = `sketch001 = startSketchOn('XY')
+        await runModifyAstCloneWithEdgeTreatmentAndTag(
+          code,
+          segmentSnippets,
+          parameters,
+          expectedCode
+        )
+      })
+      it(`should add a ${edgeTreatmentType} to two segments of a single extrusion`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(-15, sketch001)`
+        const segmentSnippets = ['line([20, 0], %)', 'line([-20, 0], %)']
+        const expectedCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %, $seg01)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg02)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(-15, sketch001)
+  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg01, seg02] }, %)`
+
+        await runModifyAstCloneWithEdgeTreatmentAndTag(
+          code,
+          segmentSnippets,
+          parameters,
+          expectedCode
+        )
+      })
+      it(`should add ${edgeTreatmentType}s to two bodies`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
   |> line([0, -20], %)
@@ -489,13 +545,12 @@ sketch002 = startSketchOn('XY')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude002 = extrude(-25, sketch002)` // <--- body 2
-    const segmentSnippets = [
-      'line([20, 0], %)',
-      'line([-20, 0], %)',
-      'line([0, -15], %)',
-    ]
-    const radiusValue = 3
-    const expectedCode = `sketch001 = startSketchOn('XY')
+        const segmentSnippets = [
+          'line([20, 0], %)',
+          'line([-20, 0], %)',
+          'line([0, -15], %)',
+        ]
+        const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
   |> line([0, -20], %)
@@ -503,7 +558,7 @@ extrude002 = extrude(-25, sketch002)` // <--- body 2
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius: 3, tags: [seg01, seg02] }, %)
+  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg01, seg02] }, %)
 sketch002 = startSketchOn('XY')
   |> startProfileAt([30, 10], %)
   |> line([15, 0], %)
@@ -512,18 +567,20 @@ sketch002 = startSketchOn('XY')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude002 = extrude(-25, sketch002)
-  |> fillet({ radius: 3, tags: [seg03] }, %)` // <-- able to add a new one
+  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg03] }, %)` // <-- able to add a new one
 
-    await runModifyAstCloneWithFilletAndTag(
-      code,
-      segmentSnippets,
-      radiusValue,
-      expectedCode
-    )
-  })
-})
+        await runModifyAstCloneWithEdgeTreatmentAndTag(
+          code,
+          segmentSnippets,
+          parameters,
+          expectedCode
+        )
+      })
+    })
+  }
+)
 
-describe('Testing isTagUsedInFillet', () => {
+describe('Testing isTagUsedInEdgeTreatment', () => {
   const code = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.72, 4.13], %)
   |> line([7.11, 3.48], %, $seg01)
@@ -556,7 +613,7 @@ extrude001 = extrude(-5, sketch001)
       'CallExpression'
     )
     if (err(callExp)) return
-    const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
+    const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
     expect(edges).toEqual(['getOppositeEdge', 'baseEdge'])
   })
   it('should correctly identify getPreviousAdjacentEdge edges', () => {
@@ -575,7 +632,7 @@ extrude001 = extrude(-5, sketch001)
       'CallExpression'
     )
     if (err(callExp)) return
-    const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
+    const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
     expect(edges).toEqual(['getPreviousAdjacentEdge'])
   })
   it('should correctly identify no edges', () => {
@@ -594,7 +651,7 @@ extrude001 = extrude(-5, sketch001)
       'CallExpression'
     )
     if (err(callExp)) return
-    const edges = isTagUsedInFillet({ ast, callExp: callExp.node })
+    const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
     expect(edges).toEqual([])
   })
 })
@@ -631,7 +688,7 @@ describe('Testing button states', () => {
     }
 
     // state
-    const buttonState = hasValidFilletSelection({
+    const buttonState = hasValidEdgeTreatmentSelection({
       ast,
       selectionRanges,
       code,
