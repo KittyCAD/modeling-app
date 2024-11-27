@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing sketch_in_object.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -39,7 +40,6 @@ description: Result of parsing sketch_in_object.kcl
                             "type": "Identifier"
                           },
                           "end": 40,
-                          "optional": false,
                           "start": 21,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -84,7 +84,6 @@ description: Result of parsing sketch_in_object.kcl
                             "type": "Identifier"
                           },
                           "end": 73,
-                          "optional": false,
                           "start": 48,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -129,7 +128,6 @@ description: Result of parsing sketch_in_object.kcl
                             "type": "Identifier"
                           },
                           "end": 96,
-                          "optional": false,
                           "start": 81,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -174,7 +172,6 @@ description: Result of parsing sketch_in_object.kcl
                             "type": "Identifier"
                           },
                           "end": 119,
-                          "optional": false,
                           "start": 104,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -226,7 +223,6 @@ description: Result of parsing sketch_in_object.kcl
                             "type": "Identifier"
                           },
                           "end": 143,
-                          "optional": false,
                           "start": 127,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -247,7 +243,6 @@ description: Result of parsing sketch_in_object.kcl
                             "type": "Identifier"
                           },
                           "end": 159,
-                          "optional": false,
                           "start": 151,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -343,7 +338,6 @@ description: Result of parsing sketch_in_object.kcl
                                         "type": "Identifier"
                                       },
                                       "end": 236,
-                                      "optional": false,
                                       "start": 217,
                                       "type": "CallExpression",
                                       "type": "CallExpression"
@@ -388,7 +382,6 @@ description: Result of parsing sketch_in_object.kcl
                                         "type": "Identifier"
                                       },
                                       "end": 273,
-                                      "optional": false,
                                       "start": 248,
                                       "type": "CallExpression",
                                       "type": "CallExpression"
@@ -433,7 +426,6 @@ description: Result of parsing sketch_in_object.kcl
                                         "type": "Identifier"
                                       },
                                       "end": 300,
-                                      "optional": false,
                                       "start": 285,
                                       "type": "CallExpression",
                                       "type": "CallExpression"
@@ -478,7 +470,6 @@ description: Result of parsing sketch_in_object.kcl
                                         "type": "Identifier"
                                       },
                                       "end": 327,
-                                      "optional": false,
                                       "start": 312,
                                       "type": "CallExpression",
                                       "type": "CallExpression"
@@ -530,7 +521,6 @@ description: Result of parsing sketch_in_object.kcl
                                         "type": "Identifier"
                                       },
                                       "end": 355,
-                                      "optional": false,
                                       "start": 339,
                                       "type": "CallExpression",
                                       "type": "CallExpression"
@@ -551,7 +541,6 @@ description: Result of parsing sketch_in_object.kcl
                                         "type": "Identifier"
                                       },
                                       "end": 375,
-                                      "optional": false,
                                       "start": 367,
                                       "type": "CallExpression",
                                       "type": "CallExpression"
@@ -618,7 +607,6 @@ description: Result of parsing sketch_in_object.kcl
                 "type": "Identifier"
               },
               "end": 399,
-              "optional": false,
               "start": 393,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -675,7 +663,6 @@ description: Result of parsing sketch_in_object.kcl
                 "type": "Identifier"
               },
               "end": 422,
-              "optional": false,
               "start": 407,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -709,7 +696,6 @@ description: Result of parsing sketch_in_object.kcl
                 "type": "Identifier"
               },
               "end": 436,
-              "optional": false,
               "start": 429,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -787,7 +773,6 @@ description: Result of parsing sketch_in_object.kcl
                 "type": "Identifier"
               },
               "end": 473,
-              "optional": false,
               "start": 459,
               "type": "CallExpression",
               "type": "CallExpression"
