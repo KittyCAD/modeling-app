@@ -35,10 +35,10 @@ Compared to other CAD software, getting Zoo Modeling App up and running is quick
 
    - `appimaged` should automatically find it and make it executable. If not, run:
      ```bash
-     chmod a+x ~/Applications/Zoo Modeling App-{version}-{arch}-linux.AppImage
+     chmod a+x ~/Applications/Zoo\ Modeling\ App-{version}-{arch}-linux.AppImage
      ```
 
 3. You can double-click on the AppImage to run it, or in a terminal with this command:
    ```bash
-    ~/Applications/Zoo Modeling App-{version}-{arch}-linux.AppImage
+    ~/Applications/Zoo\ Modeling\ App-{version}-{arch}-linux.AppImage
    ```
