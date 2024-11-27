@@ -30,14 +30,14 @@ reduce(array: [KclValue], start: KclValue, reduce_fn: FunctionParam) -> KclValue
 
 ```js
 // This function adds two numbers.
-fn add = (a, b) => {
+fn add(a, b) {
   return a + b
 }
 
 // This function adds an array of numbers.
 // It uses the `reduce` function, to call the `add` function on every
 // element of the `arr` parameter. The starting value is 0.
-fn sum = (arr) => {
+fn sum(arr) {
   return reduce(arr, 0, add)
 }
 
@@ -61,7 +61,7 @@ assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
 // an anonymous `add` function as its parameter, instead of declaring a
 // named function outside.
 arr = [1, 2, 3]
-sum = reduce(arr, 0, (i, result_so_far) => {
+sum = reduce(arr, 0, (i, result_so_far) {
   return i + result_so_far
 })
 
@@ -74,7 +74,7 @@ assertEqual(sum, 6, 0.00001, "1 + 2 + 3 summed is 6")
 
 ```js
 // Declare a function that sketches a decagon.
-fn decagon = (radius) => {
+fn decagon(radius) {
   // Each side of the decagon is turned this many degrees from the previous angle.
   stepAngle = 1 / 10 * tau()
 
@@ -84,7 +84,7 @@ fn decagon = (radius) => {
   // Use a `reduce` to draw the remaining decagon sides.
   // For each number in the array 1..10, run the given function,
   // which takes a partially-sketched decagon and adds one more edge to it.
-  fullDecagon = reduce([1..10], startOfDecagonSketch, (i, partialDecagon) => {
+  fullDecagon = reduce([1..10], startOfDecagonSketch, (i, partialDecagon) {
     // Draw one edge of the decagon.
     x = cos(stepAngle * i) * radius
     y = sin(stepAngle * i) * radius

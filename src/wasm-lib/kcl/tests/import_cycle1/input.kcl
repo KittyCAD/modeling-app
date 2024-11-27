@@ -1,5 +1,5 @@
 import two from "import_cycle2.kcl"
 
-export fn one = () => {
+export fn one() {
   return two() - 1
 }

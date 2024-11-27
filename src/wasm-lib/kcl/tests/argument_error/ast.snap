@@ -1,8 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing argument_error.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -10,7 +8,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 28,
+            "end": 22,
             "id": {
               "end": 4,
               "name": "f",
@@ -22,36 +20,36 @@ snapshot_kind: text
                 "body": [
                   {
                     "argument": {
-                      "end": 26,
+                      "end": 20,
                       "raw": "5",
-                      "start": 25,
+                      "start": 19,
                       "type": "Literal",
                       "type": "Literal",
                       "value": 5.0
                     },
-                    "end": 26,
-                    "start": 18,
+                    "end": 20,
+                    "start": 12,
                     "type": "ReturnStatement",
                     "type": "ReturnStatement"
                   }
                 ],
-                "end": 28,
-                "start": 14
+                "end": 22,
+                "start": 8
               },
-              "end": 28,
+              "end": 22,
               "params": [
                 {
                   "type": "Parameter",
                   "identifier": {
-                    "end": 9,
+                    "end": 6,
                     "name": "i",
-                    "start": 8,
+                    "start": 5,
                     "type": "Identifier"
                   },
                   "optional": false
                 }
               ],
-              "start": 7,
+              "start": 4,
               "type": "FunctionExpression",
               "type": "FunctionExpression"
             },
@@ -59,72 +57,72 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 28,
+        "end": 22,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 44,
+        "end": 38,
         "expression": {
           "arguments": [
             {
-              "end": 35,
+              "end": 29,
               "name": "f",
-              "start": 34,
+              "start": 28,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
               "elements": [
                 {
-                  "end": 39,
+                  "end": 33,
                   "raw": "0",
-                  "start": 38,
+                  "start": 32,
                   "type": "Literal",
                   "type": "Literal",
                   "value": 0.0
                 },
                 {
-                  "end": 42,
+                  "end": 36,
                   "raw": "1",
-                  "start": 41,
+                  "start": 35,
                   "type": "Literal",
                   "type": "Literal",
                   "value": 1.0
                 }
               ],
-              "end": 43,
-              "start": 37,
+              "end": 37,
+              "start": 31,
               "type": "ArrayExpression",
               "type": "ArrayExpression"
             }
           ],
           "callee": {
-            "end": 33,
+            "end": 27,
             "name": "map",
-            "start": 30,
+            "start": 24,
             "type": "Identifier"
           },
-          "end": 44,
+          "end": 38,
           "optional": false,
-          "start": 30,
+          "start": 24,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 30,
+        "start": 24,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 45,
+    "end": 39,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 30,
-            "start": 28,
+            "end": 24,
+            "start": 22,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
