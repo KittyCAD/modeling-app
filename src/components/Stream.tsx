@@ -18,8 +18,8 @@ import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { reportRejection } from 'lib/trap'
-import { Artifact } from 'lang/std/artifactGraph'
+import { err, reportRejection } from 'lib/trap'
+import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
 
 enum StreamState {
   Playing = 'playing',
@@ -300,13 +300,20 @@ export const Stream = () => {
       return
     sendSelectEventToEngine(e, videoRef.current)
       .then(({ entity_id }) => {
-        if (!entity_id) return // No entity selected. This is benign
-        const artifact = getArtifactOfTypes(
-    { key: entity_id, types: ['path', solid2D, 'segment'] },
-    engineCommandManager.artifactGraph
-  )
-  if (err(path)) return path
-  sceneInfra.modelingSend({ type: 'Enter sketch' })
+        if (!entity_id) {
+          // No entity selected. This is benign
+          return
+        } 
+        const path = getArtifactOfTypes(
+          { key: entity_id, types: ['path', 'solid2D', 'segment'] },
+          engineCommandManager.artifactGraph
+        )
+        if (err(path)) {
+          return path
+        }
+        sceneInfra.modelingSend({ type: 'Enter sketch' })
+      })
+      .catch(reportRejection)
   }
 
   return (
