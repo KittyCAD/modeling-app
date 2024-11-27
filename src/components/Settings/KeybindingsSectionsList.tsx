@@ -19,7 +19,7 @@ export function KeybindingsSectionsList({
             key={category}
             onClick={() =>
               scrollRef.current
-                ?.querySelector(`#category-${category}`)
+                ?.querySelector(`#category-${category.replaceAll(/\s/g, '-')}`)
                 ?.scrollIntoView({
                   block: 'center',
                   behavior: 'smooth',
