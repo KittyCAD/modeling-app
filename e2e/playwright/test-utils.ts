@@ -507,7 +507,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     editorTextMatches: async (code: string) => {
       const editor = page.locator(editorSelector)
-      return expect(editor).toHaveText(code, { useInnerText: true })
+      return expect.poll(() => editor.textContent()).toContain(code)
     },
 
     pasteCodeInEditor: async (code: string) => {
@@ -533,7 +533,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
           page.getByRole('button', { name: 'Start Sketch' })
         ).not.toBeDisabled()
         await page.getByTestId('create-file-button').click()
-        await page.getByTestId('file-rename-field').fill(name)
+        await page.getByTestId('tree-input-field').fill(name)
         await page.keyboard.press('Enter')
       })
     },

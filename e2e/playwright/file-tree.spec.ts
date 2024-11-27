@@ -130,8 +130,8 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test.fixme(
-    `create many new untitled files they increment their names`,
+  test(
+    `create many new files of the same name, incrementing their names`,
     { tag: '@electron' },
     async ({ page }, testInfo) => {
       const { panesOpen, createNewFile } = await getUtils(page, test)
@@ -143,17 +143,17 @@ test.describe('when using the file tree to', () => {
 
       await createProject({ name: 'project-000', page })
 
-      await createNewFile('')
-      await createNewFile('')
-      await createNewFile('')
-      await createNewFile('')
-      await createNewFile('')
+      await createNewFile('lee')
+      await createNewFile('lee')
+      await createNewFile('lee')
+      await createNewFile('lee')
+      await createNewFile('lee')
 
-      await test.step('Postcondition: there are 5 new Untitled-*.kcl files', async () => {
+      await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
         await expect(
           page
             .locator('[data-testid="file-pane-scroll-container"] button')
-            .filter({ hasText: /Untitled[-]?[0-5]?/ })
+            .filter({ hasText: /lee[-]?[0-5]?/ })
         ).toHaveCount(5)
       })
     }
