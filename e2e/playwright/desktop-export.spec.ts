@@ -26,8 +26,7 @@ test(
         ),
       ])
     }),
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
     page.on('console', console.log)
 
@@ -87,7 +86,10 @@ test(
       await expect(successToastMessage).toBeVisible()
       await expect(exportingToastMessage).not.toBeVisible()
 
-      const firstFileFullPath = path.resolve(getPlaywrightDownloadDir(page), exportFileName)
+      const firstFileFullPath = path.resolve(
+        getPlaywrightDownloadDir(page),
+        exportFileName
+      )
       await test.step('Check the export size', async () => {
         await expect
           .poll(
@@ -162,7 +164,10 @@ test(
           expect(exportingToastMessage).not.toBeVisible(),
         ]))
 
-      const secondFileFullPath = path.resolve(getPlaywrightDownloadDir(page), exportFileName)
+      const secondFileFullPath = path.resolve(
+        getPlaywrightDownloadDir(page),
+        exportFileName
+      )
       await test.step('Check the export size', async () => {
         await expect
           .poll(
