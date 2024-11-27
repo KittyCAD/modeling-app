@@ -296,14 +296,16 @@ export const Stream = () => {
       state.matches({ idle: 'showPlanes' }) ||
       sceneInfra.camControls.wasDragging === true ||
       !btnName(e.nativeEvent).left
-    )
+    ) {
       return
+    }
+
     sendSelectEventToEngine(e, videoRef.current)
       .then(({ entity_id }) => {
         if (!entity_id) {
           // No entity selected. This is benign
           return
-        } 
+        }
         const path = getArtifactOfTypes(
           { key: entity_id, types: ['path', 'solid2D', 'segment'] },
           engineCommandManager.artifactGraph
