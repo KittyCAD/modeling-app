@@ -90,12 +90,12 @@ startSketchOn('XZ')
   |> startProfileAt(origin, %)
   |> angledLine([0, 191.26], %, $rectangleSegmentA001)
   |> angledLine([
-       segAng(rectangleSegmentA001, %) - 90,
+       segAng(rectangleSegmentA001) - 90,
        196.99
      ], %, $rectangleSegmentB001)
   |> angledLine([
-       segAng(rectangleSegmentA001, %),
-       -segLen(rectangleSegmentA001, %)
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
@@ -123,12 +123,12 @@ fn rect = (origin) => {
     |> startProfileAt(origin, %)
     |> angledLine([0, 191.26], %, $rectangleSegmentA001)
     |> angledLine([
-         segAng(rectangleSegmentA001, %) - 90,
+         segAng(rectangleSegmentA001) - 90,
          196.99
        ], %, $rectangleSegmentB001)
     |> angledLine([
-         segAng(rectangleSegmentA001, %),
-         -segLen(rectangleSegmentA001, %)
+         segAng(rectangleSegmentA001),
+         -segLen(rectangleSegmentA001)
        ], %, $rectangleSegmentC001)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
     |> close(%)
@@ -151,12 +151,12 @@ fn rect = (origin) => {
     |> startProfileAt(origin, %)
     |> angledLine([0, 191.26], %, $rectangleSegmentA001)
     |> angledLine([
-         segAng(rectangleSegmentA001, %) - 90,
+         segAng(rectangleSegmentA001) - 90,
          196.99
        ], %, $rectangleSegmentB001)
     |> angledLine([
-         segAng(rectangleSegmentA001, %),
-         -segLen(rectangleSegmentA001, %)
+         segAng(rectangleSegmentA001),
+         -segLen(rectangleSegmentA001)
        ], %, $rectangleSegmentC001)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
     |> close(%)
