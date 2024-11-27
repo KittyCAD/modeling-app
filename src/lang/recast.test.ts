@@ -63,7 +63,7 @@ log(5, myVar)
   })
   it('function declaration with call', () => {
     const code = [
-      'fn funcN = (a, b) => {',
+      'fn funcN(a, b) {',
       '  return a + b',
       '}',
       'theVar = 60',
@@ -101,7 +101,7 @@ log(5, myVar)
   })
   it('recast BinaryExpression piped into CallExpression', () => {
     const code = [
-      'fn myFn = (a) => {',
+      'fn myFn(a) {',
       '  return a + 1',
       '}',
       'myVar = 5 + 1',
@@ -245,7 +245,7 @@ key = 'c'
     expect(recasted).toBe(code)
   })
   it('comments in a fn block', () => {
-    const code = `fn myFn = () => {
+    const code = `fn myFn() {
   // this is a comment
   yo = { a = { b = { c = '123' } } }
 

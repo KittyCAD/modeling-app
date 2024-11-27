@@ -58,7 +58,7 @@ mountingPlate = extrude(thickness, mountingPlateSketch)
 
 ```js
 // Sketch on the face of a chamfer.
-fn cube = (pos, scale) => {
+fn cube(pos, scale) {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)

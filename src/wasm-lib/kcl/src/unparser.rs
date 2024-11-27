@@ -3,9 +3,9 @@ use std::fmt::Write;
 use crate::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        Expr, FormatOptions, FunctionExpression, IfExpression, ImportStatement, ItemVisibility, Literal,
+        Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportStatement, ItemVisibility, Literal,
         LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeValue, ObjectExpression,
-        PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
+        Parameter, PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     parser::PIPE_OPERATOR,
 };
@@ -28,7 +28,7 @@ impl Program {
                 BodyItem::ExpressionStatement(expression_statement) => {
                     expression_statement
                         .expression
-                        .recast(options, indentation_level, false)
+                        .recast(options, indentation_level, ExprContext::Other)
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
                     variable_declaration.recast(options, indentation_level)
@@ -39,7 +39,7 @@ impl Program {
                         indentation,
                         return_statement
                             .argument
-                            .recast(options, indentation_level, false)
+                            .recast(options, indentation_level, ExprContext::Other)
                             .trim_start()
                     )
                 }
@@ -140,22 +140,37 @@ impl ImportStatement {
     }
 }
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub(crate) enum ExprContext {
+    Pipe,
+    Decl,
+    Other,
+}
+
 impl Expr {
-    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         match &self {
             Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
-            Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, is_in_pipe),
-            Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, is_in_pipe),
-            Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt),
+            Expr::ArrayRangeExpression(range_exp) => range_exp.recast(options, indentation_level, ctxt),
+            Expr::ObjectExpression(ref obj_exp) => obj_exp.recast(options, indentation_level, ctxt),
             Expr::MemberExpression(mem_exp) => mem_exp.recast(),
             Expr::Literal(literal) => literal.recast(),
-            Expr::FunctionExpression(func_exp) => func_exp.recast(options, indentation_level),
-            Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, is_in_pipe),
+            Expr::FunctionExpression(func_exp) => {
+                let mut result = if ctxt == ExprContext::Decl {
+                    String::new()
+                } else {
+                    "fn".to_owned()
+                };
+                result += &func_exp.recast(options, indentation_level);
+                result
+            }
+            Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, ctxt),
             Expr::Identifier(ident) => ident.name.to_string(),
             Expr::TagDeclarator(tag) => tag.recast(),
             Expr::PipeExpression(pipe_exp) => pipe_exp.recast(options, indentation_level),
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
-            Expr::IfExpression(e) => e.recast(options, indentation_level, is_in_pipe),
+            Expr::IfExpression(e) => e.recast(options, indentation_level, ctxt),
             Expr::PipeSubstitution(_) => crate::parser::PIPE_SUBSTITUTION_OPERATOR.to_string(),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
@@ -170,19 +185,21 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.recast(),
             BinaryPart::Identifier(identifier) => identifier.name.to_string(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
-            BinaryPart::CallExpression(call_expression) => call_expression.recast(options, indentation_level, false),
+            BinaryPart::CallExpression(call_expression) => {
+                call_expression.recast(options, indentation_level, ExprContext::Other)
+            }
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options),
             BinaryPart::MemberExpression(member_expression) => member_expression.recast(),
-            BinaryPart::IfExpression(e) => e.recast(options, indentation_level, false),
+            BinaryPart::IfExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
         }
     }
 }
 
 impl CallExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         format!(
             "{}{}({})",
-            if is_in_pipe {
+            if ctxt == ExprContext::Pipe {
                 "".to_string()
             } else {
                 options.get_indentation(indentation_level)
@@ -190,7 +207,7 @@ impl CallExpression {
             self.callee.name,
             self.arguments
                 .iter()
-                .map(|arg| arg.recast(options, indentation_level, is_in_pipe))
+                .map(|arg| arg.recast(options, indentation_level, ctxt))
                 .collect::<Vec<String>>()
                 .join(", ")
         )
@@ -205,16 +222,19 @@ impl VariableDeclaration {
             ItemVisibility::Export => "export ".to_owned(),
         };
         self.declarations.iter().fold(output, |mut output, declaration| {
-            let keyword = match self.kind {
-                VariableKind::Fn => "fn ",
-                VariableKind::Const => "",
+            let (keyword, eq) = match self.kind {
+                VariableKind::Fn => ("fn ", ""),
+                VariableKind::Const => ("", " = "),
             };
             let _ = write!(
                 output,
-                "{}{keyword}{} = {}",
+                "{}{keyword}{}{eq}{}",
                 indentation,
                 declaration.id.name,
-                declaration.init.recast(options, indentation_level, false).trim()
+                declaration
+                    .init
+                    .recast(options, indentation_level, ExprContext::Decl)
+                    .trim()
             );
             output
         })
@@ -248,7 +268,7 @@ impl TagDeclarator {
 }
 
 impl ArrayExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         // Reconstruct the order of items in the array.
         // An item can be an element (i.e. an expression for a KCL value),
         // or a non-code item (e.g. a comment)
@@ -267,7 +287,7 @@ impl ArrayExpression {
                         .collect::<Vec<_>>()
                 } else {
                     let el = elems.next().unwrap();
-                    let s = format!("{}, ", el.recast(options, 0, false));
+                    let s = format!("{}, ", el.recast(options, 0, ExprContext::Other));
                     vec![s]
                 }
             })
@@ -290,7 +310,7 @@ impl ArrayExpression {
         }
 
         // Otherwise, we format a multi-line representation.
-        let inner_indentation = if is_in_pipe {
+        let inner_indentation = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
             options.get_indentation(indentation_level + 1)
@@ -307,7 +327,7 @@ impl ArrayExpression {
             .collect::<Vec<String>>()
             .join("")
             .to_owned();
-        let end_indent = if is_in_pipe {
+        let end_indent = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
@@ -336,9 +356,9 @@ fn expr_is_trivial(expr: &Expr) -> bool {
 }
 
 impl ArrayRangeExpression {
-    fn recast(&self, options: &FormatOptions, _: usize, _: bool) -> String {
-        let s1 = self.start_element.recast(options, 0, false);
-        let s2 = self.end_element.recast(options, 0, false);
+    fn recast(&self, options: &FormatOptions, _: usize, _: ExprContext) -> String {
+        let s1 = self.start_element.recast(options, 0, ExprContext::Other);
+        let s2 = self.end_element.recast(options, 0, ExprContext::Other);
 
         // Format these items into a one-line array. Put spaces around the `..` if either expression
         // is non-trivial. This is a bit arbitrary but people seem to like simple ranges to be formatted
@@ -355,14 +375,14 @@ impl ArrayRangeExpression {
 }
 
 impl ObjectExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         if self
             .non_code_meta
             .non_code_nodes
             .values()
             .any(|nc| nc.iter().any(|nc| nc.value.should_cause_array_newline()))
         {
-            return self.recast_multi_line(options, indentation_level, is_in_pipe);
+            return self.recast_multi_line(options, indentation_level, ctxt);
         }
         let flat_recast = format!(
             "{{ {} }}",
@@ -372,7 +392,7 @@ impl ObjectExpression {
                     format!(
                         "{} = {}",
                         prop.key.name,
-                        prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
+                        prop.value.recast(options, indentation_level + 1, ctxt).trim()
                     )
                 })
                 .collect::<Vec<String>>()
@@ -383,12 +403,12 @@ impl ObjectExpression {
         if !needs_multiple_lines {
             return flat_recast;
         }
-        self.recast_multi_line(options, indentation_level, is_in_pipe)
+        self.recast_multi_line(options, indentation_level, ctxt)
     }
 
     /// Recast, but always outputs the object with newlines between each property.
-    fn recast_multi_line(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
-        let inner_indentation = if is_in_pipe {
+    fn recast_multi_line(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
+        let inner_indentation = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
             options.get_indentation(indentation_level + 1)
@@ -406,13 +426,13 @@ impl ObjectExpression {
                     let s = format!(
                         "{} = {}{comma}",
                         prop.key.name,
-                        prop.value.recast(options, indentation_level + 1, is_in_pipe).trim()
+                        prop.value.recast(options, indentation_level + 1, ctxt).trim()
                     );
                     vec![s]
                 }
             })
             .collect();
-        let end_indent = if is_in_pipe {
+        let end_indent = if ctxt == ExprContext::Pipe {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
@@ -495,17 +515,17 @@ impl UnaryExpression {
 }
 
 impl IfExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, is_in_pipe: bool) -> String {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         // We can calculate how many lines this will take, so let's do it and avoid growing the vec.
         // Total lines = starting lines, else-if lines, ending lines.
         let n = 2 + (self.else_ifs.len() * 2) + 3;
         let mut lines = Vec::with_capacity(n);
 
-        let cond = self.cond.recast(options, indentation_level, is_in_pipe);
+        let cond = self.cond.recast(options, indentation_level, ctxt);
         lines.push((0, format!("if {cond} {{")));
         lines.push((1, self.then_val.recast(options, indentation_level + 1)));
         for else_if in &self.else_ifs {
-            let cond = else_if.cond.recast(options, indentation_level, is_in_pipe);
+            let cond = else_if.cond.recast(options, indentation_level, ctxt);
             lines.push((0, format!("}} else if {cond} {{")));
             lines.push((1, else_if.then_val.recast(options, indentation_level + 1)));
         }
@@ -528,7 +548,7 @@ impl Node<PipeExpression> {
             .enumerate()
             .map(|(index, statement)| {
                 let indentation = options.get_indentation(indentation_level + 1);
-                let mut s = statement.recast(options, indentation_level + 1, true);
+                let mut s = statement.recast(options, indentation_level + 1, ExprContext::Pipe);
                 let non_code_meta = self.non_code_meta.clone();
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
@@ -568,13 +588,55 @@ impl FunctionExpression {
         let param_list = self
             .params
             .iter()
-            .map(|param| param.identifier.name.clone())
+            .map(|param| param.recast(options, indentation_level))
             .collect::<Vec<String>>()
             .join(", ");
         let tab0 = options.get_indentation(indentation_level);
         let tab1 = options.get_indentation(indentation_level + 1);
+        let return_type = match &self.return_type {
+            Some(rt) => format!(": {}", rt.recast(&new_options, indentation_level)),
+            None => String::new(),
+        };
         let body = self.body.recast(&new_options, indentation_level + 1);
-        format!("({param_list}) => {{\n{tab1}{body}\n{tab0}}}")
+
+        format!("({param_list}){return_type} {{\n{tab1}{body}\n{tab0}}}")
+    }
+}
+
+impl Parameter {
+    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let mut result = self.identifier.name.clone();
+        if let Some(ty) = &self.type_ {
+            result += ": ";
+            result += &ty.recast(options, indentation_level);
+        }
+
+        result
+    }
+}
+
+impl FnArgType {
+    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        match self {
+            FnArgType::Primitive(t) => t.to_string(),
+            FnArgType::Array(t) => format!("{t}[]"),
+            FnArgType::Object { properties } => {
+                let mut result = "{".to_owned();
+                for p in properties {
+                    result += " ";
+                    result += &p.recast(options, indentation_level);
+                    result += ",";
+                }
+
+                if result.ends_with(',') {
+                    result.pop();
+                    result += " ";
+                }
+                result += "}";
+
+                result
+            }
+        }
     }
 }
 
@@ -582,6 +644,7 @@ impl FunctionExpression {
 mod tests {
     use pretty_assertions::assert_eq;
 
+    use super::*;
     use crate::ast::types::{FormatOptions, ModuleId};
 
     #[test]
@@ -639,7 +702,7 @@ import a as aaa, b as bbb from "a.kcl"
 
     #[test]
     fn test_recast_export_fn() {
-        let input = r#"export fn a = () => {
+        let input = r#"export fn a() {
   return 0
 }
 "#;
@@ -658,7 +721,7 @@ s = 1 // s = 1 -> height of Z is 13.4mm
 // Depth
 d = 1
 
-fn rect = (x, y, w, h) => {
+fn rect(x, y, w, h) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
     |> xLine(w, %)
@@ -668,7 +731,7 @@ fn rect = (x, y, w, h) => {
     |> extrude(d, %)
 }
 
-fn quad = (x1, y1, x2, y2, x3, y3, x4, y4) => {
+fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
   startSketchOn('XY')
     |> startProfileAt([x1, y1], %)
     |> lineTo([x2, y2], %)
@@ -678,7 +741,7 @@ fn quad = (x1, y1, x2, y2, x3, y3, x4, y4) => {
     |> extrude(d, %)
 }
 
-fn crosshair = (x, y) => {
+fn crosshair(x, y) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
     |> yLine(1, %)
@@ -688,7 +751,7 @@ fn crosshair = (x, y) => {
     |> xLine(-2, %)
 }
 
-fn z = (z_x, z_y) => {
+fn z(z_x, z_y) {
   z_end_w = s * 8.4
   z_end_h = s * 3
   z_corner = s * 2
@@ -701,7 +764,7 @@ fn z = (z_x, z_y) => {
   quad(z_x, z_y - z_h + z_corner, z_x + z_w - z_corner, z_y, z_x + z_w, z_y - z_corner, z_x + z_corner, z_y - z_h)
 }
 
-fn o = (c_x, c_y) => {
+fn o(c_x, c_y) {
   // Outer and inner radii
   o_r = s * 6.95
   i_r = 0.5652173913043478 * o_r
@@ -758,7 +821,7 @@ fn o = (c_x, c_y) => {
     |> extrude(d, %)
 }
 
-fn zoo = (x0, y0) => {
+fn zoo(x0, y0) {
   z(x0, y0)
   o(x0 + s * 20, y0 - (s * 6.7))
   o(x0 + s * 35, y0 - (s * 6.7))
@@ -953,13 +1016,25 @@ thing ( 1 )
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"fn thing = (x) => {
+            r#"fn thing(x) {
   return x + 1
 }
 
 thing(1)
 "#
         );
+    }
+
+    #[test]
+    fn test_recast_typed_fn() {
+        let some_program_string = r#"fn thing(x: string, y: bool[]): number {
+  return x + 1
+}
+"#;
+        let program = crate::parser::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
     }
 
     #[test]
@@ -1231,7 +1306,7 @@ depth = 45.0
 thk = 5
 hole_diam = 5
 // define a rectangular shape func
-fn rectShape = (pos, w, l) => {
+fn rectShape(pos, w, l) {
   rr = startSketchOn('xy')
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> lineTo([pos[0] + w / 2, pos[1] - (l / 2)], %, $edge1)
@@ -1254,7 +1329,7 @@ scarlett_body = rectShape([0, 0], width, length)
        ]
      }, %)
 // build the bracket sketch around the body
-fn bracketSketch = (w, d, t) => {
+fn bracketSketch(w, d, t) {
   s = startSketchOn({
          plane = {
            origin = { x = 0, y = length / 2 + thk, z = 0 },
@@ -1360,7 +1435,7 @@ tabs_l = startSketchOn({
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"fn cube = (pos, scale) => {
+            r#"fn cube(pos, scale) {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
@@ -1447,7 +1522,7 @@ tabs_l = startSketchOn({
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"fn myFn = () => {
+            r#"fn myFn() {
   // this is a comment
   yo = { a = { b = { c = '123' } } } /* block
   comment */
@@ -1779,7 +1854,7 @@ blah = 1
 foo = false
 baz = { a = 1, part001 = "thing" }
 
-fn ghi = (part001) => {
+fn ghi(part001) {
   return part001
 }
 "#
@@ -1797,7 +1872,7 @@ fn ghi = (part001) => {
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
-            r#"fn ghi = (newName, y, z) => {
+            r#"fn ghi(newName, y, z) {
   return newName
 }
 "#
@@ -1955,15 +2030,15 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
     #[test]
     fn recast_nested_fn() {
         let some_program_string = r#"fn f = () => {
-  return () => {
+  return fn() => {
   return 1
 }
 }"#;
         let program = crate::parser::top_level_parse(some_program_string).unwrap();
         let recasted = program.recast(&Default::default(), 0);
         let expected = "\
-fn f = () => {
-  return () => {
+fn f() {
+  return fn() {
     return 1
   }
 }";
@@ -2057,7 +2132,7 @@ sketch002 = startSketchOn({
             crate::parser::parser_impl::print_tokens(&tokens);
             let expr = crate::parser::parser_impl::object.parse(&tokens).unwrap();
             assert_eq!(
-                expr.recast(&FormatOptions::new(), 0, false),
+                expr.recast(&FormatOptions::new(), 0, ExprContext::Other),
                 expected,
                 "failed test {i}, which is testing that recasting {reason}"
             );
@@ -2154,7 +2229,7 @@ sketch002 = startSketchOn({
             let tokens = crate::token::lexer(input, ModuleId::default()).unwrap();
             let expr = crate::parser::parser_impl::array_elem_by_elem.parse(&tokens).unwrap();
             assert_eq!(
-                expr.recast(&FormatOptions::new(), 0, false),
+                expr.recast(&FormatOptions::new(), 0, ExprContext::Other),
                 expected,
                 "failed test {i}, which is testing that recasting {reason}"
             );
