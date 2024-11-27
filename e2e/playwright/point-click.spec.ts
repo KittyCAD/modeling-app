@@ -552,6 +552,83 @@ test(`Verify axis, origin, and horizontal snapping`, async ({
   })
 })
 
+test(`Verify user can double-click to edit a sketch`, async ({
+  app,
+  editor,
+  toolbar,
+  scene,
+}) => {
+  const initialCode = `closedSketch = startSketchOn('XZ')
+  |> circle({ center = [8, 5], radius = 2 }, %)
+openSketch = startSketchOn('XY')
+  |> startProfileAt([-5, 0], %)
+  |> lineTo([0, 5], %)
+  |> xLine(5, %)
+  |> tangentialArcTo([10, 0], %)
+`
+  await app.initialise(initialCode)
+
+  const pointInsideCircle = {
+    x: app.viewPortSize.width * 0.63,
+    y: app.viewPortSize.height * 0.5,
+  }
+  const pointOnPathAfterSketching = {
+    x: app.viewPortSize.width * 0.58,
+    y: app.viewPortSize.height * 0.5,
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
+    scene.makeMouseHelpers(
+      pointOnPathAfterSketching.x,
+      pointOnPathAfterSketching.y,
+      { delay: 10 }
+    )
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
+    pointInsideCircle.x,
+    pointInsideCircle.y
+  )
+
+  const exitSketch = async () => {
+    await test.step(`Exit sketch mode`, async () => {
+      await toolbar.exitSketchBtn.click()
+      await expect(toolbar.exitSketchBtn).not.toBeVisible()
+      await expect(toolbar.startSketchBtn).toBeEnabled()
+    })
+  }
+
+  await test.step(`Double-click on the closed sketch`, async () => {
+    await moveToCircle()
+    await dblClickCircle()
+    await expect(toolbar.startSketchBtn).not.toBeVisible()
+    await expect(toolbar.exitSketchBtn).toBeVisible()
+    await editor.expectState({
+      activeLines: [`|>circle({center=[8,5],radius=2},%)`],
+      highlightedCode: 'circle({center=[8,5],radius=2},%)',
+      diagnostics: [],
+    })
+  })
+
+  await exitSketch()
+
+  await test.step(`Double-click on the open sketch`, async () => {
+    await moveToOpenPath()
+    await scene.expectPixelColor([250, 250, 250], pointOnPathAfterSketching, 15)
+    // There is a full execution after exiting sketch that clears the scene.
+    await app.page.waitForTimeout(500)
+    await dblClickOpenPath()
+    await expect(toolbar.startSketchBtn).not.toBeVisible()
+    await expect(toolbar.exitSketchBtn).toBeVisible()
+    // Wait for enter sketch mode to complete
+    await app.page.waitForTimeout(500)
+    await editor.expectState({
+      activeLines: [`|>xLine(5,%)`],
+      highlightedCode: 'xLine(5,%)',
+      diagnostics: [],
+    })
+  })
+})
+
 test(`Offset plane point-and-click`, async ({
   app,
   scene,
