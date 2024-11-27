@@ -3,7 +3,6 @@ import init, {
   recast_wasm,
   execute_wasm,
   kcl_lint,
-  lexer_wasm,
   modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
@@ -24,7 +23,6 @@ import { EngineCommandManager } from './std/engineConnection'
 import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
 import { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
-import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { CoreDumpInfo } from 'wasm-lib/kcl/bindings/CoreDumpInfo'
@@ -505,10 +503,6 @@ export const modifyGrid = async (
     console.log('modify grid error', e)
     return Promise.reject(e)
   }
-}
-
-export function lexer(str: string): Token[] | Error {
-  return lexer_wasm(str)
 }
 
 export const modifyAstForSketch = async (

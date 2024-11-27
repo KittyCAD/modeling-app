@@ -48,7 +48,6 @@ pub use lsp::copilot::Backend as CopilotLspBackend;
 pub use lsp::kcl::Backend as KclLspBackend;
 pub use lsp::kcl::Server as KclLspServerSubCommand;
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
-pub use token::lexer;
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
