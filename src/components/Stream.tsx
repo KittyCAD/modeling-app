@@ -289,32 +289,32 @@ export const Stream = () => {
   const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> = (
     e
   ) => {
-    if (!isNetworkOkay) return
-    if (!videoRef.current) return
-    if (state.matches('Sketch')) return
-    if (state.matches({ idle: 'showPlanes' })) return
-    if (sceneInfra.camControls.wasDragging === true) return
-    if (btnName(e.nativeEvent).left) {
-      sendSelectEventToEngine(e, videoRef.current)
-        .then(() => {
-          const maybeSelectedSketch =
-            state.context.selectionRanges.graphSelections
-          const selectionArtifactType = maybeSelectedSketch[0]?.artifact?.type
-          const sketchArtifactTypes: Artifact['type'][] = [
-            'path',
-            'solid2D',
-            'segment',
-          ]
-          if (
-            maybeSelectedSketch.length === 1 &&
-            selectionArtifactType &&
-            sketchArtifactTypes.includes(selectionArtifactType)
-          ) {
-            sceneInfra.modelingSend({ type: 'Enter sketch' })
-          }
-        })
-        .catch(reportRejection)
-    }
+    if (
+      !isNetworkOkay ||
+      !videoRef.current ||
+      state.matches('Sketch') ||
+      state.matches({ idle: 'showPlanes' }) ||
+      sceneInfra.camControls.wasDragging === true ||
+      !btnName(e.nativeEvent).left
+    )
+      return
+    sendSelectEventToEngine(e, videoRef.current)
+      .then(({ entity_id }) => {
+        if (!entity_id) return // No entity selected. This is benign
+        const artifact = engineCommandManager.artifactGraph.get(entity_id)
+        // If an ID is returned and the artifact is not found, we can't do anything, but that's bad and worth reporting
+        if (!artifact)
+          return reportRejection(`No artifact with ID: ${entity_id}`)
+        const sketchArtifactTypes: Artifact['type'][] = [
+          'path',
+          'solid2D',
+          'segment',
+        ]
+        if (sketchArtifactTypes.includes(artifact.type)) {
+          sceneInfra.modelingSend({ type: 'Enter sketch' })
+        }
+      })
+      .catch(reportRejection)
   }
 
   return (
