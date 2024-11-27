@@ -22,6 +22,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { KclCommandValue } from 'lib/commandTypes'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -61,6 +62,69 @@ export function angleLengthInfo({
     isAllTooltips &&
     transforms.every(Boolean)
   return { enabled, transforms }
+}
+
+export async function applyConstraintLength({
+  length,
+  selectionRanges,
+}: {
+  length: KclCommandValue
+  selectionRanges: Selections
+}) {
+  const ast = kclManager.ast
+  const angleLength = angleLengthInfo({ selectionRanges })
+  if (err(angleLength)) return angleLength
+  const { transforms } = angleLength
+
+  let distanceExpression: Expr = length.valueAst
+
+  /**
+   * To be "constrained", the value must be a binary expression, a named value, or a function call.
+   * If it has a variable name, we need to insert a variable declaration at the correct index.
+   */
+  if (
+    'variableName' in length &&
+    length.variableName &&
+    length.insertIndex !== undefined
+  ) {
+    const newBody = [...ast.body]
+    newBody.splice(length.insertIndex, 0, length.variableDeclarationAst)
+    ast.body = newBody
+    distanceExpression = createIdentifier(length.variableName)
+  } else if (!('variableName' in length)) {
+    /**
+     * Since the user didn't create a named value, we need to make their value a binary expression
+     * if it isn't already.
+     */
+    if (!isExprBinaryPart(distanceExpression)) {
+      return new Error('Invalid valueNode, is not a BinaryPart')
+    }
+    distanceExpression = createBinaryExpressionWithUnary([
+      distanceExpression,
+      createIdentifier('ZERO'),
+    ])
+  }
+
+  if (!isExprBinaryPart(distanceExpression)) {
+    return new Error('Invalid valueNode, is not a BinaryPart')
+  }
+
+  const retval = transformAstSketchLines({
+    ast,
+    selectionRanges,
+    transformInfos: transforms,
+    programMemory: kclManager.programMemory,
+    referenceSegName: '',
+    forceValueUsedInTransform: distanceExpression,
+  })
+  if (err(retval)) return Promise.reject(retval)
+
+  const { modifiedAst: _modifiedAst, pathToNodeMap } = retval
+
+  return {
+    modifiedAst: _modifiedAst,
+    pathToNodeMap,
+  }
 }
 
 export async function applyConstraintAngleLength({

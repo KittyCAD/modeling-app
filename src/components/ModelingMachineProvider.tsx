@@ -41,7 +41,10 @@ import {
   angleBetweenInfo,
   applyConstraintAngleBetween,
 } from './Toolbar/SetAngleBetween'
-import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
+import {
+  applyConstraintAngleLength,
+  applyConstraintLength,
+} from './Toolbar/setAngleLength'
 import {
   canSweepSelection,
   handleSelectionBatch,
@@ -845,12 +848,18 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'Get length info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
-            const { modifiedAst, pathToNodeMap } =
-              await applyConstraintAngleLength({
-                selectionRanges,
-              })
+        astConstrainLength: fromPromise(
+          async ({
+            input: { selectionRanges, sketchDetails, lengthValue },
+          }) => {
+            if (!lengthValue)
+              return Promise.reject(new Error('No length value'))
+            const constraintResult = await applyConstraintLength({
+              selectionRanges,
+              length: lengthValue,
+            })
+            if (err(constraintResult)) return Promise.reject(constraintResult)
+            const { modifiedAst, pathToNodeMap } = constraintResult
             const _modifiedAst = parse(recast(modifiedAst))
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))

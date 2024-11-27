@@ -1,8 +1,12 @@
 import { Models } from '@kittycad/lib'
+import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
+import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 
 type OutputFormat = Models['OutputFormat_type']
@@ -46,6 +50,10 @@ export type ModelingCommandSchema = {
   }
   'change tool': {
     tool: SketchTool
+  }
+  'Constrain length': {
+    selection: Selections
+    length: KclCommandValue
   }
   'Text-to-CAD': {
     prompt: string
@@ -317,6 +325,46 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+    },
+  },
+  'Constrain length': {
+    description: 'Constrain the length of one or more segments.',
+    icon: 'dimension',
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['segment'],
+        multiple: false,
+        required: true,
+        skip: true,
+      },
+      length: {
+        inputType: 'kcl',
+        required: true,
+        createVariableByDefault: true,
+        defaultValue(_, machineContext) {
+          const selectionRanges = machineContext?.selectionRanges
+          if (!selectionRanges) return KCL_DEFAULT_LENGTH
+          const angleLength = angleLengthInfo({
+            selectionRanges,
+            angleOrLength: 'setLength',
+          })
+          if (err(angleLength)) return KCL_DEFAULT_LENGTH
+          const { transforms } = angleLength
+
+          // QUESTION: is it okay to reference kclManager here? will its state be up to date?
+          const sketched = transformAstSketchLines({
+            ast: structuredClone(kclManager.ast),
+            selectionRanges,
+            transformInfos: transforms,
+            programMemory: kclManager.programMemory,
+            referenceSegName: '',
+          })
+          if (err(sketched)) return KCL_DEFAULT_LENGTH
+          const { valueUsedInTransform } = sketched
+          return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
+        },
       },
     },
   },

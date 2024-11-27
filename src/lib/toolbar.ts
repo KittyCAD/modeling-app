@@ -529,13 +529,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'constraint-length',
-          disabled: (state) =>
-            !(
-              state.matches({ Sketch: 'SketchIdle' }) &&
-              state.can({ type: 'Constrain length' })
-            ),
-          onClick: ({ modelingSend }) =>
-            modelingSend({ type: 'Constrain length' }),
+          disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: {
+                name: 'Constrain length',
+                groupId: 'modeling',
+              },
+            }),
           icon: 'dimension',
           status: 'available',
           title: 'Length',
