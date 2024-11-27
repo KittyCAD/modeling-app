@@ -450,3 +450,9 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 ## KCL
 
 For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/src/wasm-lib/kcl).
+
+### Logging
+
+To display logging (to the terminal or console) set `ZOO_LOG=1`. This will log some warnings and simple performance metrics. To view these in test runs, use `-- --nocapture`.
+
+To enable memory metrics, build with `--features dhat-heap`.

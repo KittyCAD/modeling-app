@@ -282,8 +282,8 @@ impl EngineConnection {
                     }
                     Err(e) => {
                         match &e {
-                            WebSocketReadError::Read(e) => eprintln!("could not read from WS: {:?}", e),
-                            WebSocketReadError::Deser(e) => eprintln!("could not deserialize msg from WS: {:?}", e),
+                            WebSocketReadError::Read(e) => crate::logln!("could not read from WS: {:?}", e),
+                            WebSocketReadError::Deser(e) => crate::logln!("could not deserialize msg from WS: {:?}", e),
                         }
                         *socket_health_tcp_read.lock().unwrap() = SocketHealth::Inactive;
                         return Err(e);
