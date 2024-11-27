@@ -577,7 +577,7 @@ export const ModelingMachineProvider = ({
           return true
         },
         'has valid edge treatment selection': ({
-          context: { selectionRanges } 
+          context: { selectionRanges },
         }) => {
           return hasValidEdgeTreatmentSelection({
             selectionRanges,

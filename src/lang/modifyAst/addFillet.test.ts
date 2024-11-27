@@ -297,11 +297,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   }
 
   // apply edge treatment to seleciton
-  const result = modifyAstWithEdgeTreatmentAndTag(
-    ast,
-    selection,
-    parameters
-  )
+  const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters)
   if (err(result)) {
     return result
   }

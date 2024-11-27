@@ -67,11 +67,7 @@ export function applyEdgeTreatmentToSelection(
   parameters: EdgeTreatmentParameters
 ): void | Error {
   // 1. clone and modify with edge treatment and tag
-  const result = modifyAstWithEdgeTreatmentAndTag(
-    ast,
-    selection,
-    parameters
-  )
+  const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters)
   if (err(result)) return result
   const { modifiedAst, pathToEdgeTreatmentNode } = result
 
