@@ -1,20 +1,28 @@
-import { test, expect, AuthenticatedApp } from './fixtures/fixtureSetup'
+import { test, expect, Page } from './zoo-test'
 import { EditorFixture } from './fixtures/editorFixture'
 import { SceneFixture } from './fixtures/sceneFixture'
 import { ToolbarFixture } from './fixtures/toolbarFixture'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test(
   'verify extruding circle works',
-  { tag: ['@skipWin'] },
-  async ({ app, cmdBar, editor, toolbar, scene }) => {
-    test.skip(
-      process.platform === 'win32',
-      'Fails on windows in CI, can not be replicated locally on windows.'
+  async ({ context, homePage, cmdBar, editor, toolbar, scene }) => {
+    const file = await fs.readFile(
+      path.resolve(
+        __dirname,
+        '../../',
+        './src/wasm-lib/tests/executor/inputs/test-circle-extrude.kcl'
+      ),
+      'utf-8'
     )
-    const file = await app.getInputFile('test-circle-extrude.kcl')
-    await app.initialise(file)
+    await context.addInitScript((file) => {
+      localStorage.setItem('persistCode', file)
+    }, file)
+    await homePage.goToModelingScene()
+
     const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
 
     await test.step('because there is sweepable geometry, verify extrude is enable when nothing is selected', async () => {
@@ -27,7 +35,9 @@ test(
       const circleSnippet =
         'circle({ center = [318.33, 168.1], radius = 182.8 }, %)'
       await editor.expectState({
-        activeLines: [],
+        activeLines: [
+          "constsketch002=startSketchOn('XZ')"
+        ],
         highlightedCode: circleSnippet,
         diagnostics: [],
       })
@@ -72,7 +82,7 @@ test(
 test.describe('verify sketch on chamfer works', () => {
   const _sketchOnAChamfer =
     (
-      app: AuthenticatedApp,
+      page: Page,
       editor: EditorFixture,
       toolbar: ToolbarFixture,
       scene: SceneFixture
@@ -124,7 +134,7 @@ test.describe('verify sketch on chamfer works', () => {
         await toolbar.startSketchPlaneSelection()
         await clickChamfer()
         // timeout wait for engine animation is unavoidable
-        await app.page.waitForTimeout(600)
+        await page.waitForTimeout(1000)
         await editor.expectEditor.toContain(afterChamferSelectSnippet)
       })
       await test.step('make sure a basic sketch can be added', async () => {
@@ -135,7 +145,7 @@ test.describe('verify sketch on chamfer works', () => {
           pixelDiff: 50,
         })
         await rectangle2ndClick()
-        await editor.expectEditor.toContain(afterRectangle2ndClickSnippet)
+        await editor.expectEditor.toContain(afterRectangle2ndClickSnippet, { shouldNormalise: true })
       })
 
       await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
@@ -152,16 +162,22 @@ test.describe('verify sketch on chamfer works', () => {
     }
   test(
     'works on all edge selections and can break up multi edges in a chamfer array',
-    { tag: ['@skipWin'] },
-    async ({ app, editor, toolbar, scene }) => {
-      test.skip(
-        process.platform === 'win32',
-        'Fails on windows in CI, can not be replicated locally on windows.'
+    async ({ context, page, homePage, editor, toolbar, scene }) => {
+      const file = await fs.readFile(
+        path.resolve(
+          __dirname,
+          '../../',
+          './src/wasm-lib/tests/executor/inputs/e2e-can-sketch-on-chamfer.kcl'
+        ),
+        'utf-8'
       )
-      const file = await app.getInputFile('e2e-can-sketch-on-chamfer.kcl')
-      await app.initialise(file)
+      await context.addInitScript((file) => {
+        localStorage.setItem('persistCode', file)
+      }, file)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
 
-      const sketchOnAChamfer = _sketchOnAChamfer(app, editor, toolbar, scene)
+      const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
       await sketchOnAChamfer({
         clickCoords: { x: 570, y: 220 },
@@ -177,7 +193,7 @@ test.describe('verify sketch on chamfer works', () => {
 
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, seg03)',
-        afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
+        afterRectangle1stClickSnippet: 'startProfileAt([160.39, 254.59], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
     |> angledLine([
          segAng(rectangleSegmentA002) - 90,
@@ -209,7 +225,7 @@ test.describe('verify sketch on chamfer works', () => {
 
         afterChamferSelectSnippet:
           'sketch003 = startSketchOn(extrude001, seg04)',
-        afterRectangle1stClickSnippet: 'startProfileAt([-209.64, 255.28], %)',
+        afterRectangle1stClickSnippet: 'startProfileAt([-255.89, 255.28], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
     |> angledLine([
          segAng(rectangleSegmentA003) - 90,
@@ -235,7 +251,7 @@ test.describe('verify sketch on chamfer works', () => {
        }, %)`,
         afterChamferSelectSnippet:
           'sketch003 = startSketchOn(extrude001, seg04)',
-        afterRectangle1stClickSnippet: 'startProfileAt([-209.64, 255.28], %)',
+        afterRectangle1stClickSnippet: 'startProfileAt([37.95, 322.96], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
     |> angledLine([
          segAng(rectangleSegmentA003) - 90,
@@ -259,7 +275,7 @@ test.describe('verify sketch on chamfer works', () => {
        }, %)`,
         afterChamferSelectSnippet:
           'sketch005 = startSketchOn(extrude001, seg06)',
-        afterRectangle1stClickSnippet: 'startProfileAt([-23.43, 19.69], %)',
+        afterRectangle1stClickSnippet: 'startProfileAt([-59.83, 19.69], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 9.1], %, $rectangleSegmentA005)
 
     |> angledLine([
@@ -305,7 +321,7 @@ test.describe('verify sketch on chamfer works', () => {
            tags = [getNextAdjacentEdge(yo)]
          }, %, $seg06)
     sketch005 = startSketchOn(extrude001, seg06)
-      |> startProfileAt([-23.43, 19.69], %)
+      |> startProfileAt([-59.83,19.69], %)
       |> angledLine([0, 9.1], %, $rectangleSegmentA005)
       |> angledLine([
            segAng(rectangleSegmentA005) - 90,
@@ -318,7 +334,7 @@ test.describe('verify sketch on chamfer works', () => {
       |> lineTo([profileStartX(%), profileStartY(%)], %)
       |> close(%)
     sketch004 = startSketchOn(extrude001, seg05)
-      |> startProfileAt([82.57, 322.96], %)
+      |> startProfileAt([37.95,322.96], %)
       |> angledLine([0, 11.16], %, $rectangleSegmentA004)
       |> angledLine([
            segAng(rectangleSegmentA004) - 90,
@@ -331,7 +347,7 @@ test.describe('verify sketch on chamfer works', () => {
       |> lineTo([profileStartX(%), profileStartY(%)], %)
       |> close(%)
     sketch003 = startSketchOn(extrude001, seg04)
-      |> startProfileAt([-209.64, 255.28], %)
+      |> startProfileAt([-255.89,255.28], %)
       |> angledLine([0, 11.56], %, $rectangleSegmentA003)
       |> angledLine([
            segAng(rectangleSegmentA003) - 90,
@@ -344,7 +360,7 @@ test.describe('verify sketch on chamfer works', () => {
       |> lineTo([profileStartX(%), profileStartY(%)], %)
       |> close(%)
     sketch002 = startSketchOn(extrude001, seg03)
-      |> startProfileAt([205.96, 254.59], %)
+      |> startProfileAt([160.39,254.59], %)
       |> angledLine([0, 11.39], %, $rectangleSegmentA002)
       |> angledLine([
            segAng(rectangleSegmentA002) - 90,
@@ -365,18 +381,22 @@ test.describe('verify sketch on chamfer works', () => {
 
   test(
     'Works on chamfers that are non in a pipeExpression can break up multi edges in a chamfer array',
-    { tag: ['@skipWin'] },
-    async ({ app, editor, toolbar, scene }) => {
-      test.skip(
-        process.platform === 'win32',
-        'Fails on windows in CI, can not be replicated locally on windows.'
+    async ({ context, page, homePage, editor, toolbar, scene }) => {
+      const file = await fs.readFile(
+        path.resolve(
+          __dirname,
+          '../../',
+          './src/wasm-lib/tests/executor/inputs/e2e-can-sketch-on-chamfer-no-pipeExpr.kcl'
+        ),
+        'utf-8'
       )
-      const file = await app.getInputFile(
-        'e2e-can-sketch-on-chamfer-no-pipeExpr.kcl'
-      )
-      await app.initialise(file)
+      await context.addInitScript((file) => {
+        localStorage.setItem('persistCode', file)
+      }, file)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
 
-      const sketchOnAChamfer = _sketchOnAChamfer(app, editor, toolbar, scene)
+      const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
 
       await sketchOnAChamfer({
         clickCoords: { x: 570, y: 220 },
@@ -392,7 +412,7 @@ test.describe('verify sketch on chamfer works', () => {
         beforeChamferSnippetEnd: '}, extrude001)',
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, seg03)',
-        afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
+        afterRectangle1stClickSnippet: 'startProfileAt([160.39, 254.59], %)',
         afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
     |> angledLine([
          segAng(rectangleSegmentA002) - 90,
@@ -433,7 +453,7 @@ chamf = chamfer({
        ]
      }, %)
 sketch002 = startSketchOn(extrude001, seg03)
-  |> startProfileAt([205.96, 254.59], %)
+  |> startProfileAt([160.39, 254.59], %)
   |> angledLine([0, 11.39], %, $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) - 90,
@@ -453,43 +473,50 @@ sketch002 = startSketchOn(extrude001, seg03)
 })
 
 test(`Verify axis, origin, and horizontal snapping`, async ({
-  app,
+  page,
+  homePage,
   editor,
   toolbar,
   scene,
 }) => {
+  const viewPortSize = { width: 1200, height: 500 }
+
+  await page.setBodyDimensions(viewPortSize)
+
+  await homePage.goToModelingScene()
+
   // Constants and locators
   // These are mappings from screenspace to KCL coordinates,
   // until we merge in our coordinate system helpers
   const xzPlane = [
-    app.viewPortSize.width * 0.65,
-    app.viewPortSize.height * 0.3,
+    viewPortSize.width * 0.65,
+    viewPortSize.height * 0.3,
   ] as const
   const originSloppy = {
     screen: [
-      app.viewPortSize.width / 2 + 3, // 3px off the center of the screen
-      app.viewPortSize.height / 2,
+      viewPortSize.width / 2 + 3, // 3px off the center of the screen
+      viewPortSize.height / 2,
     ],
     kcl: [0, 0],
   } as const
   const xAxisSloppy = {
     screen: [
-      app.viewPortSize.width * 0.75,
-      app.viewPortSize.height / 2 - 3, // 3px off the X-axis
+      viewPortSize.width * 0.75,
+      viewPortSize.height / 2 - 3, // 3px off the X-axis
     ],
-    kcl: [16.95, 0],
+    kcl: [20.34, 0],
   } as const
   const offYAxis = {
     screen: [
-      app.viewPortSize.width * 0.6, // Well off the Y-axis, out of snapping range
-      app.viewPortSize.height * 0.3,
+      viewPortSize.width * 0.6, // Well off the Y-axis, out of snapping range
+      viewPortSize.height * 0.3,
     ],
-    kcl: [6.78, 6.78],
+    kcl: [8.14, 6.78],
   } as const
   const yAxisSloppy = {
     screen: [
-      app.viewPortSize.width / 2 + 5, // 5px off the Y-axis
-      app.viewPortSize.height * 0.3,
+      viewPortSize.width / 2 + 5, // 5px off the Y-axis
+      viewPortSize.height * 0.3,
     ],
     kcl: [0, 6.78],
   } as const
@@ -510,15 +537,13 @@ test(`Verify axis, origin, and horizontal snapping`, async ({
     afterSegmentDraggedOnYAxis: `startProfileAt([${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}], %)`,
   }
 
-  await app.initialise()
-
   await test.step(`Start a sketch on the XZ plane`, async () => {
     await editor.closePane()
     await toolbar.startSketchPlaneSelection()
     await moveToXzPlane()
     await clickOnXzPlane()
     // timeout wait for engine animation is unavoidable
-    await app.page.waitForTimeout(600)
+    await page.waitForTimeout(600)
     await editor.expectEditor.toContain(expectedCodeSnippets.sketchOnXzPlane)
   })
   await test.step(`Place a point a few pixels off the middle, verify it still snaps to 0,0`, async () => {

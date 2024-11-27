@@ -54,13 +54,13 @@ export class EditorFixture {
         }
       }
       if (!shouldNormalise) {
-        const expectStart = expect(this.codeContent)
+        const expectStart = expect.poll(() => this.codeContent.textContent())
         if (not) {
-          const result = await expectStart.not.toContainText(code, { timeout })
+          const result = await expectStart.not.toContain(code, { timeout })
           await resetPane()
           return result
         }
-        const result = await expectStart.toContainText(code, { timeout })
+        const result = await expectStart.toContain(code, { timeout })
         await resetPane()
         return result
       }
