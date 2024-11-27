@@ -19,7 +19,7 @@ import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { err, reportRejection } from 'lib/trap'
-import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
+import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 
 enum StreamState {
   Playing = 'playing',
