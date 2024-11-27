@@ -301,20 +301,12 @@ export const Stream = () => {
     sendSelectEventToEngine(e, videoRef.current)
       .then(({ entity_id }) => {
         if (!entity_id) return // No entity selected. This is benign
-        const artifact = engineCommandManager.artifactGraph.get(entity_id)
-        // If an ID is returned and the artifact is not found, we can't do anything, but that's bad and worth reporting
-        if (!artifact)
-          return reportRejection(`No artifact with ID: ${entity_id}`)
-        const sketchArtifactTypes: Artifact['type'][] = [
-          'path',
-          'solid2D',
-          'segment',
-        ]
-        if (sketchArtifactTypes.includes(artifact.type)) {
-          sceneInfra.modelingSend({ type: 'Enter sketch' })
-        }
-      })
-      .catch(reportRejection)
+        const artifact = getArtifactOfTypes(
+    { key: entity_id, types: ['path', solid2D, 'segment'] },
+    engineCommandManager.artifactGraph
+  )
+  if (err(path)) return path
+  sceneInfra.modelingSend({ type: 'Enter sketch' })
   }
 
   return (
