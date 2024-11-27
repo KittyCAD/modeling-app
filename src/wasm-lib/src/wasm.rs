@@ -158,17 +158,6 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
     Err(JsError::new(&format!("Invalid response type, got: {:?}", ws_resp)))
 }
 
-// wasm_bindgen wrapper for lexer
-// test for this function and by extension lexer are done in javascript land src/lang/tokeniser.test.ts
-#[wasm_bindgen]
-pub fn lexer_wasm(js: &str) -> Result<JsValue, JsError> {
-    console_error_panic_hook::set_once();
-
-    let module_id = ModuleId::default();
-    let tokens = kcl_lib::lexer(js, module_id).map_err(JsError::from)?;
-    Ok(JsValue::from_serde(&tokens)?)
-}
-
 #[wasm_bindgen]
 pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
