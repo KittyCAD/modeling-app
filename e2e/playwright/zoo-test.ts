@@ -28,7 +28,12 @@ export function test(desc, objOrFn, fnMaybe) {
       const tronApp = new AuthenticatedTronApp(context, page, testInfo)
 
       const fixtures: Fixtures = { cmdBar, editor, toolbar, scene, homePage }
-      await tronApp.initialise({ fixtures })
+      const options = {
+        fixtures,
+        appSettings: objOrFn?.appSettings,
+        cleanProjectDir: objOrFn?.cleanProjectDir,
+      }
+      await tronApp.initialise(options)
 
       // We need to patch this because addInitScript will bind too late in our
       // electron tests, never running. We need to call reload() after each call
