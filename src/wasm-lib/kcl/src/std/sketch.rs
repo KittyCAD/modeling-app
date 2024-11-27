@@ -1121,20 +1121,13 @@ async fn make_sketch_plane_from_orientation(
     let hide = Some(true);
     match data {
         PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
-            let x_axis = match data {
-                PlaneData::XY | PlaneData::XZ | PlaneData::YZ => plane.x_axis,
-                PlaneData::NegXY | PlaneData::NegXZ | PlaneData::NegYZ => {
-                    Point3d::new(-plane.x_axis.x, -plane.x_axis.y, -plane.x_axis.z)
-                }
-                _ => unreachable!(),
-            };
             args.batch_modeling_cmd(
                 plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
                     clobber,
                     origin: plane.origin.into(),
                     size,
-                    x_axis: x_axis.into(),
+                    x_axis: plane.x_axis.into(),
                     y_axis: plane.y_axis.into(),
                     hide,
                 }),
