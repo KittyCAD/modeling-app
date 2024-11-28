@@ -28,9 +28,11 @@ export class AuthenticatedApp {
     this.testInfo = testInfo
   }
 
-  async initialise(code = '') {
+  async initialise(code = '', fn: () => Promise<any> = async () => {}) {
     await setup(this.context, this.page, this.testInfo)
     const u = await getUtils(this.page)
+
+    await fn()
 
     await this.page.addInitScript(async (code) => {
       localStorage.setItem('persistCode', code)
