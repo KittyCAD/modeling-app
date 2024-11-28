@@ -559,6 +559,21 @@ export function canSweepSelection(selection: Selections) {
   )
 }
 
+export function canLoftSelection(selection: Selections) {
+  console.log('selection', selection)
+  const commonNodes = selection.graphSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  console.log('commonNodes', commonNodes)
+  return (
+    // !!isSketchPipe(selection) &&
+    commonNodes.length > 1 &&
+    // commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
+    (commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n))) &&
+    commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
 // This accounts for non-geometry selections under "other"
 export type ResolvedSelectionType = Artifact['type'] | 'other'
 export type SelectionCountsByType = Map<ResolvedSelectionType, number>

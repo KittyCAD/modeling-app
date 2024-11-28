@@ -144,7 +144,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Loft', groupId: 'modeling' },
           }),
-        disabled: (state) => !state.can({ type: 'Extrude' }),
+        disabled: (state) => !state.can({ type: 'Loft' }),
         icon: 'loft',
         status: 'available',
         title: 'Loft',

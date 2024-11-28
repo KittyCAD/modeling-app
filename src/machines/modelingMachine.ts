@@ -384,6 +384,7 @@ export const modelingMachine = setup({
   guards: {
     'Selection is on face': () => false,
     'has valid sweep selection': () => false,
+    'has valid loft selection': () => false,
     'has valid fillet selection': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
@@ -1597,7 +1598,7 @@ export const modelingMachine = setup({
 
         Loft: {
           target: 'idle',
-          guard: 'has valid sweep selection',
+          guard: 'has valid loft selection',
           actions: ['AST loft'],
           reenter: false,
         },
