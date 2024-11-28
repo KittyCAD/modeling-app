@@ -87,9 +87,9 @@ export function useCalculateKclExpression({
   useEffect(() => {
     const execAstAndSetResult = async () => {
       const _code = `const __result__ = ${value}`
-      const ast = parse(_code)
-      if (err(ast)) return
-      if (trap(ast, { suppress: true })) return
+      const pResult = parse(_code)
+      if (err(pResult) || !pResult.program || pResult.errors.length > 0) return
+      const ast = pResult.program
 
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {

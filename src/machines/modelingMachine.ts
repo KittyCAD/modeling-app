@@ -542,8 +542,11 @@ export const modelingMachine = setup({
       if (event.type !== 'Convert to variable') return false
       if (!event.data) return false
       const ast = parse(recast(kclManager.ast))
-      if (err(ast)) return false
-      const isSafeRetVal = isNodeSafeToReplacePath(ast, event.data.pathToNode)
+      if (err(ast) || !ast.program || ast.errors.length > 0) return false
+      const isSafeRetVal = isNodeSafeToReplacePath(
+        ast.program,
+        event.data.pathToNode
+      )
       if (err(isSafeRetVal)) return false
       return isSafeRetVal.isSafe
     },
@@ -1332,9 +1335,13 @@ export const modelingMachine = setup({
           return
         }
 
+        const recastAst = parse(recast(modifiedAst))
+        if (err(recastAst) || !recastAst.program || recastAst.errors.length > 0)
+          return
+
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
-          parse(recast(modifiedAst)),
+          recastAst.program,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin

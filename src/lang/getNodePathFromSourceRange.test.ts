@@ -1,5 +1,5 @@
 import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
-import { Identifier, parse, initPromise, Parameter } from './wasm'
+import { Identifier, assertParse, initPromise, Parameter } from './wasm'
 import { err } from 'lib/trap'
 
 beforeAll(async () => {
@@ -22,8 +22,7 @@ const sk3 = startSketchAt([0, 0])
       lineToSubstringIndex + subStr.length,
     ]
 
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const _node = getNodeFromPath<any>(ast, nodePath)
     if (err(_node)) throw _node
@@ -50,8 +49,7 @@ const b1 = cube([0,0], 10)`
       subStrIndex + 'pos'.length,
     ]
 
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const _node = getNodeFromPath<Parameter>(ast, nodePath)
     if (err(_node)) throw _node
@@ -87,8 +85,7 @@ const b1 = cube([0,0], 10)`
       subStrIndex + 'scale'.length,
     ]
 
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
     const _node = getNodeFromPath<Identifier>(ast, nodePath)
     if (err(_node)) throw _node

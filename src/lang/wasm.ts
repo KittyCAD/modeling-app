@@ -17,7 +17,7 @@ import init, {
   default_project_settings,
   base64_decode,
 } from '../wasm-lib/pkg/wasm_lib'
-import { KCLError, KCLSyntaxError } from './errors'
+import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
 import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
@@ -124,19 +124,36 @@ export const initPromise = initialise()
 export const rangeTypeFix = (ranges: number[][]): [number, number, number][] =>
   ranges.map(([start, end, moduleId]) => [start, end, moduleId])
 
-export const parse = (code: string | Error): Node<Program> | Error => {
+const splitErrors = (
+  input: CompilationError[]
+): { errors: CompilationError[]; warnings: CompilationError[] } => {
+  let errors = []
+  let warnings = []
+  for (const i of input) {
+    if (i.severity === 'Warning') {
+      warnings.push(i)
+    } else {
+      errors.push(i)
+    }
+  }
+
+  return { errors, warnings }
+}
+
+export type ParseResult = {
+  program: Node<Program> | null
+  errors: CompilationError[]
+  warnings: CompilationError[]
+}
+
+export const parse = (code: string | Error): ParseResult | Error => {
   if (err(code)) return code
 
   try {
     const parsed: [Node<Program>, CompilationError[]] = parse_wasm(code)
-    // TODO handle warnings and multiple errors properly
-    if (parsed[1]) {
-      return new KCLSyntaxError(
-        parsed[1][0].message,
-        rangeTypeFix([parsed[1][0].source_range])
-      )
-    }
-    return parsed[0]
+    let result: any = splitErrors(parsed[1])
+    result.program = parsed[0]
+    return result
   } catch (e: any) {
     // throw e
     const parsed: RustKclError = JSON.parse(e.toString())
@@ -146,6 +163,14 @@ export const parse = (code: string | Error): Node<Program> | Error => {
       rangeTypeFix(parsed.sourceRanges)
     )
   }
+}
+
+// Parse and throw an exception if there are any errors
+export const assertParse = (code: string): Node<Program> => {
+  const result = parse(code)
+  // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+  if (err(result) || !result.program || result.errors.length > 0) throw result
+  return result.program
 }
 
 export type PathToNode = [string | number, string][]

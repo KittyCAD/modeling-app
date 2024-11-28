@@ -42,6 +42,7 @@ use tower_lsp::{
 };
 
 use crate::{
+    errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
         ast::types::{Expr, Node, VariableKind},
@@ -1401,13 +1402,17 @@ impl LanguageServer for Backend {
             .diagnostics
             .into_iter()
             .filter_map(|diagnostic| {
-                let edit = diagnostic
+                let suggestion = diagnostic
                     .data
                     .as_ref()
-                    .and_then(|data| serde_json::from_value::<TextEdit>(data.clone()).ok())?;
+                    .and_then(|data| serde_json::from_value::<Suggestion>(data.clone()).ok())?;
+                let edit = TextEdit {
+                    range: diagnostic.range,
+                    new_text: suggestion.insert,
+                };
                 let changes = HashMap::from([(params.text_document.uri.clone(), vec![edit])]);
                 Some(CodeActionOrCommand::CodeAction(CodeAction {
-                    title: "TODO".to_owned(),
+                    title: suggestion.title,
                     kind: Some(CodeActionKind::QUICKFIX),
                     diagnostics: Some(vec![diagnostic]),
                     edit: Some(WorkspaceEdit {

@@ -1,5 +1,5 @@
 import {
-  parse,
+  assertParse,
   Sketch,
   recast,
   initPromise,
@@ -35,8 +35,7 @@ async function testingSwapSketchFnCall({
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
   const range: SourceRange = [startIndex, startIndex + callToSwap.length]
-  const ast = parse(inputCode)
-  if (err(ast)) return Promise.reject(ast)
+  const ast = assertParse(inputCode)
 
   const execState = await enginelessExecutor(ast)
   const selections = {
@@ -370,7 +369,7 @@ part001 = startSketchOn('XY')
   |> line([2.14, 1.35], %) // normal-segment
   |> xLine(3.54, %)`
   it('normal case works', async () => {
-    const execState = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
     const index = code.indexOf('// normal-segment') - 7
     const sg = sketchFromKclValue(
       execState.memory.get('part001'),
@@ -387,7 +386,7 @@ part001 = startSketchOn('XY')
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
-    const execState = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
       sketchFromKclValue(execState.memory.get('part001'), 'part001') as Sketch,

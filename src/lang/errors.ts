@@ -1,8 +1,10 @@
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
 import { posToOffset } from '@kittycad/codemirror-lsp-client'
 import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
 import { Text } from '@codemirror/state'
+import { EditorView } from 'codemirror'
 
 const TOP_LEVEL_MODULE_ID = 0
 
@@ -150,5 +152,35 @@ export function kclErrorsToDiagnostics(
       sourceRanges.push({ from: 0, to: 0, message: err.msg, severity: 'error' })
     }
     return sourceRanges
+  })
+}
+
+export function complilationErrorsToDiagnostics(
+  errors: CompilationError[]
+): CodeMirrorDiagnostic[] {
+  return errors?.map((err) => {
+    let severity: any = 'error'
+    if (err.severity === 'Warning') {
+      severity = 'warning'
+    }
+    let actions
+    const suggestion = err.suggestion
+    if (suggestion) {
+      actions = [
+        {
+          name: suggestion.title,
+          apply: (view: EditorView, from: number, to: number) => {
+            view.dispatch({ changes: { from, to, insert: suggestion.insert } })
+          },
+        },
+      ]
+    }
+    return {
+      from: err.sourceRange[0],
+      to: err.sourceRange[1],
+      message: err.message,
+      severity,
+      actions,
+    }
   })
 }

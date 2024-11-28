@@ -1,4 +1,4 @@
-import { parse, initPromise } from './wasm'
+import { assertParse, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 
 beforeAll(async () => {
@@ -14,7 +14,7 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)`
-    const execState = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
     // @ts-ignore
     const sketch001 = execState.memory.get('mySketch001')
     expect(sketch001).toEqual({
@@ -67,7 +67,7 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)
   |> extrude(2, %)`
-    const execState = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
     // @ts-ignore
     const sketch001 = execState.memory.get('mySketch001')
     expect(sketch001).toEqual({
@@ -147,7 +147,7 @@ const sk2 = startSketchOn('XY')
   |> extrude(2, %)
 
 `
-    const execState = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
     const programMemory = execState.memory
     // @ts-ignore
     const geos = [programMemory.get('theExtrude'), programMemory.get('sk2')]

@@ -657,13 +657,11 @@ export class SceneEntities {
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
-    modifiedAst: Node<Program> | Error,
+    modifiedAst: Node<Program>,
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number]
   ) => {
-    if (err(modifiedAst)) return modifiedAst
-
     const nextAst = await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
@@ -721,8 +719,10 @@ export class SceneEntities {
       pathToNode: sketchPathToNode,
     })
     if (trap(mod)) return Promise.reject(mod)
-    const modifiedAst = parse(recast(mod.modifiedAst))
-    if (trap(modifiedAst)) return Promise.reject(modifiedAst)
+    const pResult = parse(recast(mod.modifiedAst))
+    if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+      return Promise.reject(pResult)
+    const modifiedAst = pResult.program
 
     const draftExpressionsIndices = { start: index, end: index }
 
@@ -914,9 +914,10 @@ export class SceneEntities {
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
 
-    let _recastAst = parse(recast(_ast))
-    if (trap(_recastAst)) return Promise.reject(_recastAst)
-    _ast = _recastAst
+    const pResult = parse(recast(_ast))
+    if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+      return Promise.reject(pResult)
+    _ast = pResult.program
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
@@ -998,9 +999,10 @@ export class SceneEntities {
         updateRectangleSketch(sketchInit, x, y, tags[0])
 
         const newCode = recast(_ast)
-        let _recastAst = parse(newCode)
-        if (trap(_recastAst)) return
-        _ast = _recastAst
+        const pResult = parse(newCode)
+        if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+          return Promise.reject(pResult)
+        _ast = pResult.program
 
         // Update the primary AST and unequip the rectangle tool
         await kclManager.executeAstMock(_ast)
@@ -1071,9 +1073,10 @@ export class SceneEntities {
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
 
-    let _recastAst = parse(recast(_ast))
-    if (trap(_recastAst)) return Promise.reject(_recastAst)
-    _ast = _recastAst
+    const pResult = parse(recast(_ast))
+    if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+      return Promise.reject(pResult)
+    _ast = pResult.program
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
@@ -1165,9 +1168,10 @@ export class SceneEntities {
             rectangleOrigin[1]
           )
 
-          let _recastAst = parse(recast(_ast))
-          if (trap(_recastAst)) return
-          _ast = _recastAst
+          const pResult = parse(recast(_ast))
+          if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            return Promise.reject(pResult)
+          _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
@@ -1241,9 +1245,10 @@ export class SceneEntities {
       ]),
     ])
 
-    let _recastAst = parse(recast(_ast))
-    if (trap(_recastAst)) return Promise.reject(_recastAst)
-    _ast = _recastAst
+    const pResult = parse(recast(_ast))
+    if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+      return Promise.reject(pResult)
+    _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
     await kclManager.executeAstMock(_ast)
@@ -1365,9 +1370,10 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          let _recastAst = parse(newCode)
-          if (trap(_recastAst)) return Promise.reject(_recastAst)
-          _ast = _recastAst
+          const pResult = parse(newCode)
+          if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            return Promise.reject(pResult)
+          _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
@@ -1901,8 +1907,10 @@ export class SceneEntities {
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
         if (parent?.userData?.pathToNode) {
-          const updatedAst = parse(recast(kclManager.ast))
-          if (trap(updatedAst)) return
+          const pResult = parse(recast(kclManager.ast))
+          if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            return Promise.reject(pResult)
+          const updatedAst = pResult.program
           const _node = getNodeFromPath<Node<CallExpression>>(
             updatedAst,
             parent.userData.pathToNode,
@@ -2087,8 +2095,10 @@ function prepareTruncatedMemoryAndAst(
     ).body.push(newSegment)
     // update source ranges to section we just added.
     // hacks like this wouldn't be needed if the AST put pathToNode info in memory/sketch segments
-    const updatedSrcRangeAst = parse(recast(_ast)) // get source ranges correct since unfortunately we still rely on them
-    if (err(updatedSrcRangeAst)) return updatedSrcRangeAst
+    const pResult = parse(recast(_ast)) // get source ranges correct since unfortunately we still rely on them
+    if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+      return Error('Unexpected compilation error')
+    const updatedSrcRangeAst = pResult.program
 
     const lastPipeItem = (
       (updatedSrcRangeAst.body[bodyIndex] as VariableDeclaration)

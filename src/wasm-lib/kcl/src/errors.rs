@@ -280,18 +280,16 @@ impl From<KclError> for pyo3::PyErr {
     }
 }
 
-/// An error which occurred during parsing.
-///
-/// In contrast to Winnow errors which may not be an actual error but just an attempted parse which
-/// didn't work out, these are errors which are always a result of incorrect user code and which should
-/// be presented to the user.
+/// An error which occurred during parsing, etc.
 #[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
 pub struct CompilationError {
+    #[serde(rename = "sourceRange")]
     pub source_range: SourceRange,
+    #[serde(rename = "contextRange")]
     pub context_range: Option<SourceRange>,
     pub message: String,
-    pub suggestion: Option<String>,
+    pub suggestion: Option<Suggestion>,
     pub severity: Severity,
     pub tag: Tag,
 }
@@ -324,14 +322,17 @@ impl CompilationError {
         source_range: SourceRange,
         context_range: Option<SourceRange>,
         message: impl ToString,
-        suggestion: Option<impl ToString>,
+        suggestion: Option<(impl ToString, impl ToString)>,
         tag: Tag,
     ) -> CompilationError {
         CompilationError {
             source_range,
             context_range,
             message: message.to_string(),
-            suggestion: suggestion.map(|s| s.to_string()),
+            suggestion: suggestion.map(|(t, i)| Suggestion {
+                title: t.to_string(),
+                insert: i.to_string(),
+            }),
             severity: Severity::Error,
             tag,
         }
@@ -343,7 +344,7 @@ impl CompilationError {
         Some(format!(
             "{}{}{}",
             &src[0..self.source_range.start()],
-            suggestion,
+            suggestion.insert,
             &src[self.source_range.end()..]
         ))
     }
@@ -381,4 +382,11 @@ pub enum Tag {
     Deprecated,
     Unnecessary,
     None,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub struct Suggestion {
+    pub title: String,
+    pub insert: String,
 }

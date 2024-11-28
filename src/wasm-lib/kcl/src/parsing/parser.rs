@@ -799,7 +799,7 @@ fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
             sep.into(),
             Some(result.as_source_range()),
             "Using `:` to initialize objects is deprecated, prefer using `=`.",
-            Some(" ="),
+            Some(("Replace `:` with `=`", " =")),
             Tag::Deprecated,
         ));
     }
@@ -1069,7 +1069,7 @@ fn function_decl(i: TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
             arrow.as_source_range(),
             Some(result.as_source_range()),
             "Unnecessary `=>` in function declaration",
-            Some(""),
+            Some(("Remove `=>`", "")),
             Tag::Unnecessary,
         ));
         true
@@ -1677,7 +1677,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                 t.as_source_range(),
                 Some(SourceRange::new(id.start, ctxt_end, module_id)),
                 "Unnecessary `=` in function declaration",
-                Some(""),
+                Some(("Remove `=`", "")),
                 Tag::Unnecessary,
             ));
         }
@@ -2301,7 +2301,7 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
             SourceRange::new(fn_name.start, end, fn_name.module_id),
             None,
             "`int` function is deprecated. You may not need it at all. If you need to round, consider `round`, `ceil`, or `floor`.",
-            Some(arg_str),
+            Some(("Remove call to `int`", arg_str)),
             Tag::Deprecated,
         ));
     }

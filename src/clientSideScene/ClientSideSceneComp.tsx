@@ -412,8 +412,10 @@ export async function deleteSegment({
   if (err(modifiedAst)) return Promise.reject(modifiedAst)
 
   const newCode = recast(modifiedAst)
-  modifiedAst = parse(newCode)
-  if (err(modifiedAst)) return Promise.reject(modifiedAst)
+  const pResult = parse(newCode)
+  if (err(pResult) || !pResult.program || pResult.errors.length > 0)
+    return Promise.reject(pResult)
+  modifiedAst = pResult.program
 
   const testExecute = await executeAst({
     ast: modifiedAst,
@@ -627,10 +629,16 @@ const ConstraintSymbol = ({
             })
           } else if (isConstrained) {
             try {
-              const parsed = parse(recast(kclManager.ast))
-              if (trap(parsed)) return Promise.reject(parsed)
+              const pResult = parse(recast(kclManager.ast))
+              if (
+                trap(pResult) ||
+                !pResult.program ||
+                pResult.errors.length > 0
+              )
+                return Promise.reject(pResult)
+
               const _node1 = getNodeFromPath<CallExpression>(
-                parsed,
+                pResult.program,
                 pathToNode,
                 'CallExpression',
                 true
