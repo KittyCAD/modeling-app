@@ -40,7 +40,6 @@ win:
     - sha256
   sign: "./sign-win.js"
   publisherName: "KittyCAD Inc" # needs to be exactly like on Digicert
-  icon: "assets/icon.ico"
   fileAssociations:
     - ext: kcl
       name: kcl
@@ -54,7 +53,6 @@ nsis:
   oneClick: false
   perMachine: true
   allowElevation: true
-  installerIcon: "assets/icon.ico"
   include: "./installer.nsh"
 linux:
   artifactName: "${productName}-${version}-${arch}-${os}.${ext}"
