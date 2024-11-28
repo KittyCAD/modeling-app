@@ -64,7 +64,12 @@ export class HomePageFixture {
       const [title, fileCount, folderCount] = await Promise.all([
         (await projectCard.locator(this.projectCardTitle).textContent()) || '',
         Number(await projectCard.locator(this.projectCardFile).textContent()),
-        Number(await projectCard.locator(this.projectCardFolder).textContent()),
+        Number(
+          (await projectCard
+            .locator(this.projectCardFolder)
+            .textContent()
+            .catch(() => 0))
+        ),
       ])
       projectCardStates.push({
         title: title,
