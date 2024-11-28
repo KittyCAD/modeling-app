@@ -7,6 +7,7 @@ import { MachinesListing } from 'components/MachineManagerProvider'
 type EnvFn = (value?: string) => string
 
 export interface IElectronAPI {
+  resizeWindow: (width: number, height: number) => Promise<void>
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
