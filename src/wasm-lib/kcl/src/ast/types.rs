@@ -1181,7 +1181,7 @@ impl Node<ImportItem> {
                     self.alias = Some(Identifier::new(new_name));
                 }
                 // Return implicit name.
-                return Some(self.identifier().to_owned());
+                Some(self.identifier().to_owned())
             }
         }
     }
