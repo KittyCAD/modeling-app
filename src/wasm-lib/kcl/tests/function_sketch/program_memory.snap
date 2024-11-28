@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing function_sketch.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -61,7 +62,6 @@ description: Program memory after executing function_sketch.kcl
                               "type": "Identifier"
                             },
                             "end": 47,
-                            "optional": false,
                             "start": 28,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -106,7 +106,6 @@ description: Program memory after executing function_sketch.kcl
                               "type": "Identifier"
                             },
                             "end": 80,
-                            "optional": false,
                             "start": 55,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -150,7 +149,6 @@ description: Program memory after executing function_sketch.kcl
                               "type": "Identifier"
                             },
                             "end": 103,
-                            "optional": false,
                             "start": 88,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -194,7 +192,6 @@ description: Program memory after executing function_sketch.kcl
                               "type": "Identifier"
                             },
                             "end": 126,
-                            "optional": false,
                             "start": 111,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -245,7 +242,6 @@ description: Program memory after executing function_sketch.kcl
                               "type": "Identifier"
                             },
                             "end": 150,
-                            "optional": false,
                             "start": 134,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -266,7 +262,6 @@ description: Program memory after executing function_sketch.kcl
                               "type": "Identifier"
                             },
                             "end": 166,
-                            "optional": false,
                             "start": 158,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -294,7 +289,6 @@ description: Program memory after executing function_sketch.kcl
                               "type": "Identifier"
                             },
                             "end": 187,
-                            "optional": false,
                             "start": 174,
                             "type": "CallExpression",
                             "type": "CallExpression"

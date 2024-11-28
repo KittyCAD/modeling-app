@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing sketch_on_face_circle_tagged.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -48,7 +49,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                                 "type": "Identifier"
                               },
                               "end": 48,
-                              "optional": false,
                               "start": 29,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -76,7 +76,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                                 "type": "Identifier"
                               },
                               "end": 78,
-                              "optional": false,
                               "start": 56,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -120,7 +119,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                                 "type": "Identifier"
                               },
                               "end": 105,
-                              "optional": false,
                               "start": 86,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -164,7 +162,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                                 "type": "Identifier"
                               },
                               "end": 132,
-                              "optional": false,
                               "start": 113,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -215,7 +212,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                                 "type": "Identifier"
                               },
                               "end": 160,
-                              "optional": false,
                               "start": 140,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -359,7 +355,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                     "type": "Identifier"
                   },
                   "end": 202,
-                  "optional": false,
                   "start": 186,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -380,7 +375,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                     "type": "Identifier"
                   },
                   "end": 216,
-                  "optional": false,
                   "start": 208,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -409,7 +403,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                     "type": "Identifier"
                   },
                   "end": 236,
-                  "optional": false,
                   "start": 222,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -467,7 +460,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                     "type": "Identifier"
                   },
                   "end": 277,
-                  "optional": false,
                   "start": 248,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -557,7 +549,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                     "type": "Identifier"
                   },
                   "end": 336,
-                  "optional": false,
                   "start": 283,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -586,7 +577,6 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                     "type": "Identifier"
                   },
                   "end": 355,
-                  "optional": false,
                   "start": 342,
                   "type": "CallExpression",
                   "type": "CallExpression"

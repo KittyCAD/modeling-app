@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing pentagon_fillet_sugar.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -1485,7 +1486,6 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                           "type": "Identifier"
                         },
                         "end": 460,
-                        "optional": false,
                         "start": 438,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -1557,7 +1557,6 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                           "type": "Identifier"
                         },
                         "end": 519,
-                        "optional": false,
                         "start": 468,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -1592,7 +1591,6 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                           "type": "Identifier"
                         },
                         "end": 549,
-                        "optional": false,
                         "start": 527,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -1613,7 +1611,6 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                           "type": "Identifier"
                         },
                         "end": 565,
-                        "optional": false,
                         "start": 557,
                         "type": "CallExpression",
                         "type": "CallExpression"

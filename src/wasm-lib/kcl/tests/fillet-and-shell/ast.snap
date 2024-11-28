@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing fillet-and-shell.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -612,7 +613,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 461,
-                  "optional": false,
                   "start": 373,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -699,7 +699,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 549,
-                  "optional": false,
                   "start": 467,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -786,7 +785,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 637,
-                  "optional": false,
                   "start": 555,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -873,7 +871,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 727,
-                  "optional": false,
                   "start": 643,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -894,7 +891,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 741,
-                  "optional": false,
                   "start": 733,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -945,7 +941,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 769,
-                  "optional": false,
                   "start": 750,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -990,7 +985,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 800,
-                  "optional": false,
                   "start": 775,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1041,7 +1035,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 839,
-                  "optional": false,
                   "start": 806,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1091,7 +1084,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 887,
-                  "optional": false,
                   "start": 845,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1142,7 +1134,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 927,
-                  "optional": false,
                   "start": 893,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1170,7 +1161,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 949,
-                  "optional": false,
                   "start": 933,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1198,7 +1188,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 977,
-                  "optional": false,
                   "start": 955,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1256,7 +1245,6 @@ description: Result of parsing fillet-and-shell.kcl
                                   "type": "Identifier"
                                 },
                                 "end": 1062,
-                                "optional": false,
                                 "start": 1036,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
@@ -1278,7 +1266,6 @@ description: Result of parsing fillet-and-shell.kcl
                                   "type": "Identifier"
                                 },
                                 "end": 1099,
-                                "optional": false,
                                 "start": 1073,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
@@ -1300,7 +1287,6 @@ description: Result of parsing fillet-and-shell.kcl
                                   "type": "Identifier"
                                 },
                                 "end": 1136,
-                                "optional": false,
                                 "start": 1110,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
@@ -1322,7 +1308,6 @@ description: Result of parsing fillet-and-shell.kcl
                                   "type": "Identifier"
                                 },
                                 "end": 1173,
-                                "optional": false,
                                 "start": 1147,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
@@ -1353,7 +1338,6 @@ description: Result of parsing fillet-and-shell.kcl
                     "type": "Identifier"
                   },
                   "end": 1193,
-                  "optional": false,
                   "start": 983,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1417,7 +1401,6 @@ description: Result of parsing fillet-and-shell.kcl
                                 "type": "Identifier"
                               },
                               "end": 1252,
-                              "optional": false,
                               "start": 1233,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -1462,7 +1445,6 @@ description: Result of parsing fillet-and-shell.kcl
                                 "type": "Identifier"
                               },
                               "end": 1285,
-                              "optional": false,
                               "start": 1260,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -1543,7 +1525,6 @@ description: Result of parsing fillet-and-shell.kcl
                                 "type": "Identifier"
                               },
                               "end": 1337,
-                              "optional": false,
                               "start": 1293,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -1626,7 +1607,6 @@ description: Result of parsing fillet-and-shell.kcl
                                     "type": "Identifier"
                                   },
                                   "end": 1395,
-                                  "optional": false,
                                   "start": 1350,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
@@ -1645,7 +1625,6 @@ description: Result of parsing fillet-and-shell.kcl
                                 "type": "Identifier"
                               },
                               "end": 1399,
-                              "optional": false,
                               "start": 1345,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -1673,7 +1652,6 @@ description: Result of parsing fillet-and-shell.kcl
                                 "type": "Identifier"
                               },
                               "end": 1425,
-                              "optional": false,
                               "start": 1407,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -1922,7 +1900,6 @@ description: Result of parsing fillet-and-shell.kcl
             "type": "Identifier"
           },
           "end": 1573,
-          "optional": false,
           "start": 1444,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -2095,7 +2072,6 @@ description: Result of parsing fillet-and-shell.kcl
             "type": "Identifier"
           },
           "end": 1702,
-          "optional": false,
           "start": 1575,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -2268,7 +2244,6 @@ description: Result of parsing fillet-and-shell.kcl
             "type": "Identifier"
           },
           "end": 1829,
-          "optional": false,
           "start": 1704,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -2441,7 +2416,6 @@ description: Result of parsing fillet-and-shell.kcl
             "type": "Identifier"
           },
           "end": 1958,
-          "optional": false,
           "start": 1831,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -2522,7 +2496,6 @@ description: Result of parsing fillet-and-shell.kcl
             "type": "Identifier"
           },
           "end": 2023,
-          "optional": false,
           "start": 1960,
           "type": "CallExpression",
           "type": "CallExpression"

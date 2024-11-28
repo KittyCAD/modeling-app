@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing property_of_object.kcl
 snapshot_kind: text
 ---
@@ -150,7 +149,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 191,
-          "optional": false,
           "start": 136,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -194,7 +192,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 250,
-          "optional": false,
           "start": 192,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -307,7 +304,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 422,
-          "optional": false,
           "start": 366,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -351,7 +347,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 482,
-          "optional": false,
           "start": 423,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -497,7 +492,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 630,
-          "optional": false,
           "start": 575,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -541,7 +535,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 689,
-          "optional": false,
           "start": 631,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -640,7 +633,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 831,
-          "optional": false,
           "start": 775,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -684,7 +676,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 891,
-          "optional": false,
           "start": 832,
           "type": "CallExpression",
           "type": "CallExpression"

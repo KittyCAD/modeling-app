@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing cube.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -472,7 +473,6 @@ description: Result of parsing cube.kcl
                             "type": "Identifier"
                           },
                           "end": 194,
-                          "optional": false,
                           "start": 177,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -500,7 +500,6 @@ description: Result of parsing cube.kcl
                             "type": "Identifier"
                           },
                           "end": 215,
-                          "optional": false,
                           "start": 202,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -528,7 +527,6 @@ description: Result of parsing cube.kcl
                             "type": "Identifier"
                           },
                           "end": 236,
-                          "optional": false,
                           "start": 223,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -556,7 +554,6 @@ description: Result of parsing cube.kcl
                             "type": "Identifier"
                           },
                           "end": 257,
-                          "optional": false,
                           "start": 244,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -584,7 +581,6 @@ description: Result of parsing cube.kcl
                             "type": "Identifier"
                           },
                           "end": 278,
-                          "optional": false,
                           "start": 265,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -605,7 +601,6 @@ description: Result of parsing cube.kcl
                             "type": "Identifier"
                           },
                           "end": 294,
-                          "optional": false,
                           "start": 286,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -633,7 +628,6 @@ description: Result of parsing cube.kcl
                             "type": "Identifier"
                           },
                           "end": 320,
-                          "optional": false,
                           "start": 302,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -757,7 +751,6 @@ description: Result of parsing cube.kcl
                 "type": "Identifier"
               },
               "end": 349,
-              "optional": false,
               "start": 333,
               "type": "CallExpression",
               "type": "CallExpression"
