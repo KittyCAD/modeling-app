@@ -279,3 +279,106 @@ impl From<KclError> for pyo3::PyErr {
         pyo3::exceptions::PyException::new_err(error.to_string())
     }
 }
+
+/// An error which occurred during parsing.
+///
+/// In contrast to Winnow errors which may not be an actual error but just an attempted parse which
+/// didn't work out, these are errors which are always a result of incorrect user code and which should
+/// be presented to the user.
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub struct CompilationError {
+    pub source_range: SourceRange,
+    pub context_range: Option<SourceRange>,
+    pub message: String,
+    pub suggestion: Option<String>,
+    pub severity: Severity,
+    pub tag: Tag,
+}
+
+impl CompilationError {
+    #[allow(dead_code)]
+    pub(crate) fn err(source_range: SourceRange, message: impl ToString) -> CompilationError {
+        CompilationError {
+            source_range,
+            context_range: None,
+            message: message.to_string(),
+            suggestion: None,
+            severity: Severity::Error,
+            tag: Tag::None,
+        }
+    }
+
+    pub(crate) fn fatal(source_range: SourceRange, message: impl ToString) -> CompilationError {
+        CompilationError {
+            source_range,
+            context_range: None,
+            message: message.to_string(),
+            suggestion: None,
+            severity: Severity::Fatal,
+            tag: Tag::None,
+        }
+    }
+
+    pub(crate) fn with_suggestion(
+        source_range: SourceRange,
+        context_range: Option<SourceRange>,
+        message: impl ToString,
+        suggestion: Option<impl ToString>,
+        tag: Tag,
+    ) -> CompilationError {
+        CompilationError {
+            source_range,
+            context_range,
+            message: message.to_string(),
+            suggestion: suggestion.map(|s| s.to_string()),
+            severity: Severity::Error,
+            tag,
+        }
+    }
+
+    #[cfg(test)]
+    pub fn apply_suggestion(&self, src: &str) -> Option<String> {
+        let suggestion = self.suggestion.as_ref()?;
+        Some(format!(
+            "{}{}{}",
+            &src[0..self.source_range.start()],
+            suggestion,
+            &src[self.source_range.end()..]
+        ))
+    }
+}
+
+impl From<CompilationError> for KclErrorDetails {
+    fn from(err: CompilationError) -> Self {
+        KclErrorDetails {
+            source_ranges: vec![err.source_range],
+            message: err.message,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub enum Severity {
+    Warning,
+    Error,
+    Fatal,
+}
+
+impl Severity {
+    pub fn is_err(self) -> bool {
+        match self {
+            Severity::Warning => false,
+            Severity::Error | Severity::Fatal => true,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub enum Tag {
+    Deprecated,
+    Unnecessary,
+    None,
+}

@@ -83,14 +83,13 @@ mod wasm;
 
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
-pub use errors::{ConnectionError, ExecError, KclError};
+pub use errors::{CompilationError, ConnectionError, ExecError, KclError};
 pub use executor::{ExecState, ExecutorContext, ExecutorSettings};
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
 pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
-pub use parsing::CompilationError;
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::{ModuleId, SourceRange};
 

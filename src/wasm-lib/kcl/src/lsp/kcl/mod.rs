@@ -317,10 +317,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         self.add_to_diagnostics(&params, &errs, true).await;
 
-        if errs
-            .iter()
-            .any(|e| e.severity == crate::parsing::Severity::Fatal)
-        {
+        if errs.iter().any(|e| e.severity == crate::errors::Severity::Fatal) {
             self.remove_from_ast_maps(&filename);
             return;
         }

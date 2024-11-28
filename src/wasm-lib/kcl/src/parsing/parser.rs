@@ -8,6 +8,7 @@ use winnow::{
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
+    stream::Stream,
     token::{any, one_of, take_till},
 };
 
@@ -18,21 +19,19 @@ use crate::{
             ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
             CallExpression, CallExpressionKw, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive,
             FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility,
-            Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode,
+            LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode,
             NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program,
             ReturnStatement, Shebang, TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration,
             VariableDeclarator, VariableKind,
         },
-        error::{self, CompilationError, ContextError},
         math::BinaryExpressionToken,
         token::{Token, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
+    errors::{CompilationError, Severity, Tag},
     unparser::ExprContext,
     SourceRange,
 };
-
-use super::ast::types::LabeledArg;
 
 thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
@@ -108,12 +107,121 @@ impl ParseContext {
 
     /// Add a warning to the current `ParseContext`, panics if there is none.
     fn warn(mut e: CompilationError) {
-        e.severity = error::Severity::Warning;
+        e.severity = Severity::Warning;
         Self::err(e);
     }
 }
 
-type PResult<O, E = error::ContextError> = winnow::prelude::PResult<O, E>;
+/// Accumulate context while backtracking errors
+/// Very similar to [`winnow::error::ContextError`] type,
+/// but the 'cause' field is always a [`CompilationError`],
+/// instead of a dynamic [`std::error::Error`] trait object.
+#[derive(Debug, Clone)]
+pub(crate) struct ContextError<C = StrContext> {
+    pub context: Vec<C>,
+    pub cause: Option<CompilationError>,
+}
+
+impl From<winnow::error::ParseError<&[Token], ContextError>> for CompilationError {
+    fn from(err: winnow::error::ParseError<&[Token], ContextError>) -> Self {
+        let Some(last_token) = err.input().last() else {
+            return CompilationError::fatal(Default::default(), "file is empty");
+        };
+
+        let (input, offset, err) = (err.input().to_vec(), err.offset(), err.into_inner());
+
+        if let Some(e) = err.cause {
+            return e;
+        }
+
+        // See docs on `offset`.
+        if offset >= input.len() {
+            let context = err.context.first();
+            return CompilationError::fatal(
+                last_token.as_source_range(),
+                match context {
+                    Some(what) => format!("Unexpected end of file. The compiler {what}"),
+                    None => "Unexpected end of file while still parsing".to_owned(),
+                },
+            );
+        }
+
+        let bad_token = &input[offset];
+        // TODO: Add the Winnow parser context to the error.
+        // See https://github.com/KittyCAD/modeling-app/issues/784
+        CompilationError::fatal(
+            bad_token.as_source_range(),
+            format!("Unexpected token: {}", bad_token.value),
+        )
+    }
+}
+
+impl<C> From<CompilationError> for ContextError<C> {
+    fn from(e: CompilationError) -> Self {
+        Self {
+            context: Default::default(),
+            cause: Some(e),
+        }
+    }
+}
+
+impl<C> std::default::Default for ContextError<C> {
+    fn default() -> Self {
+        Self {
+            context: Default::default(),
+            cause: None,
+        }
+    }
+}
+
+impl<I, C> winnow::error::ParserError<I> for ContextError<C>
+where
+    I: Stream,
+{
+    #[inline]
+    fn from_error_kind(_input: &I, _kind: winnow::error::ErrorKind) -> Self {
+        Self::default()
+    }
+
+    #[inline]
+    fn append(
+        self,
+        _input: &I,
+        _input_checkpoint: &<I as Stream>::Checkpoint,
+        _kind: winnow::error::ErrorKind,
+    ) -> Self {
+        self
+    }
+
+    #[inline]
+    fn or(self, other: Self) -> Self {
+        other
+    }
+}
+
+impl<C, I> winnow::error::AddContext<I, C> for ContextError<C>
+where
+    I: Stream,
+{
+    #[inline]
+    fn add_context(mut self, _input: &I, _input_checkpoint: &<I as Stream>::Checkpoint, ctx: C) -> Self {
+        self.context.push(ctx);
+        self
+    }
+}
+
+impl<C, I> winnow::error::FromExternalError<I, CompilationError> for ContextError<C> {
+    #[inline]
+    fn from_external_error(_input: &I, _kind: winnow::error::ErrorKind, e: CompilationError) -> Self {
+        let mut err = Self::default();
+        {
+            err.cause = Some(e);
+        }
+        err
+    }
+}
+
+type PResult<O, E = ContextError> = winnow::prelude::PResult<O, E>;
 
 fn expected(what: &'static str) -> StrContext {
     StrContext::Expected(StrContextValue::Description(what))
@@ -692,7 +800,7 @@ fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
             Some(result.as_source_range()),
             "Using `:` to initialize objects is deprecated, prefer using `=`.",
             Some(" ="),
-            error::Tag::Deprecated,
+            Tag::Deprecated,
         ));
     }
 
@@ -962,7 +1070,7 @@ fn function_decl(i: TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
             Some(result.as_source_range()),
             "Unnecessary `=>` in function declaration",
             Some(""),
-            error::Tag::Unnecessary,
+            Tag::Unnecessary,
         ));
         true
     } else {
@@ -1570,7 +1678,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                 Some(SourceRange::new(id.start, ctxt_end, module_id)),
                 "Unnecessary `=` in function declaration",
                 Some(""),
-                error::Tag::Unnecessary,
+                Tag::Unnecessary,
             ));
         }
 
@@ -2194,7 +2302,7 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
             None,
             "`int` function is deprecated. You may not need it at all. If you need to round, consider `round`, `ceil`, or `floor`.",
             Some(arg_str),
-            error::Tag::Deprecated,
+            Tag::Deprecated,
         ));
     }
 
@@ -2300,7 +2408,7 @@ mod tests {
     fn weird_program_just_a_pipe() {
         let tokens = crate::parsing::token::lexer("|", ModuleId::default()).unwrap();
         let err: CompilationError = program.parse(&tokens).unwrap_err().into();
-        assert_eq!(vec![err.source_range], vec![SourceRange::new(0, 1, ModuleId::default())]);
+        assert_eq!(err.source_range, SourceRange::new(0, 1, ModuleId::default()));
         assert_eq!(err.message, "Unexpected token: |");
     }
 

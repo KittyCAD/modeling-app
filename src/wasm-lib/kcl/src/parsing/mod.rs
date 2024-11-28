@@ -1,7 +1,5 @@
-pub use error::{CompilationError, Severity};
-
 use crate::{
-    errors::{KclError, KclErrorDetails},
+    errors::{CompilationError, KclError, KclErrorDetails},
     parsing::{
         ast::types::{Node, Program},
         token::{Token, TokenType},
@@ -10,7 +8,6 @@ use crate::{
 };
 
 pub(crate) mod ast;
-mod error;
 mod math;
 pub(crate) mod parser;
 pub(crate) mod token;
@@ -108,7 +105,7 @@ impl ParseResult {
 
     #[cfg(test)]
     #[track_caller]
-    pub fn unwrap_errs<'a>(&'a self) -> impl Iterator<Item = &'a error::CompilationError> {
+    pub fn unwrap_errs(&self) -> impl Iterator<Item = &CompilationError> {
         self.0.as_ref().unwrap().1.iter().filter(|e| e.severity.is_err())
     }
 
@@ -116,7 +113,7 @@ impl ParseResult {
     pub fn parse_errs_as_err(self) -> Result<Node<Program>, KclError> {
         let (p, errs) = self.0?;
 
-        if let Some(err) = errs.iter().filter(|e| e.severity.is_err()).next() {
+        if let Some(err) = errs.iter().find(|e| e.severity.is_err()) {
             return Err(KclError::Syntax(err.clone().into()));
         }
         match p {
