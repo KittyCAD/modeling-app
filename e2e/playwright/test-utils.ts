@@ -98,12 +98,16 @@ async function removeCurrentCode(page: Page) {
 }
 
 export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
-  await page.getByTestId('custom-cmd-input').fill(JSON.stringify(cmd))
+  const json = JSON.stringify(cmd)
+  await page.getByTestId('custom-cmd-input').fill(json)
+  await expect(page.getByTestId('custom-cmd-input')).toHaveValue(json)
   await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
-  await page.getByTestId('custom-cmd-send-button').click({ delay: 1000 })
+  await page.getByTestId('custom-cmd-send-button').click()
 }
 
 async function clearCommandLogs(page: Page) {
+  await page.getByTestId('custom-cmd-input').fill('')
+  await page.getByTestId('clear-commands').scrollIntoViewIfNeeded()
   await page.getByTestId('clear-commands').click()
 }
 
