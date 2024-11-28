@@ -3,20 +3,21 @@ use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, DiagnosticTag};
 use winnow::{error::StrContext, stream::Stream};
 
 use crate::{
-    errors::{KclError, KclErrorDetails},
-    parsing::token::Token,
+    errors::KclErrorDetails,
     lsp::IntoDiagnostic,
     SourceRange,
 };
 
+use super::token::Token;
+
 /// Accumulate context while backtracking errors
 /// Very similar to [`winnow::error::ContextError`] type,
-/// but the 'cause' field is always a [`KclError`],
+/// but the 'cause' field is always a [`CompilationError`],
 /// instead of a dynamic [`std::error::Error`] trait object.
 #[derive(Debug, Clone)]
-pub struct ContextError<C = StrContext> {
+pub(crate) struct ContextError<C = StrContext> {
     pub context: Vec<C>,
-    pub cause: Option<KclError>,
+    pub cause: Option<CompilationError>,
 }
 
 /// An error which occurred during parsing.
@@ -36,6 +37,7 @@ pub struct CompilationError {
 }
 
 impl CompilationError {
+    #[allow(dead_code)]
     pub(super) fn err(source_range: SourceRange, message: impl ToString) -> CompilationError {
         CompilationError {
             source_range,
@@ -43,6 +45,17 @@ impl CompilationError {
             message: message.to_string(),
             suggestion: None,
             severity: Severity::Error,
+            tag: Tag::None,
+        }
+    }
+
+    pub(in super::super) fn fatal(source_range: SourceRange, message: impl ToString) -> CompilationError {
+        CompilationError {
+            source_range,
+            context_range: None,
+            message: message.to_string(),
+            suggestion: None,
+            severity: Severity::Fatal,
             tag: Tag::None,
         }
     }
@@ -124,6 +137,15 @@ pub enum Severity {
     Fatal,
 }
 
+impl Severity {
+    pub fn is_err(self) -> bool {
+        match self {
+            Severity::Warning => false,
+            Severity::Error | Severity::Fatal => true,
+        }
+    }
+}
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
 #[ts(export)]
 pub enum Tag {
@@ -142,67 +164,42 @@ impl Tag {
     }
 }
 
-/// Helper enum for the below conversion of Winnow errors into either a parse error or an unexpected
-/// error.
-// TODO we should optimise the size of SourceRange and thus CompilationError
-#[allow(clippy::large_enum_variant)]
-pub(super) enum ErrorKind {
-    Parse(CompilationError),
-    Internal(KclError),
-}
-
-impl ErrorKind {
-    #[cfg(test)]
-    pub fn unwrap_compile_error(self) -> CompilationError {
-        match self {
-            ErrorKind::Parse(e) => e,
-            ErrorKind::Internal(_) => panic!(),
-        }
-    }
-}
-
-impl From<winnow::error::ParseError<&[Token], ContextError>> for ErrorKind {
+impl From<winnow::error::ParseError<&[Token], ContextError>> for CompilationError {
     fn from(err: winnow::error::ParseError<&[Token], ContextError>) -> Self {
         let Some(last_token) = err.input().last() else {
-            return ErrorKind::Parse(CompilationError::err(Default::default(), "file is empty"));
+            return CompilationError::fatal(Default::default(), "file is empty");
         };
 
         let (input, offset, err) = (err.input().to_vec(), err.offset(), err.into_inner());
 
         if let Some(e) = err.cause {
-            return match e {
-                KclError::Syntax(details) => ErrorKind::Parse(CompilationError::err(
-                    details.source_ranges.into_iter().next().unwrap(),
-                    details.message,
-                )),
-                e => ErrorKind::Internal(e),
-            };
+            return e;
         }
 
         // See docs on `offset`.
         if offset >= input.len() {
             let context = err.context.first();
-            return ErrorKind::Parse(CompilationError::err(
+            return CompilationError::fatal(
                 last_token.as_source_range(),
                 match context {
                     Some(what) => format!("Unexpected end of file. The compiler {what}"),
                     None => "Unexpected end of file while still parsing".to_owned(),
                 },
-            ));
+            );
         }
 
         let bad_token = &input[offset];
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
-        ErrorKind::Parse(CompilationError::err(
+        CompilationError::fatal(
             bad_token.as_source_range(),
             format!("Unexpected token: {}", bad_token.value),
-        ))
+        )
     }
 }
 
-impl<C> From<KclError> for ContextError<C> {
-    fn from(e: KclError) -> Self {
+impl<C> From<CompilationError> for ContextError<C> {
+    fn from(e: CompilationError) -> Self {
         Self {
             context: Default::default(),
             cause: Some(e),
@@ -255,9 +252,9 @@ where
     }
 }
 
-impl<C, I> winnow::error::FromExternalError<I, KclError> for ContextError<C> {
+impl<C, I> winnow::error::FromExternalError<I, CompilationError> for ContextError<C> {
     #[inline]
-    fn from_external_error(_input: &I, _kind: winnow::error::ErrorKind, e: KclError) -> Self {
+    fn from_external_error(_input: &I, _kind: winnow::error::ErrorKind, e: CompilationError) -> Self {
         let mut err = Self::default();
         {
             err.cause = Some(e);

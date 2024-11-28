@@ -319,7 +319,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         if errs
             .iter()
-            .any(|e| e.severity == crate::parser::parser_impl::error::Severity::Fatal)
+            .any(|e| e.severity == crate::parsing::Severity::Fatal)
         {
             self.remove_from_ast_maps(&filename);
             return;

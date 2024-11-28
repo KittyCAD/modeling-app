@@ -1,24 +1,22 @@
 use crate::{
-    errors::{KclError, KclErrorDetails},
-    parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
+parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
     SourceRange,
 };
 
+use super::CompilationError;
+
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
 /// into a binary expression tree.
-pub fn parse(infix_tokens: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, KclError> {
+pub fn parse(infix_tokens: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, CompilationError> {
     let rpn = postfix(infix_tokens);
     evaluate(rpn)
 }
 
 /// Parses a list of tokens (in postfix order) into a binary expression tree.
-fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, KclError> {
-    let source_ranges = source_range(&rpn);
+fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, CompilationError> {
+    let source_range = source_range(&rpn);
     let mut operand_stack: Vec<BinaryPart> = Vec::new();
-    let e = KclError::Internal(KclErrorDetails {
-        source_ranges,
-        message: "error parsing binary math expressions".to_owned(),
-    });
+    let e = CompilationError::fatal(source_range, "error parsing binary math expressions");
     for item in rpn {
         let expr = match item {
             BinaryExpressionToken::Operator(operator) => {
@@ -57,7 +55,7 @@ fn evaluate(rpn: Vec<BinaryExpressionToken>) -> Result<Node<BinaryExpression>, K
     }
 }
 
-fn source_range(tokens: &[BinaryExpressionToken]) -> Vec<SourceRange> {
+fn source_range(tokens: &[BinaryExpressionToken]) -> SourceRange {
     let sources: Vec<_> = tokens
         .iter()
         .filter_map(|op| match op {
@@ -66,8 +64,8 @@ fn source_range(tokens: &[BinaryExpressionToken]) -> Vec<SourceRange> {
         })
         .collect();
     match (sources.first(), sources.last()) {
-        (Some((start, _, module_id)), Some((_, end, _))) => vec![SourceRange::new(*start, *end, *module_id)],
-        _ => Vec::new(),
+        (Some((start, _, module_id)), Some((_, end, _))) => SourceRange::new(*start, *end, *module_id),
+        _ => panic!(),
     }
 }
 

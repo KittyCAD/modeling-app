@@ -1,4 +1,4 @@
-pub use error::CompilationError;
+pub use error::{CompilationError, Severity};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -101,28 +101,23 @@ impl ParseResult {
     #[cfg(test)]
     pub fn is_ok(&self) -> bool {
         match &self.0 {
-            Ok((p, errs)) => p.is_some() && errs.is_empty(),
+            Ok((p, errs)) => p.is_some() && !errs.iter().any(|e| e.severity.is_err()),
             Err(_) => false,
         }
     }
 
     #[cfg(test)]
     #[track_caller]
-<<<<<<< HEAD:src/wasm-lib/kcl/src/parsing/mod.rs
-    pub fn unwrap_errs(&self) -> &[error::ParseError] {
-        &self.0.as_ref().unwrap().1.errors
-=======
-    pub fn unwrap_errs(&self) -> &[parser_impl::error::CompilationError] {
-        &self.0.as_ref().unwrap().1
->>>>>>> e13bf1b6 (Send multiple errors and warnings to the frontend and LSP):src/wasm-lib/kcl/src/parser.rs
+    pub fn unwrap_errs<'a>(&'a self) -> impl Iterator<Item = &'a error::CompilationError> {
+        self.0.as_ref().unwrap().1.iter().filter(|e| e.severity.is_err())
     }
 
     /// Treat parsing errors as an Error.
     pub fn parse_errs_as_err(self) -> Result<Node<Program>, KclError> {
         let (p, errs) = self.0?;
 
-        if !errs.is_empty() {
-            return Err(KclError::Syntax(errs[0].clone().into()));
+        if let Some(err) = errs.iter().filter(|e| e.severity.is_err()).next() {
+            return Err(KclError::Syntax(err.clone().into()));
         }
         match p {
             Some(p) => Ok(p),
