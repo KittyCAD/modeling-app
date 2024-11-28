@@ -73,6 +73,7 @@ export function test(desc, objOrFn, fnMaybe) {
         {
           context: tronApp.context,
           page: tronApp.page,
+          electronApp: tronApp.electronApp,
           ...fixtures,
         },
         testInfo
