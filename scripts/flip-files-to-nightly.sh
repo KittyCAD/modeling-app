@@ -17,3 +17,4 @@ echo "Nightly build $VERSION (commit $COMMIT)" > release-notes.md
 
 # icons
 cp assets/icon-nightly.png assets/icon.png
+cp assets/icon-nightly.ico assets/icon.ico

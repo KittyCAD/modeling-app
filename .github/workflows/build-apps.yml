@@ -65,6 +65,7 @@ jobs:
             electron-builder.yml
             src/wasm-lib/pkg/wasm_lib*
             release-notes.md
+            assets/icon.ico
             assets/icon.png
 
       - id: export_version
@@ -116,6 +117,7 @@ jobs:
           mkdir src/wasm-lib/pkg
           cp prepared-files/src/wasm-lib/pkg/wasm_lib* src/wasm-lib/pkg
           cp prepared-files/release-notes.md release-notes.md
+          cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
 
       - name: Sync node version and setup cache
