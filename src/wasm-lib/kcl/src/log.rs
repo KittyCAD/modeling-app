@@ -107,7 +107,7 @@ impl<'a> LogPerfStats<'a> {
     }
 }
 
-impl<'a> Drop for LogPerfStats<'a> {
+impl Drop for LogPerfStats<'_> {
     fn drop(&mut self) {
         if !self.cancelled {
             self.log_now();
