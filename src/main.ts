@@ -134,6 +134,14 @@ app.on('ready', (event, data) => {
 // There is just not enough code to warrant it and further abstracts everything
 // which is already quite abstracted
 
+app.resizeWindow = async (width: number, height: number) => {
+  return mainWindow?.setSize(width, height)
+}
+
+ipcMain.handle('app.resizeWindow', (event, data) => {
+  return mainWindow?.setSize(...data)
+})
+
 ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
 })

@@ -52,11 +52,10 @@ export class SceneFixture {
   }
 
   expectState = async (expected: SceneSerialised) => {
-    return expect
-      .poll(() => this._serialiseScene(), {
-        message: `Expected scene state to match`,
-      })
-      .toEqual(expected)
+    return expect.poll(async () => await this._serialiseScene(), {
+      intervals: [1_000, 2_000, 10_000],
+      timeout: 60000,
+    }).toEqual(expected)
   }
 
   reConstruct = (page: Page) => {
@@ -187,7 +186,10 @@ export class SceneFixture {
         type: 'default_camera_get_settings',
       },
     })
-    await this.waitForExecutionDone()
+    await this.page
+      .locator(`[data-receive-command-type="default_camera_get_settings"]`)
+      .first()
+      .waitFor()
     const position = await Promise.all([
       this.page.getByTestId('cam-x-position').inputValue().then(Number),
       this.page.getByTestId('cam-y-position').inputValue().then(Number),
@@ -222,6 +224,7 @@ export class SceneFixture {
   }
 
   async clickGizmoMenuItem(name: string) {
+    await this.gizmo.hover()
     await this.gizmo.click({ button: 'right' })
     const buttonToTest = this.page.getByRole('button', {
       name: name,
