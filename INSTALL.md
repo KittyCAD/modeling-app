@@ -29,9 +29,8 @@ Compared to other CAD software, getting Zoo Modeling App up and running is quick
        sudo apt update
        sudo apt install libfuse2
        ```
-    - Further desktop environment can be achieved by installing `appimaged`, see [these steps](https://github.com/probonopd/go-appimage/blob/master/src/appimaged/README.md#initial-setup). 
-
-2. Once downloaded, copy the downloaded `Zoo Modeling App-{version}-{arch}-linux.AppImage` to the directory of your choice, for instance `~/Applications`.
+    - Optionally, follow [these steps](https://github.com/probonopd/go-appimage/blob/master/src/appimaged/README.md#initial-setup) to install `appimaged`. It is a daemon that makes interacting with AppImage files more seamless. 
+    - Once installed, copy the downloaded `Zoo Modeling App-{version}-{arch}-linux.AppImage` to the directory of your choice, for instance `~/Applications`.
 
    - `appimaged` should automatically find it and make it executable. If not, run:
      ```bash
