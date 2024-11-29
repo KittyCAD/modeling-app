@@ -1157,3 +1157,12 @@ export function getPixelRGBs(page: Page) {
     })
   }
 }
+
+export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
+  return expect
+    .poll(async () => {
+      const lines = await page.locator('.cm-activeLine').all()
+      return lines.length
+    })
+    .toBe(lines)
+}

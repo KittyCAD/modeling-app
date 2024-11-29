@@ -7,7 +7,8 @@ import packageJson from '../package.json'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import chokidar from 'chokidar'
 
-const resizeWindow = (width: number, height: number) => ipcRenderer.invoke('app.resizeWindow', [width, height])
+const resizeWindow = (width: number, height: number) =>
+  ipcRenderer.invoke('app.resizeWindow', [width, height])
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
