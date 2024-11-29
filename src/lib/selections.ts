@@ -566,6 +566,7 @@ export function canLoftSelection(selection: Selections) {
   )
   console.log('commonNodes', commonNodes)
   return (
+    // TODO: check if we need ifSketchPipe or other things enabled
     // !!isSketchPipe(selection) &&
     commonNodes.length > 1 &&
     // commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&

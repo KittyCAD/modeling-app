@@ -44,6 +44,7 @@ import {
   addOffsetPlane,
   deleteFromSelection,
   extrudeSketch,
+  loftSketches,
   revolveSketch,
 } from 'lang/modifyAst'
 import { applyFilletToSelection } from 'lang/modifyAst/addFillet'
@@ -713,13 +714,19 @@ export const modelingMachine = setup({
         if (!event.data) return
         const { selection } = event.data
         let ast = kclManager.ast
-        const pathToNode = getNodePathFromSourceRange(
+        // TODO: make it all list based
+        const pathToNode0 = getNodePathFromSourceRange(
           ast,
           selection.graphSelections[0]?.codeRef.range
         )
+        const pathToNode1 = getNodePathFromSourceRange(
+          ast,
+          selection.graphSelections[1]?.codeRef.range
+        )
         const loftSketchesRes = loftSketches(
           ast,
-          pathToNode,
+          pathToNode0,
+          pathToNode1,
         )
         if (trap(loftSketchesRes)) return
         const { modifiedAst, pathToLoftArg } = loftSketchesRes 

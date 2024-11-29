@@ -346,6 +346,73 @@ export function extrudeSketch(
   }
 }
 
+export function loftSketches(
+  node: Node<Program>,
+  pathToNode0: PathToNode,
+  pathToNode1: PathToNode,
+):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+      pathToLoftArg: PathToNode
+    }
+  | Error {
+  const _node = structuredClone(node)
+
+  // TODO: make this whole thing list based
+  const _node0 = getNodeFromPath<VariableDeclarator>(
+    _node,
+    pathToNode0,
+    'VariableDeclarator'
+  )
+  const _node1 = getNodeFromPath<VariableDeclarator>(
+    _node,
+    pathToNode1,
+    'VariableDeclarator'
+  )
+  if (err(_node0)) return _node0
+  if (err(_node1)) return _node1
+  const { node: variableDeclarator0, shallowPath: pathToDecleration0 } = _node0
+  const { node: variableDeclarator1, shallowPath: pathToDecleration1 } = _node1
+
+  const identifiers = createArrayExpression([
+    createIdentifier(variableDeclarator0.id.name),
+    createIdentifier(variableDeclarator1.id.name),
+  ])
+  const loftCall = createCallExpressionStdLib('loft', [
+    identifiers,
+    // TODO: add others
+  ])
+
+  // We're not creating a pipe expression,
+  // but rather a separate constant for the extrusion
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
+  const VariableDeclaration = createVariableDeclaration(name, loftCall)
+
+  // TODO: check these blocks below for 0..n
+  const sketchIndexInPathToNode =
+    pathToDecleration1.findIndex((a) => a[0] === 'body') + 1
+  const sketchIndexInBody = pathToDecleration1[
+    sketchIndexInPathToNode
+  ][0] as number
+  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
+
+  const pathToLoftArg: PathToNode = [
+    ['body', ''],
+    [sketchIndexInBody + 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    [0, 'index'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+  return {
+    modifiedAst: _node,
+    pathToNode: [...pathToNode0.slice(0, -1), [-1, 'index']],
+    pathToLoftArg,
+  }
+}
+
 export function revolveSketch(
   node: Node<Program>,
   pathToNode: PathToNode,
