@@ -348,53 +348,46 @@ export function extrudeSketch(
 
 export function loftSketches(
   node: Node<Program>,
-  pathToNode0: PathToNode,
-  pathToNode1: PathToNode,
+  nodePaths: PathToNode[]
 ):
   | {
       modifiedAst: Node<Program>
-      pathToNode: PathToNode
       pathToLoftArg: PathToNode
     }
   | Error {
   const _node = structuredClone(node)
 
-  // TODO: make this whole thing list based
-  const _node0 = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode0,
-    'VariableDeclarator'
-  )
-  const _node1 = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode1,
-    'VariableDeclarator'
-  )
-  if (err(_node0)) return _node0
-  if (err(_node1)) return _node1
-  const { node: variableDeclarator0, shallowPath: pathToDecleration0 } = _node0
-  const { node: variableDeclarator1, shallowPath: pathToDecleration1 } = _node1
+  const variableDeclarators = []
+  const pathsToDeclarations = []
+  for (const path of nodePaths) {
+    const node = getNodeFromPath<VariableDeclarator>(
+      _node,
+      path,
+      'VariableDeclarator'
+    )
+    if (err(node)) {
+      return node
+    }
 
-  const identifiers = createArrayExpression([
-    createIdentifier(variableDeclarator0.id.name),
-    createIdentifier(variableDeclarator1.id.name),
-  ])
-  const loftCall = createCallExpressionStdLib('loft', [
-    identifiers,
-    // TODO: add others
-  ])
+    const { node: variableDeclarator, shallowPath: pathToDecleration } = node
+    variableDeclarators.push(variableDeclarator)
+    pathsToDeclarations.push(pathToDecleration)
+  }
+
+  const identifiers = createArrayExpression(
+    variableDeclarators.map((d) => createIdentifier(d.id.name))
+  )
+  const loftCall = createCallExpressionStdLib('loft', [identifiers])
 
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
   const VariableDeclaration = createVariableDeclaration(name, loftCall)
 
-  // TODO: check these blocks below for 0..n
-  const sketchIndexInPathToNode =
-    pathToDecleration1.findIndex((a) => a[0] === 'body') + 1
-  const sketchIndexInBody = pathToDecleration1[
-    sketchIndexInPathToNode
-  ][0] as number
+  // TODO: check which item lastPath should be here
+  const lastPath = pathsToDeclarations[pathsToDeclarations.length - 1]
+  const sketchIndexInPathToNode = lastPath.findIndex((a) => a[0] === 'body') + 1
+  const sketchIndexInBody = lastPath[sketchIndexInPathToNode][0] as number
   _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
 
   const pathToLoftArg: PathToNode = [
@@ -408,7 +401,6 @@ export function loftSketches(
   ]
   return {
     modifiedAst: _node,
-    pathToNode: [...pathToNode0.slice(0, -1), [-1, 'index']],
     pathToLoftArg,
   }
 }

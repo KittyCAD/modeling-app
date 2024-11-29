@@ -715,21 +715,12 @@ export const modelingMachine = setup({
         const { selection } = event.data
         let ast = kclManager.ast
         // TODO: make it all list based
-        const pathToNode0 = getNodePathFromSourceRange(
-          ast,
-          selection.graphSelections[0]?.codeRef.range
+        const nodePaths = selection.graphSelections.map((s) =>
+          getNodePathFromSourceRange(ast, s?.codeRef.range)
         )
-        const pathToNode1 = getNodePathFromSourceRange(
-          ast,
-          selection.graphSelections[1]?.codeRef.range
-        )
-        const loftSketchesRes = loftSketches(
-          ast,
-          pathToNode0,
-          pathToNode1,
-        )
+        const loftSketchesRes = loftSketches(ast, nodePaths)
         if (trap(loftSketchesRes)) return
-        const { modifiedAst, pathToLoftArg } = loftSketchesRes 
+        const { modifiedAst, pathToLoftArg } = loftSketchesRes
 
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
           focusPath: [pathToLoftArg],

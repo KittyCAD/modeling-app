@@ -586,7 +586,10 @@ export const ModelingMachineProvider = ({
             return doesSceneHaveSweepableSketch(kclManager.ast)
           }
           // TODO: check if we need a check like this for loft
-          console.log('isSketchPipe(selectionRanges)', isSketchPipe(selectionRanges))
+          console.log(
+            'isSketchPipe(selectionRanges)',
+            isSketchPipe(selectionRanges)
+          )
           // if (!isSketchPipe(selectionRanges)) return false
 
           const canLoft = canLoftSelection(selectionRanges)

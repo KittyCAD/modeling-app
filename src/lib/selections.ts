@@ -570,7 +570,7 @@ export function canLoftSelection(selection: Selections) {
     // !!isSketchPipe(selection) &&
     commonNodes.length > 1 &&
     // commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    (commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n))) &&
+    commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n)) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
   )
 }
