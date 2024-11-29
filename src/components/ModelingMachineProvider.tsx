@@ -589,8 +589,6 @@ export const ModelingMachineProvider = ({
             'isSketchPipe(selectionRanges)',
             isSketchPipe(selectionRanges)
           )
-          // TODO: The way this is isn't letting me loft
-          // if (!isSketchPipe(selectionRanges)) return false
 
           const canLoft = canLoftSelection(selectionRanges)
           if (err(canLoft)) return false
