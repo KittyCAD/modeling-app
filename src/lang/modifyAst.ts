@@ -358,7 +358,8 @@ export function loftSketches(
   const _node = structuredClone(node)
 
   const variableDeclarators = []
-  const pathsToDeclarations = []
+  const pathsToDeclaration = []
+  const deepPaths = []
   for (const path of nodePaths) {
     const node = getNodeFromPath<VariableDeclarator>(
       _node,
@@ -369,23 +370,23 @@ export function loftSketches(
       return node
     }
 
-    const { node: variableDeclarator, shallowPath: pathToDecleration } = node
+    const { node: variableDeclarator, shallowPath: pathToDecleration, deepPath } = node
     variableDeclarators.push(variableDeclarator)
-    pathsToDeclarations.push(pathToDecleration)
+    pathsToDeclaration.push(pathToDecleration)
+    deepPaths.push(deepPath)
   }
 
   const identifiers = createArrayExpression(
     variableDeclarators.map((d) => createIdentifier(d.id.name))
   )
   const loftCall = createCallExpressionStdLib('loft', [identifiers])
-
-  // We're not creating a pipe expression,
-  // but rather a separate constant for the extrusion
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
   const VariableDeclaration = createVariableDeclaration(name, loftCall)
 
-  // TODO: check which item lastPath should be here
-  const lastPath = pathsToDeclarations[pathsToDeclarations.length - 1]
+  console.log(pathsToDeclaration[0], pathsToDeclaration[1])
+  console.log(deepPaths[0], deepPaths[1])
+  // TODO: lastPath should be based on deepPath order
+  const lastPath = pathsToDeclaration[pathsToDeclaration.length - 1]
   const sketchIndexInPathToNode = lastPath.findIndex((a) => a[0] === 'body') + 1
   const sketchIndexInBody = lastPath[sketchIndexInPathToNode][0] as number
   _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
