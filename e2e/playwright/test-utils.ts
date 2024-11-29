@@ -30,6 +30,10 @@ import { isErrorWhitelisted } from './lib/console-error-whitelist'
 import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 
+const toNormalizedCode = (text: string) => {
+  return text.replace(/\s+/g, '')
+}
+
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
   WHITE: [249, 249, 249] as TestColor,
@@ -505,13 +509,16 @@ export async function getUtils(page: Page, test_?: typeof test) {
       )
     },
 
-    toNormalizedCode: (text: string) => {
-      return text.replace(/\s+/g, '')
+    toNormalizedCode(text: string) {
+      return toNormalizedCode(text)
     },
 
-    editorTextMatches: async (code: string) => {
+    async editorTextMatches(code: string) {
       const editor = page.locator(editorSelector)
-      return expect.poll(() => editor.textContent()).toContain(code)
+      return expect.poll(async () => {
+        const text = await editor.textContent()
+        return toNormalizedCode(text)
+      }).toContain(toNormalizedCode(code))
     },
 
     pasteCodeInEditor: async (code: string) => {
