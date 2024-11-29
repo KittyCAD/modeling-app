@@ -12,7 +12,7 @@ test.describe('Test toggling perspective', () => {
     const screenHeight = 500
     const checkedScreenLocation = {
       x: screenWidth * 0.71,
-      y: screenHeight * 0.4,
+      y: screenHeight * 0.2,
     }
     const backgroundColor: [number, number, number] = [29, 29, 29]
     const xzPlaneColor: [number, number, number] = [82, 55, 96]
@@ -44,11 +44,17 @@ test.describe('Test toggling perspective', () => {
       await expect(projectionToggle).toHaveAttribute('aria-checked', 'true')
     })
 
+    // Extremely wild note: flicking between ortho and persp actually changes
+    // the orientation of the axis/camera. How can you see this? Well toggle it,
+    // then refresh. You'll see it doesn't match what we left.
     await test.step('Switch to ortho via command palette', async () => {
       await commandPaletteButton.click()
+      await page.waitForTimeout(1000)
       await commandOption.click()
+      await page.waitForTimeout(1000)
       await orthoOption.click()
       await expect(commandToast).toBeVisible()
+      await expect(commandToast).not.toBeVisible()
       await expect
         .poll(async () => locationToHaveColor(xzPlaneColor), {
           timeout: 5000,
@@ -59,27 +65,9 @@ test.describe('Test toggling perspective', () => {
     })
 
     await test.step(`Refresh the page and ensure the stream is loaded in ortho`, async () => {
-      // In playwright web, the settings set while testing are not persisted because
-      // the `addInitScript` within `setup` is re-run on page reload
-      await page.addInitScript(
-        ({ settingsKey, settings }) => {
-          localStorage.setItem(settingsKey, settings)
-        },
-        {
-          settingsKey: TEST_SETTINGS_KEY,
-          settings: TOML.stringify({
-            settings: {
-              ...TEST_SETTINGS,
-              modeling: {
-                ...TEST_SETTINGS.modeling,
-                cameraProjection: 'orthographic',
-              },
-            },
-          }),
-        }
-      )
       await page.reload()
-      await homePage.goToModelingScene()
+      await page.waitForTimeout(1000)
+      await u.closeKclCodePanel()
       await expect
         .poll(async () => locationToHaveColor(xzPlaneColor), {
           timeout: 5000,
