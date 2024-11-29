@@ -115,9 +115,7 @@ test.describe('Onboarding tests', () => {
       await replayButton.click()
 
       // Ensure we see the warning, and that the code has not yet updated
-      await expect(
-        page.getByText('Would you like to create')
-      ).toBeVisible()
+      await expect(page.getByText('Would you like to create')).toBeVisible()
       await expect(page.locator('.cm-content')).toHaveText(initialCode)
 
       const nextButton = page.getByTestId('onboarding-next')
@@ -263,7 +261,9 @@ test.describe('Onboarding tests', () => {
       await page.setBodyDimensions({ width: 1200, height: 1080 })
       await homePage.goToModelingScene()
 
-      await expect.poll(() => page.url()).toContain(onboardingPaths.PARAMETRIC_MODELING)
+      await expect
+        .poll(() => page.url())
+        .toContain(onboardingPaths.PARAMETRIC_MODELING)
 
       const bracketNoNewLines = bracket.replace(/\n/g, '')
 

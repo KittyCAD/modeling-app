@@ -1,18 +1,10 @@
-import { test, expect } from '@playwright/test'
-import { getUtils, setup, tearDown } from './test-utils'
+import { test, expect } from './zoo-test'
+import { getUtils } from './test-utils'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
 import * as TOML from '@iarna/toml'
 
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
-
 test.describe('Test toggling perspective', () => {
-  test('via command palette and toggle', async ({ page }) => {
+  test('via command palette and toggle', async ({ page, homePage }) => {
     const u = await getUtils(page)
 
     // Locators and constants
@@ -40,8 +32,8 @@ test.describe('Test toggling perspective', () => {
     })
 
     await test.step('Setup', async () => {
-      await page.setViewportSize({ width: screenWidth, height: screenHeight })
-      await u.waitForAuthSkipAppStart()
+      await page.setBodyDimensions({ width: screenWidth, height: screenHeight })
+      await homePage.goToModelingScene()
       await u.closeKclCodePanel()
       await expect
         .poll(async () => locationToHaveColor(backgroundColor), {
@@ -87,7 +79,7 @@ test.describe('Test toggling perspective', () => {
         }
       )
       await page.reload()
-      await u.waitForAuthSkipAppStart()
+      await homePage.goToModelingScene()
       await expect
         .poll(async () => locationToHaveColor(xzPlaneColor), {
           timeout: 5000,
