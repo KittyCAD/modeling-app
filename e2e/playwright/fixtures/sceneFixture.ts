@@ -52,10 +52,12 @@ export class SceneFixture {
   }
 
   expectState = async (expected: SceneSerialised) => {
-    return expect.poll(async () => await this._serialiseScene(), {
-      intervals: [1_000, 2_000, 10_000],
-      timeout: 60000,
-    }).toEqual(expected)
+    return expect
+      .poll(async () => await this._serialiseScene(), {
+        intervals: [1_000, 2_000, 10_000],
+        timeout: 60000,
+      })
+      .toEqual(expected)
   }
 
   reConstruct = (page: Page) => {
