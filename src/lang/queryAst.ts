@@ -975,7 +975,9 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
         if (
           node.type === 'CallExpression' &&
           node.callee.type === 'Identifier' &&
-          (node.callee.name === 'extrude' || node.callee.name === 'revolve' || node.callee.name === 'loft') &&
+          (node.callee.name === 'extrude' ||
+            node.callee.name === 'revolve' ||
+            node.callee.name === 'loft') &&
           node.arguments?.[1]?.type === 'Identifier' &&
           node.arguments[1].name === varDec.id.name
         ) {

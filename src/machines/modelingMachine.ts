@@ -725,7 +725,9 @@ export const modelingMachine = setup({
           focusPath: [pathToLoftArg],
           zoomToFit: true,
           zoomOnRangeAndType: {
-            range: selection.graphSelections[selection.graphSelections.length - 1]?.codeRef.range,
+            range:
+              selection.graphSelections[selection.graphSelections.length - 1]
+                ?.codeRef.range,
             type: 'path',
           },
         })

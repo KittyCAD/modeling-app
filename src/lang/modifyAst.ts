@@ -359,7 +359,6 @@ export function loftSketches(
 
   const variableDeclarators = []
   const pathsToDeclaration = []
-  const deepPaths = []
   for (const path of nodePaths) {
     const node = getNodeFromPath<VariableDeclarator>(
       _node,
@@ -370,10 +369,9 @@ export function loftSketches(
       return node
     }
 
-    const { node: variableDeclarator, shallowPath: pathToDecleration, deepPath } = node
+    const { node: variableDeclarator, shallowPath: pathToDecleration } = node
     variableDeclarators.push(variableDeclarator)
     pathsToDeclaration.push(pathToDecleration)
-    deepPaths.push(deepPath)
   }
 
   const identifiers = createArrayExpression(
@@ -383,12 +381,17 @@ export function loftSketches(
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
   const VariableDeclaration = createVariableDeclaration(name, loftCall)
 
-  console.log(pathsToDeclaration[0], pathsToDeclaration[1])
-  console.log(deepPaths[0], deepPaths[1])
-  // TODO: lastPath should be based on deepPath order
+  const sketchIndexInPathToNode = (path: PathToNode) =>
+    path.findIndex((a) => a[0] === 'body') + 1
+  pathsToDeclaration.sort(
+    (a, b) =>
+      (a[sketchIndexInPathToNode(a)][0] as number) -
+      (b[sketchIndexInPathToNode(b)][0] as number)
+  )
   const lastPath = pathsToDeclaration[pathsToDeclaration.length - 1]
-  const sketchIndexInPathToNode = lastPath.findIndex((a) => a[0] === 'body') + 1
-  const sketchIndexInBody = lastPath[sketchIndexInPathToNode][0] as number
+  const sketchIndexInBody = lastPath[
+    sketchIndexInPathToNode(lastPath)
+  ][0] as number
   _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
 
   const pathToLoftArg: PathToNode = [
