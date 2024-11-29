@@ -572,8 +572,6 @@ export const ModelingMachineProvider = ({
         },
         'has valid loft selection': ({ context: { selectionRanges } }) => {
           console.log('selectionRanges', selectionRanges)
-          // A user can begin lofting if they either have 2+ faces selected or nothing selected
-          // TODO: this is a dummy copy from the sweep one
           const hasNoSelection =
             selectionRanges.graphSelections.length === 0 ||
             isRangeBetweenCharacters(selectionRanges) ||
@@ -582,14 +580,16 @@ export const ModelingMachineProvider = ({
           if (hasNoSelection) {
             // they have no selection, we should enable the button
             // so they can select the faces through the cmdbar
-            // BUT only if there's extrudable geometry
-            return doesSceneHaveSweepableSketch(kclManager.ast)
+            // BUT only if there's two extrudable geometry
+            const count = 2
+            return doesSceneHaveSweepableSketch(kclManager.ast, count)
           }
-          // TODO: check if we need a check like this for loft
+
           console.log(
             'isSketchPipe(selectionRanges)',
             isSketchPipe(selectionRanges)
           )
+          // TODO: The way this is isn't letting me loft
           // if (!isSketchPipe(selectionRanges)) return false
 
           const canLoft = canLoftSelection(selectionRanges)

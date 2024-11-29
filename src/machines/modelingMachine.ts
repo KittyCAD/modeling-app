@@ -714,7 +714,6 @@ export const modelingMachine = setup({
         if (!event.data) return
         const { selection } = event.data
         let ast = kclManager.ast
-        // TODO: make it all list based
         const nodePaths = selection.graphSelections.map((s) =>
           getNodePathFromSourceRange(ast, s?.codeRef.range)
         )

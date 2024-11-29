@@ -565,6 +565,7 @@ export function canLoftSelection(selection: Selections) {
     buildCommonNodeFromSelection(selection, i)
   )
   console.log('commonNodes', commonNodes)
+  console.log('isSketchPipe', isSketchPipe(selection))
   return (
     // TODO: check if we need ifSketchPipe or other things enabled
     // !!isSketchPipe(selection) &&
