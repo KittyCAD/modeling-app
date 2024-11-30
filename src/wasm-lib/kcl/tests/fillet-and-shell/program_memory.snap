@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing fillet-and-shell.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -938,7 +939,6 @@ description: Program memory after executing fillet-and-shell.kcl
                               "type": "Identifier"
                             },
                             "end": 1252,
-                            "optional": false,
                             "start": 1233,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -983,7 +983,6 @@ description: Program memory after executing fillet-and-shell.kcl
                               "type": "Identifier"
                             },
                             "end": 1285,
-                            "optional": false,
                             "start": 1260,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -1064,7 +1063,6 @@ description: Program memory after executing fillet-and-shell.kcl
                               "type": "Identifier"
                             },
                             "end": 1337,
-                            "optional": false,
                             "start": 1293,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -1147,7 +1145,6 @@ description: Program memory after executing fillet-and-shell.kcl
                                   "type": "Identifier"
                                 },
                                 "end": 1395,
-                                "optional": false,
                                 "start": 1350,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
@@ -1166,7 +1163,6 @@ description: Program memory after executing fillet-and-shell.kcl
                               "type": "Identifier"
                             },
                             "end": 1399,
-                            "optional": false,
                             "start": 1345,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -1194,7 +1190,6 @@ description: Program memory after executing fillet-and-shell.kcl
                               "type": "Identifier"
                             },
                             "end": 1425,
-                            "optional": false,
                             "start": 1407,
                             "type": "CallExpression",
                             "type": "CallExpression"

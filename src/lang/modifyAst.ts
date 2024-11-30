@@ -790,7 +790,6 @@ export function createCallExpressionStdLib(
 
       name,
     },
-    optional: false,
     arguments: args,
   }
 }
@@ -812,7 +811,6 @@ export function createCallExpression(
 
       name,
     },
-    optional: false,
     arguments: args,
   }
 }

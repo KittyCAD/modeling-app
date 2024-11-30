@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing array_range_negative_expr.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -52,7 +53,6 @@ description: Result of parsing array_range_negative_expr.kcl
                   "type": "Identifier"
                 },
                 "end": 13,
-                "optional": false,
                 "start": 6,
                 "type": "CallExpression",
                 "type": "CallExpression"
@@ -135,7 +135,6 @@ description: Result of parsing array_range_negative_expr.kcl
             "type": "Identifier"
           },
           "end": 72,
-          "optional": false,
           "start": 20,
           "type": "CallExpression",
           "type": "CallExpression"

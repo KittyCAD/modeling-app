@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing index_of_array.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -134,7 +135,6 @@ description: Result of parsing index_of_array.kcl
             "type": "Identifier"
           },
           "end": 157,
-          "optional": false,
           "start": 99,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -178,7 +178,6 @@ description: Result of parsing index_of_array.kcl
             "type": "Identifier"
           },
           "end": 219,
-          "optional": false,
           "start": 158,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -230,7 +229,6 @@ description: Result of parsing index_of_array.kcl
                 "type": "Identifier"
               },
               "end": 262,
-              "optional": false,
               "start": 252,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -321,7 +319,6 @@ description: Result of parsing index_of_array.kcl
             "type": "Identifier"
           },
           "end": 340,
-          "optional": false,
           "start": 281,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -365,7 +362,6 @@ description: Result of parsing index_of_array.kcl
             "type": "Identifier"
           },
           "end": 403,
-          "optional": false,
           "start": 341,
           "type": "CallExpression",
           "type": "CallExpression"

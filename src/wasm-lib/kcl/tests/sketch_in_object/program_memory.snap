@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing sketch_in_object.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -52,7 +53,6 @@ description: Program memory after executing sketch_in_object.kcl
                           "type": "Identifier"
                         },
                         "end": 40,
-                        "optional": false,
                         "start": 21,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -97,7 +97,6 @@ description: Program memory after executing sketch_in_object.kcl
                           "type": "Identifier"
                         },
                         "end": 73,
-                        "optional": false,
                         "start": 48,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -142,7 +141,6 @@ description: Program memory after executing sketch_in_object.kcl
                           "type": "Identifier"
                         },
                         "end": 96,
-                        "optional": false,
                         "start": 81,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -187,7 +185,6 @@ description: Program memory after executing sketch_in_object.kcl
                           "type": "Identifier"
                         },
                         "end": 119,
-                        "optional": false,
                         "start": 104,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -239,7 +236,6 @@ description: Program memory after executing sketch_in_object.kcl
                           "type": "Identifier"
                         },
                         "end": 143,
-                        "optional": false,
                         "start": 127,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -260,7 +256,6 @@ description: Program memory after executing sketch_in_object.kcl
                           "type": "Identifier"
                         },
                         "end": 159,
-                        "optional": false,
                         "start": 151,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -378,7 +373,6 @@ description: Program memory after executing sketch_in_object.kcl
                                       "type": "Identifier"
                                     },
                                     "end": 236,
-                                    "optional": false,
                                     "start": 217,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
@@ -423,7 +417,6 @@ description: Program memory after executing sketch_in_object.kcl
                                       "type": "Identifier"
                                     },
                                     "end": 273,
-                                    "optional": false,
                                     "start": 248,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
@@ -468,7 +461,6 @@ description: Program memory after executing sketch_in_object.kcl
                                       "type": "Identifier"
                                     },
                                     "end": 300,
-                                    "optional": false,
                                     "start": 285,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
@@ -513,7 +505,6 @@ description: Program memory after executing sketch_in_object.kcl
                                       "type": "Identifier"
                                     },
                                     "end": 327,
-                                    "optional": false,
                                     "start": 312,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
@@ -565,7 +556,6 @@ description: Program memory after executing sketch_in_object.kcl
                                       "type": "Identifier"
                                     },
                                     "end": 355,
-                                    "optional": false,
                                     "start": 339,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
@@ -586,7 +576,6 @@ description: Program memory after executing sketch_in_object.kcl
                                       "type": "Identifier"
                                     },
                                     "end": 375,
-                                    "optional": false,
                                     "start": 367,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
@@ -673,7 +662,6 @@ description: Program memory after executing sketch_in_object.kcl
                                     "type": "Identifier"
                                   },
                                   "end": 40,
-                                  "optional": false,
                                   "start": 21,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
@@ -718,7 +706,6 @@ description: Program memory after executing sketch_in_object.kcl
                                     "type": "Identifier"
                                   },
                                   "end": 73,
-                                  "optional": false,
                                   "start": 48,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
@@ -763,7 +750,6 @@ description: Program memory after executing sketch_in_object.kcl
                                     "type": "Identifier"
                                   },
                                   "end": 96,
-                                  "optional": false,
                                   "start": 81,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
@@ -808,7 +794,6 @@ description: Program memory after executing sketch_in_object.kcl
                                     "type": "Identifier"
                                   },
                                   "end": 119,
-                                  "optional": false,
                                   "start": 104,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
@@ -860,7 +845,6 @@ description: Program memory after executing sketch_in_object.kcl
                                     "type": "Identifier"
                                   },
                                   "end": 143,
-                                  "optional": false,
                                   "start": 127,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
@@ -881,7 +865,6 @@ description: Program memory after executing sketch_in_object.kcl
                                     "type": "Identifier"
                                   },
                                   "end": 159,
-                                  "optional": false,
                                   "start": 151,
                                   "type": "CallExpression",
                                   "type": "CallExpression"

@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing riddle_small.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -230,7 +231,6 @@ description: Result of parsing riddle_small.kcl
                     "type": "Identifier"
                   },
                   "end": 107,
-                  "optional": false,
                   "start": 102,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -302,7 +302,6 @@ description: Result of parsing riddle_small.kcl
                     "type": "Identifier"
                   },
                   "end": 130,
-                  "optional": false,
                   "start": 125,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -364,7 +363,6 @@ description: Result of parsing riddle_small.kcl
                     "type": "Identifier"
                   },
                   "end": 160,
-                  "optional": false,
                   "start": 141,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -407,7 +405,6 @@ description: Result of parsing riddle_small.kcl
                     "type": "Identifier"
                   },
                   "end": 193,
-                  "optional": false,
                   "start": 166,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -452,7 +449,6 @@ description: Result of parsing riddle_small.kcl
                     "type": "Identifier"
                   },
                   "end": 214,
-                  "optional": false,
                   "start": 199,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -504,7 +500,6 @@ description: Result of parsing riddle_small.kcl
                     "type": "Identifier"
                   },
                   "end": 236,
-                  "optional": false,
                   "start": 220,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -556,7 +551,6 @@ description: Result of parsing riddle_small.kcl
                     "type": "Identifier"
                   },
                   "end": 258,
-                  "optional": false,
                   "start": 242,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -577,7 +571,6 @@ description: Result of parsing riddle_small.kcl
                     "type": "Identifier"
                   },
                   "end": 272,
-                  "optional": false,
                   "start": 264,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -606,7 +599,6 @@ description: Result of parsing riddle_small.kcl
                     "type": "Identifier"
                   },
                   "end": 291,
-                  "optional": false,
                   "start": 278,
                   "type": "CallExpression",
                   "type": "CallExpression"

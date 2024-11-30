@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing neg_xz_plane.kcl
 snapshot_kind: text
 ---
@@ -37,7 +36,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 30,
-                  "optional": false,
                   "start": 10,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -82,7 +80,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 61,
-                  "optional": false,
                   "start": 36,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -127,7 +124,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 88,
-                  "optional": false,
                   "start": 67,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -172,7 +168,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 113,
-                  "optional": false,
                   "start": 94,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -193,7 +188,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 127,
-                  "optional": false,
                   "start": 119,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -237,7 +231,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 150,
-                  "optional": false,
                   "start": 133,
                   "type": "CallExpression",
                   "type": "CallExpression"
