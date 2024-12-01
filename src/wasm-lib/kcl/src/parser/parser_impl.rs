@@ -421,6 +421,8 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
             ">=" => BinaryOperator::Gte,
             "<" => BinaryOperator::Lt,
             "<=" => BinaryOperator::Lte,
+            "&" => BinaryOperator::And,
+            "|" => BinaryOperator::Or,
             _ => {
                 return Err(KclError::Syntax(KclErrorDetails {
                     source_ranges: token.as_source_ranges(),
@@ -3821,6 +3823,18 @@ int(42.3)"#;
 }"#
         );
     }
+    #[test]
+    fn test_unary_not_operator() {
+        let some_program_string = r#"!true"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::token::lexer(some_program_string, module_id).unwrap();
+        let actual = match unary_expression.parse(&tokens) {
+            Ok(x) => x,
+            Err(e) => panic!("{e:?}"),
+        };
+        assert_eq!(actual.operator, UnaryOperator::Not);
+        crate::parser::top_level_parse(some_program_string).unwrap();
+    }
 }
 
 #[cfg(test)]
@@ -4082,6 +4096,11 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
         r#"x = 3
         obj = { x, y: 4}"#
     );
+    snapshot_test!(bj, "true");
+    snapshot_test!(bk, "truee");
+    snapshot_test!(bl, "x = !true");
+    snapshot_test!(bm, "x = true & false");
+    snapshot_test!(bn, "x = true | false");
 }
 
 #[allow(unused)]

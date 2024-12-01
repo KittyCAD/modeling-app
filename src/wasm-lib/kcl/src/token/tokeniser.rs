@@ -186,7 +186,7 @@ fn word(i: &mut Input<'_>) -> PResult<Token> {
 
 fn operator(i: &mut Input<'_>) -> PResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
+        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "&", "|",
     ))
     .with_span()
     .parse_next(i)?;
@@ -416,7 +416,7 @@ mod tests {
     #[test]
     fn test_operator() {
         for valid in [
-            "+", "+ ", "-", "<=", "<= ", ">=", ">= ", "> ", "< ", "| ", "|> ", "^ ", "% ", "+* ",
+            "+", "+ ", "-", "<=", "<= ", ">=", ">= ", "> ", "< ", "|> ", "^ ", "% ", "+* ", "& ", "| ",
         ] {
             assert_parse_ok(operator, valid);
         }
@@ -1888,6 +1888,20 @@ const things = "things"
             module_id,
         }];
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_boolean_literal() {
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex("true", module_id).unwrap();
+        assert_eq!(actual[0].token_type, TokenType::Keyword);
+    }
+
+    #[test]
+    fn test_word_starting_with_keyword() {
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex("truee", module_id).unwrap();
+        assert_eq!(actual[0].token_type, TokenType::Word);
     }
 
     #[test]

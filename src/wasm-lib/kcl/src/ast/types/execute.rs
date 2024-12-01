@@ -163,6 +163,54 @@ impl Node<BinaryExpression> {
             }
         }
 
+        // Check if we are doing logic operations on booleans.
+        if self.operator == BinaryOperator::And || self.operator == BinaryOperator::Or {
+            let KclValue::Bool {
+                value: left_value,
+                meta: _,
+            } = left_value
+            else {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "Cannot apply logic operator {} to non-boolean value: {}",
+                        self.operator,
+                        left_value.human_friendly_type()
+                    ),
+                    source_ranges: vec![self.left.clone().into()],
+                }));
+            };
+            let KclValue::Bool {
+                value: right_value,
+                meta: _,
+            } = right_value
+            else {
+                return Err(KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "Cannot apply logic operator {} to non-boolean value: {}",
+                        self.operator,
+                        right_value.human_friendly_type()
+                    ),
+                    source_ranges: vec![self.right.clone().into()],
+                }));
+            };
+            let meta = vec![Metadata {
+                source_range: self.into(),
+            }];
+            let value = match self.operator {
+                BinaryOperator::And => KclValue::Bool {
+                    value: left_value && right_value,
+                    meta,
+                },
+                BinaryOperator::Or => KclValue::Bool {
+                    value: left_value || right_value,
+                    meta,
+                },
+                _ => unreachable!(),
+            };
+
+            return Ok(value);
+        }
+
         let left = parse_number_as_f64(&left_value, self.left.clone().into())?;
         let right = parse_number_as_f64(&right_value, self.right.clone().into())?;
 
@@ -215,6 +263,9 @@ impl Node<BinaryExpression> {
                 value: left == right,
                 meta,
             },
+            BinaryOperator::And | BinaryOperator::Or => {
+                unreachable!()
+            }
         };
 
         Ok(value)
