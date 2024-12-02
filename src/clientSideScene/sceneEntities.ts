@@ -1110,14 +1110,7 @@ export class SceneEntities {
           return
         }
 
-        updateCenterRectangleSketch(
-          sketchInit,
-          x,
-          y,
-          tag,
-          rectangleOrigin[0],
-          rectangleOrigin[1]
-        )
+        updateRectangleSketch(sketchInit, x, y, tag)
 
         const newCode = recast(_ast)
         let _recastAst = parse(newCode)
