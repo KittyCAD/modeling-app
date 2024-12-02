@@ -82,7 +82,7 @@ import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
-import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
+import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addFillet'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -576,8 +576,10 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
-        'has valid fillet selection': ({ context: { selectionRanges } }) => {
-          return hasValidFilletSelection({
+        'has valid edge treatment selection': ({
+          context: { selectionRanges },
+        }) => {
+          return hasValidEdgeTreatmentSelection({
             selectionRanges,
             ast: kclManager.ast,
             code: codeManager.code,
