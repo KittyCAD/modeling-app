@@ -45,7 +45,6 @@ test.describe('integrations tests', () => {
             {
               title: 'test-sample',
               fileCount: 1,
-              folderCount: 0,
             },
           ],
           sortBy: 'last-modified-desc',
@@ -233,7 +232,6 @@ test.describe('when using the file tree to', () => {
             {
               title: projectName,
               fileCount: 2,
-              folderCount: 0,
             },
           ],
           sortBy: 'last-modified-desc',
