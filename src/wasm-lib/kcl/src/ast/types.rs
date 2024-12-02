@@ -1309,7 +1309,7 @@ pub struct CallExpressionKw {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabeledArg {
-    pub label: String,
+    pub label: Identifier,
     pub arg: Expr,
 }
 

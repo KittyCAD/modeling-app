@@ -2033,7 +2033,7 @@ fn arguments(i: TokenSlice) -> PResult<Vec<Expr>> {
 fn labeled_argument(i: TokenSlice) -> PResult<LabeledArg> {
     separated_pair(identifier, (one_of(TokenType::Colon), opt(whitespace)), expression)
         .map(|(label, arg)| LabeledArg {
-            label: label.inner.name,
+            label: label.inner,
             arg,
         })
         .parse_next(i)

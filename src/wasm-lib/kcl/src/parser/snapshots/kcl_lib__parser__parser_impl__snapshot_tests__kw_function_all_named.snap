@@ -19,7 +19,10 @@ snapshot_kind: text
             "arguments": [
               {
                 "type": "LabeledArg",
-                "label": "x",
+                "label": {
+                  "type": "Identifier",
+                  "name": "x"
+                },
                 "arg": {
                   "end": 14,
                   "name": "a",
@@ -30,7 +33,10 @@ snapshot_kind: text
               },
               {
                 "type": "LabeledArg",
-                "label": "y",
+                "label": {
+                  "type": "Identifier",
+                  "name": "y"
+                },
                 "arg": {
                   "end": 20,
                   "name": "b",

@@ -19,7 +19,10 @@ snapshot_kind: text
             "arguments": [
               {
                 "type": "LabeledArg",
-                "label": "y",
+                "label": {
+                  "type": "Identifier",
+                  "name": "y"
+                },
                 "arg": {
                   "end": 17,
                   "name": "z",
