@@ -22,6 +22,7 @@ pub enum Node<'a> {
     BinaryExpression(NodeRef<'a, types::BinaryExpression>),
     FunctionExpression(NodeRef<'a, types::FunctionExpression>),
     CallExpression(NodeRef<'a, types::CallExpression>),
+    CallExpressionKw(NodeRef<'a, types::CallExpressionKw>),
     PipeExpression(NodeRef<'a, types::PipeExpression>),
     PipeSubstitution(NodeRef<'a, types::PipeSubstitution>),
     ArrayExpression(NodeRef<'a, types::ArrayExpression>),
@@ -54,6 +55,7 @@ impl From<&Node<'_>> for SourceRange {
             Node::BinaryExpression(n) => SourceRange::from(*n),
             Node::FunctionExpression(n) => SourceRange::from(*n),
             Node::CallExpression(n) => SourceRange::from(*n),
+            Node::CallExpressionKw(n) => SourceRange::from(*n),
             Node::PipeExpression(n) => SourceRange::from(*n),
             Node::PipeSubstitution(n) => SourceRange::from(*n),
             Node::ArrayExpression(n) => SourceRange::from(*n),
@@ -102,6 +104,7 @@ impl_from!(Node, Identifier);
 impl_from!(Node, BinaryExpression);
 impl_from!(Node, FunctionExpression);
 impl_from!(Node, CallExpression);
+impl_from!(Node, CallExpressionKw);
 impl_from!(Node, PipeExpression);
 impl_from!(Node, PipeSubstitution);
 impl_from!(Node, ArrayExpression);

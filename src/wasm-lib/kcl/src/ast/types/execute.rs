@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
 use super::{
-    ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression, Expr,
-    IfExpression, KclNone, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, ObjectExpression,
-    TagDeclarator, UnaryExpression, UnaryOperator,
+    ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
+    CallExpressionKw, Expr, IfExpression, KclNone, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
+    Node, ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -28,6 +28,7 @@ impl BinaryPart {
             }
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpression(call_expression) => call_expression.execute(exec_state, ctx).await,
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
@@ -333,6 +334,7 @@ async fn inner_execute_pipe_body(
             | Expr::BinaryExpression(_)
             | Expr::FunctionExpression(_)
             | Expr::CallExpression(_)
+            | Expr::CallExpressionKw(_)
             | Expr::PipeExpression(_)
             | Expr::PipeSubstitution(_)
             | Expr::ArrayExpression(_)
@@ -354,6 +356,12 @@ async fn inner_execute_pipe_body(
     // Safe to unwrap here, because pipe_value always has something pushed in when the `match first` executes.
     let final_output = exec_state.pipe_value.take().unwrap();
     Ok(final_output)
+}
+
+impl Node<CallExpressionKw> {
+    pub async fn execute(&self, _exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        todo!()
+    }
 }
 
 impl Node<CallExpression> {

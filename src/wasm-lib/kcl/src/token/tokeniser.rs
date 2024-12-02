@@ -92,6 +92,7 @@ pub fn token(i: &mut Input<'_>) -> PResult<Token> {
         '}' | ')' | ']' => brace_end,
         ',' => comma,
         '?' => question_mark,
+        '@' => at,
         '0'..='9' => number,
         ':' => colon,
         '.' => alt((number, double_period, period)),
@@ -264,6 +265,16 @@ fn question_mark(i: &mut Input<'_>) -> PResult<Token> {
         range,
         i.state.module_id,
         TokenType::QuestionMark,
+        value.to_string(),
+    ))
+}
+
+fn at(i: &mut Input<'_>) -> PResult<Token> {
+    let (value, range) = '@'.with_span().parse_next(i)?;
+    Ok(Token::from_range(
+        range,
+        i.state.module_id,
+        TokenType::At,
         value.to_string(),
     ))
 }
