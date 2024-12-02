@@ -880,7 +880,11 @@ export class SceneEntities {
 
           // This might need to become its own function if we want more
           // case-based logic for different segment types
-          if (lastSegment.type === 'TangentialArcTo') {
+          if (
+            (lastSegment.type === 'TangentialArcTo' &&
+              segmentName !== 'line') ||
+            segmentName === 'tangentialArcTo'
+          ) {
             resolvedFunctionName = 'tangentialArcTo'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
