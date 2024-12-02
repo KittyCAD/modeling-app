@@ -630,8 +630,7 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionCountByType(selection)
   if (selectionsByType === 'none') return null
 
-  return selectionsByType
-    .entries()
+  return [...selectionsByType.entries()]
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
@@ -640,7 +639,6 @@ export function getSelectionTypeDisplayText(
           .replace('solid2D', 'face')
           .replace('segment', 'face')}${count > 1 ? 's' : ''}`
     )
-    .toArray()
     .join(', ')
 }
 
@@ -650,7 +648,7 @@ export function canSubmitSelectionArg(
 ) {
   return (
     selectionsByType !== 'none' &&
-    selectionsByType.entries().every(([type, count]) => {
+    [...selectionsByType.entries()].every(([type, count]) => {
       const foundIndex = argument.selectionTypes.findIndex((s) => s === type)
       return (
         foundIndex !== -1 &&
