@@ -6,6 +6,7 @@ export class ToolbarFixture {
   public page: Page
 
   extrudeButton!: Locator
+  loftButton!: Locator
   offsetPlaneButton!: Locator
   startSketchBtn!: Locator
   lineBtn!: Locator
@@ -26,6 +27,7 @@ export class ToolbarFixture {
   reConstruct = (page: Page) => {
     this.page = page
     this.extrudeButton = page.getByTestId('extrude')
+    this.loftButton = page.getByTestId('loft')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.startSketchBtn = page.getByTestId('sketch')
     this.lineBtn = page.getByTestId('line')

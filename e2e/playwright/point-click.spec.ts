@@ -677,3 +677,61 @@ test(`Offset plane point-and-click`, async ({
     await scene.expectPixelColor([74, 74, 74], testPoint, 15)
   })
 })
+
+test(`Loft point-and-click`, async ({
+  app,
+  page,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  const initialCode = `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 10 }, %)
+plane001 = offsetPlane('XZ', 20)
+sketch002 = startSketchOn(plane001)
+  |> circle({ center = [0, 0], radius = 5 }, %)
+`
+  await app.initialise(initialCode)
+
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 575, y: 200 }
+  const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const [clickOnSketch2] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 50)
+  const expectedOutput = `${initialCode}loft001 = loft([sketch001, sketch002])`
+
+  await test.step(`Look for the white of the sketch001 shape`, async () => {
+    await scene.expectPixelColor([254,254,254], testPoint, 15)
+  })
+  await test.step(`Go through the command bar flow`, async () => {
+    await toolbar.loftButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: { Selection: '' },
+      highlightedHeaderArg: 'selection',
+      commandName: 'Loft',
+    })
+    await clickOnSketch1()
+    await page.keyboard.down('Shift')
+    await clickOnSketch2()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      headerArguments: { Selection: '2 faces' },
+      commandName: 'Loft',
+    })
+    await cmdBar.progressCmdBar()
+  })
+
+  await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+    await editor.expectEditor.toContain(expectedOutput)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [expectedOutput],
+      highlightedCode: '',
+    })
+    await scene.expectPixelColor([74, 74, 74], testPoint, 15)
+  })
+})
