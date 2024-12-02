@@ -32,10 +32,10 @@ polygon(data: PolygonData, sketch_surface_or_group: SketchOrSurface, tag?: TagDe
 // Create a regular hexagon inscribed in a circle of radius 10
 hex = startSketchOn('XY')
   |> polygon({
-       radius: 10,
-       numSides: 6,
-       center: [0, 0],
-       inscribed: true
+       radius = 10,
+       numSides = 6,
+       center = [0, 0],
+       inscribed = true
      }, %)
 
 example = extrude(5, hex)
@@ -47,10 +47,10 @@ example = extrude(5, hex)
 // Create a square circumscribed around a circle of radius 5
 square = startSketchOn('XY')
   |> polygon({
-       radius: 5.0,
-       numSides: 4,
-       center: [10, 10],
-       inscribed: false
+       radius = 5.0,
+       numSides = 4,
+       center = [10, 10],
+       inscribed = false
      }, %)
 example = extrude(5, square)
 ```

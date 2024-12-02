@@ -48,8 +48,8 @@ case = startSketchOn('XY')
   |> close(%, $edge4)
   |> extrude(caseHeight, %)
   |> fillet({
-       radius: 1,
-       tags: [
+       radius = 1,
+       tags = [
          getNextAdjacentEdge(edge1),
          getNextAdjacentEdge(edge2),
          getNextAdjacentEdge(edge3),
@@ -57,11 +57,11 @@ case = startSketchOn('XY')
        ]
      }, %)
 
-fn m25Screw = (x, y, height) => {
+fn m25Screw(x, y, height) {
   screw = startSketchOn("XY")
     |> startProfileAt([0, 0], %)
-    |> circle({ center: [x, y], radius: 2.5 }, %)
-    |> hole(circle({ center: [x, y], radius: 1.25 }, %), %)
+    |> circle({ center = [x, y], radius = 2.5 }, %)
+    |> hole(circle({ center = [x, y], radius = 1.25 }, %), %)
     |> extrude(height, %)
   return screw
 }
@@ -75,6 +75,6 @@ m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLengt
 m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), screwHeight)
 
 shell({
-  faces: ['end'],
-  thickness: caseThickness
+  faces = ['end'],
+  thickness = caseThickness
 }, case)

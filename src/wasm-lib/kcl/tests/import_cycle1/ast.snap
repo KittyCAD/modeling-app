@@ -31,7 +31,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 81,
+            "end": 75,
             "id": {
               "end": 50,
               "name": "one",
@@ -43,46 +43,45 @@ snapshot_kind: text
                 "body": [
                   {
                     "argument": {
-                      "end": 79,
+                      "end": 73,
                       "left": {
                         "arguments": [],
                         "callee": {
-                          "end": 73,
+                          "end": 67,
                           "name": "two",
-                          "start": 70,
+                          "start": 64,
                           "type": "Identifier"
                         },
-                        "end": 75,
-                        "optional": false,
-                        "start": 70,
+                        "end": 69,
+                        "start": 64,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 79,
+                        "end": 73,
                         "raw": "1",
-                        "start": 78,
+                        "start": 72,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1
+                        "value": 1.0
                       },
-                      "start": 70,
+                      "start": 64,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "end": 79,
-                    "start": 63,
+                    "end": 73,
+                    "start": 57,
                     "type": "ReturnStatement",
                     "type": "ReturnStatement"
                   }
                 ],
-                "end": 81,
-                "start": 59
+                "end": 75,
+                "start": 53
               },
-              "end": 81,
+              "end": 75,
               "params": [],
-              "start": 53,
+              "start": 50,
               "type": "FunctionExpression",
               "type": "FunctionExpression"
             },
@@ -90,7 +89,7 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 81,
+        "end": 75,
         "kind": "fn",
         "start": 37,
         "type": "VariableDeclaration",
@@ -98,7 +97,7 @@ snapshot_kind: text
         "visibility": "export"
       }
     ],
-    "end": 82,
+    "end": 76,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [

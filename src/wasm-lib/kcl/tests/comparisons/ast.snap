@@ -18,7 +18,7 @@ snapshot_kind: text
                 "start": 7,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "operator": "==",
               "right": {
@@ -27,7 +27,7 @@ snapshot_kind: text
                 "start": 12,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "start": 7,
               "type": "BinaryExpression",
@@ -49,7 +49,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 26,
-          "optional": false,
           "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -101,7 +100,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 67,
-          "optional": false,
           "start": 27,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -122,7 +120,7 @@ snapshot_kind: text
                 "start": 75,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "operator": "!=",
               "right": {
@@ -131,7 +129,7 @@ snapshot_kind: text
                 "start": 80,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "start": 75,
               "type": "BinaryExpression",
@@ -153,7 +151,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 98,
-          "optional": false,
           "start": 68,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -205,7 +202,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 143,
-          "optional": false,
           "start": 99,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -226,7 +222,7 @@ snapshot_kind: text
                 "start": 151,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "operator": "<",
               "right": {
@@ -235,7 +231,7 @@ snapshot_kind: text
                 "start": 155,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "start": 151,
               "type": "BinaryExpression",
@@ -257,7 +253,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 163,
-          "optional": false,
           "start": 144,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -278,7 +273,7 @@ snapshot_kind: text
                 "start": 171,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "operator": "<=",
               "right": {
@@ -287,7 +282,7 @@ snapshot_kind: text
                 "start": 176,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "start": 171,
               "type": "BinaryExpression",
@@ -309,7 +304,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 201,
-          "optional": false,
           "start": 164,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -330,7 +324,7 @@ snapshot_kind: text
                 "start": 209,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "operator": "<=",
               "right": {
@@ -339,7 +333,7 @@ snapshot_kind: text
                 "start": 214,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "start": 209,
               "type": "BinaryExpression",
@@ -361,7 +355,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 239,
-          "optional": false,
           "start": 202,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -382,7 +375,7 @@ snapshot_kind: text
                 "start": 247,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "operator": ">",
               "right": {
@@ -391,7 +384,7 @@ snapshot_kind: text
                 "start": 251,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "start": 247,
               "type": "BinaryExpression",
@@ -413,7 +406,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 259,
-          "optional": false,
           "start": 240,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -434,7 +426,7 @@ snapshot_kind: text
                 "start": 267,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "operator": ">=",
               "right": {
@@ -443,7 +435,7 @@ snapshot_kind: text
                 "start": 272,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "start": 267,
               "type": "BinaryExpression",
@@ -465,7 +457,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 297,
-          "optional": false,
           "start": 260,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -486,7 +477,7 @@ snapshot_kind: text
                 "start": 305,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "operator": ">=",
               "right": {
@@ -495,7 +486,7 @@ snapshot_kind: text
                 "start": 310,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3
+                "value": 3.0
               },
               "start": 305,
               "type": "BinaryExpression",
@@ -517,7 +508,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 335,
-          "optional": false,
           "start": 298,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -569,7 +559,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 375,
-          "optional": false,
           "start": 337,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -628,7 +617,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 428,
-          "optional": false,
           "start": 376,
           "type": "CallExpression",
           "type": "CallExpression"

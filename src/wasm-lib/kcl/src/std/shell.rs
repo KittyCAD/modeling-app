@@ -48,8 +48,8 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Remove the end face for the extrusion.
 /// shell({
-///     faces: ['end'],
-///     thickness: 0.25,
+///     faces = ['end'],
+///     thickness = 0.25,
 /// }, firstSketch)
 /// ```
 ///
@@ -65,8 +65,8 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Remove the start face for the extrusion.
 /// shell({
-///     faces: ['start'],
-///     thickness: 0.25,
+///     faces = ['start'],
+///     thickness = 0.25,
 /// }, firstSketch)
 /// ```
 ///
@@ -82,8 +82,8 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Remove a tagged face for the extrusion.
 /// shell({
-///     faces: [myTag],
-///     thickness: 0.25,
+///     faces = [myTag],
+///     thickness = 0.25,
 /// }, firstSketch)
 /// ```
 ///
@@ -99,8 +99,8 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Remove a tagged face and the end face for the extrusion.
 /// shell({
-///     faces: [myTag, 'end'],
-///     thickness: 0.25,
+///     faces = [myTag, 'end'],
+///     thickness = 0.25,
 /// }, firstSketch)
 /// ```
 ///
@@ -116,15 +116,15 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> extrude(65, %)
 ///
 /// const thing1 = startSketchOn(case, 'end')
-///     |> circle({ center: [-size / 2, -size / 2], radius: 25 }, %)
+///     |> circle({ center = [-size / 2, -size / 2], radius = 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// const thing2 = startSketchOn(case, 'end')
-///     |> circle({ center: [size / 2, -size / 2], radius: 25 }, %)
+///     |> circle({ center = [size / 2, -size / 2], radius = 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// // We put "case" in the shell function to shell the entire object.
-/// shell({ faces: ['start'], thickness: 5 }, case)
+/// shell({ faces = ['start'], thickness = 5 }, case)
 /// ```
 ///
 /// ```no_run
@@ -139,15 +139,15 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> extrude(65, %)
 ///
 /// const thing1 = startSketchOn(case, 'end')
-///     |> circle({ center: [-size / 2, -size / 2], radius: 25 }, %)
+///     |> circle({ center = [-size / 2, -size / 2], radius = 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// const thing2 = startSketchOn(case, 'end')
-///     |> circle({ center: [size / 2, -size / 2], radius: 25 }, %)
+///     |> circle({ center = [size / 2, -size / 2], radius = 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// // We put "thing1" in the shell function to shell the end face of the object.
-/// shell({ faces: ['end'], thickness: 5 }, thing1)
+/// shell({ faces = ['end'], thickness = 5 }, thing1)
 /// ```
 ///
 /// ```no_run
@@ -164,15 +164,15 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> extrude(65, %)
 ///
 /// const thing1 = startSketchOn(case, 'end')
-///     |> circle({ center: [-size / 2, -size / 2], radius: 25 }, %)
+///     |> circle({ center = [-size / 2, -size / 2], radius = 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// const thing2 = startSketchOn(case, 'end')
-///     |> circle({ center: [size / 2, -size / 2], radius: 25 }, %)
+///     |> circle({ center = [size / 2, -size / 2], radius = 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// // We put "thing1" and "thing2" in the shell function to shell the end face of the object.
-/// shell({ faces: ['end'], thickness: 5 }, [thing1, thing2])
+/// shell({ faces = ['end'], thickness = 5 }, [thing1, thing2])
 /// ```
 #[stdlib {
     name = "shell",
@@ -291,11 +291,11 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> extrude(65, %)
 ///
 /// const thing1 = startSketchOn(case, 'end')
-///     |> circle({ center: [-size / 2, -size / 2], radius: 25 }, %)
+///     |> circle({ center = [-size / 2, -size / 2], radius = 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// const thing2 = startSketchOn(case, 'end')
-///     |> circle({ center: [size / 2, -size / 2], radius: 25 }, %)
+///     |> circle({ center = [size / 2, -size / 2], radius = 25 }, %)
 ///     |> extrude(50, %)
 ///
 /// hollow(0.5, case)

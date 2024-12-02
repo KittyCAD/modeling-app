@@ -61,6 +61,9 @@ fn unparse(test_name: &str) {
     };
     // Check recasting the AST produces the original string.
     let actual = ast.recast(&Default::default(), 0);
+    if matches!(std::env::var("EXPECTORATE").as_deref(), Ok("overwrite")) {
+        std::fs::write(format!("tests/{test_name}/input.kcl"), &actual).unwrap();
+    }
     let expected = read("input.kcl", test_name);
     pretty_assertions::assert_eq!(
         actual,
@@ -96,9 +99,30 @@ async fn execute(test_name: &str, render_to_png: bool) {
             });
         }
         Err(e) => {
-            assert_snapshot(test_name, "Error from executing", || {
-                insta::assert_snapshot!("execution_error", e);
-            });
+            match e {
+                crate::errors::ExecError::Kcl(error) => {
+                    // Snapshot the KCL error with a fancy graphical report.
+                    // This looks like a Cargo compile error, with arrows pointing
+                    // to source code, underlines, etc.
+                    let report = crate::errors::Report {
+                        error,
+                        filename: format!("{test_name}.kcl"),
+                        kcl_source: read("input.kcl", test_name),
+                    };
+                    let report = miette::Report::new(report);
+                    let report = format!("{:?}", report);
+
+                    assert_snapshot(test_name, "Error from executing", || {
+                        insta::assert_snapshot!("execution_error", report);
+                    });
+                }
+                e => {
+                    // These kinds of errors aren't expected to occur. We don't
+                    // snapshot them because they indicate there's something wrong
+                    // with the Rust test, not with the KCL code being tested.
+                    panic!("{e}")
+                }
+            };
         }
     }
 }

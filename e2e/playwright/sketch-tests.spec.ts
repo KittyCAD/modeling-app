@@ -45,9 +45,9 @@ test.describe('Sketch tests', () => {
   screwHole = startSketchOn('XY')
     ${startProfileAt1}
     |> arc({
-          radius: screwRadius,
-          angle_start: 0,
-          angle_end: 360
+          radius = screwRadius,
+          angle_start = 0,
+          angle_end = 360
         }, %)
 
   part001 = startSketchOn('XY')
@@ -66,9 +66,9 @@ test.describe('Sketch tests', () => {
     |> xLine(-width / 4 + wireRadius, %)
     |> yLine(wireOffset, %)
     |> arc({
-          radius: wireRadius,
-          angle_start: 0,
-          angle_end: 180
+          radius = wireRadius,
+          angle_start = 0,
+          angle_end = 180
         }, %)
     |> yLine(-wireOffset, %)
     |> xLine(-width / 4, %)
@@ -354,7 +354,7 @@ test.describe('Sketch tests', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-  |> circle({ center: [4.61, -5.01], radius: 8 }, %)`
+  |> circle({ center = [4.61, -5.01], radius = 8 }, %)`
       )
     })
 
@@ -392,7 +392,7 @@ test.describe('Sketch tests', () => {
     const dragPX = 40
 
     await page
-      .getByText('circle({ center: [4.61, -5.01], radius: 8 }, %)')
+      .getByText('circle({ center = [4.61, -5.01], radius = 8 }, %)')
       .click()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
@@ -429,7 +429,7 @@ test.describe('Sketch tests', () => {
     // expect the code to have changed
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
-  |> circle({ center: [7.26, -2.37], radius: 11.44 }, %)
+  |> circle({ center = [7.26, -2.37], radius = 11.44 }, %)
 `)
   })
   test('Can edit a sketch that has been extruded in the same pipe', async ({
@@ -547,7 +547,7 @@ test.describe('Sketch tests', () => {
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -5.38], %)
     |> close(%)
-    |> revolve({ axis: "X",}, %)`
+    |> revolve({ axis = "X",}, %)`
       )
     })
 
@@ -634,7 +634,7 @@ test.describe('Sketch tests', () => {
     |> tangentialArcTo([24.95, -5.38], %)
     |> line([1.97, 2.06], %)
     |> close(%)
-    |> revolve({ axis: "X" }, %)`)
+    |> revolve({ axis = "X" }, %)`)
   })
   test('Can add multiple sketches', async ({ page }) => {
     const u = await getUtils(page)
@@ -1074,11 +1074,11 @@ sketch002 = startSketchOn(extrude001, 'END')
         fn lug = (origin, length, diameter, plane) => {
           lugSketch = startSketchOn(plane)
             |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
-            |> angledLineOfYLength({ angle: 60, length: lugHeadLength }, %)
+            |> angledLineOfYLength({ angle = 60, length = lugHeadLength }, %)
             |> xLineTo(0 + .001, %)
             |> yLineTo(0, %)
             |> close(%)
-            |> revolve({ axis: "Y" }, %)
+            |> revolve({ axis = "Y" }, %)
 
           return lugSketch
         }

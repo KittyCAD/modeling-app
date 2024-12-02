@@ -1,4 +1,4 @@
-fn cube = (length, center) => {
+fn cube(length, center) {
   l = length / 2
   x = center[0]
   y = center[1]
@@ -16,10 +16,10 @@ fn cube = (length, center) => {
     |> extrude(length, %)
 }
 
-fn double = (x) => {
+fn double(x) {
   return x * 2
 }
-fn width = () => {
+fn width() {
   return 200
 }
 

@@ -314,22 +314,22 @@ part009 = startSketchOn('XY')
   |> line([thickness, 0], %)
   |> line([0, -1], %)
   |> angledLineToX({
-       angle: 60,
-       to: pipeSmallDia + thickness
+       angle = 60,
+       to = pipeSmallDia + thickness
      }, %)
   |> line([0, -pipeLength], %)
   |> angledLineToX({
-       angle: -60,
-       to: pipeLargeDia + thickness
+       angle = -60,
+       to = pipeLargeDia + thickness
      }, %)
   |> line([0, -1], %)
   |> line([-thickness, 0], %)
   |> line([0, 1], %)
-  |> angledLineToX({ angle: 120, to: pipeSmallDia }, %)
+  |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
   |> line([0, pipeLength], %)
-  |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
+  |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
   |> close(%)
-rev = revolve({ axis: 'y' }, part009)
+rev = revolve({ axis = 'y' }, part009)
 `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -395,27 +395,27 @@ rev = revolve({ axis: 'y' }, part009)
       `extrude001 = extrude(50, sketch001)`
     )
     await expect(u.codeLocator).toContainText(`sketch005 = startSketchOn({
-       plane: {
-         origin: { x: 0, y: -50, z: 0 },
-         x_axis: { x: 1, y: 0, z: 0 },
-         y_axis: { x: 0, y: 0, z: 1 },
-         z_axis: { x: 0, y: -1, z: 0 }
+       plane = {
+         origin = { x = 0, y = -50, z = 0 },
+         x_axis = { x = 1, y = 0, z = 0 },
+         y_axis = { x = 0, y = 0, z = 1 },
+         z_axis = { x = 0, y = -1, z = 0 }
        }
      })`)
     await expect(u.codeLocator).toContainText(`sketch003 = startSketchOn({
-       plane: {
-         origin: { x: 116.53, y: 0, z: 163.25 },
-         x_axis: { x: -0.81, y: 0, z: 0.58 },
-         y_axis: { x: 0, y: -1, z: 0 },
-         z_axis: { x: 0.58, y: 0, z: 0.81 }
+       plane = {
+         origin = { x = 116.53, y = 0, z = 163.25 },
+         x_axis = { x = -0.81, y = 0, z = 0.58 },
+         y_axis = { x = 0, y = -1, z = 0 },
+         z_axis = { x = 0.58, y = 0, z = 0.81 }
        }
      })`)
     await expect(u.codeLocator).toContainText(`sketch002 = startSketchOn({
-       plane: {
-         origin: { x: -91.74, y: 0, z: 80.89 },
-         x_axis: { x: -0.66, y: 0, z: -0.75 },
-         y_axis: { x: 0, y: -1, z: 0 },
-         z_axis: { x: -0.75, y: 0, z: 0.66 }
+       plane = {
+         origin = { x = -91.74, y = 0, z = 80.89 },
+         x_axis = { x = -0.66, y = 0, z = -0.75 },
+         y_axis = { x = 0, y = -1, z = 0 },
+         z_axis = { x = -0.75, y = 0, z = 0.66 }
        }
      })`)
 
@@ -505,19 +505,19 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
         `part001 = startSketchOn('XZ')
     |> startProfileAt([20, 0], %)
     |> line([7.13, 4 + 0], %)
-    |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+    |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
     |> lineTo([20.14 + 0, -0.14 + 0], %)
     |> xLineTo(29 + 0, %)
     |> yLine(-3.14 + 0, %, $a)
     |> xLine(1.63, %)
-    |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
-    |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
-    |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
-    |> angledLineToY({ angle: 30, to: 11.14 }, %)
+    |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 }, %)
+    |> angledLineOfYLength({ angle = 30, length = 3 + 0 }, %)
+    |> angledLineToX({ angle = 22.14 + 0, to = 12 }, %)
+    |> angledLineToY({ angle = 30, to = 11.14 }, %)
     |> angledLineThatIntersects({
-          angle: 3.14,
-          intersectTag: a,
-          offset: 0
+          angle = 3.14,
+          intersectTag = a,
+          offset = 0
         }, %)
     |> tangentialArcTo([13.14 + 0, 13.14], %)
     |> close(%)
@@ -650,7 +650,7 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await checkCodeAtHoverPosition(
       'flatExtrusionFace',
       flatExtrusionFace,
-      `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)extrude(5+7,%)`,
+      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)extrude(5+7,%)`,
       '}, %)'
     )
 
@@ -707,19 +707,19 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await checkCodeAtHoverPosition(
       'straightSegmentEdge',
       straightSegmentEdge,
-      `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+      `angledLineToY({angle=30,to=11.14},%)`,
+      'angledLineToY({ angle = 30, to = 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentOppositeEdge',
       straightSegmentOppositeEdge,
-      `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+      `angledLineToY({angle=30,to=11.14},%)`,
+      'angledLineToY({ angle = 30, to = 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentAdjacentEdge',
       straightSegmentAdjacentEdge,
-      `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)`,
+      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)`,
       '}, %)'
     )
 
@@ -741,8 +741,8 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
   |> close(%)
 extrude001 = extrude(100, sketch001)
   |> chamfer({
-       length: 30,
-       tags: [
+       length = 30,
+       tags = [
          seg01,
          getNextAdjacentEdge(yo),
          getNextAdjacentEdge(seg02),
@@ -786,14 +786,14 @@ extrude001 = extrude(100, sketch001)
     await checkCodeAtHoverPosition(
       'oppositeChamfer',
       oppositeChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'baseChamfer',
       baseChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
@@ -824,14 +824,14 @@ extrude001 = extrude(100, sketch001)
     await checkCodeAtHoverPosition(
       'adjacentChamfer1',
       adjacentChamfer1,
-      `lineTo([profileStartX(%),profileStartY(%)],%,$seg02)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `lineTo([profileStartX(%),profileStartY(%)],%,$seg02)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'adjacentChamfer2',
       adjacentChamfer2,
-      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
   })

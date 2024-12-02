@@ -8,10 +8,53 @@
 #[allow(unused_macros)]
 macro_rules! println {
     ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
         #[cfg(not(feature = "disable-println"))]
         std::println!($($rest)*)
     }
 }
+
+#[allow(unused_macros)]
+macro_rules! eprintln {
+    ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
+        #[cfg(not(feature = "disable-println"))]
+        std::eprintln!($($rest)*)
+    }
+}
+
+#[allow(unused_macros)]
+macro_rules! print {
+    ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
+        #[cfg(not(feature = "disable-println"))]
+        std::print!($($rest)*)
+    }
+}
+
+#[allow(unused_macros)]
+macro_rules! eprint {
+    ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
+        #[cfg(not(feature = "disable-println"))]
+        std::eprint!($($rest)*)
+    }
+}
+#[cfg(feature = "dhat-heap")]
+#[global_allocator]
+static ALLOC: dhat::Alloc = dhat::Alloc;
 
 mod ast;
 mod coredump;
@@ -23,6 +66,7 @@ mod fs;
 mod function_param;
 mod kcl_value;
 pub mod lint;
+mod log;
 mod lsp;
 mod parser;
 mod settings;
@@ -42,13 +86,12 @@ pub use ast::modify::modify_ast_for_sketch;
 pub use ast::types::{FormatOptions, ModuleId};
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
-pub use errors::KclError;
+pub use errors::{ConnectionError, ExecError, KclError};
 pub use executor::{ExecState, ExecutorContext, ExecutorSettings, SourceRange};
 pub use lsp::copilot::Backend as CopilotLspBackend;
 pub use lsp::kcl::Backend as KclLspBackend;
 pub use lsp::kcl::Server as KclLspServerSubCommand;
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
-pub use token::lexer;
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
@@ -72,6 +115,8 @@ pub mod std_utils {
     pub use crate::std::utils::{get_tangential_arc_to_info, is_points_ccw_wasm, TangentialArcInfoInput};
 }
 
+#[allow(unused_imports)]
+use crate::log::{log, logln};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -120,5 +165,85 @@ impl Program {
 impl From<ast::types::Node<ast::types::Program>> for Program {
     fn from(ast: ast::types::Node<ast::types::Program>) -> Program {
         Self { ast }
+    }
+}
+
+#[inline]
+fn try_f64_to_usize(f: f64) -> Option<usize> {
+    let i = f as usize;
+    if i as f64 == f {
+        Some(i)
+    } else {
+        None
+    }
+}
+
+#[inline]
+fn try_f64_to_u32(f: f64) -> Option<u32> {
+    let i = f as u32;
+    if i as f64 == f {
+        Some(i)
+    } else {
+        None
+    }
+}
+
+#[inline]
+fn try_f64_to_u64(f: f64) -> Option<u64> {
+    let i = f as u64;
+    if i as f64 == f {
+        Some(i)
+    } else {
+        None
+    }
+}
+
+#[inline]
+fn try_f64_to_i64(f: f64) -> Option<i64> {
+    let i = f as i64;
+    if i as f64 == f {
+        Some(i)
+    } else {
+        None
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn convert_int() {
+        assert_eq!(try_f64_to_usize(0.0), Some(0));
+        assert_eq!(try_f64_to_usize(42.0), Some(42));
+        assert_eq!(try_f64_to_usize(0.00000000001), None);
+        assert_eq!(try_f64_to_usize(-1.0), None);
+        assert_eq!(try_f64_to_usize(f64::NAN), None);
+        assert_eq!(try_f64_to_usize(f64::INFINITY), None);
+        assert_eq!(try_f64_to_usize((0.1 + 0.2) * 10.0), None);
+
+        assert_eq!(try_f64_to_u32(0.0), Some(0));
+        assert_eq!(try_f64_to_u32(42.0), Some(42));
+        assert_eq!(try_f64_to_u32(0.00000000001), None);
+        assert_eq!(try_f64_to_u32(-1.0), None);
+        assert_eq!(try_f64_to_u32(f64::NAN), None);
+        assert_eq!(try_f64_to_u32(f64::INFINITY), None);
+        assert_eq!(try_f64_to_u32((0.1 + 0.2) * 10.0), None);
+
+        assert_eq!(try_f64_to_u64(0.0), Some(0));
+        assert_eq!(try_f64_to_u64(42.0), Some(42));
+        assert_eq!(try_f64_to_u64(0.00000000001), None);
+        assert_eq!(try_f64_to_u64(-1.0), None);
+        assert_eq!(try_f64_to_u64(f64::NAN), None);
+        assert_eq!(try_f64_to_u64(f64::INFINITY), None);
+        assert_eq!(try_f64_to_u64((0.1 + 0.2) * 10.0), None);
+
+        assert_eq!(try_f64_to_i64(0.0), Some(0));
+        assert_eq!(try_f64_to_i64(42.0), Some(42));
+        assert_eq!(try_f64_to_i64(0.00000000001), None);
+        assert_eq!(try_f64_to_i64(-1.0), Some(-1));
+        assert_eq!(try_f64_to_i64(f64::NAN), None);
+        assert_eq!(try_f64_to_i64(f64::INFINITY), None);
+        assert_eq!(try_f64_to_i64((0.1 + 0.2) * 10.0), None);
     }
 }

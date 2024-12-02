@@ -34,7 +34,6 @@ snapshot_kind: text
                   "type": "Identifier"
                 },
                 "end": 29,
-                "optional": false,
                 "start": 11,
                 "type": "CallExpression",
                 "type": "CallExpression"
@@ -49,7 +48,7 @@ snapshot_kind: text
                         "start": 39,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0
+                        "value": 0.0
                       },
                       {
                         "argument": {
@@ -85,7 +84,6 @@ snapshot_kind: text
                   "type": "Identifier"
                 },
                 "end": 53,
-                "optional": false,
                 "start": 33,
                 "type": "CallExpression",
                 "type": "CallExpression"

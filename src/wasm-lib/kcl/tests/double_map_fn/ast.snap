@@ -9,7 +9,7 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 40,
+            "end": 34,
             "id": {
               "end": 12,
               "name": "increment",
@@ -21,50 +21,50 @@ snapshot_kind: text
                 "body": [
                   {
                     "argument": {
-                      "end": 38,
+                      "end": 32,
                       "left": {
-                        "end": 34,
+                        "end": 28,
                         "name": "i",
-                        "start": 33,
+                        "start": 27,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 38,
+                        "end": 32,
                         "raw": "1",
-                        "start": 37,
+                        "start": 31,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1
+                        "value": 1.0
                       },
-                      "start": 33,
+                      "start": 27,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
-                    "end": 38,
-                    "start": 26,
+                    "end": 32,
+                    "start": 20,
                     "type": "ReturnStatement",
                     "type": "ReturnStatement"
                   }
                 ],
-                "end": 40,
-                "start": 22
+                "end": 34,
+                "start": 16
               },
-              "end": 40,
+              "end": 34,
               "params": [
                 {
                   "type": "Parameter",
                   "identifier": {
-                    "end": 17,
+                    "end": 14,
                     "name": "i",
-                    "start": 16,
+                    "start": 13,
                     "type": "Identifier"
                   },
                   "optional": false
                 }
               ],
-              "start": 15,
+              "start": 12,
               "type": "FunctionExpression",
               "type": "FunctionExpression"
             },
@@ -72,7 +72,7 @@ snapshot_kind: text
             "type": "VariableDeclarator"
           }
         ],
-        "end": 40,
+        "end": 34,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
@@ -81,145 +81,143 @@ snapshot_kind: text
       {
         "declarations": [
           {
-            "end": 53,
+            "end": 47,
             "id": {
-              "end": 44,
+              "end": 38,
               "name": "xs",
-              "start": 42,
+              "start": 36,
               "type": "Identifier"
             },
             "init": {
-              "end": 53,
+              "end": 47,
               "endElement": {
-                "end": 52,
+                "end": 46,
                 "raw": "2",
-                "start": 51,
+                "start": 45,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2
+                "value": 2.0
               },
               "endInclusive": true,
-              "start": 47,
+              "start": 41,
               "startElement": {
-                "end": 49,
+                "end": 43,
                 "raw": "0",
-                "start": 48,
+                "start": 42,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0
+                "value": 0.0
               },
               "type": "ArrayRangeExpression",
               "type": "ArrayRangeExpression"
             },
-            "start": 42,
+            "start": 36,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 53,
+        "end": 47,
         "kind": "const",
-        "start": 42,
+        "start": 36,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declarations": [
           {
-            "end": 107,
+            "end": 101,
             "id": {
-              "end": 56,
+              "end": 50,
               "name": "ys",
-              "start": 54,
+              "start": 48,
               "type": "Identifier"
             },
             "init": {
               "body": [
                 {
-                  "end": 61,
+                  "end": 55,
                   "name": "xs",
-                  "start": 59,
+                  "start": 53,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 {
                   "arguments": [
                     {
-                      "end": 72,
-                      "start": 71,
+                      "end": 66,
+                      "start": 65,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     },
                     {
-                      "end": 83,
+                      "end": 77,
                       "name": "increment",
-                      "start": 74,
+                      "start": 68,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   ],
                   "callee": {
-                    "end": 70,
+                    "end": 64,
                     "name": "map",
-                    "start": 67,
+                    "start": 61,
                     "type": "Identifier"
                   },
-                  "end": 84,
-                  "optional": false,
-                  "start": 67,
+                  "end": 78,
+                  "start": 61,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 },
                 {
                   "arguments": [
                     {
-                      "end": 95,
-                      "start": 94,
+                      "end": 89,
+                      "start": 88,
                       "type": "PipeSubstitution",
                       "type": "PipeSubstitution"
                     },
                     {
-                      "end": 106,
+                      "end": 100,
                       "name": "increment",
-                      "start": 97,
+                      "start": 91,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   ],
                   "callee": {
-                    "end": 93,
+                    "end": 87,
                     "name": "map",
-                    "start": 90,
+                    "start": 84,
                     "type": "Identifier"
                   },
-                  "end": 107,
-                  "optional": false,
-                  "start": 90,
+                  "end": 101,
+                  "start": 84,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 }
               ],
-              "end": 107,
-              "start": 59,
+              "end": 101,
+              "start": 53,
               "type": "PipeExpression",
               "type": "PipeExpression"
             },
-            "start": 54,
+            "start": 48,
             "type": "VariableDeclarator"
           }
         ],
-        "end": 107,
+        "end": 101,
         "kind": "const",
-        "start": 54,
+        "start": 48,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 108,
+    "end": 102,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 42,
-            "start": 40,
+            "end": 36,
+            "start": 34,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

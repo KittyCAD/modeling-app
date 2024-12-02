@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing kittycad_svg.kcl
 snapshot_kind: text
 ---
@@ -6784,7 +6785,7 @@ snapshot_kind: text
                 "tag": null,
                 "to": [
                   13.44,
-                  0.0
+                  -0.0
                 ],
                 "type": "ToPoint"
               },
@@ -6799,12 +6800,12 @@ snapshot_kind: text
                 },
                 "from": [
                   13.44,
-                  0.0
+                  -0.0
                 ],
                 "tag": null,
                 "to": [
                   15.96,
-                  0.0
+                  -0.0
                 ],
                 "type": "ToPoint"
               },
@@ -6819,7 +6820,7 @@ snapshot_kind: text
                 },
                 "from": [
                   15.96,
-                  0.0
+                  -0.0
                 ],
                 "tag": null,
                 "to": [
@@ -7264,7 +7265,7 @@ snapshot_kind: text
                 "tag": null,
                 "to": [
                   5.04,
-                  0.0
+                  -0.0
                 ],
                 "type": "ToPoint"
               },
@@ -7279,12 +7280,12 @@ snapshot_kind: text
                 },
                 "from": [
                   5.04,
-                  0.0
+                  -0.0
                 ],
                 "tag": null,
                 "to": [
                   7.56,
-                  0.0
+                  -0.0
                 ],
                 "type": "ToPoint"
               },
@@ -7299,7 +7300,7 @@ snapshot_kind: text
                 },
                 "from": [
                   7.56,
-                  0.0
+                  -0.0
                 ],
                 "tag": null,
                 "to": [

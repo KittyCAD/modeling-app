@@ -73,7 +73,7 @@ snapshot_kind: text
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
+                  73.4,
                   5.0
                 ],
                 "type": "TangentialArcTo"
@@ -88,12 +88,12 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
+                  73.4,
                   5.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
+                  73.4,
                   25.0
                 ],
                 "type": "ToPoint"
@@ -109,17 +109,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
+                  68.4,
                   25.0
                 ],
                 "from": [
-                  5.0,
+                  73.4,
                   25.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  5.0
+                  68.4,
+                  30.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -133,13 +133,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  5.0
+                  68.4,
+                  30.0
                 ],
                 "tag": null,
                 "to": [
-                  -17.8,
-                  5.0
+                  55.6,
+                  30.0
                 ],
                 "type": "ToPoint"
               },
@@ -154,17 +154,17 @@ snapshot_kind: text
                 },
                 "ccw": false,
                 "center": [
-                  -17.8,
-                  10.0
+                  55.60000000000001,
+                  35.0
                 ],
                 "from": [
-                  -17.8,
-                  5.0
+                  55.6,
+                  30.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  5.0
+                  50.6,
+                  35.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -178,13 +178,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  5.0
+                  50.6,
+                  35.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  67.0
+                  50.6,
+                  97.0
                 ],
                 "type": "ToPoint"
               },
@@ -199,17 +199,17 @@ snapshot_kind: text
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
-                  67.0
+                  55.60000000000001,
+                  97.0
                 ],
                 "from": [
-                  -5.0,
-                  67.0
+                  50.6,
+                  97.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  5.0
+                  55.6,
+                  102.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -223,13 +223,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
-                  5.0
+                  55.6,
+                  102.0
                 ],
                 "tag": null,
                 "to": [
-                  10.0,
-                  5.0
+                  60.6,
+                  102.0
                 ],
                 "type": "ToPoint"
               },
@@ -244,17 +244,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  10.0,
-                  10.0
+                  60.60000000000001,
+                  107.0
                 ],
                 "from": [
-                  10.0,
-                  5.0
+                  60.6,
+                  102.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  5.0
+                  65.6,
+                  107.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -268,13 +268,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
-                  5.0
+                  65.6,
+                  107.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  23.0
+                  65.6,
+                  125.0
                 ],
                 "type": "ToPoint"
               },
@@ -289,17 +289,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  23.0
+                  60.60000000000001,
+                  125.0
                 ],
                 "from": [
-                  5.0,
-                  23.0
+                  65.6,
+                  125.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  5.0
+                  60.6,
+                  130.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -313,13 +313,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  5.0
+                  60.6,
+                  130.0
                 ],
                 "tag": null,
                 "to": [
-                  -49.0,
-                  5.0
+                  16.6,
+                  130.0
                 ],
                 "type": "ToPoint"
               },
@@ -334,17 +334,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  -49.0,
-                  0.0
+                  16.60000000000001,
+                  125.0
                 ],
                 "from": [
-                  -49.0,
-                  5.0
+                  16.6,
+                  130.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -5.0
+                  11.6,
+                  125.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -358,13 +358,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  -5.0
+                  11.6,
+                  125.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -23.0
+                  11.6,
+                  107.0
                 ],
                 "type": "ToPoint"
               },
@@ -379,17 +379,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  -23.0
+                  16.60000000000001,
+                  107.0
                 ],
                 "from": [
-                  -5.0,
-                  -23.0
+                  11.6,
+                  107.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  -5.0
+                  16.6,
+                  102.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -403,13 +403,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
-                  -5.0
+                  16.6,
+                  102.0
                 ],
                 "tag": null,
                 "to": [
-                  10.0,
-                  -5.0
+                  21.6,
+                  102.0
                 ],
                 "type": "ToPoint"
               },
@@ -424,17 +424,17 @@ snapshot_kind: text
                 },
                 "ccw": false,
                 "center": [
-                  10.0,
-                  -10.0
+                  21.60000000000001,
+                  97.0
                 ],
                 "from": [
-                  10.0,
-                  -5.0
+                  21.6,
+                  102.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  -5.0
+                  26.6,
+                  97.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -448,13 +448,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
-                  -5.0
+                  26.6,
+                  97.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  -67.0
+                  26.6,
+                  35.0
                 ],
                 "type": "ToPoint"
               },
@@ -469,17 +469,17 @@ snapshot_kind: text
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
-                  -67.0
+                  21.60000000000001,
+                  35.0
                 ],
                 "from": [
-                  5.0,
-                  -67.0
+                  26.6,
+                  35.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -5.0
+                  21.6,
+                  30.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -493,13 +493,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  -5.0
+                  21.6,
+                  30.0
                 ],
                 "tag": null,
                 "to": [
-                  -21.6,
-                  -5.0
+                  5.0,
+                  30.0
                 ],
                 "type": "ToPoint"
               },
@@ -514,17 +514,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  -21.599999999999994,
-                  -10.0
+                  5.000000000000014,
+                  25.0
                 ],
                 "from": [
-                  -21.6,
-                  -5.0
+                  5.0,
+                  30.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -5.0
+                  0.0,
+                  25.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -538,13 +538,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  -5.0
+                  0.0,
+                  25.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -25.0
+                  0.0,
+                  5.0
                 ],
                 "type": "ToPoint"
               },
@@ -559,17 +559,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  -25.0
+                  5.000000000000014,
+                  5.0
                 ],
                 "from": [
-                  -5.0,
-                  -25.0
+                  0.0,
+                  5.0
                 ],
                 "tag": null,
                 "to": [
                   5.0,
-                  -5.0
+                  0.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -584,7 +584,7 @@ snapshot_kind: text
                 },
                 "from": [
                   5.0,
-                  -5.0
+                  0.0
                 ],
                 "tag": null,
                 "to": [
@@ -1043,7 +1043,7 @@ snapshot_kind: text
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
+                  73.4,
                   5.0
                 ],
                 "type": "TangentialArcTo"
@@ -1058,12 +1058,12 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
+                  73.4,
                   5.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
+                  73.4,
                   25.0
                 ],
                 "type": "ToPoint"
@@ -1079,17 +1079,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
+                  68.4,
                   25.0
                 ],
                 "from": [
-                  5.0,
+                  73.4,
                   25.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  5.0
+                  68.4,
+                  30.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1103,13 +1103,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  5.0
+                  68.4,
+                  30.0
                 ],
                 "tag": null,
                 "to": [
-                  -17.8,
-                  5.0
+                  55.6,
+                  30.0
                 ],
                 "type": "ToPoint"
               },
@@ -1124,17 +1124,17 @@ snapshot_kind: text
                 },
                 "ccw": false,
                 "center": [
-                  -17.8,
-                  10.0
+                  55.60000000000001,
+                  35.0
                 ],
                 "from": [
-                  -17.8,
-                  5.0
+                  55.6,
+                  30.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  5.0
+                  50.6,
+                  35.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1148,13 +1148,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  5.0
+                  50.6,
+                  35.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  67.0
+                  50.6,
+                  97.0
                 ],
                 "type": "ToPoint"
               },
@@ -1169,17 +1169,17 @@ snapshot_kind: text
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
-                  67.0
+                  55.60000000000001,
+                  97.0
                 ],
                 "from": [
-                  -5.0,
-                  67.0
+                  50.6,
+                  97.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  5.0
+                  55.6,
+                  102.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1193,13 +1193,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
-                  5.0
+                  55.6,
+                  102.0
                 ],
                 "tag": null,
                 "to": [
-                  10.0,
-                  5.0
+                  60.6,
+                  102.0
                 ],
                 "type": "ToPoint"
               },
@@ -1214,17 +1214,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  10.0,
-                  10.0
+                  60.60000000000001,
+                  107.0
                 ],
                 "from": [
-                  10.0,
-                  5.0
+                  60.6,
+                  102.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  5.0
+                  65.6,
+                  107.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1238,13 +1238,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
-                  5.0
+                  65.6,
+                  107.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  23.0
+                  65.6,
+                  125.0
                 ],
                 "type": "ToPoint"
               },
@@ -1259,17 +1259,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  23.0
+                  60.60000000000001,
+                  125.0
                 ],
                 "from": [
-                  5.0,
-                  23.0
+                  65.6,
+                  125.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  5.0
+                  60.6,
+                  130.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1283,13 +1283,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  5.0
+                  60.6,
+                  130.0
                 ],
                 "tag": null,
                 "to": [
-                  -49.0,
-                  5.0
+                  16.6,
+                  130.0
                 ],
                 "type": "ToPoint"
               },
@@ -1304,17 +1304,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  -49.0,
-                  0.0
+                  16.60000000000001,
+                  125.0
                 ],
                 "from": [
-                  -49.0,
-                  5.0
+                  16.6,
+                  130.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -5.0
+                  11.6,
+                  125.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1328,13 +1328,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  -5.0
+                  11.6,
+                  125.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -23.0
+                  11.6,
+                  107.0
                 ],
                 "type": "ToPoint"
               },
@@ -1349,17 +1349,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  -23.0
+                  16.60000000000001,
+                  107.0
                 ],
                 "from": [
-                  -5.0,
-                  -23.0
+                  11.6,
+                  107.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  -5.0
+                  16.6,
+                  102.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1373,13 +1373,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
-                  -5.0
+                  16.6,
+                  102.0
                 ],
                 "tag": null,
                 "to": [
-                  10.0,
-                  -5.0
+                  21.6,
+                  102.0
                 ],
                 "type": "ToPoint"
               },
@@ -1394,17 +1394,17 @@ snapshot_kind: text
                 },
                 "ccw": false,
                 "center": [
-                  10.0,
-                  -10.0
+                  21.60000000000001,
+                  97.0
                 ],
                 "from": [
-                  10.0,
-                  -5.0
+                  21.6,
+                  102.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  -5.0
+                  26.6,
+                  97.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1418,13 +1418,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
-                  -5.0
+                  26.6,
+                  97.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  -67.0
+                  26.6,
+                  35.0
                 ],
                 "type": "ToPoint"
               },
@@ -1439,17 +1439,17 @@ snapshot_kind: text
                 },
                 "ccw": false,
                 "center": [
-                  -0.0,
-                  -67.0
+                  21.60000000000001,
+                  35.0
                 ],
                 "from": [
-                  5.0,
-                  -67.0
+                  26.6,
+                  35.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -5.0
+                  21.6,
+                  30.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1463,13 +1463,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  -5.0
+                  21.6,
+                  30.0
                 ],
                 "tag": null,
                 "to": [
-                  -21.6,
-                  -5.0
+                  5.0,
+                  30.0
                 ],
                 "type": "ToPoint"
               },
@@ -1484,17 +1484,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  -21.599999999999994,
-                  -10.0
+                  5.000000000000014,
+                  25.0
                 ],
                 "from": [
-                  -21.6,
-                  -5.0
+                  5.0,
+                  30.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -5.0
+                  0.0,
+                  25.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1508,13 +1508,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  -5.0
+                  0.0,
+                  25.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  -25.0
+                  0.0,
+                  5.0
                 ],
                 "type": "ToPoint"
               },
@@ -1529,17 +1529,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
-                  -25.0
+                  5.000000000000014,
+                  5.0
                 ],
                 "from": [
-                  -5.0,
-                  -25.0
+                  0.0,
+                  5.0
                 ],
                 "tag": null,
                 "to": [
                   5.0,
-                  -5.0
+                  0.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1554,7 +1554,7 @@ snapshot_kind: text
                 },
                 "from": [
                   5.0,
-                  -5.0
+                  0.0
                 ],
                 "tag": null,
                 "to": [
@@ -1691,7 +1691,7 @@ snapshot_kind: text
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
+                  6.0,
                   5.0
                 ],
                 "type": "TangentialArcTo"
@@ -1706,12 +1706,12 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
+                  6.0,
                   5.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
+                  6.0,
                   20.0
                 ],
                 "type": "ToPoint"
@@ -1727,17 +1727,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  0.0,
+                  1.0,
                   20.0
                 ],
                 "from": [
-                  5.0,
+                  6.0,
                   20.0
                 ],
                 "tag": null,
                 "to": [
-                  -5.0,
-                  5.0
+                  1.0,
+                  25.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1751,13 +1751,13 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  -5.0,
-                  5.0
+                  1.0,
+                  25.0
                 ],
                 "tag": null,
                 "to": [
-                  -6.0,
-                  5.0
+                  0.0,
+                  25.0
                 ],
                 "type": "ToPoint"
               },
@@ -1772,17 +1772,17 @@ snapshot_kind: text
                 },
                 "ccw": true,
                 "center": [
-                  -6.0,
-                  0.0
+                  0.0,
+                  20.0
                 ],
                 "from": [
-                  -6.0,
-                  5.0
+                  0.0,
+                  25.0
                 ],
                 "tag": null,
                 "to": [
                   -5.0,
-                  -5.0
+                  20.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1797,12 +1797,12 @@ snapshot_kind: text
                 },
                 "from": [
                   -5.0,
-                  -5.0
+                  20.0
                 ],
                 "tag": null,
                 "to": [
                   -5.0,
-                  -20.0
+                  5.0
                 ],
                 "type": "ToPoint"
               },
@@ -1818,16 +1818,16 @@ snapshot_kind: text
                 "ccw": true,
                 "center": [
                   0.0,
-                  -20.0
+                  5.0
                 ],
                 "from": [
                   -5.0,
-                  -20.0
+                  5.0
                 ],
                 "tag": null,
                 "to": [
-                  5.0,
-                  -5.0
+                  0.0,
+                  0.0
                 ],
                 "type": "TangentialArcTo"
               },
@@ -1841,8 +1841,8 @@ snapshot_kind: text
                   ]
                 },
                 "from": [
-                  5.0,
-                  -5.0
+                  0.0,
+                  0.0
                 ],
                 "tag": null,
                 "to": [

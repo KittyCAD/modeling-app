@@ -66,6 +66,9 @@ impl Program {
         for body_item in slf.body.iter_mut() {
             hasher.update(body_item.compute_digest());
         }
+        if let Some(shebang) = &slf.shebang {
+            hasher.update(&shebang.inner.content);
+        }
         hasher.update(slf.non_code_meta.compute_digest());
     });
 }
@@ -207,9 +210,6 @@ impl ReturnStatement {
 impl NonCodeNode {
     compute_digest!(|slf, hasher| {
         match &slf.value {
-            NonCodeValue::Shebang { value } => {
-                hasher.update(value);
-            }
             NonCodeValue::InlineComment { value, style } => {
                 hasher.update(value);
                 hasher.update(style.digestable_id());
@@ -369,7 +369,6 @@ impl CallExpression {
         for argument in slf.arguments.iter_mut() {
             hasher.update(argument.compute_digest());
         }
-        hasher.update(if slf.optional { [1] } else { [0] });
     });
 }
 

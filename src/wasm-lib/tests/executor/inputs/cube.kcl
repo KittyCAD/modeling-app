@@ -1,4 +1,4 @@
-fn cube = (length, center) => {
+fn cube(length, center) {
   l = length/2
   x = center[0]
   y = center[1]
