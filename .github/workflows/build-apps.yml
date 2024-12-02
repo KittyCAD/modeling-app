@@ -383,6 +383,10 @@ jobs:
           parent: false
           destination: 'dl.kittycad.io/releases/modeling-app/nightly'
 
+      - name: Invalidate bucket cache on latest*.yml and last_download.json files
+        if: ${{ env.IS_NIGHTLY == 'true' }}
+        run: yarn files:invalidate-bucket:nightly
+
       - name: Create draft release
         uses: softprops/action-gh-release@v2
         if: ${{ env.IS_RELEASE == 'true' }}
