@@ -173,7 +173,7 @@ export function modifyAstWithEdgeTreatmentAndTag(
     // CallExpression - no edge treatment
     // PipeExpression - edge treatment exists or body in sketch pipe
 
-    let pathToEdgeTreatmentNode: PathToNode = []
+    let pathToEdgeTreatmentNode: PathToNode
 
     if (extrudeDeclarator.init.type === 'CallExpression') {
       // 1. case when no edge treatment exists
