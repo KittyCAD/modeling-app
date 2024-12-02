@@ -91,6 +91,7 @@ import {
   SegmentOverlayPayload,
   SketchDetails,
   SketchDetailsUpdate,
+  SketchTool,
 } from 'machines/modelingMachine'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import {
@@ -105,6 +106,7 @@ import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { radToDeg } from 'three/src/math/MathUtils'
+import toast from 'react-hot-toast'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -349,8 +351,10 @@ export class SceneEntities {
   setupNoPointsListener({
     sketchDetails,
     afterClick,
+    currentTool,
   }: {
     sketchDetails: SketchDetails
+    currentTool: SketchTool,
     afterClick: (
       args: OnClickCallbackArgs,
       updatedPaths: {
@@ -467,6 +471,9 @@ export class SceneEntities {
             sketchNodePaths: sketchDetails.sketchNodePaths,
             sketchEntryNodePath: parent.userData.pathToNode,
           })
+          return
+        } else if (currentTool === 'tangentialArc') {
+          toast.error('Tangential Arc must continue an existing profile, please click on the last segment of the profile')
           return
         }
 

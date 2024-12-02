@@ -982,6 +982,7 @@ export const modelingMachine = setup({
       if (!sketchDetails) return
       sceneEntitiesManager.setupNoPointsListener({
         sketchDetails,
+        currentTool,
         afterClick: (_, data) =>
           sceneInfra.modelingSend(
             currentTool === 'line'
