@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing argument_error.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -106,7 +107,6 @@ description: Result of parsing argument_error.kcl
             "type": "Identifier"
           },
           "end": 38,
-          "optional": false,
           "start": 24,
           "type": "CallExpression",
           "type": "CallExpression"

@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing double_map_fn.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -162,7 +163,6 @@ description: Result of parsing double_map_fn.kcl
                     "type": "Identifier"
                   },
                   "end": 78,
-                  "optional": false,
                   "start": 61,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -190,7 +190,6 @@ description: Result of parsing double_map_fn.kcl
                     "type": "Identifier"
                   },
                   "end": 101,
-                  "optional": false,
                   "start": 84,
                   "type": "CallExpression",
                   "type": "CallExpression"

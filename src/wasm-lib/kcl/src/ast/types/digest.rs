@@ -369,7 +369,6 @@ impl CallExpression {
         for argument in slf.arguments.iter_mut() {
             hasher.update(argument.compute_digest());
         }
-        hasher.update(if slf.optional { [1] } else { [0] });
     });
 }
 

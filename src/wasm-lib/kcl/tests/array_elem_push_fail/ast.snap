@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing array_elem_push_fail.kcl
 snapshot_kind: text
 ---
@@ -94,7 +93,6 @@ snapshot_kind: text
                 "type": "Identifier"
               },
               "end": 40,
-              "optional": false,
               "start": 28,
               "type": "CallExpression",
               "type": "CallExpression"

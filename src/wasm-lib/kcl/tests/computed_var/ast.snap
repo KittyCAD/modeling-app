@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing computed_var.kcl
 snapshot_kind: text
 ---
@@ -179,7 +178,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 115,
-          "optional": false,
           "start": 77,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -366,7 +364,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 206,
-          "optional": false,
           "start": 168,
           "type": "CallExpression",
           "type": "CallExpression"

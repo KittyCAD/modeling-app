@@ -85,7 +85,6 @@ layout: manual
 | `type` |enum: `CallExpression`|  | No |
 | `callee` |[`Identifier`](/docs/kcl/types/Identifier)|  | No |
 | `arguments` |`[` [`Expr`](/docs/kcl/types/Expr) `]`|  | No |
-| `optional` |`boolean`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |

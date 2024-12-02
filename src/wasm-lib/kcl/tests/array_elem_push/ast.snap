@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing array_elem_push.kcl
 snapshot_kind: text
 ---
@@ -94,7 +93,6 @@ snapshot_kind: text
                 "type": "Identifier"
               },
               "end": 39,
-              "optional": false,
               "start": 27,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -144,7 +142,6 @@ snapshot_kind: text
                 "type": "Identifier"
               },
               "end": 68,
-              "optional": false,
               "start": 51,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -217,7 +214,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 142,
-          "optional": false,
           "start": 69,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -284,7 +280,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 216,
-          "optional": false,
           "start": 143,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -351,7 +346,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 290,
-          "optional": false,
           "start": 217,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -418,7 +412,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 366,
-          "optional": false,
           "start": 291,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -485,7 +478,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 440,
-          "optional": false,
           "start": 367,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -552,7 +544,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 514,
-          "optional": false,
           "start": 441,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -619,7 +610,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 588,
-          "optional": false,
           "start": 515,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -686,7 +676,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 664,
-          "optional": false,
           "start": 589,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -753,7 +742,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 740,
-          "optional": false,
           "start": 665,
           "type": "CallExpression",
           "type": "CallExpression"

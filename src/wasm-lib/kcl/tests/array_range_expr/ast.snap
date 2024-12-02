@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing array_range_expr.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -106,7 +107,6 @@ description: Result of parsing array_range_expr.kcl
             "type": "Identifier"
           },
           "end": 70,
-          "optional": false,
           "start": 12,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -270,7 +270,6 @@ description: Result of parsing array_range_expr.kcl
             "type": "Identifier"
           },
           "end": 166,
-          "optional": false,
           "start": 108,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -321,7 +320,6 @@ description: Result of parsing array_range_expr.kcl
                 "type": "Identifier"
               },
               "end": 188,
-              "optional": false,
               "start": 175,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -435,7 +433,6 @@ description: Result of parsing array_range_expr.kcl
             "type": "Identifier"
           },
           "end": 275,
-          "optional": false,
           "start": 207,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -502,7 +499,6 @@ description: Result of parsing array_range_expr.kcl
             "type": "Identifier"
           },
           "end": 334,
-          "optional": false,
           "start": 276,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -555,7 +551,6 @@ description: Result of parsing array_range_expr.kcl
                   "type": "Identifier"
                 },
                 "end": 372,
-                "optional": false,
                 "start": 359,
                 "type": "CallExpression",
                 "type": "CallExpression"
@@ -594,7 +589,6 @@ description: Result of parsing array_range_expr.kcl
                   "type": "Identifier"
                 },
                 "end": 355,
-                "optional": false,
                 "start": 342,
                 "type": "CallExpression",
                 "type": "CallExpression"
@@ -670,7 +664,6 @@ description: Result of parsing array_range_expr.kcl
             "type": "Identifier"
           },
           "end": 426,
-          "optional": false,
           "start": 374,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -737,7 +730,6 @@ description: Result of parsing array_range_expr.kcl
             "type": "Identifier"
           },
           "end": 488,
-          "optional": false,
           "start": 427,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -804,7 +796,6 @@ description: Result of parsing array_range_expr.kcl
             "type": "Identifier"
           },
           "end": 540,
-          "optional": false,
           "start": 489,
           "type": "CallExpression",
           "type": "CallExpression"

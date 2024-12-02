@@ -38,6 +38,7 @@ thread_local! {
 pub type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
 
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
+    let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
 
     let result = program.parse(i).save_err();
@@ -2231,7 +2232,6 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
         inner: CallExpression {
             callee: fn_name,
             arguments: args,
-            optional: false,
             digest: None,
         },
     })

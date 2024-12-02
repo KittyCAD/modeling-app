@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing pipe_substitution_inside_function_called_from_pipeline.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -95,7 +96,6 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
                     "type": "Identifier"
                   },
                   "end": 111,
-                  "optional": false,
                   "start": 107,
                   "type": "CallExpression",
                   "type": "CallExpression"
