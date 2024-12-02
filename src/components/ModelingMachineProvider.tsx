@@ -1181,6 +1181,7 @@ export const ModelingMachineProvider = ({
         'setup-client-side-sketch-segments': fromPromise(
           async ({ input: { sketchDetails, selectionRanges } }) => {
             if (!sketchDetails) return
+            if (!sketchDetails.sketchEntryNodePath.length) return
             if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
               sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             }
