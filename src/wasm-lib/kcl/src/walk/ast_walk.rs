@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use crate::{
-    ast::types::{
+    parsing::ast::types::{
         BinaryPart, BodyItem, Expr, IfExpression, LiteralIdentifier, MemberExpression, MemberObject, NodeRef,
         ObjectExpression, ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
     },
@@ -336,7 +336,7 @@ mod tests {
 
     macro_rules! kcl {
         ( $kcl:expr ) => {{
-            $crate::parser::top_level_parse($kcl).unwrap()
+            $crate::parsing::top_level_parse($kcl).unwrap()
         }};
     }
 

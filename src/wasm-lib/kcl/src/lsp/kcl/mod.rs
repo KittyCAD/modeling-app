@@ -41,10 +41,12 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Expr, Node, VariableKind},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
-    parser::PIPE_OPERATOR,
-    token::TokenType,
+    parsing::{
+        ast::types::{Expr, Node, VariableKind},
+        token::TokenType,
+        PIPE_OPERATOR,
+    },
     ExecState, ModuleId, Program, SourceRange,
 };
 
@@ -98,9 +100,9 @@ pub struct Backend {
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
     /// Token maps.
-    pub token_map: DashMap<String, Vec<crate::token::Token>>,
+    pub token_map: DashMap<String, Vec<crate::parsing::token::Token>>,
     /// AST maps.
-    pub ast_map: DashMap<String, Node<crate::ast::types::Program>>,
+    pub ast_map: DashMap<String, Node<crate::parsing::ast::types::Program>>,
     /// Memory maps.
     pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
     /// Current code.
@@ -257,7 +259,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Lets update the tokens.
         let module_id = ModuleId::default();
-        let tokens = match crate::token::lexer(&params.text, module_id) {
+        let tokens = match crate::parsing::token::lexer(&params.text, module_id) {
             Ok(tokens) => tokens,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
@@ -298,7 +300,7 @@ impl crate::lsp::backend::Backend for Backend {
         }
 
         // Lets update the ast.
-        let result = crate::parser::parse_tokens(tokens.clone());
+        let result = crate::parsing::parse_tokens(tokens.clone());
         // TODO handle parse errors properly
         let mut ast = match result.parse_errs_as_err() {
             Ok(ast) => ast,
@@ -376,7 +378,7 @@ impl Backend {
         self.executor_ctx.read().await
     }
 
-    async fn update_semantic_tokens(&self, tokens: &[crate::token::Token], params: &TextDocumentItem) {
+    async fn update_semantic_tokens(&self, tokens: &[crate::parsing::token::Token], params: &TextDocumentItem) {
         // Update the semantic tokens map.
         let mut semantic_tokens = vec![];
         let mut last_position = Position::new(0, 0);
@@ -1036,7 +1038,7 @@ impl LanguageServer for Backend {
         };
 
         match hover {
-            crate::ast::types::Hover::Function { name, range } => {
+            crate::parsing::ast::types::Hover::Function { name, range } => {
                 // Get the docs for this function.
                 let Some(completion) = self.stdlib_completions.get(&name) else {
                     return Ok(None);
@@ -1071,8 +1073,8 @@ impl LanguageServer for Backend {
                     range: Some(range),
                 }))
             }
-            crate::ast::types::Hover::Signature { .. } => Ok(None),
-            crate::ast::types::Hover::Comment { value, range } => Ok(Some(Hover {
+            crate::parsing::ast::types::Hover::Signature { .. } => Ok(None),
+            crate::parsing::ast::types::Hover::Comment { value, range } => Ok(Some(Hover {
                 contents: HoverContents::Markup(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value,
@@ -1230,7 +1232,7 @@ impl LanguageServer for Backend {
         };
 
         match hover {
-            crate::ast::types::Hover::Function { name, range: _ } => {
+            crate::parsing::ast::types::Hover::Function { name, range: _ } => {
                 // Get the docs for this function.
                 let Some(signature) = self.stdlib_signatures.get(&name) else {
                     return Ok(None);
@@ -1238,7 +1240,7 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature.clone()))
             }
-            crate::ast::types::Hover::Signature {
+            crate::parsing::ast::types::Hover::Signature {
                 name,
                 parameter_index,
                 range: _,
@@ -1253,7 +1255,7 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature))
             }
-            crate::ast::types::Hover::Comment { value: _, range: _ } => {
+            crate::parsing::ast::types::Hover::Comment { value: _, range: _ } => {
                 return Ok(None);
             }
         }
@@ -1302,12 +1304,12 @@ impl LanguageServer for Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(ast) = crate::parser::parse_str(current_code, module_id).parse_errs_as_err() else {
+        let Ok(ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
         // Now recast it.
         let recast = ast.recast(
-            &crate::ast::types::FormatOptions {
+            &crate::parsing::ast::types::FormatOptions {
                 tab_size: params.options.tab_size as usize,
                 insert_final_newline: params.options.insert_final_newline.unwrap_or(false),
                 use_tabs: !params.options.insert_spaces,
@@ -1336,7 +1338,7 @@ impl LanguageServer for Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(mut ast) = crate::parser::parse_str(current_code, module_id).parse_errs_as_err() else {
+        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
 

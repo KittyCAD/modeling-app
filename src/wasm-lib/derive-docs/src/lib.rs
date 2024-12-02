@@ -171,7 +171,7 @@ fn do_stdlib_inner(
             code_blocks.iter().map(|cb| {
                 let program = crate::Program::parse(cb).unwrap();
 
-                let mut options: crate::ast::types::FormatOptions = Default::default();
+                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
                 program.ast.recast(&options, 0)
             }).collect::<Vec<String>>()

@@ -4,8 +4,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::{FunctionExpression, Program},
     docs::{StdLibFn, StdLibFnData},
+    parsing::ast::types::{FunctionExpression, Program},
 };
 
 pub trait KclStdLibFn: StdLibFn {
