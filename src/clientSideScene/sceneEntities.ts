@@ -354,7 +354,7 @@ export class SceneEntities {
     currentTool,
   }: {
     sketchDetails: SketchDetails
-    currentTool: SketchTool,
+    currentTool: SketchTool
     afterClick: (
       args: OnClickCallbackArgs,
       updatedPaths: {
@@ -473,7 +473,9 @@ export class SceneEntities {
           })
           return
         } else if (currentTool === 'tangentialArc') {
-          toast.error('Tangential Arc must continue an existing profile, please click on the last segment of the profile')
+          toast.error(
+            'Tangential Arc must continue an existing profile, please click on the last segment of the profile'
+          )
           return
         }
 
@@ -713,6 +715,7 @@ export class SceneEntities {
   updateAstAndRejigSketch = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
+    planeNodePath: PathToNode,
     modifiedAst: Node<Program> | Error,
     forward: [number, number, number],
     up: [number, number, number],
@@ -737,12 +740,14 @@ export class SceneEntities {
       position: origin,
       sketchEntryNodePath,
       sketchNodePaths,
+      planeNodePath,
     })
     return nextAst
   }
   setupDraftSegment = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
+    planeNodePath: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number],
@@ -931,6 +936,7 @@ export class SceneEntities {
           await this.setupDraftSegment(
             sketchEntryNodePath,
             sketchNodePaths,
+            planeNodePath,
             forward,
             up,
             origin,
@@ -957,6 +963,7 @@ export class SceneEntities {
           intersects: args.intersects,
           sketchNodePaths,
           sketchEntryNodePath,
+          planeNodePath,
           draftInfo: {
             truncatedAst,
             programMemoryOverride,
@@ -1053,9 +1060,16 @@ export class SceneEntities {
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
 
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          structuredClone(updatedEntryNodePath)
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          Number(planeNodePath[1][0]) -
+          1
+
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
-          updatedEntryNodePath,
+          nodePathWithCorrectedIndexForTruncatedAst,
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
@@ -1111,7 +1125,7 @@ export class SceneEntities {
 
         const _node = getNodeFromPath<VariableDeclaration>(
           _ast,
-          updatedEntryNodePath || [],
+          updatedEntryNodePath,
           'VariableDeclaration'
         )
         if (trap(_node)) return
@@ -1140,7 +1154,6 @@ export class SceneEntities {
           ast: _ast,
           useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
-          programMemoryOverride,
           idGenerator: kclManager.execState.idGenerator,
         })
         const programMemory = execState.memory
@@ -1153,9 +1166,15 @@ export class SceneEntities {
         const orthoFactor = orthoScale(sceneInfra.camControls.camera)
 
         // Update the starting segment of the THREEjs scene
-        this.updateSegment(sketch.start, 0, 0, _ast, orthoFactor, sketch)
-        // Update the rest of the segments of the THREEjs scene
         const varDecIndex = Number(updatedEntryNodePath[1][0])
+        this.updateSegment(
+          sketch.start,
+          0,
+          varDecIndex,
+          _ast,
+          orthoFactor,
+          sketch
+        )
         sgPaths.forEach((seg, index) =>
           this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
         )
@@ -1248,9 +1267,16 @@ export class SceneEntities {
       onMove: async (args) => {
         // Update the width and height of the draft rectangle
 
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          structuredClone(updatedEntryNodePath)
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          Number(planeNodePath[1][0]) -
+          1
+
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
-          updatedEntryNodePath,
+          nodePathWithCorrectedIndexForTruncatedAst,
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
@@ -1345,7 +1371,6 @@ export class SceneEntities {
             ast: _ast,
             useFakeExecutor: true,
             engineCommandManager: this.engineCommandManager,
-            programMemoryOverride,
             idGenerator: kclManager.execState.idGenerator,
           })
           const programMemory = execState.memory
@@ -1448,9 +1473,15 @@ export class SceneEntities {
 
     sceneInfra.setCallbacks({
       onMove: async (args) => {
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          structuredClone(updatedEntryNodePath)
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          Number(planeNodePath[1][0]) -
+          1
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
-          updatedEntryNodePath || [],
+          nodePathWithCorrectedIndexForTruncatedAst,
           'VariableDeclaration'
         )
         let modded = structuredClone(truncatedAst)
@@ -1466,7 +1497,7 @@ export class SceneEntities {
             kclManager.programMemory,
             {
               type: 'path',
-              pathToNode: updatedEntryNodePath,
+              pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
             },
             {
               type: 'arc-segment',
@@ -1566,12 +1597,14 @@ export class SceneEntities {
   setupSketchIdleCallbacks = ({
     sketchEntryNodePath,
     sketchNodePaths,
+    planeNodePath,
     up,
     forward,
     position,
   }: {
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
+    planeNodePath: PathToNode
     forward: [number, number, number]
     up: [number, number, number]
     position?: [number, number, number]
@@ -1594,6 +1627,7 @@ export class SceneEntities {
           this.setupSketchIdleCallbacks({
             sketchEntryNodePath,
             sketchNodePaths,
+            planeNodePath,
             up,
             forward,
             position,
@@ -1667,6 +1701,7 @@ export class SceneEntities {
             this.onDragSegment({
               sketchNodePaths,
               sketchEntryNodePath: pathToNodeForNewSegment,
+              planeNodePath,
               object: selected,
               intersection2d: intersectionPoint.twoD,
               intersects,
@@ -1678,6 +1713,7 @@ export class SceneEntities {
         this.onDragSegment({
           object: selected,
           intersection2d: intersectionPoint.twoD,
+          planeNodePath,
           intersects,
           sketchNodePaths,
           sketchEntryNodePath,
@@ -1724,6 +1760,7 @@ export class SceneEntities {
     intersection2d: _intersection2d,
     sketchEntryNodePath,
     sketchNodePaths,
+    planeNodePath,
     draftInfo,
     intersects,
   }: {
@@ -1731,6 +1768,7 @@ export class SceneEntities {
     intersection2d: Vector2
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
+    planeNodePath: PathToNode
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
       truncatedAst: Node<Program>
@@ -1781,9 +1819,16 @@ export class SceneEntities {
     const dragTo: [number, number] = [snappedPoint.x, snappedPoint.y]
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
+    const nodePathWithCorrectedIndexForTruncatedAst =
+      structuredClone(pathToNode)
+    nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+      Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+      Number(planeNodePath[1][0]) -
+      1
+
     const _node = getNodeFromPath<Node<CallExpression>>(
       modifiedAst,
-      pathToNode,
+      draftInfo ? nodePathWithCorrectedIndexForTruncatedAst : pathToNode,
       'CallExpression'
     )
     if (trap(_node)) return
@@ -2206,9 +2251,10 @@ function prepareTruncatedMemoryAndAst(
       variableDeclarationName: string
     }
   | Error {
-  const bodyStartIndex = Number(sketchNodePaths?.[1]?.[0]) || 0
+  const bodyStartIndex = Number(sketchNodePaths?.[0]?.[1]?.[0]) || 0
   const bodyEndIndex =
-    Number(sketchNodePaths[sketchNodePaths.length - 1]?.[0]) || ast.body.length
+    Number(sketchNodePaths[sketchNodePaths.length - 1]?.[1]?.[0]) ||
+    ast.body.length
   const _ast = structuredClone(ast)
 
   const _node = getNodeFromPath<Node<VariableDeclaration>>(
@@ -2271,7 +2317,7 @@ function prepareTruncatedMemoryAndAst(
   }
   const truncatedAst: Node<Program> = {
     ..._ast,
-    body: structuredClone(_ast.body.slice(bodyStartIndex, bodyEndIndex)),
+    body: structuredClone(_ast.body.slice(bodyStartIndex, bodyEndIndex + 1)),
   }
 
   // Grab all the TagDeclarators and TagIdentifiers from memory.

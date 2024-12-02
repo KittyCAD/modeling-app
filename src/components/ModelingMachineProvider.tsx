@@ -765,6 +765,7 @@ export const ModelingMachineProvider = ({
               await sceneEntitiesManager.updateAstAndRejigSketch(
                 updatedPathToNode,
                 sketchDetails.sketchNodePaths,
+                sketchDetails.planeNodePath,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -807,6 +808,7 @@ export const ModelingMachineProvider = ({
               await sceneEntitiesManager.updateAstAndRejigSketch(
                 updatedPathToNode,
                 sketchDetails.sketchNodePaths,
+                sketchDetails.planeNodePath,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -858,6 +860,7 @@ export const ModelingMachineProvider = ({
               await sceneEntitiesManager.updateAstAndRejigSketch(
                 updatedPathToNode,
                 sketchDetails.sketchNodePaths,
+                sketchDetails.planeNodePath,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -899,6 +902,7 @@ export const ModelingMachineProvider = ({
               await sceneEntitiesManager.updateAstAndRejigSketch(
                 updatedPathToNode,
                 sketchDetails.sketchNodePaths,
+                sketchDetails.planeNodePath,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -940,6 +944,7 @@ export const ModelingMachineProvider = ({
               await sceneEntitiesManager.updateAstAndRejigSketch(
                 updatedPathToNode,
                 sketchDetails.sketchNodePaths,
+                sketchDetails.planeNodePath,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -982,6 +987,7 @@ export const ModelingMachineProvider = ({
               await sceneEntitiesManager.updateAstAndRejigSketch(
                 updatedPathToNode,
                 sketchDetails.sketchNodePaths,
+                sketchDetails.planeNodePath,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1024,6 +1030,7 @@ export const ModelingMachineProvider = ({
               await sceneEntitiesManager.updateAstAndRejigSketch(
                 updatedPathToNode,
                 sketchDetails.sketchNodePaths,
+                sketchDetails.planeNodePath,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1076,6 +1083,7 @@ export const ModelingMachineProvider = ({
               await sceneEntitiesManager.updateAstAndRejigSketch(
                 pathToReplacedNode || [],
                 sketchDetails.sketchNodePaths,
+                sketchDetails.planeNodePath,
                 parsed,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1194,6 +1202,7 @@ export const ModelingMachineProvider = ({
               up: sketchDetails.yAxis,
               position: sketchDetails.origin,
               sketchNodePaths: sketchDetails.sketchNodePaths,
+              planeNodePath: sketchDetails.planeNodePath,
             })
             return undefined
           }

@@ -799,6 +799,7 @@ export const modelingMachine = setup({
           up: sketchDetails.yAxis,
           position: sketchDetails.origin,
           sketchNodePaths: sketchDetails.sketchNodePaths,
+          planeNodePath: sketchDetails.planeNodePath,
         })
       })().catch(reportRejection)
     },
@@ -817,6 +818,7 @@ export const modelingMachine = setup({
         .setupDraftSegment(
           event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
           event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin,
@@ -842,6 +844,7 @@ export const modelingMachine = setup({
         .setupDraftSegment(
           event.data.sketchEntryNodePath || sketchDetails.sketchEntryNodePath,
           event.data.sketchNodePaths || sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin,
@@ -985,9 +988,9 @@ export const modelingMachine = setup({
         currentTool,
         afterClick: (_, data) =>
           sceneInfra.modelingSend(
-            currentTool === 'line'
-              ? { type: 'Add start point', data }
-              : { type: 'Continue existing profile', data }
+            currentTool === 'tangentialArc'
+              ? { type: 'Continue existing profile', data }
+              : { type: 'Add start point', data }
           ),
       })
     },
@@ -1092,6 +1095,7 @@ export const modelingMachine = setup({
         let updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           pathToNodeMap[0],
           sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           constraint.modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1130,6 +1134,7 @@ export const modelingMachine = setup({
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails.sketchEntryNodePath,
           sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1166,6 +1171,7 @@ export const modelingMachine = setup({
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1200,6 +1206,7 @@ export const modelingMachine = setup({
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1235,6 +1242,7 @@ export const modelingMachine = setup({
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1270,6 +1278,7 @@ export const modelingMachine = setup({
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1305,6 +1314,7 @@ export const modelingMachine = setup({
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1344,6 +1354,7 @@ export const modelingMachine = setup({
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           parse(recast(modifiedAst)),
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1379,6 +1390,7 @@ export const modelingMachine = setup({
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
+          sketchDetails.planeNodePath,
           modifiedAst,
           sketchDetails.zAxis,
           sketchDetails.yAxis,

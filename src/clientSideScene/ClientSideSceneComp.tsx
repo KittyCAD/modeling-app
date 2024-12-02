@@ -430,6 +430,7 @@ export async function deleteSegment({
   await sceneEntitiesManager.updateAstAndRejigSketch(
     pathToNode,
     sketchDetails.sketchNodePaths,
+    sketchDetails.planeNodePath,
     modifiedAst,
     sketchDetails.zAxis,
     sketchDetails.yAxis,
