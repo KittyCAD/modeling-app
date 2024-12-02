@@ -2,7 +2,6 @@ import { CustomIconName } from 'components/CustomIcon'
 import { DEV } from 'env'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import {
-  canRectangleOrCircleTool,
   isEditingExistingSketch,
   modelingMachine,
   pipeHasCircle,
@@ -468,10 +467,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'arc',
           status: 'available',
-          disabled: (state) =>
-            state.matches('Sketch no face') ||
-            (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Center Rectangle tool' })),
+          disabled: (state) => state.matches('Sketch no face'),
           title: 'Center rectangle',
           hotkey: (state) =>
             state.matches({ Sketch: 'Center Rectangle tool' })
