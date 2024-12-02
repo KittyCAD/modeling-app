@@ -110,43 +110,22 @@ export function insertNewStartProfileAt(
       createIdentifier(varDec.node.id.name),
     ])
   )
-  let minIndex = 0
-  let maxIndex = 0
-  for (const path of sketchNodePaths) {
-    const index = Number(path[1][0])
-    if (index < minIndex) minIndex = index
-    if (index > maxIndex) maxIndex = index
-  }
+  const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, insertType)
 
   const _node = structuredClone(node)
-  const insertIndex = !sketchNodePaths.length
-    ? Number(planeNodePath[1][0]) + 1
-    : insertType === 'start'
-    ? minIndex
-    : maxIndex + 1
   // TODO the rest of this function will not be robust to work for sketches defined within a function declaration
   _node.body.splice(insertIndex, 0, newExpression)
-  const netExpressionPathToNode: PathToNode = [
-    ['body', ''],
-    [insertIndex, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
-    ['init', 'VariableDeclarator'],
-  ]
-  let updatedSketchNodePaths = structuredClone(sketchNodePaths)
-  if (insertType === 'start') {
-    updatedSketchNodePaths = updatedSketchNodePaths.map((path) => {
-      path[1][0] = Number(path[1][0]) + 1
-      return path
+
+  const { updatedEntryNodePath, updatedSketchNodePaths } =
+    updateSketchNodePathsWithInsertIndex({
+      insertIndex,
+      insertType,
+      sketchNodePaths,
     })
-    updatedSketchNodePaths.unshift(netExpressionPathToNode)
-  } else {
-    updatedSketchNodePaths.push(netExpressionPathToNode)
-  }
   return {
     modifiedAst: _node,
     updatedSketchNodePaths,
-    updatedEntryNodePath: netExpressionPathToNode,
+    updatedEntryNodePath,
   }
 }
 
@@ -1307,4 +1286,61 @@ export async function deleteFromSelection(
 
 const nonCodeMetaEmpty = () => {
   return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
+}
+
+export function getInsertIndex(
+  sketchNodePaths: PathToNode[],
+  planeNodePath: PathToNode,
+  insertType: 'start' | 'end'
+) {
+  let minIndex = 0
+  let maxIndex = 0
+  for (const path of sketchNodePaths) {
+    const index = Number(path[1][0])
+    if (index < minIndex) minIndex = index
+    if (index > maxIndex) maxIndex = index
+  }
+
+  const insertIndex = !sketchNodePaths.length
+    ? Number(planeNodePath[1][0]) + 1
+    : insertType === 'start'
+    ? minIndex
+    : maxIndex + 1
+  return insertIndex
+}
+
+export function updateSketchNodePathsWithInsertIndex({
+  insertIndex,
+  insertType,
+  sketchNodePaths,
+}: {
+  insertIndex: number
+  insertType: 'start' | 'end'
+  sketchNodePaths: PathToNode[]
+}): {
+  updatedEntryNodePath: PathToNode
+  updatedSketchNodePaths: PathToNode[]
+} {
+  // TODO the rest of this function will not be robust to work for sketches defined within a function declaration
+  const newExpressionPathToNode: PathToNode = [
+    ['body', ''],
+    [insertIndex, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    ['0', 'index'],
+    ['init', 'VariableDeclarator'],
+  ]
+  let updatedSketchNodePaths = structuredClone(sketchNodePaths)
+  if (insertType === 'start') {
+    updatedSketchNodePaths = updatedSketchNodePaths.map((path) => {
+      path[1][0] = Number(path[1][0]) + 1
+      return path
+    })
+    updatedSketchNodePaths.unshift(newExpressionPathToNode)
+  } else {
+    updatedSketchNodePaths.push(newExpressionPathToNode)
+  }
+  return {
+    updatedSketchNodePaths,
+    updatedEntryNodePath: newExpressionPathToNode,
+  }
 }

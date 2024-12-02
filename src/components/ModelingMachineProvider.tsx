@@ -1100,6 +1100,82 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
+        'set-up-draft-circle': fromPromise(
+          async ({ input: { sketchDetails, data } }) => {
+            if (!sketchDetails || !data)
+              // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+              throw new Error('No sketch details or data')
+            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            const result = await sceneEntitiesManager.setupDraftCircle(
+              sketchDetails.sketchEntryNodePath,
+              sketchDetails.sketchNodePaths,
+              sketchDetails.planeNodePath,
+              sketchDetails.zAxis,
+              sketchDetails.yAxis,
+              sketchDetails.origin,
+              data
+            )
+            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+            if (err(result)) throw result
+            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+
+            return result
+          }
+        ),
+        'set-up-draft-rectangle': fromPromise(
+          async ({ input: { sketchDetails, data } }) => {
+            if (!sketchDetails || !data)
+              // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+              throw new Error('No sketch details or data')
+            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            const result = await sceneEntitiesManager.setupDraftRectangle(
+              sketchDetails.sketchEntryNodePath,
+              sketchDetails.sketchNodePaths,
+              sketchDetails.planeNodePath,
+              sketchDetails.zAxis,
+              sketchDetails.yAxis,
+              sketchDetails.origin,
+              data
+            )
+            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+            if (err(result)) throw result
+            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+
+            return result
+          }
+        ),
+        'setup-client-side-sketch-segments': fromPromise(
+          async ({ input: { sketchDetails, selectionRanges } }) => {
+            if (!sketchDetails) return
+            if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
+              sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+            }
+            sceneInfra.resetMouseListeners()
+            await sceneEntitiesManager.setupSketch({
+              sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
+              sketchNodePaths: sketchDetails.sketchNodePaths,
+              forward: sketchDetails.zAxis,
+              up: sketchDetails.yAxis,
+              position: sketchDetails.origin,
+              maybeModdedAst: kclManager.ast,
+              selectionRanges,
+            })
+            sceneInfra.resetMouseListeners()
+
+            sceneEntitiesManager.setupSketchIdleCallbacks({
+              sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
+              forward: sketchDetails.zAxis,
+              up: sketchDetails.yAxis,
+              position: sketchDetails.origin,
+              sketchNodePaths: sketchDetails.sketchNodePaths,
+            })
+            return undefined
+          }
+        ),
       },
     }),
     {
