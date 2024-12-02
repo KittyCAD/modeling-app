@@ -1808,7 +1808,8 @@ impl TryFrom<Token> for Node<TagDeclarator> {
                 ),
             )),
 
-            TokenType::Brace | TokenType::Whitespace => Err(CompilationError::fatal(
+            // e.g. `line(%, $)` or `line(%, $ , 5)`
+            TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationError::fatal(
                 token.as_source_ranges(),
                 format!("Tag names must not be empty",),
             )),
@@ -1820,7 +1821,6 @@ impl TryFrom<Token> for Node<TagDeclarator> {
 
             TokenType::Bang
             | TokenType::Hash
-            | TokenType::Comma
             | TokenType::Colon
             | TokenType::Period
             | TokenType::Operator
@@ -3977,6 +3977,15 @@ let myBox = box([0,0], -3, -16, -10)
         let some_program_string = r#"startSketchOn('XY')
     |> startProfileAt([0, 0], %)
     |> line(%, $ ,01)
+    "#;
+        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+    }
+
+    #[test]
+    fn test_parse_empty_tag_comma() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $,)
     "#;
         assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
     }
