@@ -125,7 +125,6 @@ An expression can be evaluated to yield a single KCL value.
 | `type` |enum: `CallExpression`|  | No |
 | `callee` |[`Identifier`](/docs/kcl/types/Identifier)| An expression can be evaluated to yield a single KCL value. | No |
 | `arguments` |`[` [`Expr`](/docs/kcl/types/Expr) `]`|  | No |
-| `optional` |`boolean`|  | No |
 | `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 | `start` |`integer`|  | No |
 | `end` |`integer`|  | No |

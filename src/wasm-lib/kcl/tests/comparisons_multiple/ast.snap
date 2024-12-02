@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing comparisons_multiple.kcl
 snapshot_kind: text
 ---
@@ -65,7 +64,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 46,
-          "optional": false,
           "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"

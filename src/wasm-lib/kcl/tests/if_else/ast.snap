@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing if_else.kcl
 snapshot_kind: text
 ---
@@ -161,7 +160,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 159,
-          "optional": false,
           "start": 102,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -324,7 +322,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 278,
-          "optional": false,
           "start": 216,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -487,7 +484,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 395,
-          "optional": false,
           "start": 336,
           "type": "CallExpression",
           "type": "CallExpression"

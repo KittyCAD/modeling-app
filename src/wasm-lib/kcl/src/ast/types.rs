@@ -1181,7 +1181,7 @@ impl Node<ImportItem> {
                     self.alias = Some(Identifier::new(new_name));
                 }
                 // Return implicit name.
-                return Some(self.identifier().to_owned());
+                Some(self.identifier().to_owned())
             }
         }
     }
@@ -1264,7 +1264,6 @@ pub struct ExpressionStatement {
 pub struct CallExpression {
     pub callee: Node<Identifier>,
     pub arguments: Vec<Expr>,
-    pub optional: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -1301,7 +1300,6 @@ impl CallExpression {
         Ok(Node::no_src(Self {
             callee: Identifier::new(name),
             arguments,
-            optional: false,
             digest: None,
         }))
     }

@@ -132,6 +132,12 @@ jobs:
           gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-mac.yml" --async
           gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest.yml" --async
 
+      - name: Upload release files to Github
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: 'out/Zoo*'
+
 
   announce_release:
     needs: [publish-apps-release]

@@ -1909,6 +1909,7 @@ impl ExecutorContext {
         program: &Program,
         exec_state: &mut ExecState,
     ) -> Result<Option<ModelingSessionData>, KclError> {
+        let _stats = crate::log::LogPerfStats::new("Interpretation");
         // TODO: Use the top-level file's path.
         exec_state.add_module(std::path::PathBuf::from(""));
         // Before we even start executing the program, set the units.

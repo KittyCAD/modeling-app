@@ -8,10 +8,53 @@
 #[allow(unused_macros)]
 macro_rules! println {
     ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
         #[cfg(not(feature = "disable-println"))]
         std::println!($($rest)*)
     }
 }
+
+#[allow(unused_macros)]
+macro_rules! eprintln {
+    ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
+        #[cfg(not(feature = "disable-println"))]
+        std::eprintln!($($rest)*)
+    }
+}
+
+#[allow(unused_macros)]
+macro_rules! print {
+    ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
+        #[cfg(not(feature = "disable-println"))]
+        std::print!($($rest)*)
+    }
+}
+
+#[allow(unused_macros)]
+macro_rules! eprint {
+    ($($rest:tt)*) => {
+        #[cfg(feature = "disable-println")]
+        {
+            let _ = format!($($rest)*);
+        }
+        #[cfg(not(feature = "disable-println"))]
+        std::eprint!($($rest)*)
+    }
+}
+#[cfg(feature = "dhat-heap")]
+#[global_allocator]
+static ALLOC: dhat::Alloc = dhat::Alloc;
 
 mod ast;
 mod coredump;
@@ -23,6 +66,7 @@ mod fs;
 mod function_param;
 mod kcl_value;
 pub mod lint;
+mod log;
 mod lsp;
 mod parser;
 mod settings;
@@ -71,6 +115,8 @@ pub mod std_utils {
     pub use crate::std::utils::{get_tangential_arc_to_info, is_points_ccw_wasm, TangentialArcInfoInput};
 }
 
+#[allow(unused_imports)]
+use crate::log::{log, logln};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]

@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing comparisons.kcl
 snapshot_kind: text
 ---
@@ -50,7 +49,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 26,
-          "optional": false,
           "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -102,7 +100,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 67,
-          "optional": false,
           "start": 27,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -154,7 +151,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 98,
-          "optional": false,
           "start": 68,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -206,7 +202,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 143,
-          "optional": false,
           "start": 99,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -258,7 +253,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 163,
-          "optional": false,
           "start": 144,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -310,7 +304,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 201,
-          "optional": false,
           "start": 164,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -362,7 +355,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 239,
-          "optional": false,
           "start": 202,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -414,7 +406,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 259,
-          "optional": false,
           "start": 240,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -466,7 +457,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 297,
-          "optional": false,
           "start": 260,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -518,7 +508,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 335,
-          "optional": false,
           "start": 298,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -570,7 +559,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 375,
-          "optional": false,
           "start": 337,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -629,7 +617,6 @@ snapshot_kind: text
             "type": "Identifier"
           },
           "end": 428,
-          "optional": false,
           "start": 376,
           "type": "CallExpression",
           "type": "CallExpression"

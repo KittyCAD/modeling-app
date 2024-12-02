@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing tangential_arc.kcl
 snapshot_kind: text
 ---
@@ -53,7 +52,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 33,
-                  "optional": false,
                   "start": 12,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -98,7 +96,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 55,
-                  "optional": false,
                   "start": 39,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -165,7 +162,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 106,
-                  "optional": false,
                   "start": 61,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -217,7 +213,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 129,
-                  "optional": false,
                   "start": 112,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -246,7 +241,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 149,
-                  "optional": false,
                   "start": 135,
                   "type": "CallExpression",
                   "type": "CallExpression"

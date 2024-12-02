@@ -24,7 +24,6 @@ use crate::{
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
-
 pub enum SketchOrSurface {
     SketchSurface(SketchSurface),
     Sketch(Box<Sketch>),

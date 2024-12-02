@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing helix_ccw.kcl
 snapshot_kind: text
 ---
@@ -37,7 +36,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 29,
-                  "optional": false,
                   "start": 10,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -120,7 +118,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 78,
-                  "optional": false,
                   "start": 35,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -149,7 +146,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 98,
-                  "optional": false,
                   "start": 84,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -235,7 +231,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 188,
-                  "optional": false,
                   "start": 104,
                   "type": "CallExpression",
                   "type": "CallExpression"
