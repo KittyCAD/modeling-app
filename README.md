@@ -99,7 +99,7 @@ yarn tron:start
 
 This will start the application and hot-reload on changes.
 
-Devtools can be opened with the usual Cmd-Ctrl-I (Mac) or Ctrl-Shift-I (Linux).
+Devtools can be opened with the usual Cmd-Opt-I (Mac) or Ctrl-Shift-I (Linux and Windows).
 
 To build, run `yarn tron:package`.
 
