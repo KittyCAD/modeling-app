@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing linear_pattern3d_a_pattern.kcl
 snapshot_kind: text
 ---
@@ -37,7 +36,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 35,
-                  "optional": false,
                   "start": 16,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -82,7 +80,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 66,
-                  "optional": false,
                   "start": 41,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -127,7 +124,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 87,
-                  "optional": false,
                   "start": 72,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -172,7 +168,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 108,
-                  "optional": false,
                   "start": 93,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -224,7 +219,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 130,
-                  "optional": false,
                   "start": 114,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -245,7 +239,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 144,
-                  "optional": false,
                   "start": 136,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -274,7 +267,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 163,
-                  "optional": false,
                   "start": 150,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -411,7 +403,6 @@ snapshot_kind: text
                 "type": "Identifier"
               },
               "end": 261,
-              "optional": false,
               "start": 174,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -542,7 +533,6 @@ snapshot_kind: text
                 "type": "Identifier"
               },
               "end": 352,
-              "optional": false,
               "start": 272,
               "type": "CallExpression",
               "type": "CallExpression"

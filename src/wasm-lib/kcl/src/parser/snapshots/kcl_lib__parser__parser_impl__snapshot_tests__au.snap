@@ -1,6 +1,5 @@
 ---
 source: kcl/src/parser/parser_impl.rs
-assertion_line: 3761
 expression: actual
 snapshot_kind: text
 ---
@@ -36,7 +35,6 @@ snapshot_kind: text
                   "type": "Identifier"
                 },
                 "end": 36,
-                "optional": false,
                 "start": 17,
                 "type": "CallExpression",
                 "type": "CallExpression"
@@ -119,7 +117,6 @@ snapshot_kind: text
                   "type": "Identifier"
                 },
                 "end": 85,
-                "optional": false,
                 "start": 44,
                 "type": "CallExpression",
                 "type": "CallExpression"
@@ -148,7 +145,6 @@ snapshot_kind: text
                   "type": "Identifier"
                 },
                 "end": 107,
-                "optional": false,
                 "start": 93,
                 "type": "CallExpression",
                 "type": "CallExpression"

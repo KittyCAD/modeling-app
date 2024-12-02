@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing pentagon_fillet_sugar.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -231,7 +232,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 159,
-                  "optional": false,
                   "start": 140,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -276,7 +276,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 190,
-                  "optional": false,
                   "start": 165,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -349,7 +348,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 251,
-                  "optional": false,
                   "start": 196,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -422,7 +420,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 313,
-                  "optional": false,
                   "start": 257,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -495,7 +492,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 375,
-                  "optional": false,
                   "start": 319,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -523,7 +519,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 407,
-                  "optional": false,
                   "start": 381,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -584,7 +579,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "type": "Identifier"
                           },
                           "end": 460,
-                          "optional": false,
                           "start": 438,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -656,7 +650,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "type": "Identifier"
                           },
                           "end": 519,
-                          "optional": false,
                           "start": 468,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -691,7 +684,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "type": "Identifier"
                           },
                           "end": 549,
-                          "optional": false,
                           "start": 527,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -712,7 +704,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                             "type": "Identifier"
                           },
                           "end": 565,
-                          "optional": false,
                           "start": 557,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -811,7 +802,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "type": "Identifier"
               },
               "end": 588,
-              "optional": false,
               "start": 574,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -868,7 +858,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 630,
-                  "optional": false,
                   "start": 608,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -989,7 +978,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                   "type": "Identifier"
                                 },
                                 "end": 747,
-                                "optional": false,
                                 "start": 715,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
@@ -1020,7 +1008,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 767,
-                  "optional": false,
                   "start": 636,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1076,7 +1063,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 "type": "Identifier"
               },
               "end": 786,
-              "optional": false,
               "start": 773,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -1133,7 +1119,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 828,
-                  "optional": false,
                   "start": 806,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1254,7 +1239,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                   "type": "Identifier"
                                 },
                                 "end": 945,
-                                "optional": false,
                                 "start": 913,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
@@ -1285,7 +1269,6 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "type": "Identifier"
                   },
                   "end": 965,
-                  "optional": false,
                   "start": 834,
                   "type": "CallExpression",
                   "type": "CallExpression"

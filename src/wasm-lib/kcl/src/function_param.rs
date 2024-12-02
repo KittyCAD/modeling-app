@@ -37,7 +37,7 @@ impl<'a> FunctionParam<'a> {
     }
 }
 
-impl<'a> JsonSchema for FunctionParam<'a> {
+impl JsonSchema for FunctionParam<'_> {
     fn schema_name() -> String {
         "FunctionParam".to_owned()
     }

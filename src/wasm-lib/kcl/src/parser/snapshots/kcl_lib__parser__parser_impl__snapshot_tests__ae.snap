@@ -1,6 +1,7 @@
 ---
 source: kcl/src/parser/parser_impl.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
@@ -82,7 +83,6 @@ expression: actual
           "type": "Identifier"
         },
         "end": 66,
-        "optional": false,
         "start": 54,
         "type": "CallExpression",
         "type": "CallExpression"

@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing poop_chute.kcl
 snapshot_kind: text
 ---
@@ -317,7 +316,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 202,
-                  "optional": false,
                   "start": 182,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -376,7 +374,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 252,
-                  "optional": false,
                   "start": 208,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -419,7 +416,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 286,
-                  "optional": false,
                   "start": 258,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -492,7 +488,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 355,
-                  "optional": false,
                   "start": 292,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -520,7 +515,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 379,
-                  "optional": false,
                   "start": 361,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -555,7 +549,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 410,
-                  "optional": false,
                   "start": 385,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -579,7 +572,6 @@ snapshot_kind: text
                         "type": "Identifier"
                       },
                       "end": 438,
-                      "optional": false,
                       "start": 424,
                       "type": "CallExpression",
                       "type": "CallExpression"
@@ -598,7 +590,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 442,
-                  "optional": false,
                   "start": 416,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -708,7 +699,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 547,
-                  "optional": false,
                   "start": 448,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -743,7 +733,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 578,
-                  "optional": false,
                   "start": 553,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -824,7 +813,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 662,
-                  "optional": false,
                   "start": 584,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -852,7 +840,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 686,
-                  "optional": false,
                   "start": 668,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -881,7 +868,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 705,
-                  "optional": false,
                   "start": 692,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -905,7 +891,6 @@ snapshot_kind: text
                         "type": "Identifier"
                       },
                       "end": 733,
-                      "optional": false,
                       "start": 719,
                       "type": "CallExpression",
                       "type": "CallExpression"
@@ -924,7 +909,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 737,
-                  "optional": false,
                   "start": 711,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1006,7 +990,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 789,
-                  "optional": false,
                   "start": 743,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1027,7 +1010,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 803,
-                  "optional": false,
                   "start": 795,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1224,7 +1206,6 @@ snapshot_kind: text
                 "type": "Identifier"
               },
               "end": 952,
-              "optional": false,
               "start": 814,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -1269,7 +1250,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 986,
-                  "optional": false,
                   "start": 966,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1328,7 +1308,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1036,
-                  "optional": false,
                   "start": 992,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1371,7 +1350,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1070,
-                  "optional": false,
                   "start": 1042,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1444,7 +1422,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1139,
-                  "optional": false,
                   "start": 1076,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1472,7 +1449,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1163,
-                  "optional": false,
                   "start": 1145,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1507,7 +1483,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1194,
-                  "optional": false,
                   "start": 1169,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1531,7 +1506,6 @@ snapshot_kind: text
                         "type": "Identifier"
                       },
                       "end": 1222,
-                      "optional": false,
                       "start": 1208,
                       "type": "CallExpression",
                       "type": "CallExpression"
@@ -1550,7 +1524,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1226,
-                  "optional": false,
                   "start": 1200,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1660,7 +1633,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1331,
-                  "optional": false,
                   "start": 1232,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1695,7 +1667,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1362,
-                  "optional": false,
                   "start": 1337,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1776,7 +1747,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1446,
-                  "optional": false,
                   "start": 1368,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1804,7 +1774,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1470,
-                  "optional": false,
                   "start": 1452,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1833,7 +1802,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1489,
-                  "optional": false,
                   "start": 1476,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1857,7 +1825,6 @@ snapshot_kind: text
                         "type": "Identifier"
                       },
                       "end": 1517,
-                      "optional": false,
                       "start": 1503,
                       "type": "CallExpression",
                       "type": "CallExpression"
@@ -1876,7 +1843,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1521,
-                  "optional": false,
                   "start": 1495,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1958,7 +1924,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1573,
-                  "optional": false,
                   "start": 1527,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -1979,7 +1944,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1587,
-                  "optional": false,
                   "start": 1579,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -2021,7 +1985,6 @@ snapshot_kind: text
                     "type": "Identifier"
                   },
                   "end": 1625,
-                  "optional": false,
                   "start": 1593,
                   "type": "CallExpression",
                   "type": "CallExpression"

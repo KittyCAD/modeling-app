@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing add_lots.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -305,7 +306,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                                         "type": "Identifier"
                                                                                                                                                                                                                       },
                                                                                                                                                                                                                       "end": 36,
-                                                                                                                                                                                                                      "optional": false,
                                                                                                                                                                                                                       "start": 32,
                                                                                                                                                                                                                       "type": "CallExpression",
                                                                                                                                                                                                                       "type": "CallExpression"
@@ -329,7 +329,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                                         "type": "Identifier"
                                                                                                                                                                                                                       },
                                                                                                                                                                                                                       "end": 43,
-                                                                                                                                                                                                                      "optional": false,
                                                                                                                                                                                                                       "start": 39,
                                                                                                                                                                                                                       "type": "CallExpression",
                                                                                                                                                                                                                       "type": "CallExpression"
@@ -357,7 +356,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                                       "type": "Identifier"
                                                                                                                                                                                                                     },
                                                                                                                                                                                                                     "end": 50,
-                                                                                                                                                                                                                    "optional": false,
                                                                                                                                                                                                                     "start": 46,
                                                                                                                                                                                                                     "type": "CallExpression",
                                                                                                                                                                                                                     "type": "CallExpression"
@@ -385,7 +383,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                                     "type": "Identifier"
                                                                                                                                                                                                                   },
                                                                                                                                                                                                                   "end": 57,
-                                                                                                                                                                                                                  "optional": false,
                                                                                                                                                                                                                   "start": 53,
                                                                                                                                                                                                                   "type": "CallExpression",
                                                                                                                                                                                                                   "type": "CallExpression"
@@ -413,7 +410,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                                   "type": "Identifier"
                                                                                                                                                                                                                 },
                                                                                                                                                                                                                 "end": 64,
-                                                                                                                                                                                                                "optional": false,
                                                                                                                                                                                                                 "start": 60,
                                                                                                                                                                                                                 "type": "CallExpression",
                                                                                                                                                                                                                 "type": "CallExpression"
@@ -441,7 +437,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                                 "type": "Identifier"
                                                                                                                                                                                                               },
                                                                                                                                                                                                               "end": 71,
-                                                                                                                                                                                                              "optional": false,
                                                                                                                                                                                                               "start": 67,
                                                                                                                                                                                                               "type": "CallExpression",
                                                                                                                                                                                                               "type": "CallExpression"
@@ -469,7 +464,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                               "type": "Identifier"
                                                                                                                                                                                                             },
                                                                                                                                                                                                             "end": 78,
-                                                                                                                                                                                                            "optional": false,
                                                                                                                                                                                                             "start": 74,
                                                                                                                                                                                                             "type": "CallExpression",
                                                                                                                                                                                                             "type": "CallExpression"
@@ -497,7 +491,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                             "type": "Identifier"
                                                                                                                                                                                                           },
                                                                                                                                                                                                           "end": 85,
-                                                                                                                                                                                                          "optional": false,
                                                                                                                                                                                                           "start": 81,
                                                                                                                                                                                                           "type": "CallExpression",
                                                                                                                                                                                                           "type": "CallExpression"
@@ -525,7 +518,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                           "type": "Identifier"
                                                                                                                                                                                                         },
                                                                                                                                                                                                         "end": 92,
-                                                                                                                                                                                                        "optional": false,
                                                                                                                                                                                                         "start": 88,
                                                                                                                                                                                                         "type": "CallExpression",
                                                                                                                                                                                                         "type": "CallExpression"
@@ -553,7 +545,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                         "type": "Identifier"
                                                                                                                                                                                                       },
                                                                                                                                                                                                       "end": 99,
-                                                                                                                                                                                                      "optional": false,
                                                                                                                                                                                                       "start": 95,
                                                                                                                                                                                                       "type": "CallExpression",
                                                                                                                                                                                                       "type": "CallExpression"
@@ -581,7 +572,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                       "type": "Identifier"
                                                                                                                                                                                                     },
                                                                                                                                                                                                     "end": 107,
-                                                                                                                                                                                                    "optional": false,
                                                                                                                                                                                                     "start": 102,
                                                                                                                                                                                                     "type": "CallExpression",
                                                                                                                                                                                                     "type": "CallExpression"
@@ -609,7 +599,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                     "type": "Identifier"
                                                                                                                                                                                                   },
                                                                                                                                                                                                   "end": 115,
-                                                                                                                                                                                                  "optional": false,
                                                                                                                                                                                                   "start": 110,
                                                                                                                                                                                                   "type": "CallExpression",
                                                                                                                                                                                                   "type": "CallExpression"
@@ -637,7 +626,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                   "type": "Identifier"
                                                                                                                                                                                                 },
                                                                                                                                                                                                 "end": 123,
-                                                                                                                                                                                                "optional": false,
                                                                                                                                                                                                 "start": 118,
                                                                                                                                                                                                 "type": "CallExpression",
                                                                                                                                                                                                 "type": "CallExpression"
@@ -665,7 +653,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                                 "type": "Identifier"
                                                                                                                                                                                               },
                                                                                                                                                                                               "end": 131,
-                                                                                                                                                                                              "optional": false,
                                                                                                                                                                                               "start": 126,
                                                                                                                                                                                               "type": "CallExpression",
                                                                                                                                                                                               "type": "CallExpression"
@@ -693,7 +680,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                               "type": "Identifier"
                                                                                                                                                                                             },
                                                                                                                                                                                             "end": 139,
-                                                                                                                                                                                            "optional": false,
                                                                                                                                                                                             "start": 134,
                                                                                                                                                                                             "type": "CallExpression",
                                                                                                                                                                                             "type": "CallExpression"
@@ -721,7 +707,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                             "type": "Identifier"
                                                                                                                                                                                           },
                                                                                                                                                                                           "end": 147,
-                                                                                                                                                                                          "optional": false,
                                                                                                                                                                                           "start": 142,
                                                                                                                                                                                           "type": "CallExpression",
                                                                                                                                                                                           "type": "CallExpression"
@@ -749,7 +734,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                           "type": "Identifier"
                                                                                                                                                                                         },
                                                                                                                                                                                         "end": 155,
-                                                                                                                                                                                        "optional": false,
                                                                                                                                                                                         "start": 150,
                                                                                                                                                                                         "type": "CallExpression",
                                                                                                                                                                                         "type": "CallExpression"
@@ -777,7 +761,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                         "type": "Identifier"
                                                                                                                                                                                       },
                                                                                                                                                                                       "end": 163,
-                                                                                                                                                                                      "optional": false,
                                                                                                                                                                                       "start": 158,
                                                                                                                                                                                       "type": "CallExpression",
                                                                                                                                                                                       "type": "CallExpression"
@@ -805,7 +788,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                       "type": "Identifier"
                                                                                                                                                                                     },
                                                                                                                                                                                     "end": 171,
-                                                                                                                                                                                    "optional": false,
                                                                                                                                                                                     "start": 166,
                                                                                                                                                                                     "type": "CallExpression",
                                                                                                                                                                                     "type": "CallExpression"
@@ -833,7 +815,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                     "type": "Identifier"
                                                                                                                                                                                   },
                                                                                                                                                                                   "end": 179,
-                                                                                                                                                                                  "optional": false,
                                                                                                                                                                                   "start": 174,
                                                                                                                                                                                   "type": "CallExpression",
                                                                                                                                                                                   "type": "CallExpression"
@@ -861,7 +842,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                   "type": "Identifier"
                                                                                                                                                                                 },
                                                                                                                                                                                 "end": 187,
-                                                                                                                                                                                "optional": false,
                                                                                                                                                                                 "start": 182,
                                                                                                                                                                                 "type": "CallExpression",
                                                                                                                                                                                 "type": "CallExpression"
@@ -889,7 +869,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                                 "type": "Identifier"
                                                                                                                                                                               },
                                                                                                                                                                               "end": 195,
-                                                                                                                                                                              "optional": false,
                                                                                                                                                                               "start": 190,
                                                                                                                                                                               "type": "CallExpression",
                                                                                                                                                                               "type": "CallExpression"
@@ -917,7 +896,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                               "type": "Identifier"
                                                                                                                                                                             },
                                                                                                                                                                             "end": 203,
-                                                                                                                                                                            "optional": false,
                                                                                                                                                                             "start": 198,
                                                                                                                                                                             "type": "CallExpression",
                                                                                                                                                                             "type": "CallExpression"
@@ -945,7 +923,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                             "type": "Identifier"
                                                                                                                                                                           },
                                                                                                                                                                           "end": 211,
-                                                                                                                                                                          "optional": false,
                                                                                                                                                                           "start": 206,
                                                                                                                                                                           "type": "CallExpression",
                                                                                                                                                                           "type": "CallExpression"
@@ -973,7 +950,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                           "type": "Identifier"
                                                                                                                                                                         },
                                                                                                                                                                         "end": 219,
-                                                                                                                                                                        "optional": false,
                                                                                                                                                                         "start": 214,
                                                                                                                                                                         "type": "CallExpression",
                                                                                                                                                                         "type": "CallExpression"
@@ -1001,7 +977,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                         "type": "Identifier"
                                                                                                                                                                       },
                                                                                                                                                                       "end": 227,
-                                                                                                                                                                      "optional": false,
                                                                                                                                                                       "start": 222,
                                                                                                                                                                       "type": "CallExpression",
                                                                                                                                                                       "type": "CallExpression"
@@ -1029,7 +1004,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                       "type": "Identifier"
                                                                                                                                                                     },
                                                                                                                                                                     "end": 235,
-                                                                                                                                                                    "optional": false,
                                                                                                                                                                     "start": 230,
                                                                                                                                                                     "type": "CallExpression",
                                                                                                                                                                     "type": "CallExpression"
@@ -1057,7 +1031,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                     "type": "Identifier"
                                                                                                                                                                   },
                                                                                                                                                                   "end": 243,
-                                                                                                                                                                  "optional": false,
                                                                                                                                                                   "start": 238,
                                                                                                                                                                   "type": "CallExpression",
                                                                                                                                                                   "type": "CallExpression"
@@ -1085,7 +1058,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                   "type": "Identifier"
                                                                                                                                                                 },
                                                                                                                                                                 "end": 251,
-                                                                                                                                                                "optional": false,
                                                                                                                                                                 "start": 246,
                                                                                                                                                                 "type": "CallExpression",
                                                                                                                                                                 "type": "CallExpression"
@@ -1113,7 +1085,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                                 "type": "Identifier"
                                                                                                                                                               },
                                                                                                                                                               "end": 259,
-                                                                                                                                                              "optional": false,
                                                                                                                                                               "start": 254,
                                                                                                                                                               "type": "CallExpression",
                                                                                                                                                               "type": "CallExpression"
@@ -1141,7 +1112,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                               "type": "Identifier"
                                                                                                                                                             },
                                                                                                                                                             "end": 267,
-                                                                                                                                                            "optional": false,
                                                                                                                                                             "start": 262,
                                                                                                                                                             "type": "CallExpression",
                                                                                                                                                             "type": "CallExpression"
@@ -1169,7 +1139,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                             "type": "Identifier"
                                                                                                                                                           },
                                                                                                                                                           "end": 275,
-                                                                                                                                                          "optional": false,
                                                                                                                                                           "start": 270,
                                                                                                                                                           "type": "CallExpression",
                                                                                                                                                           "type": "CallExpression"
@@ -1197,7 +1166,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                           "type": "Identifier"
                                                                                                                                                         },
                                                                                                                                                         "end": 283,
-                                                                                                                                                        "optional": false,
                                                                                                                                                         "start": 278,
                                                                                                                                                         "type": "CallExpression",
                                                                                                                                                         "type": "CallExpression"
@@ -1225,7 +1193,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                         "type": "Identifier"
                                                                                                                                                       },
                                                                                                                                                       "end": 291,
-                                                                                                                                                      "optional": false,
                                                                                                                                                       "start": 286,
                                                                                                                                                       "type": "CallExpression",
                                                                                                                                                       "type": "CallExpression"
@@ -1253,7 +1220,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                       "type": "Identifier"
                                                                                                                                                     },
                                                                                                                                                     "end": 299,
-                                                                                                                                                    "optional": false,
                                                                                                                                                     "start": 294,
                                                                                                                                                     "type": "CallExpression",
                                                                                                                                                     "type": "CallExpression"
@@ -1281,7 +1247,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                     "type": "Identifier"
                                                                                                                                                   },
                                                                                                                                                   "end": 307,
-                                                                                                                                                  "optional": false,
                                                                                                                                                   "start": 302,
                                                                                                                                                   "type": "CallExpression",
                                                                                                                                                   "type": "CallExpression"
@@ -1309,7 +1274,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                   "type": "Identifier"
                                                                                                                                                 },
                                                                                                                                                 "end": 315,
-                                                                                                                                                "optional": false,
                                                                                                                                                 "start": 310,
                                                                                                                                                 "type": "CallExpression",
                                                                                                                                                 "type": "CallExpression"
@@ -1337,7 +1301,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                                 "type": "Identifier"
                                                                                                                                               },
                                                                                                                                               "end": 323,
-                                                                                                                                              "optional": false,
                                                                                                                                               "start": 318,
                                                                                                                                               "type": "CallExpression",
                                                                                                                                               "type": "CallExpression"
@@ -1365,7 +1328,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                               "type": "Identifier"
                                                                                                                                             },
                                                                                                                                             "end": 331,
-                                                                                                                                            "optional": false,
                                                                                                                                             "start": 326,
                                                                                                                                             "type": "CallExpression",
                                                                                                                                             "type": "CallExpression"
@@ -1393,7 +1355,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                             "type": "Identifier"
                                                                                                                                           },
                                                                                                                                           "end": 339,
-                                                                                                                                          "optional": false,
                                                                                                                                           "start": 334,
                                                                                                                                           "type": "CallExpression",
                                                                                                                                           "type": "CallExpression"
@@ -1421,7 +1382,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                           "type": "Identifier"
                                                                                                                                         },
                                                                                                                                         "end": 347,
-                                                                                                                                        "optional": false,
                                                                                                                                         "start": 342,
                                                                                                                                         "type": "CallExpression",
                                                                                                                                         "type": "CallExpression"
@@ -1449,7 +1409,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                         "type": "Identifier"
                                                                                                                                       },
                                                                                                                                       "end": 355,
-                                                                                                                                      "optional": false,
                                                                                                                                       "start": 350,
                                                                                                                                       "type": "CallExpression",
                                                                                                                                       "type": "CallExpression"
@@ -1477,7 +1436,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                       "type": "Identifier"
                                                                                                                                     },
                                                                                                                                     "end": 363,
-                                                                                                                                    "optional": false,
                                                                                                                                     "start": 358,
                                                                                                                                     "type": "CallExpression",
                                                                                                                                     "type": "CallExpression"
@@ -1505,7 +1463,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                     "type": "Identifier"
                                                                                                                                   },
                                                                                                                                   "end": 371,
-                                                                                                                                  "optional": false,
                                                                                                                                   "start": 366,
                                                                                                                                   "type": "CallExpression",
                                                                                                                                   "type": "CallExpression"
@@ -1533,7 +1490,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                   "type": "Identifier"
                                                                                                                                 },
                                                                                                                                 "end": 379,
-                                                                                                                                "optional": false,
                                                                                                                                 "start": 374,
                                                                                                                                 "type": "CallExpression",
                                                                                                                                 "type": "CallExpression"
@@ -1561,7 +1517,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                                 "type": "Identifier"
                                                                                                                               },
                                                                                                                               "end": 387,
-                                                                                                                              "optional": false,
                                                                                                                               "start": 382,
                                                                                                                               "type": "CallExpression",
                                                                                                                               "type": "CallExpression"
@@ -1589,7 +1544,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                               "type": "Identifier"
                                                                                                                             },
                                                                                                                             "end": 395,
-                                                                                                                            "optional": false,
                                                                                                                             "start": 390,
                                                                                                                             "type": "CallExpression",
                                                                                                                             "type": "CallExpression"
@@ -1617,7 +1571,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                             "type": "Identifier"
                                                                                                                           },
                                                                                                                           "end": 403,
-                                                                                                                          "optional": false,
                                                                                                                           "start": 398,
                                                                                                                           "type": "CallExpression",
                                                                                                                           "type": "CallExpression"
@@ -1645,7 +1598,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                           "type": "Identifier"
                                                                                                                         },
                                                                                                                         "end": 411,
-                                                                                                                        "optional": false,
                                                                                                                         "start": 406,
                                                                                                                         "type": "CallExpression",
                                                                                                                         "type": "CallExpression"
@@ -1673,7 +1625,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                         "type": "Identifier"
                                                                                                                       },
                                                                                                                       "end": 419,
-                                                                                                                      "optional": false,
                                                                                                                       "start": 414,
                                                                                                                       "type": "CallExpression",
                                                                                                                       "type": "CallExpression"
@@ -1701,7 +1652,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                       "type": "Identifier"
                                                                                                                     },
                                                                                                                     "end": 427,
-                                                                                                                    "optional": false,
                                                                                                                     "start": 422,
                                                                                                                     "type": "CallExpression",
                                                                                                                     "type": "CallExpression"
@@ -1729,7 +1679,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                     "type": "Identifier"
                                                                                                                   },
                                                                                                                   "end": 435,
-                                                                                                                  "optional": false,
                                                                                                                   "start": 430,
                                                                                                                   "type": "CallExpression",
                                                                                                                   "type": "CallExpression"
@@ -1757,7 +1706,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                   "type": "Identifier"
                                                                                                                 },
                                                                                                                 "end": 443,
-                                                                                                                "optional": false,
                                                                                                                 "start": 438,
                                                                                                                 "type": "CallExpression",
                                                                                                                 "type": "CallExpression"
@@ -1785,7 +1733,6 @@ description: Result of parsing add_lots.kcl
                                                                                                                 "type": "Identifier"
                                                                                                               },
                                                                                                               "end": 451,
-                                                                                                              "optional": false,
                                                                                                               "start": 446,
                                                                                                               "type": "CallExpression",
                                                                                                               "type": "CallExpression"
@@ -1813,7 +1760,6 @@ description: Result of parsing add_lots.kcl
                                                                                                               "type": "Identifier"
                                                                                                             },
                                                                                                             "end": 459,
-                                                                                                            "optional": false,
                                                                                                             "start": 454,
                                                                                                             "type": "CallExpression",
                                                                                                             "type": "CallExpression"
@@ -1841,7 +1787,6 @@ description: Result of parsing add_lots.kcl
                                                                                                             "type": "Identifier"
                                                                                                           },
                                                                                                           "end": 467,
-                                                                                                          "optional": false,
                                                                                                           "start": 462,
                                                                                                           "type": "CallExpression",
                                                                                                           "type": "CallExpression"
@@ -1869,7 +1814,6 @@ description: Result of parsing add_lots.kcl
                                                                                                           "type": "Identifier"
                                                                                                         },
                                                                                                         "end": 475,
-                                                                                                        "optional": false,
                                                                                                         "start": 470,
                                                                                                         "type": "CallExpression",
                                                                                                         "type": "CallExpression"
@@ -1897,7 +1841,6 @@ description: Result of parsing add_lots.kcl
                                                                                                         "type": "Identifier"
                                                                                                       },
                                                                                                       "end": 483,
-                                                                                                      "optional": false,
                                                                                                       "start": 478,
                                                                                                       "type": "CallExpression",
                                                                                                       "type": "CallExpression"
@@ -1925,7 +1868,6 @@ description: Result of parsing add_lots.kcl
                                                                                                       "type": "Identifier"
                                                                                                     },
                                                                                                     "end": 491,
-                                                                                                    "optional": false,
                                                                                                     "start": 486,
                                                                                                     "type": "CallExpression",
                                                                                                     "type": "CallExpression"
@@ -1953,7 +1895,6 @@ description: Result of parsing add_lots.kcl
                                                                                                     "type": "Identifier"
                                                                                                   },
                                                                                                   "end": 499,
-                                                                                                  "optional": false,
                                                                                                   "start": 494,
                                                                                                   "type": "CallExpression",
                                                                                                   "type": "CallExpression"
@@ -1981,7 +1922,6 @@ description: Result of parsing add_lots.kcl
                                                                                                   "type": "Identifier"
                                                                                                 },
                                                                                                 "end": 507,
-                                                                                                "optional": false,
                                                                                                 "start": 502,
                                                                                                 "type": "CallExpression",
                                                                                                 "type": "CallExpression"
@@ -2009,7 +1949,6 @@ description: Result of parsing add_lots.kcl
                                                                                                 "type": "Identifier"
                                                                                               },
                                                                                               "end": 515,
-                                                                                              "optional": false,
                                                                                               "start": 510,
                                                                                               "type": "CallExpression",
                                                                                               "type": "CallExpression"
@@ -2037,7 +1976,6 @@ description: Result of parsing add_lots.kcl
                                                                                               "type": "Identifier"
                                                                                             },
                                                                                             "end": 523,
-                                                                                            "optional": false,
                                                                                             "start": 518,
                                                                                             "type": "CallExpression",
                                                                                             "type": "CallExpression"
@@ -2065,7 +2003,6 @@ description: Result of parsing add_lots.kcl
                                                                                             "type": "Identifier"
                                                                                           },
                                                                                           "end": 531,
-                                                                                          "optional": false,
                                                                                           "start": 526,
                                                                                           "type": "CallExpression",
                                                                                           "type": "CallExpression"
@@ -2093,7 +2030,6 @@ description: Result of parsing add_lots.kcl
                                                                                           "type": "Identifier"
                                                                                         },
                                                                                         "end": 539,
-                                                                                        "optional": false,
                                                                                         "start": 534,
                                                                                         "type": "CallExpression",
                                                                                         "type": "CallExpression"
@@ -2121,7 +2057,6 @@ description: Result of parsing add_lots.kcl
                                                                                         "type": "Identifier"
                                                                                       },
                                                                                       "end": 547,
-                                                                                      "optional": false,
                                                                                       "start": 542,
                                                                                       "type": "CallExpression",
                                                                                       "type": "CallExpression"
@@ -2149,7 +2084,6 @@ description: Result of parsing add_lots.kcl
                                                                                       "type": "Identifier"
                                                                                     },
                                                                                     "end": 555,
-                                                                                    "optional": false,
                                                                                     "start": 550,
                                                                                     "type": "CallExpression",
                                                                                     "type": "CallExpression"
@@ -2177,7 +2111,6 @@ description: Result of parsing add_lots.kcl
                                                                                     "type": "Identifier"
                                                                                   },
                                                                                   "end": 563,
-                                                                                  "optional": false,
                                                                                   "start": 558,
                                                                                   "type": "CallExpression",
                                                                                   "type": "CallExpression"
@@ -2205,7 +2138,6 @@ description: Result of parsing add_lots.kcl
                                                                                   "type": "Identifier"
                                                                                 },
                                                                                 "end": 571,
-                                                                                "optional": false,
                                                                                 "start": 566,
                                                                                 "type": "CallExpression",
                                                                                 "type": "CallExpression"
@@ -2233,7 +2165,6 @@ description: Result of parsing add_lots.kcl
                                                                                 "type": "Identifier"
                                                                               },
                                                                               "end": 579,
-                                                                              "optional": false,
                                                                               "start": 574,
                                                                               "type": "CallExpression",
                                                                               "type": "CallExpression"
@@ -2261,7 +2192,6 @@ description: Result of parsing add_lots.kcl
                                                                               "type": "Identifier"
                                                                             },
                                                                             "end": 587,
-                                                                            "optional": false,
                                                                             "start": 582,
                                                                             "type": "CallExpression",
                                                                             "type": "CallExpression"
@@ -2289,7 +2219,6 @@ description: Result of parsing add_lots.kcl
                                                                             "type": "Identifier"
                                                                           },
                                                                           "end": 595,
-                                                                          "optional": false,
                                                                           "start": 590,
                                                                           "type": "CallExpression",
                                                                           "type": "CallExpression"
@@ -2317,7 +2246,6 @@ description: Result of parsing add_lots.kcl
                                                                           "type": "Identifier"
                                                                         },
                                                                         "end": 603,
-                                                                        "optional": false,
                                                                         "start": 598,
                                                                         "type": "CallExpression",
                                                                         "type": "CallExpression"
@@ -2345,7 +2273,6 @@ description: Result of parsing add_lots.kcl
                                                                         "type": "Identifier"
                                                                       },
                                                                       "end": 611,
-                                                                      "optional": false,
                                                                       "start": 606,
                                                                       "type": "CallExpression",
                                                                       "type": "CallExpression"
@@ -2373,7 +2300,6 @@ description: Result of parsing add_lots.kcl
                                                                       "type": "Identifier"
                                                                     },
                                                                     "end": 619,
-                                                                    "optional": false,
                                                                     "start": 614,
                                                                     "type": "CallExpression",
                                                                     "type": "CallExpression"
@@ -2401,7 +2327,6 @@ description: Result of parsing add_lots.kcl
                                                                     "type": "Identifier"
                                                                   },
                                                                   "end": 627,
-                                                                  "optional": false,
                                                                   "start": 622,
                                                                   "type": "CallExpression",
                                                                   "type": "CallExpression"
@@ -2429,7 +2354,6 @@ description: Result of parsing add_lots.kcl
                                                                   "type": "Identifier"
                                                                 },
                                                                 "end": 635,
-                                                                "optional": false,
                                                                 "start": 630,
                                                                 "type": "CallExpression",
                                                                 "type": "CallExpression"
@@ -2457,7 +2381,6 @@ description: Result of parsing add_lots.kcl
                                                                 "type": "Identifier"
                                                               },
                                                               "end": 643,
-                                                              "optional": false,
                                                               "start": 638,
                                                               "type": "CallExpression",
                                                               "type": "CallExpression"
@@ -2485,7 +2408,6 @@ description: Result of parsing add_lots.kcl
                                                               "type": "Identifier"
                                                             },
                                                             "end": 651,
-                                                            "optional": false,
                                                             "start": 646,
                                                             "type": "CallExpression",
                                                             "type": "CallExpression"
@@ -2513,7 +2435,6 @@ description: Result of parsing add_lots.kcl
                                                             "type": "Identifier"
                                                           },
                                                           "end": 659,
-                                                          "optional": false,
                                                           "start": 654,
                                                           "type": "CallExpression",
                                                           "type": "CallExpression"
@@ -2541,7 +2462,6 @@ description: Result of parsing add_lots.kcl
                                                           "type": "Identifier"
                                                         },
                                                         "end": 667,
-                                                        "optional": false,
                                                         "start": 662,
                                                         "type": "CallExpression",
                                                         "type": "CallExpression"
@@ -2569,7 +2489,6 @@ description: Result of parsing add_lots.kcl
                                                         "type": "Identifier"
                                                       },
                                                       "end": 675,
-                                                      "optional": false,
                                                       "start": 670,
                                                       "type": "CallExpression",
                                                       "type": "CallExpression"
@@ -2597,7 +2516,6 @@ description: Result of parsing add_lots.kcl
                                                       "type": "Identifier"
                                                     },
                                                     "end": 683,
-                                                    "optional": false,
                                                     "start": 678,
                                                     "type": "CallExpression",
                                                     "type": "CallExpression"
@@ -2625,7 +2543,6 @@ description: Result of parsing add_lots.kcl
                                                     "type": "Identifier"
                                                   },
                                                   "end": 691,
-                                                  "optional": false,
                                                   "start": 686,
                                                   "type": "CallExpression",
                                                   "type": "CallExpression"
@@ -2653,7 +2570,6 @@ description: Result of parsing add_lots.kcl
                                                   "type": "Identifier"
                                                 },
                                                 "end": 699,
-                                                "optional": false,
                                                 "start": 694,
                                                 "type": "CallExpression",
                                                 "type": "CallExpression"
@@ -2681,7 +2597,6 @@ description: Result of parsing add_lots.kcl
                                                 "type": "Identifier"
                                               },
                                               "end": 707,
-                                              "optional": false,
                                               "start": 702,
                                               "type": "CallExpression",
                                               "type": "CallExpression"
@@ -2709,7 +2624,6 @@ description: Result of parsing add_lots.kcl
                                               "type": "Identifier"
                                             },
                                             "end": 715,
-                                            "optional": false,
                                             "start": 710,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
@@ -2737,7 +2651,6 @@ description: Result of parsing add_lots.kcl
                                             "type": "Identifier"
                                           },
                                           "end": 723,
-                                          "optional": false,
                                           "start": 718,
                                           "type": "CallExpression",
                                           "type": "CallExpression"
@@ -2765,7 +2678,6 @@ description: Result of parsing add_lots.kcl
                                           "type": "Identifier"
                                         },
                                         "end": 731,
-                                        "optional": false,
                                         "start": 726,
                                         "type": "CallExpression",
                                         "type": "CallExpression"
@@ -2793,7 +2705,6 @@ description: Result of parsing add_lots.kcl
                                         "type": "Identifier"
                                       },
                                       "end": 739,
-                                      "optional": false,
                                       "start": 734,
                                       "type": "CallExpression",
                                       "type": "CallExpression"
@@ -2821,7 +2732,6 @@ description: Result of parsing add_lots.kcl
                                       "type": "Identifier"
                                     },
                                     "end": 747,
-                                    "optional": false,
                                     "start": 742,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
@@ -2849,7 +2759,6 @@ description: Result of parsing add_lots.kcl
                                     "type": "Identifier"
                                   },
                                   "end": 755,
-                                  "optional": false,
                                   "start": 750,
                                   "type": "CallExpression",
                                   "type": "CallExpression"
@@ -2877,7 +2786,6 @@ description: Result of parsing add_lots.kcl
                                   "type": "Identifier"
                                 },
                                 "end": 763,
-                                "optional": false,
                                 "start": 758,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
@@ -2905,7 +2813,6 @@ description: Result of parsing add_lots.kcl
                                 "type": "Identifier"
                               },
                               "end": 771,
-                              "optional": false,
                               "start": 766,
                               "type": "CallExpression",
                               "type": "CallExpression"
@@ -2933,7 +2840,6 @@ description: Result of parsing add_lots.kcl
                               "type": "Identifier"
                             },
                             "end": 779,
-                            "optional": false,
                             "start": 774,
                             "type": "CallExpression",
                             "type": "CallExpression"
@@ -2961,7 +2867,6 @@ description: Result of parsing add_lots.kcl
                             "type": "Identifier"
                           },
                           "end": 787,
-                          "optional": false,
                           "start": 782,
                           "type": "CallExpression",
                           "type": "CallExpression"
@@ -2989,7 +2894,6 @@ description: Result of parsing add_lots.kcl
                           "type": "Identifier"
                         },
                         "end": 795,
-                        "optional": false,
                         "start": 790,
                         "type": "CallExpression",
                         "type": "CallExpression"
@@ -3017,7 +2921,6 @@ description: Result of parsing add_lots.kcl
                         "type": "Identifier"
                       },
                       "end": 803,
-                      "optional": false,
                       "start": 798,
                       "type": "CallExpression",
                       "type": "CallExpression"
@@ -3045,7 +2948,6 @@ description: Result of parsing add_lots.kcl
                       "type": "Identifier"
                     },
                     "end": 811,
-                    "optional": false,
                     "start": 806,
                     "type": "CallExpression",
                     "type": "CallExpression"
@@ -3073,7 +2975,6 @@ description: Result of parsing add_lots.kcl
                     "type": "Identifier"
                   },
                   "end": 819,
-                  "optional": false,
                   "start": 814,
                   "type": "CallExpression",
                   "type": "CallExpression"
@@ -3101,7 +3002,6 @@ description: Result of parsing add_lots.kcl
                   "type": "Identifier"
                 },
                 "end": 828,
-                "optional": false,
                 "start": 822,
                 "type": "CallExpression",
                 "type": "CallExpression"
@@ -3163,7 +3063,6 @@ description: Result of parsing add_lots.kcl
             "type": "Identifier"
           },
           "end": 867,
-          "optional": false,
           "start": 830,
           "type": "CallExpression",
           "type": "CallExpression"
