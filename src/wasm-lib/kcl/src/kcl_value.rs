@@ -74,6 +74,7 @@ pub enum KclValue {
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
+        #[schemars(skip)]
         expression: crate::ast::types::BoxNode<FunctionExpression>,
         memory: Box<ProgramMemory>,
         #[serde(rename = "__meta")]

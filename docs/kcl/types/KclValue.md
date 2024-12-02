@@ -317,7 +317,6 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Function`|  | No |
-| `expression` |[`FunctionExpression`](/docs/kcl/types/FunctionExpression)| Any KCL value. | No |
 | `memory` |[`ProgramMemory`](/docs/kcl/types/ProgramMemory)| Any KCL value. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 
