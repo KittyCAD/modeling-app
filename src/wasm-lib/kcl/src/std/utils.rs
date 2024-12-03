@@ -4,7 +4,8 @@ use kittycad_modeling_cmds::shared::Angle;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{Point2d, SourceRange},
+    executor::Point2d,
+    source_range::SourceRange,
 };
 
 /// Get the angle between these points
@@ -234,7 +235,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::{get_x_component, get_y_component, Angle};
-    use crate::executor::SourceRange;
+    use crate::SourceRange;
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
         (-315, [1, 1]),
@@ -354,7 +355,7 @@ mod tests {
             super::Point2d { x: -1.0, y: 1.0 },
             super::Point2d { x: -1.0, y: 0.0 },
             1.0,
-            SourceRange(Default::default()),
+            SourceRange::default(),
         )
         .unwrap();
         assert_eq!(angle_start.to_degrees().round(), 0.0);
@@ -365,7 +366,7 @@ mod tests {
             super::Point2d { x: -2.0, y: 0.0 },
             super::Point2d { x: -1.0, y: 0.0 },
             1.0,
-            SourceRange(Default::default()),
+            SourceRange::default(),
         )
         .unwrap();
         assert_eq!(angle_start.to_degrees().round(), 0.0);
@@ -376,7 +377,7 @@ mod tests {
             super::Point2d { x: -20.0, y: 0.0 },
             super::Point2d { x: -10.0, y: 0.0 },
             10.0,
-            SourceRange(Default::default()),
+            SourceRange::default(),
         )
         .unwrap();
         assert_eq!(angle_start.to_degrees().round(), 0.0);
@@ -387,7 +388,7 @@ mod tests {
             super::Point2d { x: 5.0, y: 5.0 },
             super::Point2d { x: 10.0, y: -10.0 },
             10.0,
-            SourceRange(Default::default()),
+            SourceRange::default(),
         );
 
         if let Err(err) = result {

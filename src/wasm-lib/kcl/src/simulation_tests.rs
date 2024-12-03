@@ -1,8 +1,9 @@
 use insta::rounded_redaction;
 
 use crate::{
-    ast::types::{ModuleId, Node, Program},
+    ast::types::{Node, Program},
     errors::KclError,
+    source_range::ModuleId,
 };
 
 /// Deserialize the data from a snapshot.

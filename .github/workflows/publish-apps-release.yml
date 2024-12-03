@@ -128,6 +128,12 @@ jobs:
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         run: yarn files:invalidate-bucket
 
+      - name: Upload release files to Github
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: 'out/Zoo*'
+
 
   announce_release:
     needs: [publish-apps-release]
