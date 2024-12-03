@@ -66,6 +66,22 @@ impl Args {
         }
     }
 
+    /// Collect the given keyword arguments.
+    pub fn new_kw(
+        kw_args: HashMap<String, Arg>,
+        unlabeled_kw_arg: Option<Arg>,
+        source_range: SourceRange,
+        ctx: ExecutorContext,
+    ) -> Self {
+        Self {
+            args: Default::default(),
+            kw_args,
+            unlabeled_kw_arg,
+            source_range,
+            ctx,
+        }
+    }
+
     #[cfg(test)]
     pub(crate) async fn new_test_args() -> Result<Self> {
         use std::sync::Arc;
@@ -111,11 +127,21 @@ impl Args {
     where
         T: FromKclValue<'a>,
     {
-        self.get_kw_arg_opt(label).ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
+        let Some(ref arg) = self.unlabeled_kw_arg else {
+            return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![self.source_range],
                 message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
-            })
+            }));
+        };
+        T::from_kcl_val(&arg.value).ok_or_else(|| {
+            return KclError::Semantic(KclErrorDetails {
+                source_ranges: arg.source_ranges(),
+                message: format!(
+                    "Expected a {} but found {}",
+                    type_name::<T>(),
+                    arg.value.human_friendly_type()
+                ),
+            });
         })
     }
 

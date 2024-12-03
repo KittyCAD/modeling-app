@@ -23,9 +23,9 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// If `num` is negative, the result will be too.
 ///
 /// ```no_run
-/// assertEqual(rem(7, 4),  3, 0.01, "remainder is 3")
-/// assertEqual(rem(-7, 4), -3, 0.01, "remainder is 3")
-/// assertEqual(rem(7, -4), 3, 0.01, "remainder is 3")
+/// assertEqual(rem(7, divisor: 4),  3, 0.01, "remainder is 3")
+/// assertEqual(rem(-7, divisor: 4), -3, 0.01, "remainder is 3")
+/// assertEqual(rem(7, divisor: -4), 3, 0.01, "remainder is 3")
 /// ```
 #[stdlib {
     name = "rem",
