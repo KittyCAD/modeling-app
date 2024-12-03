@@ -30,16 +30,16 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct Discovered {
     /// Zoo Lint Finding information.
-    pub finding: Finding,
+    pub(super) finding: Finding,
 
     /// Further information about the specific finding.
-    pub description: String,
+    pub(super) description: String,
 
     /// Source code location.
-    pub pos: SourceRange,
+    pub(super) pos: SourceRange,
 
     /// Is this discovered issue overridden by the programmer?
-    pub overridden: bool,
+    pub(super) overridden: bool,
 }
 
 #[cfg(feature = "pyo3")]
@@ -56,8 +56,8 @@ impl Discovered {
     }
 
     #[getter]
-    pub fn pos(&self) -> SourceRange {
-        self.pos
+    pub fn pos(&self) -> (usize, usize) {
+        (self.pos.start(), self.pos.end())
     }
 
     #[getter]

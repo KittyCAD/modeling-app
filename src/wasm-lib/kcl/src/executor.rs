@@ -991,7 +991,6 @@ pub enum BodyType {
 /// Info about a module.  Right now, this is pretty minimal.  We hope to cache
 /// modules here in the future.
 #[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 pub struct ModuleInfo {
     /// The ID of the module.
