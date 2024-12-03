@@ -703,6 +703,7 @@ sketch002 = startSketchOn(plane001)
   await test.step(`Look for the white of the sketch001 shape`, async () => {
     await scene.expectPixelColor([254, 254, 254], testPoint, 15)
   })
+
   await test.step(`Go through the command bar flow`, async () => {
     await toolbar.loftButton.click()
     await cmdBar.expectState({
