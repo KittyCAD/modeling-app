@@ -88,6 +88,29 @@ export function normaliseAngle(angle: number): number {
   return result > 180 ? result - 360 : result
 }
 
+/**
+ * Returns a function that will delay the execution of the given function each
+ * time it's called until the wait time has passed.
+ */
+export function debounce<
+  F extends (...args: any[]) => void,
+  P extends Parameters<F>
+>(func: F, wait: number): (...args: P) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null
+
+  function debounced(...args: P) {
+    if (timeout) {
+      clearTimeout(timeout)
+    }
+    timeout = setTimeout(() => {
+      timeout = null
+      func(args)
+    }, wait)
+  }
+
+  return debounced
+}
+
 export function throttle<T>(
   func: (args: T) => any,
   wait: number
