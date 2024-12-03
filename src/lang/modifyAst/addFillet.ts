@@ -44,32 +44,49 @@ import {
 } from 'lib/singletons'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
-// Apply Fillet To Selection
+// Edge Treatment Types
+export enum EdgeTreatmentType {
+  Chamfer = 'chamfer',
+  Fillet = 'fillet',
+}
 
-export function applyFilletToSelection(
+export interface ChamferParameters {
+  type: EdgeTreatmentType.Chamfer
+  length: KclCommandValue
+}
+export interface FilletParameters {
+  type: EdgeTreatmentType.Fillet
+  radius: KclCommandValue
+}
+export type EdgeTreatmentParameters = ChamferParameters | FilletParameters
+
+// Apply Edge Treatment (Fillet or Chamfer) To Selection
+export function applyEdgeTreatmentToSelection(
   ast: Node<Program>,
   selection: Selections,
-  radius: KclCommandValue
+  parameters: EdgeTreatmentParameters
 ): void | Error {
-  // 1. clone and modify with fillet and tag
-  const result = modifyAstWithFilletAndTag(ast, selection, radius)
+  // 1. clone and modify with edge treatment and tag
+  const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters)
   if (err(result)) return result
-  const { modifiedAst, pathToFilletNode } = result
+  const { modifiedAst, pathToEdgeTreatmentNode } = result
 
   // 2. update ast
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  updateAstAndFocus(modifiedAst, pathToFilletNode)
+  updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode)
 }
 
-export function modifyAstWithFilletAndTag(
+export function modifyAstWithEdgeTreatmentAndTag(
   ast: Node<Program>,
   selections: Selections,
-  radius: KclCommandValue
-): { modifiedAst: Node<Program>; pathToFilletNode: Array<PathToNode> } | Error {
+  parameters: EdgeTreatmentParameters
+):
+  | { modifiedAst: Node<Program>; pathToEdgeTreatmentNode: Array<PathToNode> }
+  | Error {
   let clonedAst = structuredClone(ast)
   const clonedAstForGetExtrude = structuredClone(ast)
 
-  const astResult = insertRadiusIntoAst(clonedAst, radius)
+  const astResult = insertParametersIntoAst(clonedAst, parameters)
   if (err(astResult)) return astResult
 
   const artifactGraph = engineCommandManager.artifactGraph
@@ -119,21 +136,26 @@ export function modifyAstWithFilletAndTag(
     }
   }
 
-  // Step 2: Apply fillet(s) for each extrude node (body)
-  let pathToFilletNodes: Array<PathToNode> = []
+  // Step 2: Apply edge treatments for each extrude node (body)
+  let pathToEdgeTreatmentNodes: Array<PathToNode> = []
   for (const [pathToExtrudeNode, tagInfos] of extrudeToTagsMap.entries()) {
-    // Create a fillet expression with multiple tags
-    const radiusValue =
-      'variableName' in radius ? radius.variableIdentifierAst : radius.valueAst
+    // Create an edge treatment expression with multiple tags
 
+    // edge treatment parameter
+    const parameterResult = getParameterNameAndValue(parameters)
+    if (err(parameterResult)) return parameterResult
+    const { parameterName, parameterValue } = parameterResult
+
+    // tag calls
     const tagCalls = tagInfos.map(({ tag, artifact }) => {
       return getEdgeTagCall(tag, artifact)
     })
     const firstTag = tagCalls[0] // can be Identifier or CallExpression (for opposite and adjacent edges)
 
-    const filletCall = createCallExpressionStdLib('fillet', [
+    // edge treatment call
+    const edgeTreatmentCall = createCallExpressionStdLib(parameters.type, [
       createObjectExpression({
-        radius: radiusValue,
+        [parameterName]: parameterValue,
         tags: createArrayExpression(tagCalls),
       }),
       createPipeSubstitution(),
@@ -147,64 +169,89 @@ export function modifyAstWithFilletAndTag(
     if (err(locatedExtrudeDeclarator)) return locatedExtrudeDeclarator
     const { extrudeDeclarator } = locatedExtrudeDeclarator
 
-    // Modify the extrude expression to include this fillet expression
-    // CallExpression - no fillet
-    // PipeExpression - fillet exists or extrude in sketch pipe
+    // Modify the extrude expression to include this edge treatment expression
+    // CallExpression - no edge treatment
+    // PipeExpression - edge treatment exists or body in sketch pipe
 
-    let pathToFilletNode: PathToNode = []
+    let pathToEdgeTreatmentNode: PathToNode
 
     if (extrudeDeclarator.init.type === 'CallExpression') {
-      // 1. case when no fillet exists
+      // 1. case when no edge treatment exists
 
-      // modify ast with new fillet call by mutating the extrude node
+      // modify ast with new edge treatment call by mutating the extrude node
       extrudeDeclarator.init = createPipeExpression([
         extrudeDeclarator.init,
-        filletCall,
+        edgeTreatmentCall,
       ])
 
-      // get path to the fillet node
-      pathToFilletNode = getPathToNodeOfFilletLiteral(
+      // get path to the edge treatment node
+      pathToEdgeTreatmentNode = getPathToNodeOfEdgeTreatmentLiteral(
         pathToExtrudeNode,
         extrudeDeclarator,
-        firstTag
+        firstTag,
+        parameters
       )
-      pathToFilletNodes.push(pathToFilletNode)
+      pathToEdgeTreatmentNodes.push(pathToEdgeTreatmentNode)
     } else if (extrudeDeclarator.init.type === 'PipeExpression') {
-      // 2. case when fillet exists or extrude in sketch pipe
+      // 2. case when edge treatment exists or extrude in sketch pipe
 
-      // mutate the extrude node with the new fillet call
-      extrudeDeclarator.init.body.push(filletCall)
+      // mutate the extrude node with the new edge treatment call
+      extrudeDeclarator.init.body.push(edgeTreatmentCall)
 
-      // get path to the fillet node
-      pathToFilletNode = getPathToNodeOfFilletLiteral(
+      // get path to the edge treatment node
+      pathToEdgeTreatmentNode = getPathToNodeOfEdgeTreatmentLiteral(
         pathToExtrudeNode,
         extrudeDeclarator,
-        firstTag
+        firstTag,
+        parameters
       )
-      pathToFilletNodes.push(pathToFilletNode)
+      pathToEdgeTreatmentNodes.push(pathToEdgeTreatmentNode)
     } else {
       return new Error('Unsupported extrude type.')
     }
   }
-  return { modifiedAst: clonedAst, pathToFilletNode: pathToFilletNodes }
+  return {
+    modifiedAst: clonedAst,
+    pathToEdgeTreatmentNode: pathToEdgeTreatmentNodes,
+  }
 }
 
-function insertRadiusIntoAst(
+function insertParametersIntoAst(
   ast: Program,
-  radius: KclCommandValue
+  parameters: EdgeTreatmentParameters
 ): { ast: Program } | Error {
   try {
-    // Validate and update AST
+    const newAst = structuredClone(ast)
+
+    // handle radius parameter
     if (
-      'variableName' in radius &&
-      radius.variableName &&
-      radius.insertIndex !== undefined
+      parameters.type === EdgeTreatmentType.Fillet &&
+      'variableName' in parameters.radius &&
+      parameters.radius.variableName &&
+      parameters.radius.insertIndex !== undefined
     ) {
-      const newAst = structuredClone(ast)
-      newAst.body.splice(radius.insertIndex, 0, radius.variableDeclarationAst)
-      return { ast: newAst }
+      newAst.body.splice(
+        parameters.radius.insertIndex,
+        0,
+        parameters.radius.variableDeclarationAst
+      )
     }
-    return { ast }
+    // handle length parameter
+    if (
+      parameters.type === EdgeTreatmentType.Chamfer &&
+      'variableName' in parameters.length &&
+      parameters.length.variableName &&
+      parameters.length.insertIndex !== undefined
+    ) {
+      newAst.body.splice(
+        parameters.length.insertIndex,
+        0,
+        parameters.length.variableDeclarationAst
+      )
+    }
+
+    // handle upcoming parameters here (for blend, bevel, etc.)
+    return { ast: newAst }
   } catch (error) {
     return new Error(`Failed to handle AST: ${(error as Error).message}`)
   }
@@ -248,10 +295,10 @@ export function getPathToExtrudeForSegmentSelection(
 
 async function updateAstAndFocus(
   modifiedAst: Node<Program>,
-  pathToFilletNode: Array<PathToNode>
+  pathToEdgeTreatmentNode: Array<PathToNode>
 ) {
   const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-    focusPath: pathToFilletNode,
+    focusPath: pathToEdgeTreatmentNode,
   })
 
   await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
@@ -340,27 +387,38 @@ function locateExtrudeDeclarator(
   return { extrudeDeclarator }
 }
 
-function getPathToNodeOfFilletLiteral(
+function getPathToNodeOfEdgeTreatmentLiteral(
   pathToExtrudeNode: PathToNode,
   extrudeDeclarator: VariableDeclarator,
-  tag: Identifier | CallExpression
+  tag: Identifier | CallExpression,
+  parameters: EdgeTreatmentParameters
 ): PathToNode {
-  let pathToFilletObj: PathToNode = []
-  let inFillet = false
+  let pathToEdgeTreatmentObj: PathToNode = []
+  let inEdgeTreatment = false
 
   traverse(extrudeDeclarator.init, {
     enter(node, path) {
-      if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
-        inFillet = true
+      if (
+        node.type === 'CallExpression' &&
+        node.callee.name === parameters.type
+      ) {
+        inEdgeTreatment = true
       }
-      if (inFillet && node.type === 'ObjectExpression') {
+      if (inEdgeTreatment && node.type === 'ObjectExpression') {
         if (!hasTag(node, tag)) return false
-        pathToFilletObj = getPathToRadiusLiteral(node, path)
+        pathToEdgeTreatmentObj = getPathToEdgeTreatmentParameterLiteral(
+          node,
+          path,
+          parameters
+        )
       }
     },
     leave(node) {
-      if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
-        inFillet = false
+      if (
+        node.type === 'CallExpression' &&
+        node.callee.name === parameters.type
+      ) {
+        inEdgeTreatment = false
       }
     },
   })
@@ -375,7 +433,7 @@ function getPathToNodeOfFilletLiteral(
 
   return [
     ...pathToExtrudeNode.slice(0, indexOfPipeExpression),
-    ...pathToFilletObj,
+    ...pathToEdgeTreatmentObj,
   ]
 }
 
@@ -408,23 +466,62 @@ function hasTag(
   })
 }
 
-function getPathToRadiusLiteral(node: ObjectExpression, path: any): PathToNode {
-  let pathToFilletObj = path
+function getPathToEdgeTreatmentParameterLiteral(
+  node: ObjectExpression,
+  path: any,
+  parameters: EdgeTreatmentParameters
+): PathToNode {
+  let pathToEdgeTreatmentObj = path
+  const parameterResult = getParameterNameAndValue(parameters)
+  if (err(parameterResult)) return pathToEdgeTreatmentObj
+  const { parameterName } = parameterResult
+
   node.properties.forEach((prop, index) => {
-    if (prop.key.name === 'radius') {
-      pathToFilletObj.push(
+    if (prop.key.name === parameterName) {
+      pathToEdgeTreatmentObj.push(
         ['properties', 'ObjectExpression'],
         [index, 'index'],
         ['value', 'Property']
       )
     }
   })
-  return pathToFilletObj
+  return pathToEdgeTreatmentObj
+}
+
+function getParameterNameAndValue(
+  parameters: EdgeTreatmentParameters
+): { parameterName: string; parameterValue: Expr } | Error {
+  if (parameters.type === EdgeTreatmentType.Fillet) {
+    const parameterValue =
+      'variableName' in parameters.radius
+        ? parameters.radius.variableIdentifierAst
+        : parameters.radius.valueAst
+    return { parameterName: 'radius', parameterValue }
+  } else if (parameters.type === EdgeTreatmentType.Chamfer) {
+    const parameterValue =
+      'variableName' in parameters.length
+        ? parameters.length.variableIdentifierAst
+        : parameters.length.valueAst
+    return { parameterName: 'length', parameterValue }
+  } else {
+    return new Error('Unsupported edge treatment type}')
+  }
+}
+
+// Type Guards
+function isEdgeTreatmentType(name: string): name is EdgeTreatmentType {
+  return name === EdgeTreatmentType.Chamfer || name === EdgeTreatmentType.Fillet
+}
+function isEdgeType(name: string): name is EdgeTypes {
+  return (
+    name === 'getNextAdjacentEdge' ||
+    name === 'getPreviousAdjacentEdge' ||
+    name === 'getOppositeEdge'
+  )
 }
 
 // Button states
-
-export const hasValidFilletSelection = ({
+export const hasValidEdgeTreatmentSelection = ({
   selectionRanges,
   ast,
   code,
@@ -433,11 +530,14 @@ export const hasValidFilletSelection = ({
   ast: Node<Program>
   code: string
 }) => {
-  // check if there is anything filletable in the scene
+  // check if there is anything valid for the edge treatment in the scene
   let extrudeExists = false
   traverse(ast, {
     enter(node) {
-      if (node.type === 'CallExpression' && node.callee.name === 'extrude') {
+      if (
+        node.type === 'CallExpression' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve')
+      ) {
         extrudeExists = true
       }
     },
@@ -494,32 +594,39 @@ export const hasValidFilletSelection = ({
       },
     })
 
-    // check if tag is used in fillet
+    // check if tag is used in edge treatment
     if (tagExists && selection.artifact) {
       // create tag call
       let tagCall: Expr = getEdgeTagCall(tag, selection.artifact)
 
-      // check if tag is used in fillet
-      let inFillet = false
-      let tagUsedInFillet = false
+      // check if tag is used in edge treatment
+      let inEdgeTreatment = false
+      let tagUsedInEdgeTreatment = false
+
       traverse(ast, {
         enter(node) {
-          if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
-            inFillet = true
+          if (
+            node.type === 'CallExpression' &&
+            isEdgeTreatmentType(node.callee.name)
+          ) {
+            inEdgeTreatment = true
           }
-          if (inFillet && node.type === 'ObjectExpression') {
+          if (inEdgeTreatment && node.type === 'ObjectExpression') {
             if (hasTag(node, tagCall)) {
-              tagUsedInFillet = true
+              tagUsedInEdgeTreatment = true
             }
           }
         },
         leave(node) {
-          if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
-            inFillet = false
+          if (
+            node.type === 'CallExpression' &&
+            isEdgeTreatmentType(node.callee.name)
+          ) {
+            inEdgeTreatment = false
           }
         },
       })
-      if (tagUsedInFillet) {
+      if (tagUsedInEdgeTreatment) {
         return false
       }
     }
@@ -533,7 +640,7 @@ type EdgeTypes =
   | 'getPreviousAdjacentEdge'
   | 'getOppositeEdge'
 
-export const isTagUsedInFillet = ({
+export const isTagUsedInEdgeTreatment = ({
   ast,
   callExp,
 }: {
@@ -543,16 +650,21 @@ export const isTagUsedInFillet = ({
   const tag = getTagFromCallExpression(callExp)
   if (err(tag)) return []
 
-  let inFillet = false
+  let inEdgeTreatment = false
   let inObj = false
   let inTagHelper: EdgeTypes | '' = ''
   const edges: Array<EdgeTypes> = []
+
   traverse(ast, {
     enter: (node) => {
-      if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
-        inFillet = true
+      // Check if we are entering an edge treatment call
+      if (
+        node.type === 'CallExpression' &&
+        isEdgeTreatmentType(node.callee.name)
+      ) {
+        inEdgeTreatment = true
       }
-      if (inFillet && node.type === 'ObjectExpression') {
+      if (inEdgeTreatment && node.type === 'ObjectExpression') {
         node.properties.forEach((prop) => {
           if (
             prop.key.name === 'tags' &&
@@ -564,17 +676,15 @@ export const isTagUsedInFillet = ({
       }
       if (
         inObj &&
-        inFillet &&
+        inEdgeTreatment &&
         node.type === 'CallExpression' &&
-        (node.callee.name === 'getOppositeEdge' ||
-          node.callee.name === 'getNextAdjacentEdge' ||
-          node.callee.name === 'getPreviousAdjacentEdge')
+        isEdgeType(node.callee.name)
       ) {
         inTagHelper = node.callee.name
       }
       if (
         inObj &&
-        inFillet &&
+        inEdgeTreatment &&
         !inTagHelper &&
         node.type === 'Identifier' &&
         node.name === tag
@@ -583,7 +693,7 @@ export const isTagUsedInFillet = ({
       }
       if (
         inObj &&
-        inFillet &&
+        inEdgeTreatment &&
         inTagHelper &&
         node.type === 'Identifier' &&
         node.name === tag
@@ -592,10 +702,13 @@ export const isTagUsedInFillet = ({
       }
     },
     leave: (node) => {
-      if (node.type === 'CallExpression' && node.callee.name === 'fillet') {
-        inFillet = false
+      if (
+        node.type === 'CallExpression' &&
+        isEdgeTreatmentType(node.callee.name)
+      ) {
+        inEdgeTreatment = false
       }
-      if (inFillet && node.type === 'ObjectExpression') {
+      if (inEdgeTreatment && node.type === 'ObjectExpression') {
         node.properties.forEach((prop) => {
           if (
             prop.key.name === 'tags' &&
@@ -607,11 +720,9 @@ export const isTagUsedInFillet = ({
       }
       if (
         inObj &&
-        inFillet &&
+        inEdgeTreatment &&
         node.type === 'CallExpression' &&
-        (node.callee.name === 'getOppositeEdge' ||
-          node.callee.name === 'getNextAdjacentEdge' ||
-          node.callee.name === 'getPreviousAdjacentEdge')
+        isEdgeType(node.callee.name)
       ) {
         inTagHelper = ''
       }

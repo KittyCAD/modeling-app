@@ -8,16 +8,15 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     ast::types::{
-        ArrayExpression, CallExpression, ConstraintLevel, FormatOptions, Literal, PipeExpression, PipeSubstitution,
-        VariableDeclarator,
+        ArrayExpression, CallExpression, ConstraintLevel, FormatOptions, Literal, Node, PipeExpression,
+        PipeSubstitution, VariableDeclarator,
     },
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::{Point2d, SourceRange},
+    executor::Point2d,
+    source_range::{ModuleId, SourceRange},
     Program,
 };
-
-use super::types::{ModuleId, Node};
 
 type Point3d = kcmc::shared::Point3d<f64>;
 

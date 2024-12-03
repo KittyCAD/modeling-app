@@ -307,7 +307,10 @@ const directoryCount = (file: FileEntry) => {
   let count = 0
   if (file.children) {
     for (let entry of file.children) {
-      count += 1
+      // We only want to count FileEntries with children, e.g. folders
+      if (entry.children !== null) {
+        count += 1
+      }
       directoryCount(entry)
     }
   }

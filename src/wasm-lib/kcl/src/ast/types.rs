@@ -27,8 +27,9 @@ pub use crate::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, ExecutorContext, KclValue, Metadata, SourceRange, TagIdentifier},
+    executor::{ExecState, ExecutorContext, KclValue, Metadata, TagIdentifier},
     parser::PIPE_OPERATOR,
+    source_range::{ModuleId, SourceRange},
     std::kcl_stdlib::KclStdLibFn,
 };
 
@@ -62,7 +63,7 @@ pub struct Node<T> {
 impl<T> Node<T> {
     pub fn metadata(&self) -> Metadata {
         Metadata {
-            source_range: SourceRange([self.start, self.end, self.module_id.0 as usize]),
+            source_range: SourceRange::new(self.start, self.end, self.module_id),
         }
     }
 
@@ -122,7 +123,7 @@ impl<T> Node<T> {
     }
 
     pub fn as_source_range(&self) -> SourceRange {
-        SourceRange([self.start, self.end, self.module_id.as_usize()])
+        SourceRange::new(self.start, self.end, self.module_id)
     }
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
@@ -150,21 +151,21 @@ impl<T: fmt::Display> fmt::Display for Node<T> {
     }
 }
 
-impl<T> From<Node<T>> for crate::executor::SourceRange {
+impl<T> From<Node<T>> for SourceRange {
     fn from(v: Node<T>) -> Self {
-        Self([v.start, v.end, v.module_id.as_usize()])
+        Self::new(v.start, v.end, v.module_id)
     }
 }
 
-impl<T> From<&Node<T>> for crate::executor::SourceRange {
+impl<T> From<&Node<T>> for SourceRange {
     fn from(v: &Node<T>) -> Self {
-        Self([v.start, v.end, v.module_id.as_usize()])
+        Self::new(v.start, v.end, v.module_id)
     }
 }
 
-impl<T> From<&BoxNode<T>> for crate::executor::SourceRange {
+impl<T> From<&BoxNode<T>> for SourceRange {
     fn from(v: &BoxNode<T>) -> Self {
-        Self([v.start, v.end, v.module_id.as_usize()])
+        Self::new(v.start, v.end, v.module_id)
     }
 }
 
@@ -540,7 +541,6 @@ impl Program {
 /// #!/usr/bin/env python
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 pub struct Shebang {
@@ -550,29 +550,6 @@ pub struct Shebang {
 impl Shebang {
     pub fn new(content: String) -> Self {
         Shebang { content }
-    }
-}
-
-/// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[databake(path = kcl_lib::ast::types)]
-#[ts(export)]
-pub struct ModuleId(pub u32);
-
-impl ModuleId {
-    pub fn from_usize(id: usize) -> Self {
-        Self(u32::try_from(id).expect("module ID should fit in a u32"))
-    }
-
-    pub fn as_usize(&self) -> usize {
-        usize::try_from(self.0).expect("module ID should fit in a usize")
-    }
-
-    /// Top-level file is the one being executed.
-    /// Represented by module ID of 0, i.e. the default value.
-    pub fn is_top_level(&self) -> bool {
-        *self == Self::default()
     }
 }
 
@@ -609,13 +586,13 @@ impl BodyItem {
 
 impl From<BodyItem> for SourceRange {
     fn from(item: BodyItem) -> Self {
-        Self([item.start(), item.end(), item.module_id().as_usize()])
+        Self::new(item.start(), item.end(), item.module_id())
     }
 }
 
 impl From<&BodyItem> for SourceRange {
     fn from(item: &BodyItem) -> Self {
-        Self([item.start(), item.end(), item.module_id().as_usize()])
+        Self::new(item.start(), item.end(), item.module_id())
     }
 }
 
@@ -631,6 +608,7 @@ pub enum Expr {
     BinaryExpression(BoxNode<BinaryExpression>),
     FunctionExpression(BoxNode<FunctionExpression>),
     CallExpression(BoxNode<CallExpression>),
+    CallExpressionKw(BoxNode<CallExpressionKw>),
     PipeExpression(BoxNode<PipeExpression>),
     PipeSubstitution(BoxNode<PipeSubstitution>),
     ArrayExpression(BoxNode<ArrayExpression>),
@@ -674,6 +652,7 @@ impl Expr {
             Expr::Literal(_literal) => None,
             Expr::FunctionExpression(_func_exp) => None,
             Expr::CallExpression(_call_exp) => None,
+            Expr::CallExpressionKw(_call_exp) => None,
             Expr::Identifier(_ident) => None,
             Expr::TagDeclarator(_tag) => None,
             Expr::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
@@ -699,6 +678,7 @@ impl Expr {
             Expr::Literal(_) => {}
             Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
             Expr::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
+            Expr::CallExpressionKw(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::Identifier(_) => {}
             Expr::TagDeclarator(_) => {}
             Expr::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
@@ -717,6 +697,7 @@ impl Expr {
             Expr::BinaryExpression(binary_expression) => binary_expression.start,
             Expr::FunctionExpression(function_expression) => function_expression.start,
             Expr::CallExpression(call_expression) => call_expression.start,
+            Expr::CallExpressionKw(call_expression) => call_expression.start,
             Expr::PipeExpression(pipe_expression) => pipe_expression.start,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start,
             Expr::ArrayExpression(array_expression) => array_expression.start,
@@ -737,6 +718,7 @@ impl Expr {
             Expr::BinaryExpression(binary_expression) => binary_expression.end,
             Expr::FunctionExpression(function_expression) => function_expression.end,
             Expr::CallExpression(call_expression) => call_expression.end,
+            Expr::CallExpressionKw(call_expression) => call_expression.end,
             Expr::PipeExpression(pipe_expression) => pipe_expression.end,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end,
             Expr::ArrayExpression(array_expression) => array_expression.end,
@@ -758,6 +740,7 @@ impl Expr {
                 function_expression.get_hover_value_for_position(pos, code)
             }
             Expr::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
+            Expr::CallExpressionKw(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
             Expr::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
             Expr::ArrayRangeExpression(array_range) => array_range.get_hover_value_for_position(pos, code),
@@ -786,6 +769,7 @@ impl Expr {
             }
             Expr::FunctionExpression(_function_identifier) => {}
             Expr::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
+            Expr::CallExpressionKw(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
             Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
             Expr::PipeSubstitution(_) => {}
             Expr::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
@@ -812,6 +796,7 @@ impl Expr {
 
             Expr::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
             Expr::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            Expr::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
             Expr::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
                 source_ranges: vec![pipe_substitution.into()],
@@ -829,13 +814,13 @@ impl Expr {
 
 impl From<Expr> for SourceRange {
     fn from(value: Expr) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
@@ -848,6 +833,7 @@ pub enum BinaryPart {
     Identifier(BoxNode<Identifier>),
     BinaryExpression(BoxNode<BinaryExpression>),
     CallExpression(BoxNode<CallExpression>),
+    CallExpressionKw(BoxNode<CallExpressionKw>),
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
     IfExpression(BoxNode<IfExpression>),
@@ -855,13 +841,13 @@ pub enum BinaryPart {
 
 impl From<BinaryPart> for SourceRange {
     fn from(value: BinaryPart) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
 impl From<&BinaryPart> for SourceRange {
     fn from(value: &BinaryPart) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
@@ -873,6 +859,7 @@ impl BinaryPart {
             BinaryPart::Identifier(identifier) => identifier.get_constraint_level(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
             BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
@@ -889,6 +876,9 @@ impl BinaryPart {
             BinaryPart::CallExpression(ref mut call_expression) => {
                 call_expression.replace_value(source_range, new_value)
             }
+            BinaryPart::CallExpressionKw(ref mut call_expression) => {
+                call_expression.replace_value(source_range, new_value)
+            }
             BinaryPart::UnaryExpression(ref mut unary_expression) => {
                 unary_expression.replace_value(source_range, new_value)
             }
@@ -903,6 +893,7 @@ impl BinaryPart {
             BinaryPart::Identifier(identifier) => identifier.start,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.start,
             BinaryPart::CallExpression(call_expression) => call_expression.start,
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.start,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
             BinaryPart::IfExpression(e) => e.start,
@@ -915,6 +906,7 @@ impl BinaryPart {
             BinaryPart::Identifier(identifier) => identifier.end,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.end,
             BinaryPart::CallExpression(call_expression) => call_expression.end,
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.end,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
             BinaryPart::IfExpression(e) => e.end,
@@ -930,6 +922,7 @@ impl BinaryPart {
                 binary_expression.get_hover_value_for_position(pos, code)
             }
             BinaryPart::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
             BinaryPart::IfExpression(e) => e.get_hover_value_for_position(pos, code),
             BinaryPart::MemberExpression(member_expression) => {
@@ -947,6 +940,9 @@ impl BinaryPart {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::CallExpression(ref mut call_expression) => {
+                call_expression.rename_identifiers(old_name, new_name)
+            }
+            BinaryPart::CallExpressionKw(ref mut call_expression) => {
                 call_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::UnaryExpression(ref mut unary_expression) => {
@@ -1270,9 +1266,39 @@ pub struct CallExpression {
     pub digest: Option<Digest>,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct CallExpressionKw {
+    pub callee: Node<Identifier>,
+    pub unlabeled: Option<Expr>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub arguments: Vec<LabeledArg>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct LabeledArg {
+    pub label: Identifier,
+    pub arg: Expr,
+}
+
 impl From<Node<CallExpression>> for Expr {
     fn from(call_expression: Node<CallExpression>) -> Self {
         Expr::CallExpression(Box::new(call_expression))
+    }
+}
+
+impl From<Node<CallExpressionKw>> for Expr {
+    fn from(call_expression: Node<CallExpressionKw>) -> Self {
+        Expr::CallExpressionKw(Box::new(call_expression))
     }
 }
 
@@ -1289,6 +1315,25 @@ impl Node<CallExpression> {
         let mut constraint_levels = ConstraintLevels::new();
         for arg in &self.arguments {
             constraint_levels.push(arg.get_constraint_level());
+        }
+
+        constraint_levels.get_constraint_level(self.into())
+    }
+}
+
+impl Node<CallExpressionKw> {
+    /// Return the constraint level for this call expression.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.arguments.is_empty() {
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
+        }
+
+        // Iterate over the arguments and get the constraint level for each one.
+        let mut constraint_levels = ConstraintLevels::new();
+        for arg in &self.arguments {
+            constraint_levels.push(arg.arg.get_constraint_level());
         }
 
         constraint_levels.get_constraint_level(self.into())
@@ -1347,6 +1392,68 @@ impl CallExpression {
 
         for arg in &mut self.arguments {
             arg.rename_identifiers(old_name, new_name);
+        }
+    }
+}
+
+impl CallExpressionKw {
+    pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
+        Ok(Node::no_src(Self {
+            callee: Identifier::new(name),
+            unlabeled,
+            arguments,
+            digest: None,
+        }))
+    }
+
+    /// Iterate over all arguments (labeled or not)
+    pub fn iter_arguments(&self) -> impl Iterator<Item = &Expr> {
+        self.unlabeled.iter().chain(self.arguments.iter().map(|arg| &arg.arg))
+    }
+
+    /// Is at least one argument the '%' i.e. the substitution operator?
+    pub fn has_substitution_arg(&self) -> bool {
+        self.arguments
+            .iter()
+            .any(|arg| matches!(arg.arg, Expr::PipeSubstitution(_)))
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for arg in &mut self.arguments {
+            arg.arg.replace_value(source_range, new_value.clone());
+        }
+    }
+
+    /// Returns a hover value that includes the given character position.
+    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+        let callee_source_range: SourceRange = self.callee.clone().into();
+        if callee_source_range.contains(pos) {
+            return Some(Hover::Function {
+                name: self.callee.name.clone(),
+                range: callee_source_range.to_lsp_range(code),
+            });
+        }
+
+        for (index, arg) in self.iter_arguments().enumerate() {
+            let source_range: SourceRange = arg.into();
+            if source_range.contains(pos) {
+                return Some(Hover::Signature {
+                    name: self.callee.name.clone(),
+                    parameter_index: index as u32,
+                    range: source_range.to_lsp_range(code),
+                });
+            }
+        }
+
+        None
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        self.callee.rename(old_name, new_name);
+
+        for arg in &mut self.arguments {
+            arg.arg.rename_identifiers(old_name, new_name);
         }
     }
 }
@@ -2199,13 +2306,13 @@ impl MemberObject {
 
 impl From<MemberObject> for SourceRange {
     fn from(obj: MemberObject) -> Self {
-        Self([obj.start(), obj.end(), obj.module_id().as_usize()])
+        Self::new(obj.start(), obj.end(), obj.module_id())
     }
 }
 
 impl From<&MemberObject> for SourceRange {
     fn from(obj: &MemberObject) -> Self {
-        Self([obj.start(), obj.end(), obj.module_id().as_usize()])
+        Self::new(obj.start(), obj.end(), obj.module_id())
     }
 }
 
@@ -2236,13 +2343,13 @@ impl LiteralIdentifier {
 
 impl From<LiteralIdentifier> for SourceRange {
     fn from(id: LiteralIdentifier) -> Self {
-        Self([id.start(), id.end(), id.module_id().as_usize()])
+        Self::new(id.start(), id.end(), id.module_id())
     }
 }
 
 impl From<&LiteralIdentifier> for SourceRange {
     fn from(id: &LiteralIdentifier) -> Self {
-        Self([id.start(), id.end(), id.module_id().as_usize()])
+        Self::new(id.start(), id.end(), id.module_id())
     }
 }
 
@@ -2828,7 +2935,6 @@ pub enum Hover {
 
 /// Format options.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FormatOptions {

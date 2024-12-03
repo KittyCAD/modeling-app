@@ -46,7 +46,11 @@ import {
   extrudeSketch,
   revolveSketch,
 } from 'lang/modifyAst'
-import { applyFilletToSelection } from 'lang/modifyAst/addFillet'
+import {
+  applyEdgeTreatmentToSelection,
+  EdgeTreatmentType,
+  FilletParameters,
+} from 'lang/modifyAst/addFillet'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -387,7 +391,7 @@ export const modelingMachine = setup({
   guards: {
     'Selection is on face': () => false,
     'has valid sweep selection': () => false,
-    'has valid fillet selection': () => false,
+    'has valid edge treatment selection': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
     'has made first point': ({ context }) => {
@@ -743,14 +747,19 @@ export const modelingMachine = setup({
       // Extract inputs
       const ast = kclManager.ast
       const { selection, radius } = event.data
+      const parameters: FilletParameters = {
+        type: EdgeTreatmentType.Fillet,
+        radius,
+      }
 
       // Apply fillet to selection
-      const applyFilletToSelectionResult = applyFilletToSelection(
+      const applyEdgeTreatmentToSelectionResult = applyEdgeTreatmentToSelection(
         ast,
         selection,
-        radius
+        parameters
       )
-      if (err(applyFilletToSelectionResult)) return applyFilletToSelectionResult
+      if (err(applyEdgeTreatmentToSelectionResult))
+        return applyEdgeTreatmentToSelectionResult
 
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
@@ -1572,7 +1581,7 @@ export const modelingMachine = setup({
 
         Fillet: {
           target: 'idle',
-          guard: 'has valid fillet selection', // TODO: fix selections
+          guard: 'has valid edge treatment selection',
           actions: ['AST fillet'],
           reenter: false,
         },
