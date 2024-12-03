@@ -3,7 +3,6 @@
 use anyhow::Result;
 use derive_docs::stdlib;
 
-use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExecState, KclValue},
@@ -13,7 +12,8 @@ use crate::{
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
 pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (n, d) = FromArgs::from_args(&args, 0)?;
+    let n = args.get_unlabeled_kw_arg("number to divide")?;
+    let d = args.get_kw_arg("divisor")?;
     let result = inner_rem(n, d)?;
 
     Ok(args.make_user_val_from_i64(result))
