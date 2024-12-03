@@ -564,12 +564,9 @@ export function canSweepSelection(selection: Selections) {
 }
 
 export function canLoftSelection(selection: Selections) {
-  console.log('selection', selection)
   const commonNodes = selection.graphSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )
-  console.log('commonNodes', commonNodes)
-  console.log('isSketchPipe', isSketchPipe(selection))
   return (
     !!isCursorInSketchCommandRange(
       engineCommandManager.artifactGraph,

@@ -577,10 +577,6 @@ export const ModelingMachineProvider = ({
             isSelectionLastLine(selectionRanges, codeManager.code)
 
           if (hasNoSelection) {
-            // TODO: can't select more than one face now if not done prior
-            // they have no selection, we should enable the button
-            // so they can select the faces through the cmdbar
-            // BUT only if there's two extrudable geometry
             const count = 2
             return doesSceneHaveSweepableSketch(kclManager.ast, count)
           }

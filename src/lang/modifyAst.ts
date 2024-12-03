@@ -355,23 +355,20 @@ export function loftSketches(
       pathToLoftArg: PathToNode
     }
   | Error {
-  const _node = structuredClone(node)
-
+  const modifiedAst = structuredClone(node)
   const variableDeclarators = []
-  const pathsToDeclaration = []
   for (const path of nodePaths) {
-    const node = getNodeFromPath<VariableDeclarator>(
-      _node,
+    const nodeFromPath = getNodeFromPath<VariableDeclarator>(
+      modifiedAst,
       path,
       'VariableDeclarator'
     )
-    if (err(node)) {
-      return node
+
+    if (err(nodeFromPath)) {
+      return nodeFromPath
     }
 
-    const { node: variableDeclarator, shallowPath: pathToDecleration } = node
-    variableDeclarators.push(variableDeclarator)
-    pathsToDeclaration.push(pathToDecleration)
+    variableDeclarators.push(nodeFromPath.node)
   }
 
   const identifiers = createArrayExpression(
@@ -379,32 +376,20 @@ export function loftSketches(
   )
   const loftCall = createCallExpressionStdLib('loft', [identifiers])
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
-  const VariableDeclaration = createVariableDeclaration(name, loftCall)
-
-  const sketchIndexInPathToNode = (path: PathToNode) =>
-    path.findIndex((a) => a[0] === 'body') + 1
-  pathsToDeclaration.sort(
-    (a, b) =>
-      (a[sketchIndexInPathToNode(a)][0] as number) -
-      (b[sketchIndexInPathToNode(b)][0] as number)
-  )
-  const lastPath = pathsToDeclaration[pathsToDeclaration.length - 1]
-  const sketchIndexInBody = lastPath[
-    sketchIndexInPathToNode(lastPath)
-  ][0] as number
-  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
-
+  const loftDeclaration = createVariableDeclaration(name, loftCall)
+  modifiedAst.body.push(loftDeclaration)
   const pathToLoftArg: PathToNode = [
     ['body', ''],
-    [sketchIndexInBody + 1, 'index'],
+    [modifiedAst.body.length - 1, 'index'],
     ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['0', 'index'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
   ]
+
   return {
-    modifiedAst: _node,
+    modifiedAst,
     pathToLoftArg,
   }
 }
