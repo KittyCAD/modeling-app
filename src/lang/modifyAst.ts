@@ -356,7 +356,7 @@ export function loftSketches(
     }
   | Error {
   const modifiedAst = structuredClone(node)
-  const variableDeclarators = []
+  const elements = []
   for (const path of nodePaths) {
     const nodeFromPath = getNodeFromPath<VariableDeclarator>(
       modifiedAst,
@@ -368,16 +368,15 @@ export function loftSketches(
       return nodeFromPath
     }
 
-    variableDeclarators.push(nodeFromPath.node)
+    elements.push(createIdentifier(nodeFromPath.node.id.name))
   }
 
-  const identifiers = createArrayExpression(
-    variableDeclarators.map((d) => createIdentifier(d.id.name))
-  )
-  const loftCall = createCallExpressionStdLib('loft', [identifiers])
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
-  const loftDeclaration = createVariableDeclaration(name, loftCall)
-  modifiedAst.body.push(loftDeclaration)
+  const loft = createCallExpressionStdLib('loft', [
+    createArrayExpression(elements),
+  ])
+  const declaration = createVariableDeclaration(name, loft)
+  modifiedAst.body.push(declaration)
   const pathToLoftArg: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],
