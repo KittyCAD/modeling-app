@@ -501,7 +501,8 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { context, send } = useModelingContext()
+  const { commandBarSend } = useCommandsContext()
+  const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
       varName: string
@@ -618,11 +619,18 @@ const ConstraintSymbol = ({
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={toSync(async () => {
           if (!isConstrained) {
-            send({
-              type: 'Convert to variable',
+            commandBarSend({
+              type: 'Find and select command',
               data: {
-                pathToNode,
-                variableName: varName,
+                name: 'Constrain with named value',
+                groupId: 'modeling',
+                argDefaultValues: {
+                  currentValue: {
+                    pathToNode,
+                    variableName: varName,
+                    valueText: value,
+                  },
+                },
               },
             })
           } else if (isConstrained) {

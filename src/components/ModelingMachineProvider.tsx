@@ -64,12 +64,13 @@ import {
   getSketchOrientationDetails,
 } from 'clientSideScene/sceneEntities'
 import {
-  moveValueIntoNewVariablePath,
+  insertNamedConstant,
+  replaceValueAtNodePath,
   sketchOnExtrudedFace,
   sketchOnOffsetPlane,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { Program, parse, recast } from 'lang/wasm'
+import { PathToNode, Program, parse, recast } from 'lang/wasm'
 import {
   doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
@@ -81,7 +82,6 @@ import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
-import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
@@ -1018,33 +1018,77 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'Get convert to variable info': fromPromise(
+        'Apply named value constraint': fromPromise(
           async ({ input: { selectionRanges, sketchDetails, data } }) => {
-            if (!sketchDetails)
+            if (!sketchDetails) {
               return Promise.reject(new Error('No sketch details'))
-            const { variableName } = await getVarNameModal({
-              valueName: data?.variableName || 'var',
-            })
+            }
+            if (!data) {
+              return Promise.reject(new Error('No data from command flow'))
+            }
             let parsed = parse(recast(kclManager.ast))
             if (trap(parsed)) return Promise.reject(parsed)
             parsed = parsed as Node<Program>
 
-            const { modifiedAst: _modifiedAst, pathToReplacedNode } =
-              moveValueIntoNewVariablePath(
-                parsed,
-                kclManager.programMemory,
-                data?.pathToNode || [],
-                variableName
+            let result = {
+              modifiedAst: parsed,
+              pathToReplaced: null as null | PathToNode,
+            }
+            // If the user provided a constant name,
+            // we need to insert the named constant
+            // and then replace the node with the constant's name.
+            if ('variableName' in data.namedValue) {
+              const astAfterReplacement = replaceValueAtNodePath({
+                ast: parsed,
+                pathToNode: data.currentValue.pathToNode,
+                newExpressionString: data.namedValue.variableName,
+              })
+              if (trap(astAfterReplacement)) {
+                return Promise.reject(astAfterReplacement)
+              }
+              const astAfterInsertion = parse(
+                recast(
+                  insertNamedConstant({
+                    node: astAfterReplacement.modifiedAst,
+                    newExpression: data.namedValue,
+                  })
+                )
               )
-            parsed = parse(recast(_modifiedAst))
+              if (trap(astAfterInsertion))
+                return Promise.reject(astAfterInsertion)
+              result = {
+                modifiedAst: astAfterInsertion as Node<Program>,
+                pathToReplaced: astAfterReplacement.pathToReplaced,
+              }
+            } else if ('valueText' in data.namedValue) {
+              // If they didn't provide a constant name,
+              // just replace the node with the value.
+              const astAfterReplacement = replaceValueAtNodePath({
+                ast: parsed,
+                pathToNode: data.currentValue.pathToNode,
+                newExpressionString: data.namedValue.valueText,
+              })
+              if (trap(astAfterReplacement)) {
+                return Promise.reject(astAfterReplacement)
+              }
+              // The `replacer` function returns a pathToNode that assumes
+              // an identifier is also being inserted into the AST, creating an off-by-one error.
+              // This corrects that error, but TODO we should fix this upstream
+              // to avoid this kind of error in the future.
+              astAfterReplacement.pathToReplaced[1][0] =
+                (astAfterReplacement.pathToReplaced[1][0] as number) - 1
+              result = astAfterReplacement
+            }
+
+            parsed = parse(recast(result.modifiedAst))
             if (trap(parsed)) return Promise.reject(parsed)
             parsed = parsed as Node<Program>
-            if (!pathToReplacedNode)
+            if (!result.pathToReplaced)
               return Promise.reject(new Error('No path to replaced node'))
 
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                pathToReplacedNode || [],
+                result.pathToReplaced || [],
                 parsed,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1057,7 +1101,7 @@ export const ModelingMachineProvider = ({
             )
 
             const selection = updateSelections(
-              { 0: pathToReplacedNode },
+              { 0: result.pathToReplaced },
               selectionRanges,
               updatedAst.newAst
             )
@@ -1065,7 +1109,7 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedPathToNode: pathToReplacedNode,
+              updatedPathToNode: result.pathToReplaced,
             }
           }
         ),

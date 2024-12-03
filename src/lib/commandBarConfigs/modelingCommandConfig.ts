@@ -1,6 +1,7 @@
 import { Models } from '@kittycad/lib'
 import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
+import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
@@ -54,6 +55,14 @@ export type ModelingCommandSchema = {
   'Constrain length': {
     selection: Selections
     length: KclCommandValue
+  }
+  'Constrain with named value': {
+    currentValue: {
+      valueText: string
+      pathToNode: PathToNode
+      variableName: string
+    }
+    namedValue: KclCommandValue
   }
   'Text-to-CAD': {
     prompt: string
@@ -364,6 +373,48 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           if (err(sketched)) return KCL_DEFAULT_LENGTH
           const { valueUsedInTransform } = sketched
           return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
+        },
+      },
+    },
+  },
+  'Constrain with named value': {
+    description: 'Constrain a value by making it a named constant.',
+    icon: 'make-variable',
+    args: {
+      currentValue: {
+        description:
+          'Path to the node in the AST to constrain. This is never shown to the user.',
+        inputType: 'text',
+        required: false,
+        skip: true,
+      },
+      namedValue: {
+        inputType: 'kcl',
+        required: true,
+        createVariableByDefault: true,
+        variableName(commandBarContext, machineContext) {
+          const { currentValue } = commandBarContext.argumentsToSubmit
+          if (
+            !currentValue ||
+            !(currentValue instanceof Object) ||
+            !('variableName' in currentValue) ||
+            typeof currentValue.variableName !== 'string'
+          ) {
+            return 'value'
+          }
+          return currentValue.variableName
+        },
+        defaultValue: (commandBarContext) => {
+          const { currentValue } = commandBarContext.argumentsToSubmit
+          if (
+            !currentValue ||
+            !(currentValue instanceof Object) ||
+            !('valueText' in currentValue) ||
+            typeof currentValue.valueText !== 'string'
+          ) {
+            return KCL_DEFAULT_LENGTH
+          }
+          return currentValue.valueText
         },
       },
     },

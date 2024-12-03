@@ -45,6 +45,7 @@ import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { KclExpressionWithVariable } from 'lib/commandTypes'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -567,6 +568,25 @@ export function addOffsetPlane({
 }
 
 /**
+ * Return a modified clone of an AST with a named constant inserted into the body
+ */
+export function insertNamedConstant({
+  node,
+  newExpression,
+}: {
+  node: Node<Program>
+  newExpression: KclExpressionWithVariable
+}): Node<Program> {
+  const ast = structuredClone(node)
+  ast.body.splice(
+    newExpression.insertIndex,
+    0,
+    newExpression.variableDeclarationAst
+  )
+  return ast
+}
+
+/**
  * Modify the AST to create a new sketch using the variable declaration
  * of an offset plane. The new sketch just has to come after the offset
  * plane declaration.
@@ -909,6 +929,31 @@ export function giveSketchFnCallTag(
   } else {
     return new Error('Unable to assign tag without value')
   }
+}
+
+/**
+ * Replace a
+ */
+export function replaceValueAtNodePath({
+  ast,
+  pathToNode,
+  newExpressionString,
+}: {
+  ast: Node<Program>
+  pathToNode: PathToNode
+  newExpressionString: string
+}) {
+  const replaceCheckResult = isNodeSafeToReplacePath(ast, pathToNode)
+  if (err(replaceCheckResult)) {
+    return replaceCheckResult
+  }
+  const { isSafe, value, replacer } = replaceCheckResult
+
+  if (!isSafe || value.type === 'Identifier') {
+    return new Error('Not safe to replace')
+  }
+
+  return replacer(ast, newExpressionString)
 }
 
 export function moveValueIntoNewVariablePath(
