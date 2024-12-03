@@ -105,6 +105,7 @@
     "tron:package": "electron-forge package",
     "tron:make": "electron-forge make",
     "tron:publish": "electron-forge publish",
+    "chrome:test": "PLATFORM=web NODE_ENV=development yarn playwright test --config=playwright.config.ts --project='Google Chrome' --grep-invert='@snapshot'",
     "tron:test": "NODE_ENV=development yarn playwright test --config=playwright.electron.config.ts --grep-invert='@snapshot'",
     "tronb:vite": "vite build -c vite.main.config.ts && vite build -c vite.preload.config.ts && vite build -c vite.renderer.config.ts",
     "tronb:package": "electron-builder --config electron-builder.yml",
