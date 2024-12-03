@@ -3,6 +3,7 @@ import {
   fixtures,
   Fixtures,
   AuthenticatedTronApp,
+  AuthenticatedApp,
 } from './fixtures/fixtureSetup'
 export { expect, Page, BrowserContext, TestInfo } from '@playwright/test'
 
@@ -24,8 +25,17 @@ export function test(desc, objOrFn, fnMaybe) {
       { page, context, cmdBar, editor, toolbar, scene, homePage },
       testInfo
     ) => {
-      // To switch to web, change this to AuthenticatedApp from fixtureSetup.ts
-      const tronApp = new AuthenticatedTronApp(context, page, testInfo)
+      // To switch to web, use PLATFORM=web environment variable.
+      // Only use this for debugging, since the playwright tracer is busted
+      // for electron.
+
+      let tronApp;
+
+      if (process.env.PLATFORM === 'web')  {
+        tronApp = new AuthenticatedApp(context, page, testInfo)
+      } else {
+        tronApp = new AuthenticatedTronApp(context, page, testInfo)
+      }
 
       const fixtures: Fixtures = { cmdBar, editor, toolbar, scene, homePage }
       const options = {
@@ -51,33 +61,35 @@ export function test(desc, objOrFn, fnMaybe) {
         await tronApp.page.reload()
       }
 
-      // Create a consistent way to resize the page across electron and web.
-      // (lee) I had to do everyhting in the book to make electron change its
-      // damn window size. I succeded in making it consistently and reliably
-      // do it after a whole afternoon.
-      tronApp.page.setBodyDimensions = async function (dims: {
-        width: number
-        height: number
-      }) {
-        await tronApp.electronApp.evaluateHandle(async ({ app }, dims) => {
-          await app.resizeWindow(dims.width, dims.height)
-        }, dims)
+      if (tronApp instanceof AuthenticatedTronApp) {
+        // Create a consistent way to resize the page across electron and web.
+        // (lee) I had to do everyhting in the book to make electron change its
+        // damn window size. I succeded in making it consistently and reliably
+        // do it after a whole afternoon.
+        tronApp.page.setBodyDimensions = async function (dims: {
+          width: number
+          height: number
+        }) {
+          await tronApp.electronApp.evaluateHandle(async ({ app }, dims) => {
+            await app.resizeWindow(dims.width, dims.height)
+          }, dims)
 
-        await tronApp.page.setViewportSize(dims)
-        return tronApp.page.evaluate(async (dims) => {
-          await window.electron.resizeWindow(dims.width, dims.height)
-          window.document.body.style.width = dims.width + 'px'
-          window.document.body.style.height = dims.height + 'px'
-          window.document.documentElement.style.width = dims.width + 'px'
-          window.document.documentElement.style.height = dims.height + 'px'
-        }, dims)
-      }
+          await tronApp.page.setViewportSize(dims)
+          return tronApp.page.evaluate(async (dims) => {
+            await window.electron.resizeWindow(dims.width, dims.height)
+            window.document.body.style.width = dims.width + 'px'
+            window.document.body.style.height = dims.height + 'px'
+            window.document.documentElement.style.width = dims.width + 'px'
+            window.document.documentElement.style.height = dims.height + 'px'
+          }, dims)
+        }
 
-      // We need to expose this in order for some tests that require folder
-      // creation. Before they used to do this by their own electronSetup({...})
-      // calls.
-      tronApp.context.folderSetupFn = function (fn) {
-        return fn(tronApp.dir).then(() => ({ dir: tronApp.dir }))
+        // We need to expose this in order for some tests that require folder
+        // creation. Before they used to do this by their own electronSetup({...})
+        // calls.
+        tronApp.context.folderSetupFn = function (fn) {
+          return fn(tronApp.dir).then(() => ({ dir: tronApp.dir }))
+        }
       }
 
       await fn(
