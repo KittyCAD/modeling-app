@@ -134,14 +134,14 @@ impl Args {
             }));
         };
         T::from_kcl_val(&arg.value).ok_or_else(|| {
-            return KclError::Semantic(KclErrorDetails {
+            KclError::Semantic(KclErrorDetails {
                 source_ranges: arg.source_ranges(),
                 message: format!(
                     "Expected a {} but found {}",
                     type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
-            });
+            })
         })
     }
 

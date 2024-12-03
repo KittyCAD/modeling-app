@@ -379,7 +379,7 @@ impl Node<CallExpressionKw> {
             let source_range = SourceRange::from(arg_expr.clone());
             let metadata = Metadata { source_range };
             let value = ctx
-                .execute_expr(&arg_expr, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
                 .await?;
             Some(Arg::new(value, source_range))
         } else {
@@ -387,7 +387,7 @@ impl Node<CallExpressionKw> {
         };
 
         let args = crate::std::Args::new_kw(fn_args, unlabeled, self.into(), ctx.clone());
-        match ctx.stdlib.get_either(&fn_name) {
+        match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
@@ -481,7 +481,7 @@ impl Node<CallExpression> {
             fn_args.push(arg);
         }
 
-        match ctx.stdlib.get_either(&fn_name) {
+        match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
