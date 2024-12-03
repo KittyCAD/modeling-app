@@ -3,7 +3,7 @@ use schemars::JsonSchema;
 use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{executor::SourceRange, lsp::IntoDiagnostic, walk::Node};
+use crate::{lsp::IntoDiagnostic, walk::Node, SourceRange};
 
 /// Check the provided AST for any found rule violations.
 ///

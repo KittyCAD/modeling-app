@@ -72,6 +72,7 @@ mod parser;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
+mod source_range;
 mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
@@ -82,16 +83,17 @@ mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
-pub use ast::modify::modify_ast_for_sketch;
-pub use ast::types::{FormatOptions, ModuleId};
+pub use ast::{modify::modify_ast_for_sketch, types::FormatOptions};
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{ConnectionError, ExecError, KclError};
-pub use executor::{ExecState, ExecutorContext, ExecutorSettings, SourceRange};
-pub use lsp::copilot::Backend as CopilotLspBackend;
-pub use lsp::kcl::Backend as KclLspBackend;
-pub use lsp::kcl::Server as KclLspServerSubCommand;
+pub use executor::{ExecState, ExecutorContext, ExecutorSettings};
+pub use lsp::{
+    copilot::Backend as CopilotLspBackend,
+    kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
+};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
+pub use source_range::{ModuleId, SourceRange};
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
@@ -101,9 +103,11 @@ pub mod exec {
 
 #[cfg(target_arch = "wasm32")]
 pub mod wasm_engine {
-    pub use crate::coredump::wasm::{CoreDumpManager, CoreDumper};
-    pub use crate::engine::conn_wasm::{EngineCommandManager, EngineConnection};
-    pub use crate::fs::wasm::FileSystemManager;
+    pub use crate::{
+        coredump::wasm::{CoreDumpManager, CoreDumper},
+        engine::conn_wasm::{EngineCommandManager, EngineConnection},
+        fs::wasm::FileSystemManager,
+    };
 }
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -115,9 +119,10 @@ pub mod std_utils {
     pub use crate::std::utils::{get_tangential_arc_to_info, is_points_ccw_wasm, TangentialArcInfoInput};
 }
 
+use serde::{Deserialize, Serialize};
+
 #[allow(unused_imports)]
 use crate::log::{log, logln};
-use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Program {

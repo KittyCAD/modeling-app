@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use async_recursion::async_recursion;
+
 use super::{
     ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
     CallExpressionKw, Expr, IfExpression, KclNone, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
@@ -7,13 +9,10 @@ use super::{
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, SourceRange, StatementKind, TagEngineInfo,
-        TagIdentifier,
-    },
+    executor::{BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier},
+    source_range::SourceRange,
     std::{args::Arg, FunctionKind},
 };
-use async_recursion::async_recursion;
 
 const FLOAT_TO_INT_MAX_DELTA: f64 = 0.01;
 

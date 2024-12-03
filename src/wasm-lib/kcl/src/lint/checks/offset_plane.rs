@@ -1,11 +1,13 @@
+use std::collections::HashMap;
+
+use anyhow::Result;
+
 use crate::{
     ast::types::{BinaryPart, Expr, LiteralValue, ObjectExpression, UnaryOperator},
-    executor::SourceRange,
     lint::rule::{def_finding, Discovered, Finding},
     walk::Node,
+    SourceRange,
 };
-use anyhow::Result;
-use std::collections::HashMap;
 
 def_finding!(
     Z0003,

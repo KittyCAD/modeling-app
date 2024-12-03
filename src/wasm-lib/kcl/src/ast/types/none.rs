@@ -4,9 +4,8 @@ use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::{ast::types::ConstraintLevel, executor::KclValue};
-
 use super::Node;
+use crate::{ast::types::ConstraintLevel, executor::KclValue};
 
 const KCL_NONE_ID: &str = "KCL_NONE_ID";
 

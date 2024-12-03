@@ -123,7 +123,7 @@ impl From<Vec<Box<Solid>>> for KclValue {
 impl From<KclValue> for Vec<SourceRange> {
     fn from(item: KclValue) -> Self {
         match item {
-            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end, t.module_id.0 as usize])],
+            KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
@@ -152,7 +152,7 @@ fn to_vec_sr(meta: &[Metadata]) -> Vec<SourceRange> {
 impl From<&KclValue> for Vec<SourceRange> {
     fn from(item: &KclValue) -> Self {
         match item {
-            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end, t.module_id.0 as usize])],
+            KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
             KclValue::Solid(e) => to_vec_sr(&e.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),

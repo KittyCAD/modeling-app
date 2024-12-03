@@ -683,7 +683,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::ast::types::{FormatOptions, ModuleId};
+    use crate::{ast::types::FormatOptions, source_range::ModuleId};
 
     #[test]
     fn test_recast_if_else_if_same() {

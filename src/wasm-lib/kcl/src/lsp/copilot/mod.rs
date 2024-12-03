@@ -27,10 +27,12 @@ use tower_lsp::{
 
 use crate::lsp::{
     backend::Backend as _,
-    copilot::cache::CopilotCache,
-    copilot::types::{
-        CopilotAcceptCompletionParams, CopilotCompletionResponse, CopilotCompletionTelemetry, CopilotEditorInfo,
-        CopilotLspCompletionParams, CopilotRejectCompletionParams, DocParams,
+    copilot::{
+        cache::CopilotCache,
+        types::{
+            CopilotAcceptCompletionParams, CopilotCompletionResponse, CopilotCompletionTelemetry, CopilotEditorInfo,
+            CopilotLspCompletionParams, CopilotRejectCompletionParams, DocParams,
+        },
     },
 };
 

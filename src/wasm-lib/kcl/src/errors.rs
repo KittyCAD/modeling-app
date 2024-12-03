@@ -2,7 +2,10 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{ast::types::ModuleId, executor::SourceRange, lsp::IntoDiagnostic};
+use crate::{
+    lsp::IntoDiagnostic,
+    source_range::{ModuleId, SourceRange},
+};
 
 /// How did the KCL execution fail
 #[derive(thiserror::Error, Debug)]

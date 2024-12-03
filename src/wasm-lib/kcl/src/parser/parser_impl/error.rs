@@ -2,8 +2,8 @@ use winnow::{error::StrContext, stream::Stream};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::SourceRange,
     token::Token,
+    SourceRange,
 };
 
 /// Accumulate context while backtracking errors

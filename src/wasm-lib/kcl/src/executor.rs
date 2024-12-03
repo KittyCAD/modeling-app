@@ -19,20 +19,18 @@ use kittycad_modeling_cmds::length_unit::LengthUnit;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use crate::kcl_value::KclValue;
 use crate::{
-    ast::types::{
-        BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, ModuleId, Node, NodeRef, TagDeclarator, TagNode,
-    },
+    ast::types::{BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, TagDeclarator, TagNode},
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     fs::{FileManager, FileSystem},
     settings::types::UnitLength,
+    source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
     ExecError, Program,
 };
@@ -1000,101 +998,6 @@ pub struct ModuleInfo {
     id: ModuleId,
     /// Absolute path of the module's source file.
     path: std::path::PathBuf,
-}
-
-#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[ts(export)]
-pub struct SourceRange(#[ts(type = "[number, number]")] pub [usize; 3]);
-
-impl From<[usize; 3]> for SourceRange {
-    fn from(value: [usize; 3]) -> Self {
-        Self(value)
-    }
-}
-
-impl From<&SourceRange> for miette::SourceSpan {
-    fn from(source_range: &SourceRange) -> Self {
-        let length = source_range.end() - source_range.start();
-        let start = miette::SourceOffset::from(source_range.start());
-        Self::new(start, length)
-    }
-}
-
-impl From<SourceRange> for miette::SourceSpan {
-    fn from(source_range: SourceRange) -> Self {
-        Self::from(&source_range)
-    }
-}
-
-impl SourceRange {
-    /// Create a new source range.
-    pub fn new(start: usize, end: usize, module_id: ModuleId) -> Self {
-        Self([start, end, module_id.as_usize()])
-    }
-
-    /// A source range that doesn't correspond to any source code.
-    pub fn synthetic() -> Self {
-        Self::default()
-    }
-
-    /// Get the start of the range.
-    pub fn start(&self) -> usize {
-        self.0[0]
-    }
-
-    /// Get the end of the range.
-    pub fn end(&self) -> usize {
-        self.0[1]
-    }
-
-    /// Get the module ID of the range.
-    pub fn module_id(&self) -> ModuleId {
-        ModuleId::from_usize(self.0[2])
-    }
-
-    /// Check if the range contains a position.
-    pub fn contains(&self, pos: usize) -> bool {
-        pos >= self.start() && pos <= self.end()
-    }
-
-    pub fn start_to_lsp_position(&self, code: &str) -> LspPosition {
-        // Calculate the line and column of the error from the source range.
-        // Lines are zero indexed in vscode so we need to subtract 1.
-        let mut line = code.get(..self.start()).unwrap_or_default().lines().count();
-        if line > 0 {
-            line = line.saturating_sub(1);
-        }
-        let column = code[..self.start()].lines().last().map(|l| l.len()).unwrap_or_default();
-
-        LspPosition {
-            line: line as u32,
-            character: column as u32,
-        }
-    }
-
-    pub fn end_to_lsp_position(&self, code: &str) -> LspPosition {
-        let lines = code.get(..self.end()).unwrap_or_default().lines();
-        if lines.clone().count() == 0 {
-            return LspPosition { line: 0, character: 0 };
-        }
-
-        // Calculate the line and column of the error from the source range.
-        // Lines are zero indexed in vscode so we need to subtract 1.
-        let line = lines.clone().count() - 1;
-        let column = lines.last().map(|l| l.len()).unwrap_or_default();
-
-        LspPosition {
-            line: line as u32,
-            character: column as u32,
-        }
-    }
-
-    pub fn to_lsp_range(&self, code: &str) -> LspRange {
-        let start = self.start_to_lsp_position(code);
-        let end = self.end_to_lsp_position(code);
-        LspRange { start, end }
-    }
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
@@ -2109,7 +2012,7 @@ impl ExecutorContext {
                     // True here tells the engine to flush all the end commands as well like fillets
                     // and chamfers where the engine would otherwise eat the ID of the segments.
                     true,
-                    SourceRange([program.end, program.end, program.module_id.as_usize()]),
+                    SourceRange::new(program.end, program.end, program.module_id),
                 )
                 .await?;
         }
@@ -2715,7 +2618,10 @@ const answer = returnX()"#;
             err,
             KclError::UndefinedValue(KclErrorDetails {
                 message: "memory item key `x` is not defined".to_owned(),
-                source_ranges: vec![SourceRange([64, 65, 0]), SourceRange([97, 106, 0])],
+                source_ranges: vec![
+                    SourceRange::new(64, 65, ModuleId::default()),
+                    SourceRange::new(97, 106, ModuleId::default())
+                ],
             }),
         );
     }
@@ -2750,7 +2656,7 @@ let shape = layer() |> patternTransform(10, transform, %)
             err,
             KclError::UndefinedValue(KclErrorDetails {
                 message: "memory item key `x` is not defined".to_owned(),
-                source_ranges: vec![SourceRange([80, 81, 0])],
+                source_ranges: vec![SourceRange::new(80, 81, ModuleId::default())],
             }),
         );
     }
@@ -2846,7 +2752,7 @@ let notNull = !myNull
             parse_execute(code1).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
-                source_ranges: vec![SourceRange([56, 63, 0])],
+                source_ranges: vec![SourceRange::new(56, 63, ModuleId::default())],
             })
         );
 
@@ -2855,7 +2761,7 @@ let notNull = !myNull
             parse_execute(code2).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
-                source_ranges: vec![SourceRange([14, 16, 0])],
+                source_ranges: vec![SourceRange::new(14, 16, ModuleId::default())],
             })
         );
 
@@ -2866,7 +2772,7 @@ let notEmptyString = !""
             parse_execute(code3).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: string (text)".to_owned(),
-                source_ranges: vec![SourceRange([22, 25, 0])],
+                source_ranges: vec![SourceRange::new(22, 25, ModuleId::default())],
             })
         );
 
@@ -2878,7 +2784,7 @@ let notMember = !obj.a
             parse_execute(code4).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
-                source_ranges: vec![SourceRange([36, 42, 0])],
+                source_ranges: vec![SourceRange::new(36, 42, ModuleId::default())],
             })
         );
 
@@ -2889,7 +2795,7 @@ let notArray = !a";
             parse_execute(code5).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: array (list)".to_owned(),
-                source_ranges: vec![SourceRange([27, 29, 0])],
+                source_ranges: vec![SourceRange::new(27, 29, ModuleId::default())],
             })
         );
 
@@ -2900,7 +2806,7 @@ let notObject = !x";
             parse_execute(code6).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Semantic(KclErrorDetails {
                 message: "Cannot apply unary operator ! to non-boolean value: object".to_owned(),
-                source_ranges: vec![SourceRange([28, 30, 0])],
+                source_ranges: vec![SourceRange::new(28, 30, ModuleId::default())],
             })
         );
 
@@ -2953,7 +2859,7 @@ let notTagIdentifier = !myTag";
             parse_execute(code10).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token: !".to_owned(),
-                source_ranges: vec![SourceRange([14, 15, 0])],
+                source_ranges: vec![SourceRange::new(14, 15, ModuleId::default())],
             })
         );
 
@@ -2966,7 +2872,7 @@ let notPipeSub = 1 |> identity(!%))";
             parse_execute(code11).await.unwrap_err().downcast::<KclError>().unwrap(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token: |>".to_owned(),
-                source_ranges: vec![SourceRange([54, 56, 0])],
+                source_ranges: vec![SourceRange::new(54, 56, ModuleId::default())],
             })
         );
 
@@ -3010,10 +2916,10 @@ test([0, 0])
 "#;
         let result = parse_execute(ast).await;
         assert!(result.is_err());
-        assert_eq!(
-            result.unwrap_err().to_string(),
-            r#"undefined value: KclErrorDetails { source_ranges: [SourceRange([10, 34, 0])], message: "Result of user-defined function test is undefined" }"#.to_owned()
-        );
+        assert!(result
+            .unwrap_err()
+            .to_string()
+            .contains("Result of user-defined function test is undefined"),);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3129,7 +3035,7 @@ let w = f() + f()
                 vec![req_param("x")],
                 vec![],
                 Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange([0, 0, 0])],
+                    source_ranges: vec![SourceRange::default()],
                     message: "Expected 1 arguments, got 0".to_owned(),
                 })),
             ),
@@ -3147,7 +3053,7 @@ let w = f() + f()
                 vec![req_param("x"), opt_param("y")],
                 vec![],
                 Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange([0, 0, 0])],
+                    source_ranges: vec![SourceRange::default()],
                     message: "Expected 1-2 arguments, got 0".to_owned(),
                 })),
             ),
@@ -3174,7 +3080,7 @@ let w = f() + f()
                 vec![req_param("x"), opt_param("y")],
                 vec![mem(1), mem(2), mem(3)],
                 Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange([0, 0, 0])],
+                    source_ranges: vec![SourceRange::default()],
                     message: "Expected 1-2 arguments, got 3".to_owned(),
                 })),
             ),

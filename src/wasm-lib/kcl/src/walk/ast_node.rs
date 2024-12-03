@@ -1,6 +1,6 @@
 use crate::{
     ast::types::{self, NodeRef},
-    executor::SourceRange,
+    source_range::SourceRange,
 };
 
 /// The "Node" type wraps all the AST elements we're able to find in a KCL
@@ -65,9 +65,9 @@ impl From<&Node<'_>> for SourceRange {
             Node::UnaryExpression(n) => SourceRange::from(*n),
             Node::Parameter(p) => SourceRange::from(&p.identifier),
             Node::ObjectProperty(n) => SourceRange::from(*n),
-            Node::MemberObject(m) => SourceRange([m.start(), m.end(), m.module_id().as_usize()]),
+            Node::MemberObject(m) => SourceRange::new(m.start(), m.end(), m.module_id()),
             Node::IfExpression(n) => SourceRange::from(*n),
-            Node::LiteralIdentifier(l) => SourceRange([l.start(), l.end(), l.module_id().as_usize()]),
+            Node::LiteralIdentifier(l) => SourceRange::new(l.start(), l.end(), l.module_id()),
         }
     }
 }

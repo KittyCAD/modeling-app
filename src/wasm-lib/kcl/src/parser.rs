@@ -1,9 +1,9 @@
 use parser_impl::ParseContext;
 
 use crate::{
-    ast::types::{ModuleId, Node, Program},
+    ast::types::{Node, Program},
     errors::{KclError, KclErrorDetails},
-    executor::SourceRange,
+    source_range::{ModuleId, SourceRange},
     token::{Token, TokenType},
 };
 

@@ -27,8 +27,9 @@ pub use crate::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, ExecutorContext, KclValue, Metadata, SourceRange, TagIdentifier},
+    executor::{ExecState, ExecutorContext, KclValue, Metadata, TagIdentifier},
     parser::PIPE_OPERATOR,
+    source_range::{ModuleId, SourceRange},
     std::kcl_stdlib::KclStdLibFn,
 };
 
@@ -62,7 +63,7 @@ pub struct Node<T> {
 impl<T> Node<T> {
     pub fn metadata(&self) -> Metadata {
         Metadata {
-            source_range: SourceRange([self.start, self.end, self.module_id.0 as usize]),
+            source_range: SourceRange::new(self.start, self.end, self.module_id),
         }
     }
 
@@ -122,7 +123,7 @@ impl<T> Node<T> {
     }
 
     pub fn as_source_range(&self) -> SourceRange {
-        SourceRange([self.start, self.end, self.module_id.as_usize()])
+        SourceRange::new(self.start, self.end, self.module_id)
     }
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
@@ -150,21 +151,21 @@ impl<T: fmt::Display> fmt::Display for Node<T> {
     }
 }
 
-impl<T> From<Node<T>> for crate::executor::SourceRange {
+impl<T> From<Node<T>> for SourceRange {
     fn from(v: Node<T>) -> Self {
-        Self([v.start, v.end, v.module_id.as_usize()])
+        Self::new(v.start, v.end, v.module_id)
     }
 }
 
-impl<T> From<&Node<T>> for crate::executor::SourceRange {
+impl<T> From<&Node<T>> for SourceRange {
     fn from(v: &Node<T>) -> Self {
-        Self([v.start, v.end, v.module_id.as_usize()])
+        Self::new(v.start, v.end, v.module_id)
     }
 }
 
-impl<T> From<&BoxNode<T>> for crate::executor::SourceRange {
+impl<T> From<&BoxNode<T>> for SourceRange {
     fn from(v: &BoxNode<T>) -> Self {
-        Self([v.start, v.end, v.module_id.as_usize()])
+        Self::new(v.start, v.end, v.module_id)
     }
 }
 
@@ -553,29 +554,6 @@ impl Shebang {
     }
 }
 
-/// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[databake(path = kcl_lib::ast::types)]
-#[ts(export)]
-pub struct ModuleId(pub u32);
-
-impl ModuleId {
-    pub fn from_usize(id: usize) -> Self {
-        Self(u32::try_from(id).expect("module ID should fit in a u32"))
-    }
-
-    pub fn as_usize(&self) -> usize {
-        usize::try_from(self.0).expect("module ID should fit in a usize")
-    }
-
-    /// Top-level file is the one being executed.
-    /// Represented by module ID of 0, i.e. the default value.
-    pub fn is_top_level(&self) -> bool {
-        *self == Self::default()
-    }
-}
-
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
@@ -609,13 +587,13 @@ impl BodyItem {
 
 impl From<BodyItem> for SourceRange {
     fn from(item: BodyItem) -> Self {
-        Self([item.start(), item.end(), item.module_id().as_usize()])
+        Self::new(item.start(), item.end(), item.module_id())
     }
 }
 
 impl From<&BodyItem> for SourceRange {
     fn from(item: &BodyItem) -> Self {
-        Self([item.start(), item.end(), item.module_id().as_usize()])
+        Self::new(item.start(), item.end(), item.module_id())
     }
 }
 
@@ -837,13 +815,13 @@ impl Expr {
 
 impl From<Expr> for SourceRange {
     fn from(value: Expr) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
@@ -864,13 +842,13 @@ pub enum BinaryPart {
 
 impl From<BinaryPart> for SourceRange {
     fn from(value: BinaryPart) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
 impl From<&BinaryPart> for SourceRange {
     fn from(value: &BinaryPart) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
@@ -2329,13 +2307,13 @@ impl MemberObject {
 
 impl From<MemberObject> for SourceRange {
     fn from(obj: MemberObject) -> Self {
-        Self([obj.start(), obj.end(), obj.module_id().as_usize()])
+        Self::new(obj.start(), obj.end(), obj.module_id())
     }
 }
 
 impl From<&MemberObject> for SourceRange {
     fn from(obj: &MemberObject) -> Self {
-        Self([obj.start(), obj.end(), obj.module_id().as_usize()])
+        Self::new(obj.start(), obj.end(), obj.module_id())
     }
 }
 
@@ -2366,13 +2344,13 @@ impl LiteralIdentifier {
 
 impl From<LiteralIdentifier> for SourceRange {
     fn from(id: LiteralIdentifier) -> Self {
-        Self([id.start(), id.end(), id.module_id().as_usize()])
+        Self::new(id.start(), id.end(), id.module_id())
     }
 }
 
 impl From<&LiteralIdentifier> for SourceRange {
     fn from(id: &LiteralIdentifier) -> Self {
-        Self([id.start(), id.end(), id.module_id().as_usize()])
+        Self::new(id.start(), id.end(), id.module_id())
     }
 }
 

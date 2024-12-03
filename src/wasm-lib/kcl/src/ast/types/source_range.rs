@@ -1,4 +1,5 @@
-use super::{BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberObject, ModuleId};
+use super::{BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberObject};
+use crate::source_range::ModuleId;
 
 impl BodyItem {
     pub fn module_id(&self) -> ModuleId {
