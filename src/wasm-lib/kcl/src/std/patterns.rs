@@ -16,17 +16,15 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use super::args::Arg;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{
-        ExecState, Geometries, Geometry, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid, SolidSet, SourceRange,
-    },
+    executor::{ExecState, Geometries, Geometry, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid, SolidSet},
     function_param::FunctionParam,
     kcl_value::KclObjectFields,
     std::Args,
+    SourceRange,
 };
-
-use super::args::Arg;
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 

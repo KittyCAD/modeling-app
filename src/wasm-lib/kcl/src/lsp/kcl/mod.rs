@@ -41,11 +41,11 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Expr, ModuleId, Node, VariableKind},
+    ast::types::{Expr, Node, VariableKind},
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parser::PIPE_OPERATOR,
     token::TokenType,
-    ExecState, Program, SourceRange,
+    ExecState, ModuleId, Program, SourceRange,
 };
 
 lazy_static::lazy_static! {

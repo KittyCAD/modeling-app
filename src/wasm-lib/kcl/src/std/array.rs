@@ -6,8 +6,9 @@ use super::{
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, SourceRange},
+    executor::{ExecState, KclValue},
     function_param::FunctionParam,
+    source_range::SourceRange,
 };
 
 /// Apply a function to each element of an array.

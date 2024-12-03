@@ -16,7 +16,7 @@ async-recursion = "1.1.1"
 async-trait = "0.1.83"
 base64 = "0.22.1"
 chrono = "0.4.38"
-clap = { version = "4.5.20", default-features = false, optional = true, features = ["std", "derive"] }
+clap = { version = "4.5.21", default-features = false, optional = true, features = ["std", "derive"] }
 convert_case = "0.6.0"
 dashmap = "6.1.0"
 databake = { version = "0.1.8", features = ["derive"] }
