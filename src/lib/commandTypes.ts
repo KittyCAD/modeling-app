@@ -151,6 +151,12 @@ export type CommandArgumentConfig<
   | {
       inputType: 'kcl'
       createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
       defaultValue?:
         | string
         | ((
@@ -234,6 +240,12 @@ export type CommandArgument<
   | {
       inputType: 'kcl'
       createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
       defaultValue?:
         | string
         | ((

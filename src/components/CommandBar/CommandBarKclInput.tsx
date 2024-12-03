@@ -49,6 +49,24 @@ function CommandBarKclInput({
         : '',
     [arg.defaultValue, commandBarState.context, argMachineContext]
   )
+  const initialVariableName = useMemo(() => {
+    // Use the configured variable name if it exists
+    if (arg.variableName !== undefined) {
+      return arg.variableName instanceof Function
+        ? arg.variableName(commandBarState.context, argMachineContext)
+        : arg.variableName
+    }
+    // or derive it from the previously set value or the argument name
+    return previouslySetValue && 'variableName' in previouslySetValue
+      ? previouslySetValue.variableName
+      : arg.name
+  }, [
+    arg.variableName,
+    commandBarState.context,
+    argMachineContext,
+    arg.name,
+    previouslySetValue,
+  ])
   const [value, setValue] = useState(
     previouslySetValue?.valueText || defaultValue || ''
   )
@@ -71,10 +89,7 @@ function CommandBarKclInput({
     isNewVariableNameUnique,
   } = useCalculateKclExpression({
     value,
-    initialVariableName:
-      previouslySetValue && 'variableName' in previouslySetValue
-        ? previouslySetValue.variableName
-        : arg.name,
+    initialVariableName,
   })
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
