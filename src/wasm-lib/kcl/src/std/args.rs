@@ -4,18 +4,19 @@ use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
+use super::shapes::PolygonType;
 use crate::{
     ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
-        SolidSet, SourceRange, TagIdentifier,
+        SolidSet, TagIdentifier,
     },
     kcl_value::KclObjectFields,
+    source_range::SourceRange,
     std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
+    ModuleId,
 };
-
-use super::shapes::PolygonType;
 
 #[derive(Debug, Clone)]
 pub struct Arg {
@@ -1221,7 +1222,6 @@ impl<'a> FromKclValue<'a> for crate::executor::GeoMeta {
         let obj = arg.as_object()?;
         let_field_of!(obj, id);
         let_field_of!(obj, source_range "sourceRange");
-        let source_range = SourceRange(source_range);
         Some(Self {
             id,
             metadata: Metadata { source_range },
@@ -1314,9 +1314,22 @@ impl_from_kcl_for_vec!(super::fillet::EdgeReference);
 impl_from_kcl_for_vec!(ExtrudeSurface);
 impl_from_kcl_for_vec!(Sketch);
 
-impl<'a> FromKclValue<'a> for crate::executor::SourceRange {
+impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        FromKclValue::from_kcl_val(arg).map(crate::executor::SourceRange)
+        let KclValue::Array { value, meta: _ } = arg else {
+            return None;
+        };
+        if value.len() != 3 {
+            return None;
+        }
+        let v0 = value.first()?;
+        let v1 = value.get(1)?;
+        let v2 = value.get(2)?;
+        Some(SourceRange::new(
+            v0.as_usize()?,
+            v1.as_usize()?,
+            ModuleId::from_usize(v2.as_usize()?),
+        ))
     }
 }
 

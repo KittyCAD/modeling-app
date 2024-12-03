@@ -1,7 +1,8 @@
 #![allow(dead_code)]
+use std::env;
+
 #[cfg(feature = "dhat-heap")]
 use dhat::{HeapStats, Profiler};
-use std::env;
 use web_time::Instant;
 
 const LOG_ENV_VAR: &str = "ZOO_LOG";

@@ -20,12 +20,12 @@ use crate::{
     },
     docs::StdLibFn,
     errors::{KclError, KclErrorDetails},
-    executor::SourceRange,
     parser::{
         math::BinaryExpressionToken, parser_impl::error::ContextError, PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
     token::{Token, TokenType},
     unparser::ExprContext,
+    SourceRange,
 };
 
 pub(crate) mod error;
@@ -1605,7 +1605,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             let ctxt_end = val.as_ref().map(|e| e.end()).unwrap_or(t.end);
             ParseContext::warn(ParseError::with_suggestion(
                 t.as_source_range(),
-                Some(SourceRange([id.start, ctxt_end, module_id.as_usize()])),
+                Some(SourceRange::new(id.start, ctxt_end, module_id)),
                 "Unnecessary `=` in function declaration",
                 Some(""),
             ));
@@ -1622,7 +1622,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                 // Check the 'if' direction:
                 if matches!(val, Expr::FunctionExpression(_)) {
                     return Err(KclError::Syntax(KclErrorDetails {
-                        source_ranges: vec![SourceRange([start, dec_end, module_id.as_usize()])],
+                        source_ranges: vec![SourceRange::new(start, dec_end, module_id)],
                         message: format!("Expected a `fn` variable kind, found: `{}`", kind),
                     }));
                 }
@@ -2287,7 +2287,10 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::ast::types::{BodyItem, Expr, ModuleId, VariableKind};
+    use crate::{
+        ast::types::{BodyItem, Expr, VariableKind},
+        ModuleId,
+    };
 
     fn assert_reserved(word: &str) {
         // Try to use it as a variable name.
@@ -2345,7 +2348,10 @@ mod tests {
         let tokens = crate::token::lexer("|", ModuleId::default()).unwrap();
         let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
         let err = err.unwrap_parse_error();
-        assert_eq!(vec![err.source_range], vec![SourceRange([0, 1, 0])]);
+        assert_eq!(
+            vec![err.source_range],
+            vec![SourceRange::new(0, 1, ModuleId::default())]
+        );
         assert_eq!(err.message, "Unexpected token: |");
     }
 
@@ -2969,7 +2975,10 @@ const mySk1 = startSketchAt([0, 0])"#;
         let err = function_decl.parse(&tokens).unwrap_err().into_inner();
         let cause = err.cause.unwrap();
         // This is the token `let`
-        assert_eq!(cause.source_ranges(), vec![SourceRange([1, 4, 2])]);
+        assert_eq!(
+            cause.source_ranges(),
+            vec![SourceRange::new(1, 4, ModuleId::from_usize(2))]
+        );
         assert_eq!(cause.message(), "Cannot assign a variable to a reserved keyword: let");
     }
 
@@ -3289,7 +3298,8 @@ const mySk1 = startSketchAt([0, 0])"#;
         let result = crate::parser::top_level_parse(p);
         let err = &result.unwrap_errs()[0];
         assert_eq!(err.message, msg);
-        assert_eq!(&err.source_range.0[..2], &src);
+        assert_eq!(err.source_range.start(), src[0]);
+        assert_eq!(err.source_range.end(), src[1]);
     }
 
     #[track_caller]
@@ -3412,7 +3422,8 @@ const secondExtrude = startSketchOn('XY')
         // TODO: Better errors when program cannot tokenize.
         // https://github.com/KittyCAD/modeling-app/issues/696
         assert_eq!(details.message, "found unknown token 'ޜ'");
-        assert_eq!(&details.source_ranges[0].0[..2], &[1, 2]);
+        assert_eq!(details.source_ranges[0].start(), 1);
+        assert_eq!(details.source_ranges[0].end(), 2);
     }
 
     #[test]
@@ -3889,6 +3900,7 @@ int(42.3)"#;
 #[cfg(test)]
 mod snapshot_math_tests {
     use super::*;
+    use crate::ModuleId;
 
     // This macro generates a test function with the given function name.
     // The macro takes a KCL program, ensures it tokenizes and parses, then compares
@@ -3897,7 +3909,7 @@ mod snapshot_math_tests {
         ($func_name:ident, $test_kcl_program:expr) => {
             #[test]
             fn $func_name() {
-                let module_id = crate::ast::types::ModuleId::default();
+                let module_id = ModuleId::default();
                 let tokens = crate::token::lexer($test_kcl_program, module_id).unwrap();
                 ParseContext::init();
 
@@ -3927,6 +3939,7 @@ mod snapshot_math_tests {
 #[cfg(test)]
 mod snapshot_tests {
     use super::*;
+    use crate::ModuleId;
 
     // This macro generates a test function with the given function name.
     // The macro takes a KCL program, ensures it tokenizes and parses, then compares
@@ -3935,7 +3948,7 @@ mod snapshot_tests {
         ($func_name:ident, $test_kcl_program:expr) => {
             #[test]
             fn $func_name() {
-                let module_id = crate::ast::types::ModuleId::default();
+                let module_id = ModuleId::default();
                 let tokens = crate::token::lexer($test_kcl_program, module_id).unwrap();
                 print_tokens(&tokens);
                 ParseContext::init();

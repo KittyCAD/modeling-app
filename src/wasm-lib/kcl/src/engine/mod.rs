@@ -33,6 +33,7 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{DefaultPlanes, IdGenerator, Point3d},
+    SourceRange,
 };
 
 lazy_static::lazy_static! {
@@ -61,10 +62,10 @@ impl ExecutionKind {
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>;
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>;
 
     /// Get the batch of end commands to be sent to the engine.
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>;
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
 
     /// Get the current execution kind.
     fn execution_kind(&self) -> ExecutionKind;
@@ -77,7 +78,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn default_planes(
         &self,
         id_generator: &mut IdGenerator,
-        _source_range: crate::executor::SourceRange,
+        _source_range: SourceRange,
     ) -> Result<DefaultPlanes, crate::errors::KclError>;
 
     /// Helpers to be called after clearing a scene.
@@ -85,22 +86,22 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn clear_scene_post_hook(
         &self,
         id_generator: &mut IdGenerator,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<(), crate::errors::KclError>;
 
     /// Send a modeling command and wait for the response message.
     async fn inner_send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
         cmd: WebSocketRequest,
-        id_to_source_range: HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<kcmc::websocket::WebSocketResponse, crate::errors::KclError>;
 
     async fn clear_scene(
         &self,
         id_generator: &mut IdGenerator,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<(), crate::errors::KclError> {
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
@@ -123,7 +124,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn batch_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         let execution_kind = self.execution_kind();
@@ -147,7 +148,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn batch_end_cmd(
         &self,
         id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
@@ -166,7 +167,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
         cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         self.batch_modeling_cmd(id, source_range, &cmd).await?;
@@ -181,7 +182,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Whether or not to flush the end commands as well.
         // We only do this at the very end of the file.
         batch_end: bool,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         let all_requests = if batch_end {
             let mut requests = self.batch().lock().unwrap().clone();
@@ -303,7 +304,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         x_axis: Point3d,
         y_axis: Point3d,
         color: Option<Color>,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<uuid::Uuid, KclError> {
         // Create new default planes.
         let default_size = 100.0;
@@ -339,7 +340,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn new_default_planes(
         &self,
         id_generator: &mut IdGenerator,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
         let plane_settings: HashMap<PlaneName, (Uuid, Point3d, Point3d, Option<Color>)> = HashMap::from([
             (
@@ -450,7 +451,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn parse_websocket_response(
         &self,
         response: WebSocketResponse,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         match response {
             WebSocketResponse::Success(success) => Ok(success.resp),
@@ -469,7 +470,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // The last response we are looking for.
         id: uuid::Uuid,
         // The mapping of source ranges to command IDs.
-        id_to_source_range: HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        id_to_source_range: HashMap<uuid::Uuid, SourceRange>,
         // The response from the engine.
         responses: HashMap<uuid::Uuid, BatchResponse>,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {

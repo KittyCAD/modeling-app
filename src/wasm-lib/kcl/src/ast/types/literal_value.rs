@@ -3,9 +3,8 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
 
-use crate::ast::types::{Expr, Literal};
-
 use super::Node;
+use crate::ast::types::{Expr, Literal};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]

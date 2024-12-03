@@ -11,7 +11,7 @@ use winnow::{
 };
 
 use crate::{
-    ast::types::ModuleId,
+    source_range::ModuleId,
     token::{Token, TokenType},
 };
 
