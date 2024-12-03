@@ -541,7 +541,6 @@ impl Program {
 /// #!/usr/bin/env python
 /// ```
 #[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 pub struct Shebang {
@@ -2936,7 +2935,6 @@ pub enum Hover {
 
 /// Format options.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FormatOptions {

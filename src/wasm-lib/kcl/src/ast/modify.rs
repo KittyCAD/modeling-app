@@ -6,11 +6,10 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 
-use super::types::Node;
 use crate::{
     ast::types::{
-        ArrayExpression, CallExpression, ConstraintLevel, FormatOptions, Literal, PipeExpression, PipeSubstitution,
-        VariableDeclarator,
+        ArrayExpression, CallExpression, ConstraintLevel, FormatOptions, Literal, Node, PipeExpression,
+        PipeSubstitution, VariableDeclarator,
     },
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},

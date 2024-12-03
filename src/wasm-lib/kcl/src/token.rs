@@ -22,7 +22,6 @@ pub(crate) use tokeniser::RESERVED_WORDS;
 
 /// The types of tokens.
 #[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, JsonSchema, FromStr, Display)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
 #[serde(rename_all = "camelCase")]
 #[display(style = "camelCase")]
 pub enum TokenType {
@@ -159,7 +158,6 @@ impl TokenType {
 }
 
 #[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 pub struct Token {
     #[serde(rename = "type")]
     pub token_type: TokenType,
