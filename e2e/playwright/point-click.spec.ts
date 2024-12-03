@@ -678,63 +678,93 @@ test(`Offset plane point-and-click`, async ({
   })
 })
 
-test(`Loft point-and-click`, async ({
-  app,
-  page,
-  scene,
-  editor,
-  toolbar,
-  cmdBar,
-}) => {
-  const initialCode = `sketch001 = startSketchOn('XZ')
+const loftPointAndClickCases = [
+  { shouldPreselect: true },
+  { shouldPreselect: false },
+]
+loftPointAndClickCases.forEach(({ shouldPreselect }) => {
+  test(`Loft point-and-click (preselected sketches: ${shouldPreselect})`, async ({
+    app,
+    page,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 30 }, %)
 plane001 = offsetPlane('XZ', 50)
 sketch002 = startSketchOn(plane001)
   |> circle({ center = [0, 0], radius = 20 }, %)
 `
-  await app.initialise(initialCode)
+    await app.initialise(initialCode)
 
-  // One dumb hardcoded screen pixel value
-  const testPoint = { x: 575, y: 200 }
-  const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-  const [clickOnSketch2] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 80)
-  const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 575, y: 200 }
+    const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const [clickOnSketch2] = scene.makeMouseHelpers(
+      testPoint.x,
+      testPoint.y + 80
+    )
+    const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
 
-  await test.step(`Look for the white of the sketch001 shape`, async () => {
-    await scene.expectPixelColor([254, 254, 254], testPoint, 15)
-  })
-
-  await test.step(`Go through the command bar flow`, async () => {
-    await toolbar.loftButton.click()
-    await cmdBar.expectState({
-      stage: 'arguments',
-      currentArgKey: 'selection',
-      currentArgValue: '',
-      headerArguments: { Selection: '' },
-      highlightedHeaderArg: 'selection',
-      commandName: 'Loft',
+    await test.step(`Look for the white of the sketch001 shape`, async () => {
+      await scene.expectPixelColor([254, 254, 254], testPoint, 15)
     })
-    await clickOnSketch1()
-    await page.keyboard.down('Shift')
-    await clickOnSketch2()
-    await app.page.waitForTimeout(500)
-    await page.keyboard.up('Shift')
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      stage: 'review',
-      headerArguments: { Selection: '2 faces' },
-      commandName: 'Loft',
-    })
-    await cmdBar.progressCmdBar()
-  })
 
-  await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-    await editor.expectEditor.toContain(loftDeclaration)
-    await editor.expectState({
-      diagnostics: [],
-      activeLines: [loftDeclaration],
-      highlightedCode: '',
+    async function selectSketches() {
+      await clickOnSketch1()
+      await page.keyboard.down('Shift')
+      await clickOnSketch2()
+      await app.page.waitForTimeout(500)
+      await page.keyboard.up('Shift')
+    }
+
+    if (!shouldPreselect) {
+      await test.step(`Go through the command bar flow without preselected sketches`, async () => {
+        await toolbar.loftButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: { Selection: '' },
+          highlightedHeaderArg: 'selection',
+          commandName: 'Loft',
+        })
+        await selectSketches()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Selection: '2 faces' },
+          commandName: 'Loft',
+        })
+        await cmdBar.progressCmdBar()
+      })
+    } else {
+      await test.step(`Preselect the two sketches`, async () => {
+        await selectSketches()
+      })
+
+      await test.step(`Go through the command bar flow with preselected sketches`, async () => {
+        await toolbar.loftButton.click()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Selection: '2 faces' },
+          commandName: 'Loft',
+        })
+        await cmdBar.progressCmdBar()
+      })
+    }
+
+    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+      await editor.expectEditor.toContain(loftDeclaration)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [loftDeclaration],
+        highlightedCode: '',
+      })
+      await scene.expectPixelColor([109, 109, 109], testPoint, 15)
     })
-    await scene.expectPixelColor([109, 109, 109], testPoint, 15)
   })
 })
