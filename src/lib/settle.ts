@@ -1,3 +1,5 @@
+import { debounce } from './utils'
+
 /**
  * A registry for tracking background work and reacting once all work has
  * settled.
@@ -6,17 +8,23 @@ export class PromiseRegistry {
   outstanding: Array<TrackedPromise<unknown>>
   settleCallbacks: Array<() => void>
 
+  /**
+   * This reduces overhead when there are many promises all settling around the
+   * same time by trading some latency for when the overall settling is
+   * detected.
+   */
+  private debouncedCleanUp: () => void
+
   constructor() {
     this.outstanding = []
     this.settleCallbacks = []
+    this.debouncedCleanUp = debounce(this.attemptCleanUp.bind(this), 10)
   }
 
   track<T>(promise: Promise<T>, onSettle?: () => void) {
     // Since built-in Promises don't have a way to synchronously check if
     // they're settled, it cannot start out settled.
-    this.outstanding.push(
-      new TrackedPromise(promise, this.attemptCleanUp.bind(this))
-    )
+    this.outstanding.push(new TrackedPromise(promise, this.debouncedCleanUp))
     if (onSettle) {
       this.settleCallbacks.push(onSettle)
     }
@@ -78,8 +86,7 @@ class TrackedPromise<T> {
     this.settled = false
     this.inner = promise.finally(() => {
       this.settled = true
-      // TODO: debounce?
-      setTimeout(onSettle, 0)
+      onSettle()
     })
   }
 }
