@@ -12,7 +12,7 @@ to other modules.
 
 ```
 // util.kcl
-export fn increment = (x) => {
+export fn increment(x) {
   return x + 1
 }
 ```
@@ -37,11 +37,11 @@ Multiple functions can be exported in a file.
 
 ```
 // util.kcl
-export fn increment = (x) => {
+export fn increment(x) {
   return x + 1
 }
 
-export fn decrement = (x) => {
+export fn decrement(x) {
   return x - 1
 }
 ```
