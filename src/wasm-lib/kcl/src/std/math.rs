@@ -30,6 +30,8 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "rem",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
 }]
 fn inner_rem(num: i64, divisor: i64) -> Result<i64, KclError> {
     Ok(num % divisor)
