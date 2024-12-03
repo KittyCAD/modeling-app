@@ -391,71 +391,7 @@ impl Node<CallExpressionKw> {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
-
-                // If the return result is a sketch or solid, we want to update the
-                // memory for the tags of the group.
-                // TODO: This could probably be done in a better way, but as of now this was my only idea
-                // and it works.
-                match result {
-                    KclValue::Sketch { value: ref mut sketch } => {
-                        for (_, tag) in sketch.tags.iter() {
-                            exec_state.memory.update_tag(&tag.value, tag.clone())?;
-                        }
-                    }
-                    KclValue::Solid(ref mut solid) => {
-                        for value in &solid.value {
-                            if let Some(tag) = value.get_tag() {
-                                // Get the past tag and update it.
-                                let mut t = if let Some(t) = solid.sketch.tags.get(&tag.name) {
-                                    t.clone()
-                                } else {
-                                    // It's probably a fillet or a chamfer.
-                                    // Initialize it.
-                                    TagIdentifier {
-                                        value: tag.name.clone(),
-                                        info: Some(TagEngineInfo {
-                                            id: value.get_id(),
-                                            surface: Some(value.clone()),
-                                            path: None,
-                                            sketch: solid.id,
-                                        }),
-                                        meta: vec![Metadata {
-                                            source_range: tag.clone().into(),
-                                        }],
-                                    }
-                                };
-
-                                let Some(ref info) = t.info else {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: format!("Tag {} does not have path info", tag.name),
-                                        source_ranges: vec![tag.into()],
-                                    }));
-                                };
-
-                                let mut info = info.clone();
-                                info.surface = Some(value.clone());
-                                info.sketch = solid.id;
-                                t.info = Some(info);
-
-                                exec_state.memory.update_tag(&tag.name, t.clone())?;
-
-                                // update the sketch tags.
-                                solid.sketch.tags.insert(tag.name.clone(), t);
-                            }
-                        }
-
-                        // Find the stale sketch in memory and update it.
-                        if let Some(current_env) = exec_state
-                            .memory
-                            .environments
-                            .get_mut(exec_state.memory.current_env.index())
-                        {
-                            current_env.update_sketch_tags(&solid.sketch);
-                        }
-                    }
-                    _ => {}
-                }
-
+                tag_2d_to_3d(&mut result, exec_state)?;
                 Ok(result)
             }
             _ => todo!(),
@@ -486,71 +422,7 @@ impl Node<CallExpression> {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
-
-                // If the return result is a sketch or solid, we want to update the
-                // memory for the tags of the group.
-                // TODO: This could probably be done in a better way, but as of now this was my only idea
-                // and it works.
-                match result {
-                    KclValue::Sketch { value: ref mut sketch } => {
-                        for (_, tag) in sketch.tags.iter() {
-                            exec_state.memory.update_tag(&tag.value, tag.clone())?;
-                        }
-                    }
-                    KclValue::Solid(ref mut solid) => {
-                        for value in &solid.value {
-                            if let Some(tag) = value.get_tag() {
-                                // Get the past tag and update it.
-                                let mut t = if let Some(t) = solid.sketch.tags.get(&tag.name) {
-                                    t.clone()
-                                } else {
-                                    // It's probably a fillet or a chamfer.
-                                    // Initialize it.
-                                    TagIdentifier {
-                                        value: tag.name.clone(),
-                                        info: Some(TagEngineInfo {
-                                            id: value.get_id(),
-                                            surface: Some(value.clone()),
-                                            path: None,
-                                            sketch: solid.id,
-                                        }),
-                                        meta: vec![Metadata {
-                                            source_range: tag.clone().into(),
-                                        }],
-                                    }
-                                };
-
-                                let Some(ref info) = t.info else {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: format!("Tag {} does not have path info", tag.name),
-                                        source_ranges: vec![tag.into()],
-                                    }));
-                                };
-
-                                let mut info = info.clone();
-                                info.surface = Some(value.clone());
-                                info.sketch = solid.id;
-                                t.info = Some(info);
-
-                                exec_state.memory.update_tag(&tag.name, t.clone())?;
-
-                                // update the sketch tags.
-                                solid.sketch.tags.insert(tag.name.clone(), t);
-                            }
-                        }
-
-                        // Find the stale sketch in memory and update it.
-                        if let Some(current_env) = exec_state
-                            .memory
-                            .environments
-                            .get_mut(exec_state.memory.current_env.index())
-                        {
-                            current_env.update_sketch_tags(&solid.sketch);
-                        }
-                    }
-                    _ => {}
-                }
-
+                tag_2d_to_3d(&mut result, exec_state)?;
                 Ok(result)
             }
             FunctionKind::Std(func) => {
@@ -668,6 +540,73 @@ impl Node<CallExpression> {
             }
         }
     }
+}
+
+fn tag_2d_to_3d(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
+    // If the return result is a sketch or solid, we want to update the
+    // memory for the tags of the group.
+    // TODO: This could probably be done in a better way, but as of now this was my only idea
+    // and it works.
+    match result {
+        KclValue::Sketch { value: ref mut sketch } => {
+            for (_, tag) in sketch.tags.iter() {
+                exec_state.memory.update_tag(&tag.value, tag.clone())?;
+            }
+        }
+        KclValue::Solid(ref mut solid) => {
+            for value in &solid.value {
+                if let Some(tag) = value.get_tag() {
+                    // Get the past tag and update it.
+                    let mut t = if let Some(t) = solid.sketch.tags.get(&tag.name) {
+                        t.clone()
+                    } else {
+                        // It's probably a fillet or a chamfer.
+                        // Initialize it.
+                        TagIdentifier {
+                            value: tag.name.clone(),
+                            info: Some(TagEngineInfo {
+                                id: value.get_id(),
+                                surface: Some(value.clone()),
+                                path: None,
+                                sketch: solid.id,
+                            }),
+                            meta: vec![Metadata {
+                                source_range: tag.clone().into(),
+                            }],
+                        }
+                    };
+
+                    let Some(ref info) = t.info else {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: format!("Tag {} does not have path info", tag.name),
+                            source_ranges: vec![tag.into()],
+                        }));
+                    };
+
+                    let mut info = info.clone();
+                    info.surface = Some(value.clone());
+                    info.sketch = solid.id;
+                    t.info = Some(info);
+
+                    exec_state.memory.update_tag(&tag.name, t.clone())?;
+
+                    // update the sketch tags.
+                    solid.sketch.tags.insert(tag.name.clone(), t);
+                }
+            }
+
+            // Find the stale sketch in memory and update it.
+            if let Some(current_env) = exec_state
+                .memory
+                .environments
+                .get_mut(exec_state.memory.current_env.index())
+            {
+                current_env.update_sketch_tags(&solid.sketch);
+            }
+        }
+        _ => {}
+    }
+    Ok(())
 }
 
 impl Node<TagDeclarator> {
