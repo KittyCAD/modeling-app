@@ -962,12 +962,15 @@ const onlyConsecutivePaths = (
       safePaths.push(path)
     }
   })
-  nodePaths.slice(0, originalIndex + 1).forEach((path) => {
-    const lastPath = safePaths[0]
-    if (Number(path?.[1]?.[0]) === Number(lastPath?.[1]?.[0]) - 1) {
-      safePaths.unshift(path)
-    }
-  })
+  nodePaths
+    .slice(0, originalIndex + 1)
+    .reverse()
+    .forEach((path) => {
+      const lastPath = safePaths[0]
+      if (Number(path?.[1]?.[0]) === Number(lastPath?.[1]?.[0]) - 1) {
+        safePaths.unshift(path)
+      }
+    })
   return safePaths
 }
 
