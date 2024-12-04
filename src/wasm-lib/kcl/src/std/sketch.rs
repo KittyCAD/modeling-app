@@ -1,9 +1,8 @@
 //! Functions related to sketching.
 
-use std::collections::HashMap;
-
 use anyhow::Result;
 use derive_docs::stdlib;
+use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
@@ -1301,7 +1300,7 @@ pub(crate) async fn inner_start_profile_at(
                 }),
                 surface: None,
             });
-            HashMap::from([(tag.name.to_string(), tag_identifier)])
+            IndexMap::from([(tag.name.to_string(), tag_identifier)])
         } else {
             Default::default()
         },

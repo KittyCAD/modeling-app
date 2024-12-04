@@ -121,6 +121,9 @@ pretty_assertions = "1.4.1"
 tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.0"
 
+[lints]
+workspace = true
+
 [[bench]]
 name = "compiler_benchmark_criterion"
 harness = false

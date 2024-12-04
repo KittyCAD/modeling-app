@@ -463,6 +463,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         responses: HashMap<uuid::Uuid, BatchResponse>,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         // Iterate over the responses and check for errors.
+        #[expect(
+            clippy::iter_over_hash_type,
+            reason = "modeling command uses a HashMap and keys are random, so we don't really have a choice"
+        )]
         for (cmd_id, resp) in responses.iter() {
             match resp {
                 BatchResponse::Success { response } => {
