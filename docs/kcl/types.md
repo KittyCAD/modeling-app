@@ -54,7 +54,7 @@ We also have support for defining your own functions. Functions can take in any
 type of argument. Below is an example of the syntax:
 
 ```
-fn myFn = (x) => {
+fn myFn(x) {
   return x
 }
 ```
@@ -118,7 +118,7 @@ use the tag `rectangleSegmentA001` in any function or expression in the file.
 However if the code was written like this:
 
 ```
-fn rect = (origin) => {
+fn rect(origin) {
   return startSketchOn('XZ')
     |> startProfileAt(origin, %)
     |> angledLine([0, 191.26], %, $rectangleSegmentA001)
@@ -146,7 +146,7 @@ Tags are accessible through the sketch group they are declared in.
 For example the following code works.
 
 ```
-fn rect = (origin) => {
+fn rect(origin) {
   return startSketchOn('XZ')
     |> startProfileAt(origin, %)
     |> angledLine([0, 191.26], %, $rectangleSegmentA001)
