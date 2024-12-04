@@ -50,7 +50,7 @@ import {
   applyEdgeTreatmentToSelection,
   EdgeTreatmentType,
   FilletParameters,
-} from 'lang/modifyAst/addFillet'
+} from 'lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
