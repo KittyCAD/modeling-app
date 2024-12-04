@@ -1,4 +1,4 @@
-fn cube = (pos, scale) => {
+fn cube(pos, scale) {
   sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
@@ -12,5 +12,5 @@ part001 = cube([0, 0], 20)
   |> extrude(20, %)
 
 part002 = startSketchOn(part001, "end")
-  |> circle({ center: [0, 0], radius: 5 }, %, $myCircle)
+  |> circle({ center = [0, 0], radius = 5 }, %, $myCircle)
   |> extrude(5, %)

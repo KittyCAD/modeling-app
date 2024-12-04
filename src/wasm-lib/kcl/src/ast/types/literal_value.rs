@@ -3,17 +3,15 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
 
-use crate::ast::types::{Expr, Literal};
-
 use super::Node;
+use crate::ast::types::{Expr, Literal};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
 #[serde(untagged, rename_all = "snake_case")]
 pub enum LiteralValue {
-    IInteger(i64),
-    Fractional(f64),
+    Number(f64),
     String(String),
     Bool(bool),
 }
@@ -21,8 +19,7 @@ pub enum LiteralValue {
 impl LiteralValue {
     pub fn digestable_id(&self) -> Vec<u8> {
         match self {
-            LiteralValue::IInteger(i) => i.to_ne_bytes().into(),
-            LiteralValue::Fractional(frac) => frac.to_ne_bytes().into(),
+            LiteralValue::Number(frac) => frac.to_ne_bytes().into(),
             LiteralValue::String(st) => st.as_bytes().into(),
             LiteralValue::Bool(b) => {
                 if *b {
@@ -44,8 +41,7 @@ impl From<Node<Literal>> for Expr {
 impl From<LiteralValue> for JValue {
     fn from(value: LiteralValue) -> Self {
         match value {
-            LiteralValue::IInteger(x) => x.into(),
-            LiteralValue::Fractional(x) => x.into(),
+            LiteralValue::Number(x) => x.into(),
             LiteralValue::String(x) => x.into(),
             LiteralValue::Bool(b) => b.into(),
         }
@@ -54,13 +50,13 @@ impl From<LiteralValue> for JValue {
 
 impl From<f64> for LiteralValue {
     fn from(value: f64) -> Self {
-        Self::Fractional(value)
+        Self::Number(value)
     }
 }
 
 impl From<i64> for LiteralValue {
     fn from(value: i64) -> Self {
-        Self::IInteger(value)
+        Self::Number(value as f64)
     }
 }
 
@@ -72,17 +68,17 @@ impl From<String> for LiteralValue {
 
 impl From<u32> for LiteralValue {
     fn from(value: u32) -> Self {
-        Self::IInteger(value as i64)
+        Self::Number(value as f64)
     }
 }
 impl From<u16> for LiteralValue {
     fn from(value: u16) -> Self {
-        Self::IInteger(value as i64)
+        Self::Number(value as f64)
     }
 }
 impl From<u8> for LiteralValue {
     fn from(value: u8) -> Self {
-        Self::IInteger(value as i64)
+        Self::Number(value as f64)
     }
 }
 impl From<&'static str> for LiteralValue {

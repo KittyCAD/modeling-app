@@ -22,7 +22,7 @@ snapshot_kind: text
               "start": 9,
               "type": "Literal",
               "type": "Literal",
-              "value": 0
+              "value": 0.0
             },
             "start": 0,
             "type": "VariableDeclarator"
@@ -50,7 +50,7 @@ snapshot_kind: text
               "start": 20,
               "type": "Literal",
               "type": "Literal",
-              "value": 0
+              "value": 0.0
             },
             "start": 11,
             "type": "VariableDeclarator"
@@ -78,7 +78,7 @@ snapshot_kind: text
               "start": 36,
               "type": "Literal",
               "type": "Literal",
-              "value": 135
+              "value": 135.0
             },
             "start": 22,
             "type": "VariableDeclarator"
@@ -106,7 +106,7 @@ snapshot_kind: text
               "start": 44,
               "type": "Literal",
               "type": "Literal",
-              "value": 1
+              "value": 1.0
             },
             "start": 40,
             "type": "VariableDeclarator"
@@ -134,7 +134,7 @@ snapshot_kind: text
               "start": 59,
               "type": "Literal",
               "type": "Literal",
-              "value": 110
+              "value": 110.0
             },
             "start": 46,
             "type": "VariableDeclarator"
@@ -147,7 +147,7 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "end": 429,
+        "end": 456,
         "expression": {
           "body": [
             {
@@ -168,7 +168,6 @@ snapshot_kind: text
                 "type": "Identifier"
               },
               "end": 83,
-              "optional": false,
               "start": 64,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -211,7 +210,6 @@ snapshot_kind: text
                 "type": "Identifier"
               },
               "end": 124,
-              "optional": false,
               "start": 89,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -219,10 +217,10 @@ snapshot_kind: text
             {
               "arguments": [
                 {
-                  "end": 179,
+                  "end": 181,
                   "properties": [
                     {
-                      "end": 160,
+                      "end": 161,
                       "key": {
                         "end": 148,
                         "name": "angle",
@@ -232,27 +230,27 @@ snapshot_kind: text
                       "start": 143,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 160,
+                        "end": 161,
                         "name": "angleStart",
-                        "start": 150,
+                        "start": 151,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
                     {
-                      "end": 177,
+                      "end": 179,
                       "key": {
-                        "end": 168,
+                        "end": 169,
                         "name": "length",
-                        "start": 162,
+                        "start": 163,
                         "type": "Identifier"
                       },
-                      "start": 162,
+                      "start": 163,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 177,
+                        "end": 179,
                         "raw": ".000001",
-                        "start": 170,
+                        "start": 172,
                         "type": "Literal",
                         "type": "Literal",
                         "value": 0.000001
@@ -264,8 +262,8 @@ snapshot_kind: text
                   "type": "ObjectExpression"
                 },
                 {
-                  "end": 182,
-                  "start": 181,
+                  "end": 184,
+                  "start": 183,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
@@ -276,8 +274,7 @@ snapshot_kind: text
                 "start": 130,
                 "type": "Identifier"
               },
-              "end": 183,
-              "optional": false,
+              "end": 185,
               "start": 130,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -285,287 +282,283 @@ snapshot_kind: text
             {
               "arguments": [
                 {
-                  "end": 237,
+                  "end": 241,
                   "properties": [
                     {
-                      "end": 224,
+                      "end": 227,
                       "key": {
-                        "end": 211,
+                        "end": 213,
                         "name": "offset",
-                        "start": 205,
+                        "start": 207,
                         "type": "Identifier"
                       },
-                      "start": 205,
+                      "start": 207,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 224,
+                        "end": 227,
                         "name": "angleOffset",
-                        "start": 213,
+                        "start": 216,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
                     {
-                      "end": 235,
+                      "end": 239,
                       "key": {
-                        "end": 232,
+                        "end": 235,
                         "name": "radius",
-                        "start": 226,
+                        "start": 229,
                         "type": "Identifier"
                       },
-                      "start": 226,
+                      "start": 229,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 235,
+                        "end": 239,
                         "name": "r",
-                        "start": 234,
+                        "start": 238,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     }
                   ],
-                  "start": 203,
+                  "start": 205,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 },
                 {
-                  "end": 240,
-                  "start": 239,
+                  "end": 244,
+                  "start": 243,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 },
                 {
-                  "end": 247,
-                  "start": 242,
+                  "end": 251,
+                  "start": 246,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
                   "value": "arc1"
                 }
               ],
               "callee": {
-                "end": 202,
+                "end": 204,
                 "name": "tangentialArc",
-                "start": 189,
+                "start": 191,
                 "type": "Identifier"
               },
-              "end": 248,
-              "optional": false,
-              "start": 189,
+              "end": 252,
+              "start": 191,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "end": 308,
+                  "end": 333,
                   "properties": [
                     {
-                      "end": 289,
+                      "end": 301,
                       "key": {
-                        "end": 276,
+                        "end": 287,
                         "name": "offset",
-                        "start": 270,
+                        "start": 281,
                         "type": "Identifier"
                       },
-                      "start": 270,
+                      "start": 281,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 289,
+                        "end": 301,
                         "name": "angleOffset",
-                        "start": 278,
+                        "start": 290,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
                     {
-                      "end": 306,
+                      "end": 326,
                       "key": {
-                        "end": 297,
+                        "end": 316,
                         "name": "radius",
-                        "start": 291,
+                        "start": 310,
                         "type": "Identifier"
                       },
-                      "start": 291,
+                      "start": 310,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 306,
+                        "end": 326,
                         "left": {
-                          "end": 302,
+                          "end": 322,
                           "raw": "0.5",
-                          "start": 299,
+                          "start": 319,
                           "type": "Literal",
                           "type": "Literal",
                           "value": 0.5
                         },
                         "operator": "*",
                         "right": {
-                          "end": 306,
+                          "end": 326,
                           "name": "r",
-                          "start": 305,
+                          "start": 325,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 299,
+                        "start": 319,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     }
                   ],
-                  "start": 268,
+                  "start": 272,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 },
                 {
-                  "end": 311,
-                  "start": 310,
+                  "end": 336,
+                  "start": 335,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 },
                 {
-                  "end": 318,
-                  "start": 313,
+                  "end": 343,
+                  "start": 338,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
                   "value": "arc2"
                 }
               ],
               "callee": {
-                "end": 267,
+                "end": 271,
                 "name": "tangentialArc",
-                "start": 254,
+                "start": 258,
                 "type": "Identifier"
               },
-              "end": 319,
-              "optional": false,
-              "start": 254,
+              "end": 344,
+              "start": 258,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "end": 399,
+                  "end": 426,
                   "properties": [
                     {
-                      "end": 368,
+                      "end": 394,
                       "key": {
-                        "end": 354,
+                        "end": 379,
                         "name": "offset",
-                        "start": 348,
+                        "start": 373,
                         "type": "Identifier"
                       },
-                      "start": 348,
+                      "start": 373,
                       "type": "ObjectProperty",
                       "value": {
                         "argument": {
-                          "end": 368,
+                          "end": 394,
                           "name": "angleOffset",
-                          "start": 357,
+                          "start": 383,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "end": 368,
+                        "end": 394,
                         "operator": "-",
-                        "start": 356,
+                        "start": 382,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     },
                     {
-                      "end": 392,
+                      "end": 419,
                       "key": {
-                        "end": 383,
+                        "end": 409,
                         "name": "radius",
-                        "start": 377,
+                        "start": 403,
                         "type": "Identifier"
                       },
-                      "start": 377,
+                      "start": 403,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 392,
+                        "end": 419,
                         "left": {
-                          "end": 388,
+                          "end": 415,
                           "raw": "0.5",
-                          "start": 385,
+                          "start": 412,
                           "type": "Literal",
                           "type": "Literal",
                           "value": 0.5
                         },
                         "operator": "*",
                         "right": {
-                          "end": 392,
+                          "end": 419,
                           "name": "r",
-                          "start": 391,
+                          "start": 418,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 385,
+                        "start": 412,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     }
                   ],
-                  "start": 339,
+                  "start": 364,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 },
                 {
-                  "end": 402,
-                  "start": 401,
+                  "end": 429,
+                  "start": 428,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 },
                 {
-                  "end": 409,
-                  "start": 404,
+                  "end": 436,
+                  "start": 431,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
                   "value": "arc3"
                 }
               ],
               "callee": {
-                "end": 338,
+                "end": 363,
                 "name": "tangentialArc",
-                "start": 325,
+                "start": 350,
                 "type": "Identifier"
               },
-              "end": 410,
-              "optional": false,
-              "start": 325,
+              "end": 437,
+              "start": 350,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "end": 425,
+                  "end": 452,
                   "raw": "1",
-                  "start": 424,
+                  "start": 451,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1
+                  "value": 1.0
                 },
                 {
-                  "end": 428,
-                  "start": 427,
+                  "end": 455,
+                  "start": 454,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               ],
               "callee": {
-                "end": 423,
+                "end": 450,
                 "name": "xLineTo",
-                "start": 416,
+                "start": 443,
                 "type": "Identifier"
               },
-              "end": 429,
-              "optional": false,
-              "start": 416,
+              "end": 456,
+              "start": 443,
               "type": "CallExpression",
               "type": "CallExpression"
             }
           ],
-          "end": 429,
+          "end": 456,
           "start": 64,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -575,7 +568,7 @@ snapshot_kind: text
         "type": "ExpressionStatement"
       }
     ],
-    "end": 430,
+    "end": 457,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "4": [

@@ -38,7 +38,7 @@ squareSketch = startSketchOn('XY')
   |> close(%)
 
 circleSketch = startSketchOn(offsetPlane('XY', 150))
-  |> circle({ center: [0, 100], radius: 50 }, %)
+  |> circle({ center = [0, 100], radius = 50 }, %)
 
 loft([squareSketch, circleSketch])
 ```
@@ -56,7 +56,7 @@ squareSketch = startSketchOn('XZ')
   |> close(%)
 
 circleSketch = startSketchOn(offsetPlane('XZ', 150))
-  |> circle({ center: [0, 100], radius: 50 }, %)
+  |> circle({ center = [0, 100], radius = 50 }, %)
 
 loft([squareSketch, circleSketch])
 ```
@@ -74,7 +74,7 @@ squareSketch = startSketchOn('YZ')
   |> close(%)
 
 circleSketch = startSketchOn(offsetPlane('YZ', 150))
-  |> circle({ center: [0, 100], radius: 50 }, %)
+  |> circle({ center = [0, 100], radius = 50 }, %)
 
 loft([squareSketch, circleSketch])
 ```
@@ -92,7 +92,7 @@ squareSketch = startSketchOn('-XZ')
   |> close(%)
 
 circleSketch = startSketchOn(offsetPlane('-XZ', -150))
-  |> circle({ center: [0, 100], radius: 50 }, %)
+  |> circle({ center = [0, 100], radius = 50 }, %)
 
 loft([squareSketch, circleSketch])
 ```
@@ -103,7 +103,7 @@ loft([squareSketch, circleSketch])
 // A circle on the XY plane
 startSketchOn("XY")
   |> startProfileAt([0, 0], %)
-  |> circle({ radius: 10, center: [0, 0] }, %)
+  |> circle({ radius = 10, center = [0, 0] }, %)
 
 // Triangle on the plane 4 units above
 startSketchOn(offsetPlane("XY", 4))

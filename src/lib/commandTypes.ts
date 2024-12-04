@@ -96,6 +96,7 @@ export type CommandConfig<
   'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
 > & {
   needsReview?: true
+  status?: 'active' | 'development' | 'inactive'
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],

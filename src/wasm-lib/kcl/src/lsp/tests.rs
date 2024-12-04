@@ -1569,7 +1569,7 @@ insideRevolve = startSketchOn('XZ')
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
   |> close(%)
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn('XZ')
@@ -1579,18 +1579,18 @@ sphere = startSketchOn('XZ')
      ], %)
   |> line([sphereDia - 0.1, 0], %)
   |> arc({
-       angle_start: 0,
-       angle_end: -180,
-       radius: sphereDia / 2 - 0.05
+       angle_start = 0,
+       angle_end = -180,
+       radius = sphereDia / 2 - 0.05
      }, %)
   |> close(%)
-  |> revolve({ axis: 'x' }, %)
+  |> revolve({ axis = 'x' }, %)
   |> patternCircular3d({
-       axis: [0, 0, 1],
-       center: [0, 0, 0],
-       repetitions: 10,
-       arcDegrees: 360,
-       rotateDuplicates: true
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       repetitions = 10,
+       arcDegrees = 360,
+       rotateDuplicates = true
      }, %)
 
 // Sketch and revolve the outside bearing
@@ -1608,7 +1608,7 @@ outsideRevolve = startSketchOn('XZ')
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
   |> close(%)
-  |> revolve({ axis: 'y' }, %)"#
+  |> revolve({ axis = 'y' }, %)"#
     );
 }
 

@@ -27,8 +27,9 @@ pub use crate::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, ExecutorContext, KclValue, Metadata, SourceRange, TagIdentifier},
+    executor::{ExecState, ExecutorContext, KclValue, Metadata, TagIdentifier},
     parser::PIPE_OPERATOR,
+    source_range::{ModuleId, SourceRange},
     std::kcl_stdlib::KclStdLibFn,
 };
 
@@ -62,8 +63,12 @@ pub struct Node<T> {
 impl<T> Node<T> {
     pub fn metadata(&self) -> Metadata {
         Metadata {
-            source_range: SourceRange([self.start, self.end, self.module_id.0 as usize]),
+            source_range: SourceRange::new(self.start, self.end, self.module_id),
         }
+    }
+
+    pub fn contains(&self, pos: usize) -> bool {
+        self.start <= pos && pos <= self.end
     }
 }
 
@@ -117,8 +122,12 @@ impl<T> Node<T> {
         })
     }
 
+    pub fn as_source_range(&self) -> SourceRange {
+        SourceRange::new(self.start, self.end, self.module_id)
+    }
+
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
-        vec![SourceRange([self.start, self.end, self.module_id.as_usize()])]
+        vec![self.as_source_range()]
     }
 }
 
@@ -142,21 +151,21 @@ impl<T: fmt::Display> fmt::Display for Node<T> {
     }
 }
 
-impl<T> From<Node<T>> for crate::executor::SourceRange {
+impl<T> From<Node<T>> for SourceRange {
     fn from(v: Node<T>) -> Self {
-        Self([v.start, v.end, v.module_id.as_usize()])
+        Self::new(v.start, v.end, v.module_id)
     }
 }
 
-impl<T> From<&Node<T>> for crate::executor::SourceRange {
+impl<T> From<&Node<T>> for SourceRange {
     fn from(v: &Node<T>) -> Self {
-        Self([v.start, v.end, v.module_id.as_usize()])
+        Self::new(v.start, v.end, v.module_id)
     }
 }
 
-impl<T> From<&BoxNode<T>> for crate::executor::SourceRange {
+impl<T> From<&BoxNode<T>> for SourceRange {
     fn from(v: &BoxNode<T>) -> Self {
-        Self([v.start, v.end, v.module_id.as_usize()])
+        Self::new(v.start, v.end, v.module_id)
     }
 }
 
@@ -173,6 +182,8 @@ pub struct Program {
     pub body: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
     pub non_code_meta: NonCodeMeta,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shebang: Option<Node<Shebang>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -261,19 +272,14 @@ impl Program {
     }
 
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
-        // Check if we are in the non code meta.
-        if let Some(meta) = self.get_non_code_meta_for_position(pos) {
-            for node in &meta.start_nodes {
-                if node.contains(pos) {
-                    // We only care about the shebang.
-                    if let NonCodeValue::Shebang { value: _ } = &node.value {
-                        let source_range: SourceRange = node.into();
-                        return Some(Hover::Comment {
-                            value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
-                            range: source_range.to_lsp_range(code),
-                        });
-                    }
-                }
+        // Check if we are in shebang.
+        if let Some(node) = &self.shebang {
+            if node.contains(pos) {
+                let source_range: SourceRange = node.into();
+                return Some(Hover::Comment {
+                    value: r#"The `#!` at the start of a script, known as a shebang, specifies the path to the interpreter that should execute the script. This line is not necessary for your `kcl` to run in the modeling-app. You can safely delete it. If you wish to learn more about what you _can_ do with a shebang, read this doc: [zoo.dev/docs/faq/shebang](https://zoo.dev/docs/faq/shebang)."#.to_string(),
+                    range: source_range.to_lsp_range(code),
+                });
             }
         }
 
@@ -528,26 +534,22 @@ impl Program {
     }
 }
 
-/// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+/// A shebang.
+/// This is a special type of comment that is at the top of the file.
+/// It looks like this:
+/// ```python,no_run
+/// #!/usr/bin/env python
+/// ```
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
 #[databake(path = kcl_lib::ast::types)]
 #[ts(export)]
-pub struct ModuleId(pub u32);
+pub struct Shebang {
+    pub content: String,
+}
 
-impl ModuleId {
-    pub fn from_usize(id: usize) -> Self {
-        Self(u32::try_from(id).expect("module ID should fit in a u32"))
-    }
-
-    pub fn as_usize(&self) -> usize {
-        usize::try_from(self.0).expect("module ID should fit in a usize")
-    }
-
-    /// Top-level file is the one being executed.
-    /// Represented by module ID of 0, i.e. the default value.
-    pub fn is_top_level(&self) -> bool {
-        *self == Self::default()
+impl Shebang {
+    pub fn new(content: String) -> Self {
+        Shebang { content }
     }
 }
 
@@ -584,13 +586,13 @@ impl BodyItem {
 
 impl From<BodyItem> for SourceRange {
     fn from(item: BodyItem) -> Self {
-        Self([item.start(), item.end(), item.module_id().as_usize()])
+        Self::new(item.start(), item.end(), item.module_id())
     }
 }
 
 impl From<&BodyItem> for SourceRange {
     fn from(item: &BodyItem) -> Self {
-        Self([item.start(), item.end(), item.module_id().as_usize()])
+        Self::new(item.start(), item.end(), item.module_id())
     }
 }
 
@@ -606,6 +608,7 @@ pub enum Expr {
     BinaryExpression(BoxNode<BinaryExpression>),
     FunctionExpression(BoxNode<FunctionExpression>),
     CallExpression(BoxNode<CallExpression>),
+    CallExpressionKw(BoxNode<CallExpressionKw>),
     PipeExpression(BoxNode<PipeExpression>),
     PipeSubstitution(BoxNode<PipeSubstitution>),
     ArrayExpression(BoxNode<ArrayExpression>),
@@ -619,7 +622,7 @@ pub enum Expr {
 
 impl Expr {
     pub fn get_lsp_folding_range(&self) -> Option<FoldingRange> {
-        let recasted = self.recast(&FormatOptions::default(), 0, false);
+        let recasted = self.recast(&FormatOptions::default(), 0, crate::unparser::ExprContext::Other);
         // If the code only has one line then we don't need to fold it.
         if recasted.lines().count() <= 1 {
             return None;
@@ -649,6 +652,7 @@ impl Expr {
             Expr::Literal(_literal) => None,
             Expr::FunctionExpression(_func_exp) => None,
             Expr::CallExpression(_call_exp) => None,
+            Expr::CallExpressionKw(_call_exp) => None,
             Expr::Identifier(_ident) => None,
             Expr::TagDeclarator(_tag) => None,
             Expr::PipeExpression(pipe_exp) => Some(&pipe_exp.non_code_meta),
@@ -674,6 +678,7 @@ impl Expr {
             Expr::Literal(_) => {}
             Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
             Expr::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
+            Expr::CallExpressionKw(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::Identifier(_) => {}
             Expr::TagDeclarator(_) => {}
             Expr::PipeExpression(ref mut pipe_exp) => pipe_exp.replace_value(source_range, new_value),
@@ -692,6 +697,7 @@ impl Expr {
             Expr::BinaryExpression(binary_expression) => binary_expression.start,
             Expr::FunctionExpression(function_expression) => function_expression.start,
             Expr::CallExpression(call_expression) => call_expression.start,
+            Expr::CallExpressionKw(call_expression) => call_expression.start,
             Expr::PipeExpression(pipe_expression) => pipe_expression.start,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start,
             Expr::ArrayExpression(array_expression) => array_expression.start,
@@ -712,6 +718,7 @@ impl Expr {
             Expr::BinaryExpression(binary_expression) => binary_expression.end,
             Expr::FunctionExpression(function_expression) => function_expression.end,
             Expr::CallExpression(call_expression) => call_expression.end,
+            Expr::CallExpressionKw(call_expression) => call_expression.end,
             Expr::PipeExpression(pipe_expression) => pipe_expression.end,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end,
             Expr::ArrayExpression(array_expression) => array_expression.end,
@@ -733,6 +740,7 @@ impl Expr {
                 function_expression.get_hover_value_for_position(pos, code)
             }
             Expr::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
+            Expr::CallExpressionKw(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code),
             Expr::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code),
             Expr::ArrayRangeExpression(array_range) => array_range.get_hover_value_for_position(pos, code),
@@ -761,6 +769,7 @@ impl Expr {
             }
             Expr::FunctionExpression(_function_identifier) => {}
             Expr::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
+            Expr::CallExpressionKw(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
             Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
             Expr::PipeSubstitution(_) => {}
             Expr::ArrayExpression(ref mut array_expression) => array_expression.rename_identifiers(old_name, new_name),
@@ -787,6 +796,7 @@ impl Expr {
 
             Expr::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
             Expr::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            Expr::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
             Expr::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
                 source_ranges: vec![pipe_substitution.into()],
@@ -804,13 +814,13 @@ impl Expr {
 
 impl From<Expr> for SourceRange {
     fn from(value: Expr) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
@@ -823,6 +833,7 @@ pub enum BinaryPart {
     Identifier(BoxNode<Identifier>),
     BinaryExpression(BoxNode<BinaryExpression>),
     CallExpression(BoxNode<CallExpression>),
+    CallExpressionKw(BoxNode<CallExpressionKw>),
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
     IfExpression(BoxNode<IfExpression>),
@@ -830,13 +841,13 @@ pub enum BinaryPart {
 
 impl From<BinaryPart> for SourceRange {
     fn from(value: BinaryPart) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
 impl From<&BinaryPart> for SourceRange {
     fn from(value: &BinaryPart) -> Self {
-        Self([value.start(), value.end(), value.module_id().as_usize()])
+        Self::new(value.start(), value.end(), value.module_id())
     }
 }
 
@@ -848,6 +859,7 @@ impl BinaryPart {
             BinaryPart::Identifier(identifier) => identifier.get_constraint_level(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
             BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
@@ -864,6 +876,9 @@ impl BinaryPart {
             BinaryPart::CallExpression(ref mut call_expression) => {
                 call_expression.replace_value(source_range, new_value)
             }
+            BinaryPart::CallExpressionKw(ref mut call_expression) => {
+                call_expression.replace_value(source_range, new_value)
+            }
             BinaryPart::UnaryExpression(ref mut unary_expression) => {
                 unary_expression.replace_value(source_range, new_value)
             }
@@ -878,6 +893,7 @@ impl BinaryPart {
             BinaryPart::Identifier(identifier) => identifier.start,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.start,
             BinaryPart::CallExpression(call_expression) => call_expression.start,
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.start,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
             BinaryPart::IfExpression(e) => e.start,
@@ -890,6 +906,7 @@ impl BinaryPart {
             BinaryPart::Identifier(identifier) => identifier.end,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.end,
             BinaryPart::CallExpression(call_expression) => call_expression.end,
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.end,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
             BinaryPart::IfExpression(e) => e.end,
@@ -905,6 +922,7 @@ impl BinaryPart {
                 binary_expression.get_hover_value_for_position(pos, code)
             }
             BinaryPart::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code),
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.get_hover_value_for_position(pos, code),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_hover_value_for_position(pos, code),
             BinaryPart::IfExpression(e) => e.get_hover_value_for_position(pos, code),
             BinaryPart::MemberExpression(member_expression) => {
@@ -922,6 +940,9 @@ impl BinaryPart {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::CallExpression(ref mut call_expression) => {
+                call_expression.rename_identifiers(old_name, new_name)
+            }
+            BinaryPart::CallExpressionKw(ref mut call_expression) => {
                 call_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::UnaryExpression(ref mut unary_expression) => {
@@ -948,13 +969,8 @@ pub struct NonCodeNode {
 }
 
 impl Node<NonCodeNode> {
-    pub fn contains(&self, pos: usize) -> bool {
-        self.start <= pos && pos <= self.end
-    }
-
     pub fn format(&self, indentation: &str) -> String {
         match &self.value {
-            NonCodeValue::Shebang { value } => format!("{}\n\n", value),
             NonCodeValue::InlineComment {
                 value,
                 style: CommentStyle::Line,
@@ -994,7 +1010,6 @@ impl Node<NonCodeNode> {
 impl NonCodeNode {
     pub fn value(&self) -> String {
         match &self.value {
-            NonCodeValue::Shebang { value } => value.clone(),
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
@@ -1028,15 +1043,6 @@ impl CommentStyle {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
-    /// A shebang.
-    /// This is a special type of comment that is at the top of the file.
-    /// It looks like this:
-    /// ```python,no_run
-    /// #!/usr/bin/env python
-    /// ```
-    Shebang {
-        value: String,
-    },
     /// An inline comment.
     /// Here are examples:
     /// `1 + 1 // This is an inline comment`.
@@ -1171,7 +1177,7 @@ impl Node<ImportItem> {
                     self.alias = Some(Identifier::new(new_name));
                 }
                 // Return implicit name.
-                return Some(self.identifier().to_owned());
+                Some(self.identifier().to_owned())
             }
         }
     }
@@ -1254,16 +1260,45 @@ pub struct ExpressionStatement {
 pub struct CallExpression {
     pub callee: Node<Identifier>,
     pub arguments: Vec<Expr>,
-    pub optional: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct CallExpressionKw {
+    pub callee: Node<Identifier>,
+    pub unlabeled: Option<Expr>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub arguments: Vec<LabeledArg>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
+#[databake(path = kcl_lib::ast::types)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct LabeledArg {
+    pub label: Identifier,
+    pub arg: Expr,
+}
+
 impl From<Node<CallExpression>> for Expr {
     fn from(call_expression: Node<CallExpression>) -> Self {
         Expr::CallExpression(Box::new(call_expression))
+    }
+}
+
+impl From<Node<CallExpressionKw>> for Expr {
+    fn from(call_expression: Node<CallExpressionKw>) -> Self {
+        Expr::CallExpressionKw(Box::new(call_expression))
     }
 }
 
@@ -1286,12 +1321,30 @@ impl Node<CallExpression> {
     }
 }
 
+impl Node<CallExpressionKw> {
+    /// Return the constraint level for this call expression.
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        if self.arguments.is_empty() {
+            return ConstraintLevel::Ignore {
+                source_ranges: vec![self.into()],
+            };
+        }
+
+        // Iterate over the arguments and get the constraint level for each one.
+        let mut constraint_levels = ConstraintLevels::new();
+        for arg in &self.arguments {
+            constraint_levels.push(arg.arg.get_constraint_level());
+        }
+
+        constraint_levels.get_constraint_level(self.into())
+    }
+}
+
 impl CallExpression {
     pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
             callee: Identifier::new(name),
             arguments,
-            optional: false,
             digest: None,
         }))
     }
@@ -1339,6 +1392,68 @@ impl CallExpression {
 
         for arg in &mut self.arguments {
             arg.rename_identifiers(old_name, new_name);
+        }
+    }
+}
+
+impl CallExpressionKw {
+    pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
+        Ok(Node::no_src(Self {
+            callee: Identifier::new(name),
+            unlabeled,
+            arguments,
+            digest: None,
+        }))
+    }
+
+    /// Iterate over all arguments (labeled or not)
+    pub fn iter_arguments(&self) -> impl Iterator<Item = &Expr> {
+        self.unlabeled.iter().chain(self.arguments.iter().map(|arg| &arg.arg))
+    }
+
+    /// Is at least one argument the '%' i.e. the substitution operator?
+    pub fn has_substitution_arg(&self) -> bool {
+        self.arguments
+            .iter()
+            .any(|arg| matches!(arg.arg, Expr::PipeSubstitution(_)))
+    }
+
+    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
+        for arg in &mut self.arguments {
+            arg.arg.replace_value(source_range, new_value.clone());
+        }
+    }
+
+    /// Returns a hover value that includes the given character position.
+    pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
+        let callee_source_range: SourceRange = self.callee.clone().into();
+        if callee_source_range.contains(pos) {
+            return Some(Hover::Function {
+                name: self.callee.name.clone(),
+                range: callee_source_range.to_lsp_range(code),
+            });
+        }
+
+        for (index, arg) in self.iter_arguments().enumerate() {
+            let source_range: SourceRange = arg.into();
+            if source_range.contains(pos) {
+                return Some(Hover::Signature {
+                    name: self.callee.name.clone(),
+                    parameter_index: index as u32,
+                    range: source_range.to_lsp_range(code),
+                });
+            }
+        }
+
+        None
+    }
+
+    /// Rename all identifiers that have the old name to the new given name.
+    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        self.callee.rename(old_name, new_name);
+
+        for arg in &mut self.arguments {
+            arg.arg.rename_identifiers(old_name, new_name);
         }
     }
 }
@@ -1718,8 +1833,7 @@ impl From<Node<Literal>> for KclValue {
     fn from(literal: Node<Literal>) -> Self {
         let meta = vec![literal.metadata()];
         match literal.inner.value {
-            LiteralValue::IInteger(value) => KclValue::Int { value, meta },
-            LiteralValue::Fractional(value) => KclValue::Number { value, meta },
+            LiteralValue::Number(value) => KclValue::Number { value, meta },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }
@@ -2192,13 +2306,13 @@ impl MemberObject {
 
 impl From<MemberObject> for SourceRange {
     fn from(obj: MemberObject) -> Self {
-        Self([obj.start(), obj.end(), obj.module_id().as_usize()])
+        Self::new(obj.start(), obj.end(), obj.module_id())
     }
 }
 
 impl From<&MemberObject> for SourceRange {
     fn from(obj: &MemberObject) -> Self {
-        Self([obj.start(), obj.end(), obj.module_id().as_usize()])
+        Self::new(obj.start(), obj.end(), obj.module_id())
     }
 }
 
@@ -2229,13 +2343,13 @@ impl LiteralIdentifier {
 
 impl From<LiteralIdentifier> for SourceRange {
     fn from(id: LiteralIdentifier) -> Self {
-        Self([id.start(), id.end(), id.module_id().as_usize()])
+        Self::new(id.start(), id.end(), id.module_id())
     }
 }
 
 impl From<&LiteralIdentifier> for SourceRange {
     fn from(id: &LiteralIdentifier) -> Self {
-        Self([id.start(), id.end(), id.module_id().as_usize()])
+        Self::new(id.start(), id.end(), id.module_id())
     }
 }
 
@@ -2821,7 +2935,6 @@ pub enum Hover {
 
 /// Format options.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct FormatOptions {
@@ -3060,9 +3173,9 @@ ghi("things")
             folding_ranges[1].collapsed_text,
             Some("startSketchOn('XY')".to_string())
         );
-        assert_eq!(folding_ranges[2].start_line, 390);
+        assert_eq!(folding_ranges[2].start_line, 384);
         assert_eq!(folding_ranges[2].end_line, 403);
-        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi = (x) => {".to_string()));
+        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
     }
 
     #[test]
@@ -3261,7 +3374,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_return_type_on_functions() {
-        let some_program_string = r#"fn thing = () => {thing: number, things: string[], more?: string} {
+        let some_program_string = r#"fn thing(): {thing: number, things: string[], more?: string} {
     return 1
 }"#;
         let module_id = ModuleId::default();
@@ -3287,8 +3400,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "thing".to_owned(),
                                 digest: None
                             },
+                            13,
                             18,
-                            23,
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
@@ -3301,8 +3414,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "things".to_owned(),
                                 digest: None
                             },
-                            33,
-                            39,
+                            28,
+                            34,
                             module_id,
                         ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
@@ -3315,8 +3428,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "more".to_owned(),
                                 digest: None
                             },
-                            51,
-                            55,
+                            46,
+                            50,
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
@@ -3339,6 +3452,7 @@ const cylinder = startSketchOn('-XZ')
                     body: Node::no_src(Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
+                        shebang: None,
                         digest: None,
                     }),
                     return_type: None,
@@ -3362,6 +3476,7 @@ const cylinder = startSketchOn('-XZ')
                         inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
+                            shebang: None,
                             digest: None,
                         },
                         start: 0,
@@ -3389,6 +3504,7 @@ const cylinder = startSketchOn('-XZ')
                         inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
+                            shebang: None,
                             digest: None,
                         },
                         start: 0,
@@ -3427,6 +3543,7 @@ const cylinder = startSketchOn('-XZ')
                         inner: Program {
                             body: Vec::new(),
                             non_code_meta: Default::default(),
+                            shebang: None,
                             digest: None,
                         },
                         start: 0,

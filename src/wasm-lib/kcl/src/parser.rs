@@ -1,9 +1,9 @@
 use parser_impl::ParseContext;
 
 use crate::{
-    ast::types::{ModuleId, Node, Program},
+    ast::types::{Node, Program},
     errors::{KclError, KclErrorDetails},
-    executor::SourceRange,
+    source_range::{ModuleId, SourceRange},
     token::{Token, TokenType},
 };
 
@@ -81,11 +81,16 @@ pub fn parse_tokens(tokens: Vec<Token>) -> ParseResult {
 /// Invariants:
 /// - if there are no errors, then the Option will be Some
 /// - if the Option is None, then there will be at least one error in the ParseContext.
+#[derive(Debug, Clone)]
 pub(crate) struct ParseResult(pub Result<(Option<Node<Program>>, ParseContext), KclError>);
 
 impl ParseResult {
     #[cfg(test)]
+    #[track_caller]
     pub fn unwrap(self) -> Node<Program> {
+        if self.0.is_err() || self.0.as_ref().unwrap().0.is_none() {
+            eprint!("{self:#?}");
+        }
         self.0.unwrap().0.unwrap()
     }
 

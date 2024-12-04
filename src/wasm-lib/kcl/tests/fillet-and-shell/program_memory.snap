@@ -28,8 +28,8 @@ snapshot_kind: text
           "__meta": []
         },
         "border": {
-          "type": "Int",
-          "value": 4,
+          "type": "Number",
+          "value": 4.0,
           "__meta": [
             {
               "sourceRange": [
@@ -552,8 +552,8 @@ snapshot_kind: text
           ]
         },
         "caseHeight": {
-          "type": "Int",
-          "value": 8,
+          "type": "Number",
+          "value": 8.0,
           "__meta": [
             {
               "sourceRange": [
@@ -592,8 +592,8 @@ snapshot_kind: text
           ]
         },
         "caseThickness": {
-          "type": "Int",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
@@ -632,8 +632,8 @@ snapshot_kind: text
           ]
         },
         "connectorPadding": {
-          "type": "Int",
-          "value": 4,
+          "type": "Number",
+          "value": 4.0,
           "__meta": [
             {
               "sourceRange": [
@@ -914,9 +914,9 @@ snapshot_kind: text
                     {
                       "end": 1425,
                       "id": {
-                        "end": 1234,
+                        "end": 1230,
                         "name": "screw",
-                        "start": 1229,
+                        "start": 1225,
                         "type": "Identifier"
                       },
                       "init": {
@@ -924,23 +924,22 @@ snapshot_kind: text
                           {
                             "arguments": [
                               {
-                                "end": 1255,
+                                "end": 1251,
                                 "raw": "\"XY\"",
-                                "start": 1251,
+                                "start": 1247,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": "XY"
                               }
                             ],
                             "callee": {
-                              "end": 1250,
+                              "end": 1246,
                               "name": "startSketchOn",
-                              "start": 1237,
+                              "start": 1233,
                               "type": "Identifier"
                             },
-                            "end": 1256,
-                            "optional": false,
-                            "start": 1237,
+                            "end": 1252,
+                            "start": 1233,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           },
@@ -949,124 +948,122 @@ snapshot_kind: text
                               {
                                 "elements": [
                                   {
-                                    "end": 1281,
+                                    "end": 1277,
                                     "raw": "0",
-                                    "start": 1280,
+                                    "start": 1276,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   },
                                   {
-                                    "end": 1284,
+                                    "end": 1280,
                                     "raw": "0",
-                                    "start": 1283,
+                                    "start": 1279,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 0
+                                    "value": 0.0
                                   }
                                 ],
-                                "end": 1285,
-                                "start": 1279,
+                                "end": 1281,
+                                "start": 1275,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               },
                               {
-                                "end": 1288,
-                                "start": 1287,
+                                "end": 1284,
+                                "start": 1283,
                                 "type": "PipeSubstitution",
                                 "type": "PipeSubstitution"
                               }
                             ],
                             "callee": {
-                              "end": 1278,
+                              "end": 1274,
                               "name": "startProfileAt",
-                              "start": 1264,
+                              "start": 1260,
                               "type": "Identifier"
                             },
-                            "end": 1289,
-                            "optional": false,
-                            "start": 1264,
+                            "end": 1285,
+                            "start": 1260,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           },
                           {
                             "arguments": [
                               {
-                                "end": 1335,
+                                "end": 1333,
                                 "properties": [
                                   {
-                                    "end": 1320,
+                                    "end": 1317,
                                     "key": {
-                                      "end": 1312,
+                                      "end": 1308,
                                       "name": "center",
-                                      "start": 1306,
+                                      "start": 1302,
                                       "type": "Identifier"
                                     },
-                                    "start": 1306,
+                                    "start": 1302,
                                     "type": "ObjectProperty",
                                     "value": {
                                       "elements": [
                                         {
-                                          "end": 1316,
+                                          "end": 1313,
                                           "name": "x",
-                                          "start": 1315,
+                                          "start": 1312,
                                           "type": "Identifier",
                                           "type": "Identifier"
                                         },
                                         {
-                                          "end": 1319,
+                                          "end": 1316,
                                           "name": "y",
-                                          "start": 1318,
+                                          "start": 1315,
                                           "type": "Identifier",
                                           "type": "Identifier"
                                         }
                                       ],
-                                      "end": 1320,
-                                      "start": 1314,
+                                      "end": 1317,
+                                      "start": 1311,
                                       "type": "ArrayExpression",
                                       "type": "ArrayExpression"
                                     }
                                   },
                                   {
-                                    "end": 1333,
+                                    "end": 1331,
                                     "key": {
-                                      "end": 1328,
+                                      "end": 1325,
                                       "name": "radius",
-                                      "start": 1322,
+                                      "start": 1319,
                                       "type": "Identifier"
                                     },
-                                    "start": 1322,
+                                    "start": 1319,
                                     "type": "ObjectProperty",
                                     "value": {
-                                      "end": 1333,
+                                      "end": 1331,
                                       "raw": "2.5",
-                                      "start": 1330,
+                                      "start": 1328,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": 2.5
                                     }
                                   }
                                 ],
-                                "start": 1304,
+                                "start": 1300,
                                 "type": "ObjectExpression",
                                 "type": "ObjectExpression"
                               },
                               {
-                                "end": 1338,
-                                "start": 1337,
+                                "end": 1336,
+                                "start": 1335,
                                 "type": "PipeSubstitution",
                                 "type": "PipeSubstitution"
                               }
                             ],
                             "callee": {
-                              "end": 1303,
+                              "end": 1299,
                               "name": "circle",
-                              "start": 1297,
+                              "start": 1293,
                               "type": "Identifier"
                             },
-                            "end": 1339,
-                            "optional": false,
-                            "start": 1297,
+                            "end": 1337,
+                            "start": 1293,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           },
@@ -1078,34 +1075,34 @@ snapshot_kind: text
                                     "end": 1391,
                                     "properties": [
                                       {
-                                        "end": 1375,
+                                        "end": 1374,
                                         "key": {
-                                          "end": 1367,
+                                          "end": 1365,
                                           "name": "center",
-                                          "start": 1361,
+                                          "start": 1359,
                                           "type": "Identifier"
                                         },
-                                        "start": 1361,
+                                        "start": 1359,
                                         "type": "ObjectProperty",
                                         "value": {
                                           "elements": [
                                             {
-                                              "end": 1371,
+                                              "end": 1370,
                                               "name": "x",
-                                              "start": 1370,
+                                              "start": 1369,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             },
                                             {
-                                              "end": 1374,
+                                              "end": 1373,
                                               "name": "y",
-                                              "start": 1373,
+                                              "start": 1372,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           ],
-                                          "end": 1375,
-                                          "start": 1369,
+                                          "end": 1374,
+                                          "start": 1368,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
                                         }
@@ -1113,12 +1110,12 @@ snapshot_kind: text
                                       {
                                         "end": 1389,
                                         "key": {
-                                          "end": 1383,
+                                          "end": 1382,
                                           "name": "radius",
-                                          "start": 1377,
+                                          "start": 1376,
                                           "type": "Identifier"
                                         },
-                                        "start": 1377,
+                                        "start": 1376,
                                         "type": "ObjectProperty",
                                         "value": {
                                           "end": 1389,
@@ -1130,7 +1127,7 @@ snapshot_kind: text
                                         }
                                       }
                                     ],
-                                    "start": 1359,
+                                    "start": 1357,
                                     "type": "ObjectExpression",
                                     "type": "ObjectExpression"
                                   },
@@ -1142,14 +1139,13 @@ snapshot_kind: text
                                   }
                                 ],
                                 "callee": {
-                                  "end": 1358,
+                                  "end": 1356,
                                   "name": "circle",
-                                  "start": 1352,
+                                  "start": 1350,
                                   "type": "Identifier"
                                 },
                                 "end": 1395,
-                                "optional": false,
-                                "start": 1352,
+                                "start": 1350,
                                 "type": "CallExpression",
                                 "type": "CallExpression"
                               },
@@ -1161,14 +1157,13 @@ snapshot_kind: text
                               }
                             ],
                             "callee": {
-                              "end": 1351,
+                              "end": 1349,
                               "name": "hole",
-                              "start": 1347,
+                              "start": 1345,
                               "type": "Identifier"
                             },
                             "end": 1399,
-                            "optional": false,
-                            "start": 1347,
+                            "start": 1345,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           },
@@ -1195,24 +1190,23 @@ snapshot_kind: text
                               "type": "Identifier"
                             },
                             "end": 1425,
-                            "optional": false,
                             "start": 1407,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           }
                         ],
                         "end": 1425,
-                        "start": 1237,
+                        "start": 1233,
                         "type": "PipeExpression",
                         "type": "PipeExpression"
                       },
-                      "start": 1229,
+                      "start": 1225,
                       "type": "VariableDeclarator"
                     }
                   ],
                   "end": 1425,
                   "kind": "const",
-                  "start": 1229,
+                  "start": 1225,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
@@ -1231,16 +1225,16 @@ snapshot_kind: text
                 }
               ],
               "end": 1442,
-              "start": 1225
+              "start": 1221
             },
             "end": 1442,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1209,
+                  "end": 1208,
                   "name": "x",
-                  "start": 1208,
+                  "start": 1207,
                   "type": "Identifier"
                 },
                 "optional": false
@@ -1248,9 +1242,9 @@ snapshot_kind: text
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1212,
+                  "end": 1211,
                   "name": "y",
-                  "start": 1211,
+                  "start": 1210,
                   "type": "Identifier"
                 },
                 "optional": false
@@ -1258,15 +1252,15 @@ snapshot_kind: text
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1220,
+                  "end": 1219,
                   "name": "height",
-                  "start": 1214,
+                  "start": 1213,
                   "type": "Identifier"
                 },
                 "optional": false
               }
             ],
-            "start": 1207,
+            "start": 1206,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -1294,8 +1288,8 @@ snapshot_kind: text
                     "__meta": []
                   },
                   "border": {
-                    "type": "Int",
-                    "value": 4,
+                    "type": "Number",
+                    "value": 4.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -1818,8 +1812,8 @@ snapshot_kind: text
                     ]
                   },
                   "caseHeight": {
-                    "type": "Int",
-                    "value": 8,
+                    "type": "Number",
+                    "value": 8.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -1858,8 +1852,8 @@ snapshot_kind: text
                     ]
                   },
                   "caseThickness": {
-                    "type": "Int",
-                    "value": 1,
+                    "type": "Number",
+                    "value": 1.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -1898,8 +1892,8 @@ snapshot_kind: text
                     ]
                   },
                   "connectorPadding": {
-                    "type": "Int",
-                    "value": 4,
+                    "type": "Number",
+                    "value": 4.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -2184,8 +2178,8 @@ snapshot_kind: text
                     ]
                   },
                   "microUsb2Distance": {
-                    "type": "Int",
-                    "value": 54,
+                    "type": "Number",
+                    "value": 54.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -2379,8 +2373,8 @@ snapshot_kind: text
                     ]
                   },
                   "rpizLength": {
-                    "type": "Int",
-                    "value": 65,
+                    "type": "Number",
+                    "value": 65.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -2392,8 +2386,8 @@ snapshot_kind: text
                     ]
                   },
                   "rpizWidth": {
-                    "type": "Int",
-                    "value": 30,
+                    "type": "Number",
+                    "value": 30.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -2405,8 +2399,8 @@ snapshot_kind: text
                     ]
                   },
                   "screwHeight": {
-                    "type": "Int",
-                    "value": 4,
+                    "type": "Number",
+                    "value": 4.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -2418,8 +2412,8 @@ snapshot_kind: text
                     ]
                   },
                   "widthBetweenScrews": {
-                    "type": "Int",
-                    "value": 23,
+                    "type": "Number",
+                    "value": 23.0,
                     "__meta": [
                       {
                         "sourceRange": [
@@ -2440,7 +2434,7 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                1207,
+                1206,
                 1442,
                 0
               ]
@@ -2461,8 +2455,8 @@ snapshot_kind: text
           ]
         },
         "microUsb2Distance": {
-          "type": "Int",
-          "value": 54,
+          "type": "Number",
+          "value": 54.0,
           "__meta": [
             {
               "sourceRange": [
@@ -2656,8 +2650,8 @@ snapshot_kind: text
           ]
         },
         "rpizLength": {
-          "type": "Int",
-          "value": 65,
+          "type": "Number",
+          "value": 65.0,
           "__meta": [
             {
               "sourceRange": [
@@ -2669,8 +2663,8 @@ snapshot_kind: text
           ]
         },
         "rpizWidth": {
-          "type": "Int",
-          "value": 30,
+          "type": "Number",
+          "value": 30.0,
           "__meta": [
             {
               "sourceRange": [
@@ -2682,8 +2676,8 @@ snapshot_kind: text
           ]
         },
         "screwHeight": {
-          "type": "Int",
-          "value": 4,
+          "type": "Number",
+          "value": 4.0,
           "__meta": [
             {
               "sourceRange": [
@@ -2695,8 +2689,8 @@ snapshot_kind: text
           ]
         },
         "widthBetweenScrews": {
-          "type": "Int",
-          "value": 23,
+          "type": "Number",
+          "value": 23.0,
           "__meta": [
             {
               "sourceRange": [

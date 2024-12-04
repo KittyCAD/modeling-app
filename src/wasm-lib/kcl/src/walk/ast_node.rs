@@ -1,6 +1,6 @@
 use crate::{
     ast::types::{self, NodeRef},
-    executor::SourceRange,
+    source_range::SourceRange,
 };
 
 /// The "Node" type wraps all the AST elements we're able to find in a KCL
@@ -22,6 +22,7 @@ pub enum Node<'a> {
     BinaryExpression(NodeRef<'a, types::BinaryExpression>),
     FunctionExpression(NodeRef<'a, types::FunctionExpression>),
     CallExpression(NodeRef<'a, types::CallExpression>),
+    CallExpressionKw(NodeRef<'a, types::CallExpressionKw>),
     PipeExpression(NodeRef<'a, types::PipeExpression>),
     PipeSubstitution(NodeRef<'a, types::PipeSubstitution>),
     ArrayExpression(NodeRef<'a, types::ArrayExpression>),
@@ -54,6 +55,7 @@ impl From<&Node<'_>> for SourceRange {
             Node::BinaryExpression(n) => SourceRange::from(*n),
             Node::FunctionExpression(n) => SourceRange::from(*n),
             Node::CallExpression(n) => SourceRange::from(*n),
+            Node::CallExpressionKw(n) => SourceRange::from(*n),
             Node::PipeExpression(n) => SourceRange::from(*n),
             Node::PipeSubstitution(n) => SourceRange::from(*n),
             Node::ArrayExpression(n) => SourceRange::from(*n),
@@ -63,9 +65,9 @@ impl From<&Node<'_>> for SourceRange {
             Node::UnaryExpression(n) => SourceRange::from(*n),
             Node::Parameter(p) => SourceRange::from(&p.identifier),
             Node::ObjectProperty(n) => SourceRange::from(*n),
-            Node::MemberObject(m) => SourceRange([m.start(), m.end(), m.module_id().as_usize()]),
+            Node::MemberObject(m) => SourceRange::new(m.start(), m.end(), m.module_id()),
             Node::IfExpression(n) => SourceRange::from(*n),
-            Node::LiteralIdentifier(l) => SourceRange([l.start(), l.end(), l.module_id().as_usize()]),
+            Node::LiteralIdentifier(l) => SourceRange::new(l.start(), l.end(), l.module_id()),
         }
     }
 }
@@ -102,6 +104,7 @@ impl_from!(Node, Identifier);
 impl_from!(Node, BinaryExpression);
 impl_from!(Node, FunctionExpression);
 impl_from!(Node, CallExpression);
+impl_from!(Node, CallExpressionKw);
 impl_from!(Node, PipeExpression);
 impl_from!(Node, PipeSubstitution);
 impl_from!(Node, ArrayExpression);

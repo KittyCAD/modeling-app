@@ -13,6 +13,8 @@ use crate::{
     ExecState, ExecutorContext, KclError, SourceRange,
 };
 
+pub type KclObjectFields = HashMap<String, KclValue>;
+
 /// Any KCL value.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -49,7 +51,7 @@ pub enum KclValue {
         meta: Vec<Metadata>,
     },
     Object {
-        value: HashMap<String, KclValue>,
+        value: KclObjectFields,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -72,6 +74,7 @@ pub enum KclValue {
     Function {
         #[serde(skip)]
         func: Option<MemoryFunction>,
+        #[schemars(skip)]
         expression: crate::ast::types::BoxNode<FunctionExpression>,
         memory: Box<ProgramMemory>,
         #[serde(rename = "__meta")]
@@ -82,6 +85,93 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+}
+
+impl From<SketchSet> for KclValue {
+    fn from(sg: SketchSet) -> Self {
+        match sg {
+            SketchSet::Sketch(value) => KclValue::Sketch { value },
+            SketchSet::Sketches(value) => KclValue::Sketches { value },
+        }
+    }
+}
+
+impl From<Vec<Box<Sketch>>> for KclValue {
+    fn from(sg: Vec<Box<Sketch>>) -> Self {
+        KclValue::Sketches { value: sg }
+    }
+}
+
+impl From<SolidSet> for KclValue {
+    fn from(eg: SolidSet) -> Self {
+        match eg {
+            SolidSet::Solid(eg) => KclValue::Solid(eg),
+            SolidSet::Solids(egs) => KclValue::Solids { value: egs },
+        }
+    }
+}
+
+impl From<Vec<Box<Solid>>> for KclValue {
+    fn from(eg: Vec<Box<Solid>>) -> Self {
+        if eg.len() == 1 {
+            KclValue::Solid(eg[0].clone())
+        } else {
+            KclValue::Solids { value: eg }
+        }
+    }
+}
+impl From<KclValue> for Vec<SourceRange> {
+    fn from(item: KclValue) -> Self {
+        match item {
+            KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
+            KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::Solid(e) => to_vec_sr(&e.meta),
+            KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Sketch { value } => to_vec_sr(&value.meta),
+            KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
+            KclValue::Function { meta, .. } => to_vec_sr(&meta),
+            KclValue::Plane(p) => to_vec_sr(&p.meta),
+            KclValue::Face(f) => to_vec_sr(&f.meta),
+            KclValue::Bool { meta, .. } => to_vec_sr(&meta),
+            KclValue::Number { meta, .. } => to_vec_sr(&meta),
+            KclValue::Int { meta, .. } => to_vec_sr(&meta),
+            KclValue::String { meta, .. } => to_vec_sr(&meta),
+            KclValue::Array { meta, .. } => to_vec_sr(&meta),
+            KclValue::Object { meta, .. } => to_vec_sr(&meta),
+            KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
+            KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
+        }
+    }
+}
+
+fn to_vec_sr(meta: &[Metadata]) -> Vec<SourceRange> {
+    meta.iter().map(|m| m.source_range).collect()
+}
+
+impl From<&KclValue> for Vec<SourceRange> {
+    fn from(item: &KclValue) -> Self {
+        match item {
+            KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
+            KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
+            KclValue::Solid(e) => to_vec_sr(&e.meta),
+            KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Sketch { value } => to_vec_sr(&value.meta),
+            KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
+            KclValue::Function { meta, .. } => to_vec_sr(meta),
+            KclValue::Plane(p) => to_vec_sr(&p.meta),
+            KclValue::Face(f) => to_vec_sr(&f.meta),
+            KclValue::Bool { meta, .. } => to_vec_sr(meta),
+            KclValue::Number { meta, .. } => to_vec_sr(meta),
+            KclValue::Int { meta, .. } => to_vec_sr(meta),
+            KclValue::String { meta, .. } => to_vec_sr(meta),
+            KclValue::Uuid { meta, .. } => to_vec_sr(meta),
+            KclValue::Array { meta, .. } => to_vec_sr(meta),
+            KclValue::Object { meta, .. } => to_vec_sr(meta),
+            KclValue::KclNone { meta, .. } => to_vec_sr(meta),
+        }
+    }
 }
 
 impl KclValue {
@@ -159,98 +249,8 @@ impl KclValue {
     pub(crate) fn is_function(&self) -> bool {
         matches!(self, KclValue::Function { .. })
     }
-}
-
-impl From<SketchSet> for KclValue {
-    fn from(sg: SketchSet) -> Self {
-        match sg {
-            SketchSet::Sketch(value) => KclValue::Sketch { value },
-            SketchSet::Sketches(value) => KclValue::Sketches { value },
-        }
-    }
-}
-
-impl From<Vec<Box<Sketch>>> for KclValue {
-    fn from(sg: Vec<Box<Sketch>>) -> Self {
-        KclValue::Sketches { value: sg }
-    }
-}
-
-impl From<SolidSet> for KclValue {
-    fn from(eg: SolidSet) -> Self {
-        match eg {
-            SolidSet::Solid(eg) => KclValue::Solid(eg),
-            SolidSet::Solids(egs) => KclValue::Solids { value: egs },
-        }
-    }
-}
-
-impl From<Vec<Box<Solid>>> for KclValue {
-    fn from(eg: Vec<Box<Solid>>) -> Self {
-        if eg.len() == 1 {
-            KclValue::Solid(eg[0].clone())
-        } else {
-            KclValue::Solids { value: eg }
-        }
-    }
-}
-impl From<KclValue> for Vec<SourceRange> {
-    fn from(item: KclValue) -> Self {
-        match item {
-            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end, t.module_id.0 as usize])],
-            KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
-            KclValue::Solid(e) => to_vec_sr(&e.meta),
-            KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::Sketch { value } => to_vec_sr(&value.meta),
-            KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
-            KclValue::Function { meta, .. } => to_vec_sr(&meta),
-            KclValue::Plane(p) => to_vec_sr(&p.meta),
-            KclValue::Face(f) => to_vec_sr(&f.meta),
-            KclValue::Bool { meta, .. } => to_vec_sr(&meta),
-            KclValue::Number { meta, .. } => to_vec_sr(&meta),
-            KclValue::Int { meta, .. } => to_vec_sr(&meta),
-            KclValue::String { meta, .. } => to_vec_sr(&meta),
-            KclValue::Array { meta, .. } => to_vec_sr(&meta),
-            KclValue::Object { meta, .. } => to_vec_sr(&meta),
-            KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
-            KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
-        }
-    }
-}
-
-fn to_vec_sr(meta: &[Metadata]) -> Vec<SourceRange> {
-    meta.iter().map(|m| m.source_range).collect()
-}
-
-impl From<&KclValue> for Vec<SourceRange> {
-    fn from(item: &KclValue) -> Self {
-        match item {
-            KclValue::TagDeclarator(t) => vec![SourceRange([t.start, t.end, t.module_id.0 as usize])],
-            KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
-            KclValue::Solid(e) => to_vec_sr(&e.meta),
-            KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::Sketch { value } => to_vec_sr(&value.meta),
-            KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
-            KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
-            KclValue::Function { meta, .. } => to_vec_sr(meta),
-            KclValue::Plane(p) => to_vec_sr(&p.meta),
-            KclValue::Face(f) => to_vec_sr(&f.meta),
-            KclValue::Bool { meta, .. } => to_vec_sr(meta),
-            KclValue::Number { meta, .. } => to_vec_sr(meta),
-            KclValue::Int { meta, .. } => to_vec_sr(meta),
-            KclValue::String { meta, .. } => to_vec_sr(meta),
-            KclValue::Uuid { meta, .. } => to_vec_sr(meta),
-            KclValue::Array { meta, .. } => to_vec_sr(meta),
-            KclValue::Object { meta, .. } => to_vec_sr(meta),
-            KclValue::KclNone { meta, .. } => to_vec_sr(meta),
-        }
-    }
-}
-
-impl KclValue {
     /// Put the number into a KCL value.
-    pub fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
+    pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
         Self::Number { value: f, meta }
     }
 
@@ -273,20 +273,21 @@ impl KclValue {
 
     pub(crate) fn as_usize(&self) -> Option<usize> {
         match self {
-            KclValue::Int { value, .. } => Some(*value as usize),
+            KclValue::Int { value, .. } if *value > 0 => Some(*value as usize),
+            KclValue::Number { value, .. } => crate::try_f64_to_usize(*value),
             _ => None,
         }
     }
 
     pub fn as_int(&self) -> Option<i64> {
-        if let KclValue::Int { value, meta: _ } = &self {
-            Some(*value)
-        } else {
-            None
+        match self {
+            KclValue::Int { value, .. } => Some(*value),
+            KclValue::Number { value, .. } => crate::try_f64_to_i64(*value),
+            _ => None,
         }
     }
 
-    pub fn as_object(&self) -> Option<&HashMap<String, KclValue>> {
+    pub fn as_object(&self) -> Option<&KclObjectFields> {
         if let KclValue::Object { value, meta: _ } = &self {
             Some(value)
         } else {
@@ -294,7 +295,7 @@ impl KclValue {
         }
     }
 
-    pub fn into_object(self) -> Option<HashMap<String, KclValue>> {
+    pub fn into_object(self) -> Option<KclObjectFields> {
         if let KclValue::Object { value, meta: _ } = self {
             Some(value)
         } else {

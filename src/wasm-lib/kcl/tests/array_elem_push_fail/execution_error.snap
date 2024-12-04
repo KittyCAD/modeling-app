@@ -3,4 +3,11 @@ source: kcl/src/simulation_tests.rs
 description: Error from executing array_elem_push_fail.kcl
 snapshot_kind: text
 ---
-undefined value: KclErrorDetails { source_ranges: [SourceRange([48, 54, 0])], message: "The array doesn't have any item at index 3" }
+KCL UndefinedValue error
+
+  × undefined value: The array doesn't have any item at index 3
+   ╭─[3:8]
+ 2 │ pushedArr = push(arr, 4)
+ 3 │ fail = arr[3]
+   ·        ──────
+   ╰────

@@ -2,7 +2,30 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{ast::types::ModuleId, executor::SourceRange, lsp::IntoDiagnostic};
+use crate::{
+    lsp::IntoDiagnostic,
+    source_range::{ModuleId, SourceRange},
+};
+
+/// How did the KCL execution fail
+#[derive(thiserror::Error, Debug)]
+pub enum ExecError {
+    #[error("{0}")]
+    Kcl(#[from] crate::KclError),
+    #[error("Could not connect to engine: {0}")]
+    Connection(#[from] ConnectionError),
+    #[error("PNG snapshot could not be decoded: {0}")]
+    BadPng(String),
+}
+
+/// How did KCL client fail to connect to the engine
+#[derive(thiserror::Error, Debug)]
+pub enum ConnectionError {
+    #[error("Could not create a Zoo client: {0}")]
+    CouldNotMakeClient(anyhow::Error),
+    #[error("Could not establish connection to engine: {0}")]
+    Establishing(anyhow::Error),
+}
 
 #[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
 #[ts(export)]
@@ -34,10 +57,56 @@ pub enum KclError {
     Internal(KclErrorDetails),
 }
 
-#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
+#[derive(thiserror::Error, Debug)]
+#[error("{}", self.error.get_message())]
+pub struct Report {
+    pub error: KclError,
+    pub kcl_source: String,
+    pub filename: String,
+}
+
+impl miette::Diagnostic for Report {
+    fn code<'a>(&'a self) -> Option<Box<dyn std::fmt::Display + 'a>> {
+        let family = match self.error {
+            KclError::Lexical(_) => "Lexical",
+            KclError::Syntax(_) => "Syntax",
+            KclError::Semantic(_) => "Semantic",
+            KclError::ImportCycle(_) => "ImportCycle",
+            KclError::Type(_) => "Type",
+            KclError::Unimplemented(_) => "Unimplemented",
+            KclError::Unexpected(_) => "Unexpected",
+            KclError::ValueAlreadyDefined(_) => "ValueAlreadyDefined",
+            KclError::UndefinedValue(_) => "UndefinedValue",
+            KclError::InvalidExpression(_) => "InvalidExpression",
+            KclError::Engine(_) => "Engine",
+            KclError::Internal(_) => "Internal",
+        };
+        let error_string = format!("KCL {family} error");
+        Some(Box::new(error_string))
+    }
+
+    fn source_code(&self) -> Option<&dyn miette::SourceCode> {
+        Some(&self.kcl_source)
+    }
+
+    fn labels(&self) -> Option<Box<dyn Iterator<Item = miette::LabeledSpan> + '_>> {
+        let iter = self
+            .error
+            .source_ranges()
+            .clone()
+            .into_iter()
+            .map(miette::SourceSpan::from)
+            .map(|span| miette::LabeledSpan::new_with_span(None, span));
+        Some(Box::new(iter))
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq, thiserror::Error, miette::Diagnostic)]
+#[error("{message}")]
 #[ts(export)]
 pub struct KclErrorDetails {
     #[serde(rename = "sourceRanges")]
+    #[label(collection, "Errors")]
     pub source_ranges: Vec<SourceRange>,
     #[serde(rename = "msg")]
     pub message: String,

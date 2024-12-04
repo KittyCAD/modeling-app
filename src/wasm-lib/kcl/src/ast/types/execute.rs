@@ -1,19 +1,18 @@
 use std::collections::HashMap;
 
+use async_recursion::async_recursion;
+
 use super::{
-    ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression, Expr,
-    IfExpression, KclNone, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, ObjectExpression,
-    TagDeclarator, UnaryExpression, UnaryOperator,
+    ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
+    CallExpressionKw, Expr, IfExpression, KclNone, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
+    Node, ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{
-        BodyType, ExecState, ExecutorContext, KclValue, Metadata, SourceRange, StatementKind, TagEngineInfo,
-        TagIdentifier,
-    },
+    executor::{BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier},
+    source_range::SourceRange,
     std::{args::Arg, FunctionKind},
 };
-use async_recursion::async_recursion;
 
 const FLOAT_TO_INT_MAX_DELTA: f64 = 0.01;
 
@@ -28,6 +27,7 @@ impl BinaryPart {
             }
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpression(call_expression) => call_expression.execute(exec_state, ctx).await,
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
@@ -95,7 +95,7 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (KclValue::Array { value: arr, meta: _ }, Property::Number(index)) => {
+            (KclValue::Array { value: arr, meta: _ }, Property::UInt(index)) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -333,6 +333,7 @@ async fn inner_execute_pipe_body(
             | Expr::BinaryExpression(_)
             | Expr::FunctionExpression(_)
             | Expr::CallExpression(_)
+            | Expr::CallExpressionKw(_)
             | Expr::PipeExpression(_)
             | Expr::PipeSubstitution(_)
             | Expr::ArrayExpression(_)
@@ -354,6 +355,12 @@ async fn inner_execute_pipe_body(
     // Safe to unwrap here, because pipe_value always has something pushed in when the `match first` executes.
     let final_output = exec_state.pipe_value.take().unwrap();
     Ok(final_output)
+}
+
+impl Node<CallExpressionKw> {
+    pub async fn execute(&self, _exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        todo!()
+    }
 }
 
 impl Node<CallExpression> {
@@ -747,7 +754,7 @@ impl Node<IfExpression> {
 
 #[derive(Debug)]
 enum Property {
-    Number(usize),
+    UInt(usize),
     String(String),
 }
 
@@ -775,9 +782,9 @@ impl Property {
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::IInteger(x) => {
-                        if let Ok(x) = u64::try_from(x) {
-                            Ok(Property::Number(x.try_into().unwrap()))
+                    LiteralValue::Number(x) => {
+                        if let Some(x) = crate::try_f64_to_usize(x) {
+                            Ok(Property::UInt(x))
                         } else {
                             Err(KclError::Semantic(KclErrorDetails {
                                 source_ranges: property_sr,
@@ -788,7 +795,7 @@ impl Property {
                     LiteralValue::String(s) => Ok(Property::String(s)),
                     _ => Err(KclError::Semantic(KclErrorDetails {
                         source_ranges: vec![sr],
-                        message: "Only strings or ints (>= 0) can be properties/indexes".to_owned(),
+                        message: "Only strings or numbers (>= 0) can be properties/indexes".to_owned(),
                     })),
                 }
             }
@@ -807,7 +814,7 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
         KclValue::Int { value:num, meta: _ } => {
             let maybe_int: Result<usize, _> = (*num).try_into();
             if let Ok(uint) = maybe_int {
-                Ok(Property::Number(uint))
+                Ok(Property::UInt(uint))
             }
             else {
                 make_err(format!("'{num}' is negative, so you can't index an array with it"))
@@ -821,7 +828,7 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
             let nearest_int = num.round();
             let delta = num-nearest_int;
             if delta < FLOAT_TO_INT_MAX_DELTA {
-                Ok(Property::Number(nearest_int as usize))
+                Ok(Property::UInt(nearest_int as usize))
             } else {
                 make_err(format!("'{num}' is not an integer, so you can't index an array with it"))
             }
@@ -835,7 +842,7 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
 impl Property {
     fn type_name(&self) -> &'static str {
         match self {
-            Property::Number(_) => "number",
+            Property::UInt(_) => "number",
             Property::String(_) => "string",
         }
     }

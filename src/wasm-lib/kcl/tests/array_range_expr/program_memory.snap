@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing array_range_expr.kcl
 snapshot_kind: text
 ---
@@ -28,8 +29,8 @@ snapshot_kind: text
           "__meta": []
         },
         "five": {
-          "type": "Int",
-          "value": 5,
+          "type": "Number",
+          "value": 5.0,
           "__meta": [
             {
               "sourceRange": [
@@ -41,8 +42,8 @@ snapshot_kind: text
           ]
         },
         "four": {
-          "type": "Int",
-          "value": 4,
+          "type": "Number",
+          "value": 4.0,
           "__meta": [
             {
               "sourceRange": [
@@ -370,8 +371,8 @@ snapshot_kind: text
           ]
         },
         "zero": {
-          "type": "Int",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": [
             {
               "sourceRange": [

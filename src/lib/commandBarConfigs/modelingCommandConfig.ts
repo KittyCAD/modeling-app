@@ -49,6 +49,10 @@ export type ModelingCommandSchema = {
     selection: Selections
     radius: KclCommandValue
   }
+  'Offset plane': {
+    plane: Selections
+    distance: KclCommandValue
+  }
   'change tool': {
     tool: SketchTool
   }
@@ -298,9 +302,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Offset plane': {
+    description: 'Offset a plane.',
+    icon: 'plane',
+    args: {
+      plane: {
+        inputType: 'selection',
+        selectionTypes: ['plane'],
+        multiple: false,
+        required: true,
+        skip: true,
+      },
+      distance: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
   Fillet: {
     description: 'Fillet edge',
     icon: 'fillet',
+    status: 'development',
     needsReview: true,
     args: {
       selection: {

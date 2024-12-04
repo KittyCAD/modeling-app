@@ -123,6 +123,7 @@ describe('Testing addSketchTo', () => {
     const result = addSketchTo(
       {
         body: [],
+        shebang: null,
         start: 0,
         end: 0,
         moduleId: 0,
@@ -518,27 +519,27 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       ],
       [
         'angledLineOfXLength',
-        'angledLineOfXLength({ angle: 45.5, length: 198.85 }, %, $a)',
+        'angledLineOfXLength({ angle = 45.5, length = 198.85 }, %, $a)',
         ['283.7', '45.5'],
       ],
       [
         'angledLineOfYLength',
-        'angledLineOfYLength({ angle: 45.5, length: 198.85 }, %, $a)',
+        'angledLineOfYLength({ angle = 45.5, length = 198.85 }, %, $a)',
         ['278.79', '45.5'],
       ],
       [
         'angledLineToX',
-        'angledLineToX({ angle: 45.5, to: 198.85 }, %, $a)',
+        'angledLineToX({ angle = 45.5, to = 198.85 }, %, $a)',
         ['231.33', '134.5'],
       ],
       [
         'angledLineToY',
-        'angledLineToY({ angle: 45.5, to: 198.85 }, %, $a)',
+        'angledLineToY({ angle = 45.5, to = 198.85 }, %, $a)',
         ['134.51', '45.5'],
       ],
       [
         'angledLineThatIntersects',
-        `angledLineThatIntersects({ angle: 45.5, intersectTag: b, offset: 198.85 }, %, $a)`,
+        `angledLineThatIntersects({ angle = 45.5, intersectTag = b, offset = 198.85 }, %, $a)`,
         ['918.4', '45.5'],
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
@@ -572,26 +573,26 @@ describe('Testing removeSingleConstraintInfo', () => {
     const code = `part001 = startSketchOn('-XZ')
   |> startProfileAt([0, 0], %)
   |> line([3 + 0, 4 + 0], %)
-  |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+  |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
   |> lineTo([6.14 + 0, 3.14 + 0], %)
   |> xLineTo(8 + 0, %)
   |> yLineTo(5 + 0, %)
   |> yLine(3.14 + 0, %, $a)
   |> xLine(3.14 + 0, %)
-  |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 + 0 }, %)
-  |> angledLineOfYLength({ angle: 30 + 0, length: 3 + 0 }, %)
-  |> angledLineToX({ angle: 12.14 + 0, to: 12 + 0 }, %)
-  |> angledLineToY({ angle: 30 + 0, to: 10.14 + 0 }, %)
+  |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 + 0 }, %)
+  |> angledLineOfYLength({ angle = 30 + 0, length = 3 + 0 }, %)
+  |> angledLineToX({ angle = 12.14 + 0, to = 12 + 0 }, %)
+  |> angledLineToY({ angle = 30 + 0, to = 10.14 + 0 }, %)
   |> angledLineThatIntersects({
-        angle: 3.14 + 0,
-        intersectTag: a,
-        offset: 0 + 0
+        angle = 3.14 + 0,
+        intersectTag = a,
+        offset = 0 + 0
       }, %)
   |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
     test.each([
       [' line([3 + 0, 4], %)', 'arrayIndex', 1],
       [
-        'angledLine({ angle: 3, length: 3.14 + 0 }, %)',
+        'angledLine({ angle = 3, length = 3.14 + 0 }, %)',
         'objectProperty',
         'angle',
       ],
@@ -601,30 +602,30 @@ describe('Testing removeSingleConstraintInfo', () => {
       ['yLine(3.14, %, $a)', '', ''],
       ['xLine(3.14, %)', '', ''],
       [
-        'angledLineOfXLength({ angle: 3, length: 3.14 + 0 }, %)',
+        'angledLineOfXLength({ angle = 3, length = 3.14 + 0 }, %)',
         'objectProperty',
         'angle',
       ],
       [
-        'angledLineOfYLength({ angle: 30 + 0, length: 3 }, %)',
+        'angledLineOfYLength({ angle = 30 + 0, length = 3 }, %)',
         'objectProperty',
         'length',
       ],
       [
-        'angledLineToX({ angle: 12.14 + 0, to: 12 }, %)',
+        'angledLineToX({ angle = 12.14 + 0, to = 12 }, %)',
         'objectProperty',
         'to',
       ],
       [
-        'angledLineToY({ angle: 30, to: 10.14 + 0 }, %)',
+        'angledLineToY({ angle = 30, to = 10.14 + 0 }, %)',
         'objectProperty',
         'angle',
       ],
       [
         `angledLineThatIntersects({
-       angle: 3.14 + 0,
-       offset: 0,
-       intersectTag: a
+       angle = 3.14 + 0,
+       offset = 0,
+       intersectTag = a
      }, %)`,
         'objectProperty',
         'offset',
@@ -801,11 +802,11 @@ sketch001 = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 sketch002 = startSketchOn({
-       plane: {
-         origin: { x: 1, y: 2, z: 3 },
-         x_axis: { x: 4, y: 5, z: 6 },
-         y_axis: { x: 7, y: 8, z: 9 },
-         z_axis: { x: 10, y: 11, z: 12 }
+       plane = {
+         origin = { x = 1, y = 2, z = 3 },
+         x_axis = { x = 4, y = 5, z = 6 },
+         y_axis = { x = 7, y = 8, z = 9 },
+         z_axis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)
@@ -857,11 +858,11 @@ sketch001 = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 sketch002 = startSketchOn({
-       plane: {
-         origin: { x: 1, y: 2, z: 3 },
-         x_axis: { x: 4, y: 5, z: 6 },
-         y_axis: { x: 7, y: 8, z: 9 },
-         z_axis: { x: 10, y: 11, z: 12 }
+       plane = {
+         origin = { x = 1, y = 2, z = 3 },
+         x_axis = { x = 4, y = 5, z = 6 },
+         y_axis = { x = 7, y = 8, z = 9 },
+         z_axis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)

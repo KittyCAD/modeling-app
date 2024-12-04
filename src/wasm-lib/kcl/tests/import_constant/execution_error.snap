@@ -3,4 +3,11 @@ source: kcl/src/simulation_tests.rs
 description: Error from executing import_constant.kcl
 snapshot_kind: text
 ---
-engine: KclErrorDetails { source_ranges: [SourceRange([0, 39, 0])], message: "Failed to read file `export_constant.kcl`: No such file or directory (os error 2)" }
+KCL Engine error
+
+  × engine: Failed to read file `export_constant.kcl`: No such file or
+  │ directory (os error 2)
+   ╭────
+ 1 │ import three from "export_constant.kcl"
+   · ───────────────────────────────────────
+   ╰────

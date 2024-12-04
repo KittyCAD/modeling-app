@@ -13,8 +13,8 @@ const sketch001 = startSketchOn('XZ')
   |> close(%)
 const extrude001 = extrude(100, sketch001)
   |> chamfer({
-       length: 30,
-       tags: [
+       length = 30,
+       tags = [
          seg01,
          getNextAdjacentEdge(yo),
          getNextAdjacentEdge(seg02),
