@@ -529,6 +529,10 @@ function nodeHasExtrude(node: CommonASTNode) {
     doesPipeHaveCallExp({
       calleeName: 'revolve',
       ...node,
+    }) ||
+    doesPipeHaveCallExp({
+      calleeName: 'loft',
+      ...node,
     })
   )
 }
@@ -555,6 +559,22 @@ export function canSweepSelection(selection: Selections) {
     commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
     (commonNodes.every((n) => nodeHasClose(n)) ||
       commonNodes.every((n) => nodeHasCircle(n))) &&
+    commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
+export function canLoftSelection(selection: Selections) {
+  const commonNodes = selection.graphSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  return (
+    !!isCursorInSketchCommandRange(
+      engineCommandManager.artifactGraph,
+      selection
+    ) &&
+    commonNodes.length > 1 &&
+    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
+    commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n)) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
   )
 }

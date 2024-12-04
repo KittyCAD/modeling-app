@@ -346,6 +346,37 @@ export function extrudeSketch(
   }
 }
 
+export function loftSketches(
+  node: Node<Program>,
+  declarators: VariableDeclarator[]
+): {
+  modifiedAst: Node<Program>
+  pathToNode: PathToNode
+} {
+  const modifiedAst = structuredClone(node)
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
+  const elements = declarators.map((d) => createIdentifier(d.id.name))
+  const loft = createCallExpressionStdLib('loft', [
+    createArrayExpression(elements),
+  ])
+  const declaration = createVariableDeclaration(name, loft)
+  modifiedAst.body.push(declaration)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    ['0', 'index'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
 export function revolveSketch(
   node: Node<Program>,
   pathToNode: PathToNode,
