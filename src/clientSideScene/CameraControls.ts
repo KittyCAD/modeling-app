@@ -273,14 +273,26 @@ export class CameraControls {
         camSettings.center.y,
         camSettings.center.z
       )
-      const quat = new Quaternion(
+      const orientation = new Quaternion(
         camSettings.orientation.x,
         camSettings.orientation.y,
         camSettings.orientation.z,
         camSettings.orientation.w
       ).invert()
 
-      this.camera.up.copy(new Vector3(0, 1, 0).applyQuaternion(quat))
+      const newUp = new Vector3(
+        camSettings.up.x,
+        camSettings.up.y,
+        camSettings.up.z
+      )
+      this.camera.quaternion.set(
+        orientation.x,
+        orientation.y,
+        orientation.z,
+        orientation.w
+      )
+      this.camera.up.copy(newUp)
+      this.camera.updateProjectionMatrix()
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
         this.useOrthographicCamera()
       }
@@ -1164,7 +1176,7 @@ export class CameraControls {
       this.camera.updateProjectionMatrix()
     }
 
-    if (this.syncDirection === 'clientToEngine' || forceUpdate)
+    if (this.syncDirection === 'clientToEngine' || forceUpdate) {
       this.throttledUpdateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,
@@ -1172,6 +1184,7 @@ export class CameraControls {
         isPerspective: this.isPerspective,
         target: this.target,
       })
+    }
     this.deferReactUpdate(this.reactCameraProperties)
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
