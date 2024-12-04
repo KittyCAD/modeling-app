@@ -46,7 +46,6 @@ import {
   addOffsetPlane,
   deleteFromSelection,
   extrudeSketch,
-  revolveSketch,
 } from 'lang/modifyAst'
 import {
   applyEdgeTreatmentToSelection,
