@@ -348,30 +348,14 @@ export function extrudeSketch(
 
 export function loftSketches(
   node: Node<Program>,
-  nodePaths: PathToNode[]
-):
-  | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
-    }
-  | Error {
+  declarators: VariableDeclarator[]
+): {
+  modifiedAst: Node<Program>
+  pathToNode: PathToNode
+} {
   const modifiedAst = structuredClone(node)
-  const elements = []
-  for (const path of nodePaths) {
-    const nodeFromPath = getNodeFromPath<VariableDeclarator>(
-      modifiedAst,
-      path,
-      'VariableDeclarator'
-    )
-
-    if (err(nodeFromPath)) {
-      return nodeFromPath
-    }
-
-    elements.push(createIdentifier(nodeFromPath.node.id.name))
-  }
-
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
+  const elements = declarators.map((d) => createIdentifier(d.id.name))
   const loft = createCallExpressionStdLib('loft', [
     createArrayExpression(elements),
   ])

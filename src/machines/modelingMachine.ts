@@ -1547,20 +1547,23 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection } = input
+        const declarators = selection.graphSelections.flatMap((s) => {
+          const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
+          const nodeFromPath = getNodeFromPath<VariableDeclarator>(
+            ast,
+            path,
+            'VariableDeclarator'
+          )
+          return err(nodeFromPath) ? [] : nodeFromPath.node
+        })
 
-        // Perform the loft
-        const nodePaths = selection.graphSelections.map((s) =>
-          getNodePathFromSourceRange(ast, s?.codeRef.range)
-        )
         // TODO: add better validation on selection
-        if (!(nodePaths && nodePaths.length > 1)) {
+        if (!(declarators && declarators.length > 1)) {
           trap('Not enough sketches selected')
         }
 
         // Preform the loft
-        const loftSketchesRes = loftSketches(ast, nodePaths)
-        // TODO: improve this
-        if (trap(loftSketchesRes)) return
+        const loftSketchesRes = loftSketches(ast, declarators)
         const updateAstResult = await kclManager.updateAst(
           loftSketchesRes.modifiedAst,
           true,
