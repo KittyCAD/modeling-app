@@ -45,6 +45,7 @@ import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Artifact } from './std/artifactGraph'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -602,18 +603,29 @@ export function addOffsetPlane({
  */
 export function addShell({
   node,
-  face,
+  selection,
   thickness,
 }: {
   node: Node<Program>
-  face: PathToNode
+  selection: Selection
   thickness: Expr
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
   const modifiedAst = structuredClone(node)
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
   // TODO: change to what's needed for shell
-  console.log(face, thickness)
-  const shell = createCallExpressionStdLib('shell', [])
+  console.log('selection, thickness', selection, thickness)
+  const baseNode = getNodeFromPath<VariableDeclarator>(
+    node,
+    selection.codeRef.pathToNode,
+    'VariableDeclarator'
+  )
+  console.log('baseNode', baseNode)
+  if (err(baseNode)) return baseNode
+  console.log("selection.artifact['subType']", selection.artifact['subType'])
+  const shell = createCallExpressionStdLib('shell', [
+    createObjectExpression({ faces: [ selection.artifact['subType'] ], thickness }),
+    createIdentifier(baseNode.node.id.name),
+  ])
   const declaration = createVariableDeclaration(name, shell)
   modifiedAst.body.push(declaration)
 

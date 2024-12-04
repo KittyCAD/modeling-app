@@ -193,7 +193,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         onClick: ({ commandBarSend }) => {
           commandBarSend({
             type: 'Find and select command',
-            data: { name: 'Offset plane', groupId: 'modeling' },
+            data: { name: 'Shell', groupId: 'modeling' },
           })
         },
         disabled: (state) => !state.can({ type: 'Shell' }),

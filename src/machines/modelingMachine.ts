@@ -259,6 +259,7 @@ export type ModelingMachineEvent =
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
+  | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
@@ -1595,9 +1596,10 @@ export const modelingMachine = setup({
         const { selection, thickness } = input
 
         // TODO: extract selection
-        // const plane = selection.otherSelections[0]
-        // if (!(plane && plane instanceof Object && 'name' in plane))
-        //   return trap('No plane selected')
+        console.log('selection', selection)
+        const graphSelection = selection.graphSelections[0]
+        if (!(graphSelection && graphSelection instanceof Object))
+          return trap('No plane selected')
 
         // Insert the thickness variable if it exists
         if (
@@ -1619,13 +1621,14 @@ export const modelingMachine = setup({
 
         const shellResult = addShell({
           node: ast,
-          face: selection.graphSelections[0],
+          selection: graphSelection,
           thickness:
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
         })
 
+        if (trap(shellResult)) return
         const updateAstResult = await kclManager.updateAst(
           shellResult.modifiedAst,
           true,

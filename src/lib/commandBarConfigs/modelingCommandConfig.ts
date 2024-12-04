@@ -288,10 +288,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['face'],
-        multiple: true,
+        selectionTypes: ['cap', 'wall'],
+        // TODO: check if we can have multiple here
+        multiple: false,
         required: true,
-        skip: false,
+        skip: true,
       },
       thickness: {
         inputType: 'kcl',
