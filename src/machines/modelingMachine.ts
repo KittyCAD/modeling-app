@@ -1562,7 +1562,7 @@ export const modelingMachine = setup({
           trap('Not enough sketches selected')
         }
 
-        // Preform the loft
+        // Perform the loft
         const loftSketchesRes = loftSketches(ast, declarators)
         const updateAstResult = await kclManager.updateAst(
           loftSketchesRes.modifiedAst,
