@@ -692,24 +692,24 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
     cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn('XZ')
-  |> circle({ center = [0, 0], radius = 40 }, %)
-plane001 = offsetPlane('XZ', -40)
-sketch002 = startSketchOn(plane001)
-  |> circle({ center = [0, 0], radius = 20 }, %)
+    |> circle({ center = [0, 0], radius = 30 }, %)
+    plane001 = offsetPlane('XZ', 50)
+    sketch002 = startSketchOn(plane001)
+    |> circle({ center = [0, 0], radius = 20 }, %)
 `
     await app.initialise(initialCode)
 
     // One dumb hardcoded screen pixel value
-    const testPoint = { x: 560, y: 275 }
+    const testPoint = { x: 575, y: 200 }
     const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const [clickOnSketch2] = scene.makeMouseHelpers(
-      testPoint.x + 20,
-      testPoint.y
+      testPoint.x,
+      testPoint.y + 80
     )
     const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
 
     await test.step(`Look for the white of the sketch001 shape`, async () => {
-      await scene.expectPixelColor([208, 208, 208], testPoint, 15)
+      await scene.expectPixelColor([254, 254, 254], testPoint, 15)
     })
 
     async function selectSketches() {
@@ -764,7 +764,7 @@ sketch002 = startSketchOn(plane001)
         activeLines: [loftDeclaration],
         highlightedCode: '',
       })
-      await scene.expectPixelColor([16, 16, 16], testPoint, 15)
+      await scene.expectPixelColor([89, 89, 89], testPoint, 15)
     })
   })
 })
