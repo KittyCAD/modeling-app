@@ -150,11 +150,6 @@
     "description": "A tire is a critical component of a vehicle that provides the necessary traction and grip between the car and the road. It supports the vehicle's weight and absorbs shocks from road irregularities."
   },
   {
-    "file": "wall-e.kcl",
-    "title": "WALL-E",
-    "description": "An inquisitive trash compacting robot imagined by Disney Pixar Animation Studios"
-  },
-  {
     "file": "washer.kcl",
     "title": "Washer",
     "description": "A small, typically disk-shaped component with a hole in the middle, used in a wide range of applications, primarily in conjunction with fasteners like bolts and screws. Washers distribute the load of a fastener across a broader area. This is especially important when the fastening surface is soft or uneven, as it helps to prevent damage to the surface and ensures the load is evenly distributed, reducing the risk of the fastener becoming loose over time."
