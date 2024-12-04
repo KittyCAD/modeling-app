@@ -306,20 +306,20 @@ test.describe('Testing selections', () => {
     |> line([thickness, 0], %)
     |> line([0, -1], %)
     |> angledLineToX({
-     angle: 60,
-     to: pipeSmallDia + thickness
+     angle = 60,
+     to = pipeSmallDia + thickness
    }, %)
     |> line([0, -pipeLength], %)
     |> angledLineToX({
-     angle: -60,
-     to: pipeLargeDia + thickness
+     angle = -60,
+     to = pipeLargeDia + thickness
    }, %)
     |> line([0, -1], %)
     |> line([-thickness, 0], %)
     |> line([0, 1], %)
-    |> angledLineToX({ angle: 120, to: pipeSmallDia }, %)
+    |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
     |> line([0, pipeLength], %)
-    |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
+    |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
     |> close(%)
   rev = revolve({ axis: 'y' }, part009)
   `
@@ -387,27 +387,27 @@ test.describe('Testing selections', () => {
       `extrude001 = extrude(50, sketch001)`
     )
     await expect(u.codeLocator).toContainText(`sketch005 = startSketchOn({
-     plane: {
-       origin: { x: 0, y: -50, z: 0 },
-       x_axis: { x: 1, y: 0, z: 0 },
-       y_axis: { x: 0, y: 0, z: 1 },
-       z_axis: { x: 0, y: -1, z: 0 }
+     plane = {
+       origin = { x = 0, y = -50, z = 0 },
+       x_axis = { x = 1, y = 0, z = 0 },
+       y_axis = { x = 0, y = 0, z = 1 },
+       z_axis = { x = 0, y = -1, z = 0 }
      }
    })`)
     await expect(u.codeLocator).toContainText(`sketch003 = startSketchOn({
-     plane: {
-       origin: { x: 116.53, y: 0, z: 163.25 },
-       x_axis: { x: -0.81, y: 0, z: 0.58 },
-       y_axis: { x: 0, y: -1, z: 0 },
-       z_axis: { x: 0.58, y: 0, z: 0.81 }
+     plane = {
+       origin = { x = 116.53, y = 0, z = 163.25 },
+       x_axis = { x = -0.81, y = 0, z = 0.58 },
+       y_axis = { x = 0, y = -1, z = 0 },
+       z_axis = { x = 0.58, y = 0, z = 0.81 }
      }
    })`)
     await expect(u.codeLocator).toContainText(`sketch002 = startSketchOn({
-     plane: {
-       origin: { x: -91.74, y: 0, z: 80.89 },
-       x_axis: { x: -0.66, y: 0, z: -0.75 },
-       y_axis: { x: 0, y: -1, z: 0 },
-       z_axis: { x: -0.75, y: 0, z: 0.66 }
+     plane = {
+       origin = { x = -91.74, y = 0, z = 80.89 },
+       x_axis = { x = -0.66, y = 0, z = -0.75 },
+       y_axis = { x = 0, y = -1, z = 0 },
+       z_axis = { x = -0.75, y = 0, z = 0.66 }
      }
    })`)
 
@@ -499,19 +499,19 @@ test.describe('Testing selections', () => {
         `part001 = startSketchOn('XZ')
   |> startProfileAt([20, 0], %)
   |> line([7.13, 4 + 0], %)
-  |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+  |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
   |> lineTo([20.14 + 0, -0.14 + 0], %)
   |> xLineTo(29 + 0, %)
   |> yLine(-3.14 + 0, %, $a)
   |> xLine(1.63, %)
-  |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
-  |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
-  |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
-  |> angledLineToY({ angle: 30, to: 11.14 }, %)
+  |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 }, %)
+  |> angledLineOfYLength({ angle = 30, length = 3 + 0 }, %)
+  |> angledLineToX({ angle = 22.14 + 0, to = 12 }, %)
+  |> angledLineToY({ angle = 30, to = 11.14 }, %)
   |> angledLineThatIntersects({
-        angle: 3.14,
-        intersectTag: a,
-        offset: 0
+        angle = 3.14,
+        intersectTag = a,
+        offset = 0
       }, %)
   |> tangentialArcTo([13.14 + 0, 13.14], %)
   |> close(%)
@@ -735,8 +735,8 @@ test.describe('Testing selections', () => {
     |> close(%)
   extrude001 = extrude(100, sketch001)
     |> chamfer({
-     length: 30,
-     tags: [
+     length = 30,
+     tags = [
        seg01,
        getNextAdjacentEdge(yo),
        getNextAdjacentEdge(seg02),
@@ -831,9 +831,11 @@ test.describe('Testing selections', () => {
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
+    editor,
     homePage,
   }) => {
     const u = await getUtils(page)
+
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -854,17 +856,20 @@ test.describe('Testing selections', () => {
     `
       )
     })
-    await page.setBodyDimensions({ width: 1000, height: 500 })
 
+    await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
     // wait for execution done
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    const selectUnExtrudable = () =>
-      page.getByText(`line([4.99, -0.46], %, $seg01)`).click()
+    const selectUnExtrudable = async () => {
+      await editor.scrollToText(`line([4.99, -0.46], %, $seg01)`)
+      await page.getByText(`line([4.99, -0.46], %, $seg01)`).click()
+    }
     const clickEmpty = () => page.mouse.click(700, 460)
     await selectUnExtrudable()
     // expect extrude button to be disabled
@@ -874,6 +879,7 @@ test.describe('Testing selections', () => {
 
     // expect active line to contain nothing
     await expect(page.locator('.cm-activeLine')).toHaveText('')
+
     // and extrude to still be disabled
     await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
 

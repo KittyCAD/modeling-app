@@ -61,35 +61,38 @@ export function test(desc, objOrFn, fnMaybe) {
         await tronApp.page.reload()
       }
 
-      if (tronApp instanceof AuthenticatedTronApp) {
-        // Create a consistent way to resize the page across electron and web.
-        // (lee) I had to do everyhting in the book to make electron change its
-        // damn window size. I succeded in making it consistently and reliably
-        // do it after a whole afternoon.
-        tronApp.page.setBodyDimensions = async function (dims: {
-          width: number
-          height: number
-        }) {
-          await tronApp.electronApp.evaluateHandle(async ({ app }, dims) => {
-            await app.resizeWindow(dims.width, dims.height)
-          }, dims)
+      // Create a consistent way to resize the page across electron and web.
+      // (lee) I had to do everyhting in the book to make electron change its
+      // damn window size. I succeded in making it consistently and reliably
+      // do it after a whole afternoon.
+      tronApp.page.setBodyDimensions = async function (dims: {
+        width: number
+        height: number
+      }) {
+        await tronApp.page.setViewportSize(dims)
 
-          await tronApp.page.setViewportSize(dims)
-          return tronApp.page.evaluate(async (dims) => {
-            await window.electron.resizeWindow(dims.width, dims.height)
-            window.document.body.style.width = dims.width + 'px'
-            window.document.body.style.height = dims.height + 'px'
-            window.document.documentElement.style.width = dims.width + 'px'
-            window.document.documentElement.style.height = dims.height + 'px'
-          }, dims)
+        if (!(tronApp instanceof AuthenticatedTronApp)) {
+          return
         }
 
-        // We need to expose this in order for some tests that require folder
-        // creation. Before they used to do this by their own electronSetup({...})
-        // calls.
-        tronApp.context.folderSetupFn = function (fn) {
-          return fn(tronApp.dir).then(() => ({ dir: tronApp.dir }))
-        }
+        await tronApp.electronApp.evaluateHandle(async ({ app }, dims) => {
+          await app.resizeWindow(dims.width, dims.height)
+        }, dims)
+
+        return tronApp.page.evaluate(async (dims) => {
+          await window.electron.resizeWindow(dims.width, dims.height)
+          window.document.body.style.width = dims.width + 'px'
+          window.document.body.style.height = dims.height + 'px'
+          window.document.documentElement.style.width = dims.width + 'px'
+          window.document.documentElement.style.height = dims.height + 'px'
+        }, dims)
+      }
+
+      // We need to expose this in order for some tests that require folder
+      // creation. Before they used to do this by their own electronSetup({...})
+      // calls.
+      tronApp.context.folderSetupFn = function (fn) {
+        return fn(tronApp.dir).then(() => ({ dir: tronApp.dir }))
       }
 
       await fn(

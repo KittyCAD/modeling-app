@@ -4,6 +4,7 @@ import { SceneFixture } from './fixtures/sceneFixture'
 import { ToolbarFixture } from './fixtures/toolbarFixture'
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { getUtils } from './test-utils'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -38,7 +39,7 @@ test('verify extruding circle works', async ({
   await test.step('check code model connection works and that button is still enable once circle is selected ', async () => {
     await moveToCircle()
     const circleSnippet =
-      'circle({ center: [318.33, 168.1], radius: 182.8 }, %)'
+      'circle({ center = [318.33, 168.1], radius = 182.8 }, %)'
     await editor.expectState({
       activeLines: ["constsketch002=startSketchOn('XZ')"],
       highlightedCode: circleSnippet,
@@ -213,7 +214,7 @@ test.describe('verify sketch on chamfer works', () => {
     ]}, %)`,
 
       afterChamferSelectSnippet: 'sketch002 = startSketchOn(extrude001, seg03)',
-      afterRectangle1stClickSnippet: 'startProfileAt([160.39, 254.59], %)',
+      afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
     |> angledLine([
          segAng(rectangleSegmentA002) - 90,
@@ -244,7 +245,7 @@ test.describe('verify sketch on chamfer works', () => {
        }, %)`,
 
       afterChamferSelectSnippet: 'sketch003 = startSketchOn(extrude001, seg04)',
-      afterRectangle1stClickSnippet: 'startProfileAt([-255.89, 255.28], %)',
+      afterRectangle1stClickSnippet: 'startProfileAt([-209.64, 255.28], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
     |> angledLine([
          segAng(rectangleSegmentA003) - 90,
@@ -269,7 +270,7 @@ test.describe('verify sketch on chamfer works', () => {
          ]
        }, %)`,
       afterChamferSelectSnippet: 'sketch003 = startSketchOn(extrude001, seg04)',
-      afterRectangle1stClickSnippet: 'startProfileAt([37.95, 322.96], %)',
+      afterRectangle1stClickSnippet: 'startProfileAt([75.8, 317.2], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
     |> angledLine([
          segAng(rectangleSegmentA003) - 90,
@@ -292,7 +293,7 @@ test.describe('verify sketch on chamfer works', () => {
          tags = [getNextAdjacentEdge(yo)]
        }, %)`,
       afterChamferSelectSnippet: 'sketch005 = startSketchOn(extrude001, seg06)',
-      afterRectangle1stClickSnippet: 'startProfileAt([-59.83, 19.69], %)',
+      afterRectangle1stClickSnippet: 'startProfileAt([-23.43, 19.69], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 9.1], %, $rectangleSegmentA005)
 
     |> angledLine([
@@ -338,7 +339,7 @@ test.describe('verify sketch on chamfer works', () => {
            tags = [getNextAdjacentEdge(yo)]
          }, %, $seg06)
     sketch005 = startSketchOn(extrude001, seg06)
-      |> startProfileAt([-59.83,19.69], %)
+      |> startProfileAt([-23.43,19.69], %)
       |> angledLine([0, 9.1], %, $rectangleSegmentA005)
       |> angledLine([
            segAng(rectangleSegmentA005) - 90,
@@ -351,7 +352,7 @@ test.describe('verify sketch on chamfer works', () => {
       |> lineTo([profileStartX(%), profileStartY(%)], %)
       |> close(%)
     sketch004 = startSketchOn(extrude001, seg05)
-      |> startProfileAt([37.95,322.96], %)
+      |> startProfileAt([82.57,322.96], %)
       |> angledLine([0, 11.16], %, $rectangleSegmentA004)
       |> angledLine([
            segAng(rectangleSegmentA004) - 90,
@@ -364,7 +365,7 @@ test.describe('verify sketch on chamfer works', () => {
       |> lineTo([profileStartX(%), profileStartY(%)], %)
       |> close(%)
     sketch003 = startSketchOn(extrude001, seg04)
-      |> startProfileAt([-255.89,255.28], %)
+      |> startProfileAt([-209.64,255.28], %)
       |> angledLine([0, 11.56], %, $rectangleSegmentA003)
       |> angledLine([
            segAng(rectangleSegmentA003) - 90,
@@ -377,7 +378,7 @@ test.describe('verify sketch on chamfer works', () => {
       |> lineTo([profileStartX(%), profileStartY(%)], %)
       |> close(%)
     sketch002 = startSketchOn(extrude001, seg03)
-      |> startProfileAt([160.39,254.59], %)
+      |> startProfileAt([205.96,254.59], %)
       |> angledLine([0, 11.39], %, $rectangleSegmentA002)
       |> angledLine([
            segAng(rectangleSegmentA002) - 90,
@@ -417,6 +418,8 @@ test.describe('verify sketch on chamfer works', () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
 
+    const sketchOnAChamfer = _sketchOnAChamfer(page, editor, toolbar, scene)
+
     await sketchOnAChamfer({
       clickCoords: { x: 570, y: 220 },
       cameraPos: { x: 16020, y: -2000, z: 10500 },
@@ -430,7 +433,7 @@ test.describe('verify sketch on chamfer works', () => {
     ]}, extrude001)`,
       beforeChamferSnippetEnd: '}, extrude001)',
       afterChamferSelectSnippet: 'sketch002 = startSketchOn(extrude001, seg03)',
-      afterRectangle1stClickSnippet: 'startProfileAt([160.39, 254.59], %)',
+      afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
       afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
     |> angledLine([
          segAng(rectangleSegmentA002) - 90,
@@ -471,7 +474,7 @@ chamf = chamfer({
        ]
      }, %)
 sketch002 = startSketchOn(extrude001, seg03)
-  |> startProfileAt([160.39, 254.59], %)
+  |> startProfileAt([205.96, 254.59], %)
   |> angledLine([0, 11.39], %, $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) - 90,
@@ -595,11 +598,15 @@ test(`Verify axis, origin, and horizontal snapping`, async ({
 })
 
 test(`Verify user can double-click to edit a sketch`, async ({
-  app,
+  context,
+  page,
+  homePage,
   editor,
   toolbar,
   scene,
 }) => {
+  const u = await getUtils(page)
+
   const initialCode = `closedSketch = startSketchOn('XZ')
   |> circle({ center = [8, 5], radius = 2 }, %)
 openSketch = startSketchOn('XY')
@@ -608,15 +615,30 @@ openSketch = startSketchOn('XY')
   |> xLine(5, %)
   |> tangentialArcTo([10, 0], %)
 `
-  await app.initialise(initialCode)
+  const viewPortSize = { width: 1200, height: 500 }
+  await page.setBodyDimensions(viewPortSize)
+
+  await context.addInitScript((code) => {
+    localStorage.setItem('persistCode', code)
+  }, initialCode)
+
+
+  await homePage.goToModelingScene()
+  await u.waitForPageLoad()
+  await page.waitForTimeout(1000)
+
+  const pointOnSketchArea = {
+    x: viewPortSize.width * 0.7,
+    y: viewPortSize.height * 0.7,
+  }
 
   const pointInsideCircle = {
-    x: app.viewPortSize.width * 0.63,
-    y: app.viewPortSize.height * 0.5,
+    x: viewPortSize.width * 0.55,
+    y: viewPortSize.height * 0.5,
   }
   const pointOnPathAfterSketching = {
-    x: app.viewPortSize.width * 0.58,
-    y: app.viewPortSize.height * 0.5,
+    x: viewPortSize.width * 0.65,
+    y: viewPortSize.height * 0.5,
   }
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
@@ -649,40 +671,53 @@ openSketch = startSketchOn('XY')
       diagnostics: [],
     })
   })
+  await page.waitForTimeout(1000)
 
   await exitSketch()
+  await page.waitForTimeout(1000)
+
+  // Drag the sketch line out of the axis view which blocks the click
+  await page.dragAndDrop('#stream', '#stream', {
+    sourcePosition: { x: viewPortSize.width * 0.7, y: viewPortSize.height* 0.5 },
+    targetPosition: { x: viewPortSize.width * 0.7, y: viewPortSize.height* 0.4 },
+  })
+
+  await page.waitForTimeout(500)
 
   await test.step(`Double-click on the open sketch`, async () => {
     await moveToOpenPath()
     await scene.expectPixelColor([250, 250, 250], pointOnPathAfterSketching, 15)
     // There is a full execution after exiting sketch that clears the scene.
-    await app.page.waitForTimeout(500)
+    await page.waitForTimeout(500)
     await dblClickOpenPath()
     await expect(toolbar.startSketchBtn).not.toBeVisible()
     await expect(toolbar.exitSketchBtn).toBeVisible()
     // Wait for enter sketch mode to complete
-    await app.page.waitForTimeout(500)
+    await page.waitForTimeout(500)
     await editor.expectState({
-      activeLines: [`|>xLine(5,%)`],
-      highlightedCode: 'xLine(5,%)',
+      activeLines: [`|>tangentialArcTo([10,0],%)`],
+      highlightedCode: 'tangentialArcTo([10,0],%)',
       diagnostics: [],
     })
   })
 })
 
 test(`Offset plane point-and-click`, async ({
-  app,
+  context,
+  page,
+  homePage,
   scene,
   editor,
   toolbar,
   cmdBar,
 }) => {
-  await app.initialise()
 
   // One dumb hardcoded screen pixel value
   const testPoint = { x: 700, y: 150 }
   const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
   const expectedOutput = `plane001 = offsetPlane('XZ', 5)`
+
+  await homePage.goToModelingScene()
 
   await test.step(`Look for the blue of the XZ plane`, async () => {
     await scene.expectPixelColor([50, 51, 96], testPoint, 15)

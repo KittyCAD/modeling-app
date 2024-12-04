@@ -3,10 +3,10 @@
 // It also tests our test wrappers are working.
 // Additionally this serves as a nice minimal example.
 
-import { test as testZoo, expect } from './fixtures/fixtureSetup'
+import { test, expect } from './zoo-test'
 
-testZoo.describe('Open the application', () => {
-  testZoo('see the project view', async ({ tronApp: { page, context } }) => {
+test.describe('Open the application', () => {
+  test('see the project view', async ({ page, context }) => {
     await expect(page.getByTestId('home-section')).toBeVisible()
   })
 })
