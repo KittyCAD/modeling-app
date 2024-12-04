@@ -51,6 +51,7 @@ import {
   Selections,
   updateSelections,
   canLoftSelection,
+  canShellSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -596,10 +597,9 @@ export const ModelingMachineProvider = ({
             // return doesSceneHaveSweepableSketch(kclManager.ast, count)
           }
 
-          // const canShell = canShellSelection(selectionRanges)
-          // if (err(canShell)) return false
-          // return canShell
-          return true
+          const canShell = canShellSelection(selectionRanges)
+          if (err(canShell)) return false
+          return canShell
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },

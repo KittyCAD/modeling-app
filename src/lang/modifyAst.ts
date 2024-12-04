@@ -377,38 +377,6 @@ export function loftSketches(
   }
 }
 
-export function shellExtrude(
-  node: Node<Program>,
-  declarators: VariableDeclarator[]
-): {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-} {
-  const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
-  const elements = declarators.map((d) => createIdentifier(d.id.name))
-  // TODO: change to what's needed for shell
-  const shell = createCallExpressionStdLib('shell', [
-    createArrayExpression(elements),
-  ])
-  const declaration = createVariableDeclaration(name, shell)
-  modifiedAst.body.push(declaration)
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
 export function revolveSketch(
   node: Node<Program>,
   pathToNode: PathToNode,
@@ -614,6 +582,41 @@ export function addOffsetPlane({
   )
 
   modifiedAst.body.push(newPlane)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    ['0', 'index'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
+ * Append a shell to the AST
+ */
+export function addShell({
+  node,
+  face,
+  thickness,
+}: {
+  node: Node<Program>
+  face: PathToNode
+  thickness: Expr
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
+  // TODO: change to what's needed for shell
+  console.log(face, thickness)
+  const shell = createCallExpressionStdLib('shell', [])
+  const declaration = createVariableDeclaration(name, shell)
+  modifiedAst.body.push(declaration)
+
   const pathToNode: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],

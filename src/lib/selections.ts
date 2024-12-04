@@ -579,6 +579,22 @@ export function canLoftSelection(selection: Selections) {
   )
 }
 
+export function canShellSelection(selection: Selections) {
+  const commonNodes = selection.graphSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  return (
+    // TODO: check what's needed here
+    // !!isCursorInSketchCommandRange(
+    //   engineCommandManager.artifactGraph,
+    //   selection
+    // ) &&
+    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
+    commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n)) &&
+    commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
 // This accounts for non-geometry selections under "other"
 export type ResolvedSelectionType = Artifact['type'] | 'other'
 export type SelectionCountsByType = Map<ResolvedSelectionType, number>

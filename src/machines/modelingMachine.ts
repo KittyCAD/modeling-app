@@ -42,6 +42,7 @@ import {
 } from 'components/Toolbar/EqualLength'
 import {
   addOffsetPlane,
+  addShell,
   deleteFromSelection,
   extrudeSketch,
   loftSketches,
@@ -1582,6 +1583,66 @@ export const modelingMachine = setup({
         }
       }
     ),
+    shellAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Shell'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection, thickness } = input
+
+        // TODO: extract selection
+        // const plane = selection.otherSelections[0]
+        // if (!(plane && plane instanceof Object && 'name' in plane))
+        //   return trap('No plane selected')
+
+        // Insert the thickness variable if it exists
+        if (
+          'variableName' in thickness &&
+          thickness.variableName &&
+          thickness.insertIndex !== undefined
+        ) {
+          const newBody = [...ast.body]
+          newBody.splice(
+            thickness.insertIndex,
+            0,
+            thickness.variableDeclarationAst
+          )
+          ast.body = newBody
+        }
+
+        // Get the shell from the selection
+        if (err(selection.graphSelections[0])) return
+
+        const shellResult = addShell({
+          node: ast,
+          face: selection.graphSelections[0],
+          thickness:
+            'variableName' in thickness
+              ? thickness.variableIdentifierAst
+              : thickness.valueAst,
+        })
+
+        const updateAstResult = await kclManager.updateAst(
+          shellResult.modifiedAst,
+          true,
+          {
+            focusPath: [shellResult.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
   },
   // end services
 }).createMachine({
@@ -2383,6 +2444,19 @@ export const modelingMachine = setup({
         id: 'loftAstMod',
         input: ({ event }) => {
           if (event.type !== 'Loft') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying shell': {
+      invoke: {
+        src: 'shellAstMod',
+        id: 'shellAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Shell') return undefined
           return event.data
         },
         onDone: ['idle'],
