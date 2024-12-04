@@ -158,29 +158,32 @@ export function kclErrorsToDiagnostics(
 export function complilationErrorsToDiagnostics(
   errors: CompilationError[]
 ): CodeMirrorDiagnostic[] {
+  // TODO handle errors in different modules
   return errors?.map((err) => {
-    let severity: any = 'error'
-    if (err.severity === 'Warning') {
-      severity = 'warning'
-    }
-    let actions
-    const suggestion = err.suggestion
-    if (suggestion) {
-      actions = [
-        {
-          name: suggestion.title,
-          apply: (view: EditorView, from: number, to: number) => {
-            view.dispatch({ changes: { from, to, insert: suggestion.insert } })
+      let severity: any = 'error'
+      if (err.severity === 'Warning') {
+        severity = 'warning'
+      }
+      let actions
+      const suggestion = err.suggestion
+      if (suggestion) {
+        actions = [
+          {
+            name: suggestion.title,
+            apply: (view: EditorView, from: number, to: number) => {
+              view.dispatch({
+                changes: { from, to, insert: suggestion.insert },
+              })
+            },
           },
-        },
-      ]
-    }
-    return {
-      from: err.sourceRange[0],
-      to: err.sourceRange[1],
-      message: err.message,
-      severity,
-      actions,
-    }
-  })
+        ]
+      }
+      return {
+        from: err.sourceRange[0],
+        to: err.sourceRange[1],
+        message: err.message,
+        severity,
+        actions,
+      }
+    })
 }

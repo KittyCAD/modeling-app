@@ -735,9 +735,9 @@ export const ModelingMachineProvider = ({
                 selectionRanges,
               })
             const pResult = parse(recast(modifiedAst))
-            if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            if (trap(pResult) || !pResult.isOk())
               return Promise.reject(new Error('Unexpected compilation error'))
-            const _modifiedAst = pResult.program
+            const _modifiedAst = pResult.program!
 
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
@@ -780,9 +780,9 @@ export const ModelingMachineProvider = ({
                 selectionRanges,
               })
             const pResult = parse(recast(modifiedAst))
-            if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            if (trap(pResult) || !pResult.isOk())
               return Promise.reject(new Error('Unexpected compilation error'))
-            const _modifiedAst = pResult.program
+            const _modifiedAst = pResult.program!
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -831,9 +831,9 @@ export const ModelingMachineProvider = ({
                   angleOrLength: 'setAngle',
                 }))
             const pResult = parse(recast(modifiedAst))
-            if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            if (trap(pResult) || !pResult.isOk())
               return Promise.reject(new Error('Unexpected compilation error'))
-            const _modifiedAst = pResult.program
+            const _modifiedAst = pResult.program!
             if (err(_modifiedAst)) return Promise.reject(_modifiedAst)
 
             if (!sketchDetails)
@@ -876,9 +876,9 @@ export const ModelingMachineProvider = ({
                 selectionRanges,
               })
             const pResult = parse(recast(modifiedAst))
-            if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            if (trap(pResult) || !pResult.isOk())
               return Promise.reject(new Error('Unexpected compilation error'))
-            const _modifiedAst = pResult.program
+            const _modifiedAst = pResult.program!
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -919,9 +919,9 @@ export const ModelingMachineProvider = ({
                 selectionRanges,
               })
             const pResult = parse(recast(modifiedAst))
-            if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            if (trap(pResult) || !pResult.isOk())
               return Promise.reject(new Error('Unexpected compilation error'))
-            const _modifiedAst = pResult.program
+            const _modifiedAst = pResult.program!
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -963,9 +963,9 @@ export const ModelingMachineProvider = ({
                 selectionRanges,
               })
             const pResult = parse(recast(modifiedAst))
-            if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            if (trap(pResult) || !pResult.isOk())
               return Promise.reject(new Error('Unexpected compilation error'))
-            const _modifiedAst = pResult.program
+            const _modifiedAst = pResult.program!
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -1007,9 +1007,9 @@ export const ModelingMachineProvider = ({
                 selectionRanges,
               })
             const pResult = parse(recast(modifiedAst))
-            if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            if (trap(pResult) || !pResult.isOk())
               return Promise.reject(new Error('Unexpected compilation error'))
-            const _modifiedAst = pResult.program
+            const _modifiedAst = pResult.program!
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -1051,9 +1051,9 @@ export const ModelingMachineProvider = ({
               valueName: data?.variableName || 'var',
             })
             let pResult = parse(recast(kclManager.ast))
-            if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            if (trap(pResult) || !pResult.isOk())
               return Promise.reject(new Error('Unexpected compilation error'))
-            let parsed = pResult.program
+            let parsed = pResult.program!
 
             const { modifiedAst: _modifiedAst, pathToReplacedNode } =
               moveValueIntoNewVariablePath(
@@ -1063,9 +1063,9 @@ export const ModelingMachineProvider = ({
                 variableName
               )
             pResult = parse(recast(_modifiedAst))
-            if (trap(pResult) || !pResult.program || pResult.errors.length > 0)
+            if (trap(pResult) || !pResult.isOk())
               return Promise.reject(new Error('Unexpected compilation error'))
-            parsed = pResult.program
+            parsed = pResult.program!
 
             if (trap(parsed)) return Promise.reject(parsed)
             parsed = parsed as Node<Program>

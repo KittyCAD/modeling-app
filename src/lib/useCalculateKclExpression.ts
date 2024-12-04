@@ -88,8 +88,8 @@ export function useCalculateKclExpression({
     const execAstAndSetResult = async () => {
       const _code = `const __result__ = ${value}`
       const pResult = parse(_code)
-      if (err(pResult) || !pResult.program || pResult.errors.length > 0) return
-      const ast = pResult.program
+      if (err(pResult) || !pResult.isOk()) return
+      const ast = pResult.program!
 
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {

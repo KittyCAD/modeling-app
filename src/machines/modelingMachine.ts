@@ -1336,12 +1336,12 @@ export const modelingMachine = setup({
         }
 
         const recastAst = parse(recast(modifiedAst))
-        if (err(recastAst) || !recastAst.program || recastAst.errors.length > 0)
+        if (err(recastAst) || !recastAst.isOk())
           return
 
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
-          recastAst.program,
+          recastAst.program!,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin

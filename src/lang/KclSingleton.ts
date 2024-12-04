@@ -213,9 +213,6 @@ export class KclManager {
 
   safeParse(code: string): Node<Program> | null {
     const result = parse(code)
-    // this.warnings = []
-    // this.errors = []
-    // this._internalError = null
     this.diagnostics = []
     this._hasErrors = false
 
@@ -223,7 +220,6 @@ export class KclManager {
       const kclerror: KCLError = result as KCLError
       this.diagnostics = kclErrorsToDiagnostics([kclerror])
       this._hasErrors = true
-      //this._internalError = kclerror
       // TODO: re-eval if session should end?
       if (kclerror.msg === 'file is empty')
         this.engineCommandManager?.endSession()

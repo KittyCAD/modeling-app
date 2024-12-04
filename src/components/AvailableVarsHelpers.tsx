@@ -142,8 +142,8 @@ export function useCalc({
     try {
       const code = `const __result__ = ${value}`
       const pResult = parse(code)
-      if (trap(pResult) || !pResult.program || pResult.errors.length > 0) return
-      const ast = pResult.program
+      if (trap(pResult) || !pResult.isOk()) return
+      const ast = pResult.program!
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
         const error = _programMem.set(key, {

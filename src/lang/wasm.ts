@@ -140,10 +140,24 @@ const splitErrors = (
   return { errors, warnings }
 }
 
-export type ParseResult = {
+export class ParseResult {
   program: Node<Program> | null
   errors: CompilationError[]
   warnings: CompilationError[]
+
+  constructor(
+    program: Node<Program> | null,
+    errors: CompilationError[],
+    warnings: CompilationError[]
+  ) {
+    this.program = program
+    this.errors = errors
+    this.warnings = warnings
+  }
+
+  isOk(): boolean {
+    return !!this.program && this.errors.length === 0
+  }
 }
 
 export const parse = (code: string | Error): ParseResult | Error => {
@@ -165,12 +179,12 @@ export const parse = (code: string | Error): ParseResult | Error => {
   }
 }
 
-// Parse and throw an exception if there are any errors
+// Parse and throw an exception if there are any errors (probably not suitable for use outside of testing).
 export const assertParse = (code: string): Node<Program> => {
   const result = parse(code)
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-  if (err(result) || !result.program || result.errors.length > 0) throw result
-  return result.program
+  if (err(result) || result.isOk()) throw result
+  return result.program!
 }
 
 export type PathToNode = [string | number, string][]
