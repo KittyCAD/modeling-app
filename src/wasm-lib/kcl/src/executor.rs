@@ -1831,6 +1831,23 @@ impl ExecutorContext {
                 }),
             )
             .await?;
+        // Engine starts default to isometric view -- change to a straight-on view for now.
+        self.engine
+            .batch_modeling_cmd(
+                exec_state.id_generator.next_uuid(),
+                SourceRange::default(),
+                &ModelingCmd::from(mcmd::DefaultCameraLookAt {
+                    vantage: kcmc::shared::Point3d {
+                        x: 0.0,
+                        y: -1250.0,
+                        z: 580.0,
+                    },
+                    center: kcmc::shared::Point3d::default(),
+                    up: kcmc::shared::Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                    sequence: None,
+                }),
+            )
+            .await?;
 
         self.inner_execute(&program.ast, exec_state, crate::executor::BodyType::Root)
             .await?;
