@@ -4308,6 +4308,7 @@ dependencies = [
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",
+ "lazy_static",
  "pretty_assertions",
  "reqwest",
  "serde_json",

@@ -25,7 +25,10 @@ use crate::{
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     fs::{FileManager, FileSystem},
-    parsing::ast::types::{BodyItem, Expr, FunctionExpression, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode},
+    parsing::ast::{
+        cache::{get_changed_program, CacheInformation},
+        types::{BodyItem, Expr, FunctionExpression, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode},
+    },
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
@@ -55,9 +58,6 @@ pub struct ExecState {
     pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
-    /// The directory of the current project.  This is used for resolving import
-    /// paths.  If None is given, the current working directory is used.
-    pub project_directory: Option<String>,
 }
 
 impl ExecState {
@@ -1484,7 +1484,8 @@ pub struct ExecutorContext {
 }
 
 /// The executor settings.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
 pub struct ExecutorSettings {
     /// The unit to use in modeling dimensions.
     pub units: UnitLength,
@@ -1785,18 +1786,21 @@ impl ExecutorContext {
         &self,
         exec_state: &mut ExecState,
         source_range: crate::executor::SourceRange,
-    ) -> Result<()> {
+    ) -> Result<(), KclError> {
         self.engine
             .clear_scene(&mut exec_state.id_generator, source_range)
             .await?;
+
+        // We do not create the planes here as the post hook in wasm will do that
+        // AND if we aren't in wasm it doesn't really matter.
         Ok(())
     }
 
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
     /// Kurt uses this for partial execution.
-    pub async fn run(&self, program: &Program, exec_state: &mut ExecState) -> Result<(), KclError> {
-        self.run_with_session_data(program, exec_state).await?;
+    pub async fn run(&self, cache_info: CacheInformation, exec_state: &mut ExecState) -> Result<(), KclError> {
+        self.run_with_session_data(cache_info, exec_state).await?;
         Ok(())
     }
 
@@ -1805,10 +1809,27 @@ impl ExecutorContext {
     /// Kurt uses this for partial execution.
     pub async fn run_with_session_data(
         &self,
-        program: &Program,
+        cache_info: CacheInformation,
         exec_state: &mut ExecState,
     ) -> Result<Option<ModelingSessionData>, KclError> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
+
+        // Get the program that actually changed from the old and new information.
+        let cache_result = get_changed_program(cache_info.clone(), &self.settings);
+
+        // Check if we don't need to re-execute.
+        let Some(cache_result) = cache_result else {
+            return Ok(None);
+        };
+
+        if cache_result.clear_scene && !self.is_mock() {
+            // We don't do this in mock mode since there is no engine connection
+            // anyways and from the TS side we override memory and don't want to clear it.
+            self.reset_scene(exec_state, Default::default()).await?;
+            // Pop the execution state, since we are starting fresh.
+            *exec_state = Default::default();
+        }
+
         // TODO: Use the top-level file's path.
         exec_state.add_module(std::path::PathBuf::from(""));
         // Before we even start executing the program, set the units.
@@ -1829,7 +1850,7 @@ impl ExecutorContext {
             )
             .await?;
 
-        self.inner_execute(&program.ast, exec_state, crate::executor::BodyType::Root)
+        self.inner_execute(&cache_result.program, exec_state, crate::executor::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();
         Ok(session_data)
@@ -1857,11 +1878,7 @@ impl ExecutorContext {
                             source_ranges: vec![source_range],
                         }));
                     }
-                    let resolved_path = if let Some(project_dir) = &exec_state.project_directory {
-                        std::path::PathBuf::from(project_dir).join(&path)
-                    } else {
-                        std::path::PathBuf::from(&path)
-                    };
+                    let resolved_path = std::path::PathBuf::from(&path);
                     if exec_state.import_stack.contains(&resolved_path) {
                         return Err(KclError::ImportCycle(KclErrorDetails {
                             message: format!(
@@ -2097,7 +2114,7 @@ impl ExecutorContext {
         program: &Program,
         exec_state: &mut ExecState,
     ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.run(program, exec_state).await?;
+        self.run(program.clone().into(), exec_state).await?;
 
         // Zoom to fit.
         self.engine
@@ -2243,7 +2260,7 @@ mod tests {
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::default();
-        ctx.run(&program, &mut exec_state).await?;
+        ctx.run(program.into(), &mut exec_state).await?;
 
         Ok(exec_state.memory)
     }

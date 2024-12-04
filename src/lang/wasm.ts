@@ -35,7 +35,6 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
 import { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
 import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
@@ -216,7 +215,6 @@ export const isPathToNodeNumber = (
 
 export interface ExecState {
   memory: ProgramMemory
-  idGenerator: IdGenerator
 }
 
 /**
@@ -226,21 +224,12 @@ export interface ExecState {
 export function emptyExecState(): ExecState {
   return {
     memory: ProgramMemory.empty(),
-    idGenerator: defaultIdGenerator(),
   }
 }
 
 function execStateFromRaw(raw: RawExecState): ExecState {
   return {
     memory: ProgramMemory.fromRaw(raw.memory),
-    idGenerator: raw.idGenerator,
-  }
-}
-
-export function defaultIdGenerator(): IdGenerator {
-  return {
-    nextId: 0,
-    ids: [],
   }
 }
 
@@ -463,36 +452,31 @@ export function sketchFromKclValue(
 
 export const executor = async (
   node: Node<Program>,
-  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
-  idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
-  isMock: boolean = false
+  programMemoryOverride: ProgramMemory | Error | null = null
 ): Promise<ExecState> => {
-  if (err(programMemory)) return Promise.reject(programMemory)
+  if (programMemoryOverride !== null && err(programMemoryOverride))
+    return Promise.reject(programMemoryOverride)
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
-    programMemory,
-    idGenerator,
     engineCommandManager,
-    isMock
+    programMemoryOverride
   )
   await engineCommandManager.waitForAllCommands()
 
-  engineCommandManager.endSession()
   return _programMemory
 }
 
 export const _executor = async (
   node: Node<Program>,
-  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
-  idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
-  isMock: boolean
+  programMemoryOverride: ProgramMemory | Error | null = null
 ): Promise<ExecState> => {
-  if (err(programMemory)) return Promise.reject(programMemory)
+  if (programMemoryOverride !== null && err(programMemoryOverride))
+    return Promise.reject(programMemoryOverride)
 
   try {
     let baseUnit = 'mm'
@@ -505,13 +489,10 @@ export const _executor = async (
     }
     const execState: RawExecState = await execute_wasm(
       JSON.stringify(node),
-      JSON.stringify(programMemory.toRaw()),
-      JSON.stringify(idGenerator),
+      JSON.stringify(programMemoryOverride?.toRaw() || null),
       baseUnit,
       engineCommandManager,
-      fileSystemManager,
-      undefined,
-      isMock
+      fileSystemManager
     )
     return execStateFromRaw(execState)
   } catch (e: any) {

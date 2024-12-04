@@ -127,8 +127,7 @@ impl From<BinaryOperator> for BinaryExpressionToken {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parsing::ast::types::Literal;
-    use crate::source_range::ModuleId;
+    use crate::{parsing::ast::types::Literal, source_range::ModuleId};
 
     #[test]
     fn parse_and_evaluate() {

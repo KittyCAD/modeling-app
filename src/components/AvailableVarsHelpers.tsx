@@ -163,9 +163,8 @@ export function useCalc({
       executeAst({
         ast,
         engineCommandManager,
-        useFakeExecutor: true,
+        // We make sure to send an empty program memory to denote we mean mock mode.
         programMemoryOverride: kclManager.programMemory.clone(),
-        idGenerator: kclManager.execState.idGenerator,
       }).then(({ execState }) => {
         const resultDeclaration = ast.body.find(
           (a) =>

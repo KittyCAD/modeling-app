@@ -4,7 +4,6 @@ import {
   _executor,
   SourceRange,
   ExecState,
-  defaultIdGenerator,
 } from '../lang/wasm'
 import {
   EngineCommandManager,
@@ -16,7 +15,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { err, reportRejection } from 'lib/trap'
 import { toSync } from './utils'
-import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
@@ -85,11 +83,11 @@ class MockEngineCommandManager {
 }
 
 export async function enginelessExecutor(
-  ast: Node<Program>,
-  pm: ProgramMemory | Error = ProgramMemory.empty(),
-  idGenerator: IdGenerator = defaultIdGenerator()
+  ast: Node<Program> | Error,
+  pmo: ProgramMemory | Error = ProgramMemory.empty()
 ): Promise<ExecState> {
-  if (err(pm)) return Promise.reject(pm)
+  if (err(ast)) return Promise.reject(ast)
+  if (pmo !== null && err(pmo)) return Promise.reject(pmo)
 
   const mockEngineCommandManager = new MockEngineCommandManager({
     setIsStreamReady: () => {},
@@ -97,21 +95,14 @@ export async function enginelessExecutor(
   }) as any as EngineCommandManager
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   mockEngineCommandManager.startNewSession()
-  const execState = await _executor(
-    ast,
-    pm,
-    idGenerator,
-    mockEngineCommandManager,
-    true
-  )
+  const execState = await _executor(ast, mockEngineCommandManager, pmo)
   await mockEngineCommandManager.waitForAllCommands()
   return execState
 }
 
 export async function executor(
   ast: Node<Program>,
-  pm: ProgramMemory = ProgramMemory.empty(),
-  idGenerator: IdGenerator = defaultIdGenerator()
+  pmo: ProgramMemory = ProgramMemory.empty()
 ): Promise<ExecState> {
   const engineCommandManager = new EngineCommandManager()
   engineCommandManager.start({
@@ -133,13 +124,7 @@ export async function executor(
       toSync(async () => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         engineCommandManager.startNewSession()
-        const execState = await _executor(
-          ast,
-          pm,
-          idGenerator,
-          engineCommandManager,
-          false
-        )
+        const execState = await _executor(ast, engineCommandManager, pmo)
         await engineCommandManager.waitForAllCommands()
         resolve(execState)
       }, reportRejection)

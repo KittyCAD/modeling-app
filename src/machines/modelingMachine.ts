@@ -1,5 +1,6 @@
 import {
   PathToNode,
+  ProgramMemory,
   VariableDeclaration,
   VariableDeclarator,
   parse,
@@ -730,9 +731,9 @@ export const modelingMachine = setup({
 
         const testExecute = await executeAst({
           ast: modifiedAst,
-          idGenerator: kclManager.execState.idGenerator,
-          useFakeExecutor: true,
           engineCommandManager,
+          // We make sure to send an empty program memory to denote we mean mock mode.
+          programMemoryOverride: ProgramMemory.empty(),
         })
         if (testExecute.errors.length) {
           toast.error('Unable to delete part')
