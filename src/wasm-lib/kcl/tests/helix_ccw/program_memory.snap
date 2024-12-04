@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 105
 description: Program memory after executing helix_ccw.kcl
 snapshot_kind: text
 ---
@@ -8,27 +9,23 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "part001": {
@@ -41,7 +38,7 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 35,
-                76,
+                78,
                 0
               ],
               "tag": null,
@@ -57,7 +54,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     35,
-                    76,
+                    78,
                     0
                   ]
                 },
@@ -67,13 +64,13 @@ snapshot_kind: text
                   5.0
                 ],
                 "from": [
-                  5.0,
+                  15.0,
                   5.0
                 ],
                 "radius": 10.0,
                 "tag": null,
                 "to": [
-                  5.0,
+                  15.0,
                   5.0
                 ],
                 "type": "Circle"
@@ -119,7 +116,7 @@ snapshot_kind: text
                 "id": "[uuid]",
                 "sourceRange": [
                   35,
-                  76,
+                  78,
                   0
                 ]
               }
@@ -128,7 +125,7 @@ snapshot_kind: text
               {
                 "sourceRange": [
                   35,
-                  76,
+                  78,
                   0
                 ]
               }
@@ -141,7 +138,7 @@ snapshot_kind: text
             {
               "sourceRange": [
                 35,
-                76,
+                78,
                 0
               ]
             }

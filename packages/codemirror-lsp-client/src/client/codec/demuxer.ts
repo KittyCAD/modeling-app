@@ -26,7 +26,7 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
 
   private async start(): Promise<void> {
     let contentLength: null | number = null
-    let buffer = new Uint8Array()
+    let buffer: Uint8Array = new Uint8Array()
 
     for await (const bytes of this) {
       buffer = Bytes.append(Uint8Array, buffer, bytes)

@@ -46,9 +46,9 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///   |> circle({ center: [5, 5], radius: 10 }, %)
 ///   |> extrude(10, %)
 ///   |> helix({
-///     angleStart: 0,
-///     ccw: true,
-///     revolutions: 16,
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 16,
 ///  }, %)
 /// ```
 #[stdlib {

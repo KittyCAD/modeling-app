@@ -60,10 +60,10 @@ squareSketch = startSketchOn('XY')
   |> close(%)
 
 circleSketch0 = startSketchOn(offsetPlane('XY', 75))
-  |> circle({ center: [0, 100], radius: 50 }, %)
+  |> circle({ center = [0, 100], radius = 50 }, %)
 
 circleSketch1 = startSketchOn(offsetPlane('XY', 150))
-  |> circle({ center: [0, 100], radius: 20 }, %)
+  |> circle({ center = [0, 100], radius = 20 }, %)
 
 loft([
   squareSketch,
@@ -85,10 +85,10 @@ squareSketch = startSketchOn('XY')
   |> close(%)
 
 circleSketch0 = startSketchOn(offsetPlane('XY', 75))
-  |> circle({ center: [0, 100], radius: 50 }, %)
+  |> circle({ center = [0, 100], radius = 50 }, %)
 
 circleSketch1 = startSketchOn(offsetPlane('XY', 150))
-  |> circle({ center: [0, 100], radius: 20 }, %)
+  |> circle({ center = [0, 100], radius = 20 }, %)
 
 loft([
   squareSketch,
@@ -97,17 +97,17 @@ loft([
 ], {
   // This can be set to override the automatically determined
   // topological base curve, which is usually the first section encountered.
-  baseCurveIndex: 0,
+  baseCurveIndex = 0,
   // Attempt to approximate rational curves (such as arcs) using a bezier.
   // This will remove banding around interpolations between arcs and non-arcs.
   // It may produce errors in other scenarios Over time, this field won't be necessary.
-  bezApproximateRational: false,
+  bezApproximateRational = false,
   // Tolerance for the loft operation.
-  tolerance: 0.000001,
+  tolerance = 0.000001,
   // Degree of the interpolation. Must be greater than zero.
   // For example, use 2 for quadratic, or 3 for cubic interpolation in
   // the V direction. This defaults to 2, if not specified.
-  vDegree: 2
+  vDegree = 2
 })
 ```
 

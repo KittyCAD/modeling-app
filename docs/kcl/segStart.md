@@ -36,13 +36,13 @@ cube = startSketchAt([0, 0])
   |> close(%)
   |> extrude(5, %)
 
-fn cylinder = (radius, tag) => {
+fn cylinder(radius, tag) {
   return startSketchAt([0, 0])
-  |> circle({
-       radius: radius,
-       center: segStart(tag)
-     }, %)
-  |> extrude(radius, %)
+    |> circle({
+         radius = radius,
+         center = segStart(tag)
+       }, %)
+    |> extrude(radius, %)
 }
 
 cylinder(1, line1)

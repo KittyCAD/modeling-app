@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 export function usePreviousVariables() {
   const { programMemory, code } = useKclContext()
   const { context } = useModelingContext()
-  const selectionRange = context.selectionRanges.codeBasedSelections[0]
+  const selectionRange = context.selectionRanges.graphSelections[0]?.codeRef
     ?.range || [code.length, code.length]
   const [previousVariablesInfo, setPreviousVariablesInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>

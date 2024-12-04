@@ -31,9 +31,9 @@ angledLineToY(data: AngledLineToData, sketch: Sketch, tag?: TagDeclarator) -> Sk
 ```js
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLineToY({ angle: 60, to: 20 }, %)
+  |> angledLineToY({ angle = 60, to = 20 }, %)
   |> line([-20, 0], %)
-  |> angledLineToY({ angle: 70, to: 10 }, %)
+  |> angledLineToY({ angle = 70, to = 10 }, %)
   |> close(%)
 
 example = extrude(10, exampleSketch)

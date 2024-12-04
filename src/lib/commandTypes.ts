@@ -1,12 +1,12 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
 import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
-import { Selection } from './selections'
 import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Artifact } from 'lang/std/artifactGraph'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -96,6 +96,7 @@ export type CommandConfig<
   'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
 > & {
   needsReview?: true
+  status?: 'active' | 'development' | 'inactive'
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],
@@ -144,7 +145,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Selection['type'][]
+      selectionTypes: Artifact['type'][]
       multiple: boolean
     }
   | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
@@ -218,7 +219,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Selection['type'][]
+      selectionTypes: Artifact['type'][]
       multiple: boolean
     }
   | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value

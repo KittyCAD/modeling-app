@@ -68,7 +68,7 @@ jobs:
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: dawidd6/action-download-artifact@v6
+      uses: dawidd6/action-download-artifact@v7
       continue-on-error: true
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}
@@ -255,7 +255,7 @@ jobs:
     - name: Download Wasm Cache
       id: download-wasm
       if: needs.check-rust-changes.outputs.rust-changed == 'false'
-      uses: dawidd6/action-download-artifact@v6
+      uses: dawidd6/action-download-artifact@v7
       continue-on-error: true
       with:
         github_token: ${{secrets.GITHUB_TOKEN}}

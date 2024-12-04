@@ -32,7 +32,7 @@ yLine(length: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> yLine(15, %)
-  |> angledLine({ angle: 30, length: 15 }, %)
+  |> angledLine({ angle = 30, length = 15 }, %)
   |> line([8, -10], %)
   |> yLine(-5, %)
   |> close(%)

@@ -1,5 +1,5 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
-use kcl_lib::{settings::types::UnitLength::Mm, test_server};
+use kcl_lib::{test_server, UnitLength::Mm};
 use tokio::runtime::Runtime;
 
 pub fn bench_execute(c: &mut Criterion) {

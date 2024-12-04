@@ -64,7 +64,10 @@ export const EngineCommands = () => {
           )
         })}
       </div>
-      <button data-testid="clear-commands" onClick={clearEngineCommands}>
+      <button
+        data-testid="clear-commands"
+        onClick={() => clearEngineCommands()}
+      >
         Clear
       </button>
       <br />

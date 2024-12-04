@@ -6,12 +6,17 @@ import { isDesktop } from 'lib/isDesktop'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
 import { Annotation, Transaction } from '@codemirror/state'
-import { KeyBinding } from '@codemirror/view'
+import { EditorView, KeyBinding } from '@codemirror/view'
+import { recast, Program } from 'lang/wasm'
+import { err } from 'lib/trap'
+import { Compartment } from '@codemirror/state'
+import { history } from '@codemirror/commands'
 
 const PERSIST_CODE_KEY = 'persistCode'
 
 const codeManagerUpdateAnnotation = Annotation.define<boolean>()
 export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(true)
+export const codeManagerHistoryCompartment = new Compartment()
 
 export default class CodeManager {
   private _code: string = bracket
@@ -88,9 +93,12 @@ export default class CodeManager {
   /**
    * Update the code in the editor.
    */
-  updateCodeEditor(code: string): void {
+  updateCodeEditor(code: string, clearHistory?: boolean): void {
     this.code = code
     if (editorManager.editorView) {
+      if (clearHistory) {
+        clearCodeMirrorHistory(editorManager.editorView)
+      }
       editorManager.editorView.dispatch({
         changes: {
           from: 0,
@@ -99,7 +107,7 @@ export default class CodeManager {
         },
         annotations: [
           codeManagerUpdateEvent,
-          Transaction.addToHistory.of(true),
+          Transaction.addToHistory.of(!clearHistory),
         ],
       })
     }
@@ -108,11 +116,11 @@ export default class CodeManager {
   /**
    * Update the code, state, and the code the code mirror editor sees.
    */
-  updateCodeStateEditor(code: string): void {
+  updateCodeStateEditor(code: string, clearHistory?: boolean): void {
     if (this._code !== code) {
       this.code = code
       this.#updateState(code)
-      this.updateCodeEditor(code)
+      this.updateCodeEditor(code, clearHistory)
     }
   }
 
@@ -147,6 +155,13 @@ export default class CodeManager {
       safeLSSetItem(PERSIST_CODE_KEY, this.code)
     }
   }
+
+  async updateEditorWithAstAndWriteToFile(ast: Program) {
+    const newCode = recast(ast)
+    if (err(newCode)) return
+    this.updateCodeStateEditor(newCode)
+    await this.writeToFile()
+  }
 }
 
 function safeLSGetItem(key: string) {
@@ -157,4 +172,18 @@ function safeLSGetItem(key: string) {
 function safeLSSetItem(key: string, value: string) {
   if (typeof window === 'undefined') return
   localStorage?.setItem(key, value)
+}
+
+function clearCodeMirrorHistory(view: EditorView) {
+  // Clear history
+  view.dispatch({
+    effects: [codeManagerHistoryCompartment.reconfigure([])],
+    annotations: [codeManagerUpdateEvent],
+  })
+
+  // Add history back
+  view.dispatch({
+    effects: [codeManagerHistoryCompartment.reconfigure([history()])],
+    annotations: [codeManagerUpdateEvent],
+  })
 }

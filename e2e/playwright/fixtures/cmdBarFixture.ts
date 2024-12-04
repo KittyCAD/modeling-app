@@ -35,7 +35,7 @@ export class CmdBarFixture {
   }
 
   private _serialiseCmdBar = async (): Promise<CmdBarSerialised> => {
-    const reviewForm = await this.page.locator('#review-form')
+    const reviewForm = this.page.locator('#review-form')
     const getHeaderArgs = async () => {
       const inputs = await this.page.getByTestId('cmd-bar-input-tab').all()
       const entries = await Promise.all(

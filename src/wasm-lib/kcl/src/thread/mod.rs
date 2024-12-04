@@ -1,13 +1,15 @@
 //! An implementation of threads that works in wasm with promises and other platforms with tokio.
+#![allow(dead_code)]
+#![allow(unused_imports)]
 
 #[cfg(not(target_arch = "wasm32"))]
-pub mod local;
+mod local;
 #[cfg(not(target_arch = "wasm32"))]
 pub use local::JoinHandle;
 
 #[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]
-pub mod wasm;
+mod wasm;
 
 #[cfg(target_arch = "wasm32")]
 #[cfg(not(test))]

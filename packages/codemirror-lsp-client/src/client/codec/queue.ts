@@ -95,6 +95,10 @@ export default class Queue<T>
     return this
   }
 
+  [Symbol.asyncDispose](): Promise<void> {
+    return this.close()
+  }
+
   get locked(): boolean {
     return this.#stream.locked
   }

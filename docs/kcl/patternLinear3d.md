@@ -37,9 +37,9 @@ exampleSketch = startSketchOn('XZ')
 
 example = extrude(1, exampleSketch)
   |> patternLinear3d({
-       axis: [1, 0, 1],
-       instances: 7,
-       distance: 6
+       axis = [1, 0, 1],
+       instances = 7,
+       distance = 6
      }, %)
 ```
 

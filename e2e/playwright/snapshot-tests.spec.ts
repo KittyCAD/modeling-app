@@ -77,27 +77,27 @@ part001 = startSketchOn('-XZ')
   |> yLine(baseHeight, %)
   |> xLine(baseLen, %)
   |> angledLineToY({
-        angle: topAng,
-        to: totalHeightHalf,
+        angle = topAng,
+        to = totalHeightHalf,
       }, %, $seg04)
   |> xLineTo(totalLen, %, $seg03)
   |> yLine(-armThick, %, $seg01)
   |> angledLineThatIntersects({
-        angle: HALF_TURN,
-        offset: -armThick,
-        intersectTag: seg04
+        angle = HALF_TURN,
+        offset = -armThick,
+        intersectTag = seg04
       }, %)
   |> angledLineToY([segAng(seg04, %) + 180, ZERO], %)
   |> angledLineToY({
-        angle: -bottomAng,
-        to: -totalHeightHalf - armThick,
+        angle = -bottomAng,
+        to = -totalHeightHalf - armThick,
       }, %, $seg02)
   |> xLineTo(segEndX(seg03, %) + 0, %)
   |> yLine(-segLen(seg01, %), %)
   |> angledLineThatIntersects({
-        angle: HALF_TURN,
-        offset: -armThick,
-        intersectTag: seg02
+        angle = HALF_TURN,
+        offset = -armThick,
+        intersectTag = seg02
       }, %)
   |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
@@ -283,7 +283,7 @@ part001 = startSketchOn('-XZ')
         const gltfFilename = filenames.filter((t: string) =>
           t.includes('.gltf')
         )[0]
-        if (!gltfFilename) throw new Error('No output.gltf in this archive')
+        if (!gltfFilename) throw new Error('No gLTF in this archive')
         cliCommand = `export ZOO_TOKEN=${secrets.snapshottoken} && zoo file snapshot --output-format=png --src-format=${outputType} ${parentPath}/${gltfFilename} ${imagePath}`
       }
 
@@ -462,7 +462,7 @@ test(
     await page.waitForTimeout(100)
 
     code += `
-  |> line([7.25, 0], %)`
+  |> xLine(7.25, %)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page
@@ -592,7 +592,7 @@ test(
     })
     await expect(page.locator('.cm-content')).toHaveText(
       `sketch001 = startSketchOn('XZ')
-  |> circle({ center: [14.44, -2.44], radius: 1 }, %)`
+  |> circle({ center = [14.44, -2.44], radius = 1 }, %)`
     )
   }
 )
@@ -647,7 +647,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> line([7.25, 0], %)`
+  |> xLine(7.25, %)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -752,7 +752,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> line([184.3, 0], %)`
+  |> xLine(184.3, %)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page

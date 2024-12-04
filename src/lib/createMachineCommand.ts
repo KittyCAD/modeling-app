@@ -14,6 +14,7 @@ import {
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from './commandTypes'
+import { DEV } from 'env'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
@@ -48,6 +49,7 @@ export function createMachineCommand<
   const commandConfig = commandBarConfig && commandBarConfig[type]
 
   // There may be no command config for this event type,
+  // or the command may be inactive or hidden,
   // or there may be multiple commands to create.
   if (!commandConfig) {
     return null
@@ -72,13 +74,17 @@ export function createMachineCommand<
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
   }
 
-  // Hide commands based on platform by returning `null`
+  // Hide commands based on platform or development status by returning `null`
   // so the consumer can filter them out
   if ('hide' in commandConfig) {
     const { hide } = commandConfig
     if (hide === 'both') return null
     else if (hide === 'desktop' && isDesktop()) return null
     else if (hide === 'web' && !isDesktop()) return null
+  } else if ('status' in commandConfig) {
+    const { status } = commandConfig
+    if (status === 'inactive') return null
+    if (status === 'development' && !DEV) return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined

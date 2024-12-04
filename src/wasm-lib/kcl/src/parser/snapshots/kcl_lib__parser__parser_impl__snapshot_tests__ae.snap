@@ -83,7 +83,6 @@ snapshot_kind: text
           "type": "Identifier"
         },
         "end": 66,
-        "optional": false,
         "start": 54,
         "type": "CallExpression",
         "type": "CallExpression"

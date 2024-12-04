@@ -1,10 +1,10 @@
 ---
 title: "angleToMatchLengthX"
-excerpt: "Compute the angle (in degrees) in o"
+excerpt: "Returns the angle to match the given length for x."
 layout: manual
 ---
 
-Compute the angle (in degrees) in o
+Returns the angle to match the given length for x.
 
 
 

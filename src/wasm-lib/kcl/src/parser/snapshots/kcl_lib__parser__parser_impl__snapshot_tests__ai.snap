@@ -25,7 +25,7 @@ snapshot_kind: text
                     "start": 16,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1
+                    "value": 1.0
                   }
                 ],
                 "callee": {
@@ -35,7 +35,6 @@ snapshot_kind: text
                   "type": "Identifier"
                 },
                 "end": 18,
-                "optional": false,
                 "start": 14,
                 "type": "CallExpression",
                 "type": "CallExpression"
@@ -48,7 +47,7 @@ snapshot_kind: text
                     "start": 24,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2
+                    "value": 2.0
                   },
                   {
                     "end": 28,
@@ -64,7 +63,6 @@ snapshot_kind: text
                   "type": "Identifier"
                 },
                 "end": 29,
-                "optional": false,
                 "start": 22,
                 "type": "CallExpression",
                 "type": "CallExpression"

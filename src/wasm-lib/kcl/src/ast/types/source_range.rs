@@ -1,4 +1,5 @@
-use super::{BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberObject, ModuleId};
+use super::{BinaryPart, BodyItem, Expr, LiteralIdentifier, MemberObject};
+use crate::source_range::ModuleId;
 
 impl BodyItem {
     pub fn module_id(&self) -> ModuleId {
@@ -20,6 +21,7 @@ impl Expr {
             Expr::BinaryExpression(binary_expression) => binary_expression.module_id,
             Expr::FunctionExpression(function_expression) => function_expression.module_id,
             Expr::CallExpression(call_expression) => call_expression.module_id,
+            Expr::CallExpressionKw(call_expression) => call_expression.module_id,
             Expr::PipeExpression(pipe_expression) => pipe_expression.module_id,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.module_id,
             Expr::ArrayExpression(array_expression) => array_expression.module_id,
@@ -40,6 +42,7 @@ impl BinaryPart {
             BinaryPart::Identifier(identifier) => identifier.module_id,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.module_id,
             BinaryPart::CallExpression(call_expression) => call_expression.module_id,
+            BinaryPart::CallExpressionKw(call_expression) => call_expression.module_id,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.module_id,
             BinaryPart::MemberExpression(member_expression) => member_expression.module_id,
             BinaryPart::IfExpression(e) => e.module_id,

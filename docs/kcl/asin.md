@@ -34,8 +34,8 @@ asin(num: number) -> number
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLine({
-       angle: toDegrees(asin(0.5)),
-       length: 20
+       angle = toDegrees(asin(0.5)),
+       length = 20
      }, %)
   |> yLineTo(0, %)
   |> close(%)

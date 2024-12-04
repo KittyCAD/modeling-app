@@ -7,7 +7,7 @@ import {
   TransformInfo,
 } from './stdTypes'
 import { ToolTip, toolTips } from 'lang/langHelpers'
-import { Selections, Selection } from 'lib/selections'
+import { Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
@@ -19,6 +19,7 @@ import {
   ProgramMemory,
   sketchFromKclValue,
   Literal,
+  SourceRange,
 } from '../wasm'
 import {
   getNodeFromPath,
@@ -1483,11 +1484,8 @@ export function getTransformInfos(
   ast: Program,
   constraintType: ConstraintType
 ): TransformInfo[] {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(ast, range)
-  )
-  const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Expr>(ast, pathToNode, 'CallExpression')
+  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode, 'CallExpression')
   )
 
   try {
@@ -1515,12 +1513,8 @@ export function getRemoveConstraintsTransforms(
   ast: Program,
   constraintType: ConstraintType
 ): TransformInfo[] | Error {
-  // return ()
-  const paths = selectionRanges.codeBasedSelections.map((selectionRange) =>
-    getNodePathFromSourceRange(ast, selectionRange.range)
-  )
-  const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Expr>(ast, pathToNode)
+  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode)
   )
 
   const theTransforms = nodes.map((nodeMeta) => {
@@ -1571,11 +1565,10 @@ export function transformSecondarySketchLinesTagFirst({
 
   // We need to sort the selections by their start position
   // so that we can process them in dependency order and not write invalid KCL.
-  const sortedCodeBasedSelections =
-    selectionRanges.codeBasedSelections.toSorted(
-      (a, b) => a.range[0] - b.range[0]
-    )
-  const primarySelection = sortedCodeBasedSelections[0].range
+  const sortedCodeBasedSelections = selectionRanges.graphSelections.toSorted(
+    (a, b) => a?.codeRef?.range[0] - b?.codeRef?.range[0]
+  )
+  const primarySelection = sortedCodeBasedSelections[0]?.codeRef?.range
   const secondarySelections = sortedCodeBasedSelections.slice(1)
 
   const _tag = giveSketchFnCallTag(ast, primarySelection, forceSegName)
@@ -1586,7 +1579,7 @@ export function transformSecondarySketchLinesTagFirst({
     ast: modifiedAst,
     selectionRanges: {
       ...selectionRanges,
-      codeBasedSelections: secondarySelections,
+      graphSelections: secondarySelections,
     },
     referencedSegmentRange: primarySelection,
     transformInfos,
@@ -1634,8 +1627,8 @@ export function transformAstSketchLines({
   transformInfos: TransformInfo[]
   programMemory: ProgramMemory
   referenceSegName: string
+  referencedSegmentRange?: SourceRange
   forceValueUsedInTransform?: BinaryPart
-  referencedSegmentRange?: Selection['range']
 }):
   | {
       modifiedAst: Node<Program>
@@ -1786,11 +1779,11 @@ export function transformAstSketchLines({
     }
   }
 
-  if ('codeBasedSelections' in selectionRanges) {
+  if ('graphSelections' in selectionRanges) {
     // If the processing of any of the selections failed, return the first error
-    const maybeProcessErrors = selectionRanges.codeBasedSelections
-      .map(({ range }, index) =>
-        processSelection(getNodePathFromSourceRange(node, range), index)
+    const maybeProcessErrors = selectionRanges.graphSelections
+      .map(({ codeRef }, index) =>
+        processSelection(getNodePathFromSourceRange(node, codeRef.range), index)
       )
       .filter(err)
 
@@ -1838,7 +1831,7 @@ function getArgLiteralVal(arg: Literal): number | Error {
 export type ConstraintLevel = 'free' | 'partial' | 'full'
 
 export function getConstraintLevelFromSourceRange(
-  cursorRange: Selection['range'],
+  cursorRange: SourceRange,
   ast: Program | Error
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast

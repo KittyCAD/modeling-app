@@ -34,7 +34,7 @@ snapshot_kind: text
                         "start": 43,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 360
+                        "value": 360.0
                       }
                     ],
                     "callee": {
@@ -44,7 +44,6 @@ snapshot_kind: text
                       "type": "Identifier"
                     },
                     "end": 47,
-                    "optional": false,
                     "start": 28,
                     "type": "CallExpression",
                     "type": "CallExpression"

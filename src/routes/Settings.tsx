@@ -26,6 +26,10 @@ export const APP_VERSION =
       window.electron.packageJson.version
     : 'main'
 
+export const PACKAGE_NAME = isDesktop()
+  ? window.electron.packageJson.name
+  : 'zoo-modeling-app'
+
 export const Settings = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()

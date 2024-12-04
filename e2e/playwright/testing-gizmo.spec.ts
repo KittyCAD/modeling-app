@@ -275,7 +275,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
 
     await test.step(`Select an edge of this circle`, async () => {
       const circleSnippet =
-        'circle({ center: [318.33, 168.1], radius: 182.8 }, %)'
+        'circle({ center = [318.33, 168.1], radius = 182.8 }, %)'
       await moveToCircle()
       await clickCircle()
       await editor.expectState({

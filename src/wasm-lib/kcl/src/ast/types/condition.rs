@@ -1,14 +1,9 @@
-use crate::executor::SourceRange;
-
-use super::BoxNode;
-use super::ConstraintLevel;
-use super::Hover;
-use super::Node;
-use super::NodeList;
-use super::{Digest, Expr};
 use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+
+use super::{BoxNode, ConstraintLevel, Digest, Expr, Hover, Node, NodeList};
+use crate::SourceRange;
 
 // TODO: This should be its own type, similar to Program,
 // but guaranteed to have an Expression as its final item.
@@ -50,7 +45,7 @@ impl Node<IfExpression> {
 impl Node<ElseIf> {
     #[allow(dead_code)]
     fn source_ranges(&self) -> Vec<SourceRange> {
-        vec![SourceRange([self.start, self.end, self.module_id.as_usize()])]
+        vec![SourceRange::new(self.start, self.end, self.module_id)]
     }
 }
 

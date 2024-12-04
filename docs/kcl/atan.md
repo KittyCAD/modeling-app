@@ -34,8 +34,8 @@ atan(num: number) -> number
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLine({
-       angle: toDegrees(atan(1.25)),
-       length: 20
+       angle = toDegrees(atan(1.25)),
+       length = 20
      }, %)
   |> yLineTo(0, %)
   |> close(%)

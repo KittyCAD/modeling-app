@@ -3,6 +3,23 @@ import toast from 'react-hot-toast'
 type ExcludeErr<T> = Exclude<T, Error>
 
 /**
+ * Similar to Error, but more lightweight, without the stack trace.  It can also
+ * be used to represent a reason for not being able to provide an alternative,
+ * which isn't necessarily an error.
+ */
+export class Reason {
+  message: string
+
+  constructor(message: string) {
+    this.message = message
+  }
+
+  toError() {
+    return new Error(this.message)
+  }
+}
+
+/**
  * This is intentionally *not* exported due to misuse.  We'd like to add a lint.
  */
 function isErr<T>(value: ExcludeErr<T> | Error): value is Error {

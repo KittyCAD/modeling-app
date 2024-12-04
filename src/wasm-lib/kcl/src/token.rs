@@ -5,23 +5,23 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::SemanticTokenType;
-use winnow::stream::ContainsToken;
+use winnow::{error::ParseError, stream::ContainsToken};
 
 use crate::{
-    ast::types::{ItemVisibility, ModuleId, VariableKind},
+    ast::types::{ItemVisibility, VariableKind},
     errors::KclError,
-    executor::SourceRange,
+    source_range::{ModuleId, SourceRange},
 };
 
 mod tokeniser;
 
 // Re-export
 pub use tokeniser::Input;
+#[cfg(test)]
+pub(crate) use tokeniser::RESERVED_WORDS;
 
 /// The types of tokens.
-#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema, FromStr, Display)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
-#[ts(export)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, JsonSchema, FromStr, Display)]
 #[serde(rename_all = "camelCase")]
 #[display(style = "camelCase")]
 pub enum TokenType {
@@ -65,6 +65,8 @@ pub enum TokenType {
     Unknown,
     /// The ? symbol, used for optional values.
     QuestionMark,
+    /// The @ symbol.
+    At,
 }
 
 /// Most KCL tokens correspond to LSP semantic tokens (but not all).
@@ -91,6 +93,7 @@ impl TryFrom<TokenType> for SemanticTokenType {
             | TokenType::DoublePeriod
             | TokenType::Hash
             | TokenType::Dollar
+            | TokenType::At
             | TokenType::Unknown => {
                 anyhow::bail!("unsupported token type: {:?}", token_type)
             }
@@ -154,9 +157,7 @@ impl TokenType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone, ts_rs::TS)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
-#[ts(export)]
+#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
 pub struct Token {
     #[serde(rename = "type")]
     pub token_type: TokenType,
@@ -204,7 +205,7 @@ impl Token {
     }
 
     pub fn as_source_range(&self) -> SourceRange {
-        SourceRange([self.start, self.end, self.module_id.as_usize()])
+        SourceRange::new(self.start, self.end, self.module_id)
     }
 
     pub fn as_source_ranges(&self) -> Vec<SourceRange> {
@@ -238,18 +239,47 @@ impl Token {
 
 impl From<Token> for SourceRange {
     fn from(token: Token) -> Self {
-        Self([token.start, token.end, token.module_id.as_usize()])
+        Self::new(token.start, token.end, token.module_id)
     }
 }
 
 impl From<&Token> for SourceRange {
     fn from(token: &Token) -> Self {
-        Self([token.start, token.end, token.module_id.as_usize()])
+        Self::new(token.start, token.end, token.module_id)
     }
 }
 
 pub fn lexer(s: &str, module_id: ModuleId) -> Result<Vec<Token>, KclError> {
-    tokeniser::lexer(s, module_id).map_err(From::from)
+    tokeniser::lex(s, module_id).map_err(From::from)
+}
+
+impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
+    fn from(err: ParseError<Input<'_>, winnow::error::ContextError>) -> Self {
+        let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
+        let module_id = err.input().state.module_id;
+
+        if offset >= input.len() {
+            // From the winnow docs:
+            //
+            // This is an offset, not an index, and may point to
+            // the end of input (input.len()) on eof errors.
+
+            return KclError::Lexical(crate::errors::KclErrorDetails {
+                source_ranges: vec![SourceRange::new(offset, offset, module_id)],
+                message: "unexpected EOF while parsing".to_string(),
+            });
+        }
+
+        // TODO: Add the Winnow tokenizer context to the error.
+        // See https://github.com/KittyCAD/modeling-app/issues/784
+        let bad_token = &input[offset];
+        // TODO: Add the Winnow parser context to the error.
+        // See https://github.com/KittyCAD/modeling-app/issues/784
+        KclError::Lexical(crate::errors::KclErrorDetails {
+            source_ranges: vec![SourceRange::new(offset, offset + 1, module_id)],
+            message: format!("found unknown token '{}'", bad_token),
+        })
+    }
 }
 
 #[cfg(test)]

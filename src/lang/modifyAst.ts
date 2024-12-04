@@ -1,5 +1,5 @@
-import { Selection } from 'lib/selections'
 import { err, reportRejection, trap } from 'lib/trap'
+import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -8,6 +8,7 @@ import {
   VariableDeclarator,
   Expr,
   Literal,
+  LiteralValue,
   PipeSubstitution,
   Identifier,
   ArrayExpression,
@@ -18,6 +19,7 @@ import {
   ProgramMemory,
   SourceRange,
   sketchFromKclValue,
+  isPathToNodeNumber,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -525,6 +527,99 @@ export function sketchOnExtrudedFace(
   }
 }
 
+/**
+ * Append an offset plane to the AST
+ */
+export function addOffsetPlane({
+  node,
+  defaultPlane,
+  offset,
+}: {
+  node: Node<Program>
+  defaultPlane: DefaultPlaneStr
+  offset: Expr
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const newPlaneName = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
+
+  const newPlane = createVariableDeclaration(
+    newPlaneName,
+    createCallExpressionStdLib('offsetPlane', [
+      createLiteral(defaultPlane.toUpperCase()),
+      offset,
+    ])
+  )
+
+  modifiedAst.body.push(newPlane)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    ['0', 'index'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
+ * Modify the AST to create a new sketch using the variable declaration
+ * of an offset plane. The new sketch just has to come after the offset
+ * plane declaration.
+ */
+export function sketchOnOffsetPlane(
+  node: Node<Program>,
+  offsetPathToNode: PathToNode
+) {
+  let _node = { ...node }
+
+  // Find the offset plane declaration
+  const offsetPlaneDeclarator = getNodeFromPath<VariableDeclarator>(
+    _node,
+    offsetPathToNode,
+    'VariableDeclarator',
+    true
+  )
+  if (err(offsetPlaneDeclarator)) return offsetPlaneDeclarator
+  const { node: offsetPlaneNode } = offsetPlaneDeclarator
+  const offsetPlaneName = offsetPlaneNode.id.name
+
+  // Create a new sketch declaration
+  const newSketchName = findUniqueName(
+    node,
+    KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
+  )
+  const newSketch = createVariableDeclaration(
+    newSketchName,
+    createCallExpressionStdLib('startSketchOn', [
+      createIdentifier(offsetPlaneName),
+    ]),
+    undefined,
+    'const'
+  )
+
+  // Decide where to insert the new sketch declaration
+  const offsetIndex = offsetPathToNode[1][0]
+
+  if (!isPathToNodeNumber(offsetIndex)) {
+    return new Error('Expected offsetIndex to be a number')
+  }
+  // and insert it
+  _node.body.splice(offsetIndex + 1, 0, newSketch)
+  const newPathToNode = structuredClone(offsetPathToNode)
+  newPathToNode[1][0] = offsetIndex + 1
+
+  // Return the modified AST and the path to the new sketch declaration
+  return {
+    modifiedAst: _node,
+    pathToNode: newPathToNode,
+  }
+}
+
 export const getLastIndex = (pathToNode: PathToNode): number =>
   splitPathAtLastIndex(pathToNode).index
 
@@ -573,7 +668,7 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
   return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
-export function createLiteral(value: string | number): Node<Literal> {
+export function createLiteral(value: LiteralValue): Node<Literal> {
   return {
     type: 'Literal',
     start: 0,
@@ -632,7 +727,6 @@ export function createCallExpressionStdLib(
 
       name,
     },
-    optional: false,
     arguments: args,
   }
 }
@@ -654,7 +748,6 @@ export function createCallExpression(
 
       name,
     },
-    optional: false,
     arguments: args,
   }
 }
@@ -780,7 +873,7 @@ export function createBinaryExpressionWithUnary([left, right]: [
 
 export function giveSketchFnCallTag(
   ast: Node<Program>,
-  range: Selection['range'],
+  range: SourceRange,
   tag?: string
 ):
   | {
@@ -854,7 +947,7 @@ export function moveValueIntoNewVariablePath(
 export function moveValueIntoNewVariable(
   ast: Node<Program>,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  sourceRange: SourceRange,
   variableName: string
 ): {
   modifiedAst: Node<Program>
@@ -979,18 +1072,15 @@ export async function deleteFromSelection(
     ({} as any)
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
-  const range = selection.range
-  const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    path,
+    selection?.codeRef?.pathToNode,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
   if (
-    (selection.type === 'extrude-wall' ||
-      selection.type === 'end-cap' ||
-      selection.type === 'start-cap') &&
+    (selection?.artifact?.type === 'wall' ||
+      selection?.artifact?.type === 'cap') &&
     varDec.node.init.type === 'PipeExpression'
   ) {
     const varDecName = varDec.node.id.name
@@ -1070,7 +1160,6 @@ export async function deleteFromSelection(
               sketchName
             )
             if (err(sketchToPreserve)) return sketchToPreserve
-            console.log('sketchName', sketchName)
             // Can't kick off multiple requests at once as getFaceDetails
             // is three engine calls in one and they conflict
             const faceDetails = await getFaceDetails(sketchToPreserve.on.id)

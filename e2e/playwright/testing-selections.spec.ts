@@ -32,10 +32,17 @@ test.describe('Testing selections', () => {
       await u.waitForAuthSkipAppStart()
       await u.openDebugPanel()
 
-      const xAxisClick = () =>
-        page.mouse.click(700, 253).then(() => page.waitForTimeout(100))
+      const yAxisClick = () =>
+        test.step('Click on Y axis', async () => {
+          await page.mouse.move(600, 200, { steps: 5 })
+          await page.mouse.click(600, 200)
+          await page.waitForTimeout(100)
+        })
       const xAxisClickAfterExitingSketch = () =>
-        page.mouse.click(639, 278).then(() => page.waitForTimeout(100))
+        test.step(`Click on X axis after exiting sketch, which shifts it at the moment`, async () => {
+          await page.mouse.click(639, 278)
+          await page.waitForTimeout(100)
+        })
       const emptySpaceHover = () =>
         test.step('Hover over empty space', async () => {
           await page.mouse.move(700, 143, { steps: 5 })
@@ -80,23 +87,23 @@ test.describe('Testing selections', () => {
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)`)
+    |> xLine(${commonPoints.num1}, %)`)
 
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([0, ${commonPoints.num1 + 0.01}], %)`)
+    |> xLine(${commonPoints.num1}, %)
+    |> yLine(${commonPoints.num1 + 0.01}, %)`)
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)
-    |> line([0, ${commonPoints.num1 + 0.01}], %)
-    |> lineTo([0, ${commonPoints.num3}], %)`)
+    |> xLine(${commonPoints.num1}, %)
+    |> yLine(${commonPoints.num1 + 0.01}, %)
+    |> xLine(${commonPoints.num2 * -1}, %)`)
 
       // deselect line tool
       await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -121,53 +128,58 @@ test.describe('Testing selections', () => {
         // now check clicking works including axis
 
         // click a segment hold shift and click an axis, see that a relevant constraint is enabled
-        await topHorzSegmentClick()
-        await page.keyboard.down('Shift')
         const constrainButton = page.getByRole('button', {
           name: 'Length: open menu',
         })
-        const absYButton = page.getByRole('button', { name: 'Absolute Y' })
-        await constrainButton.click()
-        await expect(absYButton).toBeDisabled()
-        await page.waitForTimeout(100)
-        await xAxisClick()
-        await page.keyboard.up('Shift')
-        await constrainButton.click()
-        await absYButton.and(page.locator(':not([disabled])')).waitFor()
-        await expect(absYButton).not.toBeDisabled()
+        const absXButton = page.getByRole('button', { name: 'Absolute X' })
 
-        // clear selection by clicking on nothing
+        await test.step(`Select a segment and an axis, see that a relevant constraint is enabled`, async () => {
+          await topHorzSegmentClick()
+          await page.keyboard.down('Shift')
+          await constrainButton.click()
+          await expect(absXButton).toBeDisabled()
+          await page.waitForTimeout(100)
+          await yAxisClick()
+          await page.keyboard.up('Shift')
+          await constrainButton.click()
+          await absXButton.and(page.locator(':not([disabled])')).waitFor()
+          await expect(absXButton).not.toBeDisabled()
+        })
+
         await emptySpaceClick()
-
-        await page.waitForTimeout(100)
-        // same selection but click the axis first
-        await xAxisClick()
-        await constrainButton.click()
-        await expect(absYButton).toBeDisabled()
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(100)
-        await topHorzSegmentClick()
         await page.waitForTimeout(100)
 
-        await page.keyboard.up('Shift')
-        await constrainButton.click()
-        await expect(absYButton).not.toBeDisabled()
+        await test.step(`Same selection but click the axis first`, async () => {
+          await yAxisClick()
+          await constrainButton.click()
+          await expect(absXButton).toBeDisabled()
+          await page.keyboard.down('Shift')
+          await page.waitForTimeout(100)
+          await topHorzSegmentClick()
+          await page.waitForTimeout(100)
+
+          await page.keyboard.up('Shift')
+          await constrainButton.click()
+          await expect(absXButton).not.toBeDisabled()
+        })
 
         // clear selection by clicking on nothing
         await emptySpaceClick()
 
         // check the same selection again by putting cursor in code first then selecting axis
-        await page
-          .getByText(`  |> lineTo([0, ${commonPoints.num3}], %)`)
-          .click()
-        await page.keyboard.down('Shift')
-        await constrainButton.click()
-        await expect(absYButton).toBeDisabled()
-        await page.waitForTimeout(100)
-        await xAxisClick()
-        await page.keyboard.up('Shift')
-        await constrainButton.click()
-        await expect(absYButton).not.toBeDisabled()
+        await test.step(`Same selection but code selection then axis`, async () => {
+          await page
+            .getByText(`  |> xLine(${commonPoints.num2 * -1}, %)`)
+            .click()
+          await page.keyboard.down('Shift')
+          await constrainButton.click()
+          await expect(absXButton).toBeDisabled()
+          await page.waitForTimeout(100)
+          await yAxisClick()
+          await page.keyboard.up('Shift')
+          await constrainButton.click()
+          await expect(absXButton).not.toBeDisabled()
+        })
 
         // clear selection by clicking on nothing
         await emptySpaceClick()
@@ -182,9 +194,7 @@ test.describe('Testing selections', () => {
           process.platform === 'linux' ? 'Control' : 'Meta'
         )
         await page.waitForTimeout(100)
-        await page
-          .getByText(`  |> lineTo([0, ${commonPoints.num3}], %)`)
-          .click()
+        await page.getByText(`  |> xLine(${commonPoints.num2 * -1}, %)`).click()
 
         await expect(page.locator('.cm-cursor')).toHaveCount(2)
         await page.waitForTimeout(500)
@@ -304,22 +314,22 @@ part009 = startSketchOn('XY')
   |> line([thickness, 0], %)
   |> line([0, -1], %)
   |> angledLineToX({
-       angle: 60,
-       to: pipeSmallDia + thickness
+       angle = 60,
+       to = pipeSmallDia + thickness
      }, %)
   |> line([0, -pipeLength], %)
   |> angledLineToX({
-       angle: -60,
-       to: pipeLargeDia + thickness
+       angle = -60,
+       to = pipeLargeDia + thickness
      }, %)
   |> line([0, -1], %)
   |> line([-thickness, 0], %)
   |> line([0, 1], %)
-  |> angledLineToX({ angle: 120, to: pipeSmallDia }, %)
+  |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
   |> line([0, pipeLength], %)
-  |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
+  |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
   |> close(%)
-rev = revolve({ axis: 'y' }, part009)
+rev = revolve({ axis = 'y' }, part009)
 `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -385,27 +395,27 @@ rev = revolve({ axis: 'y' }, part009)
       `extrude001 = extrude(50, sketch001)`
     )
     await expect(u.codeLocator).toContainText(`sketch005 = startSketchOn({
-       plane: {
-         origin: { x: 0, y: -50, z: 0 },
-         x_axis: { x: 1, y: 0, z: 0 },
-         y_axis: { x: 0, y: 0, z: 1 },
-         z_axis: { x: 0, y: -1, z: 0 }
+       plane = {
+         origin = { x = 0, y = -50, z = 0 },
+         x_axis = { x = 1, y = 0, z = 0 },
+         y_axis = { x = 0, y = 0, z = 1 },
+         z_axis = { x = 0, y = -1, z = 0 }
        }
      })`)
     await expect(u.codeLocator).toContainText(`sketch003 = startSketchOn({
-       plane: {
-         origin: { x: 116.53, y: 0, z: 163.25 },
-         x_axis: { x: -0.81, y: 0, z: 0.58 },
-         y_axis: { x: 0, y: -1, z: 0 },
-         z_axis: { x: 0.58, y: 0, z: 0.81 }
+       plane = {
+         origin = { x = 116.53, y = 0, z = 163.25 },
+         x_axis = { x = -0.81, y = 0, z = 0.58 },
+         y_axis = { x = 0, y = -1, z = 0 },
+         z_axis = { x = 0.58, y = 0, z = 0.81 }
        }
      })`)
     await expect(u.codeLocator).toContainText(`sketch002 = startSketchOn({
-       plane: {
-         origin: { x: -91.74, y: 0, z: 80.89 },
-         x_axis: { x: -0.66, y: 0, z: -0.75 },
-         y_axis: { x: 0, y: -1, z: 0 },
-         z_axis: { x: -0.75, y: 0, z: 0.66 }
+       plane = {
+         origin = { x = -91.74, y = 0, z = 80.89 },
+         x_axis = { x = -0.66, y = 0, z = -0.75 },
+         y_axis = { x = 0, y = -1, z = 0 },
+         z_axis = { x = -0.75, y = 0, z = 0.66 }
        }
      })`)
 
@@ -495,19 +505,19 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
         `part001 = startSketchOn('XZ')
     |> startProfileAt([20, 0], %)
     |> line([7.13, 4 + 0], %)
-    |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+    |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
     |> lineTo([20.14 + 0, -0.14 + 0], %)
     |> xLineTo(29 + 0, %)
     |> yLine(-3.14 + 0, %, $a)
     |> xLine(1.63, %)
-    |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
-    |> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
-    |> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
-    |> angledLineToY({ angle: 30, to: 11.14 }, %)
+    |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 }, %)
+    |> angledLineOfYLength({ angle = 30, length = 3 + 0 }, %)
+    |> angledLineToX({ angle = 22.14 + 0, to = 12 }, %)
+    |> angledLineToY({ angle = 30, to = 11.14 }, %)
     |> angledLineThatIntersects({
-          angle: 3.14,
-          intersectTag: a,
-          offset: 0
+          angle = 3.14,
+          intersectTag = a,
+          offset = 0
         }, %)
     |> tangentialArcTo([13.14 + 0, 13.14], %)
     |> close(%)
@@ -640,7 +650,7 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await checkCodeAtHoverPosition(
       'flatExtrusionFace',
       flatExtrusionFace,
-      `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)extrude(5+7,%)`,
+      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)extrude(5+7,%)`,
       '}, %)'
     )
 
@@ -697,19 +707,19 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await checkCodeAtHoverPosition(
       'straightSegmentEdge',
       straightSegmentEdge,
-      `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+      `angledLineToY({angle=30,to=11.14},%)`,
+      'angledLineToY({ angle = 30, to = 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentOppositeEdge',
       straightSegmentOppositeEdge,
-      `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+      `angledLineToY({angle=30,to=11.14},%)`,
+      'angledLineToY({ angle = 30, to = 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentAdjacentEdge',
       straightSegmentAdjacentEdge,
-      `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)`,
+      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)`,
       '}, %)'
     )
 
@@ -731,8 +741,8 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
   |> close(%)
 extrude001 = extrude(100, sketch001)
   |> chamfer({
-       length: 30,
-       tags: [
+       length = 30,
+       tags = [
          seg01,
          getNextAdjacentEdge(yo),
          getNextAdjacentEdge(seg02),
@@ -776,14 +786,14 @@ extrude001 = extrude(100, sketch001)
     await checkCodeAtHoverPosition(
       'oppositeChamfer',
       oppositeChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'baseChamfer',
       baseChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
@@ -814,14 +824,14 @@ extrude001 = extrude(100, sketch001)
     await checkCodeAtHoverPosition(
       'adjacentChamfer1',
       adjacentChamfer1,
-      `lineTo([profileStartX(%),profileStartY(%)],%,$seg02)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `lineTo([profileStartX(%),profileStartY(%)],%,$seg02)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'adjacentChamfer2',
       adjacentChamfer2,
-      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
   })
@@ -928,6 +938,7 @@ sketch002 = startSketchOn(extrude001, $seg01)
     // test fillet button with the body in the scene
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
 extrude001 = extrude(10, sketch001)`
+    await u.codeLocator.clear()
     await u.codeLocator.fill(codeToAdd)
     await selectSegment()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()

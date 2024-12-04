@@ -4,7 +4,6 @@ import { expect } from '@playwright/test'
 interface ProjectCardState {
   title: string
   fileCount: number
-  folderCount: number
 }
 
 interface HomePageState {
@@ -61,15 +60,13 @@ export class HomePageFixture {
     const projectCards = await this.projectCard.all()
     const projectCardStates: Array<ProjectCardState> = []
     for (const projectCard of projectCards) {
-      const [title, fileCount, folderCount] = await Promise.all([
+      const [title, fileCount] = await Promise.all([
         (await projectCard.locator(this.projectCardTitle).textContent()) || '',
         Number(await projectCard.locator(this.projectCardFile).textContent()),
-        Number(await projectCard.locator(this.projectCardFolder).textContent()),
       ])
       projectCardStates.push({
         title: title,
         fileCount,
-        folderCount,
       })
     }
     return projectCardStates

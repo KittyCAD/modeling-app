@@ -1,10 +1,10 @@
 ---
 title: "PlaneData"
-excerpt: "Data for a plane."
+excerpt: "Orientation data that can be used to construct a plane, not a plane in itself."
 layout: manual
 ---
 
-Data for a plane.
+Orientation data that can be used to construct a plane, not a plane in itself.
 
 
 

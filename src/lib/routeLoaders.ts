@@ -124,7 +124,9 @@ export const fileLoader: LoaderFunction = async (
       // We explicitly do not write to the file here since we are loading from
       // the file system and not the editor.
       codeManager.updateCurrentFilePath(currentFilePath)
-      codeManager.updateCodeStateEditor(code)
+      // We pass true on the end here to clear the code editor history.
+      // This way undo and redo are not super weird when opening new files.
+      codeManager.updateCodeStateEditor(code, true)
     }
 
     // Set the file system manager to the project path

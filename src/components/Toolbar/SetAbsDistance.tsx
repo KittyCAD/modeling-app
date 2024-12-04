@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
 import { Program, Expr } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { Selections } from 'lib/selections'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   getTransformInfos,
   transformAstSketchLines,
@@ -47,13 +44,10 @@ export function absDistanceInfo({
       : constraint === 'snapToYAxis'
       ? 'xAbs'
       : 'yAbs'
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-  const _nodes = paths.map((pathToNode) => {
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
-      pathToNode,
+      codeRef.pathToNode,
       'CallExpression'
     )
     if (err(tmp)) return tmp
@@ -84,7 +78,7 @@ export function absDistanceInfo({
   const enabled =
     isAllTooltips &&
     transforms.every(Boolean) &&
-    selectionRanges.codeBasedSelections.length === 1 &&
+    selectionRanges.graphSelections.length === 1 &&
     (enableX || enableY)
 
   return { enabled, transforms }
@@ -109,7 +103,7 @@ export async function applyConstraintAbsDistance({
 
   const transform1 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: selectionRanges,
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -129,7 +123,7 @@ export async function applyConstraintAbsDistance({
 
   const transform2 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: selectionRanges,
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -177,7 +171,7 @@ export function applyConstraintAxisAlign({
 
   return transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: selectionRanges,
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',

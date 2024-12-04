@@ -384,7 +384,6 @@ const myVar = funcN(1, 2)`
                   raw: '2',
                 },
               ],
-              optional: false,
             },
           },
         ],
@@ -465,7 +464,6 @@ describe('testing pipe operator special', () => {
                       ],
                     },
                   ],
-                  optional: false,
                 },
                 {
                   type: 'CallExpression',
@@ -508,7 +506,6 @@ describe('testing pipe operator special', () => {
                       end: 60,
                     },
                   ],
-                  optional: false,
                 },
                 {
                   type: 'CallExpression',
@@ -556,7 +553,6 @@ describe('testing pipe operator special', () => {
                       value: 'myPath',
                     },
                   ],
-                  optional: false,
                 },
                 {
                   type: 'CallExpression',
@@ -598,7 +594,6 @@ describe('testing pipe operator special', () => {
                       end: 115,
                     },
                   ],
-                  optional: false,
                 },
                 {
                   type: 'CallExpression',
@@ -625,7 +620,6 @@ describe('testing pipe operator special', () => {
                       end: 130,
                     },
                   ],
-                  optional: false,
                 },
               ],
             },
@@ -711,7 +705,6 @@ describe('testing pipe operator special', () => {
                       end: 35,
                     },
                   ],
-                  optional: false,
                 },
               ],
             },
@@ -1765,7 +1758,6 @@ describe('test UnaryExpression', () => {
             raw: '100',
           },
         ],
-        optional: false,
       },
     })
   })
@@ -1837,11 +1829,9 @@ describe('testing nested call expressions', () => {
                 raw: '3',
               },
             ],
-            optional: false,
           },
         },
       ],
-      optional: false,
     })
   })
 })
@@ -1879,7 +1869,6 @@ describe('should recognise callExpresions in binaryExpressions', () => {
               name: 'seg02',
             },
           ],
-          optional: false,
         },
         right: {
           type: 'Literal',

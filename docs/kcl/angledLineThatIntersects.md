@@ -35,9 +35,9 @@ exampleSketch = startSketchOn('XZ')
   |> lineTo([-10, 10], %, $lineToIntersect)
   |> lineTo([0, 20], %)
   |> angledLineThatIntersects({
-       angle: 80,
-       intersectTag: lineToIntersect,
-       offset: 10
+       angle = 80,
+       intersectTag = lineToIntersect,
+       offset = 10
      }, %)
   |> close(%)
 

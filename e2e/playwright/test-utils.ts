@@ -305,7 +305,7 @@ export const getMovementUtils = (opts: any) => {
     return [last.x, last.y]
   }
 
-  return { toSU, click00r }
+  return { toSU, toU, click00r }
 }
 
 async function waitForAuthAndLsp(page: Page) {

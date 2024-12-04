@@ -115,14 +115,10 @@ fn do_stdlib_inner(
     let name = metadata.name;
 
     // Fail if the name is not camel case.
-    let whitelist = [
-        "mirror2d",
-        "patternLinear3d",
-        "patternLinear2d",
-        "patternCircular3d",
-        "patternCircular2d",
-    ];
-    if !name.is_camel_case() && !whitelist.contains(&name.as_str()) {
+    // Remove some known suffix exceptions first.
+    let name_cleaned = name.strip_suffix("2d").unwrap_or(name.as_str());
+    let name_cleaned = name.strip_suffix("3d").unwrap_or(name_cleaned);
+    if !name_cleaned.is_camel_case() {
         errors.push(Error::new_spanned(
             &ast.sig.ident,
             format!("stdlib function names must be in camel case: `{}`", name),
@@ -173,11 +169,11 @@ fn do_stdlib_inner(
         quote! {
             let code_blocks = vec![#(#cb),*];
             code_blocks.iter().map(|cb| {
-                let program = crate::parser::top_level_parse(cb).unwrap();
+                let program = crate::Program::parse(cb).unwrap();
 
                 let mut options: crate::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
-                program.recast(&options, 0)
+                program.ast.recast(&options, 0)
             }).collect::<Vec<String>>()
         }
     } else {
@@ -748,8 +744,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
     quote! {
         #[tokio::test(flavor = "multi_thread")]
         async fn #test_name_mock() {
-            let program = crate::parser::top_level_parse(#code_block).unwrap();
-            let id_generator = crate::executor::IdGenerator::default();
+            let program = crate::Program::parse(#code_block).unwrap();
             let ctx = crate::executor::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
                 fs: std::sync::Arc::new(crate::fs::FileManager::new()),
@@ -758,7 +753,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::executor::ContextType::Mock,
             };
 
-            ctx.run(&program, None, id_generator, None).await.unwrap();
+            ctx.run(&program, &mut crate::ExecState::default()).await.unwrap();
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]

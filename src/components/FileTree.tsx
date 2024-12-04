@@ -22,6 +22,7 @@ import usePlatform from 'hooks/usePlatform'
 import { FileEntry } from 'lib/project'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { normalizeLineEndings } from 'lib/codeEditor'
+import { reportRejection } from 'lib/trap'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -196,8 +197,7 @@ const FileTreeItem = ({
         return
       }
 
-      // Don't try to read a file that was removed.
-      if (isCurrentFile && eventType !== 'unlink') {
+      if (isCurrentFile && eventType === 'change') {
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
@@ -242,7 +242,7 @@ const FileTreeItem = ({
       // Show the renaming form
       addCurrentItemToRenaming()
     } else if (e.code === 'Space') {
-      void handleClick()
+      void handleClick().catch(reportRejection)
     }
   }
 
@@ -293,7 +293,7 @@ const FileTreeItem = ({
               style={{ paddingInlineStart: getIndentationCSS(level) }}
               onClick={(e) => {
                 e.currentTarget.focus()
-                void handleClick()
+                void handleClick().catch(reportRejection)
               }}
               onKeyUp={handleKeyUp}
             >

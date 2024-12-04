@@ -1,5 +1,6 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3721
 expression: actual
 snapshot_kind: text
 ---
@@ -23,7 +24,7 @@ snapshot_kind: text
               "start": 20,
               "type": "Literal",
               "type": "Literal",
-              "value": 10
+              "value": 10.0
             },
             "endInclusive": true,
             "start": 16,
@@ -33,7 +34,7 @@ snapshot_kind: text
               "start": 17,
               "type": "Literal",
               "type": "Literal",
-              "value": 0
+              "value": 0.0
             },
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"

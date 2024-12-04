@@ -96,7 +96,8 @@ export function useCalc({
 } {
   const { programMemory } = useKclContext()
   const { context } = useModelingContext()
-  const selectionRange = context.selectionRanges.codeBasedSelections[0].range
+  const selectionRange =
+    context.selectionRanges?.graphSelections[0]?.codeRef?.range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -145,7 +146,7 @@ export function useCalc({
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
         const error = _programMem.set(key, {
-          type: 'UserVal',
+          type: 'String',
           value,
           __meta: [],
         })
@@ -157,6 +158,7 @@ export function useCalc({
         engineCommandManager,
         useFakeExecutor: true,
         programMemoryOverride: kclManager.programMemory.clone(),
+        idGenerator: kclManager.execState.idGenerator,
       }).then(({ execState }) => {
         const resultDeclaration = ast.body.find(
           (a) =>

@@ -41,7 +41,7 @@ sketch001 = startSketchOn('XZ')
   |> line([-8, -3], %)
   |> line([9, -1], %)
   |> line([-19, -0], %)
-  |> mirror2d({ axis: 'Y' }, %)
+  |> mirror2d({ axis = 'Y' }, %)
 
 example = extrude(10, sketch001)
 ```
@@ -54,7 +54,7 @@ sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 8.5], %)
   |> line([20, -8.5], %)
   |> line([-20, -8.5], %)
-  |> mirror2d({ axis: 'Y' }, %)
+  |> mirror2d({ axis = 'Y' }, %)
 
 example = extrude(10, sketch001)
 ```
@@ -71,7 +71,7 @@ sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 8.5], %)
   |> line([20, -8.5], %)
   |> line([-20, -8.5], %)
-  |> mirror2d({ axis: edge001 }, %)
+  |> mirror2d({ axis = edge001 }, %)
 
 example = extrude(10, sketch001)
 ```
@@ -85,8 +85,11 @@ sketch001 = startSketchOn('XZ')
   |> line([20, -8.5], %)
   |> line([-20, -8.5], %)
   |> mirror2d({
-       axis: {
-         custom: { axis: [0.0, 1.0], origin: [0.0, 0.0] }
+       axis = {
+         custom = {
+           axis = [0.0, 1.0],
+           origin = [0.0, 0.0]
+         }
        }
      }, %)
 

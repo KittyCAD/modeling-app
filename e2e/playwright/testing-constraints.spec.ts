@@ -189,9 +189,9 @@ part002 = startSketchOn('XZ')
           .click()
 
         // Wait for the codemod to take effect
-        await expect(page.locator('.cm-content')).toContainText(`angle: -57,`)
+        await expect(page.locator('.cm-content')).toContainText(`angle = -57,`)
         await expect(page.locator('.cm-content')).toContainText(
-          `offset: ${offset},`
+          `offset = ${offset},`
         )
 
         const activeLinesContent = await page.locator('.cm-activeLine').all()

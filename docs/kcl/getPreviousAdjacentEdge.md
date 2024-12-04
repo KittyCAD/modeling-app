@@ -30,16 +30,16 @@ getPreviousAdjacentEdge(tag: TagIdentifier) -> Uuid
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
-  |> angledLine({ angle: 60, length: 10 }, %)
-  |> angledLine({ angle: 120, length: 10 }, %)
+  |> angledLine({ angle = 60, length = 10 }, %)
+  |> angledLine({ angle = 120, length = 10 }, %)
   |> line([-10, 0], %)
-  |> angledLine({ angle: 240, length: 10 }, %, $referenceEdge)
+  |> angledLine({ angle = 240, length = 10 }, %, $referenceEdge)
   |> close(%)
 
 example = extrude(5, exampleSketch)
   |> fillet({
-       radius: 3,
-       tags: [getPreviousAdjacentEdge(referenceEdge)]
+       radius = 3,
+       tags = [getPreviousAdjacentEdge(referenceEdge)]
      }, %)
 ```
 

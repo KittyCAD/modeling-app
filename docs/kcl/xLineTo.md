@@ -32,10 +32,10 @@ xLineTo(to: number, sketch: Sketch, tag?: TagDeclarator) -> Sketch
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> xLineTo(15, %)
-  |> angledLine({ angle: 80, length: 15 }, %)
+  |> angledLine({ angle = 80, length = 15 }, %)
   |> line([8, -10], %)
   |> xLineTo(40, %)
-  |> angledLine({ angle: 135, length: 30 }, %)
+  |> angledLine({ angle = 135, length = 30 }, %)
   |> xLineTo(10, %)
   |> close(%)
 

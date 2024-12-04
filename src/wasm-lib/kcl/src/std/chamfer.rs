@@ -57,8 +57,8 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// const mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> chamfer({
-///     length: chamferLength,
-///     tags: [
+///     length = chamferLength,
+///     tags = [
 ///       getNextAdjacentEdge(edge1),
 ///       getNextAdjacentEdge(edge2),
 ///       getNextAdjacentEdge(edge3),
@@ -83,8 +83,8 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> close(%, $line1)
 ///     |> extrude(20, %)
 ///     |> chamfer({
-///         length: 10,
-///         tags: [getOppositeEdge(line1)]
+///         length = 10,
+///         tags = [getOppositeEdge(line1)]
 ///     }, %, $chamfer1) // We tag the chamfer to reference it later.
 ///
 /// const sketch001 = startSketchOn(part001, chamfer1)

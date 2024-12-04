@@ -5,10 +5,10 @@ use anyhow::Result;
 use crate::{
     ast::types::{CallExpression, NodeRef},
     docs::StdLibFn,
-    executor::SourceRange,
     lint::rule::{def_finding, Discovered, Finding},
     std::{FunctionKind, StdLib},
     walk::Node,
+    SourceRange,
 };
 
 def_finding!(

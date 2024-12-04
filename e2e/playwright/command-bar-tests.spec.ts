@@ -87,7 +87,7 @@ extrude001 = extrude(-10, sketch001)`
     await page.keyboard.press('Enter') // submit
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toContainText(
-      `fillet({ radius: ${KCL_DEFAULT_LENGTH}, tags: [seg01] }, %)`
+      `fillet({ radius = ${KCL_DEFAULT_LENGTH}, tags = [seg01] }, %)`
     )
   })
 

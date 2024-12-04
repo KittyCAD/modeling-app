@@ -33,9 +33,9 @@ exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> bezierCurve({
-       to: [10, 10],
-       control1: [5, 0],
-       control2: [5, 10]
+       to = [10, 10],
+       control1 = [5, 0],
+       control2 = [5, 10]
      }, %)
   |> lineTo([10, 0], %)
   |> close(%)

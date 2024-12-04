@@ -28,6 +28,7 @@ type SceneSerialised = {
 
 type ClickHandler = (clickParams?: mouseParams) => Promise<void | boolean>
 type MoveHandler = (moveParams?: mouseParams) => Promise<void | boolean>
+type DblClickHandler = (clickParams?: mouseParams) => Promise<void | boolean>
 type DragToHandler = (dragParams: mouseDragToParams) => Promise<void | boolean>
 type DragFromHandler = (
   dragParams: mouseDragFromParams
@@ -68,7 +69,7 @@ export class SceneFixture {
     x: number,
     y: number,
     { steps }: { steps: number } = { steps: 20 }
-  ): [ClickHandler, MoveHandler] =>
+  ): [ClickHandler, MoveHandler, DblClickHandler] =>
     [
       (clickParams?: mouseParams) => {
         if (clickParams?.pixelDiff) {
@@ -89,6 +90,16 @@ export class SceneFixture {
           )
         }
         return this.page.mouse.move(x, y, { steps })
+      },
+      (clickParams?: mouseParams) => {
+        if (clickParams?.pixelDiff) {
+          return doAndWaitForImageDiff(
+            this.page,
+            () => this.page.mouse.dblclick(x, y),
+            clickParams.pixelDiff
+          )
+        }
+        return this.page.mouse.dblclick(x, y)
       },
     ] as const
   makeDragHelpers = (

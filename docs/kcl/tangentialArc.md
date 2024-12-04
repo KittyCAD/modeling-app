@@ -31,9 +31,9 @@ tangentialArc(data: TangentialArcData, sketch: Sketch, tag?: TagDeclarator) -> S
 ```js
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> angledLine({ angle: 60, length: 10 }, %)
-  |> tangentialArc({ radius: 10, offset: -120 }, %)
-  |> angledLine({ angle: -60, length: 10 }, %)
+  |> angledLine({ angle = 60, length = 10 }, %)
+  |> tangentialArc({ radius = 10, offset = -120 }, %)
+  |> angledLine({ angle = -60, length = 10 }, %)
   |> close(%)
 
 example = extrude(10, exampleSketch)

@@ -1823,6 +1823,7 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
       modifiedAst: {
         start: 0,
         end: 0,
+        shebang: null,
         moduleId: 0,
         body: [],
 

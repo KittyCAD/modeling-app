@@ -1,13 +1,20 @@
-import { parse, Sketch, recast, initPromise, sketchFromKclValue } from '../wasm'
+import {
+  parse,
+  Sketch,
+  recast,
+  initPromise,
+  sketchFromKclValue,
+  SourceRange,
+} from '../wasm'
 import {
   ConstraintType,
   getTransformInfos,
   transformAstSketchLines,
 } from './sketchcombos'
 import { getSketchSegmentFromSourceRange } from './sketchConstraints'
-import { Selection } from 'lib/selections'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
+import { codeRefFromRange } from './artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -27,16 +34,17 @@ async function testingSwapSketchFnCall({
   originalRange: [number, number]
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
-  const range: Selection = {
-    type: 'default',
-    range: [startIndex, startIndex + callToSwap.length],
-  }
+  const range: SourceRange = [startIndex, startIndex + callToSwap.length]
   const ast = parse(inputCode)
   if (err(ast)) return Promise.reject(ast)
 
   const execState = await enginelessExecutor(ast)
   const selections = {
-    codeBasedSelections: [range],
+    graphSelections: [
+      {
+        codeRef: codeRefFromRange(range, ast),
+      },
+    ],
     otherSelections: [],
   }
   const transformInfos = getTransformInfos(selections, ast, constraintType)
@@ -57,7 +65,7 @@ async function testingSwapSketchFnCall({
 
   return {
     newCode,
-    originalRange: range.range,
+    originalRange: range,
   }
 }
 
@@ -67,11 +75,11 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
     `  |> startProfileAt([0, 0], %)`,
     `  |> lineTo([1, 1], %, $abc1)`,
     `  |> line([-2.04, -0.7], %, $abc2)`,
-    `  |> angledLine({ angle: 157, length: 1.69 }, %, $abc3)`,
-    `  |> angledLineOfXLength({ angle: 217, length: 0.86 }, %, $abc4)`,
-    `  |> angledLineOfYLength({ angle: 104, length: 1.58 }, %, $abc5)`,
-    `  |> angledLineToX({ angle: 55, to: -2.89 }, %, $abc6)`,
-    `  |> angledLineToY({ angle: 330, to: 2.53 }, %, $abc7)`,
+    `  |> angledLine({ angle = 157, length = 1.69 }, %, $abc3)`,
+    `  |> angledLineOfXLength({ angle = 217, length = 0.86 }, %, $abc4)`,
+    `  |> angledLineOfYLength({ angle = 104, length = 1.58 }, %, $abc5)`,
+    `  |> angledLineToX({ angle = 55, to = -2.89 }, %, $abc6)`,
+    `  |> angledLineToY({ angle = 330, to = 2.53 }, %, $abc7)`,
     `  |> xLine(1.47, %, $abc8)`,
     `  |> yLine(1.57, %, $abc9)`,
     `  |> xLineTo(1.49, %, $abc10)`,
@@ -138,7 +146,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLine with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLine({ angle: 157, length: 1.69 }, %, $abc3)',
+      callToSwap: 'angledLine({ angle = 157, length = 1.69 }, %, $abc3)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(-1.56, %, $abc3)'
@@ -161,7 +169,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfXLength with tag converts to xLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLineOfXLength({ angle: 217, length: 0.86 }, %, $abc4)',
+      callToSwap:
+        'angledLineOfXLength({ angle = 217, length = 0.86 }, %, $abc4)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLine(-0.86, %, $abc4)'
@@ -184,7 +193,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineOfYLength with tag converts to yLine', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLineOfYLength({ angle: 104, length: 1.58 }, %, $abc5)',
+      callToSwap:
+        'angledLineOfYLength({ angle = 104, length = 1.58 }, %, $abc5)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLine(1.58, %, $abc5)'
@@ -206,7 +216,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToX with tag converts to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLineToX({ angle: 55, to: -2.89 }, %, $abc6)',
+      callToSwap: 'angledLineToX({ angle = 55, to = -2.89 }, %, $abc6)',
       constraintType: 'horizontal',
     })
     const expectedLine = 'xLineTo(-2.89, %, $abc6)'
@@ -228,7 +238,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   it('angledLineToY with tag converts to yLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: bigExample,
-      callToSwap: 'angledLineToY({ angle: 330, to: 2.53 }, %, $abc7)',
+      callToSwap: 'angledLineToY({ angle = 330, to = 2.53 }, %, $abc7)',
       constraintType: 'vertical',
     })
     const expectedLine = 'yLineTo(2.53, %, $abc7)'

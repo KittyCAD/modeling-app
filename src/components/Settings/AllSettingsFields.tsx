@@ -13,7 +13,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsFieldInput } from './SettingsFieldInput'
 import toast from 'react-hot-toast'
-import { APP_VERSION } from 'routes/Settings'
+import { APP_VERSION, PACKAGE_NAME } from 'routes/Settings'
 import { PATHS } from 'lib/paths'
 import {
   createAndOpenNewTutorialProject,
@@ -24,6 +24,7 @@ import { ForwardedRef, forwardRef, useEffect } from 'react'
 import { useLspContext } from 'components/LspProvider'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -245,6 +246,9 @@ export const AllSettingsFields = forwardRef(
                   to inject the version from package.json */}
               App version {APP_VERSION}.{' '}
               <a
+                onClick={openExternalBrowserIfDesktop(
+                  `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`
+                )}
                 href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -255,6 +259,9 @@ export const AllSettingsFields = forwardRef(
             <p className="max-w-2xl mt-6">
               Don't see the feature you want? Check to see if it's on{' '}
               <a
+                onClick={openExternalBrowserIfDesktop(
+                  'https://github.com/KittyCAD/modeling-app/discussions'
+                )}
                 href="https://github.com/KittyCAD/modeling-app/discussions"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -264,6 +271,25 @@ export const AllSettingsFields = forwardRef(
               , and start a discussion if you don't see it! Your feedback will
               help us prioritize what to build next.
             </p>
+            {PACKAGE_NAME.indexOf('-nightly') === -1 && (
+              <p className="max-w-2xl mt-6">
+                Want to experience the latest and (hopefully) greatest from our
+                main development branch?{' '}
+                <a
+                  onClick={openExternalBrowserIfDesktop(
+                    'https://zoo.dev/modeling-app/download/nightly'
+                  )}
+                  href="https://zoo.dev/modeling-app/download/nightly"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Click here to grab Zoo Modeling App (Nightly)
+                </a>
+                . It can be installed side-by-side with the stable version
+                you're running now. But careful there, a lot less testing is
+                involved in their release 🤖.
+              </p>
+            )}
           </div>
         </div>
       </div>

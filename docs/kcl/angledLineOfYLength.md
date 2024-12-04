@@ -32,9 +32,9 @@ angledLineOfYLength(data: AngledLineData, sketch: Sketch, tag?: TagDeclarator) -
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
-  |> angledLineOfYLength({ angle: 45, length: 10 }, %)
+  |> angledLineOfYLength({ angle = 45, length = 10 }, %)
   |> line([0, 10], %)
-  |> angledLineOfYLength({ angle: 135, length: 10 }, %)
+  |> angledLineOfYLength({ angle = 135, length = 10 }, %)
   |> line([-10, 0], %)
   |> line([0, -30], %)
 

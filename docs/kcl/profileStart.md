@@ -29,10 +29,10 @@ profileStart(sketch: Sketch) -> [number]
 ```js
 sketch001 = startSketchOn('XY')
   |> startProfileAt([5, 2], %)
-  |> angledLine({ angle: 120, length: 50 }, %, $seg01)
+  |> angledLine({ angle = 120, length = 50 }, %, $seg01)
   |> angledLine({
-       angle: segAng(seg01) + 120,
-       length: 50
+       angle = segAng(seg01) + 120,
+       length = 50
      }, %)
   |> lineTo(profileStart(%), %)
   |> close(%)

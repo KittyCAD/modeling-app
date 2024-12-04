@@ -1,5 +1,6 @@
 ---
 source: kcl/src/parser/parser_impl.rs
+assertion_line: 3808
 expression: actual
 snapshot_kind: text
 ---
@@ -25,7 +26,7 @@ snapshot_kind: text
                 "start": 14,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4
+                "value": 4.0
               },
               "operator": "^",
               "right": {
@@ -34,7 +35,7 @@ snapshot_kind: text
                 "start": 18,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2
+                "value": 2.0
               },
               "start": 14,
               "type": "BinaryExpression",
@@ -51,7 +52,7 @@ snapshot_kind: text
                   "start": 22,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 3
+                  "value": 3.0
                 },
                 "operator": "^",
                 "right": {
@@ -60,7 +61,7 @@ snapshot_kind: text
                   "start": 26,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2
+                  "value": 2.0
                 },
                 "start": 22,
                 "type": "BinaryExpression",
@@ -73,7 +74,7 @@ snapshot_kind: text
                 "start": 30,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2
+                "value": 2.0
               },
               "start": 22,
               "type": "BinaryExpression",

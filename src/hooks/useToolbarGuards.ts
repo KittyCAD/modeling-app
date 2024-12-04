@@ -2,13 +2,13 @@ import {
   SetVarNameModal,
   createSetVarNameModal,
 } from 'components/SetVarNameModal'
-import { editorManager, kclManager } from 'lib/singletons'
-import { reportRejection, trap } from 'lib/trap'
+import { editorManager, kclManager, codeManager } from 'lib/singletons'
+import { reportRejection, trap, err } from 'lib/trap'
 import { moveValueIntoNewVariable } from 'lang/modifyAst'
 import { isNodeSafeToReplace } from 'lang/queryAst'
 import { useEffect, useState } from 'react'
 import { useModelingContext } from './useModelingContext'
-import { PathToNode, SourceRange } from 'lang/wasm'
+import { PathToNode, SourceRange, recast } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { toSync } from 'lib/utils'
 
@@ -28,14 +28,16 @@ export function useConvertToVariable(range?: SourceRange) {
 
     const meta = isNodeSafeToReplace(
       parsed,
-      range || context.selectionRanges.codeBasedSelections?.[0]?.range || []
+      range ||
+        context.selectionRanges.graphSelections?.[0]?.codeRef?.range ||
+        []
     )
     if (trap(meta)) return
 
     const { isSafe, value } = meta
     const canReplace = isSafe && value.type !== 'Identifier'
     const isOnlyOneSelection =
-      !!range || context.selectionRanges.codeBasedSelections.length === 1
+      !!range || context.selectionRanges.graphSelections.length === 1
 
     setEnabled(canReplace && isOnlyOneSelection)
   }, [context.selectionRanges])
@@ -52,11 +54,16 @@ export function useConvertToVariable(range?: SourceRange) {
         moveValueIntoNewVariable(
           ast,
           kclManager.programMemory,
-          range || context.selectionRanges.codeBasedSelections[0].range,
+          range || context.selectionRanges.graphSelections[0]?.codeRef?.range,
           variableName
         )
 
       await kclManager.updateAst(_modifiedAst, true)
+
+      const newCode = recast(_modifiedAst)
+      if (err(newCode)) return
+      codeManager.updateCodeEditor(newCode)
+
       return pathToReplacedNode
     } catch (e) {
       console.log('error', e)

@@ -1,0 +1,14 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing import_cycle1.kcl
+snapshot_kind: text
+---
+KCL Engine error
+
+  × engine: Failed to read file `import_cycle2.kcl`: No such file or directory
+  │ (os error 2)
+   ╭─[1:1]
+ 1 │ import two from "import_cycle2.kcl"
+   · ───────────────────────────────────
+ 2 │ 
+   ╰────

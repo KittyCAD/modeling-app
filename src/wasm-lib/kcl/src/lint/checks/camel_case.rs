@@ -3,9 +3,9 @@ use convert_case::Casing;
 
 use crate::{
     ast::types::{ObjectProperty, VariableDeclarator},
-    executor::SourceRange,
     lint::rule::{def_finding, Discovered, Finding},
     walk::Node,
+    SourceRange,
 };
 
 def_finding!(

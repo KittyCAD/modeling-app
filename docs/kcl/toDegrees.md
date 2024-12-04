@@ -34,8 +34,8 @@ toDegrees(num: number) -> number
 exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> angledLine({
-       angle: 50,
-       length: 70 * cos(toDegrees(pi() / 4))
+       angle = 50,
+       length = 70 * cos(toDegrees(pi() / 4))
      }, %)
   |> yLineTo(0, %)
   |> close(%)

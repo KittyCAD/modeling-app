@@ -103,6 +103,7 @@ where
         BinaryPart::Identifier(id) => f.walk(id.as_ref().into()),
         BinaryPart::BinaryExpression(be) => f.walk(be.as_ref().into()),
         BinaryPart::CallExpression(ce) => f.walk(ce.as_ref().into()),
+        BinaryPart::CallExpressionKw(ce) => f.walk(ce.as_ref().into()),
         BinaryPart::UnaryExpression(ue) => walk_unary_expression(ue, f),
         BinaryPart::MemberExpression(me) => walk_member_expression(me, f),
         BinaryPart::IfExpression(e) => walk_if_expression(e, f),
@@ -154,6 +155,26 @@ where
             }
             for e in &ce.arguments {
                 if !walk_value::<WalkT>(e, f)? {
+                    return Ok(false);
+                }
+            }
+            Ok(true)
+        }
+        Expr::CallExpressionKw(ce) => {
+            if !f.walk(ce.as_ref().into())? {
+                return Ok(false);
+            }
+
+            if !f.walk((&ce.callee).into())? {
+                return Ok(false);
+            }
+            if let Some(ref e) = ce.unlabeled {
+                if !walk_value::<WalkT>(e, f)? {
+                    return Ok(false);
+                }
+            }
+            for e in &ce.arguments {
+                if !walk_value::<WalkT>(&e.arg, f)? {
                     return Ok(false);
                 }
             }

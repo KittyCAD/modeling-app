@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
 import { Program, Expr } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { Selections } from 'lib/selections'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getTransformInfos,
@@ -40,15 +37,11 @@ export function angleLengthInfo({
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-
-  const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Expr>(kclManager.ast, pathToNode, 'CallExpression')
+  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
+    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, 'CallExpression')
   )
   const _err1 = nodes.find(err)
-  if (err(_err1)) return _err1
+  if (_err1 instanceof Error) return _err1
 
   const isAllTooltips = nodes.every((meta) => {
     if (err(meta)) return false
@@ -64,7 +57,7 @@ export function angleLengthInfo({
     angleOrLength
   )
   const enabled =
-    selectionRanges.codeBasedSelections.length <= 1 &&
+    selectionRanges.graphSelections.length <= 1 &&
     isAllTooltips &&
     transforms.every(Boolean)
   return { enabled, transforms }

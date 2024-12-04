@@ -1,7 +1,7 @@
 use crate::{
     ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
     errors::{KclError, KclErrorDetails},
-    executor::SourceRange,
+    SourceRange,
 };
 
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
@@ -66,7 +66,7 @@ fn source_range(tokens: &[BinaryExpressionToken]) -> Vec<SourceRange> {
         })
         .collect();
     match (sources.first(), sources.last()) {
-        (Some((start, _, module_id)), Some((_, end, _))) => vec![SourceRange([*start, *end, module_id.as_usize()])],
+        (Some((start, _, module_id)), Some((_, end, _))) => vec![SourceRange::new(*start, *end, *module_id)],
         _ => Vec::new(),
     }
 }
@@ -126,7 +126,7 @@ impl From<BinaryOperator> for BinaryExpressionToken {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ast::types::{Literal, ModuleId};
+    use crate::{ast::types::Literal, source_range::ModuleId};
 
     #[test]
     fn parse_and_evaluate() {

@@ -34,8 +34,8 @@ acos(num: number) -> number
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> angledLine({
-       angle: toDegrees(acos(0.5)),
-       length: 10
+       angle = toDegrees(acos(0.5)),
+       length = 10
      }, %)
   |> line([5, 0], %)
   |> lineTo([12, 0], %)

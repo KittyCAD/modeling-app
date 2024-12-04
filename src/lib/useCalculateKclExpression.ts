@@ -34,9 +34,11 @@ export function useCalculateKclExpression({
 } {
   const { programMemory, code } = useKclContext()
   const { context } = useModelingContext()
+  // If there is no selection, use the end of the code
+  // so all variables are available
   const selectionRange:
-    | (typeof context.selectionRanges.codeBasedSelections)[number]['range']
-    | undefined = context.selectionRanges.codeBasedSelections[0]?.range
+    | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
+    | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -72,11 +74,12 @@ export function useCalculateKclExpression({
   }, [programMemory, newVariableName])
 
   useEffect(() => {
-    if (!programMemory || !selectionRange) return
+    if (!programMemory) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
       kclManager.programMemory,
-      selectionRange
+      // If there is no selection, use the end of the code
+      selectionRange || [code.length, code.length]
     )
     setAvailableVarInfo(varInfo)
   }, [kclManager.ast, kclManager.programMemory, selectionRange])
@@ -91,7 +94,7 @@ export function useCalculateKclExpression({
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
         const error = _programMem.set(key, {
-          type: 'UserVal',
+          type: 'String',
           value,
           __meta: [],
         })
@@ -102,6 +105,7 @@ export function useCalculateKclExpression({
         engineCommandManager,
         useFakeExecutor: true,
         programMemoryOverride: kclManager.programMemory.clone(),
+        idGenerator: kclManager.execState.idGenerator,
       })
       const resultDeclaration = ast.body.find(
         (a) =>
@@ -115,6 +119,7 @@ export function useCalculateKclExpression({
       setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
       init && setValueNode(init)
     }
+    if (!value) return
     execAstAndSetResult().catch(() => {
       setCalcResult('NAN')
       setValueNode(null)

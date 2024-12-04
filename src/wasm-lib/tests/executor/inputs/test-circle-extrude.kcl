@@ -12,6 +12,6 @@ const sketch002 = startSketchOn('XZ')
   |> close(%)
 const sketch001 = startSketchOn('XZ')
   |> circle({
-       center: [318.33, 168.1],
-       radius: 182.8
+       center = [318.33, 168.1],
+       radius = 182.8
      }, %)
