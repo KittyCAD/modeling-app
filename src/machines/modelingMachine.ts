@@ -1629,20 +1629,24 @@ export const modelingMachine = setup({
         })
 
         if (trap(shellResult)) return
-        const updateAstResult = await kclManager.updateAst(
-          shellResult.modifiedAst,
-          true,
-          {
-            focusPath: [shellResult.pathToNode],
+        try {
+          const updateAstResult = await kclManager.updateAst(
+            shellResult.modifiedAst,
+            true,
+            {
+              focusPath: [shellResult.pathToNode],
+            }
+          )
+
+          await codeManager.updateEditorWithAstAndWriteToFile(
+            updateAstResult.newAst
+          )
+
+          if (updateAstResult?.selections) {
+            editorManager.selectRange(updateAstResult?.selections)
           }
-        )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
+        } catch (e) {
+          console.error(e)
         }
       }
     ),

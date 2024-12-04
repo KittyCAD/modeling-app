@@ -623,8 +623,15 @@ export function addShell({
   if (err(baseNode)) return baseNode
   console.log("selection.artifact['subType']", selection.artifact['subType'])
   const shell = createCallExpressionStdLib('shell', [
-    createObjectExpression({ faces: [ selection.artifact['subType'] ], thickness }),
-    createIdentifier(baseNode.node.id.name),
+    createObjectExpression({
+      faces: createArrayExpression([
+        createLiteral(selection.artifact['subType']),
+      ]),
+      thickness,
+    }),
+    // createIdentifier(baseNode.node.id.name),
+    // TODO: replace with the query from sketch to extrude
+    createIdentifier('extrude001'),
   ])
   const declaration = createVariableDeclaration(name, shell)
   modifiedAst.body.push(declaration)
