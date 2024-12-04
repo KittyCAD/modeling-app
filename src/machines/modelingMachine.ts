@@ -1618,10 +1618,6 @@ export const modelingMachine = setup({
         },
 
         Loft: {
-          // target: 'idle',
-          // guard: 'has valid loft selection',
-          // actions: ['AST loft'],
-          // reenter: false,
           target: 'Applying loft',
           reenter: true,
         },
