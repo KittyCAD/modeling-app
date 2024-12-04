@@ -7,8 +7,6 @@ import {
   getMovementUtils,
   getUtils,
   PERSIST_MODELING_CONTEXT,
-  setup,
-  tearDown,
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 
@@ -40,9 +38,9 @@ test.describe('Sketch tests', () => {
     screwHole = startSketchOn('XY')
   ${startProfileAt1}
   |> arc({
-        radius: screwRadius,
-        angle_start: 0,
-        angle_end: 360
+        radius = screwRadius,
+        angle_start = 0,
+        angle_end = 360
       }, %)
   
     part001 = startSketchOn('XY')
@@ -61,9 +59,9 @@ test.describe('Sketch tests', () => {
   |> xLine(-width / 4 + wireRadius, %)
   |> yLine(wireOffset, %)
   |> arc({
-        radius: wireRadius,
-        angle_start: 0,
-        angle_end: 180
+        radius = wireRadius,
+        angle_start = 0,
+        angle_end = 180
       }, %)
   |> yLine(-wireOffset, %)
   |> xLine(-width / 4, %)
@@ -347,6 +345,7 @@ test.describe('Sketch tests', () => {
 
   test('Can edit a circle center and radius by dragging its handles', async ({
     page,
+    editor,
     homePage,
   }) => {
     const u = await getUtils(page)
@@ -354,7 +353,7 @@ test.describe('Sketch tests', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-    |> circle({ center: [4.61, -5.01], radius: 8 }, %)`
+    |> circle({ center = [4.61, -5.01], radius = 8 }, %)`
       )
     })
 
@@ -398,6 +397,7 @@ test.describe('Sketch tests', () => {
     ).toBeVisible()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
     await page.waitForTimeout(400)
+
     let prevContent = await page.locator('.cm-content').innerText()
 
     await expect(page.getByTestId('segment-overlay')).toHaveCount(1)
@@ -408,7 +408,9 @@ test.describe('Sketch tests', () => {
         targetPosition: { x: startPX[0] + dragPX, y: startPX[1] - dragPX },
       })
       await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+
+      await editor.expectEditor.not.toContain(prevContent)
+
       prevContent = await page.locator('.cm-content').innerText()
     })
 
@@ -421,15 +423,13 @@ test.describe('Sketch tests', () => {
         sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
         targetPosition: { x: lineEnd.x + dragPX * 2, y: lineEnd.y + dragPX },
       })
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      await editor.expectEditor.not.toContain(prevContent)
       prevContent = await page.locator('.cm-content').innerText()
     })
 
     // expect the code to have changed
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> circle({ center: [7.26, -2.37], radius: 11.44 }, %)
-  `)
+    await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')
+    |> circle({ center = [7.26, -2.37], radius = 11.44 }, %)`, { shouldNormalise: true })
   })
   test('Can edit a sketch that has been extruded in the same pipe', async ({
     page,
@@ -547,7 +547,7 @@ test.describe('Sketch tests', () => {
   |> line([12.73, -0.09], %)
   |> tangentialArcTo([24.95, -5.38], %)
   |> close(%)
-  |> revolve({ axis: "X",}, %)`
+  |> revolve({ axis = "X",}, %)`
       )
     })
 
@@ -633,7 +633,7 @@ test.describe('Sketch tests', () => {
   |> tangentialArcTo([24.95, -5.38], %)
   |> line([1.97, 2.06], %)
   |> close(%)
-  |> revolve({ axis: "X" }, %)`)
+  |> revolve({ axis = "X" }, %)`)
   })
   test('Can add multiple sketches', async ({ page, homePage }) => {
     const u = await getUtils(page)
@@ -1064,11 +1064,11 @@ test.describe('Sketch tests', () => {
       fn lug = (origin, length, diameter, plane) => {
         lugSketch = startSketchOn(plane)
           |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
-          |> angledLineOfYLength({ angle: 60, length: lugHeadLength }, %)
+          |> angledLineOfYLength({ angle = 60, length = lugHeadLength }, %)
           |> xLineTo(0 + .001, %)
           |> yLineTo(0, %)
           |> close(%)
-          |> revolve({ axis: "Y" }, %)
+          |> revolve({ axis = "Y" }, %)
   
         return lugSketch
       }

@@ -92,6 +92,9 @@ export class AuthenticatedTronApp {
     this.electronApp = electronApp
     this.dir = dir
 
+    // Easier to access throughout utils
+    this.page.dir = dir
+
     // Setup localStorage, addCookies, reload
     await setup(this.context, this.page, this.testInfo)
 
