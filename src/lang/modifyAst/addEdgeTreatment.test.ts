@@ -18,7 +18,7 @@ import {
   FilletParameters,
   ChamferParameters,
   EdgeTreatmentParameters,
-} from './addFillet'
+} from './addEdgeTreatment'
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'

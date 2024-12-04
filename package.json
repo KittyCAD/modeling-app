@@ -192,7 +192,7 @@
     "eslint-plugin-css-modules": "^2.12.0",
     "eslint-plugin-import": "^2.30.0",
     "eslint-plugin-suggest-no-throw": "^1.0.0",
-    "happy-dom": "^15.10.2",
+    "happy-dom": "^15.11.7",
     "http-server": "^14.1.1",
     "husky": "^9.1.5",
     "kill-port": "^2.0.1",
@@ -212,7 +212,7 @@
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.6.0",
     "vitest-webgl-canvas-mock": "^1.1.0",
-    "wasm-pack": "^0.13.0",
+    "wasm-pack": "^0.13.1",
     "ws": "^8.17.0",
     "yarn": "^1.22.22"
   }

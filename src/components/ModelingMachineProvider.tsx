@@ -83,7 +83,7 @@ import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
-import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addFillet'
+import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addEdgeTreatment'
 import {
   ExportIntent,
   EngineConnectionStateType,
