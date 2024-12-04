@@ -81,7 +81,7 @@ export async function executeAst({
           false
         ))
 
-    await engineCommandManager.waitForAllCommands(useFakeExecutor)
+    await engineCommandManager.waitForAllCommands()
     return {
       logs: [],
       errors: [],

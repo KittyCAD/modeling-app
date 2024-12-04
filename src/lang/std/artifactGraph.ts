@@ -1,8 +1,8 @@
-import { PathToNode, Program, SourceRange } from 'lang/wasm'
+import { parse, PathToNode, Program, recast, SourceRange } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
-import { engineCommandManager } from 'lib/singletons'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 
 export type ArtifactId = string
 
@@ -939,12 +939,68 @@ export function getPlaneFromArtifact(
   graph: ArtifactGraph
 ): PlaneArtifact | Error {
   if (!artifact) return new Error(`Artifact is undefined`)
+  if (artifact.type === 'plane') return artifact
   if (artifact.type === 'path') return getPlaneFromPath(artifact, graph)
   if (artifact.type === 'segment') return getPlaneFromSegment(artifact, graph)
   if (artifact.type === 'solid2D') return getPlaneFromSolid2D(artifact, graph)
   if (artifact.type === 'cap') return getPlaneFromCap(artifact, graph)
   if (artifact.type === 'wall') return getPlaneFromWall(artifact, graph)
   return new Error(`Artifact type ${artifact.type} does not have a plane`)
+}
+
+const onlyConsecutivePaths = (
+  nodePaths: PathToNode[],
+  originalPath: PathToNode
+): PathToNode[] => {
+  const originalIndex = nodePaths.findIndex(
+    (path) => path[1][0] === originalPath[1][0]
+  )
+  const safePaths = [nodePaths[originalIndex]]
+  nodePaths.slice(originalIndex + 1).forEach((path) => {
+    const lastPath = safePaths[safePaths.length - 1]
+    if (Number(path?.[1]?.[0]) === Number(lastPath?.[1]?.[0]) + 1) {
+      safePaths.push(path)
+    }
+  })
+  nodePaths.slice(0, originalIndex + 1).forEach((path) => {
+    const lastPath = safePaths[0]
+    if (Number(path?.[1]?.[0]) === Number(lastPath?.[1]?.[0]) - 1) {
+      safePaths.unshift(path)
+    }
+  })
+  return safePaths
+}
+
+export function getPathsFromPlaneArtifact(planeArtifact: PlaneArtifact) {
+  const nodePaths: PathToNode[] = []
+  console.log('pathIds', planeArtifact.pathIds)
+  for (const pathId of planeArtifact.pathIds) {
+    const path = engineCommandManager.artifactGraph.get(pathId)
+    if (!path) continue
+    if ('codeRef' in path) {
+      // TODO should figure out why upstream the path is bad
+      const isNodePathBad = path.codeRef.pathToNode.length < 2
+      if (isNodePathBad) {
+        const code = recast(kclManager.ast)
+        if (err(code)) continue
+        const newAst = parse(code)
+        if (err(newAst)) continue
+        console.log(
+          'bad path',
+          path.codeRef.pathToNode,
+          getNodePathFromSourceRange(newAst, path.codeRef.range),
+          code.slice(path.codeRef.range[0], path.codeRef.range[1]),
+          newAst
+        )
+      }
+      nodePaths.push(
+        isNodePathBad
+          ? getNodePathFromSourceRange(kclManager.ast, path.codeRef.range)
+          : path.codeRef.pathToNode
+      )
+    }
+  }
+  return onlyConsecutivePaths(nodePaths, nodePaths[0])
 }
 
 export function getPathsFromArtifact({
@@ -954,28 +1010,6 @@ export function getPathsFromArtifact({
   sketchPathToNode: PathToNode
   artifact?: Artifact
 }): PathToNode[] | Error {
-  const onlyConsecutivePaths = (
-    nodePaths: PathToNode[],
-    originalPath: PathToNode
-  ): PathToNode[] => {
-    const originalIndex = nodePaths.findIndex(
-      (path) => path[1][0] === originalPath[1][0]
-    )
-    const safePaths = [nodePaths[originalIndex]]
-    nodePaths.slice(originalIndex + 1).forEach((path) => {
-      const lastPath = safePaths[safePaths.length - 1]
-      if (Number(path[1][0]) === Number(lastPath[1][0]) + 1) {
-        safePaths.push(path)
-      }
-    })
-    nodePaths.slice(0, originalIndex).forEach((path) => {
-      const lastPath = safePaths[0]
-      if (Number(path[1][0]) === Number(lastPath[1][0]) - 1) {
-        safePaths.unshift(path)
-      }
-    })
-    return safePaths
-  }
   const plane = getPlaneFromArtifact(
     artifact,
     engineCommandManager.artifactGraph
@@ -985,8 +1019,8 @@ export function getPathsFromArtifact({
     { keys: plane.pathIds, types: ['path'] },
     engineCommandManager.artifactGraph
   )
-  const nodePaths = [...paths]
-    .map((path) => path[1].codeRef.pathToNode)
+  let nodePaths = [...paths.values()]
+    .map((path) => path.codeRef.pathToNode)
     .sort((a, b) => Number(a[1][0]) - Number(b[1][0]))
   return onlyConsecutivePaths(nodePaths, sketchPathToNode)
 }
