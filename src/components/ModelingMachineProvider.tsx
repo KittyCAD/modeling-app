@@ -50,6 +50,7 @@ import {
   isSketchPipe,
   Selections,
   updateSelections,
+  canLoftSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -568,6 +569,21 @@ export const ModelingMachineProvider = ({
           const canSweep = canSweepSelection(selectionRanges)
           if (err(canSweep)) return false
           return canSweep
+        },
+        'has valid loft selection': ({ context: { selectionRanges } }) => {
+          const hasNoSelection =
+            selectionRanges.graphSelections.length === 0 ||
+            isRangeBetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+
+          if (hasNoSelection) {
+            const count = 2
+            return doesSceneHaveSweepableSketch(kclManager.ast, count)
+          }
+
+          const canLoft = canLoftSelection(selectionRanges)
+          if (err(canLoft)) return false
+          return canLoft
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },

@@ -31,6 +31,9 @@ export type ModelingCommandSchema = {
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
+  Loft: {
+    selection: Selections
+  }
   Revolve: {
     selection: Selections
     angle: KclCommandValue
@@ -257,6 +260,20 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+    },
+  },
+  Loft: {
+    description: 'Create a 3D body by blending between two or more sketches',
+    icon: 'loft',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['solid2D'],
+        multiple: true,
+        required: true,
+        skip: false,
       },
     },
   },
