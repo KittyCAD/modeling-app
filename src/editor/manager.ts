@@ -139,7 +139,9 @@ export default class EditorManager {
   }
 
   setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
-    this._highlightRange = range
+    this._highlightRange = range.map((s): [number, number] => {
+      return [s[0], s[1]]
+    })
 
     const selectionsWithSafeEnds = range.map((s): [number, number] => {
       const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])

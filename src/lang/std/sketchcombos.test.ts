@@ -125,7 +125,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
         )
       }
       const start = codeBeforeLine + line.indexOf('|> ' + 5)
-      const range: [number, number] = [start, start]
+      const range: [number, number, boolean] = [start, start, true]
       return {
         codeRef: codeRefFromRange(range, ast),
       }
@@ -297,7 +297,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start], ast),
+          codeRef: codeRefFromRange([start, start, true], ast),
         }
       })
 
@@ -386,7 +386,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start], ast),
+          codeRef: codeRefFromRange([start, start, true], ast),
         }
       })
 
@@ -446,7 +446,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start], ast),
+          codeRef: codeRefFromRange([start, start, true], ast),
         }
       })
 
@@ -541,7 +541,7 @@ async function helperThing(
       const comment = ln.split('//')[1]
       const start = inputScript.indexOf('//' + comment) - 7
       return {
-        codeRef: codeRefFromRange([start, start], ast),
+        codeRef: codeRefFromRange([start, start, true], ast),
       }
     })
 
@@ -610,7 +610,7 @@ part001 = startSketchOn('XY')
         }
         const offsetIndex = index - 7
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
-          [offsetIndex, offsetIndex],
+          [offsetIndex, offsetIndex, true],
           ast
         )
         if (err(expectedConstraintLevel)) {

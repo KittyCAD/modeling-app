@@ -48,6 +48,8 @@ import {
   VariableDeclarator,
   sketchFromKclValue,
   sketchFromKclValueOptional,
+  defaultSourceRange,
+  sourceRangeFromRust,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -530,7 +532,7 @@ export class SceneEntities {
 
     const segPathToNode = getNodePathFromSourceRange(
       maybeModdedAst,
-      sketch.start.__geoMeta.sourceRange
+      sourceRangeFromRust(sketch.start.__geoMeta.sourceRange)
     )
     if (sketch?.paths?.[0]?.type !== 'Circle') {
       const _profileStart = createProfileStartHandle({
@@ -552,7 +554,7 @@ export class SceneEntities {
     sketch.paths.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         maybeModdedAst,
-        segment.__geoMeta.sourceRange
+        sourceRangeFromRust(segment.__geoMeta.sourceRange)
       )
       if (
         draftExpressionsIndices &&
@@ -561,12 +563,12 @@ export class SceneEntities {
         const previousSegment = sketch.paths[index - 1] || sketch.start
         const previousSegmentPathToNode = getNodePathFromSourceRange(
           maybeModdedAst,
-          previousSegment.__geoMeta.sourceRange
+          sourceRangeFromRust(previousSegment.__geoMeta.sourceRange)
         )
         const bodyIndex = previousSegmentPathToNode[1][0]
         segPathToNode = getNodePathFromSourceRange(
           truncatedAst,
-          segment.__geoMeta.sourceRange
+          sourceRangeFromRust(segment.__geoMeta.sourceRange)
         )
         segPathToNode[1][0] = bodyIndex
       }
@@ -575,7 +577,10 @@ export class SceneEntities {
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
       const isSelected = selectionRanges?.graphSelections.some((selection) =>
-        isOverlap(selection?.codeRef?.range, segment.__geoMeta.sourceRange)
+        isOverlap(
+          selection?.codeRef?.range,
+          sourceRangeFromRust(segment.__geoMeta.sourceRange)
+        )
       )
 
       let seg: Group
@@ -1659,7 +1664,7 @@ export class SceneEntities {
         kclManager.programMemory,
         {
           type: 'sourceRange',
-          sourceRange: [node.start, node.end],
+          sourceRange: [node.start, node.end, true],
         },
         getChangeSketchInput()
       )
@@ -1749,7 +1754,7 @@ export class SceneEntities {
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
-      segment.__geoMeta.sourceRange
+      sourceRangeFromRust(segment.__geoMeta.sourceRange)
     )
     const sgPaths = sketch.paths
     const originalPathToNodeStr = JSON.stringify(segPathToNode)
@@ -1910,7 +1915,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          editorManager.setHighlightRange([[node.start, node.end]])
+          editorManager.setHighlightRange([[node.start, node.end, true]])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -1955,10 +1960,10 @@ export class SceneEntities {
             })
           return
         }
-        editorManager.setHighlightRange([[0, 0]])
+        editorManager.setHighlightRange([defaultSourceRange()])
       },
       onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
-        editorManager.setHighlightRange([[0, 0]])
+        editorManager.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
           SEGMENT_BODIES_PLUS_PROFILE_START

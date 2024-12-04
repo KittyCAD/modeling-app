@@ -220,19 +220,20 @@ export class KclManager {
       const kclerror: KCLError = result as KCLError
       this.diagnostics = kclErrorsToDiagnostics([kclerror])
       this._hasErrors = true
-      // TODO: re-eval if session should end?
-      if (kclerror.msg === 'file is empty')
-        this.engineCommandManager?.endSession()
       return null
-    }
-
-    if (!result.errors) {
-      this._hasErrors = true
     }
 
     this.addDiagnostics(complilationErrorsToDiagnostics(result.errors))
     this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
     if (result.errors.length > 0) {
+      this._hasErrors = true
+      // TODO: re-eval if session should end?
+      for (const e of result.errors)
+        if (e.message === 'file is empty') {
+          this.engineCommandManager?.endSession()
+          break
+        }
+
       return null
     }
 
@@ -406,7 +407,7 @@ export class KclManager {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,
-            range: [node.start, node.end],
+            range: [node.start, node.end, true],
           },
         })
       }
@@ -498,7 +499,7 @@ export class KclManager {
         if (start && end) {
           returnVal.graphSelections.push({
             codeRef: {
-              range: [start, end],
+              range: [start, end, true],
               pathToNode: path,
             },
           })

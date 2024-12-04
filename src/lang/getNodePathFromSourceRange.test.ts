@@ -17,9 +17,10 @@ const sk3 = startSketchAt([0, 0])
 `
     const subStr = 'lineTo([3, 4], %, $yo)'
     const lineToSubstringIndex = code.indexOf(subStr)
-    const sourceRange: [number, number] = [
+    const sourceRange: [number, number, boolean] = [
       lineToSubstringIndex,
       lineToSubstringIndex + subStr.length,
+      true,
     ]
 
     const ast = assertParse(code)
@@ -28,7 +29,7 @@ const sk3 = startSketchAt([0, 0])
     if (err(_node)) throw _node
     const { node } = _node
 
-    expect([node.start, node.end]).toEqual(sourceRange)
+    expect([node.start, node.end, true]).toEqual(sourceRange)
     expect(node.type).toBe('CallExpression')
   })
   it('gets path right for function definition params', () => {
@@ -44,9 +45,10 @@ const sk3 = startSketchAt([0, 0])
 const b1 = cube([0,0], 10)`
     const subStr = 'pos, scale'
     const subStrIndex = code.indexOf(subStr)
-    const sourceRange: [number, number] = [
+    const sourceRange: [number, number, boolean] = [
       subStrIndex,
       subStrIndex + 'pos'.length,
+      true,
     ]
 
     const ast = assertParse(code)
@@ -80,9 +82,10 @@ const b1 = cube([0,0], 10)`
 const b1 = cube([0,0], 10)`
     const subStr = 'scale, 0'
     const subStrIndex = code.indexOf(subStr)
-    const sourceRange: [number, number] = [
+    const sourceRange: [number, number, boolean] = [
       subStrIndex,
       subStrIndex + 'scale'.length,
+      true,
     ]
 
     const ast = assertParse(code)

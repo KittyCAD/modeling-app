@@ -31,10 +31,10 @@ async function testingSwapSketchFnCall({
   constraintType: ConstraintType
 }): Promise<{
   newCode: string
-  originalRange: [number, number]
+  originalRange: [number, number, boolean]
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
-  const range: SourceRange = [startIndex, startIndex + callToSwap.length]
+  const range: SourceRange = [startIndex, startIndex + callToSwap.length, true]
   const ast = assertParse(inputCode)
 
   const execState = await enginelessExecutor(ast)
@@ -375,7 +375,7 @@ part001 = startSketchOn('XY')
       execState.memory.get('part001'),
       'part001'
     ) as Sketch
-    const _segment = getSketchSegmentFromSourceRange(sg, [index, index])
+    const _segment = getSketchSegmentFromSourceRange(sg, [index, index, true])
     if (err(_segment)) throw _segment
     const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
@@ -390,7 +390,7 @@ part001 = startSketchOn('XY')
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
       sketchFromKclValue(execState.memory.get('part001'), 'part001') as Sketch,
-      [index, index]
+      [index, index, true]
     )
     if (err(_segment)) throw _segment
     const { __geoMeta, ...segment } = _segment.segment

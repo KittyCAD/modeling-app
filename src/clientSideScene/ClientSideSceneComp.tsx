@@ -29,6 +29,7 @@ import {
   Expr,
   parse,
   recast,
+  defaultSourceRange,
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
@@ -591,7 +592,9 @@ const ConstraintSymbol = ({
   if (err(_node)) return
   const node = _node.node
 
-  const range: SourceRange = node ? [node.start, node.end] : [0, 0]
+  const range: SourceRange = node
+    ? [node.start, node.end, true]
+    : defaultSourceRange()
 
   if (_type === 'intersectionTag') return null
 
@@ -613,7 +616,7 @@ const ConstraintSymbol = ({
           editorManager.setHighlightRange([range])
         }}
         onMouseLeave={() => {
-          editorManager.setHighlightRange([[0, 0]])
+          editorManager.setHighlightRange([defaultSourceRange()])
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
@@ -629,10 +632,7 @@ const ConstraintSymbol = ({
           } else if (isConstrained) {
             try {
               const pResult = parse(recast(kclManager.ast))
-              if (
-                trap(pResult) ||
-                !pResult.isOk()
-              )
+              if (trap(pResult) || !pResult.isOk())
                 return Promise.reject(pResult)
 
               const _node1 = getNodeFromPath<CallExpression>(

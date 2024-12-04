@@ -42,6 +42,7 @@ import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
+import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -85,12 +86,21 @@ export type SyntaxType =
   | 'NonCodeNode'
   | 'UnaryExpression'
 
-export type { SourceRange } from '../wasm-lib/kcl/bindings/SourceRange'
 export type { Path } from '../wasm-lib/kcl/bindings/Path'
 export type { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
 export type { Solid } from '../wasm-lib/kcl/bindings/Solid'
 export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
+
+export type SourceRange = [number, number, boolean]
+
+export function sourceRangeFromRust(s: RustSourceRange): SourceRange {
+  return [s[0], s[1], s[2] === 0]
+}
+
+export function defaultSourceRange(): SourceRange {
+  return [0, 0, true]
+}
 
 export const wasmUrl = () => {
   // For when we're in electron (file based) or web server (network based)
@@ -120,9 +130,6 @@ const initialise = async () => {
 }
 
 export const initPromise = initialise()
-
-export const rangeTypeFix = (ranges: number[][]): [number, number, number][] =>
-  ranges.map(([start, end, moduleId]) => [start, end, moduleId])
 
 const splitErrors = (
   input: CompilationError[]
@@ -165,16 +172,15 @@ export const parse = (code: string | Error): ParseResult | Error => {
 
   try {
     const parsed: [Node<Program>, CompilationError[]] = parse_wasm(code)
-    let result: any = splitErrors(parsed[1])
-    result.program = parsed[0]
-    return result
+    let errs = splitErrors(parsed[1])
+    return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
     // throw e
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      rangeTypeFix(parsed.sourceRanges)
+      sourceRangeFromRust(parsed.sourceRanges[0])
     )
   }
 }
@@ -183,7 +189,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
 export const assertParse = (code: string): Node<Program> => {
   const result = parse(code)
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-  if (err(result) || result.isOk()) throw result
+  if (err(result) || !result.isOk()) throw result
   return result.program!
 }
 
@@ -501,7 +507,7 @@ export const _executor = async (
     const kclError = new KCLError(
       parsed.kind,
       parsed.msg,
-      rangeTypeFix(parsed.sourceRanges)
+      sourceRangeFromRust(parsed.sourceRanges[0])
     )
 
     return Promise.reject(kclError)
@@ -574,7 +580,7 @@ export const modifyAstForSketch = async (
     const kclError = new KCLError(
       parsed.kind,
       parsed.msg,
-      rangeTypeFix(parsed.sourceRanges)
+      sourceRangeFromRust(parsed.sourceRanges[0])
     )
 
     console.log(kclError)
@@ -642,7 +648,7 @@ export function programMemoryInit(): ProgramMemory | Error {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      rangeTypeFix(parsed.sourceRanges)
+      sourceRangeFromRust(parsed.sourceRanges[0])
     )
   }
 }
