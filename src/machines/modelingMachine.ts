@@ -390,6 +390,7 @@ export const modelingMachine = setup({
     'Selection is on face': () => false,
     'has valid sweep selection': () => false,
     'has valid loft selection': () => false,
+    'has valid shell selection': () => false,
     'has valid edge treatment selection': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
@@ -1619,6 +1620,11 @@ export const modelingMachine = setup({
 
         Loft: {
           target: 'Applying loft',
+          reenter: true,
+        },
+
+        Shell: {
+          target: 'Applying shell',
           reenter: true,
         },
 

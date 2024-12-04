@@ -585,6 +585,22 @@ export const ModelingMachineProvider = ({
           if (err(canLoft)) return false
           return canLoft
         },
+        'has valid shell selection': ({ context: { selectionRanges } }) => {
+          const hasNoSelection =
+            selectionRanges.graphSelections.length === 0 ||
+            isRangeBetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+
+          if (hasNoSelection) {
+            // TODO: find extrude in ast
+            // return doesSceneHaveSweepableSketch(kclManager.ast, count)
+          }
+
+          // const canShell = canShellSelection(selectionRanges)
+          // if (err(canShell)) return false
+          // return canShell
+          return true
+        },
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {

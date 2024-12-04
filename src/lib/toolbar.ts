@@ -190,9 +190,16 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'shell',
-        onClick: () => console.error('Shell not yet implemented'),
+        onClick: ({ commandBarSend }) => {
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Offset plane', groupId: 'modeling' },
+          })
+        },
+        disabled: (state) => !state.can({ type: 'Shell' }),
         icon: 'shell',
-        status: 'kcl-only',
+        status: 'available',
+        hotkey: 'S',
         title: 'Shell',
         description: 'Hollow out a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/shell' }],
