@@ -352,7 +352,7 @@ export function loftSketches(
 ):
   | {
       modifiedAst: Node<Program>
-      pathToLoftArg: PathToNode
+      pathToNode: PathToNode
     }
   | Error {
   const modifiedAst = structuredClone(node)
@@ -377,7 +377,7 @@ export function loftSketches(
   ])
   const declaration = createVariableDeclaration(name, loft)
   modifiedAst.body.push(declaration)
-  const pathToLoftArg: PathToNode = [
+  const pathToNode: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],
     ['declarations', 'VariableDeclaration'],
@@ -389,7 +389,7 @@ export function loftSketches(
 
   return {
     modifiedAst,
-    pathToLoftArg,
+    pathToNode,
   }
 }
 

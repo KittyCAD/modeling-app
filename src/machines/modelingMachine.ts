@@ -712,37 +712,6 @@ export const modelingMachine = setup({
         }
       })().catch(reportRejection)
     },
-    'AST loft': ({ context: { store }, event }) => {
-      if (event.type !== 'Loft') return
-      ;(async () => {
-        if (!event.data) return
-        const { selection } = event.data
-        let ast = kclManager.ast
-        const nodePaths = selection.graphSelections.map((s) =>
-          getNodePathFromSourceRange(ast, s?.codeRef.range)
-        )
-        const loftSketchesRes = loftSketches(ast, nodePaths)
-        if (trap(loftSketchesRes)) return
-        const { modifiedAst, pathToLoftArg } = loftSketchesRes
-
-        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: [pathToLoftArg],
-          zoomToFit: true,
-          zoomOnRangeAndType: {
-            range:
-              selection.graphSelections[selection.graphSelections.length - 1]
-                ?.codeRef.range,
-            type: 'path',
-          },
-        })
-
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-        if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
-        }
-      })().catch(reportRejection)
-    },
     'AST delete selection': ({ context: { selectionRanges } }) => {
       ;(async () => {
         let ast = kclManager.ast
@@ -1568,6 +1537,47 @@ export const modelingMachine = setup({
         }
       }
     ),
+    loftAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Loft'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection } = input
+
+        // Perform the loft
+        const nodePaths = selection.graphSelections.map((s) =>
+          getNodePathFromSourceRange(ast, s?.codeRef.range)
+        )
+        // TODO: add better validation on selection
+        if (!(nodePaths && nodePaths.length > 1)) {
+          trap('Not enough sketches selected')
+        }
+
+        // Preform the loft
+        const loftSketchesRes = loftSketches(ast, nodePaths)
+        // TODO: improve this
+        if (trap(loftSketchesRes)) return
+        const updateAstResult = await kclManager.updateAst(
+          loftSketchesRes.modifiedAst,
+          true,
+          {
+            focusPath: [loftSketchesRes.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
   },
   // end services
 }).createMachine({
@@ -1605,10 +1615,12 @@ export const modelingMachine = setup({
         },
 
         Loft: {
-          target: 'idle',
-          guard: 'has valid loft selection',
-          actions: ['AST loft'],
-          reenter: false,
+          // target: 'idle',
+          // guard: 'has valid loft selection',
+          // actions: ['AST loft'],
+          // reenter: false,
+          target: 'Applying loft',
+          reenter: true,
         },
 
         Fillet: {
@@ -2353,6 +2365,19 @@ export const modelingMachine = setup({
         id: 'offsetPlaneAstMod',
         input: ({ event }) => {
           if (event.type !== 'Offset plane') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying loft': {
+      invoke: {
+        src: 'loftAstMod',
+        id: 'loftAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Loft') return undefined
           return event.data
         },
         onDone: ['idle'],
