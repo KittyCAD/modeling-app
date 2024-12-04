@@ -26,7 +26,13 @@ test.describe('Testing constraints', () => {
     })
 
     const u = await getUtils(page)
-    const PUR = 400 / 37.5 //pixeltoUnitRatio
+    // constants and locators
+    const lengthValue = {
+      old: '20',
+      new: '25',
+    }
+    const cmdBarKclInput = page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+    const cmdBarSubmitButton = page.getByRole('button', { name: 'arrow right Continue' })
     await page.setViewportSize({ width: 1200, height: 500 })
 
     await u.waitForAuthSkipAppStart()
@@ -36,26 +42,21 @@ test.describe('Testing constraints', () => {
     await u.closeDebugPanel()
 
     // Click the line of code for line.
-    await page.getByText(`line([0, 20], %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.getByText(`line([0, ${lengthValue.old}], %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
     await page.waitForTimeout(100)
 
     // enter sketch again
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
     await page.waitForTimeout(500) // wait for animation
-
-    const startXPx = 500
-    await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
-    await page.keyboard.down('Shift')
-    await page.mouse.click(834, 244)
-    await page.keyboard.up('Shift')
-
     await page
       .getByRole('button', { name: 'dimension Length', exact: true })
       .click()
-    await page.getByText('Add constraining value').click()
+    await expect(cmdBarKclInput).toHaveText('20')
+    await cmdBarKclInput.fill(lengthValue.new)
+    await cmdBarSubmitButton.click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
+      `length001 = ${lengthValue.new}sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -66,7 +67,6 @@ test.describe('Testing constraints', () => {
     await page.waitForTimeout(500) // wait for animation
 
     // Exit sketch
-    await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
     await page.keyboard.press('Escape')
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
