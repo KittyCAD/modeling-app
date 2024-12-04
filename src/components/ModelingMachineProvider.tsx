@@ -79,7 +79,7 @@ import { EditorSelection, Transaction } from '@codemirror/state'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { getVarNameModal } from 'hooks/useToolbarGuards'
-import { err, reportRejection, trap } from 'lib/trap'
+import { err, reject, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addEdgeTreatment'
@@ -1111,11 +1111,9 @@ export const ModelingMachineProvider = ({
         'set-up-draft-circle': fromPromise(
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
-              // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-              throw new Error('No sketch details or data')
+              return reject('No sketch details or data')
             await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             const result = await sceneEntitiesManager.setupDraftCircle(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
@@ -1125,8 +1123,7 @@ export const ModelingMachineProvider = ({
               sketchDetails.origin,
               data
             )
-            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-            if (err(result)) throw result
+            if (err(result)) return reject(result)
             await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
@@ -1135,11 +1132,9 @@ export const ModelingMachineProvider = ({
         'set-up-draft-rectangle': fromPromise(
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
-              // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-              throw new Error('No sketch details or data')
+              return reject('No sketch details or data')
             await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             const result = await sceneEntitiesManager.setupDraftRectangle(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
@@ -1149,8 +1144,7 @@ export const ModelingMachineProvider = ({
               sketchDetails.origin,
               data
             )
-            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-            if (err(result)) throw result
+            if (err(result)) return reject(result)
             await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
@@ -1159,8 +1153,7 @@ export const ModelingMachineProvider = ({
         'set-up-draft-center-rectangle': fromPromise(
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
-              // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-              throw new Error('No sketch details or data')
+              return reject('No sketch details or data')
             await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftCenterRectangle(
               sketchDetails.sketchEntryNodePath,
@@ -1171,8 +1164,7 @@ export const ModelingMachineProvider = ({
               sketchDetails.origin,
               data
             )
-            // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-            if (err(result)) throw result
+            if (err(result)) return reject(result)
             await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
 
             return result
