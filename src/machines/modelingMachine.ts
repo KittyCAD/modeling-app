@@ -42,7 +42,6 @@ import {
 } from 'components/Toolbar/EqualLength'
 import {
   addOffsetPlane,
-  addShell,
   deleteFromSelection,
   extrudeSketch,
   loftSketches,
@@ -79,6 +78,7 @@ import { ToolbarModeName } from 'lib/toolbar'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { Vector3 } from 'three'
 import { MachineManager } from 'components/MachineManagerProvider'
+import { addShell } from 'lang/modifyAst/addShell'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 

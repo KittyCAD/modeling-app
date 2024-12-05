@@ -199,7 +199,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         disabled: (state) => !state.can({ type: 'Shell' }),
         icon: 'shell',
         status: 'available',
-        hotkey: 'S',
         title: 'Shell',
         description: 'Hollow out a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/shell' }],
