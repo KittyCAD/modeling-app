@@ -45,6 +45,7 @@ import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Artifact, getPathsFromArtifact } from './std/artifactGraph'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -267,7 +268,7 @@ export function mutateObjExpProp(
 export function extrudeSketch(
   node: Node<Program>,
   pathToNode: PathToNode,
-  shouldPipe = false,
+  artifact?: Artifact,
   distance: Expr = createLiteral(4)
 ):
   | {
@@ -276,10 +277,15 @@ export function extrudeSketch(
       pathToExtrudeArg: PathToNode
     }
   | Error {
+  console.log('artifact', artifact)
+  const orderedSketchNodePaths = getPathsFromArtifact({
+    artifact: artifact,
+    sketchPathToNode: pathToNode,
+  })
+  if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
   const _node = structuredClone(node)
   const _node1 = getNodeFromPath(_node, pathToNode)
   if (err(_node1)) return _node1
-  const { node: sketchExpression } = _node1
 
   // determine if sketchExpression is in a pipeExpression or not
   const _node2 = getNodeFromPath<PipeExpression>(
@@ -288,9 +294,6 @@ export function extrudeSketch(
     'PipeExpression'
   )
   if (err(_node2)) return _node2
-  const { node: pipeExpression } = _node2
-
-  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
 
   const _node3 = getNodeFromPath<VariableDeclarator>(
     _node,
@@ -298,49 +301,22 @@ export function extrudeSketch(
     'VariableDeclarator'
   )
   if (err(_node3)) return _node3
-  const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
+  const { node: variableDeclarator } = _node3
 
   const extrudeCall = createCallExpressionStdLib('extrude', [
     distance,
-    shouldPipe
-      ? createPipeSubstitution()
-      : createIdentifier(variableDeclarator.id.name),
+    createIdentifier(variableDeclarator.id.name),
   ])
-
-  if (shouldPipe) {
-    const pipeChain = createPipeExpression(
-      isInPipeExpression
-        ? [...pipeExpression.body, extrudeCall]
-        : [sketchExpression as any, extrudeCall]
-    )
-
-    variableDeclarator.init = pipeChain
-    const pathToExtrudeArg: PathToNode = [
-      ...pathToDecleration,
-      ['init', 'VariableDeclarator'],
-      ['body', ''],
-      [pipeChain.body.length - 1, 'index'],
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-    ]
-
-    return {
-      modifiedAst: _node,
-      pathToNode,
-      pathToExtrudeArg,
-    }
-  }
 
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
 
-  const sketchIndexInPathToNode =
-    pathToDecleration.findIndex((a) => a[0] === 'body') + 1
-  const sketchIndexInBody = pathToDecleration[
-    sketchIndexInPathToNode
-  ][0] as number
+  const lastSketchNodePath =
+    orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
+
+  const sketchIndexInBody = Number(lastSketchNodePath[1][0])
   _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
 
   const pathToExtrudeArg: PathToNode = [

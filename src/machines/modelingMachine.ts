@@ -643,7 +643,7 @@ export const modelingMachine = setup({
         const extrudeSketchRes = extrudeSketch(
           ast,
           pathToNode,
-          false,
+          selection.graphSelections[0]?.artifact,
           'variableName' in distance
             ? distance.variableIdentifierAst
             : distance.valueAst
