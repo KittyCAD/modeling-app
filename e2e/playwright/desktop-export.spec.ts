@@ -2,7 +2,6 @@ import { test, expect } from './zoo-test'
 import path from 'path'
 import {
   getUtils,
-  setupElectron,
   executorInputPath,
   getPlaywrightDownloadDir,
 } from './test-utils'
@@ -12,7 +11,7 @@ test(
   'export works on the first try',
   { tag: '@electron' },
   async ({ page, context }, testInfo) => {
-    context.folderSetupFn(async (dir) => {
+    await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
       await Promise.all([
@@ -25,8 +24,8 @@ test(
           path.join(bracketDir, 'main.kcl')
         ),
       ])
-    }),
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
     page.on('console', console.log)
 

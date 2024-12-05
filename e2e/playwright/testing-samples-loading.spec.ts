@@ -11,61 +11,67 @@ test.describe('Testing in-app sample loading', () => {
    * Note this test implicitly depends on the KCL sample "car-wheel.kcl",
    * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/car-wheel/car-wheel.kcl
    */
-  test('Web: should overwrite current code, cannot create new file', async ({ editor, context, page,  homePage }) => {
+  test('Web: should overwrite current code, cannot create new file', async ({
+    editor,
+    context,
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
-  
-  await test.step(`Test setup`, async () => {
-    await context.addInitScript((code) => {
-      window.localStorage.setItem('persistCode', code)
-    }, bracket)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-  })
-  
-  // Locators and constants
-  const newSample = {
-    file: 'car-wheel' + FILE_EXT,
-    title: 'Car Wheel',
-  }
-  const commandBarButton = page.getByRole('button', { name: 'Commands' })
-  const samplesCommandOption = page.getByRole('option', {
-    name: 'Open Sample',
-  })
-  const commandSampleOption = page.getByRole('option', {
-    name: newSample.title,
-    exact: true,
-  })
-  const commandMethodArgButton = page.getByRole('button', {
-    name: 'Method',
-  })
-  const commandMethodOption = (name: 'Overwrite' | 'Create new file') =>
-    page.getByRole('option', {
-      name,
+
+    await test.step(`Test setup`, async () => {
+      await context.addInitScript((code) => {
+        window.localStorage.setItem('persistCode', code)
+      }, bracket)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
     })
-  const warningText = page.getByText('Overwrite current file and units?')
-  const confirmButton = page.getByRole('button', { name: 'Submit command' })
-  const unitsToast = (unit: UnitLength_type) =>
-    page.getByText(`Set default unit to "${unit}" for this project`)
-  
-  await test.step(`Precondition: check the initial code`, async () => {
-    await u.openKclCodePanel()
-    await editor.scrollToText(bracket.split('\n')[0])
-    await editor.expectEditor.toContain(bracket.split('\n')[0])
+
+    // Locators and constants
+    const newSample = {
+      file: 'car-wheel' + FILE_EXT,
+      title: 'Car Wheel',
+    }
+    const commandBarButton = page.getByRole('button', { name: 'Commands' })
+    const samplesCommandOption = page.getByRole('option', {
+      name: 'Open Sample',
+    })
+    const commandSampleOption = page.getByRole('option', {
+      name: newSample.title,
+      exact: true,
+    })
+    const commandMethodArgButton = page.getByRole('button', {
+      name: 'Method',
+    })
+    const commandMethodOption = (name: 'Overwrite' | 'Create new file') =>
+      page.getByRole('option', {
+        name,
+      })
+    const warningText = page.getByText('Overwrite current file and units?')
+    const confirmButton = page.getByRole('button', { name: 'Submit command' })
+    const unitsToast = (unit: UnitLength_type) =>
+      page.getByText(`Set default unit to "${unit}" for this project`)
+
+    await test.step(`Precondition: check the initial code`, async () => {
+      await u.openKclCodePanel()
+      await editor.scrollToText(bracket.split('\n')[0])
+      await editor.expectEditor.toContain(bracket.split('\n')[0])
+    })
+
+    await test.step(`Load a KCL sample with the command palette`, async () => {
+      await commandBarButton.click()
+      await samplesCommandOption.click()
+      await commandSampleOption.click()
+      await commandMethodArgButton.click()
+      await expect(commandMethodOption('Create new file')).not.toBeVisible()
+      await commandMethodOption('Overwrite').click()
+      await expect(warningText).toBeVisible()
+      await confirmButton.click()
+
+      await editor.expectEditor.toContain('// ' + newSample.title)
+      await expect(unitsToast('in')).toBeVisible()
+    })
   })
-  
-  await test.step(`Load a KCL sample with the command palette`, async () => {
-    await commandBarButton.click()
-    await samplesCommandOption.click()
-    await commandSampleOption.click()
-    await commandMethodArgButton.click()
-    await expect(commandMethodOption('Create new file')).not.toBeVisible()
-    await commandMethodOption('Overwrite').click()
-    await expect(warningText).toBeVisible()
-    await confirmButton.click()
-  
-    await editor.expectEditor.toContain('// ' + newSample.title)
-    await expect(unitsToast('in')).toBeVisible()
-  }) })
 
   /**
    * Note this test implicitly depends on the KCL samples:
@@ -75,7 +81,7 @@ test.describe('Testing in-app sample loading', () => {
   test(
     'Desktop: should create new file by default, optionally overwrite',
     { tag: '@electron' },
-    async ({ editor, context, page, browserName: _ }, testInfo) => {
+    async ({ editor, context, page }, testInfo) => {
       const { dir } = await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })

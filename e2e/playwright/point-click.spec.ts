@@ -622,18 +622,12 @@ openSketch = startSketchOn('XY')
     localStorage.setItem('persistCode', code)
   }, initialCode)
 
-
   await homePage.goToModelingScene()
   await u.waitForPageLoad()
   await page.waitForTimeout(1000)
 
-  const pointOnSketchArea = {
-    x: viewPortSize.width * 0.7,
-    y: viewPortSize.height * 0.7,
-  }
-
   const pointInsideCircle = {
-    x: viewPortSize.width * 0.55,
+    x: viewPortSize.width * 0.58,
     y: viewPortSize.height * 0.5,
   }
   const pointOnPathAfterSketching = {
@@ -678,8 +672,14 @@ openSketch = startSketchOn('XY')
 
   // Drag the sketch line out of the axis view which blocks the click
   await page.dragAndDrop('#stream', '#stream', {
-    sourcePosition: { x: viewPortSize.width * 0.7, y: viewPortSize.height* 0.5 },
-    targetPosition: { x: viewPortSize.width * 0.7, y: viewPortSize.height* 0.4 },
+    sourcePosition: {
+      x: viewPortSize.width * 0.7,
+      y: viewPortSize.height * 0.5,
+    },
+    targetPosition: {
+      x: viewPortSize.width * 0.7,
+      y: viewPortSize.height * 0.4,
+    },
   })
 
   await page.waitForTimeout(500)
@@ -711,7 +711,6 @@ test(`Offset plane point-and-click`, async ({
   toolbar,
   cmdBar,
 }) => {
-
   // One dumb hardcoded screen pixel value
   const testPoint = { x: 700, y: 150 }
   const [clickOnXzPlane] = scene.makeMouseHelpers(testPoint.x, testPoint.y)

@@ -80,7 +80,6 @@ test.describe('Test network and connection issues', () => {
 
   test('Engine disconnect & reconnect in sketch mode', async ({
     page,
-    browserName,
     homePage,
   }) => {
     // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit

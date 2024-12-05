@@ -134,12 +134,15 @@ app.on('ready', (event, data) => {
 // There is just not enough code to warrant it and further abstracts everything
 // which is already quite abstracted
 
+// @ts-ignore
+// electron/electron.d.ts has done type = App, making declaration merging not
+// possible :(
 app.resizeWindow = async (width: number, height: number) => {
   return mainWindow?.setSize(width, height)
 }
 
 ipcMain.handle('app.resizeWindow', (event, data) => {
-  return mainWindow?.setSize(...data)
+  return mainWindow?.setSize(data[0], data[1])
 })
 
 ipcMain.handle('app.getPath', (event, data) => {
