@@ -94,7 +94,7 @@ export function addStartProfileAt(
     return new Error('variableDeclaration.init.type !== PipeExpression')
   }
   const _node = { ...node }
-  const init = variableDeclaration.declarations[0].init
+  const init = variableDeclaration.declaration.init
   const startProfileAt = createCallExpressionStdLib('startProfileAt', [
     createArrayExpression([
       createLiteral(roundOff(at[0])),
@@ -105,7 +105,7 @@ export function addStartProfileAt(
   if (init.type === 'PipeExpression') {
     init.body.splice(1, 0, startProfileAt)
   } else {
-    variableDeclaration.declarations[0].init = createPipeExpression([
+    variableDeclaration.declaration.init = createPipeExpression([
       init,
       startProfileAt,
     ])
@@ -823,17 +823,15 @@ export function createVariableDeclaration(
     end: 0,
     moduleId: 0,
 
-    declarations: [
-      {
-        type: 'VariableDeclarator',
-        start: 0,
-        end: 0,
-        moduleId: 0,
+    declaration: {
+      type: 'VariableDeclarator',
+      start: 0,
+      end: 0,
+      moduleId: 0,
 
-        id: createIdentifier(varName),
-        init,
-      },
-    ],
+      id: createIdentifier(varName),
+      init,
+    },
     visibility,
     kind,
   }
@@ -1120,7 +1118,7 @@ export async function deleteFromSelection(
     traverse(astClone, {
       enter: (node, path) => {
         if (node.type === 'VariableDeclaration') {
-          const dec = node.declarations[0]
+          const dec = node.declaration
           if (
             dec.init.type === 'CallExpression' &&
             (dec.init.callee.name === 'extrude' ||
@@ -1155,7 +1153,7 @@ export async function deleteFromSelection(
             enter: (node, path) => {
               ;(async () => {
                 if (node.type === 'VariableDeclaration') {
-                  currentVariableName = node.declarations[0].id.name
+                  currentVariableName = node.declaration.id.name
                 }
                 if (
                   // match startSketchOn(${extrudeNameToDelete})

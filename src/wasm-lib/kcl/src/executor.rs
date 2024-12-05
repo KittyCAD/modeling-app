@@ -1931,7 +1931,7 @@ impl ExecutorContext {
                         (module_memory, module_exports)
                     };
                     match &import_stmt.selector {
-                        ImportSelector::List(items) => {
+                        ImportSelector::List { items } => {
                             for import_item in items {
                                 // Extract the item from the module.
                                 let item =
@@ -1979,34 +1979,32 @@ impl ExecutorContext {
                     );
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
-                    for declaration in &variable_declaration.declarations {
-                        let var_name = declaration.id.name.to_string();
-                        let source_range = SourceRange::from(&declaration.init);
-                        let metadata = Metadata { source_range };
+                    let var_name = variable_declaration.declaration.id.name.to_string();
+                    let source_range = SourceRange::from(&variable_declaration.declaration.init);
+                    let metadata = Metadata { source_range };
 
-                        let memory_item = self
-                            .execute_expr(
-                                &declaration.init,
-                                exec_state,
-                                &metadata,
-                                StatementKind::Declaration { name: &var_name },
-                            )
-                            .await?;
-                        let is_function = memory_item.is_function();
-                        exec_state.memory.add(&var_name, memory_item, source_range)?;
-                        // Track exports.
-                        match variable_declaration.visibility {
-                            ItemVisibility::Export => {
-                                if !is_function {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: "Only functions can be exported".to_owned(),
-                                        source_ranges: vec![source_range],
-                                    }));
-                                }
-                                exec_state.module_exports.insert(var_name);
+                    let memory_item = self
+                        .execute_expr(
+                            &variable_declaration.declaration.init,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Declaration { name: &var_name },
+                        )
+                        .await?;
+                    let is_function = memory_item.is_function();
+                    exec_state.memory.add(&var_name, memory_item, source_range)?;
+                    // Track exports.
+                    match variable_declaration.visibility {
+                        ItemVisibility::Export => {
+                            if !is_function {
+                                return Err(KclError::Semantic(KclErrorDetails {
+                                    message: "Only functions can be exported".to_owned(),
+                                    source_ranges: vec![source_range],
+                                }));
                             }
-                            ItemVisibility::Default => {}
+                            exec_state.module_exports.insert(var_name);
                         }
+                        ItemVisibility::Default => {}
                     }
                     last_expr = None;
                 }

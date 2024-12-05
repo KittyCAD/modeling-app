@@ -9,7 +9,8 @@ description: Result of parsing import_cycle1.kcl
         "end": 35,
         "path": "import_cycle2.kcl",
         "selector": {
-          "List": [
+          "type": "List",
+          "items": [
             {
               "alias": null,
               "end": 10,
@@ -29,66 +30,64 @@ description: Result of parsing import_cycle1.kcl
         "type": "ImportStatement"
       },
       {
-        "declarations": [
-          {
-            "end": 75,
-            "id": {
-              "end": 50,
-              "name": "one",
-              "start": 47,
-              "type": "Identifier"
-            },
-            "init": {
-              "body": {
-                "body": [
-                  {
-                    "argument": {
-                      "end": 73,
-                      "left": {
-                        "arguments": [],
-                        "callee": {
-                          "end": 67,
-                          "name": "two",
-                          "start": 64,
-                          "type": "Identifier"
-                        },
-                        "end": 69,
-                        "start": 64,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      "operator": "-",
-                      "right": {
-                        "end": 73,
-                        "raw": "1",
-                        "start": 72,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 1.0
-                      },
-                      "start": 64,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    "end": 73,
-                    "start": 57,
-                    "type": "ReturnStatement",
-                    "type": "ReturnStatement"
-                  }
-                ],
-                "end": 75,
-                "start": 53
-              },
-              "end": 75,
-              "params": [],
-              "start": 50,
-              "type": "FunctionExpression",
-              "type": "FunctionExpression"
-            },
+        "declaration": {
+          "end": 75,
+          "id": {
+            "end": 50,
+            "name": "one",
             "start": 47,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 73,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "end": 67,
+                        "name": "two",
+                        "start": 64,
+                        "type": "Identifier"
+                      },
+                      "end": 69,
+                      "start": 64,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    },
+                    "operator": "-",
+                    "right": {
+                      "end": 73,
+                      "raw": "1",
+                      "start": 72,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 1.0
+                    },
+                    "start": 64,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 73,
+                  "start": 57,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 75,
+              "start": 53
+            },
+            "end": 75,
+            "params": [],
+            "start": 50,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 47,
+          "type": "VariableDeclarator"
+        },
         "end": 75,
         "kind": "fn",
         "start": 37,

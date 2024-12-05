@@ -9,7 +9,8 @@ description: Result of parsing import_side_effect.kcl
         "end": 40,
         "path": "export_side_effect.kcl",
         "selector": {
-          "List": [
+          "type": "List",
+          "items": [
             {
               "alias": null,
               "end": 10,

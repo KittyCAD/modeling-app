@@ -125,7 +125,7 @@ impl ImportStatement {
         let indentation = options.get_indentation(indentation_level);
         let mut string = format!("{}import ", indentation);
         match &self.selector {
-            ImportSelector::List(items) => {
+            ImportSelector::List { items } => {
                 for (i, item) in items.iter().enumerate() {
                     if i > 0 {
                         string.push_str(", ");
@@ -265,27 +265,26 @@ impl LabeledArg {
 impl VariableDeclaration {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        let output = match self.visibility {
+        let mut output = match self.visibility {
             ItemVisibility::Default => String::new(),
             ItemVisibility::Export => "export ".to_owned(),
         };
-        self.declarations.iter().fold(output, |mut output, declaration| {
-            let (keyword, eq) = match self.kind {
-                VariableKind::Fn => ("fn ", ""),
-                VariableKind::Const => ("", " = "),
-            };
-            let _ = write!(
-                output,
-                "{}{keyword}{}{eq}{}",
-                indentation,
-                declaration.id.name,
-                declaration
-                    .init
-                    .recast(options, indentation_level, ExprContext::Decl)
-                    .trim()
-            );
-            output
-        })
+
+        let (keyword, eq) = match self.kind {
+            VariableKind::Fn => ("fn ", ""),
+            VariableKind::Const => ("", " = "),
+        };
+        let _ = write!(
+            output,
+            "{}{keyword}{}{eq}{}",
+            indentation,
+            self.declaration.id.name,
+            self.declaration
+                .init
+                .recast(options, indentation_level, ExprContext::Decl)
+                .trim()
+        );
+        output
     }
 }
 

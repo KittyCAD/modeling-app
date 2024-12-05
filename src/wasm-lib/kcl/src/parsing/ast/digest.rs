@@ -54,7 +54,7 @@ impl ImportItem {
 impl ImportStatement {
     compute_digest!(|slf, hasher| {
         match &mut slf.selector {
-            ImportSelector::List(items) => {
+            ImportSelector::List { items } => {
                 for item in items {
                     hasher.update(item.compute_digest());
                 }
@@ -281,10 +281,7 @@ impl ExpressionStatement {
 
 impl VariableDeclaration {
     compute_digest!(|slf, hasher| {
-        hasher.update(slf.declarations.len().to_ne_bytes());
-        for declarator in &mut slf.declarations {
-            hasher.update(declarator.compute_digest());
-        }
+        hasher.update(slf.declaration.compute_digest());
         hasher.update(slf.visibility.digestable_id());
         hasher.update(slf.kind.digestable_id());
     });

@@ -9,7 +9,8 @@ description: Result of parsing import_constant.kcl
         "end": 39,
         "path": "export_constant.kcl",
         "selector": {
-          "List": [
+          "type": "List",
+          "items": [
             {
               "alias": null,
               "end": 12,

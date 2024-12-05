@@ -1,57 +1,54 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing array_elem_push_fail.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
-        "declarations": [
-          {
-            "end": 15,
-            "id": {
-              "end": 3,
-              "name": "arr",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "init": {
-              "elements": [
-                {
-                  "end": 8,
-                  "raw": "1",
-                  "start": 7,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 1.0
-                },
-                {
-                  "end": 11,
-                  "raw": "2",
-                  "start": 10,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 2.0
-                },
-                {
-                  "end": 14,
-                  "raw": "3",
-                  "start": 13,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 3.0
-                }
-              ],
-              "end": 15,
-              "start": 6,
-              "type": "ArrayExpression",
-              "type": "ArrayExpression"
-            },
+        "declaration": {
+          "end": 15,
+          "id": {
+            "end": 3,
+            "name": "arr",
             "start": 0,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "elements": [
+              {
+                "end": 8,
+                "raw": "1",
+                "start": 7,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 1.0
+              },
+              {
+                "end": 11,
+                "raw": "2",
+                "start": 10,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 2.0
+              },
+              {
+                "end": 14,
+                "raw": "3",
+                "start": 13,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 3.0
+              }
+            ],
+            "end": 15,
+            "start": 6,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
         "end": 15,
         "kind": "const",
         "start": 0,
@@ -59,48 +56,46 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 40,
-            "id": {
-              "end": 25,
-              "name": "pushedArr",
-              "start": 16,
-              "type": "Identifier"
-            },
-            "init": {
-              "arguments": [
-                {
-                  "end": 36,
-                  "name": "arr",
-                  "start": 33,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                },
-                {
-                  "end": 39,
-                  "raw": "4",
-                  "start": 38,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 4.0
-                }
-              ],
-              "callee": {
-                "end": 32,
-                "name": "push",
-                "start": 28,
+        "declaration": {
+          "end": 40,
+          "id": {
+            "end": 25,
+            "name": "pushedArr",
+            "start": 16,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 36,
+                "name": "arr",
+                "start": 33,
+                "type": "Identifier",
                 "type": "Identifier"
               },
-              "end": 40,
+              {
+                "end": 39,
+                "raw": "4",
+                "start": 38,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 4.0
+              }
+            ],
+            "callee": {
+              "end": 32,
+              "name": "push",
               "start": 28,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "Identifier"
             },
-            "start": 16,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "end": 40,
+            "start": 28,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 16,
+          "type": "VariableDeclarator"
+        },
         "end": 40,
         "kind": "const",
         "start": 16,
@@ -108,41 +103,39 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
+        "declaration": {
+          "end": 54,
+          "id": {
+            "end": 45,
+            "name": "fail",
+            "start": 41,
+            "type": "Identifier"
+          },
+          "init": {
+            "computed": false,
             "end": 54,
-            "id": {
-              "end": 45,
-              "name": "fail",
-              "start": 41,
+            "object": {
+              "end": 51,
+              "name": "arr",
+              "start": 48,
+              "type": "Identifier",
               "type": "Identifier"
             },
-            "init": {
-              "computed": false,
-              "end": 54,
-              "object": {
-                "end": 51,
-                "name": "arr",
-                "start": 48,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "property": {
-                "end": 53,
-                "raw": "3",
-                "start": 52,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 3.0
-              },
-              "start": 48,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+            "property": {
+              "end": 53,
+              "raw": "3",
+              "start": 52,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 3.0
             },
-            "start": 41,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "start": 48,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 41,
+          "type": "VariableDeclarator"
+        },
         "end": 54,
         "kind": "const",
         "start": 41,

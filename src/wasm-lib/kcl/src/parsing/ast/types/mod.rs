@@ -466,11 +466,9 @@ impl Program {
                     continue;
                 }
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
-                    for declaration in &mut variable_declaration.declarations {
-                        if declaration.id.name == name {
-                            *declaration = declarator;
-                            return;
-                        }
+                    if variable_declaration.declaration.id.name == name {
+                        variable_declaration.declaration = declarator;
+                        return;
                     }
                 }
                 BodyItem::ReturnStatement(_return_statement) => continue,
@@ -509,10 +507,8 @@ impl Program {
                     continue;
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
-                    for declaration in &variable_declaration.declarations {
-                        if declaration.id.name == name {
-                            return Some(Definition::Variable(declaration));
-                        }
+                    if variable_declaration.declaration.id.name == name {
+                        return Some(Definition::Variable(&variable_declaration.declaration));
                     }
                 }
                 BodyItem::ReturnStatement(_return_statement) => continue,
@@ -1171,10 +1167,11 @@ impl ImportItem {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
+#[serde(tag = "type")]
 pub enum ImportSelector {
     /// A comma-separated list of names and possible aliases to import (may be a single item, but never zero).
     /// E.g., `import bar as baz from "foo.kcl"`
-    List(NodeList<ImportItem>),
+    List { items: NodeList<ImportItem> },
     /// Import all public items from a module.
     /// E.g., `import * from "foo.kcl"`
     Glob(Node<()>),
@@ -1186,7 +1183,7 @@ pub enum ImportSelector {
 impl ImportSelector {
     pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
         match self {
-            ImportSelector::List(items) => {
+            ImportSelector::List { items } => {
                 for item in items {
                     let source_range = SourceRange::from(&*item);
                     if source_range.contains(pos) {
@@ -1213,7 +1210,7 @@ impl ImportSelector {
 
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
-            ImportSelector::List(items) => {
+            ImportSelector::List { items } => {
                 for item in items {
                     item.rename_identifiers(old_name, new_name);
                 }
@@ -1240,7 +1237,7 @@ pub struct ImportStatement {
 impl Node<ImportStatement> {
     pub fn get_variable(&self, name: &str) -> bool {
         match &self.selector {
-            ImportSelector::List(items) => {
+            ImportSelector::List { items } => {
                 for import_item in items {
                     if import_item.identifier() == name {
                         return true;
@@ -1548,7 +1545,7 @@ impl ItemVisibility {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclaration {
-    pub declarations: NodeList<VariableDeclarator>,
+    pub declaration: Node<VariableDeclarator>,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
     pub kind: VariableKind, // Change to enum if there are specific values
@@ -1560,33 +1557,29 @@ pub struct VariableDeclaration {
 
 impl From<&Node<VariableDeclaration>> for Vec<CompletionItem> {
     fn from(declaration: &Node<VariableDeclaration>) -> Self {
-        let mut completions = vec![];
-        for variable in &declaration.declarations {
-            completions.push(CompletionItem {
-                label: variable.id.name.to_string(),
-                label_details: None,
-                kind: Some(match declaration.inner.kind {
-                    VariableKind::Const => CompletionItemKind::CONSTANT,
-                    VariableKind::Fn => CompletionItemKind::FUNCTION,
-                }),
-                detail: Some(declaration.inner.kind.to_string()),
-                documentation: None,
-                deprecated: None,
-                preselect: None,
-                sort_text: None,
-                filter_text: None,
-                insert_text: None,
-                insert_text_format: None,
-                insert_text_mode: None,
-                text_edit: None,
-                additional_text_edits: None,
-                command: None,
-                commit_characters: None,
-                data: None,
-                tags: None,
-            })
-        }
-        completions
+        vec![CompletionItem {
+            label: declaration.declaration.id.name.to_string(),
+            label_details: None,
+            kind: Some(match declaration.inner.kind {
+                VariableKind::Const => CompletionItemKind::CONSTANT,
+                VariableKind::Fn => CompletionItemKind::FUNCTION,
+            }),
+            detail: Some(declaration.inner.kind.to_string()),
+            documentation: None,
+            deprecated: None,
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: None,
+            insert_text_format: None,
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }]
     }
 }
 
@@ -1620,13 +1613,11 @@ impl Node<VariableDeclaration> {
             return None;
         }
 
-        for declaration in &mut self.declarations {
-            let declaration_source_range: SourceRange = declaration.id.clone().into();
-            if declaration_source_range.contains(pos) {
-                let old_name = declaration.id.name.clone();
-                declaration.id.name = new_name.to_string();
-                return Some(old_name);
-            }
+        let declaration_source_range: SourceRange = self.declaration.id.clone().into();
+        if declaration_source_range.contains(pos) {
+            let old_name = self.declaration.id.name.clone();
+            self.declaration.id.name = new_name.to_string();
+            return Some(old_name);
         }
 
         None
@@ -1634,9 +1625,9 @@ impl Node<VariableDeclaration> {
 }
 
 impl VariableDeclaration {
-    pub fn new(declarations: NodeList<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
+    pub fn new(declaration: Node<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
         Self {
-            declarations,
+            declaration,
             visibility,
             kind,
             digest: None,
@@ -1644,18 +1635,14 @@ impl VariableDeclaration {
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        for declaration in &mut self.declarations {
-            declaration.init.replace_value(source_range, new_value.clone());
-        }
+        self.declaration.init.replace_value(source_range, new_value.clone());
     }
 
     /// Returns an Expr that includes the given character position.
     pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
-        for declaration in &self.declarations {
-            let source_range: SourceRange = declaration.into();
-            if source_range.contains(pos) {
-                return Some(&declaration.init);
-            }
+        let source_range: SourceRange = self.declaration.clone().into();
+        if source_range.contains(pos) {
+            return Some(&self.declaration.init);
         }
 
         None
@@ -1663,77 +1650,69 @@ impl VariableDeclaration {
 
     /// Returns an Expr that includes the given character position.
     pub fn get_mut_expr_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
-        for declaration in &mut self.declarations {
-            let source_range: SourceRange = declaration.clone().into();
-            if source_range.contains(pos) {
-                return Some(&mut declaration.init);
-            }
+        let source_range: SourceRange = self.declaration.clone().into();
+        if source_range.contains(pos) {
+            return Some(&mut self.declaration.init);
         }
 
         None
     }
 
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        for declaration in &mut self.declarations {
-            // Skip the init for the variable with the new name since it is the one we are renaming.
-            if declaration.id.name == new_name {
-                continue;
-            }
-
-            declaration.init.rename_identifiers(old_name, new_name);
+        // Skip the init for the variable with the new name since it is the one we are renaming.
+        if self.declaration.id.name != new_name {
+            self.declaration.init.rename_identifiers(old_name, new_name);
         }
     }
 
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
-        let mut symbols = vec![];
+        let source_range: SourceRange = self.declaration.clone().into();
+        let inner_source_range: SourceRange = self.declaration.id.clone().into();
 
-        for declaration in &self.declarations {
-            let source_range: SourceRange = declaration.into();
-            let inner_source_range: SourceRange = declaration.id.clone().into();
+        let mut symbol_kind = match self.kind {
+            VariableKind::Fn => SymbolKind::FUNCTION,
+            VariableKind::Const => SymbolKind::CONSTANT,
+        };
 
-            let mut symbol_kind = match self.kind {
-                VariableKind::Fn => SymbolKind::FUNCTION,
-                VariableKind::Const => SymbolKind::CONSTANT,
-            };
-
-            let children = match &declaration.init {
-                Expr::FunctionExpression(function_expression) => {
-                    symbol_kind = SymbolKind::FUNCTION;
-                    let mut children = vec![];
-                    for param in &function_expression.params {
-                        let param_source_range: SourceRange = (&param.identifier).into();
-                        #[allow(deprecated)]
-                        children.push(DocumentSymbol {
-                            name: param.identifier.name.clone(),
-                            detail: None,
-                            kind: SymbolKind::CONSTANT,
-                            range: param_source_range.to_lsp_range(code),
-                            selection_range: param_source_range.to_lsp_range(code),
-                            children: None,
-                            tags: None,
-                            deprecated: None,
-                        });
-                    }
-                    children
+        let children = match &self.declaration.init {
+            Expr::FunctionExpression(function_expression) => {
+                symbol_kind = SymbolKind::FUNCTION;
+                let mut children = vec![];
+                for param in &function_expression.params {
+                    let param_source_range: SourceRange = (&param.identifier).into();
+                    #[allow(deprecated)]
+                    children.push(DocumentSymbol {
+                        name: param.identifier.name.clone(),
+                        detail: None,
+                        kind: SymbolKind::CONSTANT,
+                        range: param_source_range.to_lsp_range(code),
+                        selection_range: param_source_range.to_lsp_range(code),
+                        children: None,
+                        tags: None,
+                        deprecated: None,
+                    });
                 }
-                Expr::ObjectExpression(object_expression) => {
-                    symbol_kind = SymbolKind::OBJECT;
-                    let mut children = vec![];
-                    for property in &object_expression.properties {
-                        children.extend(property.get_lsp_symbols(code));
-                    }
-                    children
+                children
+            }
+            Expr::ObjectExpression(object_expression) => {
+                symbol_kind = SymbolKind::OBJECT;
+                let mut children = vec![];
+                for property in &object_expression.properties {
+                    children.extend(property.get_lsp_symbols(code));
                 }
-                Expr::ArrayExpression(_) => {
-                    symbol_kind = SymbolKind::ARRAY;
-                    vec![]
-                }
-                _ => vec![],
-            };
+                children
+            }
+            Expr::ArrayExpression(_) => {
+                symbol_kind = SymbolKind::ARRAY;
+                vec![]
+            }
+            _ => vec![],
+        };
 
+        vec![
             #[allow(deprecated)]
-            symbols.push(DocumentSymbol {
-                name: declaration.id.name.clone(),
+            DocumentSymbol {
+                name: self.declaration.id.name.clone(),
                 detail: Some(self.kind.to_string()),
                 kind: symbol_kind,
                 range: source_range.to_lsp_range(code),
@@ -1741,10 +1720,8 @@ impl VariableDeclaration {
                 children: Some(children),
                 tags: None,
                 deprecated: None,
-            });
-        }
-
-        symbols
+            },
+        ]
     }
 }
 
@@ -3320,7 +3297,7 @@ const cylinder = startSketchOn('-XZ')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -3342,7 +3319,7 @@ const cylinder = startSketchOn('-XZ')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -3365,7 +3342,7 @@ const cylinder = startSketchOn('-XZ')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -3439,7 +3416,7 @@ const cylinder = startSketchOn('-XZ')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;

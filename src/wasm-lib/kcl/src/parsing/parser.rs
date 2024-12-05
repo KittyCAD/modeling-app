@@ -1445,7 +1445,7 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
                 None,
             )
         }),
-        import_items.map(|l| (ImportSelector::List(l), None)),
+        import_items.map(|items| (ImportSelector::List { items }, None)),
     ))
     .parse_next(i)?;
 
@@ -1759,7 +1759,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     let end = val.end();
     Ok(Box::new(Node {
         inner: VariableDeclaration {
-            declarations: vec![Node {
+            declaration: Node {
                 start: id.start,
                 end,
                 module_id,
@@ -1768,7 +1768,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                     init: val,
                     digest: None,
                 },
-            }],
+            },
             visibility,
             kind,
             digest: None,
@@ -2501,7 +2501,7 @@ mod tests {
         let tokens = crate::parsing::token::lexer("x = 4", ModuleId::default()).unwrap();
         let vardec = declaration(&mut tokens.as_slice()).unwrap();
         assert_eq!(vardec.inner.kind, VariableKind::Const);
-        let vardec = vardec.declarations.first().unwrap();
+        let vardec = &vardec.declaration;
         assert_eq!(vardec.id.name, "x");
         let Expr::Literal(init_val) = &vardec.init else {
             panic!("weird init value")
@@ -2576,10 +2576,10 @@ const mySk1 = startSketchAt([0, 0])"#;
     fn test_comment_in_pipe() {
         let tokens = crate::parsing::token::lexer(r#"const x = y() |> /*hi*/ z(%)"#, ModuleId::default()).unwrap();
         let mut body = program.parse(&tokens).unwrap().inner.body;
-        let BodyItem::VariableDeclaration(mut item) = body.remove(0) else {
+        let BodyItem::VariableDeclaration(item) = body.remove(0) else {
             panic!("expected vardec");
         };
-        let val = item.declarations.remove(0).inner.init;
+        let val = item.inner.declaration.inner.init;
         let Expr::PipeExpression(pipe) = val else {
             panic!("expected pipe");
         };
@@ -2847,14 +2847,14 @@ const mySk1 = startSketchAt([0, 0])"#;
         .enumerate()
         {
             let tokens = crate::parsing::token::lexer(test_input, ModuleId::default()).unwrap();
-            let mut actual = match declaration.parse(&tokens) {
+            let actual = match declaration.parse(&tokens) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
-            let Expr::BinaryExpression(_expr) = actual.declarations.remove(0).inner.init else {
+            let Expr::BinaryExpression(_expr) = &actual.declaration.inner.init else {
                 panic!(
                     "Expected test {i} to be a binary expression but it wasn't, it was {:?}",
-                    actual.declarations[0]
+                    actual.declaration
                 );
             };
             // TODO: check both sides are 1... probably not necessary but should do.
@@ -3196,16 +3196,15 @@ const mySk1 = startSketchAt([0, 0])"#;
             };
 
             // Run the second parser, check it matches the first parser.
-            let mut actual = declaration.parse(&tokens).unwrap();
+            let actual = declaration.parse(&tokens).unwrap();
             assert_eq!(expected, actual);
 
             // Inspect its output in more detail.
             assert_eq!(actual.inner.kind, VariableKind::Const);
             assert_eq!(actual.start, 0);
-            assert_eq!(actual.declarations.len(), 1);
-            let decl = actual.declarations.pop().unwrap();
+            let decl = &actual.declaration;
             assert_eq!(decl.id.name, "myVar");
-            let Expr::Literal(value) = decl.inner.init else {
+            let Expr::Literal(value) = &decl.inner.init else {
                 panic!("value should be a literal")
             };
             assert_eq!(value.end, test.len());

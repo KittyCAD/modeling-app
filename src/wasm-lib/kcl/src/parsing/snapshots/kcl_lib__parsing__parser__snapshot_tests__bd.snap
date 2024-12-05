@@ -1,129 +1,125 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 4066
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 121,
-          "id": {
-            "end": 7,
-            "name": "x",
-            "start": 6,
-            "type": "Identifier"
+      "declaration": {
+        "end": 121,
+        "id": {
+          "end": 7,
+          "name": "x",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "cond": {
+            "end": 17,
+            "raw": "true",
+            "start": 13,
+            "type": "Literal",
+            "type": "Literal",
+            "value": true
           },
-          "init": {
-            "cond": {
-              "end": 17,
-              "raw": "true",
-              "start": 13,
-              "type": "Literal",
-              "type": "Literal",
-              "value": true
-            },
-            "digest": null,
-            "else_ifs": [
-              {
-                "cond": {
-                  "arguments": [
-                    {
-                      "end": 63,
-                      "name": "radius",
-                      "start": 57,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    }
-                  ],
-                  "callee": {
-                    "end": 56,
-                    "name": "func",
-                    "start": 52,
+          "digest": null,
+          "else_ifs": [
+            {
+              "cond": {
+                "arguments": [
+                  {
+                    "end": 63,
+                    "name": "radius",
+                    "start": 57,
+                    "type": "Identifier",
                     "type": "Identifier"
-                  },
-                  "end": 64,
+                  }
+                ],
+                "callee": {
+                  "end": 56,
+                  "name": "func",
                   "start": 52,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
+                  "type": "Identifier"
                 },
-                "digest": null,
-                "end": 90,
-                "start": 44,
-                "then_val": {
-                  "body": [
-                    {
+                "end": 64,
+                "start": 52,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              "digest": null,
+              "end": 90,
+              "start": 44,
+              "then_val": {
+                "body": [
+                  {
+                    "end": 80,
+                    "expression": {
                       "end": 80,
-                      "expression": {
-                        "end": 80,
-                        "raw": "4",
-                        "start": 79,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 4.0
-                      },
+                      "raw": "4",
                       "start": 79,
-                      "type": "ExpressionStatement",
-                      "type": "ExpressionStatement"
-                    }
-                  ],
-                  "end": 89,
-                  "start": 65
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 4.0
+                    },
+                    "start": 79,
+                    "type": "ExpressionStatement",
+                    "type": "ExpressionStatement"
+                  }
+                ],
+                "end": 89,
+                "start": 65
+              },
+              "type": "ElseIf"
+            }
+          ],
+          "end": 121,
+          "final_else": {
+            "body": [
+              {
+                "end": 111,
+                "expression": {
+                  "end": 111,
+                  "raw": "5",
+                  "start": 110,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 5.0
                 },
-                "type": "ElseIf"
+                "start": 110,
+                "type": "ExpressionStatement",
+                "type": "ExpressionStatement"
               }
             ],
-            "end": 121,
-            "final_else": {
-              "body": [
-                {
-                  "end": 111,
-                  "expression": {
-                    "end": 111,
-                    "raw": "5",
-                    "start": 110,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": 5.0
-                  },
-                  "start": 110,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                }
-              ],
-              "end": 120,
-              "start": 110
-            },
-            "start": 10,
-            "then_val": {
-              "body": [
-                {
-                  "end": 33,
-                  "expression": {
-                    "end": 33,
-                    "raw": "3",
-                    "start": 32,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": 3.0
-                  },
-                  "start": 32,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                }
-              ],
-              "end": 42,
-              "start": 32
-            },
-            "type": "IfExpression",
-            "type": "IfExpression"
+            "end": 120,
+            "start": 110
           },
-          "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "start": 10,
+          "then_val": {
+            "body": [
+              {
+                "end": 33,
+                "expression": {
+                  "end": 33,
+                  "raw": "3",
+                  "start": 32,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 3.0
+                },
+                "start": 32,
+                "type": "ExpressionStatement",
+                "type": "ExpressionStatement"
+              }
+            ],
+            "end": 42,
+            "start": 32
+          },
+          "type": "IfExpression",
+          "type": "IfExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
       "end": 121,
       "kind": "const",
       "start": 0,
