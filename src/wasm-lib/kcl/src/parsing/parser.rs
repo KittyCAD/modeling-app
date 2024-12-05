@@ -12,6 +12,7 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
+use super::ast::types::LabeledArg;
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
@@ -1820,6 +1821,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
             )),
 
             TokenType::Bang
+            | TokenType::At
             | TokenType::Hash
             | TokenType::Colon
             | TokenType::Period
