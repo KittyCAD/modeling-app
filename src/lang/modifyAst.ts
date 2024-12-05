@@ -45,7 +45,7 @@ import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { Artifact, ArtifactGraph } from './std/artifactGraph'
+import { ArtifactGraph } from './std/artifactGraph'
 import {
   getPathToExtrudeForSegmentSelection,
   mutateAstWithTagForSketchSegment,

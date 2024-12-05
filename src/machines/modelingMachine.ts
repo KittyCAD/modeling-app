@@ -52,7 +52,6 @@ import {
   applyEdgeTreatmentToSelection,
   EdgeTreatmentType,
   FilletParameters,
-  getPathToExtrudeForSegmentSelection,
 } from 'lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
@@ -1625,7 +1624,7 @@ export const modelingMachine = setup({
               : thickness.valueAst,
         })
         if (err(shellResult)) {
-          throw err(shellResult)
+          return err(shellResult)
         }
 
         const updateAstResult = await kclManager.updateAst(
