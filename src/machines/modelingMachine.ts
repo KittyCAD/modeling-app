@@ -4,6 +4,7 @@ import {
   VariableDeclarator,
   parse,
   recast,
+  resultIsOk,
 } from 'lang/wasm'
 import {
   Axis,
@@ -1336,11 +1337,11 @@ export const modelingMachine = setup({
         }
 
         const recastAst = parse(recast(modifiedAst))
-        if (err(recastAst) || !recastAst.isOk()) return
+        if (err(recastAst) || !resultIsOk(recastAst)) return
 
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
-          recastAst.program!,
+          recastAst.program,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin

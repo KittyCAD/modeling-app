@@ -30,6 +30,7 @@ import {
   parse,
   recast,
   defaultSourceRange,
+  resultIsOk,
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
@@ -414,8 +415,8 @@ export async function deleteSegment({
 
   const newCode = recast(modifiedAst)
   const pResult = parse(newCode)
-  if (err(pResult) || !pResult.isOk()) return Promise.reject(pResult)
-  modifiedAst = pResult.program!
+  if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+  modifiedAst = pResult.program
 
   const testExecute = await executeAst({
     ast: modifiedAst,
@@ -632,7 +633,7 @@ const ConstraintSymbol = ({
           } else if (isConstrained) {
             try {
               const pResult = parse(recast(kclManager.ast))
-              if (trap(pResult) || !pResult.isOk())
+              if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 
               const _node1 = getNodeFromPath<CallExpression>(

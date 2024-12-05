@@ -14,21 +14,21 @@ use winnow::{
 
 use crate::{
     docs::StdLibFn,
+    errors::{CompilationError, Severity, Tag},
     parsing::{
         ast::types::{
             ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
             CallExpression, CallExpressionKw, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive,
             FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility,
-            LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode,
-            NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program,
-            ReturnStatement, Shebang, TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration,
+            LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta,
+            NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
+            Program, ReturnStatement, Shebang, TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration,
             VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    errors::{CompilationError, Severity, Tag},
     unparser::ExprContext,
     SourceRange,
 };
@@ -2350,8 +2350,7 @@ mod tests {
     use super::*;
     use crate::{
         parsing::ast::types::{BodyItem, Expr, VariableKind},
-        ModuleId,
-        KclError,
+        KclError, ModuleId,
     };
 
     fn assert_reserved(word: &str) {

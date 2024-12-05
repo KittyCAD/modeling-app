@@ -3,7 +3,7 @@ import { kclManager, engineCommandManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { ProgramMemory, Expr, parse } from 'lang/wasm'
+import { ProgramMemory, Expr, parse, resultIsOk } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
 import { executeAst } from 'lang/langHelpers'
 import { err, trap } from 'lib/trap'
@@ -88,8 +88,8 @@ export function useCalculateKclExpression({
     const execAstAndSetResult = async () => {
       const _code = `const __result__ = ${value}`
       const pResult = parse(_code)
-      if (err(pResult) || !pResult.isOk()) return
-      const ast = pResult.program!
+      if (err(pResult) || !resultIsOk(pResult)) return
+      const ast = pResult.program
 
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {

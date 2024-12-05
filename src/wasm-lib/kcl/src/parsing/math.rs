@@ -2,7 +2,7 @@
 #![allow(clippy::result_large_err)]
 
 use crate::{
-parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
+    parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
     SourceRange,
 };
 

@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from 'react'
-import { parse, BinaryPart, Expr, ProgramMemory } from '../lang/wasm'
+import {
+  parse,
+  BinaryPart,
+  Expr,
+  ProgramMemory,
+  resultIsOk,
+} from '../lang/wasm'
 import {
   createIdentifier,
   createLiteral,
@@ -142,8 +148,8 @@ export function useCalc({
     try {
       const code = `const __result__ = ${value}`
       const pResult = parse(code)
-      if (trap(pResult) || !pResult.isOk()) return
-      const ast = pResult.program!
+      if (trap(pResult) || !resultIsOk(pResult)) return
+      const ast = pResult.program
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
         const error = _programMem.set(key, {

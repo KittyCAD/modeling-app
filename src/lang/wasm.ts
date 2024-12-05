@@ -161,10 +161,23 @@ export class ParseResult {
     this.errors = errors
     this.warnings = warnings
   }
+}
 
-  isOk(): boolean {
-    return !!this.program && this.errors.length === 0
+class SuccessParseResult extends ParseResult {
+  program: Node<Program>
+
+  constructor(
+    program: Node<Program>,
+    errors: CompilationError[],
+    warnings: CompilationError[]
+  ) {
+    super(program, errors, warnings)
+    this.program = program
   }
+}
+
+export function resultIsOk(result: ParseResult): result is SuccessParseResult {
+  return !!result.program && result.errors.length === 0
 }
 
 export const parse = (code: string | Error): ParseResult | Error => {
@@ -189,8 +202,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
 export const assertParse = (code: string): Node<Program> => {
   const result = parse(code)
   // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-  if (err(result) || !result.isOk()) throw result
-  return result.program!
+  if (err(result) || !resultIsOk(result)) throw result
+  return result.program
 }
 
 export type PathToNode = [string | number, string][]
