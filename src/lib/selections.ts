@@ -585,8 +585,8 @@ export function canShellSelection(selection: Selections) {
   )
   return commonNodes.every(
     (n) =>
-      n.selection.artifact?.type == 'cap' ||
-      n.selection.artifact?.type == 'wall'
+      n.selection.artifact?.type === 'cap' ||
+      n.selection.artifact?.type === 'wall'
   )
 }
 
