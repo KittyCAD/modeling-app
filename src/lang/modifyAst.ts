@@ -603,35 +603,30 @@ export function addOffsetPlane({
  */
 export function addShell({
   node,
-  selection,
+  extrudeNode,
+  selectedArtifact,
   thickness,
 }: {
   node: Node<Program>
-  selection: Selection
+  extrudeNode: {
+    node: VariableDeclarator
+    shallowPath: PathToNode
+    deepPath: PathToNode
+  }
+  selectedArtifact: Artifact
   thickness: Expr
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
-  // TODO: change to what's needed for shell
-  console.log('selection, thickness', selection, thickness)
-  const baseNode = getNodeFromPath<VariableDeclarator>(
-    node,
-    selection.codeRef.pathToNode,
-    'VariableDeclarator'
-  )
-  console.log('baseNode', baseNode)
-  if (err(baseNode)) return baseNode
-  console.log("selection.artifact['subType']", selection.artifact['subType'])
   const shell = createCallExpressionStdLib('shell', [
     createObjectExpression({
       faces: createArrayExpression([
-        createLiteral(selection.artifact['subType']),
+        // TODO: make typescript happy
+        createLiteral(selectedArtifact['subType']),
       ]),
       thickness,
     }),
-    // createIdentifier(baseNode.node.id.name),
-    // TODO: replace with the query from sketch to extrude
-    createIdentifier('extrude001'),
+    createIdentifier(extrudeNode.node.id.name),
   ])
   const declaration = createVariableDeclaration(name, shell)
   modifiedAst.body.push(declaration)

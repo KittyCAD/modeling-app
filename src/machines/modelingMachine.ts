@@ -52,6 +52,7 @@ import {
   applyEdgeTreatmentToSelection,
   EdgeTreatmentType,
   FilletParameters,
+  getPathToExtrudeForSegmentSelection,
 } from 'lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
@@ -1594,12 +1595,10 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness } = input
-
-        // TODO: extract selection
-        console.log('selection', selection)
         const graphSelection = selection.graphSelections[0]
-        if (!(graphSelection && graphSelection instanceof Object))
+        if (!(graphSelection && graphSelection instanceof Object)) {
           return trap('No plane selected')
+        }
 
         // Insert the thickness variable if it exists
         if (
@@ -1617,36 +1616,63 @@ export const modelingMachine = setup({
         }
 
         // Get the shell from the selection
-        if (err(selection.graphSelections[0])) return
+        const sketchNode = getNodeFromPath<VariableDeclarator>(
+          ast,
+          graphSelection.codeRef.pathToNode,
+          'VariableDeclarator'
+        )
+        if (err(sketchNode)) {
+          return sketchNode
+        }
+
+        const clonedAstForGetExtrude = structuredClone(ast)
+        const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
+          clonedAstForGetExtrude,
+          selection,
+          engineCommandManager.artifactGraph
+        )
+        if (err(extrudeLookupResult)) {
+          return new Error("Couldn't find extrude")
+        }
+
+        const extrudeNode = getNodeFromPath<VariableDeclarator>(
+          ast,
+          extrudeLookupResult.pathToExtrudeNode,
+          'VariableDeclarator'
+        )
+        if (err(extrudeNode)) {
+          return extrudeNode
+        }
+
+        const selectedArtifact = graphSelection.artifact
+        if (!selectedArtifact || !selectedArtifact) {
+          return new Error('Bad artifact')
+        }
 
         const shellResult = addShell({
           node: ast,
-          selection: graphSelection,
+          extrudeNode,
+          selectedArtifact,
           thickness:
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
         })
 
-        if (trap(shellResult)) return
-        try {
-          const updateAstResult = await kclManager.updateAst(
-            shellResult.modifiedAst,
-            true,
-            {
-              focusPath: [shellResult.pathToNode],
-            }
-          )
-
-          await codeManager.updateEditorWithAstAndWriteToFile(
-            updateAstResult.newAst
-          )
-
-          if (updateAstResult?.selections) {
-            editorManager.selectRange(updateAstResult?.selections)
+        const updateAstResult = await kclManager.updateAst(
+          shellResult.modifiedAst,
+          true,
+          {
+            focusPath: [shellResult.pathToNode],
           }
-        } catch (e) {
-          console.error(e)
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
         }
       }
     ),
