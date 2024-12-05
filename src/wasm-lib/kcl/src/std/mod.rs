@@ -25,21 +25,20 @@ pub mod types;
 pub mod units;
 pub mod utils;
 
-use std::collections::HashMap;
-
 use anyhow::Result;
 pub use args::Args;
 use derive_docs::stdlib;
+use indexmap::IndexMap;
 use lazy_static::lazy_static;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::FunctionExpression,
     docs::StdLibFn,
     errors::KclError,
     executor::{ExecState, KclValue, ProgramMemory},
+    parsing::ast::types::FunctionExpression,
     std::kcl_stdlib::KclStdLibFn,
 };
 
@@ -167,8 +166,8 @@ pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
 }
 
 pub struct StdLib {
-    pub fns: HashMap<String, Box<dyn StdLibFn>>,
-    pub kcl_fns: HashMap<String, Box<dyn KclStdLibFn>>,
+    pub fns: IndexMap<String, Box<dyn StdLibFn>>,
+    pub kcl_fns: IndexMap<String, Box<dyn KclStdLibFn>>,
 }
 
 impl std::fmt::Debug for StdLib {
@@ -198,7 +197,7 @@ impl StdLib {
     }
 
     // Get the combined hashmaps.
-    pub fn combined(&self) -> HashMap<String, Box<dyn StdLibFn>> {
+    pub fn combined(&self) -> IndexMap<String, Box<dyn StdLibFn>> {
         let mut combined = self.fns.clone();
         for (k, v) in self.kcl_fns.clone() {
             combined.insert(k, v.std_lib());
@@ -320,6 +319,6 @@ pub enum Primitive {
 /// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
     pub func: Option<&'a crate::executor::MemoryFunction>,
-    pub expr: crate::ast::types::BoxNode<FunctionExpression>,
+    pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }

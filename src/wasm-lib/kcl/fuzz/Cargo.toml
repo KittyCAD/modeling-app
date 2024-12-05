@@ -22,6 +22,9 @@ members = ["."]
 [profile.release]
 debug = 1
 
+[lints]
+workspace = true
+
 [[bin]]
 name = "parser"
 path = "fuzz_targets/parser.rs"

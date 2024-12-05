@@ -6,13 +6,13 @@ use kittycad_modeling_cmds as kcmc;
 
 use super::shapes::PolygonType;
 use crate::{
-    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{
         ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
         SolidSet, TagIdentifier,
     },
     kcl_value::KclObjectFields,
+    parsing::ast::types::TagNode,
     source_range::SourceRange,
     std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
     ModuleId,
@@ -578,7 +578,7 @@ where
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else { return Ok(None) };
-        if crate::ast::types::KclNone::from_kcl_val(&arg.value).is_some() {
+        if crate::parsing::ast::types::KclNone::from_kcl_val(&arg.value).is_some() {
             return Ok(None);
         }
         let Some(val) = T::from_kcl_val(&arg.value) else {
@@ -1509,7 +1509,7 @@ impl<'a> FromKclValue<'a> for String {
         Some(value.to_owned())
     }
 }
-impl<'a> FromKclValue<'a> for crate::ast::types::KclNone {
+impl<'a> FromKclValue<'a> for crate::parsing::ast::types::KclNone {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::KclNone { value, meta: _ } = arg else {
             return None;

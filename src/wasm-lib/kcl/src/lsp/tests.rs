@@ -7,9 +7,9 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Node, Program},
     executor::ProgramMemory,
     lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
+    parsing::ast::types::{Node, Program},
 };
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 12)]

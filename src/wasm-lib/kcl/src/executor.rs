@@ -1,9 +1,6 @@
 //! The executor for the AST.
 
-use std::{
-    collections::{HashMap, HashSet},
-    sync::Arc,
-};
+use std::{collections::HashSet, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
@@ -25,10 +22,12 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use crate::kcl_value::KclValue;
 use crate::{
-    ast::types::{BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, TagDeclarator, TagNode},
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     fs::{FileManager, FileSystem},
+    parsing::ast::types::{
+        BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, TagDeclarator, TagNode,
+    },
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
@@ -191,7 +190,7 @@ impl EnvironmentRef {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 pub struct Environment {
-    bindings: HashMap<String, KclValue>,
+    bindings: IndexMap<String, KclValue>,
     parent: Option<EnvironmentRef>,
 }
 
@@ -201,7 +200,7 @@ impl Environment {
     pub fn root() -> Self {
         Self {
             // Prelude
-            bindings: HashMap::from([
+            bindings: IndexMap::from([
                 ("ZERO".to_string(), KclValue::from_number(0.0, NO_META)),
                 ("QUARTER_TURN".to_string(), KclValue::from_number(90.0, NO_META)),
                 ("HALF_TURN".to_string(), KclValue::from_number(180.0, NO_META)),
@@ -213,7 +212,7 @@ impl Environment {
 
     pub fn new(parent: EnvironmentRef) -> Self {
         Self {
-            bindings: HashMap::new(),
+            bindings: IndexMap::new(),
             parent: Some(parent),
         }
     }
@@ -733,7 +732,7 @@ pub type MemoryFunction =
     fn(
         s: Vec<Arg>,
         memory: ProgramMemory,
-        expression: crate::ast::types::BoxNode<FunctionExpression>,
+        expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
         exec_state: &ExecState,
         ctx: ExecutorContext,
@@ -768,8 +767,8 @@ pub struct Sketch {
     /// The starting path.
     pub start: BasePath,
     /// Tag identifiers that have been declared in this sketch.
-    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
-    pub tags: HashMap<String, TagIdentifier>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub tags: IndexMap<String, TagIdentifier>,
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
     #[serde(skip)]
@@ -1842,7 +1841,7 @@ impl ExecutorContext {
     #[async_recursion]
     pub(crate) async fn inner_execute<'a>(
         &'a self,
-        program: NodeRef<'a, crate::ast::types::Program>,
+        program: NodeRef<'a, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
@@ -1883,7 +1882,7 @@ impl ExecutorContext {
                     let module_id = exec_state.add_module(resolved_path.clone());
                     let source = self.fs.read_to_string(&resolved_path, source_range).await?;
                     // TODO handle parsing errors properly
-                    let program = crate::parser::parse_str(&source, module_id).parse_errs_as_err()?;
+                    let program = crate::parsing::parse_str(&source, module_id).parse_errs_as_err()?;
                     let (module_memory, module_exports) = {
                         exec_state.import_stack.push(resolved_path.clone());
                         let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
@@ -2239,7 +2238,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::ast::types::{Identifier, Node, Parameter};
+    use crate::parsing::ast::types::{Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let program = Program::parse(code)?;
@@ -3088,7 +3087,7 @@ let w = f() + f()
             let func_expr = &Node::no_src(FunctionExpression {
                 params,
                 body: Node {
-                    inner: crate::ast::types::Program {
+                    inner: crate::parsing::ast::types::Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                         shebang: None,

@@ -316,7 +316,7 @@ dependencies = [
  "bitvec",
  "chrono",
  "hex",
- "indexmap 2.6.0",
+ "indexmap 2.7.0",
  "js-sys",
  "once_cell",
  "rand 0.8.5",
@@ -746,7 +746,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.31"
+version = "0.1.32"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1136,7 +1136,7 @@ dependencies = [
  "futures-core",
  "futures-sink",
  "http 1.1.0",
- "indexmap 2.6.0",
+ "indexmap 2.7.0",
  "slab",
  "tokio",
  "tokio-util",
@@ -1584,9 +1584,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.6.0"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "707907fe3c25f5424cce2cb7e1cbcafee6bdbe735ca90ef77c29e84591e5b9da"
+checksum = "62f822373a4fe84d4bb149bf54e584a7f4abec90e072ed49cda0edea5b95471f"
 dependencies = [
  "equivalent",
  "hashbrown 0.15.2",
@@ -1706,7 +1706,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.27"
+version = "0.2.28"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1732,7 +1732,7 @@ dependencies = [
  "http 1.1.0",
  "iai",
  "image",
- "indexmap 2.6.0",
+ "indexmap 2.7.0",
  "insta",
  "itertools 0.13.0",
  "js-sys",
@@ -1773,7 +1773,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.17"
+version = "0.1.18"
 dependencies = [
  "anyhow",
  "hyper 0.14.30",
@@ -1790,7 +1790,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-trait",
- "indexmap 2.6.0",
+ "indexmap 2.7.0",
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",
@@ -3158,7 +3158,7 @@ dependencies = [
  "chrono",
  "dyn-clone",
  "indexmap 1.9.3",
- "indexmap 2.6.0",
+ "indexmap 2.7.0",
  "schemars_derive",
  "serde",
  "serde_json",
@@ -3259,7 +3259,7 @@ version = "1.0.133"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c7fceb2473b9166b2294ef05efcb65a3db80803f0b03ef86a5fc88a2b85ee377"
 dependencies = [
- "indexmap 2.6.0",
+ "indexmap 2.7.0",
  "itoa",
  "memchr",
  "ryu",
@@ -3847,7 +3847,7 @@ version = "0.22.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ae48d6208a266e853d946088ed816055e556cc6028c5e8e2b84d9fa5dd7c7f5"
 dependencies = [
- "indexmap 2.6.0",
+ "indexmap 2.7.0",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -4013,7 +4013,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3a2f31991cee3dce1ca4f929a8a04fdd11fd8801aac0f2030b0fa8a0a3fef6b9"
 dependencies = [
  "chrono",
- "indexmap 2.6.0",
+ "indexmap 2.7.0",
  "lazy_static",
  "serde_json",
  "thiserror 1.0.68",
@@ -4770,7 +4770,7 @@ dependencies = [
  "crc32fast",
  "crossbeam-utils",
  "displaydoc",
- "indexmap 2.6.0",
+ "indexmap 2.7.0",
  "memchr",
  "thiserror 1.0.68",
 ]

@@ -1,9 +1,8 @@
 //! Functions related to sketching.
 
-use std::collections::HashMap;
-
 use anyhow::Result;
 use derive_docs::stdlib;
+use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
@@ -13,12 +12,12 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
         Solid, TagEngineInfo, TagIdentifier,
     },
+    parsing::ast::types::TagNode,
     std::{
         utils::{
             arc_angles, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
@@ -1301,7 +1300,7 @@ pub(crate) async fn inner_start_profile_at(
                 }),
                 surface: None,
             });
-            HashMap::from([(tag.name.to_string(), tag_identifier)])
+            IndexMap::from([(tag.name.to_string(), tag_identifier)])
         } else {
             Default::default()
         },
