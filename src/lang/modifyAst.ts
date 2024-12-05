@@ -1,5 +1,5 @@
 import { err, reportRejection, trap } from 'lib/trap'
-import { Selection } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -45,7 +45,11 @@ import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { Artifact } from './std/artifactGraph'
+import { Artifact, ArtifactGraph } from './std/artifactGraph'
+import {
+  getPathToExtrudeForSegmentSelection,
+  mutateAstWithTagForSketchSegment,
+} from './modifyAst/addEdgeTreatment'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -603,34 +607,83 @@ export function addOffsetPlane({
  */
 export function addShell({
   node,
-  extrudeNode,
-  selectedArtifact,
+  selection,
+  artifactGraph,
   thickness,
 }: {
   node: Node<Program>
-  extrudeNode: {
-    node: VariableDeclarator
-    shallowPath: PathToNode
-    deepPath: PathToNode
-  }
-  selectedArtifact: Artifact
+  selection: Selections
+  artifactGraph: ArtifactGraph
   thickness: Expr
-}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
+
+  const graphSelection = selection.graphSelections[0]
+  if (!(graphSelection && graphSelection instanceof Object)) {
+    return Error('No plane selected')
+  }
+
+  // Get the sketch ref from the selection
+  const sketchNode = getNodeFromPath<VariableDeclarator>(
+    modifiedAst,
+    graphSelection.codeRef.pathToNode,
+    'VariableDeclarator'
+  )
+  if (err(sketchNode)) {
+    return sketchNode
+  }
+
+  // Look up the corresponding extrude
+  const clonedAstForGetExtrude = structuredClone(modifiedAst)
+  const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
+    clonedAstForGetExtrude,
+    selection,
+    artifactGraph
+  )
+  if (err(extrudeLookupResult)) {
+    return new Error("Couldn't find extrude")
+  }
+
+  const extrudeNode = getNodeFromPath<VariableDeclarator>(
+    modifiedAst,
+    extrudeLookupResult.pathToExtrudeNode,
+    'VariableDeclarator'
+  )
+  if (err(extrudeNode)) {
+    return extrudeNode
+  }
+
+  const selectedArtifact = graphSelection.artifact
+  if (!selectedArtifact || !selectedArtifact) {
+    return new Error('Bad artifact')
+  }
+
+  // Check on the selection, and handle the wall vs cap casees
+  let expr: Expr
+  if (selectedArtifact.type === 'cap') {
+    expr = createLiteral(selectedArtifact['subType'])
+  } else {
+    const tagResult = mutateAstWithTagForSketchSegment(
+      modifiedAst,
+      extrudeLookupResult.pathToSegmentNode
+    )
+    if (err(tagResult)) return tagResult
+    const { tag } = tagResult
+    expr = createIdentifier(tag)
+  }
+
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
   const shell = createCallExpressionStdLib('shell', [
     createObjectExpression({
-      faces: createArrayExpression([
-        // TODO: make typescript happy
-        createLiteral(selectedArtifact['subType']),
-      ]),
+      faces: createArrayExpression([expr]),
       thickness,
     }),
     createIdentifier(extrudeNode.node.id.name),
   ])
   const declaration = createVariableDeclaration(name, shell)
-  modifiedAst.body.push(declaration)
 
+  // TODO: check if we should append at the end like here or right after the extrude
+  modifiedAst.body.push(declaration)
   const pathToNode: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],

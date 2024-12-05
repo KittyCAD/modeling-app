@@ -308,7 +308,7 @@ async function updateAstAndFocus(
   }
 }
 
-function mutateAstWithTagForSketchSegment(
+export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode
 ): { modifiedAst: Program; tag: string } | Error {

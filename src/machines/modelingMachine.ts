@@ -1591,14 +1591,13 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Shell'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) {
+          return new Error('No input provided')
+        }
+
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness } = input
-        const graphSelection = selection.graphSelections[0]
-        if (!(graphSelection && graphSelection instanceof Object)) {
-          return trap('No plane selected')
-        }
 
         // Insert the thickness variable if it exists
         if (
@@ -1615,49 +1614,19 @@ export const modelingMachine = setup({
           ast.body = newBody
         }
 
-        // Get the shell from the selection
-        const sketchNode = getNodeFromPath<VariableDeclarator>(
-          ast,
-          graphSelection.codeRef.pathToNode,
-          'VariableDeclarator'
-        )
-        if (err(sketchNode)) {
-          return sketchNode
-        }
-
-        const clonedAstForGetExtrude = structuredClone(ast)
-        const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
-          clonedAstForGetExtrude,
-          selection,
-          engineCommandManager.artifactGraph
-        )
-        if (err(extrudeLookupResult)) {
-          return new Error("Couldn't find extrude")
-        }
-
-        const extrudeNode = getNodeFromPath<VariableDeclarator>(
-          ast,
-          extrudeLookupResult.pathToExtrudeNode,
-          'VariableDeclarator'
-        )
-        if (err(extrudeNode)) {
-          return extrudeNode
-        }
-
-        const selectedArtifact = graphSelection.artifact
-        if (!selectedArtifact || !selectedArtifact) {
-          return new Error('Bad artifact')
-        }
-
+        // Perform the shell op
         const shellResult = addShell({
           node: ast,
-          extrudeNode,
-          selectedArtifact,
+          selection,
+          artifactGraph: engineCommandManager.artifactGraph,
           thickness:
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
         })
+        if (err(shellResult)) {
+          throw err(shellResult)
+        }
 
         const updateAstResult = await kclManager.updateAst(
           shellResult.modifiedAst,
