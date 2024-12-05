@@ -1069,10 +1069,10 @@ part002 = startSketchOn('XZ')
     )
 
     const linebb = await u.getBoundingBox('[data-overlay-index="1"]')
-    await page.mouse.move(linebb.x, linebb.y, { step: 25 })
+    await page.mouse.move(linebb.x, linebb.y, { steps: 25 })
     await page.mouse.click(linebb.x, linebb.y)
 
-    expect
+    await expect
       .poll(async () => await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE))
       .toBeLessThan(3)
 

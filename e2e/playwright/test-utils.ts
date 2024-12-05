@@ -1,13 +1,11 @@
 import {
   expect,
-  Page,
-  Download,
   BrowserContext,
   TestInfo,
   _electron as electron,
   Locator,
-  test,
 } from '@playwright/test'
+import { test, Page } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
@@ -16,7 +14,7 @@ import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
-import { APP_NAME, COOKIE_NAME } from 'lib/constants'
+import { COOKIE_NAME } from 'lib/constants'
 import { secrets } from './secrets'
 import {
   TEST_SETTINGS_KEY,
@@ -163,8 +161,10 @@ async function openKclCodePanel(page: Page) {
   // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
   await page.evaluate(() => {
     // editorManager is available on the window object.
+    //@ts-ignore this is in an entirely different context that tsc can't see.
     editorManager._editorView.dispatch({
       selection: {
+        //@ts-ignore this is in an entirely different context that tsc can't see.
         anchor: editorManager._editorView.docView.length,
       },
       scrollIntoView: true,
@@ -515,10 +515,12 @@ export async function getUtils(page: Page, test_?: typeof test) {
 
     async editorTextMatches(code: string) {
       const editor = page.locator(editorSelector)
-      return expect.poll(async () => {
-        const text = await editor.textContent()
-        return toNormalizedCode(text)
-      }).toContain(toNormalizedCode(code))
+      return expect
+        .poll(async () => {
+          const text = await editor.textContent()
+          return toNormalizedCode(text ?? '')
+        })
+        .toContain(toNormalizedCode(code))
     },
 
     pasteCodeInEditor: async (code: string) => {
@@ -716,7 +718,7 @@ const moveDownloadedFileTo = async (page: Page, toLocation: string) => {
   const downloadDir = getPlaywrightDownloadDir(page)
 
   // Expect there to be at least one file
-  expect
+  await expect
     .poll(async () => {
       const files = await fsp.readdir(downloadDir)
       return files.length
@@ -848,7 +850,7 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
   // It's not super reliable but we have no real other choice for now
   await page.waitForTimeout(3000)
 
-  await testInfo.tronApp.close()
+  await testInfo.tronApp?.close()
 }
 
 // settingsOverrides may need to be augmented to take more generic items,

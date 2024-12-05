@@ -125,8 +125,6 @@ test.describe('Code pane and errors', () => {
     homePage,
     context,
   }) => {
-    const u = await getUtils(page)
-
     // Load the app with the working starter code
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
@@ -168,8 +166,6 @@ test.describe('Code pane and errors', () => {
     page,
     homePage,
   }) => {
-    const u = await getUtils(page)
-
     // Load the app with the working starter code
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
@@ -236,9 +232,9 @@ test.describe('Code pane and errors', () => {
 test(
   'Opening multiple panes persists when switching projects',
   { tag: '@electron' },
-  async ({ context, browserName, page }, testInfo) => {
+  async ({ context, page }, testInfo) => {
     // Setup multiple projects.
-    context.folderSetupFn(async (dir) => {
+    await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = join(dir, 'router-template-slate')
       const bracketDir = join(dir, 'bracket')
       await Promise.all([
@@ -307,7 +303,7 @@ test(
 test(
   'external change of file contents are reflected in editor',
   { tag: '@electron' },
-  async ({ context, browserName, page }, testInfo) => {
+  async ({ context, page }, testInfo) => {
     const PROJECT_DIR_NAME = 'lee-was-here'
     const { dir: projectsDir } = await context.folderSetupFn(async (dir) => {
       const aProjectDir = join(dir, PROJECT_DIR_NAME)
