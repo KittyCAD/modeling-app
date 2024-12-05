@@ -391,10 +391,13 @@ impl Node<CallExpressionKw> {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
-                tag_2d_to_3d(&mut result, exec_state)?;
+                update_memory_for_tags_of_geometry(&mut result, exec_state)?;
                 Ok(result)
             }
-            _ => todo!(),
+            FunctionKind::UserDefined => {
+                todo!("Part of modeling-app#4600: Support keyword arguments for user-defined functions")
+            }
+            FunctionKind::Std(_) => todo!("There is no KCL std anymore, it's all core."),
         }
     }
 }
@@ -422,7 +425,7 @@ impl Node<CallExpression> {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
-                tag_2d_to_3d(&mut result, exec_state)?;
+                update_memory_for_tags_of_geometry(&mut result, exec_state)?;
                 Ok(result)
             }
             FunctionKind::Std(func) => {
@@ -542,7 +545,7 @@ impl Node<CallExpression> {
     }
 }
 
-fn tag_2d_to_3d(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
+fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
     // If the return result is a sketch or solid, we want to update the
     // memory for the tags of the group.
     // TODO: This could probably be done in a better way, but as of now this was my only idea
