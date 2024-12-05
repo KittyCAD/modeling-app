@@ -1042,6 +1042,35 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
   return Object.keys(theMap).length >= count
 }
 
+export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
+  const theMap: any = {}
+  traverse(ast as any, {
+    enter(node) {
+      if (
+        node.type === 'VariableDeclarator' &&
+        node.init?.type === 'PipeExpression'
+      ) {
+        for (const pipe of node.init.body) {
+          if (
+            pipe.type === 'CallExpression' &&
+            pipe.callee.name === 'extrude'
+          ) {
+            theMap[node.id.name] = true
+            break
+          }
+        }
+      } else if (
+        node.type === 'CallExpression' &&
+        node.callee.name === 'extrude' &&
+        node.arguments[1]?.type === 'Identifier'
+      ) {
+        theMap[node.moduleId] = true
+      }
+    },
+  })
+  return Object.keys(theMap).length > 0
+}
+
 export function getObjExprProperty(
   node: ObjectExpression,
   propName: string

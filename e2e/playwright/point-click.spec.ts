@@ -776,7 +776,6 @@ const shellPointAndClickCapCases = [
 shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
   test(`Shell point-and-click cap (preselected sketches: ${shouldPreselect})`, async ({
     app,
-    page,
     scene,
     editor,
     toolbar,
@@ -877,7 +876,7 @@ extrude001 = extrude(40, sketch001)
 
   // One dumb hardcoded screen pixel value
   const testPoint = { x: 580, y: 250 }
-  const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
   const mutatedCode = 'xLine(-40, %, $seg01)'
   const shellDeclaration =
     'shell001 = shell({ faces = [seg01], thickness = 5 }, extrude001)'
@@ -899,7 +898,7 @@ extrude001 = extrude(40, sketch001)
       highlightedHeaderArg: 'selection',
       commandName: 'Shell',
     })
-    await clickOnCap()
+    await clickOnWall()
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',

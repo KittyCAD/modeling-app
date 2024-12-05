@@ -289,7 +289,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
-        // TODO: check if we can have multiple here
+        // TODO: allow multiple faces to be selected here
         multiple: false,
         required: true,
         skip: true,

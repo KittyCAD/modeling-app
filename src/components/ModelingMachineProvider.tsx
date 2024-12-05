@@ -70,6 +70,7 @@ import {
 } from 'lang/modifyAst'
 import { Program, parse, recast } from 'lang/wasm'
 import {
+  doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
   isSingleCursorInPipe,
@@ -586,18 +587,21 @@ export const ModelingMachineProvider = ({
           if (err(canLoft)) return false
           return canLoft
         },
-        'has valid shell selection': ({ context: { selectionRanges } }) => {
+        'has valid shell selection': ({
+          context: { selectionRanges },
+          event,
+        }) => {
           const hasNoSelection =
             selectionRanges.graphSelections.length === 0 ||
             isRangeBetweenCharacters(selectionRanges) ||
             isSelectionLastLine(selectionRanges, codeManager.code)
 
           if (hasNoSelection) {
-            // TODO: find extrude in ast
-            // return doesSceneHaveSweepableSketch(kclManager.ast, count)
+            return doesSceneHaveExtrudedSketch(kclManager.ast)
           }
 
           const canShell = canShellSelection(selectionRanges)
+          console.log('canShellSelection', canShellSelection(selectionRanges))
           if (err(canShell)) return false
           return canShell
         },

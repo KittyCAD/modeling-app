@@ -1682,11 +1682,13 @@ export const modelingMachine = setup({
 
         Loft: {
           target: 'Applying loft',
+          guard: 'has valid loft selection',
           reenter: true,
         },
 
         Shell: {
           target: 'Applying shell',
+          guard: 'has valid shell selection',
           reenter: true,
         },
 
