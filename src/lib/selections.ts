@@ -613,12 +613,29 @@ export function getSelectionCountByType(
     }
   })
 
-  selection.graphSelections.forEach((selection) => {
-    if (!selection.artifact) {
-      incrementOrInitializeSelectionType('other')
-      return
+  selection.graphSelections.forEach((graphSelection) => {
+    if (!graphSelection.artifact) {
+      /**
+       * TODO: remove this heuristic-based selection type detection.
+       * Currently, if you've created a sketch and have not left sketch mode,
+       * the selection will be a segment selection with no artifact.
+       * This is because the mock execution does not update the artifact graph.
+       * Once we move the artifactGraph creation to WASM, we can remove this,
+       * as the artifactGraph will always be up-to-date.
+       */
+      if (isSingleCursorInPipe(selection, kclManager.ast)) {
+        incrementOrInitializeSelectionType('segment')
+        return
+      } else {
+        console.warn(
+          'Selection is outside of a sketch but has no artifact. Sketch segment selections are the only kind that can have a valid selection with no artifact.',
+          JSON.stringify(graphSelection)
+        )
+        incrementOrInitializeSelectionType('other')
+        return
+      }
     }
-    incrementOrInitializeSelectionType(selection.artifact.type)
+    incrementOrInitializeSelectionType(graphSelection.artifact.type)
   })
 
   return selectionsByType
