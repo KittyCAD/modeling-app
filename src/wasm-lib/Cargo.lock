@@ -746,7 +746,7 @@ dependencies = [
 
 [[package]]
 name = "derive-docs"
-version = "0.1.31"
+version = "0.1.32"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1773,7 +1773,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.17"
+version = "0.1.18"
 dependencies = [
  "anyhow",
  "hyper 0.14.30",
