@@ -25,9 +25,7 @@ use crate::{
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     fs::{FileManager, FileSystem},
-    parsing::ast::types::{
-        BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, TagDeclarator, TagNode,
-    },
+    parsing::ast::types::{BodyItem, Expr, FunctionExpression, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode},
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
@@ -2172,18 +2170,12 @@ fn assign_args_to_params(
             fn_memory.add(&param.identifier.name, arg.value.clone(), (&param.identifier).into())?;
         } else {
             // Argument was not provided.
-            if param.optional {
+            if let Some(ref default_val) = param.default_value {
                 // If the corresponding parameter is optional,
                 // then it's fine, the user doesn't need to supply it.
-                let none = Node {
-                    inner: KclNone::new(),
-                    start: param.identifier.start,
-                    end: param.identifier.end,
-                    module_id: param.identifier.module_id,
-                };
                 fn_memory.add(
                     &param.identifier.name,
-                    KclValue::from(&none),
+                    default_val.clone().into(),
                     (&param.identifier).into(),
                 )?;
             } else {
@@ -2238,7 +2230,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::parsing::ast::types::{Identifier, Node, Parameter};
+    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let program = Program::parse_no_errs(code)?;
@@ -2998,7 +2990,8 @@ let w = f() + f()
             Parameter {
                 identifier: ident(s),
                 type_: None,
-                optional: true,
+                default_value: Some(DefaultParamVal::none()),
+                labeled: true,
                 digest: None,
             }
         }
@@ -3006,7 +2999,8 @@ let w = f() + f()
             Parameter {
                 identifier: ident(s),
                 type_: None,
-                optional: false,
+                default_value: None,
+                labeled: true,
                 digest: None,
             }
         }
@@ -3041,10 +3035,7 @@ let w = f() + f()
                 "all params optional, none given, should be OK",
                 vec![opt_param("x")],
                 vec![],
-                Ok(additional_program_memory(&[(
-                    "x".to_owned(),
-                    KclValue::from(&KclNone::default()),
-                )])),
+                Ok(additional_program_memory(&[("x".to_owned(), KclValue::none())])),
             ),
             (
                 "mixed params, too few given",
@@ -3061,7 +3052,7 @@ let w = f() + f()
                 vec![mem(1)],
                 Ok(additional_program_memory(&[
                     ("x".to_owned(), mem(1)),
-                    ("y".to_owned(), KclValue::from(&KclNone::default())),
+                    ("y".to_owned(), KclValue::none()),
                 ])),
             ),
             (

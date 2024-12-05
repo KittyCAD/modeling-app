@@ -18,12 +18,12 @@ use crate::{
     parsing::{
         ast::types::{
             ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
-            CallExpression, CallExpressionKw, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive,
-            FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility,
-            LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta,
-            NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution,
-            Program, ReturnStatement, Shebang, TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration,
-            VariableDeclarator, VariableKind,
+            CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
+            FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement,
+            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
+            NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+            PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator, UnaryExpression, UnaryOperator,
+            VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenType},
@@ -2173,7 +2173,8 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
             Ok(Parameter {
                 identifier,
                 type_,
-                optional,
+                default_value: if optional { Some(DefaultParamVal::none()) } else { None },
+                labeled: true,
                 digest: None,
             })
         })
@@ -2190,10 +2191,10 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
 fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError> {
     let mut found_optional = false;
     for p in params {
-        if p.optional {
+        if p.optional() {
             found_optional = true;
         }
-        if !p.optional && found_optional {
+        if !p.optional() && found_optional {
             let e = CompilationError::fatal(
                 (&p.identifier).into(),
                 "mandatory parameters must be declared before optional parameters",
@@ -3547,7 +3548,8 @@ e
                         digest: None,
                     }),
                     type_: None,
-                    optional: true,
+                    default_value: Some(DefaultParamVal::none()),
+                    labeled: true,
                     digest: None,
                 }],
                 true,
@@ -3559,7 +3561,8 @@ e
                         digest: None,
                     }),
                     type_: None,
-                    optional: false,
+                    default_value: Some(DefaultParamVal::none()),
+                    labeled: true,
                     digest: None,
                 }],
                 true,
@@ -3572,7 +3575,8 @@ e
                             digest: None,
                         }),
                         type_: None,
-                        optional: false,
+                        default_value: Some(DefaultParamVal::none()),
+                        labeled: true,
                         digest: None,
                     },
                     Parameter {
@@ -3581,7 +3585,8 @@ e
                             digest: None,
                         }),
                         type_: None,
-                        optional: true,
+                        default_value: Some(DefaultParamVal::none()),
+                        labeled: true,
                         digest: None,
                     },
                 ],
@@ -3595,7 +3600,8 @@ e
                             digest: None,
                         }),
                         type_: None,
-                        optional: true,
+                        default_value: Some(DefaultParamVal::none()),
+                        labeled: true,
                         digest: None,
                     },
                     Parameter {
@@ -3604,7 +3610,8 @@ e
                             digest: None,
                         }),
                         type_: None,
-                        optional: false,
+                        default_value: Some(DefaultParamVal::none()),
+                        labeled: true,
                         digest: None,
                     },
                 ],

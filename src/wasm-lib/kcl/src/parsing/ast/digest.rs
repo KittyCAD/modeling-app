@@ -1,6 +1,6 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
-use super::types::{ItemVisibility, VariableKind};
+use super::types::{DefaultParamVal, ItemVisibility, VariableKind};
 use crate::parsing::ast::types::{
     ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
     CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression,
@@ -169,6 +169,7 @@ impl FnArgType {
         hasher.finalize().into()
     }
 }
+
 impl Parameter {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.identifier.compute_digest());
@@ -181,7 +182,11 @@ impl Parameter {
                 hasher.update(b"Parameter::type_::None");
             }
         }
-        hasher.update(if slf.optional { [1] } else { [0] })
+        match slf.default_value {
+            None => hasher.update(vec![0]),
+            Some(DefaultParamVal::KclNone(ref _kcl_none)) => hasher.update(vec![1]),
+            Some(DefaultParamVal::Literal(ref mut literal)) => hasher.update(literal.compute_digest()),
+        }
     });
 }
 
