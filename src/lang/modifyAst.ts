@@ -661,7 +661,7 @@ export function addShell({
   // Check on the selection, and handle the wall vs cap casees
   let expr: Expr
   if (selectedArtifact.type === 'cap') {
-    expr = createLiteral(selectedArtifact['subType'])
+    expr = createLiteral(selectedArtifact.subType)
   } else {
     const tagResult = mutateAstWithTagForSketchSegment(
       modifiedAst,

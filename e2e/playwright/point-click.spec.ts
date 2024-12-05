@@ -768,3 +768,90 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
     })
   })
 })
+
+const shellPointAndClickCases = [
+  { shouldPreselect: true },
+  { shouldPreselect: false },
+]
+shellPointAndClickCases.forEach(({ shouldPreselect }) => {
+  test(`Shell point-and-click (preselected sketches: ${shouldPreselect})`, async ({
+    app,
+    page,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn('XZ')
+    |> circle({ center = [0, 0], radius = 30 }, %)
+    extrude001 = extrude(30, sketch001)
+    `
+    await app.initialise(initialCode)
+
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 575, y: 200 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const shellDeclaration =
+      "shell001 = shell({ faces = ['end'], thickness = 5 }, extrude001)"
+
+    await test.step(`Look for the white of the sketch001 shape`, async () => {
+      await scene.expectPixelColor([127, 127, 127], testPoint, 15)
+    })
+
+    if (!shouldPreselect) {
+      await test.step(`Go through the command bar flow without preselected sketches`, async () => {
+        await toolbar.shellButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'selection',
+          commandName: 'Shell',
+        })
+        await clickOnCap()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Selection: '1 cap',
+            Thickness: '5',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.progressCmdBar()
+      })
+    } else {
+      await test.step(`Preselect the two sketches`, async () => {
+        await clickOnCap()
+      })
+
+      await test.step(`Go through the command bar flow with preselected sketches`, async () => {
+        await toolbar.shellButton.click()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Selection: '1 cap',
+            Thickness: '5',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.progressCmdBar()
+      })
+    }
+
+    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+      await editor.expectEditor.toContain(shellDeclaration)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [shellDeclaration],
+        highlightedCode: '',
+      })
+      await scene.expectPixelColor([146, 146, 146], testPoint, 15)
+    })
+  })
+})
