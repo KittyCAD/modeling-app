@@ -69,7 +69,7 @@ interface SegmentArtifactRich extends BaseArtifact {
   type: 'segment'
   path: PathArtifact
   surf: WallArtifact
-  edges: Array<SweepEdge>
+  edges: Array<SweepEdgeArtifact>
   edgeCut?: EdgeCut
   codeRef: CodeRef
 }
@@ -88,7 +88,7 @@ interface SweepArtifactRich extends BaseArtifact {
   subType: 'extrusion' | 'revolve'
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
-  edges: Array<SweepEdge>
+  edges: Array<SweepEdgeArtifact>
   codeRef: CodeRef
 }
 
@@ -107,7 +107,7 @@ interface CapArtifact extends BaseArtifact {
   pathIds: Array<ArtifactId>
 }
 
-interface SweepEdge extends BaseArtifact {
+interface SweepEdgeArtifact extends BaseArtifact {
   type: 'sweepEdge'
   segId: ArtifactId
   sweepId: ArtifactId
@@ -137,7 +137,7 @@ export type Artifact =
   | SweepArtifact
   | WallArtifact
   | CapArtifact
-  | SweepEdge
+  | SweepEdgeArtifact
   | EdgeCut
   | EdgeCutEdge
   | Solid2DArtifact
@@ -765,7 +765,7 @@ export function getWallCodeRef(
 }
 
 export function getSweepEdgeCodeRef(
-  edge: SweepEdge,
+  edge: SweepEdgeArtifact,
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
   const seg = getArtifactOfTypes(
@@ -940,6 +940,16 @@ function getPlaneFromWall(
   if (err(path)) return path
   return getPlaneFromPath(path, graph)
 }
+function getPlaneFromSweepEdge(edge: SweepEdgeArtifact, graph: ArtifactGraph) {
+  const sweep = getArtifactOfTypes(
+    { key: edge.sweepId, types: ['sweep'] },
+    graph
+  )
+  if (err(sweep)) return sweep
+  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
 
 export function getPlaneFromArtifact(
   artifact: Artifact | undefined,
@@ -952,6 +962,8 @@ export function getPlaneFromArtifact(
   if (artifact.type === 'solid2D') return getPlaneFromSolid2D(artifact, graph)
   if (artifact.type === 'cap') return getPlaneFromCap(artifact, graph)
   if (artifact.type === 'wall') return getPlaneFromWall(artifact, graph)
+  if (artifact.type === 'sweepEdge')
+    return getPlaneFromSweepEdge(artifact, graph)
   return new Error(`Artifact type ${artifact.type} does not have a plane`)
 }
 
