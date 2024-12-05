@@ -1,4 +1,3 @@
-use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use serde_json::Value as JValue;
@@ -6,8 +5,7 @@ use serde_json::Value as JValue;
 use super::Node;
 use crate::parsing::ast::types::{Expr, Literal};
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged, rename_all = "snake_case")]
 pub enum LiteralValue {
