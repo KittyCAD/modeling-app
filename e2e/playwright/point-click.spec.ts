@@ -877,14 +877,16 @@ extrude001 = extrude(40, sketch001)
   await app.initialise(initialCode)
 
   // One dumb hardcoded screen pixel value
-  const testPoint = { x: 580, y: 250 }
-  const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const testPoint = { x: 580, y: 180 }
+  const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 70)
   const mutatedCode = 'xLine(-40, %, $seg01)'
   const shellDeclaration =
-    'shell001 = shell({ faces = [seg01], thickness = 5 }, extrude001)'
+    "shell001 = shell({  faces = ['end', seg01],  thickness = 5}, extrude001)"
+  const formattedOutLastLine = '}, extrude001)'
 
   await test.step(`Look for the white of the sketch001 shape`, async () => {
-    await scene.expectPixelColor([129, 129, 129], testPoint, 15)
+    await scene.expectPixelColor([99, 99, 99], testPoint, 15)
   })
 
   await test.step(`Go through the command bar flow, selecting a wall and keeping default thickness`, async () => {
@@ -900,13 +902,17 @@ extrude001 = extrude(40, sketch001)
       highlightedHeaderArg: 'selection',
       commandName: 'Shell',
     })
+    await clickOnCap()
+    await page.keyboard.down('Shift')
     await clickOnWall()
+    await app.page.waitForTimeout(500)
+    await page.keyboard.up('Shift')
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 cap, 1 face',
         Thickness: '5',
       },
       commandName: 'Shell',
@@ -919,7 +925,7 @@ extrude001 = extrude(40, sketch001)
     await editor.expectEditor.toContain(shellDeclaration)
     await editor.expectState({
       diagnostics: [],
-      activeLines: [shellDeclaration],
+      activeLines: [formattedOutLastLine],
       highlightedCode: '',
     })
     await scene.expectPixelColor([49, 49, 49], testPoint, 15)
