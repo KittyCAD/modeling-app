@@ -1,6 +1,6 @@
-import { parse, PathToNode, Program, recast, SourceRange } from 'lang/wasm'
+import { Expr, parse, PathToNode, Program, recast, SourceRange } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodePathFromSourceRange} from 'lang/queryAst'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 
@@ -948,29 +948,65 @@ export function getPlaneFromArtifact(
   return new Error(`Artifact type ${artifact.type} does not have a plane`)
 }
 
+const isExprSafe = (index: number): boolean => {
+  const expr = kclManager.ast.body?.[index]
+  if (!expr) {
+    return false
+  }
+  if (expr.type === 'ImportStatement' || expr.type === 'ReturnStatement') {
+    return false
+  }
+  if (expr.type === 'VariableDeclaration') {
+    const init = expr.declarations?.[0]?.init
+    if (!init) return false
+    if (init.type === 'CallExpression') {
+      return false
+    }
+    if (init.type === 'BinaryExpression' && isNodeSafe(init)) {
+      return true
+    }
+    if (init.type === 'Literal' || init.type === 'MemberExpression') {
+      return true
+    }
+  }
+  return false
+}
+
 const onlyConsecutivePaths = (
-  nodePaths: PathToNode[],
+  orderedNodePaths: PathToNode[],
   originalPath: PathToNode
 ): PathToNode[] => {
-  const originalIndex = nodePaths.findIndex(
-    (path) => path[1][0] === originalPath[1][0]
+  const originalIndex = Number(
+    orderedNodePaths.find(
+      (path) => path[1][0] === originalPath[1][0]
+    )?.[1]?.[0] || 0
   )
-  const safePaths = [nodePaths[originalIndex]]
-  nodePaths.slice(originalIndex + 1).forEach((path) => {
-    const lastPath = safePaths[safePaths.length - 1]
-    if (Number(path?.[1]?.[0]) === Number(lastPath?.[1]?.[0]) + 1) {
-      safePaths.push(path)
-    }
+
+  const minIndex = Number(orderedNodePaths[0][1][0])
+  const maxIndex = Number(orderedNodePaths[orderedNodePaths.length - 1][1][0])
+  const pathIndexMap: any = {}
+  orderedNodePaths.forEach((path) => {
+    const bodyIndex = Number(path[1][0])
+    pathIndexMap[bodyIndex] = path
   })
-  nodePaths
-    .slice(0, originalIndex + 1)
-    .reverse()
-    .forEach((path) => {
-      const lastPath = safePaths[0]
-      if (Number(path?.[1]?.[0]) === Number(lastPath?.[1]?.[0]) - 1) {
-        safePaths.unshift(path)
-      }
-    })
+  const safePaths: PathToNode[] = []
+
+  // traverse expressions in either direction from the profile selected
+  // when the user entered sketch mode
+  for (let i = originalIndex; i <= maxIndex; i++) {
+    if (pathIndexMap[i]) {
+      safePaths.push(pathIndexMap[i])
+    } else if (!isExprSafe(i)) {
+      break
+    }
+  }
+  for (let i = originalIndex - 1; i >= minIndex; i--) {
+    if (pathIndexMap[i]) {
+      safePaths.unshift(pathIndexMap[i])
+    } else if (!isExprSafe(i)) {
+      break
+    }
+  }
   return safePaths
 }
 
@@ -1027,3 +1063,17 @@ export function getPathsFromArtifact({
     .sort((a, b) => Number(a[1][0]) - Number(b[1][0]))
   return onlyConsecutivePaths(nodePaths, sketchPathToNode)
 }
+
+
+function isNodeSafe(node: Expr): boolean {
+  if (node.type === 'Literal' || node.type === 'MemberExpression') {
+    return true
+  }
+  if (node.type === 'BinaryExpression') {
+    return (
+      isNodeSafe(node.left) && isNodeSafe(node.right)
+    )
+  }
+  return false
+}
+
