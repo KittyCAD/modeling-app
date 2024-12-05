@@ -1,6 +1,13 @@
-import { Expr, parse, PathToNode, Program, recast, SourceRange } from 'lang/wasm'
+import {
+  Expr,
+  parse,
+  PathToNode,
+  Program,
+  recast,
+  SourceRange,
+} from 'lang/wasm'
 import { Models } from '@kittycad/lib'
-import { getNodePathFromSourceRange} from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 
@@ -1064,16 +1071,12 @@ export function getPathsFromArtifact({
   return onlyConsecutivePaths(nodePaths, sketchPathToNode)
 }
 
-
 function isNodeSafe(node: Expr): boolean {
   if (node.type === 'Literal' || node.type === 'MemberExpression') {
     return true
   }
   if (node.type === 'BinaryExpression') {
-    return (
-      isNodeSafe(node.left) && isNodeSafe(node.right)
-    )
+    return isNodeSafe(node.left) && isNodeSafe(node.right)
   }
   return false
 }
-

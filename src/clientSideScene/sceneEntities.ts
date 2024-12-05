@@ -601,7 +601,8 @@ export class SceneEntities {
         this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
       }
       sketch.paths.forEach((segment, index) => {
-        const isLastInProfile = index === sketch.paths.length - 1
+        const isLastInProfile =
+          index === sketch.paths.length - 1 && segment.type !== 'Circle'
         let segPathToNode = getNodePathFromSourceRange(
           maybeModdedAst,
           segment.__geoMeta.sourceRange
