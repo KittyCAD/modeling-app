@@ -1,9 +1,6 @@
 //! The executor for the AST.
 
-use std::{
-    collections::{HashMap, HashSet},
-    sync::Arc,
-};
+use std::{collections::HashSet, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
@@ -193,7 +190,7 @@ impl EnvironmentRef {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 pub struct Environment {
-    bindings: HashMap<String, KclValue>,
+    bindings: IndexMap<String, KclValue>,
     parent: Option<EnvironmentRef>,
 }
 
@@ -203,7 +200,7 @@ impl Environment {
     pub fn root() -> Self {
         Self {
             // Prelude
-            bindings: HashMap::from([
+            bindings: IndexMap::from([
                 ("ZERO".to_string(), KclValue::from_number(0.0, NO_META)),
                 ("QUARTER_TURN".to_string(), KclValue::from_number(90.0, NO_META)),
                 ("HALF_TURN".to_string(), KclValue::from_number(180.0, NO_META)),
@@ -215,7 +212,7 @@ impl Environment {
 
     pub fn new(parent: EnvironmentRef) -> Self {
         Self {
-            bindings: HashMap::new(),
+            bindings: IndexMap::new(),
             parent: Some(parent),
         }
     }
@@ -770,8 +767,8 @@ pub struct Sketch {
     /// The starting path.
     pub start: BasePath,
     /// Tag identifiers that have been declared in this sketch.
-    #[serde(default, skip_serializing_if = "HashMap::is_empty")]
-    pub tags: HashMap<String, TagIdentifier>,
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub tags: IndexMap<String, TagIdentifier>,
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
     #[serde(skip)]

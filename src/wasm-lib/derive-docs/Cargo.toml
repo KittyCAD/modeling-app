@@ -27,3 +27,6 @@ anyhow = "1.0.93"
 expectorate = "1.1.0"
 pretty_assertions = "1.4.1"
 rustfmt-wrapper = "0.2.1"
+
+[lints]
+workspace = true
