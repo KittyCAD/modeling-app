@@ -1,5 +1,5 @@
 import { test, expect, Page } from './zoo-test'
-import { HomePageFixture } from './fixtures/HomePageFixture'
+import { HomePageFixture } from './fixtures/homePageFixture'
 import { getUtils } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'

@@ -4,7 +4,7 @@ test.describe('Electron app header tests', () => {
   test(
     'Open Command Palette button has correct shortcut',
     { tag: '@electron' },
-    async ({ page, browserName }, testInfo) => {
+    async ({ page }, testInfo) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // No space before the shortcut since it checks textContent.
@@ -29,7 +29,7 @@ test.describe('Electron app header tests', () => {
   test(
     'User settings has correct shortcut',
     { tag: '@electron' },
-    async ({ page, browserName }, testInfo) => {
+    async ({ page }, testInfo) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // Open the user sidebar menu.

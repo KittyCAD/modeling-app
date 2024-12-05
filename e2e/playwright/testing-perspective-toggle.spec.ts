@@ -1,7 +1,5 @@
 import { test, expect } from './zoo-test'
 import { getUtils } from './test-utils'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
-import * as TOML from '@iarna/toml'
 
 test.describe('Test toggling perspective', () => {
   test('via command palette and toggle', async ({ page, homePage }) => {

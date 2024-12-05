@@ -1,11 +1,11 @@
 import type {
   BrowserContext,
   ElectronApplication,
-  Page,
   TestInfo,
+  Page,
 } from '@playwright/test'
-import { test as base } from '@playwright/test'
-import { getUtils, setup, setupElectron, tearDown } from '../test-utils'
+
+import { getUtils, setup, setupElectron } from '../test-utils'
 import fsp from 'fs/promises'
 import { join } from 'path'
 import { CmdBarFixture } from './cmdBarFixture'
@@ -50,8 +50,6 @@ export class AuthenticatedApp {
 }
 
 export interface Fixtures {
-  app: AuthenticatedApp
-  tronApp: AuthenticatedTronApp
   cmdBar: CmdBarFixture
   editor: EditorFixture
   toolbar: ToolbarFixture
@@ -122,19 +120,19 @@ export class AuthenticatedTronApp {
 }
 
 export const fixtures = {
-  cmdBar: async ({ page }, use) => {
+  cmdBar: async ({ page }: { page: Page }, use: any) => {
     await use(new CmdBarFixture(page))
   },
-  editor: async ({ page }, use) => {
+  editor: async ({ page }: { page: Page }, use: any) => {
     await use(new EditorFixture(page))
   },
-  toolbar: async ({ page }, use) => {
+  toolbar: async ({ page }: { page: Page }, use: any) => {
     await use(new ToolbarFixture(page))
   },
-  scene: async ({ page }, use) => {
+  scene: async ({ page }: { page: Page }, use: any) => {
     await use(new SceneFixture(page))
   },
-  homePage: async ({ page }, use, testInfo) => {
+  homePage: async ({ page }: { page: Page }, use: any) => {
     await use(new HomePageFixture(page))
   },
 }

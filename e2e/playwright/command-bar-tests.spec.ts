@@ -2,7 +2,6 @@ import { test, expect } from './zoo-test'
 
 import { getUtils } from './test-utils'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import { normalizeLineEndings } from 'lib/codeEditor'
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -89,7 +88,6 @@ test.describe('Command bar tests', () => {
     page,
     homePage,
   }) => {
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
@@ -171,7 +169,6 @@ test.describe('Command bar tests', () => {
     page,
     homePage,
   }) => {
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
@@ -300,7 +297,6 @@ test.describe('Command bar tests', () => {
     page,
     homePage,
   }) => {
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 

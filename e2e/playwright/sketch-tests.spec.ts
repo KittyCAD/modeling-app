@@ -101,7 +101,6 @@ test.describe('Sketch tests', () => {
   })
   test('Can delete most of a sketch and the line tool will still work', async ({
     page,
-    center,
     homePage,
   }) => {
     const u = await getUtils(page)
@@ -142,7 +141,7 @@ test.describe('Sketch tests', () => {
     await page.waitForTimeout(100)
 
     await expect(async () => {
-      await page.mouse.move(700, 200, { step: 25 })
+      await page.mouse.move(700, 200, { steps: 25 })
       await page.mouse.click(700, 200)
 
       await expect
@@ -164,7 +163,6 @@ test.describe('Sketch tests', () => {
       localStorage.setItem('persistCode', ``)
     })
 
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
@@ -428,8 +426,11 @@ test.describe('Sketch tests', () => {
     })
 
     // expect the code to have changed
-    await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')
-    |> circle({ center = [7.26, -2.37], radius = 11.44 }, %)`, { shouldNormalise: true })
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn('XZ')
+    |> circle({ center = [7.26, -2.37], radius = 11.44 }, %)`,
+      { shouldNormalise: true }
+    )
   })
   test('Can edit a sketch that has been extruded in the same pipe', async ({
     page,
@@ -1289,7 +1290,7 @@ test.describe(`Sketching with offset planes`, () => {
       )
     })
 
-    homePage.goToModelingScene()
+    await homePage.goToModelingScene()
 
     const [planeClick, planeHover] = scene.makeMouseHelpers(650, 200)
 

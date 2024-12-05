@@ -45,6 +45,7 @@ test.describe('Copilot ghost text', () => {
 
   test.skip('copilot disabled in sketch mode no select plane', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     // const PUR = 400 / 37.5 //pixeltoUnitRatio

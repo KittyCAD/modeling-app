@@ -56,11 +56,11 @@ export class EditorFixture {
       if (!shouldNormalise) {
         const expectStart = expect.poll(() => this.codeContent.textContent())
         if (not) {
-          const result = await expectStart.not.toContain(code, { timeout })
+          const result = await expectStart.not.toContain(code)
           await resetPane()
           return result
         }
-        const result = await expectStart.toContain(code, { timeout })
+        const result = await expectStart.toContain(code)
         await resetPane()
         return result
       }
@@ -150,9 +150,11 @@ export class EditorFixture {
   scrollToText(text: string) {
     return this.page.evaluate((scrollToText: string) => {
       // editorManager is available on the window object.
+      // @ts-ignore
       let index = editorManager._editorView.docView.view.state.doc
         .toString()
         .indexOf(scrollToText)
+      // @ts-ignore
       editorManager._editorView.dispatch({
         selection: {
           anchor: index,

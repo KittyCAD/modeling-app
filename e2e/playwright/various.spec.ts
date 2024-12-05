@@ -3,7 +3,6 @@ import { test, expect } from './zoo-test'
 import { doExport, getUtils, makeTemplate } from './test-utils'
 
 test.fixme('Units menu', async ({ page, homePage }) => {
-  const u = await getUtils(page)
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
 
@@ -102,15 +101,8 @@ part001 = startSketchOn('-XZ')
 
 test('Paste should not work unless an input is focused', async ({
   page,
-  browserName,
   homePage,
 }) => {
-  // To run this test locally, uncomment Firefox in playwright.config.ts
-  test.skip(
-    browserName !== 'firefox',
-    "This bug is really Firefox-only, which we don't run in CI."
-  )
-  const u = await getUtils(page)
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
   await page
@@ -154,7 +146,6 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({
   page,
   homePage,
 }) => {
-  const u = await getUtils(page)
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
 
@@ -248,7 +239,7 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
 
 test.fixme(
   'Basic default modeling and sketch hotkeys work',
-  async ({ page }) => {
+  async ({ page, homePage }) => {
     const u = await getUtils(page)
 
     // This test can run long if it takes a little too long to load

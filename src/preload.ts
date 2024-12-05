@@ -20,12 +20,16 @@ const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
 const onUpdateDownloaded = (
   callback: (value: { version: string; releaseNotes: string }) => void
-) => ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
+) =>
+  ipcRenderer.on('update-downloaded', (_event: any, value) => callback(value))
 const onUpdateDownloadStart = (
   callback: (value: { version: string }) => void
-) => ipcRenderer.on('update-download-start', (_event, value) => callback(value))
+) =>
+  ipcRenderer.on('update-download-start', (_event: any, value) =>
+    callback(value)
+  )
 const onUpdateError = (callback: (value: Error) => void) =>
-  ipcRenderer.on('update-error', (_event, value) => callback(value))
+  ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
 
 const isMac = os.platform() === 'darwin'

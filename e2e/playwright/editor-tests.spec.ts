@@ -190,8 +190,6 @@ test.describe('Editor tests', () => {
   })
 
   test('fold gutters work', async ({ page, homePage }) => {
-    const u = await getUtils(page)
-
     const fullCode = `sketch001 = startSketchOn('XY')
    |> startProfileAt([-10, -10], %)
    |> line([20, 0], %)
@@ -642,8 +640,6 @@ test.describe('Editor tests', () => {
     page,
     homePage,
   }) => {
-    const u = await getUtils(page)
-
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',

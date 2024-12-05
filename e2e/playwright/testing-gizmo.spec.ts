@@ -1,9 +1,7 @@
 import { test, expect } from './zoo-test'
-import { getUtils, executorInputPath } from './test-utils'
+import { getUtils } from './test-utils'
 import { uuidv4 } from 'lib/utils'
 import { TEST_CODE_GIZMO } from './storageStates'
-import path from 'node:path'
-import fsp from 'fs/promises'
 
 test.describe('Testing Gizmo', () => {
   const cases = [

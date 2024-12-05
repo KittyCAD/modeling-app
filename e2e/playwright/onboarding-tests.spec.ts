@@ -8,7 +8,6 @@ import {
   TEST_SETTINGS_KEY,
   TEST_SETTINGS_ONBOARDING_START,
   TEST_SETTINGS_ONBOARDING_EXPORT,
-  TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING,
   TEST_SETTINGS_ONBOARDING_USER_MENU,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
@@ -29,8 +28,6 @@ test.describe('Onboarding tests', () => {
       cleanProjectDir: true,
     },
     async ({ context, page, homePage }) => {
-      const u = await getUtils(page)
-
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
 
@@ -117,7 +114,6 @@ test.describe('Onboarding tests', () => {
         localStorage.setItem('persistCode', code)
       }, initialCode)
 
-      const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
 
@@ -159,8 +155,6 @@ test.describe('Onboarding tests', () => {
       },
     },
     async ({ context, page, homePage }) => {
-      const u = await getUtils(page)
-
       // Override beforeEach test setup
       await context.addInitScript(
         async ({ settingsKey, settings }) => {
@@ -212,8 +206,6 @@ test.describe('Onboarding tests', () => {
       cleanProjectDir: true,
     },
     async ({ context, page, homePage }) => {
-      const u = await getUtils(page)
-
       const originalCode = 'sigmaAllow = 15000'
 
       // Override beforeEach test setup
@@ -332,7 +324,6 @@ test.describe('Onboarding tests', () => {
         }
       )
 
-      const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
 
@@ -407,7 +398,6 @@ test.describe('Onboarding tests', () => {
         }
       )
 
-      const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
 
