@@ -27,7 +27,8 @@ description: Result of parsing import_side_effect.kcl
         },
         "start": 0,
         "type": "ImportStatement",
-        "type": "ImportStatement"
+        "type": "ImportStatement",
+        "visibility": "default"
       }
     ],
     "end": 41,

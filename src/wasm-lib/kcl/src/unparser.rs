@@ -123,7 +123,12 @@ impl NonCodeValue {
 impl ImportStatement {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        let mut string = format!("{}import ", indentation);
+        let vis = if self.visibility == ItemVisibility::Export {
+            "export "
+        } else {
+            ""
+        };
+        let mut string = format!("{}{}import ", vis, indentation);
         match &self.selector {
             ImportSelector::List { items } => {
                 for (i, item) in items.iter().enumerate() {
@@ -735,6 +740,10 @@ import a as aaa, b as bbb from "a.kcl"
 import "a_b.kcl"
 import "a-b.kcl" as b
 import * from "a.kcl"
+export import a as aaa from "a.kcl"
+export import a, b from "a.kcl"
+export import a as aaa, b from "a.kcl"
+export import a, b as bbb from "a.kcl"
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);

@@ -66,6 +66,7 @@ impl ImportStatement {
                 hasher.update(alias.compute_digest());
             }
         }
+        hasher.update(slf.visibility.digestable_id());
         let path = slf.path.as_bytes();
         hasher.update(path.len().to_ne_bytes());
         hasher.update(path);

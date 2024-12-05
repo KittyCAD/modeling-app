@@ -1237,7 +1237,8 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
-        token if token.declaration_keyword().is_some() || token.visibility_keyword().is_some() =>
+        token if token.visibility_keyword().is_some() => (alt((declaration.map(BodyItem::VariableDeclaration), import_stmt.map(BodyItem::ImportStatement))), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
+        token if token.declaration_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         token if token.value == "import" && matches!(token.token_type, TokenType::Keyword) =>
             (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
@@ -1419,6 +1420,9 @@ fn glob(i: TokenSlice) -> PResult<Token> {
 }
 
 fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
+    let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
+        .parse_next(i)?
+        .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
     let import_token = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "import" {
@@ -1432,7 +1436,9 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         })
         .context(expected("the 'import' keyword"))
         .parse_next(i)?;
-    let start = import_token.start;
+
+    let module_id = import_token.module_id;
+    let start = visibility_token.unwrap_or(import_token).start;
 
     require_whitespace(i)?;
 
@@ -1521,12 +1527,13 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     Ok(Node::boxed(
         ImportStatement {
             selector,
+            visibility,
             path: path_string,
             digest: None,
         },
         start,
         end,
-        import_token.module_id,
+        module_id,
     ))
 }
 
@@ -2435,10 +2442,11 @@ mod tests {
         // example, "return" is the problem.
         assert!(
             err.message.starts_with("Unexpected token: ")
+                || err.message.starts_with("= is not")
                 || err
                     .message
                     .starts_with("Cannot assign a variable to a reserved keyword: "),
-            "Error message is: {}",
+            "Error message is: `{}`",
             err.message,
         );
     }
