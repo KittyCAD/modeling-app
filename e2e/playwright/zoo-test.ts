@@ -85,7 +85,7 @@ export const test = (
     desc,
     hasTestConf ? objOrFn : {},
     async (
-      { page, context, cmdBar, editor, toolbar, scene, homePage, ...rest },
+      { page, context, cmdBar, editor, toolbar, scene, homePage, request, playwright, browser, acceptDownloads, bypassCSP, colorScheme, clientCertificates, deviceScaleFactor, extraHTTPHeaders, geolocation, hasTouch, httpCredentials, ignoreHTTPSErrors, isMobile, javaScriptEnabled, locale, offline, permissions, proxy, storageState, timezoneId, userAgent, viewport, baseURL, contextOptions, actionTimeout, navigationTimeout, serviceWorkers, testIdAttribute, browserName, defaultBrowserType, headless, channel, launchOptions, connectOptions, screenshot, trace, video },
       testInfo
     ) => {
       // To switch to web, use PLATFORM=web environment variable.
@@ -190,7 +190,9 @@ export const test = (
                 ? tronApp.electronApp
                 : undefined,
             ...fixtures,
-            ...rest,
+            request,
+            playwright,
+            browser, acceptDownloads, bypassCSP, colorScheme, clientCertificates, deviceScaleFactor, extraHTTPHeaders, geolocation, hasTouch, httpCredentials, ignoreHTTPSErrors, isMobile, javaScriptEnabled, locale, offline, permissions, proxy, storageState, timezoneId, userAgent, viewport, baseURL, contextOptions, actionTimeout, navigationTimeout, serviceWorkers, testIdAttribute, browserName, defaultBrowserType, headless, channel, launchOptions, connectOptions, screenshot, trace, video
           },
           testInfo
         )
