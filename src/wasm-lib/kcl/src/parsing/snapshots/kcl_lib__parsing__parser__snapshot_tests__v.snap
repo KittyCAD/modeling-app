@@ -1,0 +1,54 @@
+---
+source: kcl/src/parsing/parser.rs
+assertion_line: 3958
+expression: actual
+snapshot_kind: text
+---
+{
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 17,
+          "id": {
+            "end": 9,
+            "name": "pt1",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "computed": false,
+            "end": 17,
+            "object": {
+              "end": 14,
+              "name": "b1",
+              "start": 12,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "end": 16,
+              "raw": "0",
+              "start": 15,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 0.0
+            },
+            "start": 12,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 17,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 17,
+  "start": 0
+}

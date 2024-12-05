@@ -14,9 +14,9 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
+    parsing::ast::types::TagNode,
     std::Args,
 };
 

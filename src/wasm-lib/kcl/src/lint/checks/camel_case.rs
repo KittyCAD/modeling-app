@@ -2,8 +2,8 @@ use anyhow::Result;
 use convert_case::Casing;
 
 use crate::{
-    ast::types::{ObjectProperty, VariableDeclarator},
     lint::rule::{def_finding, Discovered, Finding},
+    parsing::ast::types::{ObjectProperty, VariableDeclarator},
     walk::Node,
     SourceRange,
 };
