@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - pierremtb/cleaner-nightly-release-notes
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
   schedule:
@@ -14,7 +15,8 @@ on:
 
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' }}
-  IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
+  # IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
+  IS_NIGHTLY: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -256,7 +258,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    if: ${{ github.ref_type == 'tag' || github.event_name == 'schedule' }}
+    # if: ${{ github.ref_type == 'tag' || github.event_name == 'schedule' }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
@@ -313,8 +315,10 @@ jobs:
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
-          WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-          URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+          # WEBSITE_DIR: ${{ github.event_name == 'schedule' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
+          WEBSITE_DIR: ${{ 'dl.zoo.dev/releases/modeling-app/nightly' }}
+          # URL_CODED_NAME: ${{ github.event_name == 'schedule' && 'Zoo%20Modeling%20App%20%28Nightly%29' || 'Zoo%20Modeling%20App' }}
+          URL_CODED_NAME: ${{ 'Zoo%20Modeling%20App%20%28Nightly%29' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
           jq --null-input \
@@ -361,6 +365,17 @@ jobs:
 
       - name: List artifacts
         run: "ls -R out"
+
+      - name: Set more complete nightly release notes
+        if: ${{ env.IS_NIGHTLY == 'true' }}
+        run: |
+          # Note: prefered going this way instead of a full clone in the checkout step,
+          # see https://github.com/actions/checkout/issues/1471
+          git fetch --prune --unshallow --tags
+          export TAG="nightly-v$VERSION"
+          export PREVIOUS_TAG=$(git describe --tags --match="nightly-v[0-9]*" --abbrev=0)
+          export NOTES=$(./scripts/get-nightly-changelog.sh)
+          yarn files:set-notes
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_NIGHTLY == 'true' }}
