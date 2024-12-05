@@ -365,7 +365,7 @@ jobs:
       - name: Set more complete nightly release notes
         if: ${{ env.IS_NIGHTLY == 'true' }}
         run: |
-          # Note: prefered going this way instead of a full clone in the checkout step,
+          # Note: preferred going this way instead of a full clone in the checkout step,
           # see https://github.com/actions/checkout/issues/1471
           git fetch --prune --unshallow --tags
           export TAG="nightly-${VERSION}"
