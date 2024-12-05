@@ -1,9 +1,8 @@
 //! Functions related to sketching.
 
-use std::collections::HashMap;
-
 use anyhow::Result;
 use derive_docs::stdlib;
+use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
@@ -13,12 +12,12 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
         Solid, TagEngineInfo, TagIdentifier,
     },
+    parsing::ast::types::TagNode,
     std::{
         utils::{
             arc_angles, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
@@ -1113,46 +1112,53 @@ async fn make_sketch_plane_from_orientation(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Plane>, KclError> {
-    let mut plane = Plane::from_plane_data(data.clone(), exec_state);
+    let plane = Plane::from_plane_data(data.clone(), exec_state);
 
-    // Get the default planes.
-    let default_planes = args
-        .ctx
-        .engine
-        .default_planes(&mut exec_state.id_generator, args.source_range)
-        .await?;
-
-    plane.id = match data {
-        PlaneData::XY => default_planes.xy,
-        PlaneData::NegXY => default_planes.neg_xy,
-        PlaneData::XZ => default_planes.xz,
-        PlaneData::NegXZ => default_planes.neg_xz,
-        PlaneData::YZ => default_planes.yz,
-        PlaneData::NegYZ => default_planes.neg_yz,
+    // Create the plane on the fly.
+    let clobber = false;
+    let size = LengthUnit(60.0);
+    let hide = Some(true);
+    match data {
+        PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
+            let x_axis = match data {
+                PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0),
+                PlaneData::NegXZ => Point3d::new(-1.0, 0.0, 0.0),
+                PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0),
+                _ => plane.x_axis,
+            };
+            args.batch_modeling_cmd(
+                plane.id,
+                ModelingCmd::from(mcmd::MakePlane {
+                    clobber,
+                    origin: plane.origin.into(),
+                    size,
+                    x_axis: x_axis.into(),
+                    y_axis: plane.y_axis.into(),
+                    hide,
+                }),
+            )
+            .await?;
+        }
         PlaneData::Plane {
             origin,
             x_axis,
             y_axis,
             z_axis: _,
         } => {
-            // Create the custom plane on the fly.
-            let id = exec_state.id_generator.next_uuid();
             args.batch_modeling_cmd(
-                id,
+                plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
-                    clobber: false,
+                    clobber,
                     origin: (*origin).into(),
-                    size: LengthUnit(60.0),
+                    size,
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
-                    hide: Some(true),
+                    hide,
                 }),
             )
             .await?;
-
-            id
         }
-    };
+    }
 
     Ok(Box::new(plane))
 }
@@ -1294,7 +1300,7 @@ pub(crate) async fn inner_start_profile_at(
                 }),
                 surface: None,
             });
-            HashMap::from([(tag.name.to_string(), tag_identifier)])
+            IndexMap::from([(tag.name.to_string(), tag_identifier)])
         } else {
             Default::default()
         },

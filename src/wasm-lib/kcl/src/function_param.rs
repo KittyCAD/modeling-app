@@ -1,11 +1,11 @@
 use schemars::JsonSchema;
 
 use crate::{
-    ast::types::FunctionExpression,
     errors::KclError,
     executor::{
         call_user_defined_function, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory,
     },
+    parsing::ast::types::FunctionExpression,
     std::args::Arg,
 };
 
@@ -14,7 +14,7 @@ use crate::{
 pub struct FunctionParam<'a> {
     pub inner: Option<&'a MemoryFunction>,
     pub memory: ProgramMemory,
-    pub fn_expr: crate::ast::types::BoxNode<FunctionExpression>,
+    pub fn_expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub meta: Vec<Metadata>,
     pub ctx: ExecutorContext,
 }

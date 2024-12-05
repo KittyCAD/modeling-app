@@ -108,6 +108,10 @@ impl crate::docs::StdLibFn for MyFunc {
         vec![]
     }
 
+    fn keyword_arguments(&self) -> bool {
+        false
+    }
+
     fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
@@ -117,6 +121,7 @@ impl crate::docs::StdLibFn for MyFunc {
             type_: "kittycad::types::InputFormat".to_string(),
             schema: generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
             required: false,
+            label_required: true,
         }]
     }
 
@@ -130,6 +135,7 @@ impl crate::docs::StdLibFn for MyFunc {
             type_: "[Sketch]".to_string(),
             schema,
             required: true,
+            label_required: true,
         })
     }
 
@@ -150,7 +156,7 @@ impl crate::docs::StdLibFn for MyFunc {
             .iter()
             .map(|cb| {
                 let program = crate::Program::parse(cb).unwrap();
-                let mut options: crate::ast::types::FormatOptions = Default::default();
+                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
                 program.ast.recast(&options, 0)
             })

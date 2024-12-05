@@ -23,17 +23,30 @@ use unbox::unbox;
 struct StdlibMetadata {
     /// The name of the function in the API.
     name: String,
+
     /// Tags for the function.
     #[serde(default)]
     tags: Vec<String>,
+
     /// Whether the function is unpublished.
     /// Then docs will not be generated.
     #[serde(default)]
     unpublished: bool,
+
     /// Whether the function is deprecated.
     /// Then specific docs detailing that this is deprecated will be generated.
     #[serde(default)]
     deprecated: bool,
+
+    /// If true, expects keyword arguments.
+    /// If false, expects positional arguments.
+    #[serde(default)]
+    keywords: bool,
+
+    /// If true, the first argument is unlabeled.
+    /// If false, all arguments require labels.
+    #[serde(default)]
+    unlabeled_first: bool,
 }
 
 #[proc_macro_attribute]
@@ -171,7 +184,7 @@ fn do_stdlib_inner(
             code_blocks.iter().map(|cb| {
                 let program = crate::Program::parse(cb).unwrap();
 
-                let mut options: crate::ast::types::FormatOptions = Default::default();
+                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
                 program.ast.recast(&options, 0)
             }).collect::<Vec<String>>()
@@ -225,6 +238,12 @@ fn do_stdlib_inner(
         quote! { false }
     };
 
+    let uses_keyword_arguments = if metadata.keywords {
+        quote! { true }
+    } else {
+        quote! { false }
+    };
+
     let docs_crate = get_crate(None);
 
     // When the user attaches this proc macro to a function with the wrong type
@@ -233,7 +252,7 @@ fn do_stdlib_inner(
     // of the various parameters. We do this by calling dummy functions that
     // require a type that satisfies SharedExtractor or ExclusiveExtractor.
     let mut arg_types = Vec::new();
-    for arg in ast.sig.inputs.iter() {
+    for (i, arg) in ast.sig.inputs.iter().enumerate() {
         // Get the name of the argument.
         let arg_name = match arg {
             syn::FnArg::Receiver(pat) => {
@@ -263,7 +282,7 @@ fn do_stdlib_inner(
 
         let ty_string = rust_type_to_openapi_type(&ty_string);
         let required = !ty_ident.to_string().starts_with("Option <");
-
+        let label_required = !(i == 0 && metadata.unlabeled_first);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
                generator.root_schema_for::<#ty_ident>()
@@ -274,6 +293,7 @@ fn do_stdlib_inner(
                     type_: #ty_string.to_string(),
                     schema: #schema,
                     required: #required,
+                    label_required: #label_required,
                 }
             });
         }
@@ -334,6 +354,7 @@ fn do_stdlib_inner(
                 type_: #ret_ty_string.to_string(),
                 schema,
                 required: true,
+                label_required: true,
             })
         }
     } else {
@@ -398,6 +419,10 @@ fn do_stdlib_inner(
 
             fn tags(&self) -> Vec<String> {
                 vec![#(#tags),*]
+            }
+
+            fn keyword_arguments(&self) -> bool {
+                #uses_keyword_arguments
             }
 
             fn args(&self, inline_subschemas: bool) -> Vec<#docs_crate::StdLibFnArg> {

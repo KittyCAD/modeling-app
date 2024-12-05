@@ -7,6 +7,8 @@ try {
     .split('\n')
     .filter((line) => line && line.length > 1)
     .forEach((line) => {
+      // Allow line comments.
+      if (line.trimStart().startsWith('#')) return
       const [key, value] = line.split('=')
       // prefer env vars over secrets file
       secrets[key] = process.env[key] || (value as any).replaceAll('"', '')

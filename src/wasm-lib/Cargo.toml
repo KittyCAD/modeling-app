@@ -74,8 +74,11 @@ members = [
 
 [workspace.dependencies]
 http = "1"
-kittycad = { version = "0.3.25", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.76", features = ["websocket"] }
+kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }
+kittycad-modeling-cmds = { version = "0.2.77", features = ["websocket"] }
+
+[workspace.lints.clippy]
+iter_over_hash_type = "warn"
 
 [[test]]
 name = "executor"

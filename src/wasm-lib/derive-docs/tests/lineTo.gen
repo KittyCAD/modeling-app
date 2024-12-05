@@ -108,6 +108,10 @@ impl crate::docs::StdLibFn for LineTo {
         vec![]
     }
 
+    fn keyword_arguments(&self) -> bool {
+        false
+    }
+
     fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
@@ -118,12 +122,14 @@ impl crate::docs::StdLibFn for LineTo {
                 type_: "LineToData".to_string(),
                 schema: generator.root_schema_for::<LineToData>(),
                 required: true,
+                label_required: true,
             },
             crate::docs::StdLibFnArg {
                 name: "sketch".to_string(),
                 type_: "Sketch".to_string(),
                 schema: generator.root_schema_for::<Sketch>(),
                 required: true,
+                label_required: true,
             },
         ]
     }
@@ -138,6 +144,7 @@ impl crate::docs::StdLibFn for LineTo {
             type_: "Sketch".to_string(),
             schema,
             required: true,
+            label_required: true,
         })
     }
 
@@ -158,7 +165,7 @@ impl crate::docs::StdLibFn for LineTo {
             .iter()
             .map(|cb| {
                 let program = crate::Program::parse(cb).unwrap();
-                let mut options: crate::ast::types::FormatOptions = Default::default();
+                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
                 program.ast.recast(&options, 0)
             })

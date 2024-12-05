@@ -348,6 +348,133 @@ export function extrudeSketch(
   }
 }
 
+export function loftSketches(
+  node: Node<Program>,
+  declarators: VariableDeclarator[]
+): {
+  modifiedAst: Node<Program>
+  pathToNode: PathToNode
+} {
+  const modifiedAst = structuredClone(node)
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
+  const elements = declarators.map((d) => createIdentifier(d.id.name))
+  const loft = createCallExpressionStdLib('loft', [
+    createArrayExpression(elements),
+  ])
+  const declaration = createVariableDeclaration(name, loft)
+  modifiedAst.body.push(declaration)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    ['0', 'index'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function revolveSketch(
+  node: Node<Program>,
+  pathToNode: PathToNode,
+  shouldPipe = false,
+  angle: Expr = createLiteral(4)
+):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+      pathToRevolveArg: PathToNode
+    }
+  | Error {
+  const _node = structuredClone(node)
+  const _node1 = getNodeFromPath(_node, pathToNode)
+  if (err(_node1)) return _node1
+  const { node: sketchExpression } = _node1
+
+  // determine if sketchExpression is in a pipeExpression or not
+  const _node2 = getNodeFromPath<PipeExpression>(
+    _node,
+    pathToNode,
+    'PipeExpression'
+  )
+  if (err(_node2)) return _node2
+  const { node: pipeExpression } = _node2
+
+  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
+
+  const _node3 = getNodeFromPath<VariableDeclarator>(
+    _node,
+    pathToNode,
+    'VariableDeclarator'
+  )
+  if (err(_node3)) return _node3
+  const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
+
+  const revolveCall = createCallExpressionStdLib('revolve', [
+    createObjectExpression({
+      angle: angle,
+      // TODO: hard coded 'X' axis for revolve MVP, should be changed.
+      axis: createLiteral('X'),
+    }),
+    createIdentifier(variableDeclarator.id.name),
+  ])
+
+  if (shouldPipe) {
+    const pipeChain = createPipeExpression(
+      isInPipeExpression
+        ? [...pipeExpression.body, revolveCall]
+        : [sketchExpression as any, revolveCall]
+    )
+
+    variableDeclarator.init = pipeChain
+    const pathToRevolveArg: PathToNode = [
+      ...pathToDecleration,
+      ['init', 'VariableDeclarator'],
+      ['body', ''],
+      [pipeChain.body.length - 1, 'index'],
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+    ]
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+      pathToRevolveArg,
+    }
+  }
+
+  // We're not creating a pipe expression,
+  // but rather a separate constant for the extrusion
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
+  const VariableDeclaration = createVariableDeclaration(name, revolveCall)
+  const sketchIndexInPathToNode =
+    pathToDecleration.findIndex((a) => a[0] === 'body') + 1
+  const sketchIndexInBody = pathToDecleration[sketchIndexInPathToNode][0]
+  if (typeof sketchIndexInBody !== 'number')
+    return new Error('expected sketchIndexInBody to be a number')
+  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
+
+  const pathToRevolveArg: PathToNode = [
+    ['body', ''],
+    [sketchIndexInBody + 1, 'index'],
+    ['declarations', 'VariableDeclaration'],
+    [0, 'index'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+  return {
+    modifiedAst: _node,
+    pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
+    pathToRevolveArg,
+  }
+}
+
 export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
@@ -754,7 +881,7 @@ export function createUnaryExpression(
 export function createBinaryExpression([left, operator, right]: [
   BinaryExpression['left'],
   BinaryExpression['operator'],
-  BinaryExpression['right']
+  BinaryExpression['right'],
 ]): Node<BinaryExpression> {
   return {
     type: 'BinaryExpression',
@@ -770,7 +897,7 @@ export function createBinaryExpression([left, operator, right]: [
 
 export function createBinaryExpressionWithUnary([left, right]: [
   BinaryExpression['left'],
-  BinaryExpression['right']
+  BinaryExpression['right'],
 ]): Node<BinaryExpression> {
   if (right.type === 'UnaryExpression' && right.operator === '-')
     return createBinaryExpression([left, '-', right.argument])
@@ -975,7 +1102,7 @@ export async function deleteFromSelection(
   selection: Selection,
   programMemory: ProgramMemory,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
-    ({} as any)
+    ({}) as any
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
   const varDec = getNodeFromPath<VariableDeclarator>(

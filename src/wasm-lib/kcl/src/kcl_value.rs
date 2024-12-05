@@ -5,10 +5,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::{FunctionExpression, KclNone, TagDeclarator, TagNode},
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
     executor::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
+    parsing::ast::types::{FunctionExpression, KclNone, TagDeclarator, TagNode},
     std::{args::Arg, FnAsArg},
     ExecState, ExecutorContext, KclError, SourceRange,
 };
@@ -56,7 +56,7 @@ pub enum KclValue {
         meta: Vec<Metadata>,
     },
     TagIdentifier(Box<TagIdentifier>),
-    TagDeclarator(crate::ast::types::BoxNode<TagDeclarator>),
+    TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
     Plane(Box<Plane>),
     Face(Box<Face>),
     Sketch {
@@ -75,7 +75,7 @@ pub enum KclValue {
         #[serde(skip)]
         func: Option<MemoryFunction>,
         #[schemars(skip)]
-        expression: crate::ast::types::BoxNode<FunctionExpression>,
+        expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         memory: Box<ProgramMemory>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
