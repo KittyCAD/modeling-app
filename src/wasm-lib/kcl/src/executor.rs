@@ -25,10 +25,12 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use crate::kcl_value::KclValue;
 use crate::{
-    ast::types::{BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, TagDeclarator, TagNode},
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     fs::{FileManager, FileSystem},
+    parsing::ast::types::{
+        BodyItem, Expr, FunctionExpression, ItemVisibility, KclNone, Node, NodeRef, TagDeclarator, TagNode,
+    },
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
@@ -733,7 +735,7 @@ pub type MemoryFunction =
     fn(
         s: Vec<Arg>,
         memory: ProgramMemory,
-        expression: crate::ast::types::BoxNode<FunctionExpression>,
+        expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
         exec_state: &ExecState,
         ctx: ExecutorContext,
@@ -1842,7 +1844,7 @@ impl ExecutorContext {
     #[async_recursion]
     pub(crate) async fn inner_execute<'a>(
         &'a self,
-        program: NodeRef<'a, crate::ast::types::Program>,
+        program: NodeRef<'a, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
@@ -1883,7 +1885,7 @@ impl ExecutorContext {
                     let module_id = exec_state.add_module(resolved_path.clone());
                     let source = self.fs.read_to_string(&resolved_path, source_range).await?;
                     // TODO handle parsing errors properly
-                    let program = crate::parser::parse_str(&source, module_id).parse_errs_as_err()?;
+                    let program = crate::parsing::parse_str(&source, module_id).parse_errs_as_err()?;
                     let (module_memory, module_exports) = {
                         exec_state.import_stack.push(resolved_path.clone());
                         let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
@@ -2239,7 +2241,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::ast::types::{Identifier, Node, Parameter};
+    use crate::parsing::ast::types::{Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
         let program = Program::parse(code)?;
@@ -3088,7 +3090,7 @@ let w = f() + f()
             let func_expr = &Node::no_src(FunctionExpression {
                 params,
                 body: Node {
-                    inner: crate::ast::types::Program {
+                    inner: crate::parsing::ast::types::Program {
                         body: Vec::new(),
                         non_code_meta: Default::default(),
                         shebang: None,

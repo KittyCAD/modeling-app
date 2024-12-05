@@ -36,10 +36,10 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::FunctionExpression,
     docs::StdLibFn,
     errors::KclError,
     executor::{ExecState, KclValue, ProgramMemory},
+    parsing::ast::types::FunctionExpression,
     std::kcl_stdlib::KclStdLibFn,
 };
 
@@ -320,6 +320,6 @@ pub enum Primitive {
 /// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
     pub func: Option<&'a crate::executor::MemoryFunction>,
-    pub expr: crate::ast::types::BoxNode<FunctionExpression>,
+    pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }

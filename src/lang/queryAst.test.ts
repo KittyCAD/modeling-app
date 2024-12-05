@@ -628,6 +628,18 @@ sketch002 = startSketchOn(extrude001, $seg01)
     const extrudable = doesSceneHaveSweepableSketch(ast)
     expect(extrudable).toBeTruthy()
   })
+  it('finds sketch001 and sketch002 pipes to be lofted', async () => {
+    const exampleCode = `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+plane001 = offsetPlane('XZ', 2)
+sketch002 = startSketchOn(plane001)
+  |> circle({ center = [0, 0], radius = 3 }, %)
+`
+    const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveSweepableSketch(ast, 2)
+    expect(extrudable).toBeTruthy()
+  })
   it('find sketch002 NOT pipe to be extruded', async () => {
     const exampleCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)

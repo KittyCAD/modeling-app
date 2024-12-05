@@ -56,7 +56,6 @@ macro_rules! eprint {
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
-mod ast;
 mod coredump;
 mod docs;
 mod engine;
@@ -68,7 +67,7 @@ mod kcl_value;
 pub mod lint;
 mod log;
 mod lsp;
-mod parser;
+mod parsing;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
@@ -77,13 +76,11 @@ mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
 mod thread;
-mod token;
 mod unparser;
 mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
-pub use ast::{modify::modify_ast_for_sketch, types::FormatOptions};
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{ConnectionError, ExecError, KclError};
@@ -92,6 +89,7 @@ pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
+pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::{ModuleId, SourceRange};
 
@@ -127,7 +125,7 @@ use crate::log::{log, logln};
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Program {
     #[serde(flatten)]
-    ast: ast::types::Node<ast::types::Program>,
+    ast: parsing::ast::types::Node<parsing::ast::types::Program>,
 }
 
 #[cfg(any(test, feature = "lsp-test-util"))]
@@ -138,14 +136,14 @@ pub use lsp::test_util::kcl_lsp_server;
 impl Program {
     pub fn parse(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
-        let tokens = token::lexer(input, module_id)?;
+        let tokens = parsing::token::lexer(input, module_id)?;
         // TODO handle parsing errors properly
-        let ast = parser::parse_tokens(tokens).parse_errs_as_err()?;
+        let ast = parsing::parse_tokens(tokens).parse_errs_as_err()?;
 
         Ok(Program { ast })
     }
 
-    pub fn compute_digest(&mut self) -> ast::types::digest::Digest {
+    pub fn compute_digest(&mut self) -> parsing::ast::digest::Digest {
         self.ast.compute_digest()
     }
 
@@ -167,8 +165,8 @@ impl Program {
     }
 }
 
-impl From<ast::types::Node<ast::types::Program>> for Program {
-    fn from(ast: ast::types::Node<ast::types::Program>) -> Program {
+impl From<parsing::ast::types::Node<parsing::ast::types::Program>> for Program {
+    fn from(ast: parsing::ast::types::Node<parsing::ast::types::Program>) -> Program {
         Self { ast }
     }
 }

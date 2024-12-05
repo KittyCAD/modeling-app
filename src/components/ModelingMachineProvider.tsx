@@ -53,6 +53,7 @@ import {
   isSketchPipe,
   Selections,
   updateSelections,
+  canLoftSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -85,7 +86,7 @@ import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
-import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addFillet'
+import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addEdgeTreatment'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -571,6 +572,21 @@ export const ModelingMachineProvider = ({
           const canSweep = canSweepSelection(selectionRanges)
           if (err(canSweep)) return false
           return canSweep
+        },
+        'has valid loft selection': ({ context: { selectionRanges } }) => {
+          const hasNoSelection =
+            selectionRanges.graphSelections.length === 0 ||
+            isRangeBetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+
+          if (hasNoSelection) {
+            const count = 2
+            return doesSceneHaveSweepableSketch(kclManager.ast, count)
+          }
+
+          const canLoft = canLoftSelection(selectionRanges)
+          if (err(canLoft)) return false
+          return canLoft
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },

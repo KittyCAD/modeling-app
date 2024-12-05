@@ -44,13 +44,14 @@ import {
   addOffsetPlane,
   deleteFromSelection,
   extrudeSketch,
+  loftSketches,
   revolveSketch,
 } from 'lang/modifyAst'
 import {
   applyEdgeTreatmentToSelection,
   EdgeTreatmentType,
   FilletParameters,
-} from 'lang/modifyAst/addFillet'
+} from 'lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -260,6 +261,7 @@ export type ModelingMachineEvent =
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
@@ -388,6 +390,7 @@ export const modelingMachine = setup({
   guards: {
     'Selection is on face': () => false,
     'has valid sweep selection': () => false,
+    'has valid loft selection': () => false,
     'has valid edge treatment selection': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
@@ -1540,6 +1543,50 @@ export const modelingMachine = setup({
         }
       }
     ),
+    loftAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Loft'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection } = input
+        const declarators = selection.graphSelections.flatMap((s) => {
+          const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
+          const nodeFromPath = getNodeFromPath<VariableDeclarator>(
+            ast,
+            path,
+            'VariableDeclarator'
+          )
+          return err(nodeFromPath) ? [] : nodeFromPath.node
+        })
+
+        // TODO: add better validation on selection
+        if (!(declarators && declarators.length > 1)) {
+          trap('Not enough sketches selected')
+        }
+
+        // Perform the loft
+        const loftSketchesRes = loftSketches(ast, declarators)
+        const updateAstResult = await kclManager.updateAst(
+          loftSketchesRes.modifiedAst,
+          true,
+          {
+            focusPath: [loftSketchesRes.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
   },
   // end services
 }).createMachine({
@@ -1574,6 +1621,11 @@ export const modelingMachine = setup({
           guard: 'has valid sweep selection',
           actions: ['AST revolve'],
           reenter: false,
+        },
+
+        Loft: {
+          target: 'Applying loft',
+          reenter: true,
         },
 
         Fillet: {
@@ -2323,6 +2375,19 @@ export const modelingMachine = setup({
         id: 'offsetPlaneAstMod',
         input: ({ event }) => {
           if (event.type !== 'Offset plane') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying loft': {
+      invoke: {
+        src: 'loftAstMod',
+        id: 'loftAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Loft') return undefined
           return event.data
         },
         onDone: ['idle'],

@@ -3,9 +3,9 @@ use std::sync::Arc;
 use anyhow::Result;
 
 use crate::{
-    ast::types::{CallExpression, NodeRef},
     docs::StdLibFn,
     lint::rule::{def_finding, Discovered, Finding},
+    parsing::ast::types::{CallExpression, NodeRef},
     std::{FunctionKind, StdLib},
     walk::Node,
     SourceRange,

@@ -30,16 +30,16 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct Discovered {
     /// Zoo Lint Finding information.
-    pub(super) finding: Finding,
+    pub finding: Finding,
 
     /// Further information about the specific finding.
-    pub(super) description: String,
+    pub description: String,
 
     /// Source code location.
-    pub(super) pos: SourceRange,
+    pub pos: SourceRange,
 
     /// Is this discovered issue overridden by the programmer?
-    pub(super) overridden: bool,
+    pub overridden: bool,
 }
 
 #[cfg(feature = "pyo3")]
@@ -182,7 +182,7 @@ mod test {
 
     macro_rules! assert_no_finding {
         ( $check:expr, $finding:expr, $kcl:expr ) => {
-            let prog = $crate::parser::top_level_parse($kcl).unwrap();
+            let prog = $crate::parsing::top_level_parse($kcl).unwrap();
             for discovered_finding in prog.lint($check).unwrap() {
                 if discovered_finding.finding == $finding {
                     assert!(false, "Finding {:?} was emitted", $finding.code);
@@ -193,7 +193,7 @@ mod test {
 
     macro_rules! assert_finding {
         ( $check:expr, $finding:expr, $kcl:expr ) => {
-            let prog = $crate::parser::top_level_parse($kcl).unwrap();
+            let prog = $crate::parsing::top_level_parse($kcl).unwrap();
 
             for discovered_finding in prog.lint($check).unwrap() {
                 if discovered_finding.finding == $finding {
