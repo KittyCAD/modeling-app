@@ -1,9 +1,10 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 use anyhow::Result;
 use base64::Engine;
 use convert_case::Casing;
 use handlebars::Renderable;
+use indexmap::IndexMap;
 use itertools::Itertools;
 use serde_json::json;
 
@@ -271,7 +272,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     Ok(hbs)
 }
 
-fn generate_index(combined: &HashMap<String, Box<dyn StdLibFn>>) -> Result<()> {
+fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> {
     let hbs = init_handlebars()?;
 
     let mut functions = Vec::new();

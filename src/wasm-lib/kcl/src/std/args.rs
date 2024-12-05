@@ -1,4 +1,4 @@
-use std::{any::type_name, num::NonZeroU32};
+use std::{any::type_name, collections::HashMap, num::NonZeroU32};
 
 use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
@@ -45,7 +45,12 @@ impl Arg {
 
 #[derive(Debug, Clone)]
 pub struct Args {
+    /// Positional args.
     pub args: Vec<Arg>,
+    /// Keyword args.
+    pub kw_args: HashMap<String, Arg>,
+    /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
+    pub unlabeled_kw_arg: Option<Arg>,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
 }
@@ -54,6 +59,24 @@ impl Args {
     pub fn new(args: Vec<Arg>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
         Self {
             args,
+            kw_args: Default::default(),
+            unlabeled_kw_arg: Default::default(),
+            source_range,
+            ctx,
+        }
+    }
+
+    /// Collect the given keyword arguments.
+    pub fn new_kw(
+        kw_args: HashMap<String, Arg>,
+        unlabeled_kw_arg: Option<Arg>,
+        source_range: SourceRange,
+        ctx: ExecutorContext,
+    ) -> Self {
+        Self {
+            args: Default::default(),
+            kw_args,
+            unlabeled_kw_arg,
             source_range,
             ctx,
         }
@@ -65,6 +88,8 @@ impl Args {
 
         Ok(Self {
             args: Vec::new(),
+            kw_args: Default::default(),
+            unlabeled_kw_arg: Default::default(),
             source_range: SourceRange::default(),
             ctx: ExecutorContext {
                 engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
@@ -73,6 +98,50 @@ impl Args {
                 settings: Default::default(),
                 context_type: crate::executor::ContextType::Mock,
             },
+        })
+    }
+
+    /// Get a keyword argument. If not set, returns None.
+    pub(crate) fn get_kw_arg_opt<'a, T>(&'a self, label: &str) -> Option<T>
+    where
+        T: FromKclValue<'a>,
+    {
+        self.kw_args.get(label).and_then(|arg| T::from_kcl_val(&arg.value))
+    }
+
+    /// Get a keyword argument. If not set, returns Err.
+    pub(crate) fn get_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
+    where
+        T: FromKclValue<'a>,
+    {
+        self.get_kw_arg_opt(label).ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: format!("This function requires a keyword argument '{label}'"),
+            })
+        })
+    }
+
+    /// Get the unlabeled keyword argument. If not set, returns Err.
+    pub(crate) fn get_unlabeled_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
+    where
+        T: FromKclValue<'a>,
+    {
+        let Some(ref arg) = self.unlabeled_kw_arg else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
+            }));
+        };
+        T::from_kcl_val(&arg.value).ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                source_ranges: arg.source_ranges(),
+                message: format!(
+                    "Expected a {} but found {}",
+                    type_name::<T>(),
+                    arg.value.human_friendly_type()
+                ),
+            })
         })
     }
 

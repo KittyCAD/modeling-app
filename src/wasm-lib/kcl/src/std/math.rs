@@ -3,7 +3,6 @@
 use anyhow::Result;
 use derive_docs::stdlib;
 
-use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
     executor::{ExecState, KclValue},
@@ -13,7 +12,8 @@ use crate::{
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
 pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (n, d) = FromArgs::from_args(&args, 0)?;
+    let n = args.get_unlabeled_kw_arg("number to divide")?;
+    let d = args.get_kw_arg("divisor")?;
     let result = inner_rem(n, d)?;
 
     Ok(args.make_user_val_from_i64(result))
@@ -23,13 +23,15 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// If `num` is negative, the result will be too.
 ///
 /// ```no_run
-/// assertEqual(rem(7, 4),  3, 0.01, "remainder is 3")
-/// assertEqual(rem(-7, 4), -3, 0.01, "remainder is 3")
-/// assertEqual(rem(7, -4), 3, 0.01, "remainder is 3")
+/// assertEqual(rem(7, divisor: 4),  3, 0.01, "remainder is 3")
+/// assertEqual(rem(-7, divisor: 4), -3, 0.01, "remainder is 3")
+/// assertEqual(rem(7, divisor: -4), 3, 0.01, "remainder is 3")
 /// ```
 #[stdlib {
     name = "rem",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
 }]
 fn inner_rem(num: i64, divisor: i64) -> Result<i64, KclError> {
     Ok(num % divisor)

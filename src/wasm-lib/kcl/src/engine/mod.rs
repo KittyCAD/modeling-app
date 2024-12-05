@@ -342,92 +342,80 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
-        let plane_settings: HashMap<PlaneName, (Uuid, Point3d, Point3d, Option<Color>)> = HashMap::from([
+        let plane_settings: Vec<(PlaneName, Uuid, Point3d, Point3d, Option<Color>)> = vec![
             (
                 PlaneName::Xy,
-                (
-                    id_generator.next_uuid(),
-                    Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                    Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                    Some(Color {
-                        r: 0.7,
-                        g: 0.28,
-                        b: 0.28,
-                        a: 0.4,
-                    }),
-                ),
+                id_generator.next_uuid(),
+                Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Some(Color {
+                    r: 0.7,
+                    g: 0.28,
+                    b: 0.28,
+                    a: 0.4,
+                }),
             ),
             (
                 PlaneName::Yz,
-                (
-                    id_generator.next_uuid(),
-                    Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                    Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    Some(Color {
-                        r: 0.28,
-                        g: 0.7,
-                        b: 0.28,
-                        a: 0.4,
-                    }),
-                ),
+                id_generator.next_uuid(),
+                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Some(Color {
+                    r: 0.28,
+                    g: 0.7,
+                    b: 0.28,
+                    a: 0.4,
+                }),
             ),
             (
                 PlaneName::Xz,
-                (
-                    id_generator.next_uuid(),
-                    Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                    Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    Some(Color {
-                        r: 0.28,
-                        g: 0.28,
-                        b: 0.7,
-                        a: 0.4,
-                    }),
-                ),
+                id_generator.next_uuid(),
+                Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Some(Color {
+                    r: 0.28,
+                    g: 0.28,
+                    b: 0.7,
+                    a: 0.4,
+                }),
             ),
             (
                 PlaneName::NegXy,
-                (
-                    id_generator.next_uuid(),
-                    Point3d {
-                        x: -1.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                    None,
-                ),
+                id_generator.next_uuid(),
+                Point3d {
+                    x: -1.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                None,
             ),
             (
                 PlaneName::NegYz,
-                (
-                    id_generator.next_uuid(),
-                    Point3d {
-                        x: 0.0,
-                        y: -1.0,
-                        z: 0.0,
-                    },
-                    Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    None,
-                ),
+                id_generator.next_uuid(),
+                Point3d {
+                    x: 0.0,
+                    y: -1.0,
+                    z: 0.0,
+                },
+                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                None,
             ),
             (
                 PlaneName::NegXz,
-                (
-                    id_generator.next_uuid(),
-                    Point3d {
-                        x: -1.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    None,
-                ),
+                id_generator.next_uuid(),
+                Point3d {
+                    x: -1.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                None,
             ),
-        ]);
+        ];
 
         let mut planes = HashMap::new();
-        for (name, (plane_id, x_axis, y_axis, color)) in plane_settings {
+        for (name, plane_id, x_axis, y_axis, color) in plane_settings {
             planes.insert(
                 name,
                 self.make_default_plane(plane_id, x_axis, y_axis, color, source_range)
@@ -475,6 +463,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         responses: HashMap<uuid::Uuid, BatchResponse>,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         // Iterate over the responses and check for errors.
+        #[expect(
+            clippy::iter_over_hash_type,
+            reason = "modeling command uses a HashMap and keys are random, so we don't really have a choice"
+        )]
         for (cmd_id, resp) in responses.iter() {
             match resp {
                 BatchResponse::Success { response } => {
