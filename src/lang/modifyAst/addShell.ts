@@ -1,14 +1,25 @@
-import { ArtifactGraph } from "lang/std/artifactGraph";
-import { Selections } from "lib/selections";
-import { Expr } from "wasm-lib/kcl/bindings/Expr";
-import { Program } from "wasm-lib/kcl/bindings/Program";
+import { ArtifactGraph } from 'lang/std/artifactGraph'
+import { Selections } from 'lib/selections'
+import { Expr } from 'wasm-lib/kcl/bindings/Expr'
+import { Program } from 'wasm-lib/kcl/bindings/Program'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { PathToNode, VariableDeclarator } from "lang/wasm";
-import { getPathToExtrudeForSegmentSelection, mutateAstWithTagForSketchSegment } from "./addEdgeTreatment";
-import { getNodeFromPath } from "lang/queryAst";
-import { err } from "lib/trap";
-import { createLiteral, createIdentifier, findUniqueName, createCallExpressionStdLib, createObjectExpression, createArrayExpression, createVariableDeclaration } from "lang/modifyAst";
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from "lib/constants";
+import { PathToNode, VariableDeclarator } from 'lang/wasm'
+import {
+  getPathToExtrudeForSegmentSelection,
+  mutateAstWithTagForSketchSegment,
+} from './addEdgeTreatment'
+import { getNodeFromPath } from 'lang/queryAst'
+import { err } from 'lib/trap'
+import {
+  createLiteral,
+  createIdentifier,
+  findUniqueName,
+  createCallExpressionStdLib,
+  createObjectExpression,
+  createArrayExpression,
+  createVariableDeclaration,
+} from 'lang/modifyAst'
+import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 
 export function addShell({
   node,
