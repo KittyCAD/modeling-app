@@ -413,7 +413,10 @@ impl Backend {
                 let token_index = Arc::new(Mutex::new(token_type_index));
                 let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
                 crate::walk::walk(&ast, &|node: crate::walk::Node| {
-                    let node_range: SourceRange = (&node).into();
+                    let Ok(node_range): Result<SourceRange, _> = (&node).try_into() else {
+                        return Ok(true);
+                    };
+
                     if !node_range.contains(source_range.start()) {
                         return Ok(true);
                     }
