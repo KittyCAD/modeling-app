@@ -91,18 +91,6 @@ export async function applyConstraintLength({
     newBody.splice(length.insertIndex, 0, length.variableDeclarationAst)
     ast.body = newBody
     distanceExpression = createIdentifier(length.variableName)
-  } else if (!('variableName' in length)) {
-    /**
-     * Since the user didn't create a named value, we need to make their value a binary expression
-     * if it isn't already.
-     */
-    if (!isExprBinaryPart(distanceExpression)) {
-      return new Error('Invalid valueNode, is not a BinaryPart')
-    }
-    distanceExpression = createBinaryExpressionWithUnary([
-      distanceExpression,
-      createIdentifier('ZERO'),
-    ])
   }
 
   if (!isExprBinaryPart(distanceExpression)) {
