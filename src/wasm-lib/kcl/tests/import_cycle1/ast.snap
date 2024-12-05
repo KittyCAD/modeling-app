@@ -1,29 +1,29 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing import_cycle1.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
         "end": 35,
-        "items": [
-          {
-            "alias": null,
-            "end": 10,
-            "name": {
-              "end": 10,
-              "name": "two",
-              "start": 7,
-              "type": "Identifier"
-            },
-            "start": 7,
-            "type": "ImportItem"
-          }
-        ],
         "path": "import_cycle2.kcl",
-        "raw_path": "\"import_cycle2.kcl\"",
+        "selector": {
+          "List": [
+            {
+              "alias": null,
+              "end": 10,
+              "name": {
+                "end": 10,
+                "name": "two",
+                "start": 7,
+                "type": "Identifier"
+              },
+              "start": 7,
+              "type": "ImportItem"
+            }
+          ]
+        },
         "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"

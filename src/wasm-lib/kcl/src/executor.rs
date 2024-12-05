@@ -27,7 +27,9 @@ use crate::{
     fs::{FileManager, FileSystem},
     parsing::ast::{
         cache::{get_changed_program, CacheInformation},
-        types::{BodyItem, Expr, FunctionExpression, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode},
+        types::{
+            BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode,
+        },
     },
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
@@ -1928,33 +1930,39 @@ impl ExecutorContext {
 
                         (module_memory, module_exports)
                     };
-                    for import_item in &import_stmt.items {
-                        // Extract the item from the module.
-                        let item = module_memory
-                            .get(&import_item.name.name, import_item.into())
-                            .map_err(|_err| {
-                                KclError::UndefinedValue(KclErrorDetails {
-                                    message: format!("{} is not defined in module", import_item.name.name),
-                                    source_ranges: vec![SourceRange::from(&import_item.name)],
-                                })
-                            })?;
-                        // Check that the item is allowed to be imported.
-                        if !module_exports.contains(&import_item.name.name) {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                message: format!(
-                                    "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                    import_item.name.name
-                                ),
-                                source_ranges: vec![SourceRange::from(&import_item.name)],
-                            }));
-                        }
+                    match &import_stmt.selector {
+                        ImportSelector::List(items) => {
+                            for import_item in items {
+                                // Extract the item from the module.
+                                let item =
+                                    module_memory
+                                        .get(&import_item.name.name, import_item.into())
+                                        .map_err(|_err| {
+                                            KclError::UndefinedValue(KclErrorDetails {
+                                                message: format!("{} is not defined in module", import_item.name.name),
+                                                source_ranges: vec![SourceRange::from(&import_item.name)],
+                                            })
+                                        })?;
+                                // Check that the item is allowed to be imported.
+                                if !module_exports.contains(&import_item.name.name) {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!(
+                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                            import_item.name.name
+                                        ),
+                                        source_ranges: vec![SourceRange::from(&import_item.name)],
+                                    }));
+                                }
 
-                        // Add the item to the current module.
-                        exec_state.memory.add(
-                            import_item.identifier(),
-                            item.clone(),
-                            SourceRange::from(&import_item.name),
-                        )?;
+                                // Add the item to the current module.
+                                exec_state.memory.add(
+                                    import_item.identifier(),
+                                    item.clone(),
+                                    SourceRange::from(&import_item.name),
+                                )?;
+                            }
+                        }
+                        _ => todo!(),
                     }
                     last_expr = None;
                 }

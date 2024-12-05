@@ -3,10 +3,10 @@ use std::fmt::Write;
 use crate::parsing::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportStatement,
-        ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-        NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator, UnaryExpression,
-        VariableDeclaration, VariableKind,
+        CallExpressionKw, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportSelector,
+        ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
+        MemberObject, Node, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator,
+        UnaryExpression, VariableDeclaration, VariableKind,
     },
     PIPE_OPERATOR,
 };
@@ -124,19 +124,31 @@ impl ImportStatement {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
         let mut string = format!("{}import ", indentation);
-        for (i, item) in self.items.iter().enumerate() {
-            if i > 0 {
-                string.push_str(", ");
-            }
-            string.push_str(&item.name.name);
-            if let Some(alias) = &item.alias {
-                // If the alias is the same, don't output it.
-                if item.name.name != alias.name {
-                    string.push_str(&format!(" as {}", alias.name));
+        match &self.selector {
+            ImportSelector::List(items) => {
+                for (i, item) in items.iter().enumerate() {
+                    if i > 0 {
+                        string.push_str(", ");
+                    }
+                    string.push_str(&item.name.name);
+                    if let Some(alias) = &item.alias {
+                        // If the alias is the same, don't output it.
+                        if item.name.name != alias.name {
+                            string.push_str(&format!(" as {}", alias.name));
+                        }
+                    }
                 }
+                string.push_str(" from ");
             }
+            ImportSelector::Glob(_) => string.push_str("* from "),
+            ImportSelector::None(_) => {}
         }
-        string.push_str(&format!(" from {}", self.raw_path));
+        string.push_str(&format!("\"{}\"", self.path));
+
+        if let ImportSelector::None(Some(alias)) = &self.selector {
+            string.push_str(" as ");
+            string.push_str(&alias.name);
+        }
         string
     }
 }
@@ -721,6 +733,9 @@ import a, b from "a.kcl"
 import a as aaa, b from "a.kcl"
 import a, b as bbb from "a.kcl"
 import a as aaa, b as bbb from "a.kcl"
+import "a_b.kcl"
+import "a-b.kcl" as b
+import * from "a.kcl"
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);

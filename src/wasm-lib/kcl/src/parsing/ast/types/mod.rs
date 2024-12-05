@@ -501,10 +501,8 @@ impl Program {
         for item in &self.body {
             match item {
                 BodyItem::ImportStatement(stmt) => {
-                    for import_item in &stmt.items {
-                        if import_item.identifier() == name {
-                            return Some(Definition::Import(stmt.as_ref()));
-                        }
+                    if stmt.get_variable(name) {
+                        return Some(Definition::Import(&*stmt));
                     }
                 }
                 BodyItem::ExpressionStatement(_expression_statement) => {
@@ -1125,7 +1123,7 @@ impl NonCodeMeta {
 pub struct ImportItem {
     /// Name of the item to import.
     pub name: Node<Identifier>,
-    /// Rename the item using an identifier after "as".
+    /// Rename the item using an identifier after `as`.
     pub alias: Option<Node<Identifier>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1173,11 +1171,66 @@ impl ImportItem {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
+pub enum ImportSelector {
+    /// A comma-separated list of names and possible aliases to import (may be a single item, but never zero).
+    /// E.g., `import bar as baz from "foo.kcl"`
+    List(NodeList<ImportItem>),
+    /// Import all public items from a module.
+    /// E.g., `import * from "foo.kcl"`
+    Glob(Node<()>),
+    /// Import the module itself (the param is an optional alias).
+    /// E.g., `import "foo.kcl" as bar`
+    None(Option<Node<Identifier>>),
+}
+
+impl ImportSelector {
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        match self {
+            ImportSelector::List(items) => {
+                for item in items {
+                    let source_range = SourceRange::from(&*item);
+                    if source_range.contains(pos) {
+                        let old_name = item.rename_symbol(new_name, pos);
+                        if old_name.is_some() {
+                            return old_name;
+                        }
+                    }
+                }
+                None
+            }
+            ImportSelector::Glob(_) => None,
+            ImportSelector::None(None) => None,
+            ImportSelector::None(Some(alias)) => {
+                let alias_source_range = SourceRange::from(&*alias);
+                if !alias_source_range.contains(pos) {
+                    return None;
+                }
+                let old_name = std::mem::replace(&mut alias.name, new_name.to_owned());
+                Some(old_name)
+            }
+        }
+    }
+
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        match self {
+            ImportSelector::List(items) => {
+                for item in items {
+                    item.rename_identifiers(old_name, new_name);
+                }
+            }
+            ImportSelector::Glob(_) => {}
+            ImportSelector::None(None) => {}
+            ImportSelector::None(Some(alias)) => alias.rename(old_name, new_name),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
 #[serde(tag = "type")]
 pub struct ImportStatement {
-    pub items: NodeList<ImportItem>,
+    pub selector: ImportSelector,
     pub path: String,
-    pub raw_path: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -1185,6 +1238,41 @@ pub struct ImportStatement {
 }
 
 impl Node<ImportStatement> {
+    pub fn get_variable(&self, name: &str) -> bool {
+        match &self.selector {
+            ImportSelector::List(items) => {
+                for import_item in items {
+                    if import_item.identifier() == name {
+                        return true;
+                    }
+                }
+                false
+            }
+            ImportSelector::Glob(_) => false,
+            ImportSelector::None(_) => name == self.module_name().unwrap(),
+        }
+    }
+
+    /// Get the name of the module object for this import.
+    /// Validated during parsing and guaranteed to return `Some` if the statement imports
+    /// the module itself (i.e., self.selector is ImportSelector::None).
+    pub fn module_name(&self) -> Option<String> {
+        if let ImportSelector::None(Some(alias)) = &self.selector {
+            return Some(alias.name.clone());
+        }
+
+        let mut parts = self.path.split('.');
+        let name = parts.next()?;
+        let ext = parts.next()?;
+        let rest = parts.next();
+
+        if rest.is_some() || ext != "kcl" {
+            return None;
+        }
+
+        Some(name.to_owned())
+    }
+
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {
             source_ranges: vec![self.into()],
@@ -1192,24 +1280,13 @@ impl Node<ImportStatement> {
     }
 
     pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
-        for item in &mut self.items {
-            let source_range = SourceRange::from(&*item);
-            if source_range.contains(pos) {
-                let old_name = item.rename_symbol(new_name, pos);
-                if old_name.is_some() {
-                    return old_name;
-                }
-            }
-        }
-        None
+        self.selector.rename_symbol(new_name, pos)
     }
 }
 
 impl ImportStatement {
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        for item in &mut self.items {
-            item.rename_identifiers(old_name, new_name);
-        }
+        self.selector.rename_identifiers(old_name, new_name);
     }
 }
 

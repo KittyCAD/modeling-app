@@ -19,11 +19,11 @@ use crate::{
         ast::types::{
             ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
             CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
-            FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement,
-            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-            NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-            PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator, UnaryExpression, UnaryOperator,
-            VariableDeclaration, VariableDeclarator, VariableKind,
+            FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector,
+            ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
+            MemberObject, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
+            Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator,
+            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenType},
@@ -1217,7 +1217,6 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
 // the large_enum_variant lint below introduces a LOT of code complexity in a
 // match!() that's super clean that isn't worth it for the marginal space
 // savings. revisit if that's a lie.
-
 #[derive(Debug)]
 #[allow(clippy::large_enum_variant)]
 enum WithinFunction {
@@ -1407,6 +1406,18 @@ fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
     ))
 }
 
+fn import_items(i: TokenSlice) -> PResult<NodeList<ImportItem>> {
+    separated(1.., import_item, comma_sep)
+        .parse_next(i)
+        .map_err(|e| e.cut())
+}
+
+fn glob(i: TokenSlice) -> PResult<Token> {
+    one_of((TokenType::Operator, "*"))
+        .context(expected("the multiple import operator, *"))
+        .parse_next(i)
+}
+
 fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     let import_token = any
         .try_map(|token: Token| {
@@ -1425,30 +1436,44 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
 
     require_whitespace(i)?;
 
-    let items = separated(1.., import_item, comma_sep)
-        .parse_next(i)
-        .map_err(|e| e.cut())?;
+    let (mut selector, path) = alt((
+        string_literal.map(|s| (ImportSelector::None(None), Some(s))),
+        glob.map(|t| {
+            let s = t.as_source_range();
+            (
+                ImportSelector::Glob(Node::new((), s.start(), s.end(), s.module_id())),
+                None,
+            )
+        }),
+        import_items.map(|l| (ImportSelector::List(l), None)),
+    ))
+    .parse_next(i)?;
 
-    require_whitespace(i)?;
+    let path = match path {
+        Some(path) => path,
+        None => {
+            require_whitespace(i)?;
+            any.try_map(|token: Token| {
+                if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
+                    Ok(())
+                } else {
+                    Err(CompilationError::fatal(
+                        token.as_source_range(),
+                        format!("{} is not the 'from' keyword", token.value.as_str()),
+                    ))
+                }
+            })
+            .context(expected("the 'from' keyword"))
+            .parse_next(i)
+            .map_err(|e| e.cut())?;
 
-    any.try_map(|token: Token| {
-        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
-            Ok(())
-        } else {
-            Err(CompilationError::fatal(
-                token.as_source_range(),
-                format!("{} is not the 'from' keyword", token.value.as_str()),
-            ))
+            require_whitespace(i)?;
+
+            string_literal(i)?
         }
-    })
-    .context(expected("the 'from' keyword"))
-    .parse_next(i)
-    .map_err(|e| e.cut())?;
+    };
 
-    require_whitespace(i)?;
-
-    let path = string_literal(i)?;
-    let end = path.end;
+    let mut end: usize = path.end;
     let path_string = match path.inner.value {
         LiteralValue::String(s) => s,
         _ => unreachable!(),
@@ -1465,11 +1490,38 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             .into(),
         ));
     }
+
+    if let ImportSelector::None(ref mut a) = selector {
+        if let Some(alias) = opt(preceded(
+            (whitespace, import_as_keyword, whitespace),
+            identifier.context(expected("an identifier to alias the import")),
+        ))
+        .parse_next(i)?
+        {
+            end = alias.end;
+            *a = Some(alias);
+        }
+
+        if a.is_none()
+            && (!path_string.ends_with(".kcl")
+                || path_string.starts_with("_")
+                || path_string.contains('-')
+                || path_string[0..path_string.len() - 4].contains('.'))
+        {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    SourceRange::new(path.start, path.end, path.module_id),
+                    "import path is not a valid identifier and must be aliased.".to_owned(),
+                )
+                .into(),
+            ));
+        }
+    }
+
     Ok(Node::boxed(
         ImportStatement {
-            items,
+            selector,
             path: path_string,
-            raw_path: path.inner.raw,
             digest: None,
         },
         start,
@@ -3695,6 +3747,41 @@ e
             "Cannot assign a variable to a reserved keyword: cos",
             [12, 15],
         )
+    }
+
+    #[test]
+    fn bad_imports() {
+        assert_err(
+            r#"import * as foo from "dsfs""#,
+            "as is not the 'from' keyword",
+            [9, 11],
+        );
+        assert_err(r#"import a from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
+        assert_err(r#"import * from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
+        assert_err(r#"import a from b"#, "invalid string literal", [14, 15]);
+        assert_err(r#"import * "dsfs""#, "\"dsfs\" is not the 'from' keyword", [9, 15]);
+        assert_err(r#"import from "dsfs""#, "\"dsfs\" is not the 'from' keyword", [12, 18]);
+        assert_err(r#"import "dsfs.kcl" as *"#, "Unexpected token: as", [18, 20]);
+        assert_err(
+            r#"import "dsfs""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 13],
+        );
+        assert_err(
+            r#"import "foo.bar.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 20],
+        );
+        assert_err(
+            r#"import "_foo.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 17],
+        );
+        assert_err(
+            r#"import "foo-bar.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 20],
+        );
     }
 
     #[test]
