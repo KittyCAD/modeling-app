@@ -280,8 +280,6 @@ export class KclManager {
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
       this.lints = await lintAst({ ast: ast })
-
-      sceneInfra.modelingSend({ type: 'code edit during sketch' })
       setSelectionFilterToDefault(execState.memory, this.engineCommandManager)
 
       if (args.zoomToFit) {
@@ -325,11 +323,15 @@ export class KclManager {
     // Reset the next ID index so that we reuse the previous IDs next time.
     execState.idGenerator.nextId = 0
     this.execState = execState
+    // updateArtifactGraph relies on updated executeState/programMemory
+    await this.engineCommandManager.updateArtifactGraph(this.ast)
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
     }
     this.ast = { ...ast }
     this._executeCallback()
+    if (!isInterrupted)
+      sceneInfra.modelingSend({ type: 'code edit during sketch' })
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
@@ -371,6 +373,7 @@ export class KclManager {
 
     this._logs = logs
     this._kclErrors = errors
+
     this._execState = execState
     this._programMemory = execState.memory
     if (!errors.length) {

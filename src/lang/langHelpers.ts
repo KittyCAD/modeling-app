@@ -1,6 +1,6 @@
 import {
   Program,
-  _executor,
+  executor,
   ProgramMemory,
   programMemoryInit,
   kclLint,
@@ -73,7 +73,7 @@ export async function executeAst({
     }
     const execState = await (useFakeExecutor
       ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
-      : _executor(
+      : executor(
           ast,
           programMemoryInit(),
           idGenerator,
@@ -81,7 +81,7 @@ export async function executeAst({
           false
         ))
 
-    await engineCommandManager.waitForAllCommands(useFakeExecutor)
+    await engineCommandManager.waitForAllCommands()
     return {
       logs: [],
       errors: [],
