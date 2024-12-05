@@ -289,10 +289,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
-        // TODO: allow multiple faces to be selected here
-        multiple: false,
+        multiple: true,
         required: true,
-        skip: true,
+        skip: false,
       },
       thickness: {
         inputType: 'kcl',

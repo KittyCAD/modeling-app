@@ -618,21 +618,6 @@ export function addShell({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
 
-  const graphSelection = selection.graphSelections[0]
-  if (!(graphSelection && graphSelection instanceof Object)) {
-    return Error('No plane selected')
-  }
-
-  // Get the sketch ref from the selection
-  const sketchNode = getNodeFromPath<VariableDeclarator>(
-    modifiedAst,
-    graphSelection.codeRef.pathToNode,
-    'VariableDeclarator'
-  )
-  if (err(sketchNode)) {
-    return sketchNode
-  }
-
   // Look up the corresponding extrude
   const clonedAstForGetExtrude = structuredClone(modifiedAst)
   const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
@@ -653,29 +638,45 @@ export function addShell({
     return extrudeNode
   }
 
-  const selectedArtifact = graphSelection.artifact
-  if (!selectedArtifact || !selectedArtifact) {
-    return new Error('Bad artifact')
-  }
-
-  // Check on the selection, and handle the wall vs cap casees
-  let expr: Expr
-  if (selectedArtifact.type === 'cap') {
-    expr = createLiteral(selectedArtifact.subType)
-  } else {
-    const tagResult = mutateAstWithTagForSketchSegment(
+  const expressions: Expr[] = []
+  for (const graphSelection of selection.graphSelections) {
+    // Get the sketch ref from the selection
+    const sketchNode = getNodeFromPath<VariableDeclarator>(
       modifiedAst,
-      extrudeLookupResult.pathToSegmentNode
+      graphSelection.codeRef.pathToNode,
+      'VariableDeclarator'
     )
-    if (err(tagResult)) return tagResult
-    const { tag } = tagResult
-    expr = createIdentifier(tag)
+    if (err(sketchNode)) {
+      return sketchNode
+    }
+
+    const selectedArtifact = graphSelection.artifact
+    if (!selectedArtifact || !selectedArtifact) {
+      return new Error('Bad artifact')
+    }
+
+    // Check on the selection, and handle the wall vs cap casees
+    let expr: Expr
+    if (selectedArtifact.type === 'cap') {
+      expr = createLiteral(selectedArtifact.subType)
+    } else if (selectedArtifact.type === 'wall') {
+      const tagResult = mutateAstWithTagForSketchSegment(
+        modifiedAst,
+        extrudeLookupResult.pathToSegmentNode
+      )
+      if (err(tagResult)) return tagResult
+      const { tag } = tagResult
+      expr = createIdentifier(tag)
+    } else {
+      continue
+    }
+    expressions.push(expr)
   }
 
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
   const shell = createCallExpressionStdLib('shell', [
     createObjectExpression({
-      faces: createArrayExpression([expr]),
+      faces: createArrayExpression(expressions),
       thickness,
     }),
     createIdentifier(extrudeNode.node.id.name),

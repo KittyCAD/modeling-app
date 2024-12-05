@@ -813,6 +813,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
         })
         await clickOnCap()
         await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
           headerArguments: {
@@ -830,6 +831,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
 
       await test.step(`Go through the command bar flow with preselected sketches`, async () => {
         await toolbar.shellButton.click()
+        await cmdBar.progressCmdBar()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
@@ -899,6 +901,7 @@ extrude001 = extrude(40, sketch001)
       commandName: 'Shell',
     })
     await clickOnWall()
+    await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
