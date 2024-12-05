@@ -1,8 +1,8 @@
 use insta::rounded_redaction;
 
 use crate::{
-    ast::types::{Node, Program},
     errors::KclError,
+    parsing::ast::types::{Node, Program},
     source_range::ModuleId,
 };
 
@@ -45,10 +45,10 @@ fn read(filename: &'static str, test_name: &str) -> String {
 
 fn parse(test_name: &str) {
     let input = read("input.kcl", test_name);
-    let tokens = crate::token::lexer(&input, ModuleId::default()).unwrap();
+    let tokens = crate::parsing::token::lexer(&input, ModuleId::default()).unwrap();
 
     // Parse the tokens into an AST.
-    let parse_res = Result::<_, KclError>::Ok(crate::parser::parse_tokens(tokens).unwrap());
+    let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
     assert_snapshot(test_name, "Result of parsing", || {
         insta::assert_json_snapshot!("ast", parse_res);
     });

@@ -1,0 +1,95 @@
+---
+source: kcl/src/parsing/parser.rs
+assertion_line: 3957
+expression: actual
+snapshot_kind: text
+---
+{
+  "body": [
+    {
+      "declarations": [
+        {
+          "end": 34,
+          "id": {
+            "end": 10,
+            "name": "prop",
+            "start": 6,
+            "type": "Identifier"
+          },
+          "init": {
+            "computed": false,
+            "end": 34,
+            "object": {
+              "computed": false,
+              "end": 29,
+              "object": {
+                "computed": false,
+                "end": 23,
+                "object": {
+                  "computed": false,
+                  "end": 19,
+                  "object": {
+                    "end": 15,
+                    "name": "yo",
+                    "start": 13,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "property": {
+                    "end": 19,
+                    "name": "one",
+                    "start": 16,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 13,
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
+                },
+                "property": {
+                  "end": 23,
+                  "name": "two",
+                  "start": 20,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "start": 13,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
+              },
+              "property": {
+                "end": 29,
+                "name": "three",
+                "start": 24,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 13,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            "property": {
+              "end": 34,
+              "name": "four",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "start": 13,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 6,
+          "type": "VariableDeclarator"
+        }
+      ],
+      "end": 34,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 34,
+  "start": 0
+}

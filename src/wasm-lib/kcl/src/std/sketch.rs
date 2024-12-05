@@ -13,12 +13,12 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
     executor::{
         BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
         Solid, TagEngineInfo, TagIdentifier,
     },
+    parsing::ast::types::TagNode,
     std::{
         utils::{
             arc_angles, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
