@@ -173,6 +173,30 @@ function moreNodePathFromSourceRange(
     }
     return path
   }
+
+  if (_node.type === 'CallExpressionKw' && isInRange) {
+    const { callee, arguments: args } = _node
+    if (
+      callee.type === 'Identifier' &&
+      callee.start <= start &&
+      callee.end >= end
+    ) {
+      path.push(['callee', 'CallExpressionKw'])
+      return path
+    }
+    if (args.length > 0) {
+      for (let argIndex = 0; argIndex < args.length; argIndex++) {
+        const arg = args[argIndex].arg
+        if (arg.start <= start && arg.end >= end) {
+          path.push(['arguments', 'CallExpressionKw'])
+          path.push([argIndex, 'index'])
+          return moreNodePathFromSourceRange(arg, sourceRange, path)
+        }
+      }
+    }
+    return path
+  }
+
   if (_node.type === 'BinaryExpression' && isInRange) {
     const { left, right } = _node
     if (left.start <= start && left.end >= end) {
