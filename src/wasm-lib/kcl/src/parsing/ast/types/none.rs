@@ -1,6 +1,5 @@
 //! KCL has optional parameters. Their type is [`KclOption`].
 //! If an optional parameter is not given, it will have a value of type [`KclNone`].
-use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
@@ -12,8 +11,7 @@ const KCL_NONE_ID: &str = "KCL_NONE_ID";
 /// KCL value for an optional parameter which was not given an argument.
 /// (remember, parameters are in the function declaration,
 /// arguments are in the function call/application).
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Default, Copy)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Default, Copy)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct KclNone {
@@ -29,8 +27,7 @@ impl KclNone {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Bake, Default)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 struct Private;
 
 impl Serialize for Private {
