@@ -36,26 +36,20 @@ export function addShell({
 
   // Look up the corresponding extrude
   const clonedAstForGetExtrude = structuredClone(modifiedAst)
-  const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
-    clonedAstForGetExtrude,
-    selection,
-    artifactGraph
-  )
-  if (err(extrudeLookupResult)) {
-    return new Error("Couldn't find extrude")
-  }
-
-  const extrudeNode = getNodeFromPath<VariableDeclarator>(
-    modifiedAst,
-    extrudeLookupResult.pathToExtrudeNode,
-    'VariableDeclarator'
-  )
-  if (err(extrudeNode)) {
-    return extrudeNode
-  }
 
   const expressions: Expr[] = []
+  let pathToExtrudeNode: PathToNode | undefined = undefined
   for (const graphSelection of selection.graphSelections) {
+    const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
+      clonedAstForGetExtrude,
+      graphSelection,
+      artifactGraph
+    )
+    if (err(extrudeLookupResult)) {
+      return new Error("Couldn't find extrude")
+    }
+
+    pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
     // Get the sketch ref from the selection
     const sketchNode = getNodeFromPath<VariableDeclarator>(
       modifiedAst,
@@ -87,6 +81,17 @@ export function addShell({
       continue
     }
     expressions.push(expr)
+  }
+
+  if (!pathToExtrudeNode) return new Error('No extrude found')
+
+  const extrudeNode = getNodeFromPath<VariableDeclarator>(
+    modifiedAst,
+    pathToExtrudeNode,
+    'VariableDeclarator'
+  )
+  if (err(extrudeNode)) {
+    return extrudeNode
   }
 
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
