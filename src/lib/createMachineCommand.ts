@@ -18,7 +18,7 @@ import { DEV } from 'env'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 > {
   type: EventFrom<T>['type']
   groupId: T['id']
@@ -33,7 +33,7 @@ interface CreateMachineCommandProps<
 // from a more terse Command Bar Meta definition.
 export function createMachineCommand<
   T extends AnyStateMachine,
-  S extends StateMachineCommandSetSchema<T>
+  S extends StateMachineCommandSetSchema<T>,
 >({
   groupId,
   type,
@@ -130,7 +130,7 @@ export function createMachineCommand<
 function buildCommandArguments<
   T extends AnyStateMachine,
   S extends StateMachineCommandSetSchema<T>,
-  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type']
+  CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
@@ -149,12 +149,14 @@ function buildCommandArguments<
 
 export function buildCommandArgument<
   T extends AnyStateMachine,
-  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>
+  O extends StateMachineCommandSetSchema<T> = StateMachineCommandSetSchema<T>,
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,
   machineActor: Actor<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
+  // GOTCHA: modelingCommandConfig is not a 1:1 mapping to this baseCommandArgument
+  // You need to manually add key/value pairs here.
   const baseCommandArgument = {
     description: arg.description,
     required: arg.required,
@@ -162,6 +164,7 @@ export function buildCommandArgument<
     machineActor,
     valueSummary: arg.valueSummary,
     warningMessage: arg.warningMessage ?? '',
+    validation: arg.validation,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {

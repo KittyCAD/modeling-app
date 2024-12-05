@@ -23,7 +23,7 @@ import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import {
   mutateAstWithTagForSketchSegment,
   getEdgeTagCall,
-} from 'lang/modifyAst/addFillet'
+} from 'lang/modifyAst/addEdgeTreatment'
 export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,

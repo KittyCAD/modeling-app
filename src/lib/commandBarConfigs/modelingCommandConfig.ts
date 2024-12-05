@@ -12,6 +12,8 @@ import {
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
+import { engineCommandManager } from 'lib/singletons'
+import { uuidv4 } from 'lib/utils'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -286,6 +288,50 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        validation: async ({ data, context }) => {
+          // TODO: Move this to another file way to dense
+          // revolve <- axis
+          // revolve_about_edge <- edge
+
+          // TODO: try catch finally ALWAYS turn this off because you will brick the dry run
+          // what if it fails constantly?
+          const dryModeOnRequest = await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'enable_dry_run' },
+          })
+
+          const sketchSelection =
+            context.argumentsToSubmit.selection.graphSelections[0].artifact
+              .pathId
+          let edgeSelection = data.axis.graphSelections[0].artifact.id
+
+          const angleInDegrees: Models['Angle_type'] = {
+            unit: 'degrees',
+            value: 360,
+          }
+
+          const attemptRevolve = await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'revolve_about_edge',
+              angle: angleInDegrees,
+              edge_id: edgeSelection,
+              target: sketchSelection,
+              tolerance: 0.0001,
+            },
+          })
+
+          const dryModeOffRequest = await engineCommandManager.sendSceneCommand(
+            {
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'disable_dry_run' },
+            }
+          )
+          return attemptRevolve?.success
+        },
         // inputType: 'options',
         // defaultValue: KCL_DEFAULT_AXIS,
         // options: [

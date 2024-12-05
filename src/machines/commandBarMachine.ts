@@ -233,8 +233,8 @@ export const commandBarMachine = setup({
             argName in event.data.argDefaultValues
               ? event.data.argDefaultValues[argName]
               : arg.skip && 'defaultValue' in arg
-              ? arg.defaultValue
-              : undefined
+                ? arg.defaultValue
+                : undefined
         }
         return args
       },
@@ -247,17 +247,30 @@ export const commandBarMachine = setup({
     'All arguments are skippable': () => false,
   },
   actors: {
-    'Validate argument': fromPromise(({ input }) => {
-      return new Promise((resolve, reject) => {
-        // TODO: figure out if we should validate argument data here or in the form itself,
-        // and if we should support people configuring a argument's validation function
+    'Validate argument': fromPromise((something) => {
+      return new Promise(async (resolve, reject) => {
+        const context = something.input.context
+        const data = something.input.event.data
 
-        resolve(input)
+        const argName = context.currentArgument.name
+        const argConfig = context.selectedCommand.args[argName]
+
+        const result = argConfig.validation
+          ? await argConfig.validation({ context, data })
+          : true
+
+        if (result) {
+          resolve(data)
+        } else {
+          // TODO Error message handling with a string, send a toast
+          // modelingMachine send a toast message, follow the pattern
+          reject('NO')
+        }
       })
     }),
     'Validate all arguments': fromPromise(
       ({ input }: { input: CommandBarContext }) => {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
           for (const [argName, argConfig] of Object.entries(
             input.selectedCommand!.args!
           )) {
@@ -449,9 +462,9 @@ export const commandBarMachine = setup({
           invoke: {
             src: 'Validate argument',
             id: 'validateSingleArgument',
-            input: ({ event }) => {
+            input: ({ event, context }) => {
               if (event.type !== 'Submit argument') return {}
-              return event.data
+              return { event, context }
             },
             onDone: {
               target: '#Command Bar.Checking Arguments',
