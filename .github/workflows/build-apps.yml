@@ -382,14 +382,3 @@ jobs:
           glob: '*'
           parent: false
           destination: 'dl.kittycad.io/releases/modeling-app/nightly'
-
-      - name: Tag nightly commit
-        if: ${{ env.IS_NIGHTLY == 'true' }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const { VERSION } = process.env          
-            const { owner, repo } = context.repo
-            const { sha } = context
-            const ref = `refs/tags/nightly-${VERSION}`
-            github.rest.git.createRef({ owner, repo, sha, ref })
