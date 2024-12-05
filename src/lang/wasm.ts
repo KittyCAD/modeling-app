@@ -400,30 +400,6 @@ export const executor = async (
   programMemory: ProgramMemory | Error = ProgramMemory.empty(),
   idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
-  isMock: boolean = false
-): Promise<ExecState> => {
-  if (err(programMemory)) return Promise.reject(programMemory)
-
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  engineCommandManager.startNewSession()
-  const _programMemory = await _executor(
-    node,
-    programMemory,
-    idGenerator,
-    engineCommandManager,
-    isMock
-  )
-  await engineCommandManager.waitForAllCommands()
-
-  engineCommandManager.endSession()
-  return _programMemory
-}
-
-export const _executor = async (
-  node: Node<Program>,
-  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
-  idGenerator: IdGenerator = defaultIdGenerator(),
-  engineCommandManager: EngineCommandManager,
   isMock: boolean
 ): Promise<ExecState> => {
   if (err(programMemory)) return Promise.reject(programMemory)
