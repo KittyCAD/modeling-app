@@ -4,7 +4,9 @@ use std::{str::FromStr, sync::Arc};
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program};
+use kcl_lib::{
+    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program,
+};
 use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
@@ -20,6 +22,36 @@ lazy_static::lazy_static! {
 async fn read_old_ast_memory() -> Option<OldAstState> {
     let lock = OLD_AST_MEMORY.read().await;
     lock.clone()
+}
+
+async fn bust_cache() {
+    // We don't use the cache in mock mode.
+    let mut current_cache = OLD_AST_MEMORY.write().await;
+    // Set the cache to None.
+    *current_cache = None;
+}
+
+// wasm_bindgen wrapper for clearing the scene and busting the cache.
+#[wasm_bindgen]
+pub async fn clear_scene_and_bust_cache(
+    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
+) -> Result<(), String> {
+    console_error_panic_hook::set_once();
+
+    let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
+        .await
+        .map_err(|e| format!("{:?}", e))?;
+
+    let mut id_generator: IdGenerator = Default::default();
+    engine
+        .clear_scene(&mut id_generator, Default::default())
+        .await
+        .map_err(|e| e.to_string())?;
+
+    // Bust the cache.
+    bust_cache().await;
+
+    Ok(())
 }
 
 // wasm_bindgen wrapper for execute
@@ -74,10 +106,7 @@ pub async fn execute_wasm(
         .map_err(String::from)
     {
         if !is_mock {
-            // We don't use the cache in mock mode.
-            let mut current_cache = OLD_AST_MEMORY.write().await;
-            // Set the cache to None.
-            *current_cache = None;
+            bust_cache().await;
         }
 
         // Throw the error.
