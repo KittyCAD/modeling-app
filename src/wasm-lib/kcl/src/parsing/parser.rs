@@ -2145,7 +2145,13 @@ fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
     Ok(type_)
 }
 
-fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<FnArgType>, bool)> {
+struct ParamDescription {
+    arg_name: Token,
+    type_: std::option::Option<FnArgType>,
+    is_optional: bool,
+}
+
+fn parameter(i: TokenSlice) -> PResult<ParamDescription> {
     let (arg_name, optional, _, type_) = (
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
@@ -2153,7 +2159,11 @@ fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<FnArgType>, b
         opt((colon, opt(whitespace), argument_type).map(|tup| tup.2)),
     )
         .parse_next(i)?;
-    Ok((arg_name, type_, optional.is_some()))
+    Ok(ParamDescription {
+        arg_name,
+        type_,
+        is_optional: optional.is_some(),
+    })
 }
 
 /// Parameters are declared in a function signature, and used within a function.
@@ -2166,18 +2176,28 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
     // Make sure all those tokens are valid parameters.
     let params: Vec<Parameter> = candidates
         .into_iter()
-        .map(|(arg_name, type_, optional)| {
-            let identifier =
-                Node::<Identifier>::try_from(arg_name).and_then(Node::<Identifier>::into_valid_binding_name)?;
+        .map(
+            |ParamDescription {
+                 arg_name,
+                 type_,
+                 is_optional,
+             }| {
+                let identifier =
+                    Node::<Identifier>::try_from(arg_name).and_then(Node::<Identifier>::into_valid_binding_name)?;
 
-            Ok(Parameter {
-                identifier,
-                type_,
-                default_value: if optional { Some(DefaultParamVal::none()) } else { None },
-                labeled: true,
-                digest: None,
-            })
-        })
+                Ok(Parameter {
+                    identifier,
+                    type_,
+                    default_value: if is_optional {
+                        Some(DefaultParamVal::none())
+                    } else {
+                        None
+                    },
+                    labeled: true,
+                    digest: None,
+                })
+            },
+        )
         .collect::<Result<_, _>>()
         .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
 
