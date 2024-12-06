@@ -13,7 +13,6 @@ import {
   listProjects,
   readAppSettingsFile,
 } from './desktop'
-import { engineCommandManager } from './singletons'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
