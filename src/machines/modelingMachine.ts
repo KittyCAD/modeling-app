@@ -672,13 +672,6 @@ export const modelingMachine = setup({
       if (event.type !== 'Revolve') return
       ;(async () => {
         if (!event.data) return
-
-        const dryModeOnRequest = await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'enable_dry_run' },
-        })
-
         const { selection, angle, axis } = event.data
         let ast = kclManager.ast
         if (
@@ -723,12 +716,6 @@ export const modelingMachine = setup({
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
-
-        const dryModeOffRequest = await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'disable_dry_run' },
-        })
       })().catch(reportRejection)
     },
     'AST delete selection': ({ context: { selectionRanges } }) => {

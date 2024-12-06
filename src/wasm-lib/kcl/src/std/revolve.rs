@@ -267,9 +267,6 @@ async fn inner_revolve(
     match data.axis {
         AxisOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
-            // TODO Can we move this to edge_id if we make local sketch plane axis as edge_id?
-            // What if we made temp edges in the scene? That would be an edge_id as well?
-            // This would work for all x,y and custom axis
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::Revolve {
