@@ -23,25 +23,24 @@ type Point3D = kcmc::shared::Point3d<f64>;
 pub use function_param::FunctionParam;
 pub use kcl_value::{KclObjectFields, KclValue};
 
+pub(crate) mod cache;
+mod exec_ast;
+mod function_param;
+mod kcl_value;
+
 use crate::{
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
+    execution::cache::{CacheInformation, CacheResult},
     fs::{FileManager, FileSystem},
-    parsing::ast::{
-        cache::{get_changed_program, CacheInformation},
-        types::{
-            BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode,
-        },
+    parsing::ast::types::{
+        BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode,
     },
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
     ExecError, Program,
 };
-
-mod exec_ast;
-mod function_param;
-mod kcl_value;
 
 /// State for executing a program.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1811,6 +1810,52 @@ impl ExecutorContext {
         // AND if we aren't in wasm it doesn't really matter.
         Ok(())
     }
+    // Given an old ast, old program memory and new ast, find the parts of the code that need to be
+    // re-executed.
+    // This function should never error, because in the case of any internal error, we should just pop
+    // the cache.
+    pub fn get_changed_program(&self, info: CacheInformation) -> Option<CacheResult> {
+        let Some(old) = info.old else {
+            // We have no old info, we need to re-execute the whole thing.
+            return Some(CacheResult {
+                clear_scene: true,
+                program: info.new_ast,
+            });
+        };
+
+        // If the settings are different we need to bust the cache.
+        // We specifically do this before checking if they are the exact same.
+        if old.settings != self.settings {
+            return Some(CacheResult {
+                clear_scene: true,
+                program: info.new_ast,
+            });
+        }
+
+        // If the ASTs are the EXACT same we return None.
+        // We don't even need to waste time computing the digests.
+        if old.ast == info.new_ast {
+            return None;
+        }
+
+        let mut old_ast = old.ast.inner;
+        old_ast.compute_digest();
+        let mut new_ast = info.new_ast.inner.clone();
+        new_ast.compute_digest();
+
+        // Check if the digest is the same.
+        if old_ast.digest == new_ast.digest {
+            return None;
+        }
+
+        // Check if the changes were only to Non-code areas, like comments or whitespace.
+
+        // For any unhandled cases just re-execute the whole thing.
+        Some(CacheResult {
+            clear_scene: true,
+            program: info.new_ast,
+        })
+    }
 
     /// Perform the execution of a program.
     /// You can optionally pass in some initialization memory.
@@ -1831,7 +1876,7 @@ impl ExecutorContext {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Get the program that actually changed from the old and new information.
-        let cache_result = get_changed_program(cache_info.clone(), &self.settings);
+        let cache_result = self.get_changed_program(cache_info.clone());
 
         // Check if we don't need to re-execute.
         let Some(cache_result) = cache_result else {
@@ -2290,8 +2335,9 @@ mod tests {
 
     use super::*;
     use crate::parsing::ast::types::{DefaultParamVal, Identifier, Node, Parameter};
+    use crate::OldAstState;
 
-    pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
+    pub async fn parse_execute(code: &str) -> Result<(Program, ExecutorContext, ExecState)> {
         let program = Program::parse_no_errs(code)?;
 
         let ctx = ExecutorContext {
@@ -2302,9 +2348,9 @@ mod tests {
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::default();
-        ctx.run(program.into(), &mut exec_state).await?;
+        ctx.run(program.clone().into(), &mut exec_state).await?;
 
-        Ok(exec_state.memory)
+        Ok((program, ctx, exec_state))
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
@@ -2715,36 +2761,39 @@ let shape = layer() |> patternTransform(10, transform, %)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(5.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(5.0, mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(7.4, mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(1.0, mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
         let ast = r#"const myVar = pi() * 2"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(std::f64::consts::TAU, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            std::f64::consts::TAU,
+            mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(&memory, "thing").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(7.4, mem_get_json(&exec_state.memory, "thing").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2783,11 +2832,11 @@ fn check = (x) => {
 }
 check(false)
 "#;
-        let mem = parse_execute(ast).await.unwrap();
-        assert_eq!(false, mem_get_json(&mem, "notTrue").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(&mem, "notFalse").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(&mem, "c").as_bool().unwrap());
-        assert_eq!(false, mem_get_json(&mem, "d").as_bool().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(false, mem_get_json(&exec_state.memory, "notTrue").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(&exec_state.memory, "notFalse").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(&exec_state.memory, "c").as_bool().unwrap());
+        assert_eq!(false, mem_get_json(&exec_state.memory, "d").as_bool().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3166,5 +3215,231 @@ let w = f() + f()
         };
         let json = serde_json::to_string(&mem).unwrap();
         assert_eq!(json, r#"{"type":"Solids","value":[]}"#);
+    }
+
+    // Easy case where we have no old ast and memory.
+    // We need to re-execute everything.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_no_old_information() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+        let (program, ctx, _) = parse_execute(&new).await.unwrap();
+
+        let result = ctx.get_changed_program(CacheInformation {
+            old: None,
+            new_ast: program.ast.clone(),
+        });
+
+        assert!(result.is_some());
+
+        let result = result.unwrap();
+
+        assert_eq!(result.program, program.ast);
+        assert!(result.clear_scene);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, ctx, exec_state) = parse_execute(&new).await.unwrap();
+
+        let result = ctx.get_changed_program(CacheInformation {
+            old: Some(OldAstState {
+                ast: program.ast.clone(),
+                exec_state,
+                settings: Default::default(),
+            }),
+            new_ast: program.ast.clone(),
+        });
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_changed_whitespace() {
+        let old = r#" // Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program_old, ctx, exec_state) = parse_execute(&old).await.unwrap();
+
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
+
+        let result = ctx.get_changed_program(CacheInformation {
+            old: Some(OldAstState {
+                ast: program_old.ast.clone(),
+                exec_state,
+                settings: Default::default(),
+            }),
+            new_ast: program_new.ast.clone(),
+        });
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_changed_code_comment_start_of_program() {
+        let old = r#" // Removed the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, ctx, exec_state) = parse_execute(old).await.unwrap();
+
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
+
+        let result = ctx.get_changed_program(CacheInformation {
+            old: Some(OldAstState {
+                ast: program.ast.clone(),
+                exec_state,
+                settings: Default::default(),
+            }),
+            new_ast: program_new.ast.clone(),
+        });
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_changed_code_comments() {
+        let old = r#" // Removed the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %) // my thing
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, ctx, exec_state) = parse_execute(old).await.unwrap();
+
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
+
+        let result = ctx.get_changed_program(CacheInformation {
+            old: Some(OldAstState {
+                ast: program.ast.clone(),
+                exec_state,
+                settings: Default::default(),
+            }),
+            new_ast: program_new.ast.clone(),
+        });
+
+        assert!(result.is_some());
+
+        let result = result.unwrap();
+
+        assert_eq!(result.program, program_new.ast);
+        assert!(result.clear_scene);
+    }
+
+    // Changing the units with the exact same file should bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_units() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        // Change the settings to cm.
+        ctx.settings.units = crate::UnitLength::Cm;
+
+        let result = ctx.get_changed_program(CacheInformation {
+            old: Some(OldAstState {
+                ast: program.ast.clone(),
+                exec_state,
+                settings: Default::default(),
+            }),
+            new_ast: program.ast.clone(),
+        });
+
+        assert!(result.is_some());
+
+        let result = result.unwrap();
+
+        assert_eq!(result.program, program.ast);
+        assert!(result.clear_scene);
     }
 }
