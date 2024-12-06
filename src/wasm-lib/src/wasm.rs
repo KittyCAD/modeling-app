@@ -180,7 +180,10 @@ pub async fn modify_grid(
     let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
         .await
         .map_err(|e| format!("{:?}", e))?;
-    engine.modify_grid(hidden).await.map_err(String::from)?;
+    engine
+        .modify_grid(hidden, Default::default())
+        .await
+        .map_err(String::from)?;
 
     Ok(())
 }
