@@ -366,6 +366,7 @@ impl Node<CallExpressionKw> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let fn_name = &self.callee.name;
+        let callsite: SourceRange = self.into();
 
         // Build a hashmap from argument labels to the final evaluated values.
         let mut fn_args = HashMap::with_capacity(self.arguments.len());
@@ -412,7 +413,39 @@ impl Node<CallExpressionKw> {
                 Ok(result)
             }
             FunctionKind::UserDefined => {
-                todo!("Part of modeling-app#4600: Support keyword arguments for user-defined functions")
+                let source_range = SourceRange::from(self);
+                // Clone the function so that we can use a mutable reference to
+                // exec_state.
+                let func = exec_state.memory.get(fn_name, source_range)?.clone();
+                let fn_dynamic_state = exec_state.dynamic_state.merge(&exec_state.memory);
+
+                let return_value = {
+                    let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
+                    let result = func
+                        .call_fn_kw(args, exec_state, ctx.clone(), callsite)
+                        .await
+                        .map_err(|e| {
+                            // Add the call expression to the source ranges.
+                            // TODO currently ignored by the frontend
+                            e.add_source_ranges(vec![source_range])
+                        });
+                    exec_state.dynamic_state = previous_dynamic_state;
+                    result?
+                };
+
+                let result = return_value.ok_or_else(move || {
+                    let mut source_ranges: Vec<SourceRange> = vec![source_range];
+                    // We want to send the source range of the original function.
+                    if let KclValue::Function { meta, .. } = func {
+                        source_ranges = meta.iter().map(|m| m.source_range).collect();
+                    };
+                    KclError::UndefinedValue(KclErrorDetails {
+                        message: format!("Result of user-defined function {} is undefined", fn_name),
+                        source_ranges,
+                    })
+                })?;
+
+                Ok(result)
             }
         }
     }
