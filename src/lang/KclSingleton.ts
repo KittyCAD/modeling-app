@@ -12,6 +12,7 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
   CallExpression,
+  clearSceneAndBustCache,
   emptyExecState,
   ExecState,
   initPromise,
@@ -60,6 +61,7 @@ export class KclManager {
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
   private _hasErrors = false
+  private _switchedFiles = false
 
   engineCommandManager: EngineCommandManager
 
@@ -77,6 +79,10 @@ export class KclManager {
   set ast(ast) {
     this._ast = ast
     this._astCallBack(ast)
+  }
+
+  set switchedFiles(switchedFiles: boolean) {
+    this._switchedFiles = switchedFiles
   }
 
   get programMemory() {
@@ -166,8 +172,12 @@ export class KclManager {
     this.engineCommandManager = engineCommandManager
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.ensureWasmInit().then(() => {
-      this.ast = this.safeParse(codeManager.code) || this.ast
+    this.ensureWasmInit().then(async () => {
+      await this.safeParse(codeManager.code).then((ast) => {
+        if (ast) {
+          this.ast = ast
+        }
+      })
     })
   }
 
@@ -211,7 +221,25 @@ export class KclManager {
     }
   }
 
-  safeParse(code: string): Node<Program> | null {
+  // (jess) I'm not in love with this, but it ensures we clear the scene and
+  // bust the cache on
+  // errors from parsing when opening new files.
+  // Why not just clear the cache on all parse errors, you ask? well its actually
+  // really nice to keep the cache on parse errors within the same file, and
+  // only bust on engine errors esp if they take a long time to execute and
+  // you hit the wrong key!
+  private async checkIfSwitchedFilesShouldClear() {
+    // If we were switching files and we hit an error on parse we need to bust
+    // the cache and clear the scene.
+    if (this._hasErrors && this._switchedFiles) {
+      await clearSceneAndBustCache(this.engineCommandManager)
+    } else if (this._switchedFiles) {
+      // Reset the switched files boolean.
+      this._switchedFiles = false
+    }
+  }
+
+  async safeParse(code: string): Promise<Node<Program> | null> {
     const result = parse(code)
     this.diagnostics = []
     this._hasErrors = false
@@ -220,6 +248,8 @@ export class KclManager {
       const kclerror: KCLError = result as KCLError
       this.diagnostics = kclErrorsToDiagnostics([kclerror])
       this._hasErrors = true
+
+      await this.checkIfSwitchedFilesShouldClear()
       return null
     }
 
@@ -228,6 +258,7 @@ export class KclManager {
     if (result.errors.length > 0) {
       this._hasErrors = true
 
+      await this.checkIfSwitchedFilesShouldClear()
       return null
     }
 
@@ -353,7 +384,7 @@ export class KclManager {
       console.error(newCode)
       return
     }
-    const newAst = this.safeParse(newCode)
+    const newAst = await this.safeParse(newCode)
     if (!newAst) {
       this.clearAst()
       return
@@ -408,7 +439,7 @@ export class KclManager {
     })
   }
   async executeCode(zoomToFit?: boolean): Promise<void> {
-    const ast = this.safeParse(codeManager.code)
+    const ast = await this.safeParse(codeManager.code)
     if (!ast) {
       this.clearAst()
       return
@@ -416,9 +447,9 @@ export class KclManager {
     this.ast = { ...ast }
     return this.executeAst({ zoomToFit })
   }
-  format() {
+  async format() {
     const originalCode = codeManager.code
-    const ast = this.safeParse(originalCode)
+    const ast = await this.safeParse(originalCode)
     if (!ast) {
       this.clearAst()
       return
@@ -458,7 +489,7 @@ export class KclManager {
     const newCode = recast(ast)
     if (err(newCode)) return Promise.reject(newCode)
 
-    const astWithUpdatedSource = this.safeParse(newCode)
+    const astWithUpdatedSource = await this.safeParse(newCode)
     if (!astWithUpdatedSource) return Promise.reject(new Error('bad ast'))
     let returnVal: Selections | undefined = undefined
 
