@@ -3452,4 +3452,72 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         assert_eq!(result.program, program.ast);
         assert!(result.clear_scene);
     }
+
+    // Changing the grid settings with the exact same file should NOT bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_grid_setting() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        // Change the settings.
+        ctx.settings.show_grid = !ctx.settings.show_grid;
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    // Changing the edge visibility settings with the exact same file should NOT bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        // Change the settings.
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
 }
