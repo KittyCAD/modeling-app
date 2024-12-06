@@ -173,7 +173,7 @@ export class KclManager {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(async () => {
-      void this.safeParse(codeManager.code).then((ast) => {
+      await this.safeParse(codeManager.code).then((ast) => {
         if (ast) {
           this.ast = ast
         }
