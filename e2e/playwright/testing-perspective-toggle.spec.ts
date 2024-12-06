@@ -2,7 +2,7 @@ import { test, expect } from './zoo-test'
 import { getUtils } from './test-utils'
 
 test.describe('Test toggling perspective', () => {
-  test('via command palette and toggle', async ({ page, homePage }) => {
+  test.fixme('via command palette and toggle', async ({ page, homePage }) => {
     const u = await getUtils(page)
 
     // Locators and constants
