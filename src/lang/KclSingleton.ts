@@ -281,11 +281,6 @@ export class KclManager {
     if (!isInterrupted) {
       this.addDiagnostics(await lintAst({ ast: ast }))
 
-      // If the ast was empty, show the planes.
-      if (ast.body.length === 0) {
-        await this.showPlanes()
-      }
-
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
       setSelectionFilterToDefault(execState.memory, this.engineCommandManager)
 
