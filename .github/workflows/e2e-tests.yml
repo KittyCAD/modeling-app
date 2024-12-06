@@ -34,7 +34,7 @@ jobs:
               - 'src/wasm-lib/**'
 
   electron:
-    timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
+    timeout-minutes: 90
     name: playwright:electron:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
     strategy:
       fail-fast: false
@@ -190,7 +190,6 @@ jobs:
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
-      timeout-minutes: 90
       run: |
         .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
       env:
