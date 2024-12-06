@@ -615,7 +615,7 @@ openSketch = startSketchOn('XY')
   |> xLine(5, %)
   |> tangentialArcTo([10, 0], %)
 `
-  const viewPortSize = { width: 1200, height: 500 }
+  const viewPortSize = { width: 1000, height: 500 }
   await page.setBodyDimensions(viewPortSize)
 
   await context.addInitScript((code) => {
@@ -627,7 +627,7 @@ openSketch = startSketchOn('XY')
   await page.waitForTimeout(1000)
 
   const pointInsideCircle = {
-    x: viewPortSize.width * 0.58,
+    x: viewPortSize.width * 0.63,
     y: viewPortSize.height * 0.5,
   }
   const pointOnPathAfterSketching = {
