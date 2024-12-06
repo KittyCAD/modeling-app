@@ -1,0 +1,90 @@
+---
+source: kcl/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "declaration": {
+        "end": 42,
+        "id": {
+          "end": 9,
+          "name": "obj",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "end": 42,
+          "properties": [
+            {
+              "end": 30,
+              "key": {
+                "end": 19,
+                "name": "center",
+                "start": 13,
+                "type": "Identifier"
+              },
+              "start": 13,
+              "type": "ObjectProperty",
+              "value": {
+                "elements": [
+                  {
+                    "end": 25,
+                    "raw": "10",
+                    "start": 23,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 10.0
+                  },
+                  {
+                    "end": 29,
+                    "raw": "10",
+                    "start": 27,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 10.0
+                  }
+                ],
+                "end": 30,
+                "start": 22,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            },
+            {
+              "end": 41,
+              "key": {
+                "end": 38,
+                "name": "radius",
+                "start": 32,
+                "type": "Identifier"
+              },
+              "start": 32,
+              "type": "ObjectProperty",
+              "value": {
+                "end": 41,
+                "raw": "5",
+                "start": 40,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 5.0
+              }
+            }
+          ],
+          "start": 12,
+          "type": "ObjectExpression",
+          "type": "ObjectExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
+      "end": 42,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 42,
+  "start": 0
+}

@@ -1,0 +1,51 @@
+---
+source: kcl/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "declaration": {
+        "end": 23,
+        "id": {
+          "end": 13,
+          "name": "myArray",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "end": 23,
+          "endElement": {
+            "end": 22,
+            "raw": "10",
+            "start": 20,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 10.0
+          },
+          "endInclusive": true,
+          "start": 16,
+          "startElement": {
+            "end": 18,
+            "raw": "0",
+            "start": 17,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 0.0
+          },
+          "type": "ArrayRangeExpression",
+          "type": "ArrayRangeExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
+      "end": 23,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 23,
+  "start": 0
+}

@@ -1,26 +1,7 @@
 use iai::black_box;
 
 pub fn parse(program: &str) {
-    let tokens = kcl_lib::token::lexer(program).unwrap();
-    let tok = tokens.clone();
-    let parser = kcl_lib::parser::Parser::new(tok.clone());
-    black_box(parser.ast().unwrap());
-}
-
-fn lex_kitt() {
-    black_box(kcl_lib::token::lexer(KITT_PROGRAM).unwrap());
-}
-fn lex_pipes() {
-    black_box(kcl_lib::token::lexer(PIPES_PROGRAM).unwrap());
-}
-fn lex_cube() {
-    black_box(kcl_lib::token::lexer(CUBE_PROGRAM).unwrap());
-}
-fn lex_math() {
-    black_box(kcl_lib::token::lexer(MATH_PROGRAM).unwrap());
-}
-fn lex_lsystem() {
-    black_box(kcl_lib::token::lexer(LSYSTEM_PROGRAM).unwrap());
+    black_box(kcl_lib::Program::parse(program).unwrap());
 }
 
 fn parse_kitt() {
@@ -40,11 +21,6 @@ fn parse_lsystem() {
 }
 
 iai::main! {
-    lex_kitt,
-    lex_pipes,
-    lex_cube,
-    lex_math,
-    lex_lsystem,
     parse_kitt,
     parse_pipes,
     parse_cube,

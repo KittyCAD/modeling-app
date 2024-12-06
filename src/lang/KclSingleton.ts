@@ -1,6 +1,10 @@
 import { executeAst, lintAst } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { KCLError, kclErrorsToDiagnostics } from './errors'
+import {
+  KCLError,
+  complilationErrorsToDiagnostics,
+  kclErrorsToDiagnostics,
+} from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err } from 'lib/trap'
@@ -21,7 +25,9 @@ import {
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
+import { markOnce } from 'lib/performance'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -36,8 +42,10 @@ interface ExecuteArgs {
 export class KclManager {
   private _ast: Node<Program> = {
     body: [],
+    shebang: null,
     start: 0,
     end: 0,
+    moduleId: 0,
     nonCodeMeta: {
       nonCodeNodes: {},
       startNodes: [],
@@ -47,11 +55,11 @@ export class KclManager {
   private _programMemory: ProgramMemory = ProgramMemory.empty()
   lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
-  private _lints: Diagnostic[] = []
-  private _kclErrors: KCLError[] = []
+  private _diagnostics: Diagnostic[] = []
   private _isExecuting = false
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
+  private _hasErrors = false
 
   engineCommandManager: EngineCommandManager
 
@@ -59,7 +67,7 @@ export class KclManager {
   private _astCallBack: (arg: Node<Program>) => void = () => {}
   private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
-  private _kclErrorsCallBack: (arg: KCLError[]) => void = () => {}
+  private _kclErrorsCallBack: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
 
@@ -80,7 +88,7 @@ export class KclManager {
     this._programMemoryCallBack(programMemory)
   }
 
-  set execState(execState) {
+  private set execState(execState) {
     this._execState = execState
     this.programMemory = execState.memory
   }
@@ -97,38 +105,28 @@ export class KclManager {
     this._logsCallBack(logs)
   }
 
-  get lints() {
-    return this._lints
+  get diagnostics() {
+    return this._diagnostics
   }
 
-  set lints(lints) {
-    if (lints === this._lints) return
-    this._lints = lints
-    // Run the lints through the diagnostics.
-    this.kclErrors = this._kclErrors
-  }
-
-  get kclErrors() {
-    return this._kclErrors
-  }
-  set kclErrors(kclErrors) {
-    if (kclErrors === this._kclErrors && this.lints.length === 0) return
-    this._kclErrors = kclErrors
+  set diagnostics(ds) {
+    if (ds === this._diagnostics) return
+    this._diagnostics = ds
     this.setDiagnosticsForCurrentErrors()
-    this._kclErrorsCallBack(kclErrors)
+  }
+
+  addDiagnostics(ds: Diagnostic[]) {
+    if (ds.length === 0) return
+    this.diagnostics = this.diagnostics.concat(ds)
+  }
+
+  hasErrors(): boolean {
+    return this._hasErrors
   }
 
   setDiagnosticsForCurrentErrors() {
-    let diagnostics = kclErrorsToDiagnostics(this.kclErrors)
-    if (this.lints.length > 0) {
-      diagnostics = diagnostics.concat(this.lints)
-    }
-    editorManager.setDiagnostics(diagnostics)
-  }
-
-  addKclErrors(kclErrors: KCLError[]) {
-    if (kclErrors.length === 0) return
-    this.kclErrors = this.kclErrors.concat(kclErrors)
+    editorManager?.setDiagnostics(this.diagnostics)
+    this._kclErrorsCallBack(this.diagnostics)
   }
 
   get isExecuting() {
@@ -184,7 +182,7 @@ export class KclManager {
     setProgramMemory: (arg: ProgramMemory) => void
     setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
-    setKclErrors: (arg: KCLError[]) => void
+    setKclErrors: (errors: Diagnostic[]) => void
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
@@ -202,8 +200,10 @@ export class KclManager {
   clearAst() {
     this._ast = {
       body: [],
+      shebang: null,
       start: 0,
       end: 0,
+      moduleId: 0,
       nonCodeMeta: {
         nonCodeNodes: {},
         startNodes: [],
@@ -212,17 +212,26 @@ export class KclManager {
   }
 
   safeParse(code: string): Node<Program> | null {
-    const ast = parse(code)
-    this.lints = []
-    this.kclErrors = []
-    if (!err(ast)) return ast
-    const kclerror: KCLError = ast as KCLError
+    const result = parse(code)
+    this.diagnostics = []
+    this._hasErrors = false
 
-    this.addKclErrors([kclerror])
-    // TODO: re-eval if session should end?
-    if (kclerror.msg === 'file is empty')
-      this.engineCommandManager?.endSession()
-    return null
+    if (err(result)) {
+      const kclerror: KCLError = result as KCLError
+      this.diagnostics = kclErrorsToDiagnostics([kclerror])
+      this._hasErrors = true
+      return null
+    }
+
+    this.addDiagnostics(complilationErrorsToDiagnostics(result.errors))
+    this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
+    if (result.errors.length > 0) {
+      this._hasErrors = true
+
+      return null
+    }
+
+    return result.program
   }
 
   async ensureWasmInit() {
@@ -255,27 +264,25 @@ export class KclManager {
     }
 
     const ast = args.ast || this.ast
+    markOnce('code/startExecuteAst')
 
     const currentExecutionId = args.executionId || Date.now()
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
-    // Make sure we clear before starting again. End session will do this.
-    this.engineCommandManager?.endSession()
     await this.ensureWasmInit()
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
-      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
     })
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
-      this.lints = await lintAst({ ast: ast })
+      this.addDiagnostics(await lintAst({ ast: ast }))
 
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
-      defaultSelectionFilter(execState.memory, this.engineCommandManager)
+      setSelectionFilterToDefault(execState.memory, this.engineCommandManager)
 
       if (args.zoomToFit) {
         let zoomObjectId: string | undefined = ''
@@ -314,9 +321,7 @@ export class KclManager {
 
     this.logs = logs
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
-    this.addKclErrors(isInterrupted ? [] : errors)
-    // Reset the next ID index so that we reuse the previous IDs next time.
-    execState.idGenerator.nextId = 0
+    this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
@@ -329,6 +334,7 @@ export class KclManager {
     })
 
     this._cancelTokens.delete(currentExecutionId)
+    markOnce('code/endExecuteAst')
   }
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
@@ -352,20 +358,17 @@ export class KclManager {
       this.clearAst()
       return
     }
-    codeManager.updateCodeEditor(newCode)
-    // Write the file to disk.
-    await codeManager.writeToFile()
     this._ast = { ...newAst }
 
     const { logs, errors, execState } = await executeAst({
       ast: newAst,
-      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
-      useFakeExecutor: true,
+      // We make sure to send an empty program memory to denote we mean mock mode.
+      programMemoryOverride: ProgramMemory.empty(),
     })
 
     this._logs = logs
-    this._kclErrors = errors
+    this.addDiagnostics(kclErrorsToDiagnostics(errors))
     this._execState = execState
     this._programMemory = execState.memory
     if (!errors.length) {
@@ -393,7 +396,7 @@ export class KclManager {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,
-            range: [node.start, node.end],
+            range: [node.start, node.end, true],
           },
         })
       }
@@ -461,7 +464,7 @@ export class KclManager {
 
     if (optionalParams?.focusPath) {
       returnVal = {
-        codeBasedSelections: [],
+        graphSelections: [],
         otherSelections: [],
       }
 
@@ -483,20 +486,17 @@ export class KclManager {
           }
 
         if (start && end) {
-          returnVal.codeBasedSelections.push({
-            type: 'default',
-            range: [start, end],
+          returnVal.graphSelections.push({
+            codeRef: {
+              range: [start, end, true],
+              pathToNode: path,
+            },
           })
         }
       }
     }
 
     if (execute) {
-      // Call execute on the set ast.
-      // Update the code state and editor.
-      codeManager.updateCodeEditor(newCode)
-      // Write the file to disk.
-      await codeManager.writeToFile()
       await this.executeAst({
         ast: astWithUpdatedSource,
         zoomToFit: optionalParams?.zoomToFit,
@@ -567,8 +567,13 @@ export class KclManager {
     }
     return Promise.all(thePromises)
   }
+  /** TODO: this function is hiding unawaited asynchronous work */
   defaultSelectionFilter() {
-    defaultSelectionFilter(this.programMemory, this.engineCommandManager)
+    setSelectionFilterToDefault(this.programMemory, this.engineCommandManager)
+  }
+  /** TODO: this function is hiding unawaited asynchronous work */
+  setSelectionFilter(filter: EntityType_type[]) {
+    setSelectionFilter(filter, this.engineCommandManager)
   }
 
   /**
@@ -590,18 +595,35 @@ export class KclManager {
   }
 }
 
-function defaultSelectionFilter(
+const defaultSelectionFilter: EntityType_type[] = [
+  'face',
+  'edge',
+  'solid2d',
+  'curve',
+  'object',
+]
+
+/** TODO: This function is not synchronous but is currently treated as such */
+function setSelectionFilterToDefault(
   programMemory: ProgramMemory,
   engineCommandManager: EngineCommandManager
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  programMemory.hasSketchOrSolid() &&
-    engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'set_selection_filter',
-        filter: ['face', 'edge', 'solid2d', 'curve'],
-      },
-    })
+  setSelectionFilter(defaultSelectionFilter, engineCommandManager)
+}
+
+/** TODO: This function is not synchronous but is currently treated as such */
+function setSelectionFilter(
+  filter: EntityType_type[],
+  engineCommandManager: EngineCommandManager
+) {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'set_selection_filter',
+      filter,
+    },
+  })
 }

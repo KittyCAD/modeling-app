@@ -2,15 +2,31 @@ use std::collections::BTreeMap;
 
 use pretty_assertions::assert_eq;
 use tower_lsp::{
-    lsp_types::{SemanticTokenModifier, SemanticTokenType},
+    lsp_types::{Diagnostic, SemanticTokenModifier, SemanticTokenType},
     LanguageServer,
 };
 
 use crate::{
-    ast::types::{Node, Program},
-    executor::ProgramMemory,
+    execution::ProgramMemory,
     lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
+    parsing::ast::types::{Node, Program},
 };
+
+#[track_caller]
+fn assert_diagnostic_count(diagnostics: Option<&Vec<Diagnostic>>, n: usize) {
+    let Some(diagnostics) = diagnostics else {
+        assert_eq!(n, 0, "No diagnostics");
+        return;
+    };
+    assert_eq!(
+        diagnostics
+            .iter()
+            .filter(|d| d.severity.as_ref().unwrap() != &tower_lsp::lsp_types::DiagnosticSeverity::WARNING)
+            .count(),
+        n,
+        "expected {n} errors, found {diagnostics:#?}"
+    );
+}
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 12)]
 async fn test_updating_kcl_lsp_files() {
@@ -1061,9 +1077,8 @@ fn myFn = (param1) => {
         })
         .await;
 
-    // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    // Assure we have no errors.
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 
     // Get the token map.
     let token_map = server.token_map.get("file:///test.kcl").unwrap().clone();
@@ -1569,7 +1584,7 @@ insideRevolve = startSketchOn('XZ')
   |> line([0, -thickness], %)
   |> line([-overHangLength, 0], %)
   |> close(%)
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn('XZ')
@@ -1579,18 +1594,18 @@ sphere = startSketchOn('XZ')
      ], %)
   |> line([sphereDia - 0.1, 0], %)
   |> arc({
-       angle_start: 0,
-       angle_end: -180,
-       radius: sphereDia / 2 - 0.05
+       angle_start = 0,
+       angle_end = -180,
+       radius = sphereDia / 2 - 0.05
      }, %)
   |> close(%)
-  |> revolve({ axis: 'x' }, %)
+  |> revolve({ axis = 'x' }, %)
   |> patternCircular3d({
-       axis: [0, 0, 1],
-       center: [0, 0, 0],
-       repetitions: 10,
-       arcDegrees: 360,
-       rotateDuplicates: true
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       repetitions = 10,
+       arcDegrees = 360,
+       rotateDuplicates = true
      }, %)
 
 // Sketch and revolve the outside bearing
@@ -1608,7 +1623,7 @@ outsideRevolve = startSketchOn('XZ')
   |> line([0, thickness], %)
   |> line([overHangLength - thickness, 0], %)
   |> close(%)
-  |> revolve({ axis: 'y' }, %)"#
+  |> revolve({ axis = 'y' }, %)"#
     );
 }
 
@@ -2287,8 +2302,7 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
         .await;
 
     // Get the diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Update the text.
     let new_text = r#"const thing = 2"#.to_string();
@@ -2308,8 +2322,7 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
         .await;
 
     // Get the diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2340,8 +2353,7 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
         .await;
 
     // Get the diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Update the text.
     let new_text = r#"const part001 = startSketchOn('XY')
@@ -2368,8 +2380,7 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
         .await;
 
     // Get the diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2460,8 +2471,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 
     // Add some fake diagnostics.
     server.diagnostics_map.insert(
@@ -2482,8 +2492,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
         }],
     );
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Clear the ast and memory.
     server
@@ -2520,8 +2529,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2556,8 +2564,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 
     // Add some fake diagnostics.
     server.diagnostics_map.insert(
@@ -2578,8 +2585,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
         }],
     );
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Clear ONLY the memory.
     server
@@ -2611,8 +2617,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2647,8 +2652,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 
     // Add some fake diagnostics.
     server.diagnostics_map.insert(
@@ -2669,8 +2673,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
         }],
     );
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Clear ONLY the memory.
     server
@@ -2705,8 +2708,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2741,8 +2743,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 
     // Clear ONLY the memory.
     server
@@ -2777,8 +2778,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2813,8 +2813,7 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 
     // Clear ONLY the memory.
     server
@@ -2848,8 +2847,7 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 
     // Clear ONLY the memory.
     server
@@ -2896,8 +2894,7 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     assert!(memory == ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 
     // Set that we CAN execute.
     server
@@ -2932,8 +2929,7 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     assert!(memory != ProgramMemory::default());
 
     // Assure we have no diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl");
-    assert!(diagnostics.is_none());
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3011,8 +3007,7 @@ async fn kcl_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagno
     assert!(ast.is_none());
 
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Send change file, but the code is the same.
     server
@@ -3034,8 +3029,7 @@ async fn kcl_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagno
     assert!(ast.is_none());
 
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3068,9 +3062,7 @@ const part001 = startSketchOn('XY')
     assert!(ast != Node::<Program>::default());
 
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
-
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
     // Send change file, but the code is the same.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
@@ -3091,8 +3083,7 @@ const part001 = startSketchOn('XY')
     assert!(ast != Node::<Program>::default());
 
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3125,8 +3116,7 @@ const part001 = startSketchOn('XY')
     assert!(ast.is_none());
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Send change file, but the code is the same.
     server
@@ -3148,8 +3138,7 @@ const part001 = startSketchOn('XY')
     assert!(ast.is_none());
 
     // Assure we have one diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3178,9 +3167,9 @@ const part001 = startSketchOn('XY')
         .await;
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 2);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3212,9 +3201,9 @@ const part001 = startSketchOn('XY')
     assert!(memory.is_none());
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 2);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3243,9 +3232,9 @@ const part001 = startSketchOn('XY')
         .await;
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 2);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3285,9 +3274,9 @@ const NEW_LINT = 1"#
     assert!(memory.is_none());
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 2);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3316,9 +3305,9 @@ const part001 = startSketchOn('XY')
         .await;
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl");
@@ -3358,9 +3347,9 @@ const NEW_LINT = 1"#
     assert!(memory.is_none());
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3389,9 +3378,9 @@ const part001 = startSketchOn('XY')
         .await;
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3449,9 +3438,9 @@ const NEW_LINT = 1"#
     assert!(memory.is_none());
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -3480,9 +3469,9 @@ const part001 = startSketchOn('XY')
         .await;
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Get the token map.
     let token_map = server.token_map.get("file:///test.kcl").unwrap().clone();
@@ -3548,9 +3537,9 @@ const part001 = startSketchOn('XY')
     assert!(memory.is_none());
 
     // Assure we have diagnostics.
-    let diagnostics = server.diagnostics_map.get("file:///test.kcl").unwrap().clone();
+
     // Check the diagnostics.
-    assert_eq!(diagnostics.len(), 2);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
 }
 
 #[tokio::test(flavor = "multi_thread")]

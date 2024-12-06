@@ -1,11 +1,13 @@
-use crate::{
-    ast::types::{BinaryPart, Expr, LiteralValue, ObjectExpression, UnaryOperator},
-    executor::SourceRange,
-    lint::rule::{def_finding, Discovered, Finding},
-    walk::Node,
-};
-use anyhow::Result;
 use std::collections::HashMap;
+
+use anyhow::Result;
+
+use crate::{
+    lint::rule::{def_finding, Discovered, Finding},
+    parsing::ast::types::{BinaryPart, Expr, LiteralValue, ObjectExpression, UnaryOperator},
+    walk::Node,
+    SourceRange,
+};
 
 def_finding!(
     Z0003,
@@ -144,7 +146,7 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
         return Ok(vec![]);
     };
 
-    let call_source_range = SourceRange::new(call.start, call.end);
+    let call_source_range = SourceRange::new(call.start, call.end, call.module_id);
     Ok(vec![Z0003.at(
         format!(
             "custom plane in startSketchOn; offsetPlane from {} would work here",
@@ -161,8 +163,7 @@ fn get_xyz(point: &ObjectExpression) -> Option<(f64, f64, f64)> {
 
     fn unlitafy(lit: &LiteralValue) -> Option<f64> {
         Some(match lit {
-            LiteralValue::IInteger(value) => *value as f64,
-            LiteralValue::Fractional(value) => *value,
+            LiteralValue::Number(value) => *value,
             _ => {
                 return None;
             }

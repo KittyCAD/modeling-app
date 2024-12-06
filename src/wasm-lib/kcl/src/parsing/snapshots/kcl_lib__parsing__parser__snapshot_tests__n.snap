@@ -1,0 +1,64 @@
+---
+source: kcl/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "declaration": {
+        "end": 24,
+        "id": {
+          "end": 12,
+          "name": "height",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "end": 24,
+          "left": {
+            "end": 16,
+            "raw": "1",
+            "start": 15,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 1.0
+          },
+          "operator": "-",
+          "right": {
+            "computed": false,
+            "end": 24,
+            "object": {
+              "end": 22,
+              "name": "obj",
+              "start": 19,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "end": 24,
+              "name": "a",
+              "start": 23,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "start": 19,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 15,
+          "type": "BinaryExpression",
+          "type": "BinaryExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
+      "end": 24,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 24,
+  "start": 0
+}

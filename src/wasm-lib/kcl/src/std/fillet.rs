@@ -12,9 +12,9 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
-    executor::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier, UserVal},
+    execution::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier},
+    parsing::ast::types::TagNode,
     settings::types::UnitLength,
     std::Args,
 };
@@ -82,8 +82,8 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// const mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> fillet({
-///     radius: filletRadius,
-///     tags: [
+///     radius = filletRadius,
+///     tags = [
 ///       getNextAdjacentEdge(edge1),
 ///       getNextAdjacentEdge(edge2),
 ///       getNextAdjacentEdge(edge3),
@@ -107,9 +107,9 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// const mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> fillet({
-///     radius: filletRadius,
-///     tolerance: 0.000001,
-///     tags: [
+///     radius = filletRadius,
+///     tolerance = 0.000001,
+///     tags = [
 ///       getNextAdjacentEdge(edge1),
 ///       getNextAdjacentEdge(edge2),
 ///       getNextAdjacentEdge(edge3),
@@ -186,15 +186,10 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_opposite_edge(tag, exec_state, args.clone()).await?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
+    Ok(KclValue::Uuid {
+        value: edge,
         meta: vec![args.source_range.into()],
-    }))
+    })
 }
 
 /// Get the opposite edge to the edge given.
@@ -204,24 +199,24 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
 ///   |> angledLine({
-///     angle: 120,
-///     length: 10,
+///     angle = 120,
+///     length = 10,
 ///   }, %)
 ///   |> line([-10, 0], %)
 ///   |> angledLine({
-///     angle: 240,
-///     length: 10,
+///     angle = 240,
+///     length = 10,
 ///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
-///     radius: 3,
-///     tags: [getOppositeEdge(referenceEdge)],
+///     radius = 3,
+///     tags = [getOppositeEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
@@ -264,15 +259,10 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_next_adjacent_edge(tag, exec_state, args.clone()).await?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
+    Ok(KclValue::Uuid {
+        value: edge,
         meta: vec![args.source_range.into()],
-    }))
+    })
 }
 
 /// Get the next adjacent edge to the edge given.
@@ -282,24 +272,24 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
 ///   |> angledLine({
-///     angle: 120,
-///     length: 10,
+///     angle = 120,
+///     length = 10,
 ///   }, %)
 ///   |> line([-10, 0], %)
 ///   |> angledLine({
-///     angle: 240,
-///     length: 10,
+///     angle = 240,
+///     length = 10,
 ///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
-///     radius: 3,
-///     tags: [getNextAdjacentEdge(referenceEdge)],
+///     radius = 3,
+///     tags = [getNextAdjacentEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
@@ -354,15 +344,10 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_previous_adjacent_edge(tag, exec_state, args.clone()).await?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
+    Ok(KclValue::Uuid {
+        value: edge,
         meta: vec![args.source_range.into()],
-    }))
+    })
 }
 
 /// Get the previous adjacent edge to the edge given.
@@ -372,24 +357,24 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
 ///   |> angledLine({
-///     angle: 120,
-///     length: 10,
+///     angle = 120,
+///     length = 10,
 ///   }, %)
 ///   |> line([-10, 0], %)
 ///   |> angledLine({
-///     angle: 240,
-///     length: 10,
+///     angle = 240,
+///     length = 10,
 ///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
 ///   |> fillet({
-///     radius: 3,
-///     tags: [getPreviousAdjacentEdge(referenceEdge)],
+///     radius = 3,
+///     tags = [getPreviousAdjacentEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {

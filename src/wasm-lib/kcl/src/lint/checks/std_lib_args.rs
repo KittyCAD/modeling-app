@@ -3,12 +3,12 @@ use std::sync::Arc;
 use anyhow::Result;
 
 use crate::{
-    ast::types::{CallExpression, NodeRef},
     docs::StdLibFn,
-    executor::SourceRange,
     lint::rule::{def_finding, Discovered, Finding},
+    parsing::ast::types::{CallExpression, NodeRef},
     std::{FunctionKind, StdLib},
     walk::Node,
+    SourceRange,
 };
 
 def_finding!(
@@ -28,7 +28,7 @@ fn lint_too_many_args_std_lib_function(
         if exp.arguments.len() != 2 {
             findings.push(Z0002.at(
                 format!("expected 2 arguments, found {}", exp.arguments.len()),
-                SourceRange::new(exp.start, exp.end),
+                SourceRange::new(exp.start, exp.end, exp.module_id),
             ));
         }
         return Ok(findings);
@@ -38,7 +38,7 @@ fn lint_too_many_args_std_lib_function(
         if exp.arguments.len() < 2 {
             findings.push(Z0002.at(
                 format!("expected at least 2 arguments, found {}", exp.arguments.len()),
-                SourceRange::new(exp.start, exp.end),
+                SourceRange::new(exp.start, exp.end, exp.module_id),
             ));
         }
         return Ok(findings);
@@ -48,7 +48,7 @@ fn lint_too_many_args_std_lib_function(
     if exp.arguments.len() > fn_args_len {
         findings.push(Z0002.at(
             format!("expected {} arguments, found {}", fn_args_len, exp.arguments.len()),
-            SourceRange::new(exp.start, exp.end),
+            SourceRange::new(exp.start, exp.end, exp.module_id),
         ));
     }
 

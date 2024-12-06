@@ -1,9 +1,10 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 use anyhow::Result;
 use base64::Engine;
 use convert_case::Casing;
 use handlebars::Renderable;
+use indexmap::IndexMap;
 use itertools::Itertools;
 use serde_json::json;
 
@@ -271,7 +272,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     Ok(hbs)
 }
 
-fn generate_index(combined: &HashMap<String, Box<dyn StdLibFn>>) -> Result<()> {
+fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> {
     let hbs = init_handlebars()?;
 
     let mut functions = Vec::new();
@@ -790,6 +791,7 @@ fn test_generate_stdlib_json_schema() {
     // If this test fails and you've modified the AST or something else which affects the json repr
     // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
     // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
+    // Alternatively, run `just redo-kcl-stdlib-docs` (make sure to have just installed).
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
 

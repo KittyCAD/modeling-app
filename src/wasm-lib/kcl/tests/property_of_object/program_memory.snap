@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing property_of_object.kcl
 snapshot_kind: text
 ---
@@ -8,124 +9,180 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "obj": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Object",
           "value": {
-            "bar": 0,
-            "foo": 1
+            "bar": {
+              "type": "Number",
+              "value": 0.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    73,
+                    74,
+                    0
+                  ]
+                }
+              ]
+            },
+            "foo": {
+              "type": "Number",
+              "value": 1.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    64,
+                    65,
+                    0
+                  ]
+                }
+              ]
+            }
           },
           "__meta": [
             {
               "sourceRange": [
                 56,
-                74
+                76,
+                0
               ]
             }
           ]
         },
         "obj2": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Object",
           "value": {
             "inner": {
-              "bar": 0,
-              "foo": 1
+              "type": "Object",
+              "value": {
+                "bar": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "__meta": [
+                    {
+                      "sourceRange": [
+                        73,
+                        74,
+                        0
+                      ]
+                    }
+                  ]
+                },
+                "foo": {
+                  "type": "Number",
+                  "value": 1.0,
+                  "__meta": [
+                    {
+                      "sourceRange": [
+                        64,
+                        65,
+                        0
+                      ]
+                    }
+                  ]
+                }
+              },
+              "__meta": [
+                {
+                  "sourceRange": [
+                    56,
+                    76,
+                    0
+                  ]
+                }
+              ]
             }
           },
           "__meta": [
             {
               "sourceRange": [
-                529,
-                543
+                531,
+                546,
+                0
               ]
             }
           ]
         },
         "one_a": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
-                122,
-                132
+                64,
+                65,
+                0
               ]
             }
           ]
         },
         "one_b": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
-                356,
-                362
+                64,
+                65,
+                0
               ]
             }
           ]
         },
         "one_c": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
-                553,
-                570
+                64,
+                65,
+                0
               ]
             }
           ]
         },
         "one_d": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
-                757,
-                770
+                64,
+                65,
+                0
               ]
             }
           ]
         },
         "p": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "String",
           "value": "foo",
           "__meta": [
             {
               "sourceRange": [
-                342,
-                347
+                344,
+                349,
+                0
               ]
             }
           ]

@@ -14,9 +14,9 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
-    executor::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
+    execution::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
+    parsing::ast::types::TagNode,
     std::Args,
 };
 
@@ -24,7 +24,6 @@ use crate::{
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
-
 pub enum SketchOrSurface {
     SketchSurface(SketchSurface),
     Sketch(Box<Sketch>),
@@ -48,7 +47,9 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         args.get_circle_args()?;
 
     let sketch = inner_circle(data, sketch_surface_or_group, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(sketch.meta.clone(), sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
 }
 
 /// Construct a 2-dimensional circle, of the specified radius, centered at
@@ -56,7 +57,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// const exampleSketch = startSketchOn("-XZ")
-///   |> circle({ center: [0, 0], radius: 10 }, %)
+///   |> circle({ center = [0, 0], radius = 10 }, %)
 ///
 /// const example = extrude(5, exampleSketch)
 /// ```
@@ -68,7 +69,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> line([0, 30], %)
 ///   |> line([-30, 0], %)
 ///   |> close(%)
-///   |> hole(circle({ center: [0, 15], radius: 5 }, %), %)
+///   |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
 ///
 /// const example = extrude(5, exampleSketch)
 /// ```
@@ -95,6 +96,7 @@ async fn inner_circle(
     )
     .await?;
 
+    let from = [data.center[0] + data.radius, data.center[1]];
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
 
@@ -117,8 +119,8 @@ async fn inner_circle(
 
     let current_path = Path::Circle {
         base: BasePath {
-            from: data.center,
-            to: data.center,
+            from,
+            to: from,
             tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
@@ -127,7 +129,7 @@ async fn inner_circle(
         },
         radius: data.radius,
         center: data.center,
-        ccw: angle_start.to_degrees() < angle_end.to_degrees(),
+        ccw: angle_start < angle_end,
     };
 
     let mut new_sketch = sketch.clone();
@@ -166,7 +168,7 @@ pub struct PolygonData {
     pub center: [f64; 2],
     /// The type of the polygon (inscribed or circumscribed)
     #[serde(skip)]
-    polygon_type: PolygonType,
+    pub polygon_type: PolygonType,
     /// Whether the polygon is inscribed (true) or circumscribed (false) about a circle with the specified radius
     #[serde(default = "default_inscribed")]
     pub inscribed: bool,
@@ -182,7 +184,9 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.get_polygon_args()?;
 
     let sketch = inner_polygon(data, sketch_surface_or_group, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(sketch.meta.clone(), sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
 }
 
 /// Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
@@ -191,10 +195,10 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// // Create a regular hexagon inscribed in a circle of radius 10
 /// hex = startSketchOn('XY')
 ///   |> polygon({
-///     radius: 10,
-///     numSides: 6,
-///     center: [0, 0],
-///     inscribed: true,
+///     radius = 10,
+///     numSides = 6,
+///     center = [0, 0],
+///     inscribed = true,
 ///   }, %)
 ///
 /// example = extrude(5, hex)
@@ -204,10 +208,10 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// // Create a square circumscribed around a circle of radius 5
 /// square = startSketchOn('XY')
 ///   |> polygon({
-///     radius: 5.0,
-///     numSides: 4,
-///     center: [10, 10],
-///     inscribed: false,
+///     radius = 5.0,
+///     numSides = 4,
+///     center = [10, 10],
+///     inscribed = false,
 ///   }, %)
 /// example = extrude(5, square)
 /// ```

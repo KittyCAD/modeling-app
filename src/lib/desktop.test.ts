@@ -46,9 +46,21 @@ describe('desktop utilities', () => {
       'project-without-kcl-files',
       'another-valid-project',
     ],
-    '/test/projects/valid-project': ['file1.kcl', 'file2.stp'],
+    '/test/projects/valid-project': [
+      'file1.kcl',
+      'file2.stp',
+      'file3.kcl',
+      'directory1',
+    ],
+    '/test/projects/valid-project/directory1': [],
     '/test/projects/project-without-kcl-files': ['file3.glb'],
-    '/test/projects/another-valid-project': ['file4.kcl'],
+    '/test/projects/another-valid-project': [
+      'file4.kcl',
+      'directory2',
+      'directory3',
+    ],
+    '/test/projects/another-valid-project/directory2': [],
+    '/test/projects/another-valid-project/directory3': [],
   }
 
   beforeEach(() => {
@@ -117,6 +129,15 @@ describe('desktop utilities', () => {
       expect(projects.map((p) => p.name)).not.toContain(
         'project-without-kcl-files'
       )
+    })
+
+    it('correctly counts directories and files', async () => {
+      const projects = await listProjects(mockConfig)
+      // Verify that directories and files are counted correctly
+      expect(projects[0].directory_count).toEqual(1)
+      expect(projects[0].kcl_file_count).toEqual(2)
+      expect(projects[1].directory_count).toEqual(2)
+      expect(projects[1].kcl_file_count).toEqual(1)
     })
 
     it('handles empty project directory', async () => {

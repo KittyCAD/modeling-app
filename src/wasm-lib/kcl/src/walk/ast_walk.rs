@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use crate::{
-    ast::types::{
+    parsing::ast::types::{
         BinaryPart, BodyItem, Expr, IfExpression, LiteralIdentifier, MemberExpression, MemberObject, NodeRef,
         ObjectExpression, ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
     },
@@ -103,6 +103,7 @@ where
         BinaryPart::Identifier(id) => f.walk(id.as_ref().into()),
         BinaryPart::BinaryExpression(be) => f.walk(be.as_ref().into()),
         BinaryPart::CallExpression(ce) => f.walk(ce.as_ref().into()),
+        BinaryPart::CallExpressionKw(ce) => f.walk(ce.as_ref().into()),
         BinaryPart::UnaryExpression(ue) => walk_unary_expression(ue, f),
         BinaryPart::MemberExpression(me) => walk_member_expression(me, f),
         BinaryPart::IfExpression(e) => walk_if_expression(e, f),
@@ -154,6 +155,26 @@ where
             }
             for e in &ce.arguments {
                 if !walk_value::<WalkT>(e, f)? {
+                    return Ok(false);
+                }
+            }
+            Ok(true)
+        }
+        Expr::CallExpressionKw(ce) => {
+            if !f.walk(ce.as_ref().into())? {
+                return Ok(false);
+            }
+
+            if !f.walk((&ce.callee).into())? {
+                return Ok(false);
+            }
+            if let Some(ref e) = ce.unlabeled {
+                if !walk_value::<WalkT>(e, f)? {
+                    return Ok(false);
+                }
+            }
+            for e in &ce.arguments {
+                if !walk_value::<WalkT>(&e.arg, f)? {
                     return Ok(false);
                 }
             }
@@ -293,12 +314,8 @@ where
             if !f.walk(vd.as_ref().into())? {
                 return Ok(false);
             }
-            for dec in &vd.declarations {
-                if !walk_variable_declarator(dec, f)? {
-                    return Ok(false);
-                }
-            }
-            Ok(true)
+
+            walk_variable_declarator(&vd.declaration, f)
         }
         BodyItem::ReturnStatement(rs) => {
             if !f.walk(rs.into())? {
@@ -315,9 +332,7 @@ mod tests {
 
     macro_rules! kcl {
         ( $kcl:expr ) => {{
-            let tokens = $crate::token::lexer($kcl).unwrap();
-            let parser = $crate::parser::Parser::new(tokens);
-            parser.ast().unwrap()
+            $crate::parsing::top_level_parse($kcl).unwrap()
         }};
     }
 

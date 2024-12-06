@@ -1,6 +1,5 @@
-import { parse, initPromise, programMemoryInit } from './wasm'
+import { assertParse, initPromise, programMemoryInit } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
-import { assert } from 'vitest'
 // These unit tests makes web requests to a public github repository.
 
 interface KclSampleFile {
@@ -55,18 +54,12 @@ describe('Test KCL Samples from public Github repository', () => {
     })
     // Run through all of the files in the manifest json. This will allow us to be automatically updated
     // with the latest changes in github. We won't be hard coding the filenames
-    it(
-      'should run through all the files',
-      async () => {
-        for (let i = 0; i < files.length; i++) {
-          const file: KclSampleFile = files[i]
-          const code = await getKclSampleCodeFromGithub(file.filename)
-          const parsed = parse(code)
-          assert(!(parsed instanceof Error))
-        }
-      },
-      files.length * 1000
-    )
+    files.forEach((file: KclSampleFile) => {
+      it(`should parse ${file.filename} without errors`, async () => {
+        const code = await getKclSampleCodeFromGithub(file.filename)
+        assertParse(code)
+      }, 1000)
+    })
   })
 
   describe('when performing enginelessExecutor', () => {
@@ -76,9 +69,8 @@ describe('Test KCL Samples from public Github repository', () => {
         for (let i = 0; i < files.length; i++) {
           const file: KclSampleFile = files[i]
           const code = await getKclSampleCodeFromGithub(file.filename)
-          const parsed = parse(code)
-          assert(!(parsed instanceof Error))
-          await enginelessExecutor(parsed, programMemoryInit())
+          const ast = assertParse(code)
+          await enginelessExecutor(ast, programMemoryInit())
         }
       },
       files.length * 1000

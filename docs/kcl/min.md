@@ -34,8 +34,8 @@ min(args: [number]) -> number
 exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> angledLine({
-       angle: 70,
-       length: min(15, 31, 4, 13, 22)
+       angle = 70,
+       length = min(15, 31, 4, 13, 22)
      }, %)
   |> line([20, 0], %)
   |> close(%)

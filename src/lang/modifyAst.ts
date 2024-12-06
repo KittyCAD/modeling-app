@@ -1,5 +1,5 @@
-import { Selection } from 'lib/selections'
 import { err, reportRejection, trap } from 'lib/trap'
+import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
@@ -8,6 +8,7 @@ import {
   VariableDeclarator,
   Expr,
   Literal,
+  LiteralValue,
   PipeSubstitution,
   Identifier,
   ArrayExpression,
@@ -18,6 +19,7 @@ import {
   ProgramMemory,
   SourceRange,
   sketchFromKclValue,
+  isPathToNodeNumber,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -64,8 +66,7 @@ export function startSketchOnDefault(
   let pathToNode: PathToNode = [
     ['body', ''],
     [sketchIndex, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
 
@@ -92,7 +93,7 @@ export function addStartProfileAt(
     return new Error('variableDeclaration.init.type !== PipeExpression')
   }
   const _node = { ...node }
-  const init = variableDeclaration.declarations[0].init
+  const init = variableDeclaration.declaration.init
   const startProfileAt = createCallExpressionStdLib('startProfileAt', [
     createArrayExpression([
       createLiteral(roundOff(at[0])),
@@ -103,7 +104,7 @@ export function addStartProfileAt(
   if (init.type === 'PipeExpression') {
     init.body.splice(1, 0, startProfileAt)
   } else {
-    variableDeclaration.declarations[0].init = createPipeExpression([
+    variableDeclaration.declaration.init = createPipeExpression([
       init,
       startProfileAt,
     ])
@@ -147,8 +148,7 @@ export function addSketchTo(
   let pathToNode: PathToNode = [
     ['body', ''],
     [sketchIndex, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
   if (axis !== 'xy') {
@@ -242,6 +242,7 @@ export function mutateObjExpProp(
         value: updateWith,
         start: 0,
         end: 0,
+        moduleId: 0,
       })
     }
   }
@@ -330,8 +331,7 @@ export function extrudeSketch(
   const pathToExtrudeArg: PathToNode = [
     ['body', ''],
     [sketchIndexInBody + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
@@ -340,6 +340,36 @@ export function extrudeSketch(
     modifiedAst: _node,
     pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
     pathToExtrudeArg,
+  }
+}
+
+export function loftSketches(
+  node: Node<Program>,
+  declarators: VariableDeclarator[]
+): {
+  modifiedAst: Node<Program>
+  pathToNode: PathToNode
+} {
+  const modifiedAst = structuredClone(node)
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
+  const elements = declarators.map((d) => createIdentifier(d.id.name))
+  const loft = createCallExpressionStdLib('loft', [
+    createArrayExpression(elements),
+  ])
+  const declaration = createVariableDeclaration(name, loft)
+  modifiedAst.body.push(declaration)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
   }
 }
 
@@ -426,8 +456,7 @@ export function revolveSketch(
   const pathToRevolveArg: PathToNode = [
     ['body', ''],
     [sketchIndexInBody + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
@@ -513,14 +542,105 @@ export function sketchOnExtrudedFace(
   const newpathToNode: PathToNode = [
     ['body', ''],
     [expressionIndex + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
 
   return {
     modifiedAst: _node,
     pathToNode: newpathToNode,
+  }
+}
+
+/**
+ * Append an offset plane to the AST
+ */
+export function addOffsetPlane({
+  node,
+  defaultPlane,
+  offset,
+}: {
+  node: Node<Program>
+  defaultPlane: DefaultPlaneStr
+  offset: Expr
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const newPlaneName = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
+
+  const newPlane = createVariableDeclaration(
+    newPlaneName,
+    createCallExpressionStdLib('offsetPlane', [
+      createLiteral(defaultPlane.toUpperCase()),
+      offset,
+    ])
+  )
+
+  modifiedAst.body.push(newPlane)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
+ * Modify the AST to create a new sketch using the variable declaration
+ * of an offset plane. The new sketch just has to come after the offset
+ * plane declaration.
+ */
+export function sketchOnOffsetPlane(
+  node: Node<Program>,
+  offsetPathToNode: PathToNode
+) {
+  let _node = { ...node }
+
+  // Find the offset plane declaration
+  const offsetPlaneDeclarator = getNodeFromPath<VariableDeclarator>(
+    _node,
+    offsetPathToNode,
+    'VariableDeclarator',
+    true
+  )
+  if (err(offsetPlaneDeclarator)) return offsetPlaneDeclarator
+  const { node: offsetPlaneNode } = offsetPlaneDeclarator
+  const offsetPlaneName = offsetPlaneNode.id.name
+
+  // Create a new sketch declaration
+  const newSketchName = findUniqueName(
+    node,
+    KCL_DEFAULT_CONSTANT_PREFIXES.SKETCH
+  )
+  const newSketch = createVariableDeclaration(
+    newSketchName,
+    createCallExpressionStdLib('startSketchOn', [
+      createIdentifier(offsetPlaneName),
+    ]),
+    undefined,
+    'const'
+  )
+
+  // Decide where to insert the new sketch declaration
+  const offsetIndex = offsetPathToNode[1][0]
+
+  if (!isPathToNodeNumber(offsetIndex)) {
+    return new Error('Expected offsetIndex to be a number')
+  }
+  // and insert it
+  _node.body.splice(offsetIndex + 1, 0, newSketch)
+  const newPathToNode = structuredClone(offsetPathToNode)
+  newPathToNode[1][0] = offsetIndex + 1
+
+  // Return the modified AST and the path to the new sketch declaration
+  return {
+    modifiedAst: _node,
+    pathToNode: newPathToNode,
   }
 }
 
@@ -572,11 +692,12 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
   return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
-export function createLiteral(value: string | number): Node<Literal> {
+export function createLiteral(value: LiteralValue): Node<Literal> {
   return {
     type: 'Literal',
     start: 0,
     end: 0,
+    moduleId: 0,
     value,
     raw: `${value}`,
   }
@@ -587,6 +708,7 @@ export function createTagDeclarator(value: string): Node<TagDeclarator> {
     type: 'TagDeclarator',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     value,
   }
@@ -597,6 +719,7 @@ export function createIdentifier(name: string): Node<Identifier> {
     type: 'Identifier',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     name,
   }
@@ -607,6 +730,7 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
     type: 'PipeSubstitution',
     start: 0,
     end: 0,
+    moduleId: 0,
   }
 }
 
@@ -618,14 +742,15 @@ export function createCallExpressionStdLib(
     type: 'CallExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
+      moduleId: 0,
 
       name,
     },
-    optional: false,
     arguments: args,
   }
 }
@@ -638,14 +763,15 @@ export function createCallExpression(
     type: 'CallExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
+      moduleId: 0,
 
       name,
     },
-    optional: false,
     arguments: args,
   }
 }
@@ -657,6 +783,7 @@ export function createArrayExpression(
     type: 'ArrayExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     nonCodeMeta: nonCodeMetaEmpty(),
     elements,
@@ -670,6 +797,7 @@ export function createPipeExpression(
     type: 'PipeExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     body,
     nonCodeMeta: nonCodeMetaEmpty(),
@@ -686,17 +814,17 @@ export function createVariableDeclaration(
     type: 'VariableDeclaration',
     start: 0,
     end: 0,
+    moduleId: 0,
 
-    declarations: [
-      {
-        type: 'VariableDeclarator',
-        start: 0,
-        end: 0,
+    declaration: {
+      type: 'VariableDeclarator',
+      start: 0,
+      end: 0,
+      moduleId: 0,
 
-        id: createIdentifier(varName),
-        init,
-      },
-    ],
+      id: createIdentifier(varName),
+      init,
+    },
     visibility,
     kind,
   }
@@ -709,12 +837,14 @@ export function createObjectExpression(properties: {
     type: 'ObjectExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
       type: 'ObjectProperty',
       start: 0,
       end: 0,
+      moduleId: 0,
       key: createIdentifier(key),
 
       value,
@@ -730,6 +860,7 @@ export function createUnaryExpression(
     type: 'UnaryExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     operator,
     argument,
@@ -745,6 +876,7 @@ export function createBinaryExpression([left, operator, right]: [
     type: 'BinaryExpression',
     start: 0,
     end: 0,
+    moduleId: 0,
 
     operator,
     left,
@@ -763,7 +895,7 @@ export function createBinaryExpressionWithUnary([left, right]: [
 
 export function giveSketchFnCallTag(
   ast: Node<Program>,
-  range: Selection['range'],
+  range: SourceRange,
   tag?: string
 ):
   | {
@@ -837,7 +969,7 @@ export function moveValueIntoNewVariablePath(
 export function moveValueIntoNewVariable(
   ast: Node<Program>,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  sourceRange: SourceRange,
   variableName: string
 ): {
   modifiedAst: Node<Program>
@@ -962,18 +1094,15 @@ export async function deleteFromSelection(
     ({} as any)
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
-  const range = selection.range
-  const path = getNodePathFromSourceRange(ast, range)
   const varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    path,
+    selection?.codeRef?.pathToNode,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
   if (
-    (selection.type === 'extrude-wall' ||
-      selection.type === 'end-cap' ||
-      selection.type === 'start-cap') &&
+    (selection?.artifact?.type === 'wall' ||
+      selection?.artifact?.type === 'cap') &&
     varDec.node.init.type === 'PipeExpression'
   ) {
     const varDecName = varDec.node.id.name
@@ -982,7 +1111,7 @@ export async function deleteFromSelection(
     traverse(astClone, {
       enter: (node, path) => {
         if (node.type === 'VariableDeclaration') {
-          const dec = node.declarations[0]
+          const dec = node.declaration
           if (
             dec.init.type === 'CallExpression' &&
             (dec.init.callee.name === 'extrude' ||
@@ -1017,7 +1146,7 @@ export async function deleteFromSelection(
             enter: (node, path) => {
               ;(async () => {
                 if (node.type === 'VariableDeclaration') {
-                  currentVariableName = node.declarations[0].id.name
+                  currentVariableName = node.declaration.id.name
                 }
                 if (
                   // match startSketchOn(${extrudeNameToDelete})
@@ -1053,7 +1182,6 @@ export async function deleteFromSelection(
               sketchName
             )
             if (err(sketchToPreserve)) return sketchToPreserve
-            console.log('sketchName', sketchName)
             // Can't kick off multiple requests at once as getFaceDetails
             // is three engine calls in one and they conflict
             const faceDetails = await getFaceDetails(sketchToPreserve.on.id)

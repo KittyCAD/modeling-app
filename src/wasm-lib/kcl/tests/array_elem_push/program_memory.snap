@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing array_elem_push.kcl
 snapshot_kind: text
 ---
@@ -8,79 +9,219 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "arr": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            1,
-            2,
-            3
+            {
+              "type": "Number",
+              "value": 1.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    7,
+                    8,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 2.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    10,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 3.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    13,
+                    14,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
               "sourceRange": [
                 6,
-                15
+                15,
+                0
               ]
             }
           ]
         },
         "new_arr1": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            1,
-            2,
-            3,
-            4
+            {
+              "type": "Number",
+              "value": 1.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    7,
+                    8,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 2.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    10,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 3.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    13,
+                    14,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 4.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    37,
+                    38,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
               "sourceRange": [
                 27,
-                39
+                39,
+                0
               ]
             }
           ]
         },
         "new_arr2": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            1,
-            2,
-            3,
-            4,
-            5
+            {
+              "type": "Number",
+              "value": 1.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    7,
+                    8,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 2.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    10,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 3.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    13,
+                    14,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 4.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    37,
+                    38,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 5.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    66,
+                    67,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
               "sourceRange": [
                 51,
-                68
+                68,
+                0
               ]
             }
           ]

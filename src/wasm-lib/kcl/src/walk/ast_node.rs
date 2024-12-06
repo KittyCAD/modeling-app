@@ -1,6 +1,6 @@
 use crate::{
-    ast::types::{self, NodeRef},
-    executor::SourceRange,
+    parsing::ast::types::{self, NodeRef},
+    source_range::SourceRange,
 };
 
 /// The "Node" type wraps all the AST elements we're able to find in a KCL
@@ -22,6 +22,7 @@ pub enum Node<'a> {
     BinaryExpression(NodeRef<'a, types::BinaryExpression>),
     FunctionExpression(NodeRef<'a, types::FunctionExpression>),
     CallExpression(NodeRef<'a, types::CallExpression>),
+    CallExpressionKw(NodeRef<'a, types::CallExpressionKw>),
     PipeExpression(NodeRef<'a, types::PipeExpression>),
     PipeSubstitution(NodeRef<'a, types::PipeSubstitution>),
     ArrayExpression(NodeRef<'a, types::ArrayExpression>),
@@ -42,30 +43,31 @@ pub enum Node<'a> {
 impl From<&Node<'_>> for SourceRange {
     fn from(node: &Node) -> Self {
         match node {
-            Node::Program(p) => SourceRange([p.start, p.end]),
-            Node::ImportStatement(e) => SourceRange([e.start, e.end]),
-            Node::ExpressionStatement(e) => SourceRange([e.start, e.end]),
-            Node::VariableDeclaration(v) => SourceRange([v.start, v.end]),
-            Node::ReturnStatement(r) => SourceRange([r.start, r.end]),
-            Node::VariableDeclarator(v) => SourceRange([v.start, v.end]),
-            Node::Literal(l) => SourceRange([l.start, l.end]),
-            Node::TagDeclarator(t) => SourceRange([t.start, t.end]),
-            Node::Identifier(i) => SourceRange([i.start, i.end]),
-            Node::BinaryExpression(b) => SourceRange([b.start, b.end]),
-            Node::FunctionExpression(f) => SourceRange([f.start, f.end]),
-            Node::CallExpression(c) => SourceRange([c.start, c.end]),
-            Node::PipeExpression(p) => SourceRange([p.start, p.end]),
-            Node::PipeSubstitution(p) => SourceRange([p.start, p.end]),
-            Node::ArrayExpression(a) => SourceRange([a.start, a.end]),
-            Node::ArrayRangeExpression(a) => SourceRange([a.start, a.end]),
-            Node::ObjectExpression(o) => SourceRange([o.start, o.end]),
-            Node::MemberExpression(m) => SourceRange([m.start, m.end]),
-            Node::UnaryExpression(u) => SourceRange([u.start, u.end]),
-            Node::Parameter(p) => SourceRange([p.identifier.start, p.identifier.end]),
-            Node::ObjectProperty(o) => SourceRange([o.start, o.end]),
-            Node::MemberObject(m) => SourceRange([m.start(), m.end()]),
-            Node::IfExpression(m) => SourceRange([m.start, m.end]),
-            Node::LiteralIdentifier(l) => SourceRange([l.start(), l.end()]),
+            Node::Program(n) => SourceRange::from(*n),
+            Node::ImportStatement(n) => SourceRange::from(*n),
+            Node::ExpressionStatement(n) => SourceRange::from(*n),
+            Node::VariableDeclaration(n) => SourceRange::from(*n),
+            Node::ReturnStatement(n) => SourceRange::from(*n),
+            Node::VariableDeclarator(n) => SourceRange::from(*n),
+            Node::Literal(n) => SourceRange::from(*n),
+            Node::TagDeclarator(n) => SourceRange::from(*n),
+            Node::Identifier(n) => SourceRange::from(*n),
+            Node::BinaryExpression(n) => SourceRange::from(*n),
+            Node::FunctionExpression(n) => SourceRange::from(*n),
+            Node::CallExpression(n) => SourceRange::from(*n),
+            Node::CallExpressionKw(n) => SourceRange::from(*n),
+            Node::PipeExpression(n) => SourceRange::from(*n),
+            Node::PipeSubstitution(n) => SourceRange::from(*n),
+            Node::ArrayExpression(n) => SourceRange::from(*n),
+            Node::ArrayRangeExpression(n) => SourceRange::from(*n),
+            Node::ObjectExpression(n) => SourceRange::from(*n),
+            Node::MemberExpression(n) => SourceRange::from(*n),
+            Node::UnaryExpression(n) => SourceRange::from(*n),
+            Node::Parameter(p) => SourceRange::from(&p.identifier),
+            Node::ObjectProperty(n) => SourceRange::from(*n),
+            Node::MemberObject(m) => SourceRange::new(m.start(), m.end(), m.module_id()),
+            Node::IfExpression(n) => SourceRange::from(*n),
+            Node::LiteralIdentifier(l) => SourceRange::new(l.start(), l.end(), l.module_id()),
         }
     }
 }
@@ -102,6 +104,7 @@ impl_from!(Node, Identifier);
 impl_from!(Node, BinaryExpression);
 impl_from!(Node, FunctionExpression);
 impl_from!(Node, CallExpression);
+impl_from!(Node, CallExpressionKw);
 impl_from!(Node, PipeExpression);
 impl_from!(Node, PipeSubstitution);
 impl_from!(Node, ArrayExpression);

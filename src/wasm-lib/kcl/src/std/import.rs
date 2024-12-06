@@ -18,7 +18,7 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, ImportedGeometry, KclValue},
+    execution::{ExecState, ImportedGeometry, KclValue},
     fs::FileSystem,
     std::Args,
 };
@@ -42,7 +42,7 @@ const ZOO_COORD_SYSTEM: System = System {
 /// Import format specifier
 #[derive(serde :: Serialize, serde :: Deserialize, PartialEq, Debug, Clone, schemars :: JsonSchema)]
 #[cfg_attr(feature = "tabled", derive(tabled::Tabled))]
-#[serde(tag = "type")]
+#[serde(tag = "format")]
 pub enum ImportFormat {
     /// Autodesk Filmbox (FBX) format
     #[serde(rename = "fbx")]
@@ -144,12 +144,15 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// Note: The import command currently only works when using the native
 /// Modeling App.
 ///
+/// For importing KCL functions using the `import` statement, see the docs on
+/// [KCL modules](/docs/kcl/modules).
+///
 /// ```no_run
 /// const model = import("tests/inputs/cube.obj")
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.obj", {type: "obj", units: "m"})
+/// const model = import("tests/inputs/cube.obj", {format: "obj", units: "m"})
 /// ```
 ///
 /// ```no_run
@@ -162,6 +165,15 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// const model = import("tests/inputs/cube.step")
+/// ```
+///
+/// ```no_run
+/// import height, buildSketch from 'common.kcl'
+///
+/// plane = 'XZ'
+/// margin = 2
+/// s1 = buildSketch(plane, [0, 0])
+/// s2 = buildSketch(plane, [0, height() + margin])
 /// ```
 #[stdlib {
     name = "import",

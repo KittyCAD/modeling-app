@@ -43,13 +43,14 @@ import {
 } from './Toolbar/SetAngleBetween'
 import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
 import {
-  Selections,
   canSweepSelection,
   handleSelectionBatch,
   isSelectionLastLine,
   isRangeBetweenCharacters,
   isSketchPipe,
+  Selections,
   updateSelections,
+  canLoftSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -63,9 +64,10 @@ import {
 import {
   moveValueIntoNewVariablePath,
   sketchOnExtrudedFace,
+  sketchOnOffsetPlane,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { Program, parse, recast } from 'lang/wasm'
+import { Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
   doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
@@ -81,7 +83,7 @@ import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
-import { hasValidFilletSelection } from 'lang/modifyAst/addFillet'
+import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addEdgeTreatment'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -304,6 +306,7 @@ export const ModelingMachineProvider = ({
             const dispatchSelection = (selection?: EditorSelection) => {
               if (!selection) return // TODO less of hack for the below please
               if (!editorManager.editorView) return
+
               setTimeout(() => {
                 if (!editorManager.editorView) return
                 editorManager.editorView.dispatch({
@@ -315,8 +318,9 @@ export const ModelingMachineProvider = ({
                 })
               })
             }
+
             let selections: Selections = {
-              codeBasedSelections: [],
+              graphSelections: [],
               otherSelections: [],
             }
             if (setSelections.selectionType === 'singleCodeCursor') {
@@ -326,7 +330,7 @@ export const ModelingMachineProvider = ({
                 !editorManager.isShiftDown
               ) {
                 selections = {
-                  codeBasedSelections: [],
+                  graphSelections: [],
                   otherSelections: [],
                 }
               } else if (
@@ -334,13 +338,13 @@ export const ModelingMachineProvider = ({
                 !editorManager.isShiftDown
               ) {
                 selections = {
-                  codeBasedSelections: [setSelections.selection],
+                  graphSelections: [setSelections.selection],
                   otherSelections: [],
                 }
               } else if (setSelections.selection && editorManager.isShiftDown) {
                 selections = {
-                  codeBasedSelections: [
-                    ...selectionRanges.codeBasedSelections,
+                  graphSelections: [
+                    ...selectionRanges.graphSelections,
                     setSelections.selection,
                   ],
                   otherSelections: selectionRanges.otherSelections,
@@ -373,32 +377,26 @@ export const ModelingMachineProvider = ({
               }
             }
 
-            if (setSelections.selectionType === 'otherSelection') {
+            if (
+              setSelections.selectionType === 'axisSelection' ||
+              setSelections.selectionType === 'defaultPlaneSelection'
+            ) {
               if (editorManager.isShiftDown) {
                 selections = {
-                  codeBasedSelections: selectionRanges.codeBasedSelections,
+                  graphSelections: selectionRanges.graphSelections,
                   otherSelections: [setSelections.selection],
                 }
               } else {
                 selections = {
-                  codeBasedSelections: [],
+                  graphSelections: [],
                   otherSelections: [setSelections.selection],
                 }
               }
-              const { engineEvents, updateSceneObjectColors } =
-                handleSelectionBatch({
-                  selections,
-                })
-              engineEvents &&
-                engineEvents.forEach((event) => {
-                  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                  engineCommandManager.sendSceneCommand(event)
-                })
-              updateSceneObjectColors()
               return {
                 selectionRanges: selections,
               }
             }
+
             if (setSelections.selectionType === 'completeSelection') {
               editorManager.selectRange(setSelections.selection)
               if (!sketchDetails)
@@ -482,7 +480,7 @@ export const ModelingMachineProvider = ({
           engineCommandManager.exportInfo = {
             intent: ExportIntent.Save,
             // This never gets used its only for make.
-            name: '',
+            name: file?.name?.replace('.kcl', `.${event.data.type}`) || '',
           }
 
           const format = {
@@ -556,7 +554,7 @@ export const ModelingMachineProvider = ({
           // A user can begin extruding if they either have 1+ faces selected or nothing selected
           // TODO: I believe this guard only allows for extruding a single face at a time
           const hasNoSelection =
-            selectionRanges.codeBasedSelections.length === 0 ||
+            selectionRanges.graphSelections.length === 0 ||
             isRangeBetweenCharacters(selectionRanges) ||
             isSelectionLastLine(selectionRanges, codeManager.code)
 
@@ -568,21 +566,41 @@ export const ModelingMachineProvider = ({
           }
           if (!isSketchPipe(selectionRanges)) return false
 
-          return canSweepSelection(selectionRanges)
+          const canSweep = canSweepSelection(selectionRanges)
+          if (err(canSweep)) return false
+          return canSweep
+        },
+        'has valid loft selection': ({ context: { selectionRanges } }) => {
+          const hasNoSelection =
+            selectionRanges.graphSelections.length === 0 ||
+            isRangeBetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+
+          if (hasNoSelection) {
+            const count = 2
+            return doesSceneHaveSweepableSketch(kclManager.ast, count)
+          }
+
+          const canLoft = canLoftSelection(selectionRanges)
+          if (err(canLoft)) return false
+          return canLoft
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
           if (!commandBarState.matches('Closed')) return false
-          if (selectionRanges.codeBasedSelections.length <= 0) return false
+          if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
-        'has valid fillet selection': ({ context: { selectionRanges } }) =>
-          hasValidFilletSelection({
+        'has valid edge treatment selection': ({
+          context: { selectionRanges },
+        }) => {
+          return hasValidEdgeTreatmentSelection({
             selectionRanges,
             ast: kclManager.ast,
             code: codeManager.code,
-          }),
+          })
+        },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
@@ -594,15 +612,11 @@ export const ModelingMachineProvider = ({
           )
         },
         'Has exportable geometry': () => {
-          if (
-            kclManager.kclErrors.length === 0 &&
-            kclManager.ast.body.length > 0
-          )
+          if (!kclManager.hasErrors() && kclManager.ast.body.length > 0)
             return true
           else {
             let errorMessage = 'Unable to Export '
-            if (kclManager.kclErrors.length > 0)
-              errorMessage += 'due to KCL Errors'
+            if (kclManager.hasErrors()) errorMessage += 'due to KCL Errors'
             else if (kclManager.ast.body.length === 0)
               errorMessage += 'due to Empty Scene'
             console.error(errorMessage)
@@ -635,13 +649,16 @@ export const ModelingMachineProvider = ({
         ),
         'animate-to-face': fromPromise(async ({ input }) => {
           if (!input) return undefined
-          if (input.type === 'extrudeFace') {
-            const sketched = sketchOnExtrudedFace(
-              kclManager.ast,
-              input.sketchPathToNode,
-              input.extrudePathToNode,
-              input.faceInfo
-            )
+          if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
+            const sketched =
+              input.type === 'extrudeFace'
+                ? sketchOnExtrudedFace(
+                    kclManager.ast,
+                    input.sketchPathToNode,
+                    input.extrudePathToNode,
+                    input.faceInfo
+                  )
+                : sketchOnOffsetPlane(kclManager.ast, input.pathToNode)
             if (err(sketched)) {
               const sketchedError = new Error(
                 'Incompatible face, please try another'
@@ -653,10 +670,9 @@ export const ModelingMachineProvider = ({
 
             await kclManager.executeAstMock(modifiedAst)
 
-            await letEngineAnimateAndSyncCamAfter(
-              engineCommandManager,
-              input.faceId
-            )
+            const id =
+              input.type === 'extrudeFace' ? input.faceId : input.planeId
+            await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
             sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
               sketchPathToNode: pathToNewSketchNode,
@@ -687,7 +703,8 @@ export const ModelingMachineProvider = ({
         }),
         'animate-to-sketch': fromPromise(
           async ({ input: { selectionRanges } }) => {
-            const sourceRange = selectionRanges.codeBasedSelections[0].range
+            const sourceRange =
+              selectionRanges.graphSelections[0]?.codeRef?.range
             const sketchPathToNode = getNodePathFromSourceRange(
               kclManager.ast,
               sourceRange
@@ -709,6 +726,7 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
+
         'Get horizontal info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
             const { modifiedAst, pathToNodeMap } =
@@ -716,7 +734,11 @@ export const ModelingMachineProvider = ({
                 constraint: 'setHorzDistance',
                 selectionRanges,
               })
-            const _modifiedAst = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst))
+            if (trap(pResult) || !resultIsOk(pResult))
+              return Promise.reject(new Error('Unexpected compilation error'))
+            const _modifiedAst = pResult.program
+
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -732,6 +754,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -752,7 +779,10 @@ export const ModelingMachineProvider = ({
                 constraint: 'setVertDistance',
                 selectionRanges,
               })
-            const _modifiedAst = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst))
+            if (trap(pResult) || !resultIsOk(pResult))
+              return Promise.reject(new Error('Unexpected compilation error'))
+            const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -768,6 +798,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -795,7 +830,10 @@ export const ModelingMachineProvider = ({
                   selectionRanges,
                   angleOrLength: 'setAngle',
                 }))
-            const _modifiedAst = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst))
+            if (trap(pResult) || !resultIsOk(pResult))
+              return Promise.reject(new Error('Unexpected compilation error'))
+            const _modifiedAst = pResult.program
             if (err(_modifiedAst)) return Promise.reject(_modifiedAst)
 
             if (!sketchDetails)
@@ -813,6 +851,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -829,8 +872,13 @@ export const ModelingMachineProvider = ({
         'Get length info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
             const { modifiedAst, pathToNodeMap } =
-              await applyConstraintAngleLength({ selectionRanges })
-            const _modifiedAst = parse(recast(modifiedAst))
+              await applyConstraintAngleLength({
+                selectionRanges,
+              })
+            const pResult = parse(recast(modifiedAst))
+            if (trap(pResult) || !resultIsOk(pResult))
+              return Promise.reject(new Error('Unexpected compilation error'))
+            const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -846,6 +894,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -865,7 +918,10 @@ export const ModelingMachineProvider = ({
               await applyConstraintIntersect({
                 selectionRanges,
               })
-            const _modifiedAst = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst))
+            if (trap(pResult) || !resultIsOk(pResult))
+              return Promise.reject(new Error('Unexpected compilation error'))
+            const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -881,6 +937,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -901,7 +962,10 @@ export const ModelingMachineProvider = ({
                 constraint: 'xAbs',
                 selectionRanges,
               })
-            const _modifiedAst = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst))
+            if (trap(pResult) || !resultIsOk(pResult))
+              return Promise.reject(new Error('Unexpected compilation error'))
+            const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -917,6 +981,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -937,7 +1006,10 @@ export const ModelingMachineProvider = ({
                 constraint: 'yAbs',
                 selectionRanges,
               })
-            const _modifiedAst = parse(recast(modifiedAst))
+            const pResult = parse(recast(modifiedAst))
+            if (trap(pResult) || !resultIsOk(pResult))
+              return Promise.reject(new Error('Unexpected compilation error'))
+            const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
             const updatedPathToNode = updatePathToNodeFromMap(
@@ -953,6 +1025,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               pathToNodeMap,
               selectionRanges,
@@ -973,9 +1050,10 @@ export const ModelingMachineProvider = ({
             const { variableName } = await getVarNameModal({
               valueName: data?.variableName || 'var',
             })
-            let parsed = parse(recast(kclManager.ast))
-            if (trap(parsed)) return Promise.reject(parsed)
-            parsed = parsed as Node<Program>
+            let pResult = parse(recast(kclManager.ast))
+            if (trap(pResult) || !resultIsOk(pResult))
+              return Promise.reject(new Error('Unexpected compilation error'))
+            let parsed = pResult.program
 
             const { modifiedAst: _modifiedAst, pathToReplacedNode } =
               moveValueIntoNewVariablePath(
@@ -984,7 +1062,11 @@ export const ModelingMachineProvider = ({
                 data?.pathToNode || [],
                 variableName
               )
-            parsed = parse(recast(_modifiedAst))
+            pResult = parse(recast(_modifiedAst))
+            if (trap(pResult) || !resultIsOk(pResult))
+              return Promise.reject(new Error('Unexpected compilation error'))
+            parsed = pResult.program
+
             if (trap(parsed)) return Promise.reject(parsed)
             parsed = parsed as Node<Program>
             if (!pathToReplacedNode)
@@ -999,6 +1081,11 @@ export const ModelingMachineProvider = ({
                 sketchDetails.origin
               )
             if (err(updatedAst)) return Promise.reject(updatedAst)
+
+            await codeManager.updateEditorWithAstAndWriteToFile(
+              updatedAst.newAst
+            )
+
             const selection = updateSelections(
               { 0: pathToReplacedNode },
               selectionRanges,

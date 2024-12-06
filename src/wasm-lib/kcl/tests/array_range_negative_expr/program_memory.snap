@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing array_range_negative_expr.kcl
 snapshot_kind: text
 ---
@@ -8,50 +9,178 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "xs": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            -5,
-            -4,
-            -3,
-            -2,
-            -1,
-            0,
-            1,
-            2,
-            3,
-            4,
-            5
+            {
+              "type": "Int",
+              "value": -5,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": -4,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": -3,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": -2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": -1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 3,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 4,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 5,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    5,
+                    19,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
               "sourceRange": [
                 5,
-                19
+                19,
+                0
               ]
             }
           ]

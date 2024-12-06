@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing index_of_array.kcl
 snapshot_kind: text
 ---
@@ -8,81 +9,113 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
-        "array": {
-          "type": "UserVal",
-          "type": "UserVal",
+        "arr": {
+          "type": "Array",
           "value": [
-            90,
-            91,
-            92
+            {
+              "type": "Number",
+              "value": 90.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    42,
+                    44,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 91.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    46,
+                    48,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 92.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    50,
+                    52,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
               "sourceRange": [
-                43,
-                55
+                41,
+                53,
+                0
               ]
             }
           ]
         },
         "i": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
-                256,
-                266
+                252,
+                262,
+                0
               ]
             }
           ]
         },
         "result0": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 91,
+          "type": "Number",
+          "value": 91.0,
           "__meta": [
             {
               "sourceRange": [
-                93,
-                101
+                46,
+                48,
+                0
               ]
             }
           ]
         },
         "result1": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 91,
+          "type": "Number",
+          "value": 91.0,
           "__meta": [
             {
               "sourceRange": [
-                277,
-                285
+                46,
+                48,
+                0
               ]
             }
           ]

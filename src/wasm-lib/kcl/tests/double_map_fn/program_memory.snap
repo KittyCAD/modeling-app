@@ -8,27 +8,23 @@ snapshot_kind: text
     {
       "bindings": {
         "HALF_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 180,
+          "type": "Number",
+          "value": 180.0,
           "__meta": []
         },
         "QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 90,
+          "type": "Number",
+          "value": 90.0,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 270,
+          "type": "Number",
+          "value": 270.0,
           "__meta": []
         },
         "ZERO": {
-          "type": "UserVal",
-          "type": "UserVal",
-          "value": 0,
+          "type": "Number",
+          "value": 0.0,
           "__meta": []
         },
         "increment": {
@@ -38,50 +34,49 @@ snapshot_kind: text
               "body": [
                 {
                   "argument": {
-                    "end": 38,
+                    "end": 32,
                     "left": {
-                      "end": 34,
+                      "end": 28,
                       "name": "i",
-                      "start": 33,
+                      "start": 27,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
                     "operator": "+",
                     "right": {
-                      "end": 38,
+                      "end": 32,
                       "raw": "1",
-                      "start": 37,
+                      "start": 31,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1
+                      "value": 1.0
                     },
-                    "start": 33,
+                    "start": 27,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 38,
-                  "start": 26,
+                  "end": 32,
+                  "start": 20,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 40,
-              "start": 22
+              "end": 34,
+              "start": 16
             },
-            "end": 40,
+            "end": 34,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 17,
+                  "end": 14,
                   "name": "i",
-                  "start": 16,
+                  "start": 13,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
-            "start": 15,
+            "start": 12,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -89,27 +84,23 @@ snapshot_kind: text
               {
                 "bindings": {
                   "HALF_TURN": {
-                    "type": "UserVal",
-                    "type": "UserVal",
-                    "value": 180,
+                    "type": "Number",
+                    "value": 180.0,
                     "__meta": []
                   },
                   "QUARTER_TURN": {
-                    "type": "UserVal",
-                    "type": "UserVal",
-                    "value": 90,
+                    "type": "Number",
+                    "value": 90.0,
                     "__meta": []
                   },
                   "THREE_QUARTER_TURN": {
-                    "type": "UserVal",
-                    "type": "UserVal",
-                    "value": 270,
+                    "type": "Number",
+                    "value": 270.0,
                     "__meta": []
                   },
                   "ZERO": {
-                    "type": "UserVal",
-                    "type": "UserVal",
-                    "value": 0,
+                    "type": "Number",
+                    "value": 0.0,
                     "__meta": []
                   }
                 },
@@ -122,42 +113,157 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                15,
-                40
+                12,
+                34,
+                0
               ]
             }
           ]
         },
         "xs": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            0,
-            1,
-            2
+            {
+              "type": "Int",
+              "value": 0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    41,
+                    47,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 1,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    41,
+                    47,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Int",
+              "value": 2,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    41,
+                    47,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
               "sourceRange": [
+                41,
                 47,
-                53
+                0
               ]
             }
           ]
         },
         "ys": {
-          "type": "UserVal",
-          "type": "UserVal",
+          "type": "Array",
           "value": [
-            2.0,
-            3.0,
-            4.0
+            {
+              "type": "Number",
+              "value": 2.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    41,
+                    47,
+                    0
+                  ]
+                },
+                {
+                  "sourceRange": [
+                    31,
+                    32,
+                    0
+                  ]
+                },
+                {
+                  "sourceRange": [
+                    31,
+                    32,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 3.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    41,
+                    47,
+                    0
+                  ]
+                },
+                {
+                  "sourceRange": [
+                    31,
+                    32,
+                    0
+                  ]
+                },
+                {
+                  "sourceRange": [
+                    31,
+                    32,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 4.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    41,
+                    47,
+                    0
+                  ]
+                },
+                {
+                  "sourceRange": [
+                    31,
+                    32,
+                    0
+                  ]
+                },
+                {
+                  "sourceRange": [
+                    31,
+                    32,
+                    0
+                  ]
+                }
+              ]
+            }
           ],
           "__meta": [
             {
               "sourceRange": [
-                90,
-                107
+                84,
+                101,
+                0
               ]
             }
           ]

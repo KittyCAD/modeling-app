@@ -68,8 +68,8 @@ function AppLogoLink({
       data-testid="app-logo"
       onClick={() => {
         onProjectClose(file || null, project?.path || null, false)
-        // Clear the scene and end the session.
-        engineCommandManager.endSession()
+        // Clear the scene.
+        engineCommandManager.clearScene()
       }}
       to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
@@ -190,8 +190,8 @@ function ProjectMenuPopover({
           className: !isDesktop() ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
-            // Clear the scene and end the session.
-            engineCommandManager.endSession()
+            // Clear the scene.
+            engineCommandManager.clearScene()
           },
         },
       ].filter(

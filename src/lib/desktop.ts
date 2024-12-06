@@ -12,6 +12,8 @@ import {
   PROJECT_FOLDER,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
+  TELEMETRY_FILE_NAME,
+  TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
 } from './constants'
 import { DeepPartial } from './types'
@@ -305,7 +307,10 @@ const directoryCount = (file: FileEntry) => {
   let count = 0
   if (file.children) {
     for (let entry of file.children) {
-      count += 1
+      // We only want to count FileEntries with children, e.g. folders
+      if (entry.children !== null) {
+        count += 1
+      }
       directoryCount(entry)
     }
   }
@@ -417,6 +422,34 @@ const getTokenFilePath = async () => {
     }
   }
   return window.electron.path.join(fullPath, TOKEN_FILE_NAME)
+}
+
+const getTelemetryFilePath = async () => {
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = window.electron.path.join(appConfig, getAppFolderName())
+  try {
+    await window.electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+  return window.electron.path.join(fullPath, TELEMETRY_FILE_NAME)
+}
+
+const getRawTelemetryFilePath = async () => {
+  const appConfig = await window.electron.getPath('appData')
+  const fullPath = window.electron.path.join(appConfig, getAppFolderName())
+  try {
+    await window.electron.stat(fullPath)
+  } catch (e) {
+    // File/path doesn't exist
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(fullPath, { recursive: true })
+    }
+  }
+  return window.electron.path.join(fullPath, TELEMETRY_RAW_FILE_NAME)
 }
 
 const getProjectSettingsFilePath = async (projectPath: string) => {
@@ -550,6 +583,18 @@ export const writeTokenFile = async (token: string) => {
   const tokenFilePath = await getTokenFilePath()
   if (err(token)) return Promise.reject(token)
   return window.electron.writeFile(tokenFilePath, token)
+}
+
+export const writeTelemetryFile = async (content: string) => {
+  const telemetryFilePath = await getTelemetryFilePath()
+  if (err(content)) return Promise.reject(content)
+  return window.electron.writeFile(telemetryFilePath, content)
+}
+
+export const writeRawTelemetryFile = async (content: string) => {
+  const rawTelemetryFilePath = await getRawTelemetryFilePath()
+  if (err(content)) return Promise.reject(content)
+  return window.electron.writeFile(rawTelemetryFilePath, content)
 }
 
 let appStateStore: Project | undefined = undefined

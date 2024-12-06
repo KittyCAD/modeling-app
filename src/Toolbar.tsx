@@ -38,9 +38,8 @@ export function Toolbar({
     '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
 
   const sketchPathId = useMemo(() => {
-    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
+    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast))
       return false
-    }
     return isCursorInSketchCommandRange(
       engineCommandManager.artifactGraph,
       context.selectionRanges
@@ -141,6 +140,7 @@ export function Toolbar({
       >
         {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
         {currentModeItems.map((maybeIconConfig, i) => {
+          // Vertical Line Break
           if (maybeIconConfig === 'break') {
             return (
               <div
@@ -149,6 +149,7 @@ export function Toolbar({
               />
             )
           } else if (Array.isArray(maybeIconConfig)) {
+            // A button with a dropdown
             return (
               <ActionButtonDropdown
                 Element="button"
@@ -215,6 +216,7 @@ export function Toolbar({
           }
           const itemConfig = maybeIconConfig
 
+          // A single button
           return (
             <div className="relative" key={itemConfig.id}>
               <ActionButton

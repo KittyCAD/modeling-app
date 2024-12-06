@@ -45,9 +45,9 @@ test.describe('Sketch tests', () => {
   screwHole = startSketchOn('XY')
     ${startProfileAt1}
     |> arc({
-          radius: screwRadius,
-          angle_start: 0,
-          angle_end: 360
+          radius = screwRadius,
+          angle_start = 0,
+          angle_end = 360
         }, %)
 
   part001 = startSketchOn('XY')
@@ -66,9 +66,9 @@ test.describe('Sketch tests', () => {
     |> xLine(-width / 4 + wireRadius, %)
     |> yLine(wireOffset, %)
     |> arc({
-          radius: wireRadius,
-          angle_start: 0,
-          angle_end: 180
+          radius = wireRadius,
+          angle_start = 0,
+          angle_end = 180
         }, %)
     |> yLine(-wireOffset, %)
     |> xLine(-width / 4, %)
@@ -115,7 +115,7 @@ test.describe('Sketch tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
+  |> xLine(12.73, %)
   |> tangentialArcTo([24.95, -5.38], %)`
       )
     })
@@ -156,7 +156,7 @@ test.describe('Sketch tests', () => {
       await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
         .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
-  |> line([-12.34, 12.34], %)
+  |> yLine(12.34, %)
 
 `)
     }).toPass({ timeout: 40_000, intervals: [1_000] })
@@ -354,7 +354,7 @@ test.describe('Sketch tests', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-  |> circle({ center: [4.61, -5.01], radius: 8 }, %)`
+  |> circle({ center = [4.61, -5.01], radius = 8 }, %)`
       )
     })
 
@@ -392,7 +392,7 @@ test.describe('Sketch tests', () => {
     const dragPX = 40
 
     await page
-      .getByText('circle({ center: [4.61, -5.01], radius: 8 }, %)')
+      .getByText('circle({ center = [4.61, -5.01], radius = 8 }, %)')
       .click()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
@@ -429,7 +429,7 @@ test.describe('Sketch tests', () => {
     // expect the code to have changed
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
-  |> circle({ center: [7.26, -2.37], radius: 11.44 }, %)
+  |> circle({ center = [7.26, -2.37], radius = 11.44 }, %)
 `)
   })
   test('Can edit a sketch that has been extruded in the same pipe', async ({
@@ -547,7 +547,7 @@ test.describe('Sketch tests', () => {
     |> line([12.73, -0.09], %)
     |> tangentialArcTo([24.95, -5.38], %)
     |> close(%)
-    |> revolve({ axis: "X",}, %)`
+    |> revolve({ axis = "X",}, %)`
       )
     })
 
@@ -634,7 +634,7 @@ test.describe('Sketch tests', () => {
     |> tangentialArcTo([24.95, -5.38], %)
     |> line([1.97, 2.06], %)
     |> close(%)
-    |> revolve({ axis: "X" }, %)`)
+    |> revolve({ axis = "X" }, %)`)
   })
   test('Can add multiple sketches', async ({ page }) => {
     const u = await getUtils(page)
@@ -645,7 +645,7 @@ test.describe('Sketch tests', () => {
     await u.openDebugPanel()
 
     const center = { x: viewportSize.width / 2, y: viewportSize.height / 2 }
-    const { toSU, click00r } = getMovementUtils({ center, page })
+    const { toSU, toU, click00r } = getMovementUtils({ center, page })
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -674,16 +674,15 @@ test.describe('Sketch tests', () => {
 
     await click00r(50, 0)
     await page.waitForTimeout(100)
-    codeStr += `  |> lineTo(${toSU([50, 0])}, %)`
+    codeStr += `  |> xLine(${toU(50, 0)[0]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 50)
-    codeStr += `  |> line(${toSU([0, 50])}, %)`
+    codeStr += `  |> yLine(${toU(0, 50)[1]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
-    let clickCoords = await click00r(-50, 0)
-    expect(clickCoords).not.toBeUndefined()
-    codeStr += `  |> lineTo(${toSU(clickCoords!)}, %)`
+    await click00r(-50, 0)
+    codeStr += `  |> xLine(${toU(-50, 0)[0]}, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // exit the sketch, reset relative clicker
@@ -712,15 +711,15 @@ test.describe('Sketch tests', () => {
     // TODO: I couldn't use `toSU` here because of some rounding error causing
     // it to be off by 0.01
     await click00r(30, 0)
-    codeStr += `  |> lineTo([4.07, 0], %)`
+    codeStr += `  |> xLine(2.04, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(0, 30)
-    codeStr += `  |> line([0, -2.03], %)`
+    codeStr += `  |> yLine(-2.03, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(-30, 0)
-    codeStr += `  |> line([-2.04, 0], %)`
+    codeStr += `  |> xLine(-2.04, %)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(undefined, undefined)
@@ -744,8 +743,8 @@ test.describe('Sketch tests', () => {
 
       const code = `sketch001 = startSketchOn('-XZ')
     |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
-    |> line([${roundOff(scale * 139.19)}, 0], %)
-    |> line([0, -${roundOff(scale * 139.2)}], %)
+    |> xLine(${roundOff(scale * 139.19)}, %)
+    |> yLine(-${roundOff(scale * 139.2)}, %)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
     |> close(%)`
 
@@ -944,6 +943,110 @@ sketch002 = startSketchOn(extrude001, 'END')
 `.replace(/\s/g, '')
     )
   })
+
+  /* TODO: once we fix bug turn on.
+   test('empty-scene default-planes act as expected when spaces in file', async ({
+    page,
+    browserName,
+  }) => {
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const unHoveredColor: [number, number, number] = [47, 47, 93]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await u.openAndClearDebugPanel()
+
+    // Fill with spaces
+    await u.codeLocator.fill(`               
+`)
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+  })
+
+  test('empty-scene default-planes act as expected when only code comments in file', async ({
+    page,
+    browserName,
+  }) => {
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const unHoveredColor: [number, number, number] = [47, 47, 93]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await u.openAndClearDebugPanel()
+
+    // Fill with spaces
+    await u.codeLocator.fill(`// this is a code comments ya nerds
+`)
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+  })*/
+
   test('empty-scene default-planes act as expected', async ({
     page,
     browserName,
@@ -1075,11 +1178,11 @@ sketch002 = startSketchOn(extrude001, 'END')
         fn lug = (origin, length, diameter, plane) => {
           lugSketch = startSketchOn(plane)
             |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
-            |> angledLineOfYLength({ angle: 60, length: lugHeadLength }, %)
+            |> angledLineOfYLength({ angle = 60, length = lugHeadLength }, %)
             |> xLineTo(0 + .001, %)
             |> yLineTo(0, %)
             |> close(%)
-            |> revolve({ axis: "Y" }, %)
+            |> revolve({ axis = "Y" }, %)
 
           return lugSketch
         }
@@ -1272,6 +1375,47 @@ test2.describe('Sketch mode should be toleratant to syntax errors', () => {
         await verifyArrowHeadColor(arrowHeadWhite)
       })
       await app.page.waitForTimeout(100)
+    }
+  )
+})
+
+test2.describe(`Sketching with offset planes`, () => {
+  test2(
+    `Can select an offset plane to sketch on`,
+    async ({ app, scene, toolbar, editor }) => {
+      // We seed the scene with a single offset plane
+      await app.initialise(`offsetPlane001 = offsetPlane("XY", 10)`)
+
+      const [planeClick, planeHover] = scene.makeMouseHelpers(650, 200)
+
+      await test2.step(`Start sketching on the offset plane`, async () => {
+        await toolbar.startSketchPlaneSelection()
+
+        await test2.step(`Hovering should highlight code`, async () => {
+          await planeHover()
+          await editor.expectState({
+            activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+            diagnostics: [],
+            highlightedCode: 'offsetPlane("XY", 10)',
+          })
+        })
+
+        await test2.step(
+          `Clicking should select the plane and enter sketch mode`,
+          async () => {
+            await planeClick()
+            // Have to wait for engine-side animation to finish
+            await app.page.waitForTimeout(600)
+            await expect2(toolbar.lineBtn).toBeEnabled()
+            await editor.expectEditor.toContain('startSketchOn(offsetPlane001)')
+            await editor.expectState({
+              activeLines: [`offsetPlane001=offsetPlane("XY",10)`],
+              diagnostics: [],
+              highlightedCode: '',
+            })
+          }
+        )
+      })
     }
   )
 })

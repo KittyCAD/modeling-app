@@ -1,0 +1,49 @@
+---
+source: kcl/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "declaration": {
+        "end": 19,
+        "id": {
+          "end": 9,
+          "name": "pt1",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "computed": false,
+          "end": 19,
+          "object": {
+            "end": 14,
+            "name": "b1",
+            "start": 12,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "property": {
+            "end": 19,
+            "name": "zero",
+            "start": 15,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "start": 12,
+          "type": "MemberExpression",
+          "type": "MemberExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
+      "end": 19,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 19,
+  "start": 0
+}

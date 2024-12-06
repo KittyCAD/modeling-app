@@ -52,8 +52,10 @@ export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
 export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
+  LOFT: 'loft',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
+  PLANE: 'plane',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -69,6 +71,8 @@ export const SETTINGS_FILE_NAME = 'settings.toml'
 export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const COOKIE_NAME = '__Secure-next-auth.session-token'
+export const TELEMETRY_FILE_NAME = 'boot.txt'
+export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 
 /** localStorage key to determine if we're in Playwright tests */
 export const PLAYWRIGHT_KEY = 'playwright'

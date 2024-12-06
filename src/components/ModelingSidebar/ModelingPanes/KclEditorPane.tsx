@@ -4,7 +4,7 @@ import { Themes, getSystemTheme } from 'lib/theme'
 import { useMemo, useRef } from 'react'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { lineHighlightField } from 'editor/highlightextension'
-import { roundOff } from 'lib/utils'
+import { onMouseDragMakeANewNumber, onMouseDragRegex } from 'lib/utils'
 import {
   lineNumbers,
   rectangularSelection,
@@ -43,6 +43,7 @@ import {
   completionKeymap,
 } from '@codemirror/autocomplete'
 import CodeEditor from './CodeEditor'
+import { codeManagerHistoryCompartment } from 'lang/codeManager'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -89,7 +90,7 @@ export const KclEditorPane = () => {
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
       lineHighlightField,
-      history(),
+      codeManagerHistoryCompartment.of(history()),
       closeBrackets(),
       codeFolding(),
       keymap.of([
@@ -121,7 +122,6 @@ export const KclEditorPane = () => {
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),
-        history(),
         foldGutter(),
         EditorState.allowMultipleSelections.of(true),
         indentOnInput(),
@@ -129,7 +129,9 @@ export const KclEditorPane = () => {
         closeBrackets(),
         highlightActiveLine(),
         highlightSelectionMatches(),
-        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        syntaxHighlighting(defaultHighlightStyle, {
+          fallback: true,
+        }),
         rectangularSelection(),
         dropCursor(),
         interact({
@@ -137,29 +139,12 @@ export const KclEditorPane = () => {
             // a rule for a number dragger
             {
               // the regexp matching the value
-              regexp: /-?\b\d+\.?\d*\b/g,
+              regexp: onMouseDragRegex,
               // set cursor to "ew-resize" on hover
               cursor: 'ew-resize',
               // change number value based on mouse X movement on drag
               onDrag: (text, setText, e) => {
-                const multiplier =
-                  e.shiftKey && e.metaKey
-                    ? 0.01
-                    : e.metaKey
-                    ? 0.1
-                    : e.shiftKey
-                    ? 10
-                    : 1
-
-                const delta = e.movementX * multiplier
-
-                const newVal = roundOff(
-                  Number(text) + delta,
-                  multiplier === 0.01 ? 2 : multiplier === 0.1 ? 1 : 0
-                )
-
-                if (isNaN(newVal)) return
-                setText(newVal.toString())
+                onMouseDragMakeANewNumber(text, setText, e)
               },
             },
           ],

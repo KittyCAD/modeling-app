@@ -17,6 +17,9 @@ import {
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import { err, reportRejection } from 'lib/trap'
+import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 
 enum StreamState {
   Playing = 'playing',
@@ -30,6 +33,7 @@ export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send } = useModelingContext()
+  const { commandBarState } = useCommandsContext()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
@@ -260,7 +264,15 @@ export const Stream = () => {
     if (!videoRef.current) return
     // If we're in sketch mode, don't send a engine-side select event
     if (state.matches('Sketch')) return
-    if (state.matches({ idle: 'showPlanes' })) return
+    // Only respect default plane selection if we're on a selection command argument
+    if (
+      state.matches({ idle: 'showPlanes' }) &&
+      !(
+        commandBarState.matches('Gathering arguments') &&
+        commandBarState.context.currentArgument?.inputType === 'selection'
+      )
+    )
+      return
     // If we're mousing up from a camera drag, don't send a select event
     if (sceneInfra.camControls.wasDragging === true) return
 
@@ -270,12 +282,49 @@ export const Stream = () => {
     }
   }
 
+  /**
+   * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
+   * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
+   */
+  const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> = (
+    e
+  ) => {
+    if (
+      !isNetworkOkay ||
+      !videoRef.current ||
+      state.matches('Sketch') ||
+      state.matches({ idle: 'showPlanes' }) ||
+      sceneInfra.camControls.wasDragging === true ||
+      !btnName(e.nativeEvent).left
+    ) {
+      return
+    }
+
+    sendSelectEventToEngine(e, videoRef.current)
+      .then(({ entity_id }) => {
+        if (!entity_id) {
+          // No entity selected. This is benign
+          return
+        }
+        const path = getArtifactOfTypes(
+          { key: entity_id, types: ['path', 'solid2D', 'segment'] },
+          engineCommandManager.artifactGraph
+        )
+        if (err(path)) {
+          return path
+        }
+        sceneInfra.modelingSend({ type: 'Enter sketch' })
+      })
+      .catch(reportRejection)
+  }
+
   return (
     <div
       className="absolute inset-0 z-0"
       id="stream"
       data-testid="stream"
       onClick={handleMouseUp}
+      onDoubleClick={enterSketchModeIfSelectingSketch}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >

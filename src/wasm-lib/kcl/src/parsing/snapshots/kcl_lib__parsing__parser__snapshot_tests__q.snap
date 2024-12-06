@@ -1,0 +1,66 @@
+---
+source: kcl/src/parsing/parser.rs
+expression: actual
+---
+{
+  "body": [
+    {
+      "declaration": {
+        "end": 30,
+        "id": {
+          "end": 12,
+          "name": "height",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "elements": [
+            {
+              "computed": false,
+              "end": 25,
+              "object": {
+                "end": 20,
+                "name": "obj",
+                "start": 17,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "property": {
+                "end": 24,
+                "raw": "\"a\"",
+                "start": 21,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "a"
+              },
+              "start": 17,
+              "type": "MemberExpression",
+              "type": "MemberExpression"
+            },
+            {
+              "end": 28,
+              "raw": "0",
+              "start": 27,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 0.0
+            }
+          ],
+          "end": 30,
+          "start": 15,
+          "type": "ArrayExpression",
+          "type": "ArrayExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
+      "end": 30,
+      "kind": "const",
+      "start": 0,
+      "type": "VariableDeclaration",
+      "type": "VariableDeclaration"
+    }
+  ],
+  "end": 30,
+  "start": 0
+}

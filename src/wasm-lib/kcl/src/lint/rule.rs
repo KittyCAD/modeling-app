@@ -3,7 +3,7 @@ use schemars::JsonSchema;
 use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{executor::SourceRange, lsp::IntoDiagnostic, walk::Node};
+use crate::{lsp::IntoDiagnostic, walk::Node, SourceRange};
 
 /// Check the provided AST for any found rule violations.
 ///
@@ -56,8 +56,8 @@ impl Discovered {
     }
 
     #[getter]
-    pub fn pos(&self) -> SourceRange {
-        self.pos
+    pub fn pos(&self) -> (usize, usize) {
+        (self.pos.start(), self.pos.end())
     }
 
     #[getter]
@@ -182,9 +182,7 @@ mod test {
 
     macro_rules! assert_no_finding {
         ( $check:expr, $finding:expr, $kcl:expr ) => {
-            let tokens = $crate::token::lexer($kcl).unwrap();
-            let parser = $crate::parser::Parser::new(tokens);
-            let prog = parser.ast().unwrap();
+            let prog = $crate::parsing::top_level_parse($kcl).unwrap();
             for discovered_finding in prog.lint($check).unwrap() {
                 if discovered_finding.finding == $finding {
                     assert!(false, "Finding {:?} was emitted", $finding.code);
@@ -195,9 +193,7 @@ mod test {
 
     macro_rules! assert_finding {
         ( $check:expr, $finding:expr, $kcl:expr ) => {
-            let tokens = $crate::token::lexer($kcl).unwrap();
-            let parser = $crate::parser::Parser::new(tokens);
-            let prog = parser.ast().unwrap();
+            let prog = $crate::parsing::top_level_parse($kcl).unwrap();
 
             for discovered_finding in prog.lint($check).unwrap() {
                 if discovered_finding.finding == $finding {
