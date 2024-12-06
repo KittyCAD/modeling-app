@@ -83,10 +83,9 @@ class MockEngineCommandManager {
 }
 
 export async function enginelessExecutor(
-  ast: Node<Program> | Error,
+  ast: Node<Program>,
   pmo: ProgramMemory | Error = ProgramMemory.empty()
 ): Promise<ExecState> {
-  if (err(ast)) return Promise.reject(ast)
   if (pmo !== null && err(pmo)) return Promise.reject(pmo)
 
   const mockEngineCommandManager = new MockEngineCommandManager({
