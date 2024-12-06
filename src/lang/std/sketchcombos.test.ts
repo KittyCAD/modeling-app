@@ -1,4 +1,4 @@
-import { parse, Expr, recast, initPromise, Program } from '../wasm'
+import { assertParse, Expr, recast, initPromise, Program } from '../wasm'
 import {
   getConstraintType,
   getTransformInfos,
@@ -66,8 +66,7 @@ describe('testing getConstraintType', () => {
 function getConstraintTypeFromSourceHelper(
   code: string
 ): ReturnType<typeof getConstraintType> | Error {
-  const ast = parse(code)
-  if (err(ast)) return ast
+  const ast = assertParse(code)
 
   const args = (ast.body[0] as any).expression.arguments[0].elements as [
     Expr,
@@ -79,8 +78,7 @@ function getConstraintTypeFromSourceHelper(
 function getConstraintTypeFromSourceHelper2(
   code: string
 ): ReturnType<typeof getConstraintType> | Error {
-  const ast = parse(code)
-  if (err(ast)) return ast
+  const ast = assertParse(code)
 
   const arg = (ast.body[0] as any).expression.arguments[0] as Expr
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
@@ -127,7 +125,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
         )
       }
       const start = codeBeforeLine + line.indexOf('|> ' + 5)
-      const range: [number, number] = [start, start]
+      const range: [number, number, boolean] = [start, start, true]
       return {
         codeRef: codeRefFromRange(range, ast),
       }
@@ -137,8 +135,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
       inputCode: string,
       selectionRanges: Selections['graphSelections']
     ) {
-      const ast = parse(inputCode)
-      if (err(ast)) return Promise.reject(ast)
+      const ast = assertParse(inputCode)
       const execState = await enginelessExecutor(ast)
       const transformInfos = getTransformInfos(
         makeSelections(selectionRanges.slice(1)),
@@ -161,8 +158,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
     }
 
     it(`Should reorder when user selects first-to-last`, async () => {
-      const ast = parse(inputScript)
-      if (err(ast)) return Promise.reject(ast)
+      const ast = assertParse(inputScript)
       const selectionRanges: Selections['graphSelections'] = [
         selectLine(inputScript, 3, ast),
         selectLine(inputScript, 4, ast),
@@ -173,8 +169,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
     })
 
     it(`Should reorder when user selects last-to-first`, async () => {
-      const ast = parse(inputScript)
-      if (err(ast)) return Promise.reject(ast)
+      const ast = assertParse(inputScript)
       const selectionRanges: Selections['graphSelections'] = [
         selectLine(inputScript, 4, ast),
         selectLine(inputScript, 3, ast),
@@ -293,8 +288,7 @@ part001 = startSketchOn('XY')
   |> yLine(segLen(seg01), %) // ln-yLineTo-free should convert to yLine
 `
   it('should transform the ast', async () => {
-    const ast = parse(inputScript)
-    if (err(ast)) return Promise.reject(ast)
+    const ast = assertParse(inputScript)
 
     const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
@@ -303,7 +297,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start], ast),
+          codeRef: codeRefFromRange([start, start, true], ast),
         }
       })
 
@@ -383,8 +377,7 @@ part001 = startSketchOn('XY')
   |> xLineTo(myVar3, %) // select for horizontal constraint 10
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 `
-    const ast = parse(inputScript)
-    if (err(ast)) return Promise.reject(ast)
+    const ast = assertParse(inputScript)
 
     const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
@@ -393,7 +386,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start], ast),
+          codeRef: codeRefFromRange([start, start, true], ast),
         }
       })
 
@@ -444,8 +437,7 @@ part001 = startSketchOn('XY')
   |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
   |> yLineTo(myVar, %) // select for vertical constraint 10
 `
-    const ast = parse(inputScript)
-    if (err(ast)) return Promise.reject(ast)
+    const ast = assertParse(inputScript)
 
     const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
@@ -454,7 +446,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start], ast),
+          codeRef: codeRefFromRange([start, start, true], ast),
         }
       })
 
@@ -538,8 +530,7 @@ async function helperThing(
   linesOfInterest: string[],
   constraint: ConstraintType
 ): Promise<string> {
-  const ast = parse(inputScript)
-  if (err(ast)) return Promise.reject(ast)
+  const ast = assertParse(inputScript)
 
   const selectionRanges: Selections['graphSelections'] = inputScript
     .split('\n')
@@ -550,7 +541,7 @@ async function helperThing(
       const comment = ln.split('//')[1]
       const start = inputScript.indexOf('//' + comment) - 7
       return {
-        codeRef: codeRefFromRange([start, start], ast),
+        codeRef: codeRefFromRange([start, start, true], ast),
       }
     })
 
@@ -606,7 +597,7 @@ part001 = startSketchOn('XY')
   |> line([-1.49, 1.06], %) // free
   |> xLine(-3.43 + 0, %) // full
   |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full`
-    const ast = parse(code)
+    const ast = assertParse(code)
     const constraintLevels: ConstraintLevel[] = ['full', 'partial', 'free']
     constraintLevels.forEach((constraintLevel) => {
       const recursivelySearchCommentsAndCheckConstraintLevel = (
@@ -619,7 +610,7 @@ part001 = startSketchOn('XY')
         }
         const offsetIndex = index - 7
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
-          [offsetIndex, offsetIndex],
+          [offsetIndex, offsetIndex, true],
           ast
         )
         if (err(expectedConstraintLevel)) {

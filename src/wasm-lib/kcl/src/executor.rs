@@ -2241,7 +2241,7 @@ mod tests {
     use crate::parsing::ast::types::{Identifier, Node, Parameter};
 
     pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
-        let program = Program::parse(code)?;
+        let program = Program::parse_no_errs(code)?;
 
         let ctx = ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),

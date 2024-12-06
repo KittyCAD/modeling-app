@@ -296,7 +296,7 @@ async fn inner_pattern_transform<'a>(
     // Build the vec of transforms, one for each repetition.
     let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
     if total_instances < 1 {
-        return Err(KclError::Syntax(KclErrorDetails {
+        return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: MUST_HAVE_ONE_INSTANCE.to_owned(),
         }));
@@ -333,7 +333,7 @@ async fn inner_pattern_transform_2d<'a>(
     // Build the vec of transforms, one for each repetition.
     let mut transform = Vec::with_capacity(usize::try_from(total_instances).unwrap());
     if total_instances < 1 {
-        return Err(KclError::Syntax(KclErrorDetails {
+        return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![args.source_range],
             message: MUST_HAVE_ONE_INSTANCE.to_owned(),
         }));
@@ -1035,7 +1035,7 @@ async fn pattern_circular(
             return Ok(Geometries::from(geometry));
         }
         RepetitionsNeeded::Invalid => {
-            return Err(KclError::Syntax(KclErrorDetails {
+            return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
                 message: MUST_HAVE_ONE_INSTANCE.to_owned(),
             }));

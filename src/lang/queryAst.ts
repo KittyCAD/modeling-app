@@ -16,6 +16,7 @@ import {
   sketchFromKclValue,
   sketchFromKclValueOptional,
   SourceRange,
+  sourceRangeFromRust,
   SyntaxType,
   VariableDeclaration,
   VariableDeclarator,
@@ -669,7 +670,7 @@ export function isNodeSafeToReplacePath(
 
 export function isNodeSafeToReplace(
   ast: Node<Program>,
-  sourceRange: [number, number]
+  sourceRange: SourceRange
 ):
   | {
       isSafe: boolean
@@ -821,7 +822,7 @@ export function isLinesParallelAndConstrained(
     return {
       isParallelAndConstrained,
       selection: {
-        codeRef: codeRefFromRange(prevSourceRange, ast),
+        codeRef: codeRefFromRange(sourceRangeFromRust(prevSourceRange), ast),
         artifact: artifactGraph.get(prevSegment.__geoMeta.id),
       },
     }
@@ -957,7 +958,8 @@ export function findUsesOfTagInPipe(
         return
       const tagArgValue =
         tagArg.type === 'TagDeclarator' ? String(tagArg.value) : tagArg.name
-      if (tagArgValue === tag) dependentRanges.push([node.start, node.end])
+      if (tagArgValue === tag)
+        dependentRanges.push([node.start, node.end, true])
     },
   })
   return dependentRanges

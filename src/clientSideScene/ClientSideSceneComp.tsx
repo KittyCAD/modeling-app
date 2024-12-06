@@ -29,6 +29,8 @@ import {
   Expr,
   parse,
   recast,
+  defaultSourceRange,
+  resultIsOk,
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
@@ -412,8 +414,9 @@ export async function deleteSegment({
   if (err(modifiedAst)) return Promise.reject(modifiedAst)
 
   const newCode = recast(modifiedAst)
-  modifiedAst = parse(newCode)
-  if (err(modifiedAst)) return Promise.reject(modifiedAst)
+  const pResult = parse(newCode)
+  if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+  modifiedAst = pResult.program
 
   const testExecute = await executeAst({
     ast: modifiedAst,
@@ -590,7 +593,9 @@ const ConstraintSymbol = ({
   if (err(_node)) return
   const node = _node.node
 
-  const range: SourceRange = node ? [node.start, node.end] : [0, 0]
+  const range: SourceRange = node
+    ? [node.start, node.end, true]
+    : defaultSourceRange()
 
   if (_type === 'intersectionTag') return null
 
@@ -612,7 +617,7 @@ const ConstraintSymbol = ({
           editorManager.setHighlightRange([range])
         }}
         onMouseLeave={() => {
-          editorManager.setHighlightRange([[0, 0]])
+          editorManager.setHighlightRange([defaultSourceRange()])
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
@@ -627,10 +632,12 @@ const ConstraintSymbol = ({
             })
           } else if (isConstrained) {
             try {
-              const parsed = parse(recast(kclManager.ast))
-              if (trap(parsed)) return Promise.reject(parsed)
+              const pResult = parse(recast(kclManager.ast))
+              if (trap(pResult) || !resultIsOk(pResult))
+                return Promise.reject(pResult)
+
               const _node1 = getNodeFromPath<CallExpression>(
-                parsed,
+                pResult.program!,
                 pathToNode,
                 'CallExpression',
                 true

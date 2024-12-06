@@ -1,6 +1,10 @@
 import { executeAst, lintAst } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { KCLError, kclErrorsToDiagnostics } from './errors'
+import {
+  KCLError,
+  complilationErrorsToDiagnostics,
+  kclErrorsToDiagnostics,
+} from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err } from 'lib/trap'
@@ -51,11 +55,11 @@ export class KclManager {
   private _programMemory: ProgramMemory = ProgramMemory.empty()
   lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
-  private _lints: Diagnostic[] = []
-  private _kclErrors: KCLError[] = []
+  private _diagnostics: Diagnostic[] = []
   private _isExecuting = false
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
+  private _hasErrors = false
 
   engineCommandManager: EngineCommandManager
 
@@ -63,7 +67,7 @@ export class KclManager {
   private _astCallBack: (arg: Node<Program>) => void = () => {}
   private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
-  private _kclErrorsCallBack: (arg: KCLError[]) => void = () => {}
+  private _kclErrorsCallBack: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
 
@@ -101,38 +105,28 @@ export class KclManager {
     this._logsCallBack(logs)
   }
 
-  get lints() {
-    return this._lints
+  get diagnostics() {
+    return this._diagnostics
   }
 
-  set lints(lints) {
-    if (lints === this._lints) return
-    this._lints = lints
-    // Run the lints through the diagnostics.
-    this.kclErrors = this._kclErrors
-  }
-
-  get kclErrors() {
-    return this._kclErrors
-  }
-  set kclErrors(kclErrors) {
-    if (kclErrors === this._kclErrors && this.lints.length === 0) return
-    this._kclErrors = kclErrors
+  set diagnostics(ds) {
+    if (ds === this._diagnostics) return
+    this._diagnostics = ds
     this.setDiagnosticsForCurrentErrors()
-    this._kclErrorsCallBack(kclErrors)
+  }
+
+  addDiagnostics(ds: Diagnostic[]) {
+    if (ds.length === 0) return
+    this.diagnostics = this.diagnostics.concat(ds)
+  }
+
+  hasErrors(): boolean {
+    return this._hasErrors
   }
 
   setDiagnosticsForCurrentErrors() {
-    let diagnostics = kclErrorsToDiagnostics(this.kclErrors)
-    if (this.lints.length > 0) {
-      diagnostics = diagnostics.concat(this.lints)
-    }
-    editorManager?.setDiagnostics(diagnostics)
-  }
-
-  addKclErrors(kclErrors: KCLError[]) {
-    if (kclErrors.length === 0) return
-    this.kclErrors = this.kclErrors.concat(kclErrors)
+    editorManager?.setDiagnostics(this.diagnostics)
+    this._kclErrorsCallBack(this.diagnostics)
   }
 
   get isExecuting() {
@@ -188,7 +182,7 @@ export class KclManager {
     setProgramMemory: (arg: ProgramMemory) => void
     setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
-    setKclErrors: (arg: KCLError[]) => void
+    setKclErrors: (errors: Diagnostic[]) => void
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
@@ -218,17 +212,32 @@ export class KclManager {
   }
 
   safeParse(code: string): Node<Program> | null {
-    const ast = parse(code)
-    this.lints = []
-    this.kclErrors = []
-    if (!err(ast)) return ast
-    const kclerror: KCLError = ast as KCLError
+    const result = parse(code)
+    this.diagnostics = []
+    this._hasErrors = false
 
-    this.addKclErrors([kclerror])
-    // TODO: re-eval if session should end?
-    if (kclerror.msg === 'file is empty')
-      this.engineCommandManager?.endSession()
-    return null
+    if (err(result)) {
+      const kclerror: KCLError = result as KCLError
+      this.diagnostics = kclErrorsToDiagnostics([kclerror])
+      this._hasErrors = true
+      return null
+    }
+
+    this.addDiagnostics(complilationErrorsToDiagnostics(result.errors))
+    this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
+    if (result.errors.length > 0) {
+      this._hasErrors = true
+      // TODO: re-eval if session should end?
+      for (const e of result.errors)
+        if (e.message === 'file is empty') {
+          this.engineCommandManager?.endSession()
+          break
+        }
+
+      return null
+    }
+
+    return result.program
   }
 
   async ensureWasmInit() {
@@ -279,7 +288,7 @@ export class KclManager {
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
-      this.lints = await lintAst({ ast: ast })
+      this.addDiagnostics(await lintAst({ ast: ast }))
 
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
       setSelectionFilterToDefault(execState.memory, this.engineCommandManager)
@@ -321,7 +330,7 @@ export class KclManager {
 
     this.logs = logs
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
-    this.addKclErrors(isInterrupted ? [] : errors)
+    this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     // Reset the next ID index so that we reuse the previous IDs next time.
     execState.idGenerator.nextId = 0
     this.execState = execState
@@ -370,7 +379,7 @@ export class KclManager {
     })
 
     this._logs = logs
-    this._kclErrors = errors
+    this.addDiagnostics(kclErrorsToDiagnostics(errors))
     this._execState = execState
     this._programMemory = execState.memory
     if (!errors.length) {
@@ -398,7 +407,7 @@ export class KclManager {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,
-            range: [node.start, node.end],
+            range: [node.start, node.end, true],
           },
         })
       }
@@ -490,7 +499,7 @@ export class KclManager {
         if (start && end) {
           returnVal.graphSelections.push({
             codeRef: {
-              range: [start, end],
+              range: [start, end, true],
               pathToNode: path,
             },
           })

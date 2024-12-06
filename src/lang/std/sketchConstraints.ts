@@ -31,7 +31,7 @@ export function getSketchSegmentFromPathToNode(
   const node = nodeMeta.node
   if (!node || typeof node.start !== 'number' || !node.end)
     return new Error('no node found')
-  const sourceRange: SourceRange = [node.start, node.end]
+  const sourceRange: SourceRange = [node.start, node.end, true]
   return getSketchSegmentFromSourceRange(sketch, sourceRange)
 }
 export function getSketchSegmentFromSourceRange(

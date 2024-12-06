@@ -438,6 +438,7 @@ impl Node<CallExpression> {
                     let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
                     let result = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
                         // Add the call expression to the source ranges.
+                        // TODO currently ignored by the frontend
                         e.add_source_ranges(vec![source_range])
                     });
                     exec_state.dynamic_state = previous_dynamic_state;

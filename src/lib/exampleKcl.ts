@@ -30,27 +30,27 @@ const bracketLeg1Sketch = startSketchOn('XY')
   |> line([-shelfMountL + filletRadius, 0], %)
   |> close(%)
   |> hole(circle({
-       center: [1, 1],
-       radius: mountingHoleDiameter / 2
+       center = [1, 1],
+       radius = mountingHoleDiameter / 2
      }, %), %)
   |> hole(circle({
-       center: [shelfMountL - 1.5, width - 1],
-       radius: mountingHoleDiameter / 2
+       center = [shelfMountL - 1.5, width - 1],
+       radius = mountingHoleDiameter / 2
      }, %), %)
   |> hole(circle({
-       center: [1, width - 1],
-       radius: mountingHoleDiameter / 2
+       center = [1, width - 1],
+       radius = mountingHoleDiameter / 2
      }, %), %)
   |> hole(circle({
-       center: [shelfMountL - 1.5, 1],
-       radius: mountingHoleDiameter / 2
+       center = [shelfMountL - 1.5, 1],
+       radius = mountingHoleDiameter / 2
      }, %), %)
 
 // Extrude the leg 2 bracket sketch
 const bracketLeg1Extrude = extrude(thickness, bracketLeg1Sketch)
   |> fillet({
-       radius: extFilletRadius,
-       tags: [
+       radius = extFilletRadius,
+       tags = [
          getNextAdjacentEdge(fillet1),
          getNextAdjacentEdge(fillet2)
        ]
@@ -61,15 +61,15 @@ const filletSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, thickness], %)
   |> arc({
-       angleEnd: 180,
-       angleStart: 90,
-       radius: filletRadius + thickness
+       angleEnd = 180,
+       angleStart = 90,
+       radius = filletRadius + thickness
      }, %)
   |> line([thickness, 0], %)
   |> arc({
-       angleEnd: 90,
-       angleStart: 180,
-       radius: filletRadius
+       angleEnd = 90,
+       angleStart = 180,
+       radius = filletRadius
      }, %)
 
 // Sketch the bend
@@ -77,11 +77,11 @@ const filletExtrude = extrude(-width, filletSketch)
 
 // Create a custom plane for the leg that sits on the wall
 const customPlane = {
-  plane: {
-    origin: { x: -filletRadius, y: 0, z: 0 },
-    xAxis: { x: 0, y: 1, z: 0 },
-    yAxis: { x: 0, y: 0, z: 1 },
-    zAxis: { x: 1, y: 0, z: 0 }
+  plane = {
+    origin = { x = -filletRadius, y = 0, z = 0 },
+    xAxis = { x = 0, y = 1, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 1, y = 0, z = 0 }
   }
 }
 
@@ -93,19 +93,19 @@ const bracketLeg2Sketch = startSketchOn(customPlane)
   |> line([-width, 0], %, $fillet4)
   |> close(%)
   |> hole(circle({
-       center: [1, -1.5],
-       radius: mountingHoleDiameter / 2
+       center = [1, -1.5],
+       radius = mountingHoleDiameter / 2
      }, %), %)
   |> hole(circle({
-       center: [5, -1.5],
-       radius: mountingHoleDiameter / 2
+       center = [5, -1.5],
+       radius = mountingHoleDiameter / 2
      }, %), %)
 
 // Extrude the second leg
 const bracketLeg2Extrude = extrude(-thickness, bracketLeg2Sketch)
   |> fillet({
-       radius: extFilletRadius,
-       tags: [
+       radius = extFilletRadius,
+       tags = [
          getNextAdjacentEdge(fillet3),
          getNextAdjacentEdge(fillet4)
        ]

@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import {
-  parse,
+  assertParse,
   ProgramMemory,
   Sketch,
   initPromise,
@@ -472,7 +472,7 @@ describe('Testing Errors', () => {
 const theExtrude = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([-2.4, 5], %)
-  |> line([-0.76], myVarZ, %)
+  |> line(myVarZ, %)
   |> line([5,5], %)
   |> close(%)
   |> extrude(4, %)`
@@ -480,7 +480,7 @@ const theExtrude = startSketchOn('XY')
       new KCLError(
         'undefined_value',
         'memory item key `myVarZ` is not defined',
-        [[129, 135, 0]]
+        [129, 135, true]
       )
     )
   })
@@ -492,7 +492,7 @@ async function exe(
   code: string,
   programMemory: ProgramMemory = ProgramMemory.empty()
 ) {
-  const ast = parse(code)
+  const ast = assertParse(code)
 
   const execState = await enginelessExecutor(ast, programMemory)
   return execState.memory

@@ -48,6 +48,9 @@ import {
   VariableDeclarator,
   sketchFromKclValue,
   sketchFromKclValueOptional,
+  defaultSourceRange,
+  sourceRangeFromRust,
+  resultIsOk,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -530,7 +533,7 @@ export class SceneEntities {
 
     const segPathToNode = getNodePathFromSourceRange(
       maybeModdedAst,
-      sketch.start.__geoMeta.sourceRange
+      sourceRangeFromRust(sketch.start.__geoMeta.sourceRange)
     )
     if (sketch?.paths?.[0]?.type !== 'Circle') {
       const _profileStart = createProfileStartHandle({
@@ -552,7 +555,7 @@ export class SceneEntities {
     sketch.paths.forEach((segment, index) => {
       let segPathToNode = getNodePathFromSourceRange(
         maybeModdedAst,
-        segment.__geoMeta.sourceRange
+        sourceRangeFromRust(segment.__geoMeta.sourceRange)
       )
       if (
         draftExpressionsIndices &&
@@ -561,12 +564,12 @@ export class SceneEntities {
         const previousSegment = sketch.paths[index - 1] || sketch.start
         const previousSegmentPathToNode = getNodePathFromSourceRange(
           maybeModdedAst,
-          previousSegment.__geoMeta.sourceRange
+          sourceRangeFromRust(previousSegment.__geoMeta.sourceRange)
         )
         const bodyIndex = previousSegmentPathToNode[1][0]
         segPathToNode = getNodePathFromSourceRange(
           truncatedAst,
-          segment.__geoMeta.sourceRange
+          sourceRangeFromRust(segment.__geoMeta.sourceRange)
         )
         segPathToNode[1][0] = bodyIndex
       }
@@ -575,7 +578,10 @@ export class SceneEntities {
         index <= draftExpressionsIndices.end &&
         index >= draftExpressionsIndices.start
       const isSelected = selectionRanges?.graphSelections.some((selection) =>
-        isOverlap(selection?.codeRef?.range, segment.__geoMeta.sourceRange)
+        isOverlap(
+          selection?.codeRef?.range,
+          sourceRangeFromRust(segment.__geoMeta.sourceRange)
+        )
       )
 
       let seg: Group
@@ -657,13 +663,11 @@ export class SceneEntities {
   }
   updateAstAndRejigSketch = async (
     sketchPathToNode: PathToNode,
-    modifiedAst: Node<Program> | Error,
+    modifiedAst: Node<Program>,
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number]
   ) => {
-    if (err(modifiedAst)) return modifiedAst
-
     const nextAst = await kclManager.updateAst(modifiedAst, false)
     await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
@@ -721,8 +725,9 @@ export class SceneEntities {
       pathToNode: sketchPathToNode,
     })
     if (trap(mod)) return Promise.reject(mod)
-    const modifiedAst = parse(recast(mod.modifiedAst))
-    if (trap(modifiedAst)) return Promise.reject(modifiedAst)
+    const pResult = parse(recast(mod.modifiedAst))
+    if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+    const modifiedAst = pResult.program
 
     const draftExpressionsIndices = { start: index, end: index }
 
@@ -914,9 +919,9 @@ export class SceneEntities {
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
 
-    let _recastAst = parse(recast(_ast))
-    if (trap(_recastAst)) return Promise.reject(_recastAst)
-    _ast = _recastAst
+    const pResult = parse(recast(_ast))
+    if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+    _ast = pResult.program
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
@@ -998,9 +1003,10 @@ export class SceneEntities {
         updateRectangleSketch(sketchInit, x, y, tags[0])
 
         const newCode = recast(_ast)
-        let _recastAst = parse(newCode)
-        if (trap(_recastAst)) return
-        _ast = _recastAst
+        const pResult = parse(newCode)
+        if (trap(pResult) || !resultIsOk(pResult))
+          return Promise.reject(pResult)
+        _ast = pResult.program
 
         // Update the primary AST and unequip the rectangle tool
         await kclManager.executeAstMock(_ast)
@@ -1071,9 +1077,9 @@ export class SceneEntities {
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
 
-    let _recastAst = parse(recast(_ast))
-    if (trap(_recastAst)) return Promise.reject(_recastAst)
-    _ast = _recastAst
+    const pResult = parse(recast(_ast))
+    if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+    _ast = pResult.program
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchPathToNode,
@@ -1165,9 +1171,10 @@ export class SceneEntities {
             rectangleOrigin[1]
           )
 
-          let _recastAst = parse(recast(_ast))
-          if (trap(_recastAst)) return
-          _ast = _recastAst
+          const pResult = parse(recast(_ast))
+          if (trap(pResult) || !resultIsOk(pResult))
+            return Promise.reject(pResult)
+          _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
@@ -1241,9 +1248,9 @@ export class SceneEntities {
       ]),
     ])
 
-    let _recastAst = parse(recast(_ast))
-    if (trap(_recastAst)) return Promise.reject(_recastAst)
-    _ast = _recastAst
+    const pResult = parse(recast(_ast))
+    if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+    _ast = pResult.program
 
     // do a quick mock execution to get the program memory up-to-date
     await kclManager.executeAstMock(_ast)
@@ -1365,9 +1372,10 @@ export class SceneEntities {
 
           const newCode = recast(modded)
           if (err(newCode)) return
-          let _recastAst = parse(newCode)
-          if (trap(_recastAst)) return Promise.reject(_recastAst)
-          _ast = _recastAst
+          const pResult = parse(newCode)
+          if (trap(pResult) || !resultIsOk(pResult))
+            return Promise.reject(pResult)
+          _ast = pResult.program
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
@@ -1660,7 +1668,7 @@ export class SceneEntities {
         kclManager.programMemory,
         {
           type: 'sourceRange',
-          sourceRange: [node.start, node.end],
+          sourceRange: [node.start, node.end, true],
         },
         getChangeSketchInput()
       )
@@ -1750,7 +1758,7 @@ export class SceneEntities {
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
-      segment.__geoMeta.sourceRange
+      sourceRangeFromRust(segment.__geoMeta.sourceRange)
     )
     const sgPaths = sketch.paths
     const originalPathToNodeStr = JSON.stringify(segPathToNode)
@@ -1901,8 +1909,10 @@ export class SceneEntities {
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
         if (parent?.userData?.pathToNode) {
-          const updatedAst = parse(recast(kclManager.ast))
-          if (trap(updatedAst)) return
+          const pResult = parse(recast(kclManager.ast))
+          if (trap(pResult) || !resultIsOk(pResult))
+            return Promise.reject(pResult)
+          const updatedAst = pResult.program
           const _node = getNodeFromPath<Node<CallExpression>>(
             updatedAst,
             parent.userData.pathToNode,
@@ -1910,7 +1920,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          editorManager.setHighlightRange([[node.start, node.end]])
+          editorManager.setHighlightRange([[node.start, node.end, true]])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -1955,10 +1965,10 @@ export class SceneEntities {
             })
           return
         }
-        editorManager.setHighlightRange([[0, 0]])
+        editorManager.setHighlightRange([defaultSourceRange()])
       },
       onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
-        editorManager.setHighlightRange([[0, 0]])
+        editorManager.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
           SEGMENT_BODIES_PLUS_PROFILE_START
@@ -2087,8 +2097,10 @@ function prepareTruncatedMemoryAndAst(
     ).body.push(newSegment)
     // update source ranges to section we just added.
     // hacks like this wouldn't be needed if the AST put pathToNode info in memory/sketch segments
-    const updatedSrcRangeAst = parse(recast(_ast)) // get source ranges correct since unfortunately we still rely on them
-    if (err(updatedSrcRangeAst)) return updatedSrcRangeAst
+    const pResult = parse(recast(_ast)) // get source ranges correct since unfortunately we still rely on them
+    if (trap(pResult) || !resultIsOk(pResult))
+      return Error('Unexpected compilation error')
+    const updatedSrcRangeAst = pResult.program
 
     const lastPipeItem = (
       (updatedSrcRangeAst.body[bodyIndex] as VariableDeclaration)

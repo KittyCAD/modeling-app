@@ -8,20 +8,14 @@ describe('test kclErrToDiagnostic', () => {
         message: '',
         kind: 'semantic',
         msg: 'Semantic error',
-        sourceRanges: [
-          [0, 1, 0],
-          [2, 3, 0],
-        ],
+        sourceRange: [0, 1, true],
       },
       {
         name: '',
         message: '',
         kind: 'type',
         msg: 'Type error',
-        sourceRanges: [
-          [4, 5, 0],
-          [6, 7, 0],
-        ],
+        sourceRange: [4, 5, true],
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors)
@@ -33,20 +27,8 @@ describe('test kclErrToDiagnostic', () => {
         severity: 'error',
       },
       {
-        from: 2,
-        to: 3,
-        message: 'Semantic error',
-        severity: 'error',
-      },
-      {
         from: 4,
         to: 5,
-        message: 'Type error',
-        severity: 'error',
-      },
-      {
-        from: 6,
-        to: 7,
         message: 'Type error',
         severity: 'error',
       },

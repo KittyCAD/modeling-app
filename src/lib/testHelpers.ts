@@ -85,11 +85,10 @@ class MockEngineCommandManager {
 }
 
 export async function enginelessExecutor(
-  ast: Node<Program> | Error,
+  ast: Node<Program>,
   pm: ProgramMemory | Error = ProgramMemory.empty(),
   idGenerator: IdGenerator = defaultIdGenerator()
 ): Promise<ExecState> {
-  if (err(ast)) return Promise.reject(ast)
   if (err(pm)) return Promise.reject(pm)
 
   const mockEngineCommandManager = new MockEngineCommandManager({

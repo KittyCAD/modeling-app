@@ -20,7 +20,8 @@ use sha2::Digest;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
-        CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
+        CodeAction, CodeActionKind, CodeActionOrCommand, CodeActionParams, CodeActionResponse, CompletionItem,
+        CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
         DeleteFilesParams, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
         DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
         DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
@@ -41,6 +42,7 @@ use tower_lsp::{
 };
 
 use crate::{
+    errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
         ast::types::{Expr, Node, VariableKind},
@@ -190,6 +192,12 @@ impl Backend {
             is_initialized: Default::default(),
         })
     }
+
+    fn remove_from_ast_maps(&self, filename: &str) {
+        self.ast_map.remove(filename);
+        self.symbols_map.remove(filename);
+        self.memory_map.remove(filename);
+    }
 }
 
 // Implement the shared backend trait for the language server.
@@ -264,10 +272,8 @@ impl crate::lsp::backend::Backend for Backend {
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
                 self.token_map.remove(&filename);
-                self.ast_map.remove(&filename);
-                self.symbols_map.remove(&filename);
+                self.remove_from_ast_maps(&filename);
                 self.semantic_tokens_map.remove(&filename);
-                self.memory_map.remove(&filename);
                 return;
             }
         };
@@ -300,17 +306,26 @@ impl crate::lsp::backend::Backend for Backend {
         }
 
         // Lets update the ast.
-        let result = crate::parsing::parse_tokens(tokens.clone());
-        // TODO handle parse errors properly
-        let mut ast = match result.parse_errs_as_err() {
-            Ok(ast) => ast,
+
+        let (ast, errs) = match crate::parsing::parse_tokens(tokens.clone()).0 {
+            Ok(result) => result,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
-                self.ast_map.remove(&filename);
-                self.symbols_map.remove(&filename);
-                self.memory_map.remove(&filename);
+                self.remove_from_ast_maps(&filename);
                 return;
             }
+        };
+
+        self.add_to_diagnostics(&params, &errs, true).await;
+
+        if errs.iter().any(|e| e.severity == crate::errors::Severity::Fatal) {
+            self.remove_from_ast_maps(&filename);
+            return;
+        }
+
+        let Some(mut ast) = ast else {
+            self.remove_from_ast_maps(&filename);
+            return;
         };
 
         // Here we will want to store the digest and compare, but for now
@@ -327,7 +342,7 @@ impl crate::lsp::backend::Backend for Backend {
             None => true,
         };
 
-        if !ast_changed && !force && has_memory && !self.has_diagnostics(params.uri.as_ref()).await {
+        if !ast_changed && !force && has_memory {
             // Return early if the ast did not change and we don't need to force.
             return;
         }
@@ -1379,6 +1394,41 @@ impl LanguageServer for Backend {
         }
 
         Ok(Some(folding_ranges))
+    }
+
+    async fn code_action(&self, params: CodeActionParams) -> RpcResult<Option<CodeActionResponse>> {
+        let actions = params
+            .context
+            .diagnostics
+            .into_iter()
+            .filter_map(|diagnostic| {
+                let suggestion = diagnostic
+                    .data
+                    .as_ref()
+                    .and_then(|data| serde_json::from_value::<Suggestion>(data.clone()).ok())?;
+                let edit = TextEdit {
+                    range: diagnostic.range,
+                    new_text: suggestion.insert,
+                };
+                let changes = HashMap::from([(params.text_document.uri.clone(), vec![edit])]);
+                Some(CodeActionOrCommand::CodeAction(CodeAction {
+                    title: suggestion.title,
+                    kind: Some(CodeActionKind::QUICKFIX),
+                    diagnostics: Some(vec![diagnostic]),
+                    edit: Some(WorkspaceEdit {
+                        changes: Some(changes),
+                        document_changes: None,
+                        change_annotations: None,
+                    }),
+                    command: None,
+                    is_preferred: Some(true),
+                    disabled: None,
+                    data: None,
+                }))
+            })
+            .collect();
+
+        Ok(Some(actions))
     }
 }
 

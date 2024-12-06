@@ -7,7 +7,7 @@ mod conn_mock_core;
 
 ///Converts the given kcl code to an engine test
 pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
-    let program = kcl_lib::Program::parse(code)?;
+    let program = kcl_lib::Program::parse_no_errs(code)?;
 
     let result = Arc::new(Mutex::new("".into()));
     let ref_result = Arc::clone(&result);
