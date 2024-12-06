@@ -1655,13 +1655,7 @@ impl ExecutorContext {
 
         // Set the edge visibility.
         engine
-            .batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                &ModelingCmd::from(mcmd::EdgeLinesVisible {
-                    hidden: !settings.highlight_edges,
-                }),
-            )
+            .set_edge_visibility(settings.highlight_edges, Default::default())
             .await?;
 
         Ok(Self {
@@ -1814,7 +1808,7 @@ impl ExecutorContext {
     // re-executed.
     // This function should never error, because in the case of any internal error, we should just pop
     // the cache.
-    pub fn get_changed_program(&self, info: CacheInformation) -> Option<CacheResult> {
+    pub async fn get_changed_program(&self, info: CacheInformation) -> Option<CacheResult> {
         let Some(old) = info.old else {
             // We have no old info, we need to re-execute the whole thing.
             return Some(CacheResult {
@@ -1823,13 +1817,32 @@ impl ExecutorContext {
             });
         };
 
-        // If the settings are different we need to bust the cache.
+        // If the settings are different we might need to bust the cache.
         // We specifically do this before checking if they are the exact same.
         if old.settings != self.settings {
-            return Some(CacheResult {
-                clear_scene: true,
-                program: info.new_ast,
-            });
+            // If the units are different we need to re-execute the whole thing.
+            if old.settings.units != self.settings.units {
+                return Some(CacheResult {
+                    clear_scene: true,
+                    program: info.new_ast,
+                });
+            }
+
+            // If anything else is different we do not need to re-execute, but rather just
+            // run the settings again.
+
+            if self
+                .engine
+                .reapply_settings(&self.settings, Default::default())
+                .await
+                .is_err()
+            {
+                // Bust the cache, we errored.
+                return Some(CacheResult {
+                    clear_scene: true,
+                    program: info.new_ast,
+                });
+            }
         }
 
         // If the ASTs are the EXACT same we return None.
@@ -1876,7 +1889,7 @@ impl ExecutorContext {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Get the program that actually changed from the old and new information.
-        let cache_result = self.get_changed_program(cache_info.clone());
+        let cache_result = self.get_changed_program(cache_info.clone()).await;
 
         // Check if we don't need to re-execute.
         let Some(cache_result) = cache_result else {
@@ -1894,22 +1907,7 @@ impl ExecutorContext {
         // TODO: Use the top-level file's path.
         exec_state.add_module(std::path::PathBuf::from(""));
         // Before we even start executing the program, set the units.
-        self.engine
-            .batch_modeling_cmd(
-                exec_state.id_generator.next_uuid(),
-                SourceRange::default(),
-                &ModelingCmd::from(mcmd::SetSceneUnits {
-                    unit: match self.settings.units {
-                        UnitLength::Cm => kcmc::units::UnitLength::Centimeters,
-                        UnitLength::Ft => kcmc::units::UnitLength::Feet,
-                        UnitLength::In => kcmc::units::UnitLength::Inches,
-                        UnitLength::M => kcmc::units::UnitLength::Meters,
-                        UnitLength::Mm => kcmc::units::UnitLength::Millimeters,
-                        UnitLength::Yd => kcmc::units::UnitLength::Yards,
-                    },
-                }),
-            )
-            .await?;
+        self.engine.set_units(self.settings.units, Default::default()).await?;
 
         self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
             .await?;
@@ -3234,10 +3232,12 @@ firstSketch = startSketchOn('XY')
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         let (program, ctx, _) = parse_execute(new).await.unwrap();
 
-        let result = ctx.get_changed_program(CacheInformation {
-            old: None,
-            new_ast: program.ast.clone(),
-        });
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: None,
+                new_ast: program.ast.clone(),
+            })
+            .await;
 
         assert!(result.is_some());
 
@@ -3263,14 +3263,16 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
 
         let (program, ctx, exec_state) = parse_execute(new).await.unwrap();
 
-        let result = ctx.get_changed_program(CacheInformation {
-            old: Some(OldAstState {
-                ast: program.ast.clone(),
-                exec_state,
-                settings: Default::default(),
-            }),
-            new_ast: program.ast.clone(),
-        });
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
 
         assert_eq!(result, None);
     }
@@ -3305,14 +3307,16 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
 
         let program_new = crate::Program::parse_no_errs(new).unwrap();
 
-        let result = ctx.get_changed_program(CacheInformation {
-            old: Some(OldAstState {
-                ast: program_old.ast.clone(),
-                exec_state,
-                settings: Default::default(),
-            }),
-            new_ast: program_new.ast.clone(),
-        });
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program_old.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program_new.ast.clone(),
+            })
+            .await;
 
         assert_eq!(result, None);
     }
@@ -3347,14 +3351,16 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
 
         let program_new = crate::Program::parse_no_errs(new).unwrap();
 
-        let result = ctx.get_changed_program(CacheInformation {
-            old: Some(OldAstState {
-                ast: program.ast.clone(),
-                exec_state,
-                settings: Default::default(),
-            }),
-            new_ast: program_new.ast.clone(),
-        });
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program_new.ast.clone(),
+            })
+            .await;
 
         assert_eq!(result, None);
     }
@@ -3389,14 +3395,16 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
 
         let program_new = crate::Program::parse_no_errs(new).unwrap();
 
-        let result = ctx.get_changed_program(CacheInformation {
-            old: Some(OldAstState {
-                ast: program.ast.clone(),
-                exec_state,
-                settings: Default::default(),
-            }),
-            new_ast: program_new.ast.clone(),
-        });
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program_new.ast.clone(),
+            })
+            .await;
 
         assert!(result.is_some());
 
@@ -3426,14 +3434,16 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         // Change the settings to cm.
         ctx.settings.units = crate::UnitLength::Cm;
 
-        let result = ctx.get_changed_program(CacheInformation {
-            old: Some(OldAstState {
-                ast: program.ast.clone(),
-                exec_state,
-                settings: Default::default(),
-            }),
-            new_ast: program.ast.clone(),
-        });
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
 
         assert!(result.is_some());
 
