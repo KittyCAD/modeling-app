@@ -1,6 +1,6 @@
 //! The executor for the AST.
 
-use std::{collections::HashSet, path::PathBuf, sync::Arc};
+use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
@@ -58,7 +58,7 @@ pub struct ExecState {
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
     /// Identifiers that have been exported from the current module.
-    pub module_exports: HashSet<String>,
+    pub module_exports: Vec<String>,
     /// The stack of import statements for detecting circular module imports.
     /// If this is empty, we're not currently executing an import statement.
     pub import_stack: Vec<std::path::PathBuf>,
@@ -66,9 +66,6 @@ pub struct ExecState {
     pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
-    /// The directory of the current project.  This is used for resolving import
-    /// paths.  If None is given, the current working directory is used.
-    pub project_directory: Option<PathBuf>,
 }
 
 impl ExecState {
@@ -1509,6 +1506,9 @@ pub struct ExecutorSettings {
     /// Should engine store this for replay?
     /// If so, under what name?
     pub replay: Option<String>,
+    /// The directory of the current project.  This is used for resolving import
+    /// paths.  If None is given, the current working directory is used.
+    pub project_directory: Option<PathBuf>,
 }
 
 impl Default for ExecutorSettings {
@@ -1519,6 +1519,7 @@ impl Default for ExecutorSettings {
             enable_ssao: false,
             show_grid: false,
             replay: None,
+            project_directory: None,
         }
     }
 }
@@ -1531,6 +1532,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
             replay: None,
+            project_directory: None,
         }
     }
 }
@@ -1543,6 +1545,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
             replay: None,
+            project_directory: None,
         }
     }
 }
@@ -1555,6 +1558,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
             replay: None,
+            project_directory: None,
         }
     }
 }
@@ -1785,6 +1789,7 @@ impl ExecutorContext {
                 enable_ssao: false,
                 show_grid: false,
                 replay: None,
+                project_directory: None,
             },
             None,
             engine_addr,
@@ -1916,7 +1921,7 @@ impl ExecutorContext {
                                 )?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state.module_exports.insert(import_item.identifier().to_owned());
+                                    exec_state.module_exports.push(import_item.identifier().to_owned());
                                 }
                             }
                         }
@@ -1931,7 +1936,7 @@ impl ExecutorContext {
                                 exec_state.memory.add(name, item.clone(), source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state.module_exports.insert(name.clone());
+                                    exec_state.module_exports.push(name.clone());
                                 }
                             }
                         }
@@ -1973,7 +1978,7 @@ impl ExecutorContext {
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
-                        exec_state.module_exports.insert(var_name);
+                        exec_state.module_exports.push(var_name);
                     }
                     last_expr = None;
                 }
@@ -2013,9 +2018,9 @@ impl ExecutorContext {
         path: &str,
         exec_state: &mut ExecState,
         source_range: SourceRange,
-    ) -> Result<(ProgramMemory, HashSet<String>), KclError> {
-        let resolved_path = if let Some(project_dir) = &exec_state.project_directory {
-            project_dir.join(&path)
+    ) -> Result<(ProgramMemory, Vec<String>), KclError> {
+        let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
+            project_dir.join(path)
         } else {
             std::path::PathBuf::from(&path)
         };

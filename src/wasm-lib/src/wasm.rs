@@ -48,8 +48,7 @@ pub async fn execute_wasm(
         kcl_lib::ExecutorContext::new(engine_manager, fs_manager, units).await?
     };
 
-    let mut exec_state = ExecState { ..ExecState::default() };
-
+    let mut exec_state = ExecState::default();
     let mut old_ast_memory = None;
 
     // Populate from the old exec state if it exists.

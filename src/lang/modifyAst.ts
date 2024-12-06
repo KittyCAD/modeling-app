@@ -66,8 +66,7 @@ export function startSketchOnDefault(
   let pathToNode: PathToNode = [
     ['body', ''],
     [sketchIndex, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
 
@@ -149,8 +148,7 @@ export function addSketchTo(
   let pathToNode: PathToNode = [
     ['body', ''],
     [sketchIndex, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
   if (axis !== 'xy') {
@@ -333,8 +331,7 @@ export function extrudeSketch(
   const pathToExtrudeArg: PathToNode = [
     ['body', ''],
     [sketchIndexInBody + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
@@ -364,8 +361,7 @@ export function loftSketches(
   const pathToNode: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
@@ -460,8 +456,7 @@ export function revolveSketch(
   const pathToRevolveArg: PathToNode = [
     ['body', ''],
     [sketchIndexInBody + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
@@ -547,8 +542,7 @@ export function sketchOnExtrudedFace(
   const newpathToNode: PathToNode = [
     ['body', ''],
     [expressionIndex + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
 
@@ -585,8 +579,7 @@ export function addOffsetPlane({
   const pathToNode: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
