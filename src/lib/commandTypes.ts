@@ -187,13 +187,6 @@ export type CommandArgument<
   T extends AnyStateMachine = AnyStateMachine
 > = {
   description?: string
-  validation?: ({
-    data,
-    context,
-  }: {
-    data: any
-    context: CommandBarContext
-  }) => Promise<boolean | string>
   required:
     | boolean
     | ((

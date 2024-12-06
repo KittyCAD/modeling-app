@@ -258,7 +258,7 @@ export const commandBarMachine = setup({
           if (input.event.type !== 'Submit argument') {
             toast.error(`Unable to validate, wrong event type.`)
             reject(`Unable to validate, wrong event type`)
-            return false
+            return
           }
           const context = input?.context
           const data = input.event.data
@@ -276,17 +276,19 @@ export const commandBarMachine = setup({
               : true
 
             if (typeof result === 'boolean' && result === true) {
-              resolve(data)
+              return resolve(data)
             } else {
               // validation failed
               if (typeof result === 'string') {
                 // The result of the validation is the error message
                 toast.error(result)
-                reject(`unable to validate ${argName}, Message: ${result}`)
+                return reject(
+                  `unable to validate ${argName}, Message: ${result}`
+                )
               } else {
                 // Default message if there is not a custom one sent
                 toast.error(`Unable to validate ${argName}`)
-                reject(`unable to validate ${argName}}`)
+                return reject(`unable to validate ${argName}}`)
               }
             }
           } else {
