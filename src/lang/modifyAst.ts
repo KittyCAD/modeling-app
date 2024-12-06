@@ -881,7 +881,7 @@ export function createUnaryExpression(
 export function createBinaryExpression([left, operator, right]: [
   BinaryExpression['left'],
   BinaryExpression['operator'],
-  BinaryExpression['right'],
+  BinaryExpression['right']
 ]): Node<BinaryExpression> {
   return {
     type: 'BinaryExpression',
@@ -897,7 +897,7 @@ export function createBinaryExpression([left, operator, right]: [
 
 export function createBinaryExpressionWithUnary([left, right]: [
   BinaryExpression['left'],
-  BinaryExpression['right'],
+  BinaryExpression['right']
 ]): Node<BinaryExpression> {
   if (right.type === 'UnaryExpression' && right.operator === '-')
     return createBinaryExpression([left, '-', right.argument])
@@ -1102,7 +1102,7 @@ export async function deleteFromSelection(
   selection: Selection,
   programMemory: ProgramMemory,
   getFaceDetails: (id: string) => Promise<Models['FaceIsPlanar_type']> = () =>
-    ({}) as any
+    ({} as any)
 ): Promise<Node<Program> | Error> {
   const astClone = structuredClone(ast)
   const varDec = getNodeFromPath<VariableDeclarator>(
