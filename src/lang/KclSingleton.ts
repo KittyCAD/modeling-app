@@ -12,6 +12,7 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
   CallExpression,
+  clearSceneAndBustCache,
   emptyExecState,
   ExecState,
   initPromise,
@@ -60,6 +61,7 @@ export class KclManager {
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
   private _hasErrors = false
+  private _switchedFiles = false
 
   engineCommandManager: EngineCommandManager
 
@@ -77,6 +79,10 @@ export class KclManager {
   set ast(ast) {
     this._ast = ast
     this._astCallBack(ast)
+  }
+
+  set switchedFiles(switchedFiles: boolean) {
+    this._switchedFiles = switchedFiles
   }
 
   get programMemory() {
@@ -211,6 +217,24 @@ export class KclManager {
     }
   }
 
+  // (jess) I'm not in love with this, but it ensures we clear the scene and
+  // bust the cache on
+  // errors from parsing when opening new files.
+  // Why not just clear the cache on all parse errors, you ask? well its actually
+  // really nice to keep the cache on parse errors within the same file, and
+  // only bust on engine errors esp if they take a long time to execute and
+  // you hit the wrong key!
+  private async checkIfSwitchedFilesShouldClear() {
+    // If we were switching files and we hit an error on parse we need to bust
+    // the cache and clear the scene.
+    if (this._hasErrors && this._switchedFiles) {
+      void clearSceneAndBustCache(this.engineCommandManager)
+    } else if (this._switchedFiles) {
+      // Reset the switched files boolean.
+      this._switchedFiles = false
+    }
+  }
+
   safeParse(code: string): Node<Program> | null {
     const result = parse(code)
     this.diagnostics = []
@@ -220,6 +244,8 @@ export class KclManager {
       const kclerror: KCLError = result as KCLError
       this.diagnostics = kclErrorsToDiagnostics([kclerror])
       this._hasErrors = true
+
+      void this.checkIfSwitchedFilesShouldClear()
       return null
     }
 
@@ -228,6 +254,7 @@ export class KclManager {
     if (result.errors.length > 0) {
       this._hasErrors = true
 
+      void this.checkIfSwitchedFilesShouldClear()
       return null
     }
 

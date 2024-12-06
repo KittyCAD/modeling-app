@@ -703,7 +703,7 @@ export async function clearSceneAndBustCache(
   engineCommandManager: EngineCommandManager
 ): Promise<null | Error> {
   try {
-    clear_scene_and_bust_cache(engineCommandManager)
+    await clear_scene_and_bust_cache(engineCommandManager)
   } catch (e: any) {
     console.error('clear_scene_and_bust_cache: error', e)
     return Promise.reject(
