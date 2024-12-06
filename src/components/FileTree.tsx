@@ -266,6 +266,7 @@ const FileTreeItem = ({
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)
       onFileOpen(fileOrDir.path, project?.path || null)
+      kclManager.switchedFiles = true
 
       // Open kcl files
       navigate(`${PATHS.FILE}/${encodeURIComponent(fileOrDir.path)}`)

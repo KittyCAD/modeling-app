@@ -16,6 +16,7 @@ import init, {
   parse_project_settings,
   default_project_settings,
   base64_decode,
+  clear_scene_and_bust_cache,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -696,6 +697,21 @@ export function tomlStringify(toml: any): string | Error {
 
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
+}
+
+export async function clearSceneAndBustCache(
+  engineCommandManager: EngineCommandManager
+): Promise<null | Error> {
+  try {
+    await clear_scene_and_bust_cache(engineCommandManager)
+  } catch (e: any) {
+    console.error('clear_scene_and_bust_cache: error', e)
+    return Promise.reject(
+      new Error(`Error on clear_scene_and_bust_cache: ${e}`)
+    )
+  }
+
+  return null
 }
 
 export function parseAppSettings(
