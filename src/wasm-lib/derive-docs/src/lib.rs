@@ -785,7 +785,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
         async fn #test_name() {
             let code = #code_block;
             // Note, `crate` must be kcl_lib
-            let result = crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm).await.unwrap();
+            let result = crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm, None).await.unwrap();
             twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #output_test_name_str), &result, 0.99);
         }
     }

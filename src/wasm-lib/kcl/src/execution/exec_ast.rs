@@ -4,11 +4,13 @@ use async_recursion::async_recursion;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier},
+    execution::{
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
+    },
     parsing::ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
         CallExpressionKw, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-        ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator, PipeExpression,
+        ObjectExpression, PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{args::Arg, FunctionKind},

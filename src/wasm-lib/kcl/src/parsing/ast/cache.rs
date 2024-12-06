@@ -4,7 +4,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    executor::ExecState,
+    execution::ExecState,
     parsing::ast::types::{Node, Program},
 };
 
@@ -27,7 +27,7 @@ pub struct OldAstState {
     /// The exec state.
     pub exec_state: ExecState,
     /// The last settings used for execution.
-    pub settings: crate::executor::ExecutorSettings,
+    pub settings: crate::execution::ExecutorSettings,
 }
 
 impl From<crate::Program> for CacheInformation {
@@ -55,7 +55,7 @@ pub struct CacheResult {
 // the cache.
 pub fn get_changed_program(
     info: CacheInformation,
-    new_settings: &crate::executor::ExecutorSettings,
+    new_settings: &crate::execution::ExecutorSettings,
 ) -> Option<CacheResult> {
     let Some(old) = info.old else {
         // We have no old info, we need to re-execute the whole thing.
@@ -109,14 +109,14 @@ mod tests {
     use super::*;
 
     async fn execute(program: &crate::Program) -> Result<ExecState> {
-        let ctx = crate::executor::ExecutorContext {
+        let ctx = crate::execution::ExecutorContext {
             engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
             fs: Arc::new(crate::fs::FileManager::new()),
             stdlib: Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ContextType::Mock,
+            context_type: crate::execution::ContextType::Mock,
         };
-        let mut exec_state = crate::executor::ExecState::default();
+        let mut exec_state = crate::execution::ExecState::default();
         ctx.run(program.clone().into(), &mut exec_state).await?;
 
         Ok(exec_state)

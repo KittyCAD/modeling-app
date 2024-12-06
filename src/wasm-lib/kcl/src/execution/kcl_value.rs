@@ -262,9 +262,6 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn is_function(&self) -> bool {
-        matches!(self, KclValue::Function { .. })
-    }
     /// Put the number into a KCL value.
     pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
         Self::Number { value: f, meta }

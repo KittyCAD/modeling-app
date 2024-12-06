@@ -8,8 +8,8 @@ use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExecutorContext, ExtrudeSurface, KclObjectFields, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
-        SolidSet, TagIdentifier,
+        ExecState, ExecutorContext, ExtrudeSurface, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
+        SketchSurface, Solid, SolidSet, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,

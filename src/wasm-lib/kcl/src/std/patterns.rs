@@ -19,7 +19,10 @@ use uuid::Uuid;
 use super::args::Arg;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid, SolidSet},
+    execution::{
+        ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, SketchSet,
+        Solid, SolidSet,
+    },
     std::Args,
     SourceRange,
 };

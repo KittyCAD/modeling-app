@@ -13,7 +13,9 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet},
+    execution::{
+        ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet,
+    },
     std::Args,
 };
 

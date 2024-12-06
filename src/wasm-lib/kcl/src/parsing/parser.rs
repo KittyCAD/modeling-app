@@ -1484,6 +1484,15 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         LiteralValue::String(s) => s,
         _ => unreachable!(),
     };
+    if path_string.is_empty() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(path.start, path.end, path.module_id),
+                "import path cannot be empty",
+            )
+            .into(),
+        ));
+    }
     if path_string
         .chars()
         .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
@@ -3758,6 +3767,11 @@ e
 
     #[test]
     fn bad_imports() {
+        assert_err(
+            r#"import cube from "../cube.kcl""#,
+            "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
+            [17, 30],
+        );
         assert_err(
             r#"import * as foo from "dsfs""#,
             "as is not the 'from' keyword",

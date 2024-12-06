@@ -1,5 +1,7 @@
 //! Types used to send data to the test server.
 
+use std::path::PathBuf;
+
 use crate::{
     execution::{new_zoo_client, ExecutorContext, ExecutorSettings, ProgramMemory},
     settings::types::UnitLength,
@@ -15,10 +17,16 @@ pub struct RequestBody {
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
-pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::DynamicImage, ExecError> {
+pub async fn execute_and_snapshot(
+    code: &str,
+    units: UnitLength,
+    project_directory: Option<PathBuf>,
+) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(units, true).await?;
     let program = Program::parse_no_errs(code)?;
-    do_execute_and_snapshot(&ctx, program).await.map(|(_state, snap)| snap)
+    do_execute_and_snapshot(&ctx, program, project_directory)
+        .await
+        .map(|(_state, snap)| snap)
 }
 
 /// Executes a kcl program and takes a snapshot of the result.
@@ -26,24 +34,33 @@ pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image
 pub async fn execute_and_snapshot_ast(
     ast: Program,
     units: UnitLength,
+    project_directory: Option<PathBuf>,
 ) -> Result<(ProgramMemory, image::DynamicImage), ExecError> {
     let ctx = new_context(units, true).await?;
-    do_execute_and_snapshot(&ctx, ast)
+    do_execute_and_snapshot(&ctx, ast, project_directory)
         .await
         .map(|(state, snap)| (state.memory, snap))
 }
 
-pub async fn execute_and_snapshot_no_auth(code: &str, units: UnitLength) -> Result<image::DynamicImage, ExecError> {
+pub async fn execute_and_snapshot_no_auth(
+    code: &str,
+    units: UnitLength,
+    project_directory: Option<PathBuf>,
+) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(units, false).await?;
     let program = Program::parse_no_errs(code)?;
-    do_execute_and_snapshot(&ctx, program).await.map(|(_state, snap)| snap)
+    do_execute_and_snapshot(&ctx, program, project_directory)
+        .await
+        .map(|(_state, snap)| snap)
 }
 
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
+    project_directory: Option<PathBuf>,
 ) -> Result<(crate::execution::ExecState, image::DynamicImage), ExecError> {
     let mut exec_state = ExecState::default();
+    exec_state.project_directory = project_directory;
     let snapshot_png_bytes = ctx.execute_and_prepare(&program, &mut exec_state).await?.contents.0;
 
     // Decode the snapshot, return it.

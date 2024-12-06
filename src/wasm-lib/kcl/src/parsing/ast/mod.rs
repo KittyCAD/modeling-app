@@ -54,3 +54,21 @@ impl BinaryPart {
         }
     }
 }
+
+impl MemberObject {
+    pub fn module_id(&self) -> ModuleId {
+        match self {
+            MemberObject::MemberExpression(member_expression) => member_expression.module_id,
+            MemberObject::Identifier(identifier) => identifier.module_id,
+        }
+    }
+}
+
+impl LiteralIdentifier {
+    pub fn module_id(&self) -> ModuleId {
+        match self {
+            LiteralIdentifier::Identifier(identifier) => identifier.module_id,
+            LiteralIdentifier::Literal(literal) => literal.module_id,
+        }
+    }
+}
