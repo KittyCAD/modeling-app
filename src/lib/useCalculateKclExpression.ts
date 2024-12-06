@@ -103,9 +103,8 @@ export function useCalculateKclExpression({
       const { execState } = await executeAst({
         ast,
         engineCommandManager,
-        useFakeExecutor: true,
+        // We make sure to send an empty program memory to denote we mean mock mode.
         programMemoryOverride: kclManager.programMemory.clone(),
-        idGenerator: kclManager.execState.idGenerator,
       })
       const resultDeclaration = ast.body.find(
         (a) =>

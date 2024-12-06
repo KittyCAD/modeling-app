@@ -45,11 +45,14 @@ use crate::{
     errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
-        ast::types::{Expr, Node, VariableKind},
+        ast::{
+            cache::{CacheInformation, OldAstState},
+            types::{Expr, Node, VariableKind},
+        },
         token::TokenType,
         PIPE_OPERATOR,
     },
-    ExecState, ModuleId, Program, SourceRange,
+    ModuleId, Program, SourceRange,
 };
 
 lazy_static::lazy_static! {
@@ -105,6 +108,12 @@ pub struct Backend {
     pub token_map: DashMap<String, Vec<crate::parsing::token::Token>>,
     /// AST maps.
     pub ast_map: DashMap<String, Node<crate::parsing::ast::types::Program>>,
+    /// Last successful execution.
+    /// This gets set to None when execution errors, or we want to bust the cache on purpose to
+    /// force a re-execution.
+    /// We do not need to manually bust the cache for changed units, that's handled by the cache
+    /// information.
+    pub last_successful_ast_state: Arc<RwLock<Option<OldAstState>>>,
     /// Memory maps.
     pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
     /// Current code.
@@ -189,6 +198,7 @@ impl Backend {
             diagnostics_map: Default::default(),
             symbols_map: Default::default(),
             semantic_tokens_map: Default::default(),
+            last_successful_ast_state: Default::default(),
             is_initialized: Default::default(),
         })
     }
@@ -262,6 +272,13 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
+        if force {
+            // Bust the execution cache.
+            let mut old_ast_state = self.last_successful_ast_state.write().await;
+            *old_ast_state = None;
+            drop(old_ast_state);
+        }
+
         let filename = params.uri.to_string();
         // We already updated the code map in the shared backend.
 
@@ -674,22 +691,42 @@ impl Backend {
             return Ok(());
         }
 
-        let mut exec_state = ExecState::default();
+        let mut last_successful_ast_state = self.last_successful_ast_state.write().await;
 
-        // Clear the scene, before we execute so it's not fugly as shit.
-        executor_ctx
-            .engine
-            .clear_scene(&mut exec_state.id_generator, SourceRange::default())
-            .await?;
+        let mut exec_state = if let Some(last_successful_ast_state) = last_successful_ast_state.clone() {
+            last_successful_ast_state.exec_state
+        } else {
+            Default::default()
+        };
 
-        if let Err(err) = executor_ctx.run(ast, &mut exec_state).await {
+        if let Err(err) = executor_ctx
+            .run(
+                CacheInformation {
+                    old: last_successful_ast_state.clone(),
+                    new_ast: ast.ast.clone(),
+                },
+                &mut exec_state,
+            )
+            .await
+        {
             self.memory_map.remove(params.uri.as_str());
             self.add_to_diagnostics(params, &[err], false).await;
+
+            // Update the last successful ast state to be None.
+            *last_successful_ast_state = None;
 
             // Since we already published the diagnostics we don't really care about the error
             // string.
             return Err(anyhow::anyhow!("failed to execute code"));
         }
+
+        // Update the last successful ast state.
+        *last_successful_ast_state = Some(OldAstState {
+            ast: ast.ast.clone(),
+            exec_state: exec_state.clone(),
+            settings: executor_ctx.settings.clone(),
+        });
+        drop(last_successful_ast_state);
 
         self.memory_map
             .insert(params.uri.to_string(), exec_state.memory.clone());

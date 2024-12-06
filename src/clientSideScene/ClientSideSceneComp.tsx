@@ -31,6 +31,7 @@ import {
   recast,
   defaultSourceRange,
   resultIsOk,
+  ProgramMemory,
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
@@ -420,9 +421,9 @@ export async function deleteSegment({
 
   const testExecute = await executeAst({
     ast: modifiedAst,
-    idGenerator: kclManager.execState.idGenerator,
-    useFakeExecutor: true,
     engineCommandManager: engineCommandManager,
+    // We make sure to send an empty program memory to denote we mean mock mode.
+    programMemoryOverride: ProgramMemory.empty(),
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')

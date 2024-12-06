@@ -498,10 +498,9 @@ export class SceneEntities {
 
     const { execState } = await executeAst({
       ast: truncatedAst,
-      useFakeExecutor: true,
       engineCommandManager: this.engineCommandManager,
+      // We make sure to send an empty program memory to denote we mean mock mode.
       programMemoryOverride,
-      idGenerator: kclManager.execState.idGenerator,
     })
     const programMemory = execState.memory
     const sketch = sketchFromPathToNode({
@@ -955,10 +954,9 @@ export class SceneEntities {
 
         const { execState } = await executeAst({
           ast: truncatedAst,
-          useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
+          // We make sure to send an empty program memory to denote we mean mock mode.
           programMemoryOverride,
-          idGenerator: kclManager.execState.idGenerator,
         })
         const programMemory = execState.memory
         this.sceneProgramMemory = programMemory
@@ -1019,10 +1017,9 @@ export class SceneEntities {
 
         const { execState } = await executeAst({
           ast: _ast,
-          useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
+          // We make sure to send an empty program memory to denote we mean mock mode.
           programMemoryOverride,
-          idGenerator: kclManager.execState.idGenerator,
         })
         const programMemory = execState.memory
 
@@ -1120,10 +1117,9 @@ export class SceneEntities {
 
         const { execState } = await executeAst({
           ast: truncatedAst,
-          useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
+          // We make sure to send an empty program memory to denote we mean mock mode.
           programMemoryOverride,
-          idGenerator: kclManager.execState.idGenerator,
         })
         const programMemory = execState.memory
         this.sceneProgramMemory = programMemory
@@ -1187,10 +1183,9 @@ export class SceneEntities {
 
           const { execState } = await executeAst({
             ast: _ast,
-            useFakeExecutor: true,
             engineCommandManager: this.engineCommandManager,
+            // We make sure to send an empty program memory to denote we mean mock mode.
             programMemoryOverride,
-            idGenerator: kclManager.execState.idGenerator,
           })
           const programMemory = execState.memory
 
@@ -1306,10 +1301,9 @@ export class SceneEntities {
 
         const { execState } = await executeAst({
           ast: modded,
-          useFakeExecutor: true,
           engineCommandManager: this.engineCommandManager,
+          // We make sure to send an empty program memory to denote we mean mock mode.
           programMemoryOverride,
-          idGenerator: kclManager.execState.idGenerator,
         })
         const programMemory = execState.memory
         this.sceneProgramMemory = programMemory
@@ -1691,10 +1685,9 @@ export class SceneEntities {
         codeManager.updateCodeEditor(code)
       const { execState } = await executeAst({
         ast: truncatedAst,
-        useFakeExecutor: true,
         engineCommandManager: this.engineCommandManager,
+        // We make sure to send an empty program memory to denote we mean mock mode.
         programMemoryOverride,
-        idGenerator: kclManager.execState.idGenerator,
       })
       const programMemory = execState.memory
       this.sceneProgramMemory = programMemory

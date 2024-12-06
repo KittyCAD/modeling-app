@@ -1879,7 +1879,7 @@ export class EngineCommandManager extends EventTarget {
     }
     return JSON.stringify(this.defaultPlanes)
   }
-  endSession() {
+  clearScene(): void {
     const deleteCmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

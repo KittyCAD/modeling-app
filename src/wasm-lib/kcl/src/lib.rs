@@ -89,7 +89,11 @@ pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
-pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
+pub use parsing::ast::{
+    cache::{CacheInformation, OldAstState},
+    modify::modify_ast_for_sketch,
+    types::FormatOptions,
+};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::{ModuleId, SourceRange};
 
@@ -125,7 +129,7 @@ use crate::log::{log, logln};
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Program {
     #[serde(flatten)]
-    ast: parsing::ast::types::Node<parsing::ast::types::Program>,
+    pub ast: parsing::ast::types::Node<parsing::ast::types::Program>,
 }
 
 #[cfg(any(test, feature = "lsp-test-util"))]

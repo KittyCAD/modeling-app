@@ -1,6 +1,7 @@
+use std::sync::{Arc, Mutex};
+
 use anyhow::Result;
 use kcl_lib::{ExecState, ExecutorContext};
-use std::sync::{Arc, Mutex};
 
 #[cfg(not(target_arch = "wasm32"))]
 mod conn_mock_core;
@@ -15,7 +16,7 @@ pub async fn kcl_to_engine_core(code: &str) -> Result<String> {
     let ctx = ExecutorContext::new_forwarded_mock(Arc::new(Box::new(
         crate::conn_mock_core::EngineConnection::new(ref_result).await?,
     )));
-    ctx.run(&program, &mut ExecState::default()).await?;
+    ctx.run(program.into(), &mut ExecState::default()).await?;
 
     let result = result.lock().expect("mutex lock").clone();
     Ok(result)

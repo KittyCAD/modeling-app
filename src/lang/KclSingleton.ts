@@ -88,7 +88,7 @@ export class KclManager {
     this._programMemoryCallBack(programMemory)
   }
 
-  set execState(execState) {
+  private set execState(execState) {
     this._execState = execState
     this.programMemory = execState.memory
   }
@@ -227,12 +227,6 @@ export class KclManager {
     this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
     if (result.errors.length > 0) {
       this._hasErrors = true
-      // TODO: re-eval if session should end?
-      for (const e of result.errors)
-        if (e.message === 'file is empty') {
-          this.engineCommandManager?.endSession()
-          break
-        }
 
       return null
     }
@@ -276,12 +270,9 @@ export class KclManager {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
-    // Make sure we clear before starting again. End session will do this.
-    this.engineCommandManager?.endSession()
     await this.ensureWasmInit()
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
-      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
     })
 
@@ -331,8 +322,6 @@ export class KclManager {
     this.logs = logs
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
-    // Reset the next ID index so that we reuse the previous IDs next time.
-    execState.idGenerator.nextId = 0
     this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
@@ -373,9 +362,9 @@ export class KclManager {
 
     const { logs, errors, execState } = await executeAst({
       ast: newAst,
-      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
-      useFakeExecutor: true,
+      // We make sure to send an empty program memory to denote we mean mock mode.
+      programMemoryOverride: ProgramMemory.empty(),
     })
 
     this._logs = logs
