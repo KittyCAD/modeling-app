@@ -1811,7 +1811,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
             // e.g. `line(%, $)` or `line(%, $ , 5)`
             TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationError::fatal(
                 token.as_source_range(),
-                format!("Tag names must not be empty",),
+                "Tag names must not be empty".to_string(),
             )),
 
             TokenType::Type => Err(CompilationError::fatal(
