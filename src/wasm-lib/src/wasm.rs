@@ -38,6 +38,9 @@ pub async fn clear_scene_and_bust_cache(
 ) -> Result<(), String> {
     console_error_panic_hook::set_once();
 
+    // Bust the cache.
+    bust_cache().await;
+
     let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
         .await
         .map_err(|e| format!("{:?}", e))?;
@@ -47,9 +50,6 @@ pub async fn clear_scene_and_bust_cache(
         .clear_scene(&mut id_generator, Default::default())
         .await
         .map_err(|e| e.to_string())?;
-
-    // Bust the cache.
-    bust_cache().await;
 
     Ok(())
 }

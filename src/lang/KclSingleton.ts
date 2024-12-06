@@ -172,8 +172,12 @@ export class KclManager {
     this.engineCommandManager = engineCommandManager
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.ensureWasmInit().then(() => {
-      this.ast = this.safeParse(codeManager.code) || this.ast
+    this.ensureWasmInit().then(async () => {
+      void this.safeParse(codeManager.code).then((ast) => {
+        if (ast) {
+          this.ast = ast
+        }
+      })
     })
   }
 
@@ -228,14 +232,14 @@ export class KclManager {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
     if (this._hasErrors && this._switchedFiles) {
-      void clearSceneAndBustCache(this.engineCommandManager)
+      await clearSceneAndBustCache(this.engineCommandManager)
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
       this._switchedFiles = false
     }
   }
 
-  safeParse(code: string): Node<Program> | null {
+  async safeParse(code: string): Promise<Node<Program> | null> {
     const result = parse(code)
     this.diagnostics = []
     this._hasErrors = false
@@ -245,7 +249,7 @@ export class KclManager {
       this.diagnostics = kclErrorsToDiagnostics([kclerror])
       this._hasErrors = true
 
-      void this.checkIfSwitchedFilesShouldClear()
+      await this.checkIfSwitchedFilesShouldClear()
       return null
     }
 
@@ -254,7 +258,7 @@ export class KclManager {
     if (result.errors.length > 0) {
       this._hasErrors = true
 
-      void this.checkIfSwitchedFilesShouldClear()
+      await this.checkIfSwitchedFilesShouldClear()
       return null
     }
 
@@ -380,7 +384,7 @@ export class KclManager {
       console.error(newCode)
       return
     }
-    const newAst = this.safeParse(newCode)
+    const newAst = await this.safeParse(newCode)
     if (!newAst) {
       this.clearAst()
       return
@@ -435,7 +439,7 @@ export class KclManager {
     })
   }
   async executeCode(zoomToFit?: boolean): Promise<void> {
-    const ast = this.safeParse(codeManager.code)
+    const ast = await this.safeParse(codeManager.code)
     if (!ast) {
       this.clearAst()
       return
@@ -443,9 +447,9 @@ export class KclManager {
     this.ast = { ...ast }
     return this.executeAst({ zoomToFit })
   }
-  format() {
+  async format() {
     const originalCode = codeManager.code
-    const ast = this.safeParse(originalCode)
+    const ast = await this.safeParse(originalCode)
     if (!ast) {
       this.clearAst()
       return
@@ -485,7 +489,7 @@ export class KclManager {
     const newCode = recast(ast)
     if (err(newCode)) return Promise.reject(newCode)
 
-    const astWithUpdatedSource = this.safeParse(newCode)
+    const astWithUpdatedSource = await this.safeParse(newCode)
     if (!astWithUpdatedSource) return Promise.reject(new Error('bad ast'))
     let returnVal: Selections | undefined = undefined
 

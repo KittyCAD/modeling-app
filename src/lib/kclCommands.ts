@@ -28,7 +28,7 @@ export function kclCommands(
       groupId: 'code',
       icon: 'code',
       onSubmit: () => {
-        kclManager.format()
+        void kclManager.format()
       },
     },
     {

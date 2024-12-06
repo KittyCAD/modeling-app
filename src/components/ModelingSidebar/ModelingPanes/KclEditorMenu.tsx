@@ -40,7 +40,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
         <Menu.Items className="absolute right-0 left-auto w-72 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50">
           <Menu.Item>
             <button
-              onClick={() => kclManager.format()}
+              onClick={() => void kclManager.format()}
               className={styles.button}
             >
               <span>Format code</span>
