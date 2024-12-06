@@ -248,34 +248,54 @@ export const commandBarMachine = setup({
     'All arguments are skippable': () => false,
   },
   actors: {
-    'Validate argument': fromPromise((something) => {
-      return new Promise(async (resolve, reject) => {
-        const context = something.input.context
-        const data = something.input.event.data
-
-        const argName = context.currentArgument.name
-        const argConfig = context.selectedCommand.args[argName]
-
-        const result = argConfig.validation
-          ? await argConfig.validation({ context, data })
-          : true
-
-        if (typeof result === 'boolean' && result === true) {
-          resolve(data)
-        } else {
-          // validation failed
-          if (typeof result === 'string') {
-            // The result of the validation is the error message
-            toast.error(result)
-            reject(`unable to validate ${argName}, Message: ${result}`)
-          } else {
-            // Default message if there is not a custom one sent
-            toast.error(`Unable to validate ${argName}`)
-            reject(`unable to validate ${argName}}`)
+    'Validate argument': fromPromise(
+      ({
+        input,
+      }: {
+        input: { context: CommandBarContext; event: CommandBarMachineEvent }
+      }) => {
+        return new Promise(async (resolve, reject) => {
+          if (input.event.type !== 'Submit argument') {
+            toast.error(`Unable to validate, wrong event type.`)
+            reject(`Unable to validate, wrong event type`)
+            return false
           }
-        }
-      })
-    }),
+          const context = input?.context
+          const data = input.event.data
+          const argName = context.currentArgument?.name
+          const args = context?.selectedCommand?.args
+          const argConfig = args && argName ? args[argName] : undefined
+          // Only do a validation check if the argument, selectedCommand, and the validation function are defined
+          if (
+            context.currentArgument &&
+            context.selectedCommand &&
+            argConfig?.validation
+          ) {
+            const result = argConfig.validation
+              ? await argConfig.validation({ context, data })
+              : true
+
+            if (typeof result === 'boolean' && result === true) {
+              resolve(data)
+            } else {
+              // validation failed
+              if (typeof result === 'string') {
+                // The result of the validation is the error message
+                toast.error(result)
+                reject(`unable to validate ${argName}, Message: ${result}`)
+              } else {
+                // Default message if there is not a custom one sent
+                toast.error(`Unable to validate ${argName}`)
+                reject(`unable to validate ${argName}}`)
+              }
+            }
+          } else {
+            // Missing several requirements for validate argument, just bypass
+            return resolve(data)
+          }
+        })
+      }
+    ),
     'Validate all arguments': fromPromise(
       ({ input }: { input: CommandBarContext }) => {
         return new Promise(async (resolve, reject) => {

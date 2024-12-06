@@ -7,6 +7,7 @@ import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
+import { CommandBarContext } from 'machines/commandBarMachine'
 
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -186,7 +187,13 @@ export type CommandArgument<
   T extends AnyStateMachine = AnyStateMachine
 > = {
   description?: string
-  validation?: (a0: any) => boolean
+  validation?: ({
+    data,
+    context,
+  }: {
+    data: any
+    context: CommandBarContext
+  }) => Promise<boolean | string>
   required:
     | boolean
     | ((

@@ -1,19 +1,10 @@
 import { Models } from '@kittycad/lib'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import {
-  KCL_DEFAULT_LENGTH,
-  KCL_DEFAULT_DEGREE,
-  KCL_DEFAULT_AXIS,
-  KCL_AXIS_X,
-  KCL_AXIS_Y,
-  KCL_AXIS_NEG_X,
-  KCL_AXIS_NEG_Y,
-} from 'lib/constants'
+import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
-import { engineCommandManager } from 'lib/singletons'
-import { uuidv4 } from 'lib/utils'
+import { revolveAxisValidator } from './validators'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -305,56 +296,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
-        validation: async ({ data, context }) => {
-          // TODO: Move this to another file way to dense
-          // revolve <- axis
-          // revolve_about_edge <- edge
-
-          // TODO: try catch finally ALWAYS turn this off because you will brick the dry run
-          // what if it fails constantly?
-          const dryModeOnRequest = await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'enable_dry_run' },
-          })
-
-          const sketchSelection =
-            context.argumentsToSubmit.selection.graphSelections[0].artifact
-              .pathId
-          let edgeSelection = data.axis.graphSelections[0].artifact.id
-
-          const angleInDegrees: Models['Angle_type'] = {
-            unit: 'degrees',
-            value: 360,
-          }
-
-          const attemptRevolve = await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'revolve_about_edge',
-              angle: angleInDegrees,
-              edge_id: edgeSelection,
-              target: sketchSelection,
-              tolerance: 0.0001,
-            },
-          })
-
-          const dryModeOffRequest = await engineCommandManager.sendSceneCommand(
-            {
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: { type: 'disable_dry_run' },
-            }
-          )
-
-          if (attemptRevolve?.success) {
-            return true
-          } else {
-            // return error message for the toast
-            return 'Unable to revolve with selected axis'
-          }
-        },
+        validation: revolveAxisValidator,
       },
       angle: {
         inputType: 'kcl',
