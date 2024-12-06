@@ -137,7 +137,7 @@ firstSketch = startSketchOn('XY')
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-        let program = crate::Program::parse(new).unwrap().ast;
+        let program = crate::Program::parse_no_errs(new).unwrap().ast;
 
         let result = get_changed_program(
             CacheInformation {
@@ -168,7 +168,7 @@ firstSketch = startSketchOn('XY')
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-        let program = crate::Program::parse(new).unwrap();
+        let program = crate::Program::parse_no_errs(new).unwrap();
 
         let executed = execute(&program).await.unwrap();
 
@@ -212,11 +212,11 @@ firstSketch = startSketchOn('XY')
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-        let program_old = crate::Program::parse(old).unwrap();
+        let program_old = crate::Program::parse_no_errs(old).unwrap();
 
         let executed = execute(&program_old).await.unwrap();
 
-        let program_new = crate::Program::parse(new).unwrap();
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
 
         let result = get_changed_program(
             CacheInformation {
@@ -258,11 +258,11 @@ firstSketch = startSketchOn('XY')
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-        let program_old = crate::Program::parse(old).unwrap();
+        let program_old = crate::Program::parse_no_errs(old).unwrap();
 
         let executed = execute(&program_old).await.unwrap();
 
-        let program_new = crate::Program::parse(new).unwrap();
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
 
         let result = get_changed_program(
             CacheInformation {
@@ -304,11 +304,11 @@ firstSketch = startSketchOn('XY')
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-        let program_old = crate::Program::parse(old).unwrap();
+        let program_old = crate::Program::parse_no_errs(old).unwrap();
 
         let executed = execute(&program_old).await.unwrap();
 
-        let program_new = crate::Program::parse(new).unwrap();
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
 
         let result = get_changed_program(
             CacheInformation {
@@ -344,7 +344,7 @@ firstSketch = startSketchOn('XY')
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-        let program = crate::Program::parse(new).unwrap();
+        let program = crate::Program::parse_no_errs(new).unwrap();
 
         let executed = execute(&program).await.unwrap();
 
