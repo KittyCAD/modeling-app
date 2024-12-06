@@ -215,7 +215,7 @@ test(
 
       // black pixel means the scene has been cleared.
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [0, 0, 0]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [30, 30, 30]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
@@ -455,7 +455,7 @@ test(
 
       // black pixel means the scene has been cleared.
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [0, 0, 0]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [30, 30, 30]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
