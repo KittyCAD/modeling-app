@@ -550,6 +550,8 @@ test.describe('Editor tests', () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await u.waitForPageLoad()
+    await page.waitForTimeout(1000)
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
