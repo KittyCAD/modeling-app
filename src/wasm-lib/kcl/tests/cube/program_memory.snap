@@ -684,8 +684,7 @@ snapshot_kind: text
                   "name": "length",
                   "start": 8,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               },
               {
                 "type": "Parameter",
@@ -694,8 +693,7 @@ snapshot_kind: text
                   "name": "center",
                   "start": 16,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
             "start": 7,

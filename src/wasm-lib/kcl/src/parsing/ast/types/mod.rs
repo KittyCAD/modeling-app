@@ -2768,7 +2768,7 @@ pub struct Parameter {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_value: Option<DefaultParamVal>,
     /// Functions may declare at most one parameter without label, prefixed by '@', and it must be the first parameter.
-    #[serde(default, skip_serializing_if = "is_true")]
+    #[serde(default = "return_true", skip_serializing_if = "is_true")]
     pub labeled: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2785,6 +2785,10 @@ impl Parameter {
 
 fn is_true(b: &bool) -> bool {
     *b
+}
+
+fn return_true() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

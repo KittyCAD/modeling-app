@@ -1698,8 +1698,7 @@ snapshot_kind: text
                     "name": "x",
                     "start": 1207,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 },
                 {
                   "type": "Parameter",
@@ -1708,8 +1707,7 @@ snapshot_kind: text
                     "name": "y",
                     "start": 1210,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 },
                 {
                   "type": "Parameter",
@@ -1718,8 +1716,7 @@ snapshot_kind: text
                     "name": "height",
                     "start": 1213,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 }
               ],
               "start": 1206,

@@ -684,8 +684,7 @@ snapshot_kind: text
                   "name": "length",
                   "start": 8,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               },
               {
                 "type": "Parameter",
@@ -694,8 +693,7 @@ snapshot_kind: text
                   "name": "center",
                   "start": 16,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
             "start": 7,
@@ -788,8 +786,7 @@ snapshot_kind: text
                   "name": "x",
                   "start": 334,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
             "start": 333,
@@ -1476,8 +1473,7 @@ snapshot_kind: text
                             "name": "length",
                             "start": 8,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         },
                         {
                           "type": "Parameter",
@@ -1486,8 +1482,7 @@ snapshot_kind: text
                             "name": "center",
                             "start": 16,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         }
                       ],
                       "start": 7,
@@ -2483,8 +2478,7 @@ snapshot_kind: text
                             "name": "length",
                             "start": 8,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         },
                         {
                           "type": "Parameter",
@@ -2493,8 +2487,7 @@ snapshot_kind: text
                             "name": "center",
                             "start": 16,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         }
                       ],
                       "start": 7,
@@ -2587,8 +2580,7 @@ snapshot_kind: text
                             "name": "x",
                             "start": 334,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         }
                       ],
                       "start": 333,
@@ -3275,8 +3267,7 @@ snapshot_kind: text
                                       "name": "length",
                                       "start": 8,
                                       "type": "Identifier"
-                                    },
-                                    "optional": false
+                                    }
                                   },
                                   {
                                     "type": "Parameter",
@@ -3285,8 +3276,7 @@ snapshot_kind: text
                                       "name": "center",
                                       "start": 16,
                                       "type": "Identifier"
-                                    },
-                                    "optional": false
+                                    }
                                   }
                                 ],
                                 "start": 7,

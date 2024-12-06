@@ -333,8 +333,7 @@ snapshot_kind: text
                   "name": "p",
                   "start": 7,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               },
               {
                 "type": "Parameter",
@@ -343,8 +342,7 @@ snapshot_kind: text
                   "name": "h",
                   "start": 10,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               },
               {
                 "type": "Parameter",
@@ -353,8 +351,7 @@ snapshot_kind: text
                   "name": "l",
                   "start": 13,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               },
               {
                 "type": "Parameter",
@@ -363,8 +360,7 @@ snapshot_kind: text
                   "name": "w",
                   "start": 16,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
             "start": 6,

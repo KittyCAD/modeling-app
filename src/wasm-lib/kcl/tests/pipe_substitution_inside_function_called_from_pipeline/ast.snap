@@ -44,8 +44,7 @@ snapshot_kind: text
                     "name": "ignored",
                     "start": 66,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 }
               ],
               "start": 65,
