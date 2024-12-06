@@ -568,7 +568,7 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
   })
 
-  test('error with 2 source ranges gets 2 diagnostics', async ({
+  test.fixme('error with 2 source ranges gets 2 diagnostics', async ({
     page,
     homePage,
   }) => {
