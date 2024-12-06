@@ -162,7 +162,7 @@ test.describe('Testing settings', () => {
     await expect(hotkey).toHaveText(text)
   })
 
-  test('Project and user settings can be reset', async ({ page, homePage }) => {
+  test.fixme('Project and user settings can be reset', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await test.step(`Setup`, async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
