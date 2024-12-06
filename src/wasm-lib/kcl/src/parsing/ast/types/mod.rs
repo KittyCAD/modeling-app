@@ -8,7 +8,7 @@ use std::{
 };
 
 use anyhow::Result;
-use async_recursion::async_recursion;
+
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -17,7 +17,7 @@ use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
 
-use super::{digest::Digest, execute::execute_pipe_body};
+use super::digest::Digest;
 pub use crate::parsing::ast::types::{
     condition::{ElseIf, IfExpression},
     literal_value::LiteralValue,
@@ -26,7 +26,7 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, ExecutorContext, KclValue, Metadata, TagIdentifier},
+    execution::{KclValue, Metadata, TagIdentifier},
     parsing::PIPE_OPERATOR,
     source_range::{ModuleId, SourceRange},
 };
@@ -500,7 +500,7 @@ impl Program {
             match item {
                 BodyItem::ImportStatement(stmt) => {
                     if stmt.get_variable(name) {
-                        return Some(Definition::Import(&*stmt));
+                        return Some(Definition::Import(stmt));
                     }
                 }
                 BodyItem::ExpressionStatement(_expression_statement) => {
@@ -1168,6 +1168,7 @@ impl ImportItem {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum ImportSelector {
     /// A comma-separated list of names and possible aliases to import (may be a single item, but never zero).
     /// E.g., `import bar as baz from "foo.kcl"`
@@ -2683,11 +2684,6 @@ impl Node<PipeExpression> {
         }
 
         constraint_levels.get_constraint_level(self.into())
-    }
-
-    #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 }
 

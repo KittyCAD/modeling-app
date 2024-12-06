@@ -20,7 +20,9 @@ use serde::{Deserialize, Serialize};
 type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
-pub use crate::kcl_value::KclValue;
+pub use kcl_value::{KclValue, KclObjectFields};
+pub use function_param::FunctionParam;
+
 use crate::{
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
@@ -36,6 +38,10 @@ use crate::{
     std::{args::Arg, StdLib},
     ExecError, Program,
 };
+
+mod function_param;
+mod exec_ast;
+mod kcl_value;
 
 /// State for executing a program.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1787,7 +1793,7 @@ impl ExecutorContext {
     pub async fn reset_scene(
         &self,
         exec_state: &mut ExecState,
-        source_range: crate::executor::SourceRange,
+        source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
         self.engine
             .clear_scene(&mut exec_state.id_generator, source_range)
@@ -1852,7 +1858,7 @@ impl ExecutorContext {
             )
             .await?;
 
-        self.inner_execute(&cache_result.program, exec_state, crate::executor::BodyType::Root)
+        self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();
         Ok(session_data)
@@ -1906,7 +1912,7 @@ impl ExecutorContext {
                         let original_memory = std::mem::take(&mut exec_state.memory);
                         let original_exports = std::mem::take(&mut exec_state.module_exports);
                         let result = self
-                            .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
+                            .inner_execute(&program, exec_state, crate::execution::BodyType::Root)
                             .await;
                         let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
                         let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
@@ -2126,7 +2132,7 @@ impl ExecutorContext {
         self.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
-                crate::executor::SourceRange::default(),
+                crate::execution::SourceRange::default(),
                 ModelingCmd::from(mcmd::ZoomToFit {
                     object_ids: Default::default(),
                     animated: false,
@@ -2140,7 +2146,7 @@ impl ExecutorContext {
             .engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
-                crate::executor::SourceRange::default(),
+                crate::execution::SourceRange::default(),
                 ModelingCmd::from(mcmd::TakeSnapshot {
                     format: ImageFormat::Png,
                 }),

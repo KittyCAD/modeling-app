@@ -1,7 +1,7 @@
 //! Types used to send data to the test server.
 
 use crate::{
-    executor::{new_zoo_client, ExecutorContext, ExecutorSettings, ProgramMemory},
+    execution::{new_zoo_client, ExecutorContext, ExecutorSettings, ProgramMemory},
     settings::types::UnitLength,
     ConnectionError, ExecError, ExecState, Program,
 };
@@ -42,7 +42,7 @@ pub async fn execute_and_snapshot_no_auth(code: &str, units: UnitLength) -> Resu
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
-) -> Result<(crate::executor::ExecState, image::DynamicImage), ExecError> {
+) -> Result<(crate::execution::ExecState, image::DynamicImage), ExecError> {
     let mut exec_state = ExecState::default();
     let snapshot_png_bytes = ctx.execute_and_prepare(&program, &mut exec_state).await?.contents.0;
 

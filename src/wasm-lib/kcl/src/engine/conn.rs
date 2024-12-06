@@ -22,7 +22,7 @@ use super::ExecutionKind;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::{DefaultPlanes, IdGenerator},
+    execution::{DefaultPlanes, IdGenerator},
     SourceRange,
 };
 

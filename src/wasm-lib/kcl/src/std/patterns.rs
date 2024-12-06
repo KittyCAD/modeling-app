@@ -19,9 +19,7 @@ use uuid::Uuid;
 use super::args::Arg;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, Geometries, Geometry, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid, SolidSet},
-    function_param::FunctionParam,
-    kcl_value::KclObjectFields,
+    execution::{ExecState, FunctionParam, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, SketchSet, Solid, SolidSet},
     std::Args,
     SourceRange,
 };
@@ -357,7 +355,7 @@ async fn execute_pattern_transform<'a, T: GeometryTrait>(
     T::flush_batch(args, exec_state, geo_set.clone()).await?;
     let starting: Vec<T> = geo_set.into();
 
-    if args.ctx.context_type == crate::executor::ContextType::Mock {
+    if args.ctx.context_type == crate::execution::ContextType::Mock {
         return Ok(starting);
     }
 
@@ -925,7 +923,7 @@ async fn inner_pattern_circular_2d(
 ) -> Result<Vec<Box<Sketch>>, KclError> {
     let starting_sketches: Vec<Box<Sketch>> = sketch_set.into();
 
-    if args.ctx.context_type == crate::executor::ContextType::Mock {
+    if args.ctx.context_type == crate::execution::ContextType::Mock {
         return Ok(starting_sketches);
     }
 
@@ -995,7 +993,7 @@ async fn inner_pattern_circular_3d(
 
     let starting_solids: Vec<Box<Solid>> = solid_set.into();
 
-    if args.ctx.context_type == crate::executor::ContextType::Mock {
+    if args.ctx.context_type == crate::execution::ContextType::Mock {
         return Ok(starting_solids);
     }
 

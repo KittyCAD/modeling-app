@@ -395,10 +395,10 @@ fn do_stdlib_inner(
         #const_struct
 
         fn #boxed_fn_name_ident(
-            exec_state: &mut crate::executor::ExecState,
+            exec_state: &mut crate::ExecState,
             args: crate::std::Args,
         ) -> std::pin::Pin<
-            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>> + Send + '_>,
+            Box<dyn std::future::Future<Output = anyhow::Result<crate::execution::KclValue, crate::errors::KclError>> + Send + '_>,
         > {
             Box::pin(#fn_name_ident(exec_state, args))
         }
@@ -770,12 +770,12 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
         #[tokio::test(flavor = "multi_thread")]
         async fn #test_name_mock() {
             let program = crate::Program::parse_no_errs(#code_block).unwrap();
-            let ctx = crate::executor::ExecutorContext {
+            let ctx = crate::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
                 fs: std::sync::Arc::new(crate::fs::FileManager::new()),
                 stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
-                context_type: crate::executor::ContextType::Mock,
+                context_type: crate::execution::ContextType::Mock,
             };
 
             ctx.run(program.into(), &mut crate::ExecState::default()).await.unwrap();

@@ -115,7 +115,7 @@ pub struct Backend {
     /// information.
     pub last_successful_ast_state: Arc<RwLock<Option<OldAstState>>>,
     /// Memory maps.
-    pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
+    pub memory_map: DashMap<String, crate::execution::ProgramMemory>,
     /// Current code.
     pub code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
@@ -129,7 +129,7 @@ pub struct Backend {
     /// If we can send telemetry for this user.
     pub can_send_telemetry: bool,
     /// Optional executor context to use if we want to execute the code.
-    pub executor_ctx: Arc<RwLock<Option<crate::executor::ExecutorContext>>>,
+    pub executor_ctx: Arc<RwLock<Option<crate::execution::ExecutorContext>>>,
     /// If we are currently allowed to execute the ast.
     pub can_execute: Arc<RwLock<bool>>,
 
@@ -140,7 +140,7 @@ impl Backend {
     #[cfg(target_arch = "wasm32")]
     pub fn new_wasm(
         client: Client,
-        executor_ctx: Option<crate::executor::ExecutorContext>,
+        executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::wasm::FileSystemManager,
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
@@ -157,7 +157,7 @@ impl Backend {
     #[cfg(not(target_arch = "wasm32"))]
     pub fn new(
         client: Client,
-        executor_ctx: Option<crate::executor::ExecutorContext>,
+        executor_ctx: Option<crate::execution::ExecutorContext>,
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
     ) -> Result<Self, String> {
@@ -172,7 +172,7 @@ impl Backend {
 
     fn with_file_manager(
         client: Client,
-        executor_ctx: Option<crate::executor::ExecutorContext>,
+        executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::FileManager,
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
@@ -297,7 +297,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Try to get the memory for the current code.
         let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
-            *memory != crate::executor::ProgramMemory::default()
+            *memory != crate::execution::ProgramMemory::default()
         } else {
             false
         };
@@ -406,7 +406,7 @@ impl Backend {
         *self.can_execute.read().await
     }
 
-    pub async fn executor_ctx(&self) -> tokio::sync::RwLockReadGuard<'_, Option<crate::executor::ExecutorContext>> {
+    pub async fn executor_ctx(&self) -> tokio::sync::RwLockReadGuard<'_, Option<crate::execution::ExecutorContext>> {
         self.executor_ctx.read().await
     }
 
@@ -871,7 +871,7 @@ impl Backend {
 
             // Try to get the memory for the current code.
             let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
-                *memory != crate::executor::ProgramMemory::default()
+                *memory != crate::execution::ProgramMemory::default()
             } else {
                 false
             };

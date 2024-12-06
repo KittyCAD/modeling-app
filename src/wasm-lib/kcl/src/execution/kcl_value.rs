@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
-    executor::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
+    execution::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
     parsing::ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
     std::{args::Arg, FnAsArg},
     ExecState, ExecutorContext, KclError, SourceRange,
@@ -496,7 +496,7 @@ impl KclValue {
             )
             .await
         } else {
-            crate::executor::call_user_defined_function(
+            crate::execution::call_user_defined_function(
                 args,
                 closure_memory.as_ref(),
                 expression.as_ref(),
