@@ -7,6 +7,8 @@ import packageJson from '../package.json'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import chokidar from 'chokidar'
 
+const resizeWindow = (width: number, height: number) =>
+  ipcRenderer.invoke('app.resizeWindow', [width, height])
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
@@ -18,12 +20,16 @@ const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
 const onUpdateDownloaded = (
   callback: (value: { version: string; releaseNotes: string }) => void
-) => ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
+) =>
+  ipcRenderer.on('update-downloaded', (_event: any, value) => callback(value))
 const onUpdateDownloadStart = (
   callback: (value: { version: string }) => void
-) => ipcRenderer.on('update-download-start', (_event, value) => callback(value))
+) =>
+  ipcRenderer.on('update-download-start', (_event: any, value) =>
+    callback(value)
+  )
 const onUpdateError = (callback: (value: Error) => void) =>
-  ipcRenderer.on('update-error', (_event, value) => callback(value))
+  ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
 
 const isMac = os.platform() === 'darwin'
@@ -189,4 +195,5 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateError,
   appRestart,
   getArgvParsed,
+  resizeWindow,
 })
