@@ -19,6 +19,8 @@ async function doBasicSketch(
   const PUR = 400 / 37.5 //pixeltoUnitRatio
 
   await homePage.goToModelingScene()
+  await u.waitForPageLoad()
+  await page.waitForTimeout()
   await u.openDebugPanel()
 
   // If we have the code pane open, we should see the code.
@@ -144,7 +146,6 @@ async function doBasicSketch(
 
 test.describe('Basic sketch', () => {
   test('code pane open at start', async ({ page, homePage }) => {
-    // Skip on windows it is being weird.
     await doBasicSketch(page, homePage, ['code'])
   })
 
