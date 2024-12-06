@@ -1,11 +1,9 @@
-use databake::*;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{Position as LspPosition, Range as LspRange};
 
 /// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ModuleId(u32);
 
@@ -26,21 +24,12 @@ impl ModuleId {
 }
 
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
-#[ts(export, as = "TsSourceRange")]
+#[ts(export, type = "[number, number, number]")]
 pub struct SourceRange([usize; 3]);
-
-#[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
-struct TsSourceRange(#[ts(type = "[number, number]")] [usize; 2]);
 
 impl From<[usize; 3]> for SourceRange {
     fn from(value: [usize; 3]) -> Self {
         Self(value)
-    }
-}
-
-impl From<SourceRange> for TsSourceRange {
-    fn from(value: SourceRange) -> Self {
-        Self([value.start(), value.end()])
     }
 }
 

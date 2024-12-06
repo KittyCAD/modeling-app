@@ -177,7 +177,7 @@ impl KclError {
         }
     }
 
-    pub fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
+    pub(crate) fn override_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
         let mut new = self.clone();
         match &mut new {
             KclError::Lexical(e) => e.source_ranges = source_ranges,
@@ -197,7 +197,7 @@ impl KclError {
         new
     }
 
-    pub fn add_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
+    pub(crate) fn add_source_ranges(&self, source_ranges: Vec<SourceRange>) -> Self {
         let mut new = self.clone();
         match &mut new {
             KclError::Lexical(e) => e.source_ranges.extend(source_ranges),
@@ -278,4 +278,115 @@ impl From<KclError> for pyo3::PyErr {
     fn from(error: KclError) -> Self {
         pyo3::exceptions::PyException::new_err(error.to_string())
     }
+}
+
+/// An error which occurred during parsing, etc.
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub struct CompilationError {
+    #[serde(rename = "sourceRange")]
+    pub source_range: SourceRange,
+    #[serde(rename = "contextRange")]
+    pub context_range: Option<SourceRange>,
+    pub message: String,
+    pub suggestion: Option<Suggestion>,
+    pub severity: Severity,
+    pub tag: Tag,
+}
+
+impl CompilationError {
+    #[allow(dead_code)]
+    pub(crate) fn err(source_range: SourceRange, message: impl ToString) -> CompilationError {
+        CompilationError {
+            source_range,
+            context_range: None,
+            message: message.to_string(),
+            suggestion: None,
+            severity: Severity::Error,
+            tag: Tag::None,
+        }
+    }
+
+    pub(crate) fn fatal(source_range: SourceRange, message: impl ToString) -> CompilationError {
+        CompilationError {
+            source_range,
+            context_range: None,
+            message: message.to_string(),
+            suggestion: None,
+            severity: Severity::Fatal,
+            tag: Tag::None,
+        }
+    }
+
+    pub(crate) fn with_suggestion(
+        source_range: SourceRange,
+        context_range: Option<SourceRange>,
+        message: impl ToString,
+        suggestion: Option<(impl ToString, impl ToString)>,
+        tag: Tag,
+    ) -> CompilationError {
+        CompilationError {
+            source_range,
+            context_range,
+            message: message.to_string(),
+            suggestion: suggestion.map(|(t, i)| Suggestion {
+                title: t.to_string(),
+                insert: i.to_string(),
+            }),
+            severity: Severity::Error,
+            tag,
+        }
+    }
+
+    #[cfg(test)]
+    pub fn apply_suggestion(&self, src: &str) -> Option<String> {
+        let suggestion = self.suggestion.as_ref()?;
+        Some(format!(
+            "{}{}{}",
+            &src[0..self.source_range.start()],
+            suggestion.insert,
+            &src[self.source_range.end()..]
+        ))
+    }
+}
+
+impl From<CompilationError> for KclErrorDetails {
+    fn from(err: CompilationError) -> Self {
+        KclErrorDetails {
+            source_ranges: vec![err.source_range],
+            message: err.message,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub enum Severity {
+    Warning,
+    Error,
+    Fatal,
+}
+
+impl Severity {
+    pub fn is_err(self) -> bool {
+        match self {
+            Severity::Warning => false,
+            Severity::Error | Severity::Fatal => true,
+        }
+    }
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub enum Tag {
+    Deprecated,
+    Unnecessary,
+    None,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+pub struct Suggestion {
+    pub title: String,
+    pub insert: String,
 }

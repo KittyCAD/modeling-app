@@ -314,12 +314,8 @@ where
             if !f.walk(vd.as_ref().into())? {
                 return Ok(false);
             }
-            for dec in &vd.declarations {
-                if !walk_variable_declarator(dec, f)? {
-                    return Ok(false);
-                }
-            }
-            Ok(true)
+
+            walk_variable_declarator(&vd.declaration, f)
         }
         BodyItem::ReturnStatement(rs) => {
             if !f.walk(rs.into())? {

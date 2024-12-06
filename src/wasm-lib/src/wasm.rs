@@ -4,27 +4,42 @@ use std::{str::FromStr, sync::Arc};
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{CoreDump, EngineManager, ExecState, ModuleId, Program};
+use kcl_lib::{CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program};
+use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
+
+lazy_static::lazy_static! {
+    /// A static mutable lock for updating the last successful execution state for the cache.
+    static ref OLD_AST_MEMORY: Arc<RwLock<Option<OldAstState>>> = Default::default();
+}
+
+// Read the old ast memory from the lock, this should never fail since
+// in failure scenarios we should just bust the cache and send back None as the previous
+// state.
+async fn read_old_ast_memory() -> Option<OldAstState> {
+    let lock = OLD_AST_MEMORY.read().await;
+    lock.clone()
+}
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
 pub async fn execute_wasm(
     program_str: &str,
-    memory_str: &str,
-    id_generator_str: &str,
+    program_memory_override_str: &str,
     units: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     fs_manager: kcl_lib::wasm_engine::FileSystemManager,
-    project_directory: Option<String>,
-    is_mock: bool,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
-    let memory: kcl_lib::exec::ProgramMemory = serde_json::from_str(memory_str).map_err(|e| e.to_string())?;
-    let id_generator: kcl_lib::exec::IdGenerator = serde_json::from_str(id_generator_str).map_err(|e| e.to_string())?;
+    let program_memory_override: Option<kcl_lib::exec::ProgramMemory> =
+        serde_json::from_str(program_memory_override_str).map_err(|e| e.to_string())?;
+
+    // If we have a program memory override, assume we are in mock mode.
+    // You cannot override the memory in non-mock mode.
+    let is_mock = program_memory_override.is_some();
 
     let units = kcl_lib::UnitLength::from_str(units).map_err(|e| e.to_string())?;
     let ctx = if is_mock {
@@ -33,14 +48,54 @@ pub async fn execute_wasm(
         kcl_lib::ExecutorContext::new(engine_manager, fs_manager, units).await?
     };
 
-    let mut exec_state = ExecState {
-        memory,
-        id_generator,
-        project_directory,
-        ..ExecState::default()
-    };
+    let mut exec_state = ExecState::default();
+    let mut old_ast_memory = None;
 
-    ctx.run(&program, &mut exec_state).await.map_err(String::from)?;
+    // Populate from the old exec state if it exists.
+    if let Some(program_memory_override) = program_memory_override {
+        exec_state.memory = program_memory_override;
+    } else {
+        // If we are in mock mode, we don't want to use any cache.
+        if let Some(old) = read_old_ast_memory().await {
+            exec_state = old.exec_state.clone();
+            old_ast_memory = Some(old);
+        }
+    }
+
+    if let Err(err) = ctx
+        .run(
+            CacheInformation {
+                old: old_ast_memory,
+                new_ast: program.ast.clone(),
+            },
+            &mut exec_state,
+        )
+        .await
+        .map_err(String::from)
+    {
+        if !is_mock {
+            // We don't use the cache in mock mode.
+            let mut current_cache = OLD_AST_MEMORY.write().await;
+            // Set the cache to None.
+            *current_cache = None;
+        }
+
+        // Throw the error.
+        return Err(err);
+    }
+
+    if !is_mock {
+        // We don't use the cache in mock mode.
+        let mut current_cache = OLD_AST_MEMORY.write().await;
+
+        // If we aren't in mock mode, save this as the last successful execution to the cache.
+        *current_cache = Some(OldAstState {
+            ast: program.ast.clone(),
+            exec_state: exec_state.clone(),
+            settings: ctx.settings.clone(),
+        });
+        drop(current_cache);
+    }
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
@@ -162,10 +217,10 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
 pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let program = Program::parse(js).map_err(String::from)?;
+    let (program, errs) = Program::parse(js).map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
-    JsValue::from_serde(&program).map_err(|e| e.to_string())
+    JsValue::from_serde(&(program, errs)).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for recast

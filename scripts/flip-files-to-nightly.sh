@@ -1,8 +1,6 @@
 #!/bin/bash
 
 export VERSION=$(date +'%-y.%-m.%-d')
-export TAG="nightly-v$VERSION"
-export PREVIOUS_TAG=$(git describe --tags --match="nightly-v[0-9]*" --abbrev=0)
 export COMMIT=$(git rev-parse --short HEAD)
 
 # package.json
@@ -15,7 +13,7 @@ yq -i '.publish[0].url = "https://dl.zoo.dev/releases/modeling-app/nightly"' ele
 yq -i '.appId = "dev.zoo.modeling-app-nightly"' electron-builder.yml
 
 # Release notes
-./scripts/get-nightly-changelog.sh > release-notes.md
+echo "Nightly build $VERSION (commit $COMMIT)" > release-notes.md
 
 # icons
 cp assets/icon-nightly.png assets/icon.png

@@ -4,11 +4,13 @@ use async_recursion::async_recursion;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier},
+    execution::{
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
+    },
     parsing::ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
-        CallExpressionKw, Expr, IfExpression, KclNone, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
-        Node, ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
+        CallExpressionKw, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
+        ObjectExpression, PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{args::Arg, FunctionKind},
@@ -358,8 +360,46 @@ async fn inner_execute_pipe_body(
 }
 
 impl Node<CallExpressionKw> {
-    pub async fn execute(&self, _exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        todo!()
+    #[async_recursion]
+    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        let fn_name = &self.callee.name;
+
+        // Build a hashmap from argument labels to the final evaluated values.
+        let mut fn_args = HashMap::with_capacity(self.arguments.len());
+        for arg_expr in &self.arguments {
+            let source_range = SourceRange::from(arg_expr.arg.clone());
+            let metadata = Metadata { source_range };
+            let value = ctx
+                .execute_expr(&arg_expr.arg, exec_state, &metadata, StatementKind::Expression)
+                .await?;
+            fn_args.insert(arg_expr.label.name.clone(), Arg::new(value, source_range));
+        }
+        let fn_args = fn_args; // remove mutability
+
+        // Evaluate the unlabeled first param, if any exists.
+        let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
+            let source_range = SourceRange::from(arg_expr.clone());
+            let metadata = Metadata { source_range };
+            let value = ctx
+                .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
+                .await?;
+            Some(Arg::new(value, source_range))
+        } else {
+            None
+        };
+
+        let args = crate::std::Args::new_kw(fn_args, unlabeled, self.into(), ctx.clone());
+        match ctx.stdlib.get_either(fn_name) {
+            FunctionKind::Core(func) => {
+                // Attempt to call the function.
+                let mut result = func.std_lib_fn()(exec_state, args).await?;
+                update_memory_for_tags_of_geometry(&mut result, exec_state)?;
+                Ok(result)
+            }
+            FunctionKind::UserDefined => {
+                todo!("Part of modeling-app#4600: Support keyword arguments for user-defined functions")
+            }
+        }
     }
 }
 
@@ -381,158 +421,12 @@ impl Node<CallExpression> {
             fn_args.push(arg);
         }
 
-        match ctx.stdlib.get_either(&self.callee.name) {
+        match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
-
-                // If the return result is a sketch or solid, we want to update the
-                // memory for the tags of the group.
-                // TODO: This could probably be done in a better way, but as of now this was my only idea
-                // and it works.
-                match result {
-                    KclValue::Sketch { value: ref mut sketch } => {
-                        for (_, tag) in sketch.tags.iter() {
-                            exec_state.memory.update_tag(&tag.value, tag.clone())?;
-                        }
-                    }
-                    KclValue::Solid(ref mut solid) => {
-                        for value in &solid.value {
-                            if let Some(tag) = value.get_tag() {
-                                // Get the past tag and update it.
-                                let mut t = if let Some(t) = solid.sketch.tags.get(&tag.name) {
-                                    t.clone()
-                                } else {
-                                    // It's probably a fillet or a chamfer.
-                                    // Initialize it.
-                                    TagIdentifier {
-                                        value: tag.name.clone(),
-                                        info: Some(TagEngineInfo {
-                                            id: value.get_id(),
-                                            surface: Some(value.clone()),
-                                            path: None,
-                                            sketch: solid.id,
-                                        }),
-                                        meta: vec![Metadata {
-                                            source_range: tag.clone().into(),
-                                        }],
-                                    }
-                                };
-
-                                let Some(ref info) = t.info else {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: format!("Tag {} does not have path info", tag.name),
-                                        source_ranges: vec![tag.into()],
-                                    }));
-                                };
-
-                                let mut info = info.clone();
-                                info.surface = Some(value.clone());
-                                info.sketch = solid.id;
-                                t.info = Some(info);
-
-                                exec_state.memory.update_tag(&tag.name, t.clone())?;
-
-                                // update the sketch tags.
-                                solid.sketch.tags.insert(tag.name.clone(), t);
-                            }
-                        }
-
-                        // Find the stale sketch in memory and update it.
-                        if let Some(current_env) = exec_state
-                            .memory
-                            .environments
-                            .get_mut(exec_state.memory.current_env.index())
-                        {
-                            current_env.update_sketch_tags(&solid.sketch);
-                        }
-                    }
-                    _ => {}
-                }
-
-                Ok(result)
-            }
-            FunctionKind::Std(func) => {
-                let function_expression = func.function();
-                let (required_params, optional_params) =
-                    function_expression.required_and_optional_params().map_err(|e| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!("Error getting parts of function: {}", e),
-                            source_ranges: vec![self.into()],
-                        })
-                    })?;
-                if fn_args.len() < required_params.len() || fn_args.len() > function_expression.params.len() {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "this function expected {} arguments, got {}",
-                            required_params.len(),
-                            fn_args.len(),
-                        ),
-                        source_ranges: vec![self.into()],
-                    }));
-                }
-
-                // Add the arguments to the memory.
-                let mut fn_memory = exec_state.memory.clone();
-                for (index, param) in required_params.iter().enumerate() {
-                    fn_memory.add(
-                        &param.identifier.name,
-                        fn_args.get(index).unwrap().value.clone(),
-                        param.identifier.clone().into(),
-                    )?;
-                }
-                // Add the optional arguments to the memory.
-                for (index, param) in optional_params.iter().enumerate() {
-                    if let Some(arg) = fn_args.get(index + required_params.len()) {
-                        fn_memory.add(
-                            &param.identifier.name,
-                            arg.value.clone(),
-                            param.identifier.clone().into(),
-                        )?;
-                    } else {
-                        fn_memory.add(
-                            &param.identifier.name,
-                            KclValue::KclNone {
-                                value: KclNone::new(),
-                                meta: vec![self.into()],
-                            },
-                            param.identifier.clone().into(),
-                        )?;
-                    }
-                }
-
-                let fn_dynamic_state = exec_state.dynamic_state.clone();
-                // TODO: Shouldn't we merge program memory into fn_dynamic_state
-                // here?
-
-                // Call the stdlib function
-                let p = &func.function().body;
-
-                let (exec_result, fn_memory) = {
-                    let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
-                    let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
-                    let result = ctx.inner_execute(p, exec_state, BodyType::Block).await;
-                    exec_state.dynamic_state = previous_dynamic_state;
-                    let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
-                    (result, fn_memory)
-                };
-
-                match exec_result {
-                    Ok(_) => {}
-                    Err(err) => {
-                        // We need to override the source ranges so we don't get the embedded kcl
-                        // function from the stdlib.
-                        return Err(err.override_source_ranges(vec![self.into()]));
-                    }
-                };
-                let out = fn_memory.return_;
-                let result = out.ok_or_else(|| {
-                    KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of stdlib function {} is undefined", fn_name),
-                        source_ranges: vec![self.into()],
-                    })
-                })?;
+                update_memory_for_tags_of_geometry(&mut result, exec_state)?;
                 Ok(result)
             }
             FunctionKind::UserDefined => {
@@ -546,6 +440,7 @@ impl Node<CallExpression> {
                     let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
                     let result = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
                         // Add the call expression to the source ranges.
+                        // TODO currently ignored by the frontend
                         e.add_source_ranges(vec![source_range])
                     });
                     exec_state.dynamic_state = previous_dynamic_state;
@@ -568,6 +463,73 @@ impl Node<CallExpression> {
             }
         }
     }
+}
+
+fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
+    // If the return result is a sketch or solid, we want to update the
+    // memory for the tags of the group.
+    // TODO: This could probably be done in a better way, but as of now this was my only idea
+    // and it works.
+    match result {
+        KclValue::Sketch { value: ref mut sketch } => {
+            for (_, tag) in sketch.tags.iter() {
+                exec_state.memory.update_tag(&tag.value, tag.clone())?;
+            }
+        }
+        KclValue::Solid(ref mut solid) => {
+            for value in &solid.value {
+                if let Some(tag) = value.get_tag() {
+                    // Get the past tag and update it.
+                    let mut t = if let Some(t) = solid.sketch.tags.get(&tag.name) {
+                        t.clone()
+                    } else {
+                        // It's probably a fillet or a chamfer.
+                        // Initialize it.
+                        TagIdentifier {
+                            value: tag.name.clone(),
+                            info: Some(TagEngineInfo {
+                                id: value.get_id(),
+                                surface: Some(value.clone()),
+                                path: None,
+                                sketch: solid.id,
+                            }),
+                            meta: vec![Metadata {
+                                source_range: tag.clone().into(),
+                            }],
+                        }
+                    };
+
+                    let Some(ref info) = t.info else {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: format!("Tag {} does not have path info", tag.name),
+                            source_ranges: vec![tag.into()],
+                        }));
+                    };
+
+                    let mut info = info.clone();
+                    info.surface = Some(value.clone());
+                    info.sketch = solid.id;
+                    t.info = Some(info);
+
+                    exec_state.memory.update_tag(&tag.name, t.clone())?;
+
+                    // update the sketch tags.
+                    solid.sketch.tags.insert(tag.name.clone(), t);
+                }
+            }
+
+            // Find the stale sketch in memory and update it.
+            if let Some(current_env) = exec_state
+                .memory
+                .environments
+                .get_mut(exec_state.memory.current_env.index())
+            {
+                current_env.update_sketch_tags(&solid.sketch);
+            }
+        }
+        _ => {}
+    }
+    Ok(())
 }
 
 impl Node<TagDeclarator> {
@@ -845,5 +807,12 @@ impl Property {
             Property::UInt(_) => "number",
             Property::String(_) => "string",
         }
+    }
+}
+
+impl Node<PipeExpression> {
+    #[async_recursion]
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 }

@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing double_map_fn.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -72,8 +73,7 @@ description: Program memory after executing double_map_fn.kcl
                   "name": "i",
                   "start": 13,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
             "start": 12,

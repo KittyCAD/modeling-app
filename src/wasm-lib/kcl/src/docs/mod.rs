@@ -27,6 +27,8 @@ pub struct StdLibFnData {
     pub description: String,
     /// The tags of the function.
     pub tags: Vec<String>,
+    /// If this function uses keyword arguments, or positional arguments.
+    pub keyword_arguments: bool,
     /// The args of the function.
     pub args: Vec<StdLibFnArg>,
     /// The return value of the function.
@@ -55,6 +57,18 @@ pub struct StdLibFnArg {
     pub schema: schemars::schema::RootSchema,
     /// If the argument is required.
     pub required: bool,
+    /// Even in functions that use keyword arguments, not every parameter requires a label (most do though).
+    /// Some functions allow one unlabeled parameter, which has to be first in the
+    /// argument list.
+    ///
+    /// This field is ignored for functions that still use positional arguments.
+    /// Defaults to true.
+    #[serde(default = "its_true")]
+    pub label_required: bool,
+}
+
+fn its_true() -> bool {
+    true
 }
 
 impl StdLibFnArg {
@@ -120,6 +134,9 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     /// The description of the function.
     fn description(&self) -> String;
 
+    /// Does this use keyword arguments, or positional?
+    fn keyword_arguments(&self) -> bool;
+
     /// The tags of the function.
     fn tags(&self) -> Vec<String>;
 
@@ -151,6 +168,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
             summary: self.summary(),
             description: self.description(),
             tags: self.tags(),
+            keyword_arguments: self.keyword_arguments(),
             args: self.args(false),
             return_value: self.return_value(false),
             unpublished: self.unpublished(),
@@ -806,7 +824,7 @@ mod tests {
 
     #[test]
     fn test_deserialize_function() {
-        let some_function_string = r#"{"type":"StdLib","func":{"name":"line","summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{},"schemaDefinitions":{}},"args":[],"unpublished":false,"deprecated":false, "examples": []}}"#;
+        let some_function_string = r#"{"type":"StdLib","func":{"name":"line","keywordArguments":false,"summary":"","description":"","tags":[],"returnValue":{"type":"","required":false,"name":"","schema":{},"schemaDefinitions":{}},"args":[],"unpublished":false,"deprecated":false, "examples": []}}"#;
         let some_function: crate::parsing::ast::types::Function = serde_json::from_str(some_function_string).unwrap();
 
         assert_eq!(

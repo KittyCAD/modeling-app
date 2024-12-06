@@ -1,3 +1,6 @@
+// TODO optimise size of CompilationError
+#![allow(clippy::result_large_err)]
+
 use std::{cell::RefCell, collections::HashMap, str::FromStr};
 
 use winnow::{
@@ -5,23 +8,23 @@ use winnow::{
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
+    stream::Stream,
     token::{any, one_of, take_till},
 };
 
 use crate::{
     docs::StdLibFn,
-    errors::{KclError, KclErrorDetails},
+    errors::{CompilationError, Severity, Tag},
     parsing::{
         ast::types::{
             ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
-            CallExpression, CallExpressionKw, CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgPrimitive,
-            FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement, ItemVisibility,
-            Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node, NonCodeMeta, NonCodeNode,
-            NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program,
-            ReturnStatement, Shebang, TagDeclarator, UnaryExpression, UnaryOperator, VariableDeclaration,
-            VariableDeclarator, VariableKind,
+            CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
+            FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector,
+            ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
+            MemberObject, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
+            Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator,
+            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
-        error::{self, ContextError, ParseError},
         math::BinaryExpressionToken,
         token::{Token, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
@@ -29,8 +32,6 @@ use crate::{
     unparser::ExprContext,
     SourceRange,
 };
-
-use super::ast::types::LabeledArg;
 
 thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
@@ -43,26 +44,28 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
 
-    let result = program.parse(i).save_err();
+    let result = match program.parse(i) {
+        Ok(result) => Some(result),
+        Err(e) => {
+            ParseContext::err(e.into());
+            None
+        }
+    };
     let ctxt = ParseContext::take();
-    result.map(|o| (o, ctxt)).into()
+    (result, ctxt.errors).into()
 }
 
 /// Context built up while parsing a program.
 ///
 /// When returned from parsing contains the errors and warnings from the current parse.
 #[derive(Debug, Clone, Default)]
-pub(crate) struct ParseContext {
-    pub errors: Vec<ParseError>,
-    pub warnings: Vec<ParseError>,
+struct ParseContext {
+    pub errors: Vec<CompilationError>,
 }
 
 impl ParseContext {
     fn new() -> Self {
-        ParseContext {
-            errors: Vec::new(),
-            warnings: Vec::new(),
-        }
+        ParseContext { errors: Vec::new() }
     }
 
     /// Set a new `ParseContext` in thread-local storage. Panics if one already exists.
@@ -78,66 +81,147 @@ impl ParseContext {
     }
 
     /// Add an error to the current `ParseContext`, panics if there is none.
-    fn err(e: ParseError) {
-        // TODO follow warnings replacement with errors
-        CTXT.with_borrow_mut(|ctxt| ctxt.as_mut().unwrap().errors.push(e));
-    }
-
-    /// Add a warning to the current `ParseContext`, panics if there is none.
-    fn warn(mut e: ParseError) {
-        e.severity = error::Severity::Warning;
+    fn err(err: CompilationError) {
         CTXT.with_borrow_mut(|ctxt| {
-            // Avoid duplicating warnings. This is possible since the parser can try one path, find
+            // Avoid duplicating errors. This is possible since the parser can try one path, find
             // a warning, then backtrack and decide not to take that path and try another. This can
-            // happen 'high up the stack', so it's impossible to fix where the warnings are generated.
-            // Ideally we would pass warnings up the call stack rather than use a context object or
-            // have some way to mark warnings as speculative or committed, but I don't think Winnow
+            // happen 'high up the stack', so it's impossible to fix where the errors are generated.
+            // Ideally we would pass errors up the call stack rather than use a context object or
+            // have some way to mark errors as speculative or committed, but I don't think Winnow
             // is flexible enough for that (or at least, not without significant changes to the
             // parser).
-            let warnings = &mut ctxt.as_mut().unwrap().warnings;
-            for w in warnings.iter_mut().rev() {
-                if w.source_range == e.source_range {
-                    *w = e;
+            let errors = &mut ctxt.as_mut().unwrap().errors;
+            for e in errors.iter_mut().rev() {
+                if e.source_range == err.source_range {
+                    *e = err;
                     return;
                 }
 
-                if w.source_range.start() > e.source_range.end() {
+                if e.source_range.start() > err.source_range.end() {
                     break;
                 }
             }
-            warnings.push(e);
+            errors.push(err);
         });
+    }
+
+    /// Add a warning to the current `ParseContext`, panics if there is none.
+    fn warn(mut e: CompilationError) {
+        e.severity = Severity::Warning;
+        Self::err(e);
     }
 }
 
-type PResult<O, E = error::ContextError> = winnow::prelude::PResult<O, E>;
-
-/// Helper trait for dealing with PResults and the `ParseContext`.
-trait PResultEx {
-    type O;
-
-    /// If self is Ok, then returns it wrapped in `Ok(Some())`.
-    /// If self is a parsing error, saves it to the current `ParseContext` and returns `Ok(None)`.
-    /// If self is some other kind of error, then returns it.
-    fn save_err(self) -> Result<Option<Self::O>, KclError>;
+/// Accumulate context while backtracking errors
+/// Very similar to [`winnow::error::ContextError`] type,
+/// but the 'cause' field is always a [`CompilationError`],
+/// instead of a dynamic [`std::error::Error`] trait object.
+#[derive(Debug, Clone)]
+pub(crate) struct ContextError<C = StrContext> {
+    pub context: Vec<C>,
+    pub cause: Option<CompilationError>,
 }
 
-impl<O, E: Into<error::ErrorKind>> PResultEx for Result<O, E> {
-    type O = O;
+impl From<winnow::error::ParseError<&[Token], ContextError>> for CompilationError {
+    fn from(err: winnow::error::ParseError<&[Token], ContextError>) -> Self {
+        let Some(last_token) = err.input().last() else {
+            return CompilationError::fatal(Default::default(), "file is empty");
+        };
 
-    fn save_err(self) -> Result<Option<O>, KclError> {
-        match self {
-            Ok(o) => Ok(Some(o)),
-            Err(e) => match e.into() {
-                error::ErrorKind::Parse(e) => {
-                    ParseContext::err(e);
-                    Ok(None)
-                }
-                error::ErrorKind::Internal(e) => Err(e),
-            },
+        let (input, offset, err) = (err.input().to_vec(), err.offset(), err.into_inner());
+
+        if let Some(e) = err.cause {
+            return e;
+        }
+
+        // See docs on `offset`.
+        if offset >= input.len() {
+            let context = err.context.first();
+            return CompilationError::fatal(
+                last_token.as_source_range(),
+                match context {
+                    Some(what) => format!("Unexpected end of file. The compiler {what}"),
+                    None => "Unexpected end of file while still parsing".to_owned(),
+                },
+            );
+        }
+
+        let bad_token = &input[offset];
+        // TODO: Add the Winnow parser context to the error.
+        // See https://github.com/KittyCAD/modeling-app/issues/784
+        CompilationError::fatal(
+            bad_token.as_source_range(),
+            format!("Unexpected token: {}", bad_token.value),
+        )
+    }
+}
+
+impl<C> From<CompilationError> for ContextError<C> {
+    fn from(e: CompilationError) -> Self {
+        Self {
+            context: Default::default(),
+            cause: Some(e),
         }
     }
 }
+
+impl<C> std::default::Default for ContextError<C> {
+    fn default() -> Self {
+        Self {
+            context: Default::default(),
+            cause: None,
+        }
+    }
+}
+
+impl<I, C> winnow::error::ParserError<I> for ContextError<C>
+where
+    I: Stream,
+{
+    #[inline]
+    fn from_error_kind(_input: &I, _kind: winnow::error::ErrorKind) -> Self {
+        Self::default()
+    }
+
+    #[inline]
+    fn append(
+        self,
+        _input: &I,
+        _input_checkpoint: &<I as Stream>::Checkpoint,
+        _kind: winnow::error::ErrorKind,
+    ) -> Self {
+        self
+    }
+
+    #[inline]
+    fn or(self, other: Self) -> Self {
+        other
+    }
+}
+
+impl<C, I> winnow::error::AddContext<I, C> for ContextError<C>
+where
+    I: Stream,
+{
+    #[inline]
+    fn add_context(mut self, _input: &I, _input_checkpoint: &<I as Stream>::Checkpoint, ctx: C) -> Self {
+        self.context.push(ctx);
+        self
+    }
+}
+
+impl<C, I> winnow::error::FromExternalError<I, CompilationError> for ContextError<C> {
+    #[inline]
+    fn from_external_error(_input: &I, _kind: winnow::error::ErrorKind, e: CompilationError) -> Self {
+        let mut err = Self::default();
+        {
+            err.cause = Some(e);
+        }
+        err
+    }
+}
+
+type PResult<O, E = ContextError> = winnow::prelude::PResult<O, E>;
 
 fn expected(what: &'static str) -> StrContext {
     StrContext::Expected(StrContextValue::Description(what))
@@ -271,16 +355,16 @@ fn pipe_expression(i: TokenSlice) -> PResult<Node<PipeExpression>> {
     // First, ensure they all have a % in their args.
     let calls_without_substitution = tail.iter().find_map(|(_nc, call_expr, _nc2)| {
         if !call_expr.has_substitution_arg() {
-            Some(call_expr.as_source_ranges())
+            Some(call_expr.as_source_range())
         } else {
             None
         }
     });
-    if let Some(source_ranges) = calls_without_substitution {
-        let err = KclError::Syntax(KclErrorDetails {
-            source_ranges,
-            message: "All expressions in a pipeline must use the % (substitution operator)".to_owned(),
-        });
+    if let Some(source_range) = calls_without_substitution {
+        let err = CompilationError::fatal(
+            source_range,
+            "All expressions in a pipeline must use the % (substitution operator)",
+        );
         return Err(ErrMode::Cut(err.into()));
     }
     // Time to structure the return value.
@@ -315,10 +399,10 @@ fn bool_value(i: TokenSlice) -> PResult<BoxNode<Literal>> {
         .try_map(|token: Token| match token.token_type {
             TokenType::Keyword if token.value == "true" => Ok((true, token)),
             TokenType::Keyword if token.value == "false" => Ok((false, token)),
-            _ => Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: "invalid boolean literal".to_owned(),
-            })),
+            _ => Err(CompilationError::fatal(
+                token.as_source_range(),
+                "invalid boolean literal",
+            )),
         })
         .context(expected("a boolean literal (either true or false)"))
         .parse_next(i)?;
@@ -334,7 +418,7 @@ fn bool_value(i: TokenSlice) -> PResult<BoxNode<Literal>> {
     )))
 }
 
-pub fn literal(i: TokenSlice) -> PResult<BoxNode<Literal>> {
+fn literal(i: TokenSlice) -> PResult<BoxNode<Literal>> {
     alt((string_literal, unsigned_number_literal))
         .map(Box::new)
         .context(expected("a KCL literal, like 'myPart' or 3"))
@@ -342,17 +426,17 @@ pub fn literal(i: TokenSlice) -> PResult<BoxNode<Literal>> {
 }
 
 /// Parse a KCL string literal
-pub fn string_literal(i: TokenSlice) -> PResult<Node<Literal>> {
+fn string_literal(i: TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::String => {
                 let s = token.value[1..token.value.len() - 1].to_string();
                 Ok((LiteralValue::from(s), token))
             }
-            _ => Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: "invalid string literal".to_owned(),
-            })),
+            _ => Err(CompilationError::fatal(
+                token.as_source_range(),
+                "invalid string literal",
+            )),
         })
         .context(expected("string literal (like \"myPart\""))
         .parse_next(i)?;
@@ -374,18 +458,12 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
                 let x: f64 = token.value.parse().map_err(|_| {
-                    KclError::Syntax(KclErrorDetails {
-                        source_ranges: token.as_source_ranges(),
-                        message: format!("Invalid float: {}", token.value),
-                    })
+                    CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
                 Ok((LiteralValue::Number(x), token))
             }
-            _ => Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: "invalid literal".to_owned(),
-            })),
+            _ => Err(CompilationError::fatal(token.as_source_range(), "invalid literal")),
         })
         .context(expected("an unsigned number literal (e.g. 3 or 12.5)"))
         .parse_next(i)?;
@@ -405,10 +483,10 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
 fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
     any.try_map(|token: Token| {
         if !matches!(token.token_type, TokenType::Operator) {
-            return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!("unexpected token, should be an operator but was {}", token.token_type),
-            }));
+            return Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!("unexpected token, should be an operator but was {}", token.token_type),
+            ));
         }
         let op = match token.value.as_str() {
             "+" => BinaryOperator::Add,
@@ -424,10 +502,10 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
             "<" => BinaryOperator::Lt,
             "<=" => BinaryOperator::Lte,
             _ => {
-                return Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!("{} is not a binary operator", token.value.as_str()),
-                }))
+                return Err(CompilationError::fatal(
+                    token.as_source_range(),
+                    format!("{} is not a binary operator", token.value.as_str()),
+                ))
             }
         };
         Ok(op)
@@ -441,7 +519,7 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
     const TODO_783: &str = "found a value, but this kind of value cannot be used as the operand to an operator yet (see https://github.com/KittyCAD/modeling-app/issues/783)";
     let op = possible_operands
         .try_map(|part| {
-            let source_ranges = vec![SourceRange::from(&part)];
+            let source_range = SourceRange::from(&part);
             let expr = match part {
                 // TODO: these should be valid operands eventually,
                 // users should be able to run "let x = f() + g()"
@@ -451,29 +529,24 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
                 | Expr::PipeSubstitution(_)
                 | Expr::ArrayExpression(_)
                 | Expr::ArrayRangeExpression(_)
-                | Expr::ObjectExpression(_) => {
-                    return Err(KclError::Syntax(KclErrorDetails {
-                        source_ranges,
-                        message: TODO_783.to_owned(),
-                    }))
-                }
+                | Expr::ObjectExpression(_) => return Err(CompilationError::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        source_ranges,
+                    return Err(CompilationError::fatal(
+                        source_range,
                         // TODO: Better error message here.
                         // Once we have ways to use None values (e.g. by replacing with a default value)
                         // we should suggest one of them here.
-                        message: "cannot use a KCL None value as an operand".to_owned(),
-                    }));
+                        "cannot use a KCL None value as an operand",
+                    ));
                 }
                 Expr::TagDeclarator(_) => {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        source_ranges,
+                    return Err(CompilationError::fatal(
+                        source_range,
                         // TODO: Better error message here.
                         // Once we have ways to use None values (e.g. by replacing with a default value)
                         // we should suggest one of them here.
-                        message: "cannot use a KCL tag declaration as an operand".to_owned(),
-                    }));
+                        "cannot use a KCL tag declaration as an operand",
+                    ));
                 }
                 Expr::UnaryExpression(x) => BinaryPart::UnaryExpression(x),
                 Expr::Literal(x) => BinaryPart::Literal(x),
@@ -497,14 +570,14 @@ impl TokenType {
             if token.token_type == self {
                 Ok(token)
             } else {
-                Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!(
+                Err(CompilationError::fatal(
+                    token.as_source_range(),
+                    format!(
                         "expected {self} but found {} which is a {}",
                         token.value.as_str(),
                         token.token_type
                     ),
-                }))
+                ))
             }
         })
         .parse_next(i)
@@ -519,14 +592,14 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
             if token.token_type == TokenType::Whitespace {
                 Ok(token)
             } else {
-                Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!(
+                Err(CompilationError::fatal(
+                    token.as_source_range(),
+                    format!(
                         "expected whitespace, found '{}' which is {}",
                         token.value.as_str(),
                         token.token_type
                     ),
-                }))
+                ))
             }
         }),
     )
@@ -539,7 +612,7 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
 fn shebang(i: TokenSlice) -> PResult<Node<Shebang>> {
     // Parse the hash and the bang.
     hash.parse_next(i)?;
-    bang.parse_next(i)?;
+    let tok = bang.parse_next(i)?;
     // Get the rest of the line.
     // Parse everything until the next newline.
     let tokens = take_till(0.., |token: Token| token.value.contains('\n')).parse_next(i)?;
@@ -547,11 +620,7 @@ fn shebang(i: TokenSlice) -> PResult<Node<Shebang>> {
 
     if tokens.is_empty() {
         return Err(ErrMode::Cut(
-            KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![],
-                message: "expected a shebang value after #!".to_owned(),
-            })
-            .into(),
+            CompilationError::fatal(tok.as_source_range(), "expected a shebang value after #!").into(),
         ));
     }
 
@@ -726,11 +795,12 @@ fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
     };
 
     if sep.token_type == TokenType::Colon {
-        ParseContext::warn(ParseError::with_suggestion(
+        ParseContext::warn(CompilationError::with_suggestion(
             sep.into(),
             Some(result.as_source_range()),
             "Using `:` to initialize objects is deprecated, prefer using `=`.",
-            Some(" ="),
+            Some(("Replace `:` with `=`", " =")),
+            Tag::Deprecated,
         ));
     }
 
@@ -814,13 +884,13 @@ fn pipe_sub(i: TokenSlice) -> PResult<Node<PipeSubstitution>> {
                 token.module_id,
             ))
         } else {
-            Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!(
+            Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!(
                     "expected a pipe substitution symbol (%) but found {}",
                     token.value.as_str()
                 ),
-            }))
+            ))
         }
     })
     .context(expected("the substitution symbol, %"))
@@ -833,10 +903,10 @@ fn else_if(i: TokenSlice) -> PResult<Node<ElseIf>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
                 Ok(token)
             } else {
-                Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!("{} is not 'else'", token.value.as_str()),
-                }))
+                Err(CompilationError::fatal(
+                    token.as_source_range(),
+                    format!("{} is not 'else'", token.value.as_str()),
+                ))
             }
         })
         .context(expected("the 'else' keyword"))
@@ -847,10 +917,10 @@ fn else_if(i: TokenSlice) -> PResult<Node<ElseIf>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
                 Ok(token.start)
             } else {
-                Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!("{} is not 'if'", token.value.as_str()),
-                }))
+                Err(CompilationError::fatal(
+                    token.as_source_range(),
+                    format!("{} is not 'if'", token.value.as_str()),
+                ))
             }
         })
         .context(expected("the 'if' keyword"))
@@ -884,10 +954,10 @@ fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
                 Ok(token)
             } else {
-                Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!("{} is not 'if'", token.value.as_str()),
-                }))
+                Err(CompilationError::fatal(
+                    token.as_source_range(),
+                    format!("{} is not 'if'", token.value.as_str()),
+                ))
             }
         })
         .context(expected("the 'if' keyword"))
@@ -913,10 +983,10 @@ fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
                 Ok(token.start)
             } else {
-                Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!("{} is not 'else'", token.value.as_str()),
-                }))
+                Err(CompilationError::fatal(
+                    token.as_source_range(),
+                    format!("{} is not 'else'", token.value.as_str()),
+                ))
             }
         })
         .context(expected("the 'else' keyword"))
@@ -951,10 +1021,7 @@ fn function_expr(i: TokenSlice) -> PResult<Expr> {
     ignore_whitespace(i);
     let (result, has_arrow) = function_decl.parse_next(i)?;
     if fn_tok.is_none() && !has_arrow {
-        let err = KclError::Syntax(KclErrorDetails {
-            source_ranges: result.as_source_ranges(),
-            message: "Anonymous function requires `fn` before `(`".to_owned(),
-        });
+        let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
         return Err(ErrMode::Cut(err.into()));
     }
     Ok(Expr::FunctionExpression(Box::new(result)))
@@ -998,11 +1065,12 @@ fn function_decl(i: TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
     );
 
     let has_arrow = if let Some(arrow) = arrow {
-        ParseContext::warn(ParseError::with_suggestion(
+        ParseContext::warn(CompilationError::with_suggestion(
             arrow.as_source_range(),
             Some(result.as_source_range()),
             "Unnecessary `=>` in function declaration",
-            Some(""),
+            Some(("Remove `=>`", "")),
+            Tag::Unnecessary,
         ));
         true
     } else {
@@ -1149,7 +1217,6 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
 // the large_enum_variant lint below introduces a LOT of code complexity in a
 // match!() that's super clean that isn't worth it for the marginal space
 // savings. revisit if that's a lie.
-
 #[derive(Debug)]
 #[allow(clippy::large_enum_variant)]
 enum WithinFunction {
@@ -1170,7 +1237,8 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
-        token if token.declaration_keyword().is_some() || token.visibility_keyword().is_some() =>
+        token if token.visibility_keyword().is_some() => (alt((declaration.map(BodyItem::VariableDeclaration), import_stmt.map(BodyItem::ImportStatement))), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
+        token if token.declaration_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         token if token.value == "import" && matches!(token.token_type, TokenType::Keyword) =>
             (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
@@ -1197,7 +1265,7 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
 }
 
 /// Parse the body of a user-defined function.
-pub fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
+fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
     let leading_whitespace_start = alt((
         peek(non_code_node).map(|_| None),
         // Subtract 1 from `t.start` to match behaviour of the old parser.
@@ -1339,74 +1407,142 @@ pub fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
     ))
 }
 
+fn import_items(i: TokenSlice) -> PResult<NodeList<ImportItem>> {
+    separated(1.., import_item, comma_sep)
+        .parse_next(i)
+        .map_err(|e| e.cut())
+}
+
+fn glob(i: TokenSlice) -> PResult<Token> {
+    one_of((TokenType::Operator, "*"))
+        .context(expected("the multiple import operator, *"))
+        .parse_next(i)
+}
+
 fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
+    let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
+        .parse_next(i)?
+        .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
     let import_token = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "import" {
                 Ok(token)
             } else {
-                Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!("{} is not the 'import' keyword", token.value.as_str()),
-                }))
+                Err(CompilationError::fatal(
+                    token.as_source_range(),
+                    format!("{} is not the 'import' keyword", token.value.as_str()),
+                ))
             }
         })
         .context(expected("the 'import' keyword"))
         .parse_next(i)?;
-    let start = import_token.start;
+
+    let module_id = import_token.module_id;
+    let start = visibility_token.unwrap_or(import_token).start;
 
     require_whitespace(i)?;
 
-    let items = separated(1.., import_item, comma_sep)
-        .parse_next(i)
-        .map_err(|e| e.cut())?;
+    let (mut selector, path) = alt((
+        string_literal.map(|s| (ImportSelector::None(None), Some(s))),
+        glob.map(|t| {
+            let s = t.as_source_range();
+            (
+                ImportSelector::Glob(Node::new((), s.start(), s.end(), s.module_id())),
+                None,
+            )
+        }),
+        import_items.map(|items| (ImportSelector::List { items }, None)),
+    ))
+    .parse_next(i)?;
 
-    require_whitespace(i)?;
+    let path = match path {
+        Some(path) => path,
+        None => {
+            require_whitespace(i)?;
+            any.try_map(|token: Token| {
+                if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
+                    Ok(())
+                } else {
+                    Err(CompilationError::fatal(
+                        token.as_source_range(),
+                        format!("{} is not the 'from' keyword", token.value.as_str()),
+                    ))
+                }
+            })
+            .context(expected("the 'from' keyword"))
+            .parse_next(i)
+            .map_err(|e| e.cut())?;
 
-    any.try_map(|token: Token| {
-        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
-            Ok(())
-        } else {
-            Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!("{} is not the 'from' keyword", token.value.as_str()),
-            }))
+            require_whitespace(i)?;
+
+            string_literal(i)?
         }
-    })
-    .context(expected("the 'from' keyword"))
-    .parse_next(i)
-    .map_err(|e| e.cut())?;
+    };
 
-    require_whitespace(i)?;
-
-    let path = string_literal(i)?;
-    let end = path.end;
+    let mut end: usize = path.end;
     let path_string = match path.inner.value {
         LiteralValue::String(s) => s,
         _ => unreachable!(),
     };
+    if path_string.is_empty() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(path.start, path.end, path.module_id),
+                "import path cannot be empty",
+            )
+            .into(),
+        ));
+    }
     if path_string
         .chars()
         .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
     {
         return Err(ErrMode::Cut(
-            KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![SourceRange::new(path.start, path.end, path.module_id)],
-                message: "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.".to_owned(),
-            })
+            CompilationError::fatal(
+                SourceRange::new(path.start, path.end, path.module_id),
+                "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
+            )
             .into(),
         ));
     }
+
+    if let ImportSelector::None(ref mut a) = selector {
+        if let Some(alias) = opt(preceded(
+            (whitespace, import_as_keyword, whitespace),
+            identifier.context(expected("an identifier to alias the import")),
+        ))
+        .parse_next(i)?
+        {
+            end = alias.end;
+            *a = Some(alias);
+        }
+
+        if a.is_none()
+            && (!path_string.ends_with(".kcl")
+                || path_string.starts_with("_")
+                || path_string.contains('-')
+                || path_string[0..path_string.len() - 4].contains('.'))
+        {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    SourceRange::new(path.start, path.end, path.module_id),
+                    "import path is not a valid identifier and must be aliased.".to_owned(),
+                )
+                .into(),
+            ));
+        }
+    }
+
     Ok(Node::boxed(
         ImportStatement {
-            items,
+            selector,
+            visibility,
             path: path_string,
-            raw_path: path.inner.raw,
             digest: None,
         },
         start,
         end,
-        import_token.module_id,
+        module_id,
     ))
 }
 
@@ -1441,10 +1577,10 @@ fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
         if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "as" {
             Ok(token)
         } else {
-            Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!("{} is not the 'as' keyword", token.value.as_str()),
-            }))
+            Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!("{} is not the 'as' keyword", token.value.as_str()),
+            ))
         }
     })
     .context(expected("the 'as' keyword"))
@@ -1452,16 +1588,16 @@ fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
 }
 
 /// Parse a return statement of a user-defined function, e.g. `return x`.
-pub fn return_stmt(i: TokenSlice) -> PResult<Node<ReturnStatement>> {
+fn return_stmt(i: TokenSlice) -> PResult<Node<ReturnStatement>> {
     let ret = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "return" {
                 Ok(token)
             } else {
-                Err(KclError::Syntax(KclErrorDetails {
-                    source_ranges: token.as_source_ranges(),
-                    message: format!("{} is not a return keyword", token.value.as_str()),
-                }))
+                Err(CompilationError::fatal(
+                    token.as_source_range(),
+                    format!("{} is not a return keyword", token.value.as_str()),
+                ))
             }
         })
         .context(expected(
@@ -1605,11 +1741,12 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
 
         if let Some(t) = eq {
             let ctxt_end = val.as_ref().map(|e| e.end()).unwrap_or(t.end);
-            ParseContext::warn(ParseError::with_suggestion(
+            ParseContext::warn(CompilationError::with_suggestion(
                 t.as_source_range(),
                 Some(SourceRange::new(id.start, ctxt_end, module_id)),
                 "Unnecessary `=` in function declaration",
-                Some(""),
+                Some(("Remove `=`", "")),
+                Tag::Unnecessary,
             ));
         }
 
@@ -1623,10 +1760,10 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                 // Function bodies can be used if and only if declaring a function.
                 // Check the 'if' direction:
                 if matches!(val, Expr::FunctionExpression(_)) {
-                    return Err(KclError::Syntax(KclErrorDetails {
-                        source_ranges: vec![SourceRange::new(start, dec_end, module_id)],
-                        message: format!("Expected a `fn` variable kind, found: `{}`", kind),
-                    }));
+                    return Err(CompilationError::fatal(
+                        SourceRange::new(start, dec_end, module_id),
+                        format!("Expected a `fn` variable kind, found: `{}`", kind),
+                    ));
                 }
                 Ok(val)
             })
@@ -1638,7 +1775,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     let end = val.end();
     Ok(Box::new(Node {
         inner: VariableDeclaration {
-            declarations: vec![Node {
+            declaration: Node {
                 start: id.start,
                 end,
                 module_id,
@@ -1647,7 +1784,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                     init: val,
                     digest: None,
                 },
-            }],
+            },
             visibility,
             kind,
             digest: None,
@@ -1659,7 +1796,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
 }
 
 impl TryFrom<Token> for Node<Identifier> {
-    type Error = KclError;
+    type Error = CompilationError;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
         if token.token_type == TokenType::Word {
@@ -1673,13 +1810,13 @@ impl TryFrom<Token> for Node<Identifier> {
                 token.module_id,
             ))
         } else {
-            Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!(
+            Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!(
                     "Cannot assign a variable to a reserved keyword: {}",
                     token.value.as_str()
                 ),
-            }))
+            ))
         }
     }
 }
@@ -1704,10 +1841,10 @@ fn sketch_keyword(i: TokenSlice) -> PResult<Node<Identifier>> {
                 token.module_id,
             ))
         } else {
-            Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!("Expected 'sketch' keyword, but found {}", token.value.as_str()),
-            }))
+            Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!("Expected 'sketch' keyword, but found {}", token.value.as_str()),
+            ))
         }
     })
     .context(expected("the 'sketch' keyword"))
@@ -1715,37 +1852,74 @@ fn sketch_keyword(i: TokenSlice) -> PResult<Node<Identifier>> {
 }
 
 impl TryFrom<Token> for Node<TagDeclarator> {
-    type Error = KclError;
+    type Error = CompilationError;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
-        if token.token_type == TokenType::Word {
-            Ok(Node::new(
-                TagDeclarator {
-                    // We subtract 1 from the start because the tag starts with a `$`.
-                    name: token.value,
-                    digest: None,
-                },
-                token.start - 1,
-                token.end,
-                token.module_id,
-            ))
-        } else {
-            Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
-            }))
+        match token.token_type {
+            TokenType::Word => {
+                Ok(Node::new(
+                    TagDeclarator {
+                        // We subtract 1 from the start because the tag starts with a `$`.
+                        name: token.value,
+                        digest: None,
+                    },
+                    token.start - 1,
+                    token.end,
+                    token.module_id,
+                ))
+            }
+            TokenType::Number => Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!(
+                    "Tag names must not start with a number. Tag starts with `{}`",
+                    token.value.as_str()
+                ),
+            )),
+
+            // e.g. `line(%, $)` or `line(%, $ , 5)`
+            TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationError::fatal(
+                token.as_source_range(),
+                "Tag names must not be empty".to_string(),
+            )),
+
+            TokenType::Type => Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
+            )),
+
+            TokenType::Bang
+            | TokenType::At
+            | TokenType::Hash
+            | TokenType::Colon
+            | TokenType::Period
+            | TokenType::Operator
+            | TokenType::DoublePeriod
+            | TokenType::QuestionMark
+            | TokenType::BlockComment
+            | TokenType::Function
+            | TokenType::String
+            | TokenType::Dollar
+            | TokenType::Keyword
+            | TokenType::Unknown
+            | TokenType::LineComment => Err(CompilationError::fatal(
+                token.as_source_range(),
+                // this is `start with` because if most of these cases are in the middle, it ends
+                // up hitting a different error path(e.g. including a bang) or being valid(e.g. including a comment) since it will get broken up into
+                // multiple tokens
+                format!("Tag names must not start with a {}", token.token_type),
+            )),
         }
     }
 }
 
 impl Node<TagDeclarator> {
-    fn into_valid_binding_name(self) -> Result<Self, KclError> {
+    fn into_valid_binding_name(self) -> Result<Self, CompilationError> {
         // Make sure they are not assigning a variable to a stdlib function.
         if crate::std::name_in_stdlib(&self.name) {
-            return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![SourceRange::from(&self)],
-                message: format!("Cannot assign a tag to a reserved keyword: {}", self.name),
-            }));
+            return Err(CompilationError::fatal(
+                SourceRange::from(&self),
+                format!("Cannot assign a tag to a reserved keyword: {}", self.name),
+            ));
         }
         Ok(self)
     }
@@ -1757,7 +1931,8 @@ fn tag(i: TokenSlice) -> PResult<Node<TagDeclarator>> {
     let tag_declarator = any
         .try_map(Node::<TagDeclarator>::try_from)
         .context(expected("a tag, e.g. '$seg01' or '$line01'"))
-        .parse_next(i)?;
+        .parse_next(i)
+        .map_err(|e| e.cut())?;
     // Now that we've parsed a tag declarator, verify that it's not a stdlib
     // name.  If it is, stop backtracking.
     tag_declarator
@@ -1785,12 +1960,12 @@ fn unary_expression(i: TokenSlice) -> PResult<Node<UnaryExpression>> {
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Operator if token.value == "-" => Ok((UnaryOperator::Neg, token)),
-            TokenType::Operator => Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
-            })),
+            TokenType::Operator => Err(CompilationError::fatal(
+                 token.as_source_range(),
+                 format!("{EXPECTED} but found {} which is an operator, but not a unary one (unary operators apply to just a single operand, your operator applies to two or more operands)", token.value.as_str(),),
+            )),
             TokenType::Bang => Ok((UnaryOperator::Not, token)),
-            other => Err(KclError::Syntax(KclErrorDetails { source_ranges: token.as_source_ranges(), message: format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) })),
+            other => Err(CompilationError::fatal(  token.as_source_range(), format!("{EXPECTED} but found {} which is {}", token.value.as_str(), other,) )),
         })
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
@@ -1957,9 +2132,8 @@ fn hash(i: TokenSlice) -> PResult<()> {
     Ok(())
 }
 
-fn bang(i: TokenSlice) -> PResult<()> {
-    TokenType::Bang.parse_from(i)?;
-    Ok(())
+fn bang(i: TokenSlice) -> PResult<Token> {
+    TokenType::Bang.parse_from(i)
 }
 
 fn dollar(i: TokenSlice) -> PResult<()> {
@@ -1977,14 +2151,14 @@ fn double_period(i: TokenSlice) -> PResult<Token> {
         if matches!(token.token_type, TokenType::DoublePeriod) {
             Ok(token)
         } else {
-            Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: token.as_source_ranges(),
-                message: format!(
+            Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!(
                     "expected a '..' (double period) found {} which is {}",
                     token.value.as_str(),
                     token.token_type
                 ),
-            }))
+            ))
         }
     })
     .context(expected("the .. operator, used for array ranges like [0..10]"))
@@ -2009,10 +2183,10 @@ fn question_mark(i: TokenSlice) -> PResult<()> {
 fn fun(i: TokenSlice) -> PResult<Token> {
     any.try_map(|token: Token| match token.token_type {
         TokenType::Keyword if token.value == "fn" => Ok(token),
-        _ => Err(KclError::Syntax(KclErrorDetails {
-            source_ranges: token.as_source_ranges(),
-            message: format!("expected 'fn', found {}", token.value.as_str(),),
-        })),
+        _ => Err(CompilationError::fatal(
+            token.as_source_range(),
+            format!("expected 'fn', found {}", token.value.as_str(),),
+        )),
     })
     .parse_next(i)
 }
@@ -2063,31 +2237,27 @@ fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
         (one_of(TokenType::Type), open_bracket, close_bracket).map(|(token, _, _)| {
             FnArgPrimitive::from_str(&token.value)
                 .map(FnArgType::Array)
-                .map_err(|err| {
-                    KclError::Syntax(KclErrorDetails {
-                        source_ranges: token.as_source_ranges(),
-                        message: format!("Invalid type: {}", err),
-                    })
-                })
+                .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
         }),
         // Primitive types
         one_of(TokenType::Type).map(|token: Token| {
             FnArgPrimitive::from_str(&token.value)
                 .map(FnArgType::Primitive)
-                .map_err(|err| {
-                    KclError::Syntax(KclErrorDetails {
-                        source_ranges: token.as_source_ranges(),
-                        message: format!("Invalid type: {}", err),
-                    })
-                })
+                .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
         }),
     ))
     .parse_next(i)?
-    .map_err(|e: KclError| ErrMode::Backtrack(ContextError::from(e)))?;
+    .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
     Ok(type_)
 }
 
-fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<FnArgType>, bool)> {
+struct ParamDescription {
+    arg_name: Token,
+    type_: std::option::Option<FnArgType>,
+    is_optional: bool,
+}
+
+fn parameter(i: TokenSlice) -> PResult<ParamDescription> {
     let (arg_name, optional, _, type_) = (
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
@@ -2095,7 +2265,11 @@ fn parameter(i: TokenSlice) -> PResult<(Token, std::option::Option<FnArgType>, b
         opt((colon, opt(whitespace), argument_type).map(|tup| tup.2)),
     )
         .parse_next(i)?;
-    Ok((arg_name, type_, optional.is_some()))
+    Ok(ParamDescription {
+        arg_name,
+        type_,
+        is_optional: optional.is_some(),
+    })
 }
 
 /// Parameters are declared in a function signature, and used within a function.
@@ -2108,19 +2282,30 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
     // Make sure all those tokens are valid parameters.
     let params: Vec<Parameter> = candidates
         .into_iter()
-        .map(|(arg_name, type_, optional)| {
-            let identifier =
-                Node::<Identifier>::try_from(arg_name).and_then(Node::<Identifier>::into_valid_binding_name)?;
+        .map(
+            |ParamDescription {
+                 arg_name,
+                 type_,
+                 is_optional,
+             }| {
+                let identifier =
+                    Node::<Identifier>::try_from(arg_name).and_then(Node::<Identifier>::into_valid_binding_name)?;
 
-            Ok(Parameter {
-                identifier,
-                type_,
-                optional,
-                digest: None,
-            })
-        })
+                Ok(Parameter {
+                    identifier,
+                    type_,
+                    default_value: if is_optional {
+                        Some(DefaultParamVal::none())
+                    } else {
+                        None
+                    },
+                    labeled: true,
+                    digest: None,
+                })
+            },
+        )
         .collect::<Result<_, _>>()
-        .map_err(|e: KclError| ErrMode::Backtrack(ContextError::from(e)))?;
+        .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
 
     // Make sure optional parameters are last.
     if let Err(e) = optional_after_required(&params) {
@@ -2129,17 +2314,17 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
     Ok(params)
 }
 
-fn optional_after_required(params: &[Parameter]) -> Result<(), KclError> {
+fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError> {
     let mut found_optional = false;
     for p in params {
-        if p.optional {
+        if p.optional() {
             found_optional = true;
         }
-        if !p.optional && found_optional {
-            let e = KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![(&p.identifier).into()],
-                message: "mandatory parameters must be declared before optional parameters".to_owned(),
-            });
+        if !p.optional() && found_optional {
+            let e = CompilationError::fatal(
+                (&p.identifier).into(),
+                "mandatory parameters must be declared before optional parameters",
+            );
             return Err(e);
         }
     }
@@ -2147,13 +2332,13 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), KclError> {
 }
 
 impl Node<Identifier> {
-    fn into_valid_binding_name(self) -> Result<Node<Identifier>, KclError> {
+    fn into_valid_binding_name(self) -> Result<Node<Identifier>, CompilationError> {
         // Make sure they are not assigning a variable to a stdlib function.
         if crate::std::name_in_stdlib(&self.name) {
-            return Err(KclError::Syntax(KclErrorDetails {
-                source_ranges: vec![SourceRange::from(&self)],
-                message: format!("Cannot assign a variable to a reserved keyword: {}", self.name),
-            }));
+            return Err(CompilationError::fatal(
+                SourceRange::from(&self),
+                format!("Cannot assign a variable to a reserved keyword: {}", self.name),
+            ));
         }
         Ok(self)
     }
@@ -2194,10 +2379,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
             }
             e => {
                 return Err(ErrMode::Cut(
-                    KclError::Syntax(KclErrorDetails {
-                        source_ranges: vec![SourceRange::from(*arg)],
-                        message: format!("Expected a tag declarator like `$name`, found {:?}", e),
-                    })
+                    CompilationError::fatal(
+                        SourceRange::from(*arg),
+                        format!("Expected a tag declarator like `$name`, found {:?}", e),
+                    )
                     .into(),
                 ));
             }
@@ -2207,10 +2392,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
             Expr::MemberExpression(_) => {}
             e => {
                 return Err(ErrMode::Cut(
-                    KclError::Syntax(KclErrorDetails {
-                        source_ranges: vec![SourceRange::from(*arg)],
-                        message: format!("Expected a tag identifier like `tagName`, found {:?}", e),
-                    })
+                    CompilationError::fatal(
+                        SourceRange::from(*arg),
+                        format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                    )
                     .into(),
                 ));
             }
@@ -2225,6 +2410,7 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
+
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         let just_args: Vec<_> = args.iter().collect();
         typecheck_all(std_fn, &just_args)?;
@@ -2239,11 +2425,12 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
         if arg_str.contains('.') && !arg_str.ends_with(".0") {
             arg_str = format!("round({arg_str})");
         }
-        ParseContext::warn(ParseError::with_suggestion(
+        ParseContext::warn(CompilationError::with_suggestion(
             SourceRange::new(fn_name.start, end, fn_name.module_id),
             None,
             "`int` function is deprecated. You may not need it at all. If you need to round, consider `round`, `ceil`, or `floor`.",
-            Some(arg_str),
+            Some(("Remove call to `int`", arg_str)),
+            Tag::Deprecated,
         ));
     }
 
@@ -2291,22 +2478,23 @@ mod tests {
     use super::*;
     use crate::{
         parsing::ast::types::{BodyItem, Expr, VariableKind},
-        ModuleId,
+        KclError, ModuleId,
     };
 
     fn assert_reserved(word: &str) {
         // Try to use it as a variable name.
         let code = format!(r#"{} = 0"#, word);
         let result = crate::parsing::top_level_parse(code.as_str());
-        let err = &result.unwrap_errs()[0];
+        let err = &result.unwrap_errs().next().unwrap();
         // Which token causes the error may change.  In "return = 0", for
         // example, "return" is the problem.
         assert!(
             err.message.starts_with("Unexpected token: ")
+                || err.message.starts_with("= is not")
                 || err
                     .message
                     .starts_with("Cannot assign a variable to a reserved keyword: "),
-            "Error message is: {}",
+            "Error message is: `{}`",
             err.message,
         );
     }
@@ -2337,8 +2525,7 @@ mod tests {
     fn weird_program_unclosed_paren() {
         let tokens = crate::parsing::token::lexer("fn firstPrime(", ModuleId::default()).unwrap();
         let last = tokens.last().unwrap();
-        let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
-        let err = err.unwrap_parse_error();
+        let err: CompilationError = program.parse(&tokens).unwrap_err().into();
         assert_eq!(vec![err.source_range], last.as_source_ranges());
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
@@ -2348,12 +2535,8 @@ mod tests {
     #[test]
     fn weird_program_just_a_pipe() {
         let tokens = crate::parsing::token::lexer("|", ModuleId::default()).unwrap();
-        let err: super::error::ErrorKind = program.parse(&tokens).unwrap_err().into();
-        let err = err.unwrap_parse_error();
-        assert_eq!(
-            vec![err.source_range],
-            vec![SourceRange::new(0, 1, ModuleId::default())]
-        );
+        let err: CompilationError = program.parse(&tokens).unwrap_err().into();
+        assert_eq!(err.source_range, SourceRange::new(0, 1, ModuleId::default()));
         assert_eq!(err.message, "Unexpected token: |");
     }
 
@@ -2374,7 +2557,7 @@ mod tests {
         let tokens = crate::parsing::token::lexer("x = 4", ModuleId::default()).unwrap();
         let vardec = declaration(&mut tokens.as_slice()).unwrap();
         assert_eq!(vardec.inner.kind, VariableKind::Const);
-        let vardec = vardec.declarations.first().unwrap();
+        let vardec = &vardec.declaration;
         assert_eq!(vardec.id.name, "x");
         let Expr::Literal(init_val) = &vardec.init else {
             panic!("weird init value")
@@ -2449,10 +2632,10 @@ const mySk1 = startSketchAt([0, 0])"#;
     fn test_comment_in_pipe() {
         let tokens = crate::parsing::token::lexer(r#"const x = y() |> /*hi*/ z(%)"#, ModuleId::default()).unwrap();
         let mut body = program.parse(&tokens).unwrap().inner.body;
-        let BodyItem::VariableDeclaration(mut item) = body.remove(0) else {
+        let BodyItem::VariableDeclaration(item) = body.remove(0) else {
             panic!("expected vardec");
         };
-        let val = item.declarations.remove(0).inner.init;
+        let val = item.inner.declaration.inner.init;
         let Expr::PipeExpression(pipe) = val else {
             panic!("expected pipe");
         };
@@ -2720,14 +2903,14 @@ const mySk1 = startSketchAt([0, 0])"#;
         .enumerate()
         {
             let tokens = crate::parsing::token::lexer(test_input, ModuleId::default()).unwrap();
-            let mut actual = match declaration.parse(&tokens) {
+            let actual = match declaration.parse(&tokens) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
-            let Expr::BinaryExpression(_expr) = actual.declarations.remove(0).inner.init else {
+            let Expr::BinaryExpression(_expr) = &actual.declaration.inner.init else {
                 panic!(
                     "Expected test {i} to be a binary expression but it wasn't, it was {:?}",
-                    actual.declarations[0]
+                    actual.declaration
                 );
             };
             // TODO: check both sides are 1... probably not necessary but should do.
@@ -2977,11 +3160,8 @@ const mySk1 = startSketchAt([0, 0])"#;
         let err = function_decl.parse(&tokens).unwrap_err().into_inner();
         let cause = err.cause.unwrap();
         // This is the token `let`
-        assert_eq!(
-            cause.source_ranges(),
-            vec![SourceRange::new(1, 4, ModuleId::from_usize(2))]
-        );
-        assert_eq!(cause.message(), "Cannot assign a variable to a reserved keyword: let");
+        assert_eq!(cause.source_range, SourceRange::new(1, 4, ModuleId::from_usize(2)));
+        assert_eq!(cause.message, "Cannot assign a variable to a reserved keyword: let");
     }
 
     #[test]
@@ -3072,16 +3252,15 @@ const mySk1 = startSketchAt([0, 0])"#;
             };
 
             // Run the second parser, check it matches the first parser.
-            let mut actual = declaration.parse(&tokens).unwrap();
+            let actual = declaration.parse(&tokens).unwrap();
             assert_eq!(expected, actual);
 
             // Inspect its output in more detail.
             assert_eq!(actual.inner.kind, VariableKind::Const);
             assert_eq!(actual.start, 0);
-            assert_eq!(actual.declarations.len(), 1);
-            let decl = actual.declarations.pop().unwrap();
+            let decl = &actual.declaration;
             assert_eq!(decl.id.name, "myVar");
-            let Expr::Literal(value) = decl.inner.init else {
+            let Expr::Literal(value) = &decl.inner.init else {
                 panic!("value should be a literal")
             };
             assert_eq!(value.end, test.len());
@@ -3288,17 +3467,17 @@ const mySk1 = startSketchAt([0, 0])"#;
     }
 
     #[track_caller]
-    fn assert_no_err(p: &str) -> (Node<Program>, ParseContext) {
+    fn assert_no_err(p: &str) -> (Node<Program>, Vec<CompilationError>) {
         let result = crate::parsing::top_level_parse(p);
         let result = result.0.unwrap();
-        assert!(result.1.errors.is_empty(), "found: {:#?}", result.1.errors);
+        assert!(result.1.iter().all(|e| !e.severity.is_err()), "found: {:#?}", result.1);
         (result.0.unwrap(), result.1)
     }
 
     #[track_caller]
     fn assert_err(p: &str, msg: &str, src: [usize; 2]) {
         let result = crate::parsing::top_level_parse(p);
-        let err = &result.unwrap_errs()[0];
+        let err = result.unwrap_errs().next().unwrap();
         assert_eq!(err.message, msg);
         assert_eq!(err.source_range.start(), src[0]);
         assert_eq!(err.source_range.end(), src[1]);
@@ -3307,7 +3486,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[track_caller]
     fn assert_err_contains(p: &str, expected: &str) {
         let result = crate::parsing::top_level_parse(p);
-        let err = &result.unwrap_errs()[0].message;
+        let err = &result.unwrap_errs().next().unwrap().message;
         assert!(err.contains(expected), "actual='{err}'");
     }
 
@@ -3440,7 +3619,7 @@ const bracket = [-leg2 + thickness, 0]
 
     #[test]
     fn test_parse_nested_open_brackets() {
-        crate::parsing::top_level_parse(
+        let _ = crate::parsing::top_level_parse(
             r#"
 z(-[["#,
         )
@@ -3496,7 +3675,8 @@ e
                         digest: None,
                     }),
                     type_: None,
-                    optional: true,
+                    default_value: Some(DefaultParamVal::none()),
+                    labeled: true,
                     digest: None,
                 }],
                 true,
@@ -3508,7 +3688,8 @@ e
                         digest: None,
                     }),
                     type_: None,
-                    optional: false,
+                    default_value: None,
+                    labeled: true,
                     digest: None,
                 }],
                 true,
@@ -3521,7 +3702,8 @@ e
                             digest: None,
                         }),
                         type_: None,
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None,
                     },
                     Parameter {
@@ -3530,7 +3712,8 @@ e
                             digest: None,
                         }),
                         type_: None,
-                        optional: true,
+                        default_value: Some(DefaultParamVal::none()),
+                        labeled: true,
                         digest: None,
                     },
                 ],
@@ -3544,7 +3727,8 @@ e
                             digest: None,
                         }),
                         type_: None,
-                        optional: true,
+                        default_value: Some(DefaultParamVal::none()),
+                        labeled: true,
                         digest: None,
                     },
                     Parameter {
@@ -3553,7 +3737,8 @@ e
                             digest: None,
                         }),
                         type_: None,
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None,
                     },
                 ],
@@ -3617,6 +3802,46 @@ e
             "Cannot assign a variable to a reserved keyword: cos",
             [12, 15],
         )
+    }
+
+    #[test]
+    fn bad_imports() {
+        assert_err(
+            r#"import cube from "../cube.kcl""#,
+            "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
+            [17, 30],
+        );
+        assert_err(
+            r#"import * as foo from "dsfs""#,
+            "as is not the 'from' keyword",
+            [9, 11],
+        );
+        assert_err(r#"import a from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
+        assert_err(r#"import * from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
+        assert_err(r#"import a from b"#, "invalid string literal", [14, 15]);
+        assert_err(r#"import * "dsfs""#, "\"dsfs\" is not the 'from' keyword", [9, 15]);
+        assert_err(r#"import from "dsfs""#, "\"dsfs\" is not the 'from' keyword", [12, 18]);
+        assert_err(r#"import "dsfs.kcl" as *"#, "Unexpected token: as", [18, 20]);
+        assert_err(
+            r#"import "dsfs""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 13],
+        );
+        assert_err(
+            r#"import "foo.bar.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 20],
+        );
+        assert_err(
+            r#"import "_foo.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 17],
+        );
+        assert_err(
+            r#"import "foo-bar.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 20],
+        );
     }
 
     #[test]
@@ -3754,7 +3979,7 @@ thing(false)
     |> line([-5.09, 12.33], %)
     asdasd
 "#;
-        crate::parsing::top_level_parse(test_program).unwrap_errs();
+        let _ = crate::parsing::top_level_parse(test_program).unwrap_errs();
     }
 
     #[test]
@@ -3849,33 +4074,126 @@ let myBox = box([0,0], -3, -16, -10)
     }
 
     #[test]
-    fn test_parse_empty_tag() {
+    fn test_parse_empty_tag_brace() {
         let some_program_string = r#"startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $)
-"#;
-        assert_err(some_program_string, "Unexpected token: |>", [57, 59]);
+    |> line(%, $)
+    "#;
+        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+    }
+    #[test]
+    fn test_parse_empty_tag_whitespace() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $ ,01)
+    "#;
+        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+    }
+
+    #[test]
+    fn test_parse_empty_tag_comma() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $,)
+    "#;
+        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_digit() {
+        let some_program_string = r#"
+    startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $01)"#;
+        assert_err(
+            some_program_string,
+            "Tag names must not start with a number. Tag starts with `01`",
+            [74, 76],
+        );
+    }
+    #[test]
+    fn test_parse_tag_including_digit() {
+        let some_program_string = r#"
+    startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $var01)"#;
+        assert_no_err(some_program_string);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_bang() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $!var,01)
+    "#;
+        assert_err(some_program_string, "Tag names must not start with a bang", [69, 70]);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_dollar() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $$,01)
+    "#;
+        assert_err(some_program_string, "Tag names must not start with a dollar", [69, 70]);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_fn() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $fn,01)
+    "#;
+        assert_err(some_program_string, "Tag names must not start with a keyword", [69, 71]);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_a_comment() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $//
+    ,01)
+    "#;
+        assert_err(
+            some_program_string,
+            "Tag names must not start with a lineComment",
+            [69, 71],
+        );
+    }
+
+    #[test]
+    fn test_parse_tag_starting_with_reserved_type() {
+        let some_program_string = r#"
+    startSketchOn('XY')
+    |> line(%, $sketch)
+    "#;
+        assert_err(
+            some_program_string,
+            "Cannot assign a tag to a reserved keyword: sketch",
+            [41, 47],
+        );
+    }
+    #[test]
+    fn test_parse_tag_with_reserved_in_middle_works() {
+        let some_program_string = r#"
+    startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $sketching)
+    "#;
+        assert_no_err(some_program_string);
     }
 
     #[test]
     fn warn_object_expr() {
         let some_program_string = "{ foo: bar }";
-        let (_, ctxt) = assert_no_err(some_program_string);
-        assert_eq!(ctxt.warnings.len(), 1);
-        assert_eq!(
-            ctxt.warnings[0].apply_suggestion(some_program_string).unwrap(),
-            "{ foo = bar }"
-        )
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1);
+        assert_eq!(errs[0].apply_suggestion(some_program_string).unwrap(), "{ foo = bar }")
     }
 
     #[test]
     fn warn_fn_int() {
         let some_program_string = r#"int(1.0)
 int(42.3)"#;
-        let (_, ctxt) = assert_no_err(some_program_string);
-        assert_eq!(ctxt.warnings.len(), 2);
-        let replaced = ctxt.warnings[1].apply_suggestion(some_program_string).unwrap();
-        let replaced = ctxt.warnings[0].apply_suggestion(&replaced).unwrap();
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2);
+        let replaced = errs[1].apply_suggestion(some_program_string).unwrap();
+        let replaced = errs[0].apply_suggestion(&replaced).unwrap();
         assert_eq!(replaced, "1.0\nround(42.3)");
     }
 
@@ -3884,10 +4202,10 @@ int(42.3)"#;
         let some_program_string = r#"fn foo = () => {
     return 0
 }"#;
-        let (_, ctxt) = assert_no_err(some_program_string);
-        assert_eq!(ctxt.warnings.len(), 2);
-        let replaced = ctxt.warnings[0].apply_suggestion(some_program_string).unwrap();
-        let replaced = ctxt.warnings[1].apply_suggestion(&replaced).unwrap();
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2);
+        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
+        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
         // Note the whitespace here is bad, but we're just testing the suggestion spans really. In
         // real life we might reformat after applying suggestions.
         assert_eq!(

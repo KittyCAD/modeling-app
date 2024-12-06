@@ -13,7 +13,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier},
+    execution::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier},
     parsing::ast::types::TagNode,
     settings::types::UnitLength,
     std::Args,

@@ -5,54 +5,52 @@ expression: actual
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 18,
-          "id": {
-            "end": 3,
-            "name": "val",
-            "start": 0,
+      "declaration": {
+        "end": 18,
+        "id": {
+          "end": 3,
+          "name": "val",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "y"
+              },
+              "arg": {
+                "end": 17,
+                "name": "z",
+                "start": 16,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            }
+          ],
+          "callee": {
+            "end": 9,
+            "name": "foo",
+            "start": 6,
             "type": "Identifier"
           },
-          "init": {
-            "arguments": [
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "type": "Identifier",
-                  "name": "y"
-                },
-                "arg": {
-                  "end": 17,
-                  "name": "z",
-                  "start": 16,
-                  "type": "Identifier",
-                  "type": "Identifier"
-                }
-              }
-            ],
-            "callee": {
-              "end": 9,
-              "name": "foo",
-              "start": 6,
-              "type": "Identifier"
-            },
-            "end": 18,
-            "start": 6,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "end": 11,
-              "name": "x",
-              "start": 10,
-              "type": "Identifier",
-              "type": "Identifier"
-            }
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "end": 18,
+          "start": 6,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "end": 11,
+            "name": "x",
+            "start": 10,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
       "end": 18,
       "kind": "const",
       "start": 0,

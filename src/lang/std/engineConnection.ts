@@ -1,4 +1,4 @@
-import { SourceRange } from 'lang/wasm'
+import { defaultSourceRange, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -1879,7 +1879,7 @@ export class EngineCommandManager extends EventTarget {
     }
     return JSON.stringify(this.defaultPlanes)
   }
-  endSession() {
+  clearScene(): void {
     const deleteCmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -2014,7 +2014,7 @@ export class EngineCommandManager extends EventTarget {
       {
         command,
         idToRangeMap: {},
-        range: [0, 0],
+        range: defaultSourceRange(),
       },
       true // isSceneCommand
     )
