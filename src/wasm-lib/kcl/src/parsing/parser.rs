@@ -12,7 +12,6 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
-use super::ast::types::LabeledArg;
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
@@ -1802,7 +1801,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
                 ))
             }
             TokenType::Number => Err(CompilationError::fatal(
-                token.as_source_ranges(),
+                token.as_source_range(),
                 format!(
                     "Tag names must not start with a number. Tag starts with `{}`",
                     token.value.as_str()
@@ -1811,7 +1810,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
 
             // e.g. `line(%, $)` or `line(%, $ , 5)`
             TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationError::fatal(
-                token.as_source_ranges(),
+                token.as_source_range(),
                 format!("Tag names must not be empty",),
             )),
 
@@ -1835,7 +1834,7 @@ impl TryFrom<Token> for Node<TagDeclarator> {
             | TokenType::Keyword
             | TokenType::Unknown
             | TokenType::LineComment => Err(CompilationError::fatal(
-                token.as_source_ranges(),
+                token.as_source_range(),
                 // this is `start with` because if most of these cases are in the middle, it ends
                 // up hitting a different error path(e.g. including a bang) or being valid(e.g. including a comment) since it will get broken up into
                 // multiple tokens
@@ -4057,7 +4056,7 @@ let myBox = box([0,0], -3, -16, -10)
     "#;
         assert_err(
             some_program_string,
-            "Tag names must not be a reserved keyword. Invalid tag name is `sketch`",
+            "Cannot assign a tag to a reserved keyword: sketch",
             [41, 47],
         );
     }
