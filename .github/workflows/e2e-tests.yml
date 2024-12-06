@@ -190,6 +190,7 @@ jobs:
       id: retry
       if: ${{ !cancelled() && (success() || failure()) }}
       shell: bash
+      timeout-minutes: 90
       run: |
         .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
       env:
