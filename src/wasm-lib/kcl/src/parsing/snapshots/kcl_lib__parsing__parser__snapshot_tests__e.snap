@@ -1,63 +1,59 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3906
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
+      "declaration": {
+        "end": 18,
+        "id": {
+          "end": 5,
+          "name": "x",
+          "start": 4,
+          "type": "Identifier"
+        },
+        "init": {
           "end": 18,
-          "id": {
-            "end": 5,
-            "name": "x",
-            "start": 4,
-            "type": "Identifier"
+          "left": {
+            "end": 9,
+            "raw": "1",
+            "start": 8,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 1.0
           },
-          "init": {
+          "operator": "*",
+          "right": {
             "end": 18,
             "left": {
-              "end": 9,
-              "raw": "1",
-              "start": 8,
+              "end": 14,
+              "raw": "3",
+              "start": 13,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": 3.0
             },
-            "operator": "*",
+            "operator": "-",
             "right": {
               "end": 18,
-              "left": {
-                "end": 14,
-                "raw": "3",
-                "start": 13,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 3.0
-              },
-              "operator": "-",
-              "right": {
-                "end": 18,
-                "raw": "4",
-                "start": 17,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 4.0
-              },
-              "start": 13,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
+              "raw": "4",
+              "start": 17,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 4.0
             },
-            "start": 8,
+            "start": 13,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 4,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "start": 8,
+          "type": "BinaryExpression",
+          "type": "BinaryExpression"
+        },
+        "start": 4,
+        "type": "VariableDeclarator"
+      },
       "end": 18,
       "kind": "const",
       "start": 0,

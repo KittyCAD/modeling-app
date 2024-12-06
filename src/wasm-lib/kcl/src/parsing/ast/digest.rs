@@ -4,9 +4,10 @@ use super::types::{DefaultParamVal, ItemVisibility, VariableKind};
 use crate::parsing::ast::types::{
     ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
     CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression,
-    ImportItem, ImportStatement, Literal, LiteralIdentifier, MemberExpression, MemberObject, NonCodeMeta, NonCodeNode,
-    NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program,
-    ReturnStatement, TagDeclarator, UnaryExpression, VariableDeclaration, VariableDeclarator,
+    ImportItem, ImportSelector, ImportStatement, Literal, LiteralIdentifier, MemberExpression, MemberObject,
+    NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+    PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression, VariableDeclaration,
+    VariableDeclarator,
 };
 
 /// Position-independent digest of the AST node.
@@ -52,9 +53,20 @@ impl ImportItem {
 
 impl ImportStatement {
     compute_digest!(|slf, hasher| {
-        for item in &mut slf.items {
-            hasher.update(item.compute_digest());
+        match &mut slf.selector {
+            ImportSelector::List { items } => {
+                for item in items {
+                    hasher.update(item.compute_digest());
+                }
+            }
+            ImportSelector::Glob(_) => hasher.update(b"ImportSelector::Glob"),
+            ImportSelector::None(None) => hasher.update(b"ImportSelector::None"),
+            ImportSelector::None(Some(alias)) => {
+                hasher.update(b"ImportSelector::None");
+                hasher.update(alias.compute_digest());
+            }
         }
+        hasher.update(slf.visibility.digestable_id());
         let path = slf.path.as_bytes();
         hasher.update(path.len().to_ne_bytes());
         hasher.update(path);
@@ -270,10 +282,7 @@ impl ExpressionStatement {
 
 impl VariableDeclaration {
     compute_digest!(|slf, hasher| {
-        hasher.update(slf.declarations.len().to_ne_bytes());
-        for declarator in &mut slf.declarations {
-            hasher.update(declarator.compute_digest());
-        }
+        hasher.update(slf.declaration.compute_digest());
         hasher.update(slf.visibility.digestable_id());
         hasher.update(slf.kind.digestable_id());
     });

@@ -111,12 +111,10 @@ export function isSketchVariablesLinked(
   let nextVarDec: VariableDeclarator | undefined
   for (const node of ast.body) {
     if (node.type !== 'VariableDeclaration') continue
-    const found = node.declarations.find(
-      ({ id }) => id?.name === secondArg.name
-    )
-    if (!found) continue
-    nextVarDec = found
-    break
+    if (node.declaration.id.name === secondArg.name) {
+      nextVarDec = node.declaration
+      break
+    }
   }
   if (!nextVarDec) return false
   return isSketchVariablesLinked(nextVarDec, primaryVarDec, ast)

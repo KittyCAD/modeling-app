@@ -164,8 +164,7 @@ mySketch001 = startSketchOn('XY')
       pathToNode: [
         ['body', ''],
         [0, 'index'],
-        ['declarations', 'VariableDeclaration'],
-        [0, 'index'],
+        ['declaration', 'VariableDeclaration'],
         ['init', 'VariableDeclarator'],
       ],
     })
@@ -189,8 +188,7 @@ mySketch001 = startSketchOn('XY')
       pathToNode: [
         ['body', ''],
         [0, 'index'],
-        ['declarations', 'VariableDeclaration'],
-        [0, 'index'],
+        ['declaration', 'VariableDeclaration'],
         ['init', 'VariableDeclarator'],
       ],
     })

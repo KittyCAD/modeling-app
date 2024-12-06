@@ -4,11 +4,13 @@ use async_recursion::async_recursion;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier},
+    execution::{
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
+    },
     parsing::ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
         CallExpressionKw, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-        ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
+        ObjectExpression, PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{args::Arg, FunctionKind},
@@ -805,5 +807,12 @@ impl Property {
             Property::UInt(_) => "number",
             Property::String(_) => "string",
         }
+    }
+}
+
+impl Node<PipeExpression> {
+    #[async_recursion]
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 }

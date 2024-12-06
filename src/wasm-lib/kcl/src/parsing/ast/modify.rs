@@ -9,7 +9,7 @@ use kittycad_modeling_cmds as kcmc;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::Point2d,
+    execution::Point2d,
     parsing::ast::types::{
         ArrayExpression, CallExpression, ConstraintLevel, FormatOptions, Literal, Node, PipeExpression,
         PipeSubstitution, VariableDeclarator,
@@ -42,7 +42,7 @@ pub async fn modify_ast_for_sketch(
     // The name of the sketch.
     sketch_name: &str,
     // The type of plane the sketch is on. `XY` or `XZ`, etc
-    plane: crate::executor::PlaneType,
+    plane: crate::execution::PlaneType,
     // The ID of the parent sketch.
     sketch_id: uuid::Uuid,
 ) -> Result<String, KclError> {
@@ -196,7 +196,7 @@ fn create_start_sketch_on(
     name: &str,
     start: [f64; 2],
     end: [f64; 2],
-    plane: crate::executor::PlaneType,
+    plane: crate::execution::PlaneType,
     additional_lines: Vec<[f64; 2]>,
 ) -> Result<Node<VariableDeclarator>, KclError> {
     let start_sketch_on = CallExpression::new("startSketchOn", vec![Literal::new(plane.to_string().into()).into()])?;

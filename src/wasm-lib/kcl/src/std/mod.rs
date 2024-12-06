@@ -36,7 +36,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, KclValue, ProgramMemory},
+    execution::{ExecState, KclValue, ProgramMemory},
     parsing::ast::types::FunctionExpression,
 };
 
@@ -295,7 +295,7 @@ pub enum Primitive {
 
 /// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
-    pub func: Option<&'a crate::executor::MemoryFunction>,
+    pub func: Option<&'a crate::execution::MemoryFunction>,
     pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }

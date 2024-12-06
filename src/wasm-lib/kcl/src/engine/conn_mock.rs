@@ -20,7 +20,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use super::ExecutionKind;
 use crate::{
     errors::KclError,
-    executor::{DefaultPlanes, IdGenerator},
+    execution::{DefaultPlanes, IdGenerator},
     SourceRange,
 };
 
