@@ -347,7 +347,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               cmd: { type: 'disable_dry_run' },
             }
           )
-          return attemptRevolve?.success
+
+          if (attemptRevolve?.success) {
+            return true
+          } else {
+            // return error message for the toast
+            return 'Unable to revolve with selected axis'
+          }
         },
         // inputType: 'options',
         // defaultValue: KCL_DEFAULT_AXIS,

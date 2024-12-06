@@ -8,6 +8,7 @@ import {
 import { Selections__old } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 import { MachineManager } from 'components/MachineManagerProvider'
+import toast from 'react-hot-toast'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -259,12 +260,19 @@ export const commandBarMachine = setup({
           ? await argConfig.validation({ context, data })
           : true
 
-        if (result) {
+        if (typeof result === 'boolean' && result === true) {
           resolve(data)
         } else {
-          // TODO Error message handling with a string, send a toast
-          // modelingMachine send a toast message, follow the pattern
-          reject('NO')
+          // validation failed
+          if (typeof result === 'string') {
+            // The result of the validation is the error message
+            toast.error(result)
+            reject(`unable to validate ${argName}, Message: ${result}`)
+          } else {
+            // Default message if there is not a custom one sent
+            toast.error(`Unable to validate ${argName}`)
+            reject(`unable to validate ${argName}}`)
+          }
         }
       })
     }),
