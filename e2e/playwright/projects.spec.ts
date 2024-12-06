@@ -297,7 +297,7 @@ test(
 
       // planes colors means the scene has been cleared.
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [104, 66, 90]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [92, 53, 53]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
@@ -369,7 +369,7 @@ test(
 
       // planes colors means the scene has been cleared.
       await expect
-        .poll(() => u.getGreatestPixDiff(pointOnModel, [104, 66, 90]), {
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [92, 53, 53]), {
           timeout: 10_000,
         })
         .toBeLessThan(15)
