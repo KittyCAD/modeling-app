@@ -3,7 +3,7 @@ import { kclManager, engineCommandManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { ProgramMemory, Expr, parse } from 'lang/wasm'
+import { ProgramMemory, Expr, parse, resultIsOk } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
 import { executeAst } from 'lang/langHelpers'
 import { err, trap } from 'lib/trap'
@@ -87,9 +87,9 @@ export function useCalculateKclExpression({
   useEffect(() => {
     const execAstAndSetResult = async () => {
       const _code = `const __result__ = ${value}`
-      const ast = parse(_code)
-      if (err(ast)) return
-      if (trap(ast, { suppress: true })) return
+      const pResult = parse(_code)
+      if (err(pResult) || !resultIsOk(pResult)) return
+      const ast = pResult.program
 
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
@@ -103,9 +103,8 @@ export function useCalculateKclExpression({
       const { execState } = await executeAst({
         ast,
         engineCommandManager,
-        useFakeExecutor: true,
+        // We make sure to send an empty program memory to denote we mean mock mode.
         programMemoryOverride: kclManager.programMemory.clone(),
-        idGenerator: kclManager.execState.idGenerator,
       })
       const resultDeclaration = ast.body.find(
         (a) =>

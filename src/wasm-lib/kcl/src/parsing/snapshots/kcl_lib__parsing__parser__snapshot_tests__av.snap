@@ -1,6 +1,5 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 4006
 expression: actual
 snapshot_kind: text
 ---
@@ -68,7 +67,11 @@ snapshot_kind: text
                   "start": 8,
                   "type": "Identifier"
                 },
-                "optional": true
+                "default_value": {
+                  "type": "KclNone",
+                  "type": "KclNone",
+                  "__private": "KCL_NONE_ID"
+                }
               }
             ],
             "start": 7,

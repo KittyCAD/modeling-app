@@ -732,8 +732,7 @@ snapshot_kind: text
                     "name": "x",
                     "start": 418,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 },
                 {
                   "type": "Parameter",
@@ -742,8 +741,7 @@ snapshot_kind: text
                     "name": "face",
                     "start": 421,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 }
               ],
               "start": 417,

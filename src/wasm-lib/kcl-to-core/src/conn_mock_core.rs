@@ -1,3 +1,8 @@
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
+
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
@@ -10,10 +15,6 @@ use kittycad_modeling_cmds::{
     ok_response::OkModelingCmdResponse,
     shared::PathSegment::{self, *},
     websocket::{ModelingBatch, ModelingCmdReq, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse},
-};
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
 };
 use tokio::sync::RwLock;
 

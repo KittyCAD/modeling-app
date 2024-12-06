@@ -117,8 +117,7 @@ snapshot_kind: text
                     "name": "s",
                     "start": 21,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 }
               ],
               "start": 20,

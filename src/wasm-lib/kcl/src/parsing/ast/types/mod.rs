@@ -2707,7 +2707,7 @@ impl FnArgPrimitive {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema)]
 #[serde(tag = "type")]
 pub enum FnArgType {
     /// A primitive type.
@@ -2720,8 +2720,38 @@ pub enum FnArgType {
     },
 }
 
+/// Default value for a parameter of a KCL function.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
+pub enum DefaultParamVal {
+    KclNone(KclNone),
+    Literal(Literal),
+}
+
+// TODO: This should actually take metadata.
+impl From<DefaultParamVal> for KclValue {
+    fn from(v: DefaultParamVal) -> Self {
+        match v {
+            DefaultParamVal::KclNone(kcl_none) => Self::KclNone {
+                value: kcl_none,
+                meta: Default::default(),
+            },
+            DefaultParamVal::Literal(literal) => Self::from_literal(literal.value, Vec::new()),
+        }
+    }
+}
+
+impl DefaultParamVal {
+    /// KCL none.
+    pub(crate) fn none() -> Self {
+        Self::KclNone(KclNone::default())
+    }
+}
+
 /// Parameter of a KCL function.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Parameter {
@@ -2732,11 +2762,33 @@ pub struct Parameter {
     #[serde(skip)]
     pub type_: Option<FnArgType>,
     /// Is the parameter optional?
-    pub optional: bool,
+    /// If so, what is its default value?
+    /// If this is None, then the parameter is required.
+    /// Defaults to None.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_value: Option<DefaultParamVal>,
+    /// Functions may declare at most one parameter without label, prefixed by '@', and it must be the first parameter.
+    #[serde(default = "return_true", skip_serializing_if = "is_true")]
+    pub labeled: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
+}
+
+impl Parameter {
+    /// Is the parameter optional?
+    pub fn optional(&self) -> bool {
+        self.default_value.is_some()
+    }
+}
+
+fn is_true(b: &bool) -> bool {
+    *b
+}
+
+fn return_true() -> bool {
+    true
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -2783,13 +2835,13 @@ impl FunctionExpression {
         } = self;
         let mut found_optional = false;
         for param in params {
-            if param.optional {
+            if param.optional() {
                 found_optional = true;
             } else if found_optional {
                 return Err(RequiredParamAfterOptionalParam(Box::new(param.clone())));
             }
         }
-        let boundary = self.params.partition_point(|param| !param.optional);
+        let boundary = self.params.partition_point(|param| !param.optional());
         // SAFETY: split_at panics if the boundary is greater than the length.
         Ok(self.params.split_at(boundary))
     }
@@ -2800,7 +2852,7 @@ impl FunctionExpression {
         let end_of_required_params = self
             .params
             .iter()
-            .position(|param| param.optional)
+            .position(|param| param.optional())
             // If there's no optional params, then all the params are required params.
             .unwrap_or(self.params.len());
         &self.params[..end_of_required_params]
@@ -3257,8 +3309,9 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false,
-                        digest: None
+                        default_value: None,
+                        labeled: true,
+                        digest: None,
                     },
                     Parameter {
                         identifier: Node::new(
@@ -3271,7 +3324,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None
                     },
                     Parameter {
@@ -3285,7 +3339,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true,
+                        labeled: true,
+                        default_value: Some(DefaultParamVal::none()),
                         digest: None
                     }
                 ]
@@ -3327,7 +3382,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None
                     },
                     Parameter {
@@ -3341,7 +3397,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None
                     },
                     Parameter {
@@ -3355,7 +3412,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true,
+                        labeled: true,
+                        default_value: Some(DefaultParamVal::none()),
                         digest: None
                     }
                 ]
@@ -3391,7 +3449,8 @@ const cylinder = startSketchOn('-XZ')
                             digest: None,
                         }),
                         type_: None,
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None,
                     }],
                     body: Node {
@@ -3419,7 +3478,8 @@ const cylinder = startSketchOn('-XZ')
                             digest: None,
                         }),
                         type_: None,
-                        optional: true,
+                        default_value: Some(DefaultParamVal::none()),
+                        labeled: true,
                         digest: None,
                     }],
                     body: Node {
@@ -3448,7 +3508,8 @@ const cylinder = startSketchOn('-XZ')
                                 digest: None,
                             }),
                             type_: None,
-                            optional: false,
+                            default_value: None,
+                            labeled: true,
                             digest: None,
                         },
                         Parameter {
@@ -3457,7 +3518,8 @@ const cylinder = startSketchOn('-XZ')
                                 digest: None,
                             }),
                             type_: None,
-                            optional: true,
+                            default_value: Some(DefaultParamVal::none()),
+                            labeled: true,
                             digest: None,
                         },
                     ],

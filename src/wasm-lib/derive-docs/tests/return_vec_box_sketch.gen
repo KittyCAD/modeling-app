@@ -2,7 +2,8 @@
 mod test_examples_import {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_mock_example_import0() {
-        let program = crate::Program::parse("This is code.\nIt does other shit.\nimport").unwrap();
+        let program =
+            crate::Program::parse_no_errs("This is code.\nIt does other shit.\nimport").unwrap();
         let ctx = crate::executor::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -14,7 +15,7 @@ mod test_examples_import {
             settings: Default::default(),
             context_type: crate::executor::ContextType::Mock,
         };
-        ctx.run(&program, &mut crate::ExecState::default())
+        ctx.run(program.into(), &mut crate::ExecState::default())
             .await
             .unwrap();
     }
@@ -118,7 +119,7 @@ impl crate::docs::StdLibFn for Import {
         code_blocks
             .iter()
             .map(|cb| {
-                let program = crate::Program::parse(cb).unwrap();
+                let program = crate::Program::parse_no_errs(cb).unwrap();
                 let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
                 program.ast.recast(&options, 0)

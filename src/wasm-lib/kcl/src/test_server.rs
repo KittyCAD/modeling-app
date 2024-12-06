@@ -17,7 +17,7 @@ pub struct RequestBody {
 /// This returns the bytes of the snapshot.
 pub async fn execute_and_snapshot(code: &str, units: UnitLength) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(units, true).await?;
-    let program = Program::parse(code)?;
+    let program = Program::parse_no_errs(code)?;
     do_execute_and_snapshot(&ctx, program).await.map(|(_state, snap)| snap)
 }
 
@@ -35,7 +35,7 @@ pub async fn execute_and_snapshot_ast(
 
 pub async fn execute_and_snapshot_no_auth(code: &str, units: UnitLength) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(units, false).await?;
-    let program = Program::parse(code)?;
+    let program = Program::parse_no_errs(code)?;
     do_execute_and_snapshot(&ctx, program).await.map(|(_state, snap)| snap)
 }
 
