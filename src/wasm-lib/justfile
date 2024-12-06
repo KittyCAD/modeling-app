@@ -15,7 +15,6 @@ redo-kcl-stdlib-docs:
     TWENTY_TWENTY=overwrite {{cnr}} -p kcl-lib kcl_test_example
     EXPECTORATE=overwrite {{cnr}} -p kcl-lib docs::gen_std_tests::test_generate_stdlib
 
-
 # Copy a test KCL file from executor tests into a new simulation test.
 copy-exec-test-into-sim-test test_name:
     mkdir -p kcl/tests/{{test_name}}

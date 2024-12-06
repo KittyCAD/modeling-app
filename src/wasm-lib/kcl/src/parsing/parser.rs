@@ -2180,6 +2180,11 @@ fn question_mark(i: TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+fn at_sign(i: TokenSlice) -> PResult<()> {
+    TokenType::At.parse_from(i)?;
+    Ok(())
+}
+
 fn fun(i: TokenSlice) -> PResult<Token> {
     any.try_map(|token: Token| match token.token_type {
         TokenType::Keyword if token.value == "fn" => Ok(token),
@@ -2252,13 +2257,15 @@ fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
 }
 
 struct ParamDescription {
+    labeled: bool,
     arg_name: Token,
     type_: std::option::Option<FnArgType>,
     is_optional: bool,
 }
 
 fn parameter(i: TokenSlice) -> PResult<ParamDescription> {
-    let (arg_name, optional, _, type_) = (
+    let (found_at_sign, arg_name, optional, _, type_) = (
+        opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
         opt(whitespace),
@@ -2266,6 +2273,7 @@ fn parameter(i: TokenSlice) -> PResult<ParamDescription> {
     )
         .parse_next(i)?;
     Ok(ParamDescription {
+        labeled: found_at_sign.is_none(),
         arg_name,
         type_,
         is_optional: optional.is_some(),
@@ -2284,6 +2292,7 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
         .into_iter()
         .map(
             |ParamDescription {
+                 labeled,
                  arg_name,
                  type_,
                  is_optional,
@@ -2299,13 +2308,22 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
                     } else {
                         None
                     },
-                    labeled: true,
+                    labeled,
                     digest: None,
                 })
             },
         )
         .collect::<Result<_, _>>()
         .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
+
+    // Make sure the only unlabeled parameter is the first one.
+    if let Some(param) = params.iter().skip(1).find(|param| !param.labeled) {
+        let source_range = SourceRange::from(param);
+        return Err(ErrMode::Cut(ContextError::from(CompilationError::fatal(
+            source_range,
+            "Only the first parameter can be declared unlabeled",
+        ))));
+    }
 
     // Make sure optional parameters are last.
     if let Err(e) = optional_after_required(&params) {
@@ -3475,12 +3493,18 @@ const mySk1 = startSketchAt([0, 0])"#;
     }
 
     #[track_caller]
-    fn assert_err(p: &str, msg: &str, src: [usize; 2]) {
+    fn assert_err(p: &str, msg: &str, src_expected: [usize; 2]) {
         let result = crate::parsing::top_level_parse(p);
         let err = result.unwrap_errs().next().unwrap();
         assert_eq!(err.message, msg);
-        assert_eq!(err.source_range.start(), src[0]);
-        assert_eq!(err.source_range.end(), src[1]);
+        let src_actual = [err.source_range.start(), err.source_range.end()];
+        assert_eq!(
+            src_expected,
+            src_actual,
+            "expected error would highlight {} but it actually highlighted {}",
+            &p[src_expected[0]..src_expected[1]],
+            &p[src_actual[0]..src_actual[1]],
+        );
     }
 
     #[track_caller]
@@ -3587,6 +3611,20 @@ const secondExtrude = startSketchOn('XY')
     #[test]
     fn test_parse_greater_bang() {
         assert_err(">!", "Unexpected token: >", [0, 1]);
+    }
+
+    #[test]
+    fn test_parse_unlabeled_param_not_allowed() {
+        assert_err(
+            "fn f(@x, @y) { return 1 }",
+            "Only the first parameter can be declared unlabeled",
+            [9, 11],
+        );
+        assert_err(
+            "fn f(x, @y) { return 1 }",
+            "Only the first parameter can be declared unlabeled",
+            [8, 10],
+        );
     }
 
     #[test]
@@ -4478,6 +4516,8 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
     );
     snapshot_test!(kw_function_unnamed_first, r#"val = foo(x, y: z)"#);
     snapshot_test!(kw_function_all_named, r#"val = foo(x: a, y: b)"#);
+    snapshot_test!(kw_function_decl_all_labeled, r#"fn foo(x, y) { return 1 }"#);
+    snapshot_test!(kw_function_decl_first_unlabeled, r#"fn foo(@x, y) { return 1 }"#);
 }
 
 #[allow(unused)]

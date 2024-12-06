@@ -659,7 +659,11 @@ impl FunctionExpression {
 
 impl Parameter {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let mut result = self.identifier.name.clone();
+        let mut result = format!(
+            "{}{}",
+            if self.labeled { "" } else { "@" },
+            self.identifier.name.clone()
+        );
         if let Some(ty) = &self.type_ {
             result += ": ";
             result += &ty.recast(options, indentation_level);
