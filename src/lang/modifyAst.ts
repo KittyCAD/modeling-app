@@ -1,5 +1,5 @@
 import { err, reportRejection, trap } from 'lib/trap'
-import { Selection } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import {
   Program,
   CallExpression,

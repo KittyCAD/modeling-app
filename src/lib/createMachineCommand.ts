@@ -155,6 +155,8 @@ export function buildCommandArgument<
   context: ContextFrom<T>,
   machineActor: Actor<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
+  // GOTCHA: modelingCommandConfig is not a 1:1 mapping to this baseCommandArgument
+  // You need to manually add key/value pairs here.
   const baseCommandArgument = {
     description: arg.description,
     required: arg.required,
@@ -162,6 +164,7 @@ export function buildCommandArgument<
     machineActor,
     valueSummary: arg.valueSummary,
     warningMessage: arg.warningMessage ?? '',
+    validation: arg.validation,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {

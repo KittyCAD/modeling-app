@@ -308,7 +308,7 @@ async function updateAstAndFocus(
   }
 }
 
-function mutateAstWithTagForSketchSegment(
+export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode
 ): { modifiedAst: Program; tag: string } | Error {
@@ -340,7 +340,7 @@ function mutateAstWithTagForSketchSegment(
   return { modifiedAst: astClone, tag }
 }
 
-function getEdgeTagCall(
+export function getEdgeTagCall(
   tag: string,
   artifact: Artifact
 ): Node<Identifier | CallExpression> {
