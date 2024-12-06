@@ -60,8 +60,7 @@ snapshot_kind: text
                     "name": "i",
                     "start": 13,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 }
               ],
               "start": 12,

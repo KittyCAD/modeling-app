@@ -1,6 +1,5 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3974
 expression: actual
 snapshot_kind: text
 ---
@@ -46,8 +45,7 @@ snapshot_kind: text
                   "name": "param",
                   "start": 12,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
             "start": 11,

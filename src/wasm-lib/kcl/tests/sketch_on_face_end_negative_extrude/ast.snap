@@ -273,8 +273,7 @@ snapshot_kind: text
                     "name": "pos",
                     "start": 8,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 },
                 {
                   "type": "Parameter",
@@ -283,8 +282,7 @@ snapshot_kind: text
                     "name": "scale",
                     "start": 13,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 }
               ],
               "start": 7,

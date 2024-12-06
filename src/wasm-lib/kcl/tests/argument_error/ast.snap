@@ -46,8 +46,7 @@ snapshot_kind: text
                     "name": "i",
                     "start": 5,
                     "type": "Identifier"
-                  },
-                  "optional": false
+                  }
                 }
               ],
               "start": 4,

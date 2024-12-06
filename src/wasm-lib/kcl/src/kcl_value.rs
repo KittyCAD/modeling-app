@@ -8,7 +8,7 @@ use crate::{
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
     executor::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
-    parsing::ast::types::{FunctionExpression, KclNone, TagDeclarator, TagNode},
+    parsing::ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
     std::{args::Arg, FnAsArg},
     ExecState, ExecutorContext, KclError, SourceRange,
 };
@@ -221,6 +221,14 @@ impl KclValue {
         }
     }
 
+    #[allow(unused)]
+    pub(crate) fn none() -> Self {
+        Self::KclNone {
+            value: Default::default(),
+            meta: Default::default(),
+        }
+    }
+
     /// Human readable type name used in error messages.  Should not be relied
     /// on for program logic.
     pub(crate) fn human_friendly_type(&self) -> &'static str {
@@ -243,6 +251,14 @@ impl KclValue {
             KclValue::Array { .. } => "array (list)",
             KclValue::Object { .. } => "object",
             KclValue::KclNone { .. } => "None",
+        }
+    }
+
+    pub(crate) fn from_literal(literal: LiteralValue, meta: Vec<Metadata>) -> Self {
+        match literal {
+            LiteralValue::Number(value) => KclValue::Number { value, meta },
+            LiteralValue::String(value) => KclValue::String { value, meta },
+            LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }
     }
 
