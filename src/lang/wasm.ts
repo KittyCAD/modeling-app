@@ -243,6 +243,19 @@ function emptyEnvironment(): Environment {
   return { bindings: {}, parent: null }
 }
 
+function emptyRootEnvironment(): Environment {
+  return {
+    // This is dumb this is copied from rust.
+    bindings: {
+      ZERO: { type: 'Number', value: 0.0, __meta: [] },
+      QUARTER_TURN: { type: 'Number', value: 90.0, __meta: [] },
+      HALF_TURN: { type: 'Number', value: 180.0, __meta: [] },
+      THREE_QUARTER_TURN: { type: 'Number', value: 270.0, __meta: [] },
+    },
+    parent: null,
+  }
+}
+
 /**
  * This duplicates logic in Rust.  The hope is to keep ProgramMemory internals
  * isolated from the rest of the TypeScript code so that we can move it to Rust
@@ -265,7 +278,7 @@ export class ProgramMemory {
   }
 
   constructor(
-    environments: Environment[] = [emptyEnvironment()],
+    environments: Environment[] = [emptyRootEnvironment()],
     currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
     returnVal: KclValue | null = null
   ) {
