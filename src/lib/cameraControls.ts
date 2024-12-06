@@ -32,11 +32,11 @@ export function mouseControlsToCameraSystem(
   mouseControl: MouseControlType | undefined
 ): CameraSystem | undefined {
   switch (mouseControl) {
-    case 'kittycad':
+    case 'kitty_cad':
       return 'KittyCAD'
-    case 'onshape':
+    case 'on_shape':
       return 'OnShape'
-    case 'trackpadfriendly':
+    case 'trackpad_friendly':
       return 'Trackpad Friendly'
     case 'solidworks':
       return 'Solidworks'
@@ -44,7 +44,7 @@ export function mouseControlsToCameraSystem(
       return 'NX'
     case 'creo':
       return 'Creo'
-    case 'autocad':
+    case 'auto_cad':
       return 'AutoCAD'
     default:
       return undefined
