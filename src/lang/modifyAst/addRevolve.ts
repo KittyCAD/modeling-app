@@ -91,10 +91,14 @@ export function revolveSketch(
     shallowPath: sketchPathToDecleration,
   } = sketchVariableDeclaratorNode
 
+  const axisSelection = axis?.graphSelections[0]?.artifact
+
+  if (!axisSelection) return new Error('Axis selection is missing.')
+
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
-      axis: getEdgeTagCall(tag, axis?.graphSelections[0]?.artifact),
+      axis: getEdgeTagCall(tag, axisSelection),
     }),
     createIdentifier(sketchVariableDeclarator.id.name),
   ])

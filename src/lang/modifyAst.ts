@@ -45,8 +45,6 @@ import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { mutateAstWithTagForSketchSegment } from './modifyAst/addFillet'
-import { locateDeclarator } from './modifyAst/utils'
 
 export function startSketchOnDefault(
   node: Node<Program>,
