@@ -5,7 +5,7 @@ import { isDesktop } from './isDesktop'
 import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from './constants'
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { parseProjectSettings } from 'lang/wasm'
-import { err } from './trap'
+import { err, reportRejection } from './trap'
 import { projectConfigurationToSettingsPayload } from './settings/settingsUtils'
 
 interface OnSubmitProps {
@@ -28,7 +28,7 @@ export function kclCommands(
       groupId: 'code',
       icon: 'code',
       onSubmit: () => {
-        void kclManager.format()
+        kclManager.format().catch(reportRejection)
       },
     },
     {
