@@ -296,6 +296,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        multiple: false,
         validation: revolveAxisValidator,
       },
       angle: {

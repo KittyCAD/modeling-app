@@ -8,7 +8,6 @@ import { MachineManager } from 'components/MachineManagerProvider'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandBarContext } from 'machines/commandBarMachine'
-
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = [
@@ -39,7 +38,7 @@ export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
 
 export type StateMachineCommandSet<
   T extends AllMachines,
-  Schema extends StateMachineCommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]: Command<
     T,
@@ -56,7 +55,7 @@ export type StateMachineCommandSet<
  */
 export type StateMachineCommandSetConfig<
   T extends AllMachines,
-  Schema extends StateMachineCommandSetSchema<T>
+  Schema extends StateMachineCommandSetSchema<T>,
 > = Partial<{
   [EventType in EventFrom<T>['type']]:
     | CommandConfig<T, EventFrom<T>['type'], Schema[EventType]>
@@ -66,7 +65,8 @@ export type StateMachineCommandSetConfig<
 export type Command<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
+  CommandSchema extends
+    StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = {
   name: CommandName
   groupId: T['id']
@@ -91,7 +91,8 @@ export type Command<
 export type CommandConfig<
   T extends AnyStateMachine = AnyStateMachine,
   CommandName extends EventFrom<T>['type'] = EventFrom<T>['type'],
-  CommandSchema extends StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName]
+  CommandSchema extends
+    StateMachineCommandSetSchema<T>[CommandName] = StateMachineCommandSetSchema<T>[CommandName],
 > = Omit<
   Command<T, CommandName, CommandSchema>,
   'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
@@ -108,7 +109,7 @@ export type CommandConfig<
 
 export type CommandArgumentConfig<
   OutputType,
-  C = ContextFrom<AnyStateMachine>
+  C = ContextFrom<AnyStateMachine>,
 > = {
   description?: string
   required:
@@ -148,6 +149,13 @@ export type CommandArgumentConfig<
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
       multiple: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
   | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
   | {
@@ -184,7 +192,7 @@ export type CommandArgumentConfig<
 
 export type CommandArgument<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  T extends AnyStateMachine = AnyStateMachine,
 > = {
   description?: string
   required:
@@ -222,6 +230,13 @@ export type CommandArgument<
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
       multiple: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
   | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
   | {
@@ -255,7 +270,7 @@ export type CommandArgument<
 
 export type CommandArgumentWithName<
   OutputType,
-  T extends AnyStateMachine = AnyStateMachine
+  T extends AnyStateMachine = AnyStateMachine,
 > = CommandArgument<OutputType, T> & {
   name: string
 }
