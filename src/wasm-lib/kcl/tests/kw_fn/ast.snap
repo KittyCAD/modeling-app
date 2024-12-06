@@ -1,0 +1,138 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing kw_fn.kcl
+snapshot_kind: text
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 35,
+          "id": {
+            "end": 12,
+            "name": "increment",
+            "start": 3,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 33,
+                    "left": {
+                      "end": 29,
+                      "name": "x",
+                      "start": 28,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 33,
+                      "raw": "1",
+                      "start": 32,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 1.0
+                    },
+                    "start": 28,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 33,
+                  "start": 21,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 35,
+              "start": 17
+            },
+            "end": 35,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 15,
+                  "name": "x",
+                  "start": 14,
+                  "type": "Identifier"
+                },
+                "labeled": false
+              }
+            ],
+            "start": 12,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 3,
+          "type": "VariableDeclarator"
+        },
+        "end": 35,
+        "kind": "fn",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 55,
+          "id": {
+            "end": 40,
+            "name": "two",
+            "start": 37,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 54,
+                "raw": "1",
+                "start": 53,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 1.0
+              }
+            ],
+            "callee": {
+              "end": 52,
+              "name": "increment",
+              "start": 43,
+              "type": "Identifier"
+            },
+            "end": 55,
+            "start": 43,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 37,
+          "type": "VariableDeclarator"
+        },
+        "end": 55,
+        "kind": "const",
+        "start": 37,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 56,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 37,
+            "start": 35,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

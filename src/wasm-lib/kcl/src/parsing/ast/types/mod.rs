@@ -2833,6 +2833,18 @@ impl Parameter {
     }
 }
 
+impl From<&Parameter> for SourceRange {
+    fn from(p: &Parameter) -> Self {
+        let sr = Self::from(&p.identifier);
+        // If it's unlabelled, the span should start 1 char earlier than the identifier,
+        // to include the '@' symbol.
+        if !p.labeled {
+            return Self::new(sr.start() - 1, sr.end(), sr.module_id());
+        }
+        sr
+    }
+}
+
 fn is_true(b: &bool) -> bool {
     *b
 }
