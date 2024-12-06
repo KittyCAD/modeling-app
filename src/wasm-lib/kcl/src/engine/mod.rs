@@ -120,6 +120,57 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
+    /// Set the visibility of edges.
+    async fn set_edge_visibility(
+        &self,
+        visible: bool,
+        source_range: SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
+        self.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            source_range,
+            &ModelingCmd::from(mcmd::EdgeLinesVisible { hidden: !visible }),
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    async fn set_units(
+        &self,
+        units: crate::UnitLength,
+        source_range: SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
+        // Before we even start executing the program, set the units.
+        self.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            source_range,
+            &ModelingCmd::from(mcmd::SetSceneUnits { unit: units.into() }),
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    /// Re-run the command to apply the settings.
+    async fn reapply_settings(
+        &self,
+        settings: &crate::ExecutorSettings,
+        source_range: SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
+        self.set_edge_visibility(settings.highlight_edges, source_range).await?;
+
+        // Send the command to show the grid.
+        self.modify_grid(!settings.show_grid, source_range).await?;
+
+        // Change the units.
+        self.set_units(settings.units, source_range).await?;
+
+        // We do not have commands for changing ssao on the fly.
+
+        Ok(())
+    }
+
     // Add a modeling command to the batch but don't fire it right away.
     async fn batch_modeling_cmd(
         &self,
@@ -504,11 +555,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }))
     }
 
-    async fn modify_grid(&self, hidden: bool) -> Result<(), KclError> {
+    async fn modify_grid(&self, hidden: bool, source_range: SourceRange) -> Result<(), KclError> {
         // Hide/show the grid.
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            Default::default(),
+            source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_OBJECT_ID,
@@ -519,15 +570,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Hide/show the grid scale text.
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            Default::default(),
+            source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_SCALE_TEXT_OBJECT_ID,
             }),
         )
         .await?;
-
-        self.flush_batch(false, Default::default()).await?;
 
         Ok(())
     }
