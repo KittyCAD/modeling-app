@@ -82,11 +82,11 @@ describe('Testing createVariableDeclaration', () => {
   it('should create a variable declaration', () => {
     const result = createVariableDeclaration('myVar', createLiteral(5))
     expect(result.type).toBe('VariableDeclaration')
-    expect(result.declarations[0].type).toBe('VariableDeclarator')
-    expect(result.declarations[0].id.type).toBe('Identifier')
-    expect(result.declarations[0].id.name).toBe('myVar')
-    expect(result.declarations[0].init.type).toBe('Literal')
-    expect((result.declarations[0].init as any).value).toBe(5)
+    expect(result.declaration.type).toBe('VariableDeclarator')
+    expect(result.declaration.id.type).toBe('Identifier')
+    expect(result.declaration.id.name).toBe('myVar')
+    expect(result.declaration.init.type).toBe('Literal')
+    expect((result.declaration.init as any).value).toBe(5)
   })
 })
 describe('Testing createPipeExpression', () => {

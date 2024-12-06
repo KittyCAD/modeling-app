@@ -169,11 +169,11 @@ export function useCalc({
         const resultDeclaration = ast.body.find(
           (a) =>
             a.type === 'VariableDeclaration' &&
-            a.declarations?.[0]?.id?.name === '__result__'
+            a.declaration.id?.name === '__result__'
         )
         const init =
           resultDeclaration?.type === 'VariableDeclaration' &&
-          resultDeclaration?.declarations?.[0]?.init
+          resultDeclaration?.declaration.init
         const result = execState.memory?.get('__result__')?.value
         setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
         init && setValueNode(init)

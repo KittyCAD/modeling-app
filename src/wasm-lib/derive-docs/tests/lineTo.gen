@@ -5,7 +5,7 @@ mod test_examples_line_to {
         let program =
             crate::Program::parse_no_errs("This is another code block.\nyes sirrr.\nlineTo")
                 .unwrap();
-        let ctx = crate::executor::ExecutorContext {
+        let ctx = crate::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
                     .await
@@ -14,7 +14,7 @@ mod test_examples_line_to {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ContextType::Mock,
+            context_type: crate::execution::ContextType::Mock,
         };
         ctx.run(program.into(), &mut crate::ExecState::default())
             .await
@@ -24,10 +24,13 @@ mod test_examples_line_to {
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn kcl_test_example_line_to0() {
         let code = "This is another code block.\nyes sirrr.\nlineTo";
-        let result =
-            crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
-                .await
-                .unwrap();
+        let result = crate::test_server::execute_and_snapshot(
+            code,
+            crate::settings::types::UnitLength::Mm,
+            None,
+        )
+        .await
+        .unwrap();
         twenty_twenty::assert_image(
             &format!("tests/outputs/{}.png", "serial_test_example_line_to0"),
             &result,
@@ -39,7 +42,7 @@ mod test_examples_line_to {
     async fn test_mock_example_line_to1() {
         let program =
             crate::Program::parse_no_errs("This is code.\nIt does other shit.\nlineTo").unwrap();
-        let ctx = crate::executor::ExecutorContext {
+        let ctx = crate::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
                     .await
@@ -48,7 +51,7 @@ mod test_examples_line_to {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ContextType::Mock,
+            context_type: crate::execution::ContextType::Mock,
         };
         ctx.run(program.into(), &mut crate::ExecState::default())
             .await
@@ -58,10 +61,13 @@ mod test_examples_line_to {
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn kcl_test_example_line_to1() {
         let code = "This is code.\nIt does other shit.\nlineTo";
-        let result =
-            crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
-                .await
-                .unwrap();
+        let result = crate::test_server::execute_and_snapshot(
+            code,
+            crate::settings::types::UnitLength::Mm,
+            None,
+        )
+        .await
+        .unwrap();
         twenty_twenty::assert_image(
             &format!("tests/outputs/{}.png", "serial_test_example_line_to1"),
             &result,
@@ -80,12 +86,12 @@ pub(crate) struct LineTo {}
 #[doc = "Std lib function: lineTo\nThis is some function.\nIt does shit."]
 pub(crate) const LineTo: LineTo = LineTo {};
 fn boxed_line_to(
-    exec_state: &mut crate::executor::ExecState,
+    exec_state: &mut crate::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-                Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>,
+                Output = anyhow::Result<crate::execution::KclValue, crate::errors::KclError>,
             > + Send
             + '_,
     >,

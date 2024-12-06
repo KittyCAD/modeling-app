@@ -1,71 +1,67 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3950
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 26,
-          "id": {
-            "end": 9,
-            "name": "obj",
-            "start": 6,
-            "type": "Identifier"
-          },
-          "init": {
-            "end": 26,
-            "properties": [
-              {
-                "end": 18,
-                "key": {
-                  "end": 15,
-                  "name": "a",
-                  "start": 14,
-                  "type": "Identifier"
-                },
-                "start": 14,
-                "type": "ObjectProperty",
-                "value": {
-                  "end": 18,
-                  "raw": "1",
-                  "start": 17,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 1.0
-                }
-              },
-              {
-                "end": 24,
-                "key": {
-                  "end": 21,
-                  "name": "b",
-                  "start": 20,
-                  "type": "Identifier"
-                },
-                "start": 20,
-                "type": "ObjectProperty",
-                "value": {
-                  "end": 24,
-                  "raw": "2",
-                  "start": 23,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 2.0
-                }
-              }
-            ],
-            "start": 12,
-            "type": "ObjectExpression",
-            "type": "ObjectExpression"
-          },
+      "declaration": {
+        "end": 26,
+        "id": {
+          "end": 9,
+          "name": "obj",
           "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "type": "Identifier"
+        },
+        "init": {
+          "end": 26,
+          "properties": [
+            {
+              "end": 18,
+              "key": {
+                "end": 15,
+                "name": "a",
+                "start": 14,
+                "type": "Identifier"
+              },
+              "start": 14,
+              "type": "ObjectProperty",
+              "value": {
+                "end": 18,
+                "raw": "1",
+                "start": 17,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 1.0
+              }
+            },
+            {
+              "end": 24,
+              "key": {
+                "end": 21,
+                "name": "b",
+                "start": 20,
+                "type": "Identifier"
+              },
+              "start": 20,
+              "type": "ObjectProperty",
+              "value": {
+                "end": 24,
+                "raw": "2",
+                "start": 23,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 2.0
+              }
+            }
+          ],
+          "start": 12,
+          "type": "ObjectExpression",
+          "type": "ObjectExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
       "end": 26,
       "kind": "const",
       "start": 0,
@@ -73,41 +69,39 @@ snapshot_kind: text
       "type": "VariableDeclaration"
     },
     {
-      "declarations": [
-        {
+      "declaration": {
+        "end": 54,
+        "id": {
+          "end": 43,
+          "name": "height",
+          "start": 37,
+          "type": "Identifier"
+        },
+        "init": {
+          "computed": false,
           "end": 54,
-          "id": {
-            "end": 43,
-            "name": "height",
-            "start": 37,
+          "object": {
+            "end": 49,
+            "name": "obj",
+            "start": 46,
+            "type": "Identifier",
             "type": "Identifier"
           },
-          "init": {
-            "computed": false,
-            "end": 54,
-            "object": {
-              "end": 49,
-              "name": "obj",
-              "start": 46,
-              "type": "Identifier",
-              "type": "Identifier"
-            },
-            "property": {
-              "end": 53,
-              "raw": "\"a\"",
-              "start": 50,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "a"
-            },
-            "start": 46,
-            "type": "MemberExpression",
-            "type": "MemberExpression"
+          "property": {
+            "end": 53,
+            "raw": "\"a\"",
+            "start": 50,
+            "type": "Literal",
+            "type": "Literal",
+            "value": "a"
           },
-          "start": 37,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "start": 46,
+          "type": "MemberExpression",
+          "type": "MemberExpression"
+        },
+        "start": 37,
+        "type": "VariableDeclarator"
+      },
       "end": 54,
       "kind": "const",
       "start": 31,

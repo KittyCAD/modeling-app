@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use insta::rounded_redaction;
 
 use crate::{
@@ -82,8 +84,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
     };
 
     // Run the program.
-    let exec_res =
-        crate::test_server::execute_and_snapshot_ast(ast.into(), crate::settings::types::UnitLength::Mm).await;
+    let exec_res = crate::test_server::execute_and_snapshot_ast(
+        ast.into(),
+        crate::settings::types::UnitLength::Mm,
+        Some(Path::new("tests").join(test_name)),
+    )
+    .await;
     match exec_res {
         Ok((program_memory, png)) => {
             if render_to_png {
@@ -637,6 +643,48 @@ mod import_cycle1 {
 }
 mod import_constant {
     const TEST_NAME: &str = "import_constant";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_export {
+    const TEST_NAME: &str = "import_export";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_glob {
+    const TEST_NAME: &str = "import_glob";
 
     /// Test parsing KCL.
     #[test]
