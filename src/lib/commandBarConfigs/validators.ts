@@ -11,6 +11,11 @@ export const dryRunWrapper = async (callback: () => Promise<any>) => {
       cmd_id: uuidv4(),
       cmd: { type: 'enable_dry_run' },
     })
+    // Race condition ?????
+    // What if concurrent does this and our app works because of it!
+    // engineCommandManager.dryRunOn()
+    // engineCommandManager.dryRunOff()
+    // global singleton
     const result = await callback()
     return result
   } catch (e) {
