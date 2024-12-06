@@ -1,12 +1,11 @@
 // TODO optimise size of CompilationError
 #![allow(clippy::result_large_err)]
 
+use super::CompilationError;
 use crate::{
     parsing::ast::types::{BinaryExpression, BinaryOperator, BinaryPart, Node},
     SourceRange,
 };
-
-use super::CompilationError;
 
 /// Parses a list of tokens (in infix order, i.e. as the user typed them)
 /// into a binary expression tree.
