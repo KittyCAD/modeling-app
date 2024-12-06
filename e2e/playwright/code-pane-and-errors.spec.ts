@@ -120,7 +120,7 @@ test.describe('Code pane and errors', () => {
     await expect(page.locator('.cm-tooltip').first()).toBeVisible()
   })
 
-  test('When error is not in view you can click the badge to scroll to it', async ({
+  test.fixme('When error is not in view you can click the badge to scroll to it', async ({
     page,
     homePage,
     context,

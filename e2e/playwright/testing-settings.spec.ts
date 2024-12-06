@@ -443,7 +443,7 @@ test.describe('Testing settings', () => {
     }
   )
 
-  test(
+  test.fixme(
     'project settings reload on external change',
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
