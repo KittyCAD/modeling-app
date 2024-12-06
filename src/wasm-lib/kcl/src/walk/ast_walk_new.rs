@@ -10,7 +10,7 @@ use crate::{
 
 /// Implemented on [Node] to handle recursing into the AST, as well as helpers
 /// for traversing the tree.
-trait WalkableAst<'tree> {
+pub trait WalkableAst<'tree> {
     fn children(&self) -> Vec<Node<'tree>>;
     fn node(&self) -> Node<'tree>;
 
@@ -24,7 +24,7 @@ trait WalkableAst<'tree> {
 }
 
 /// Function to be called on AST.
-trait AstVisitor<'tree> {
+pub trait AstVisitor<'tree> {
     type Error;
 
     /// Return true to stop walking nodes.
@@ -80,7 +80,7 @@ impl<'tree> WalkableAst<'tree> for Node<'tree> {
                 children.push((&n.final_else).as_ref().into());
                 children
             }
-            Node::VariableDeclaration(n) => n.declarations.iter().map(|v| v.into()).collect(),
+            Node::VariableDeclaration(n) => vec![(&n.declaration).into()],
             Node::ReturnStatement(n) => {
                 vec![(&n.argument).into()]
             }
@@ -128,6 +128,11 @@ mod tests {
             "\
 const crow1 = 1
 const crow2 = 2
+
+fn crow3() {
+    const crow4 = 3
+    crow5()
+}
 "
         );
 
@@ -158,7 +163,7 @@ const crow2 = 2
 
         let prog: Node = (&program).into();
         let count_crows: CountCrows = Default::default();
-        prog.visit(&count_crows).unwrap();
-        assert_eq!(*count_crows.n.lock().unwrap(), 2);
+        WalkableAst::visit(&prog, &count_crows).unwrap();
+        assert_eq!(*count_crows.n.lock().unwrap(), 4);
     }
 }
