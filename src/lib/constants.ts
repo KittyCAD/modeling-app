@@ -53,6 +53,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
   LOFT: 'loft',
+  SHELL: 'shell',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
   PLANE: 'plane',

@@ -29,7 +29,7 @@ import {
   sketchLineHelperMap,
 } from '../std/sketch'
 import { err, trap } from 'lib/trap'
-import { Selections } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import {
   Artifact,
@@ -99,14 +99,9 @@ export function modifyAstWithEdgeTreatmentAndTag(
   const lookupMap: Map<string, PathToNode> = new Map() // work around for Map key comparison
 
   for (const selection of selections.graphSelections) {
-    const singleSelection = {
-      graphSelections: [selection],
-      otherSelections: [],
-    }
-
     const result = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
-      singleSelection,
+      selection,
       artifactGraph
     )
     if (err(result)) return result
@@ -259,12 +254,12 @@ function insertParametersIntoAst(
 
 export function getPathToExtrudeForSegmentSelection(
   ast: Program,
-  selection: Selections,
+  selection: Selection,
   artifactGraph: ArtifactGraph
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
   const pathToSegmentNode = getNodePathFromSourceRange(
     ast,
-    selection.graphSelections[0]?.codeRef?.range
+    selection.codeRef?.range
   )
 
   const varDecNode = getNodeFromPath<VariableDeclaration>(
@@ -308,7 +303,7 @@ async function updateAstAndFocus(
   }
 }
 
-function mutateAstWithTagForSketchSegment(
+export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode
 ): { modifiedAst: Program; tag: string } | Error {

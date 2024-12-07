@@ -585,6 +585,17 @@ export function canLoftSelection(selection: Selections) {
   )
 }
 
+export function canShellSelection(selection: Selections) {
+  const commonNodes = selection.graphSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  return commonNodes.every(
+    (n) =>
+      n.selection.artifact?.type === 'cap' ||
+      n.selection.artifact?.type === 'wall'
+  )
+}
+
 // This accounts for non-geometry selections under "other"
 export type ResolvedSelectionType = Artifact['type'] | 'other'
 export type SelectionCountsByType = Map<ResolvedSelectionType, number>
