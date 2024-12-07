@@ -169,6 +169,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // We do not have commands for changing ssao on the fly.
 
+        // Flush the batch queue, so the settings are applied right away.
+        self.flush_batch(false, source_range).await?;
+
         Ok(())
     }
 
