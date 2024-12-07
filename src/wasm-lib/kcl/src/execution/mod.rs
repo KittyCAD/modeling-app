@@ -1903,14 +1903,9 @@ impl ExecutorContext {
 
         // TODO: Use the top-level file's path.
         exec_state.add_module(std::path::PathBuf::from(""));
-        // Before we even start executing the program, set the units.
-        self.engine.set_units(self.settings.units, Default::default()).await?;
 
-        // Until the bug is fixed in the engine, we need to set the grid visibility here.
-        // see: https://github.com/KittyCAD/engine/issues/2915
-        self.engine
-            .modify_grid(!self.settings.show_grid, Default::default())
-            .await?;
+        // Re-apply the settings, in case the cache was busted.
+        self.engine.reapply_settings(&self.settings, Default::default()).await?;
 
         self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
             .await?;
