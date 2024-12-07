@@ -1,0 +1,529 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing tag_can_be_proxied_through_parameter.kcl
+snapshot_kind: text
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "Number",
+          "value": 180.0,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "Number",
+          "value": 270.0,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "Number",
+          "value": 0.0,
+          "__meta": []
+        },
+        "ang1": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                242,
+                268,
+                0
+              ]
+            }
+          ]
+        },
+        "ang2": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                403,
+                429,
+                0
+              ]
+            }
+          ]
+        },
+        "c1": {
+          "type": "Sketch",
+          "value": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    79,
+                    127,
+                    0
+                  ]
+                },
+                "ccw": true,
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "from": [
+                  4.0,
+                  0.0
+                ],
+                "radius": 4.0,
+                "tag": {
+                  "end": 209,
+                  "start": 204,
+                  "type": "TagDeclarator",
+                  "value": "mine"
+                },
+                "to": [
+                  4.0,
+                  0.0
+                ],
+                "type": "Circle"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XY",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                4.0,
+                0.0
+              ],
+              "to": [
+                4.0,
+                0.0
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  79,
+                  127,
+                  0
+                ]
+              }
+            },
+            "tags": {
+              "mine": {
+                "type": "TagIdentifier",
+                "value": "mine",
+                "info": {
+                  "type": "TagEngineInfo",
+                  "id": "[uuid]",
+                  "sketch": "[uuid]",
+                  "path": {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        79,
+                        127,
+                        0
+                      ]
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      4.0,
+                      0.0
+                    ],
+                    "radius": 4.0,
+                    "tag": {
+                      "end": 209,
+                      "start": 204,
+                      "type": "TagDeclarator",
+                      "value": "mine"
+                    },
+                    "to": [
+                      4.0,
+                      0.0
+                    ],
+                    "type": "Circle"
+                  },
+                  "surface": null
+                },
+                "__meta": [
+                  {
+                    "sourceRange": [
+                      204,
+                      209,
+                      0
+                    ]
+                  }
+                ]
+              }
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  79,
+                  127,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        "c2": {
+          "type": "Sketch",
+          "value": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    79,
+                    127,
+                    0
+                  ]
+                },
+                "ccw": true,
+                "center": [
+                  0.0,
+                  0.0
+                ],
+                "from": [
+                  4.0,
+                  0.0
+                ],
+                "radius": 4.0,
+                "tag": {
+                  "end": 394,
+                  "start": 389,
+                  "type": "TagDeclarator",
+                  "value": "mine"
+                },
+                "to": [
+                  4.0,
+                  0.0
+                ],
+                "type": "Circle"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XY",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                4.0,
+                0.0
+              ],
+              "to": [
+                4.0,
+                0.0
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  79,
+                  127,
+                  0
+                ]
+              }
+            },
+            "tags": {
+              "mine": {
+                "type": "TagIdentifier",
+                "value": "mine",
+                "info": {
+                  "type": "TagEngineInfo",
+                  "id": "[uuid]",
+                  "sketch": "[uuid]",
+                  "path": {
+                    "__geoMeta": {
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        79,
+                        127,
+                        0
+                      ]
+                    },
+                    "ccw": true,
+                    "center": [
+                      0.0,
+                      0.0
+                    ],
+                    "from": [
+                      4.0,
+                      0.0
+                    ],
+                    "radius": 4.0,
+                    "tag": {
+                      "end": 394,
+                      "start": 389,
+                      "type": "TagDeclarator",
+                      "value": "mine"
+                    },
+                    "to": [
+                      4.0,
+                      0.0
+                    ],
+                    "type": "Circle"
+                  },
+                  "surface": null
+                },
+                "__meta": [
+                  {
+                    "sourceRange": [
+                      389,
+                      394,
+                      0
+                    ]
+                  }
+                ]
+              }
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  79,
+                  127,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        "myCircle": {
+          "type": "Function",
+          "expression": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "arguments": [
+                      {
+                        "end": 117,
+                        "properties": [
+                          {
+                            "end": 98,
+                            "key": {
+                              "end": 94,
+                              "name": "radius",
+                              "start": 88,
+                              "type": "Identifier"
+                            },
+                            "start": 88,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "end": 98,
+                              "raw": "4",
+                              "start": 97,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": 4.0
+                            }
+                          },
+                          {
+                            "end": 115,
+                            "key": {
+                              "end": 106,
+                              "name": "center",
+                              "start": 100,
+                              "type": "Identifier"
+                            },
+                            "start": 100,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "elements": [
+                                {
+                                  "end": 111,
+                                  "raw": "0",
+                                  "start": 110,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 0.0
+                                },
+                                {
+                                  "end": 114,
+                                  "raw": "0",
+                                  "start": 113,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 0.0
+                                }
+                              ],
+                              "end": 115,
+                              "start": 109,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "start": 86,
+                        "type": "ObjectExpression",
+                        "type": "ObjectExpression"
+                      },
+                      {
+                        "end": 121,
+                        "name": "sk",
+                        "start": 119,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      {
+                        "end": 126,
+                        "name": "tag",
+                        "start": 123,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "callee": {
+                      "end": 85,
+                      "name": "circle",
+                      "start": 79,
+                      "type": "Identifier"
+                    },
+                    "end": 127,
+                    "start": 79,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  },
+                  "end": 127,
+                  "start": 72,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 129,
+              "start": 68
+            },
+            "end": 129,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 60,
+                  "name": "sk",
+                  "start": 58,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 65,
+                  "name": "tag",
+                  "start": 62,
+                  "type": "Identifier"
+                },
+                "default_value": {
+                  "type": "KclNone",
+                  "type": "KclNone",
+                  "__private": "KCL_NONE_ID"
+                }
+              }
+            ],
+            "start": 57,
+            "type": "FunctionExpression"
+          },
+          "memory": {
+            "environments": [
+              {
+                "bindings": {
+                  "HALF_TURN": {
+                    "type": "Number",
+                    "value": 180.0,
+                    "__meta": []
+                  },
+                  "QUARTER_TURN": {
+                    "type": "Number",
+                    "value": 90.0,
+                    "__meta": []
+                  },
+                  "THREE_QUARTER_TURN": {
+                    "type": "Number",
+                    "value": 270.0,
+                    "__meta": []
+                  },
+                  "ZERO": {
+                    "type": "Number",
+                    "value": 0.0,
+                    "__meta": []
+                  }
+                },
+                "parent": null
+              }
+            ],
+            "currentEnv": 0,
+            "return": null
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                57,
+                129,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}
