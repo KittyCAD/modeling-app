@@ -2184,23 +2184,8 @@ impl ExecutorContext {
         self.settings.units = units;
     }
 
-    /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(
-        &self,
-        program: &Program,
-        exec_state: &mut ExecState,
-    ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.execute_and_prepare(program, exec_state).await
-    }
-
-    /// Execute the program, return the interpreter and outputs.
-    pub async fn execute_and_prepare(
-        &self,
-        program: &Program,
-        exec_state: &mut ExecState,
-    ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.run(program.clone().into(), exec_state).await?;
-
+    /// Get a snapshot of the current scene.
+    pub async fn prepare_snapshot(&self) -> std::result::Result<TakeSnapshot, ExecError> {
         // Zoom to fit.
         self.engine
             .send_modeling_cmd(
@@ -2235,6 +2220,17 @@ impl ExecutorContext {
             )));
         };
         Ok(contents)
+    }
+
+    /// Execute the program, then get a PNG screenshot.
+    pub async fn execute_and_prepare_snapshot(
+        &self,
+        program: &Program,
+        exec_state: &mut ExecState,
+    ) -> std::result::Result<TakeSnapshot, ExecError> {
+        self.run(program.clone().into(), exec_state).await?;
+
+        self.prepare_snapshot().await
     }
 }
 
@@ -2332,8 +2328,10 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Node, Parameter};
-    use crate::OldAstState;
+    use crate::{
+        parsing::ast::types::{DefaultParamVal, Identifier, Node, Parameter},
+        OldAstState,
+    };
 
     pub async fn parse_execute(code: &str) -> Result<(Program, ExecutorContext, ExecState)> {
         let program = Program::parse_no_errs(code)?;
