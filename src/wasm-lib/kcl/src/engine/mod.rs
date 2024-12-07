@@ -160,11 +160,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     ) -> Result<(), crate::errors::KclError> {
         self.set_edge_visibility(settings.highlight_edges, source_range).await?;
 
-        // Send the command to show the grid.
-        self.modify_grid(!settings.show_grid, source_range).await?;
-
         // Change the units.
         self.set_units(settings.units, source_range).await?;
+
+        // Send the command to show the grid.
+        self.modify_grid(!settings.show_grid, source_range).await?;
 
         // We do not have commands for changing ssao on the fly.
 
@@ -577,6 +577,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }),
         )
         .await?;
+
+
+        // Flush the batch queue.
+        self.flush_batch(false, source_range).await
+
+
 
         Ok(())
     }
