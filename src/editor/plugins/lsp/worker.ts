@@ -17,9 +17,7 @@ import {
   KclWorkerOptions,
   CopilotWorkerOptions,
 } from 'editor/plugins/lsp/types'
-import { EngineCommandManager } from 'lang/std/engineConnection'
 import { err, reportRejection } from 'lib/trap'
-import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 
 const intoServer: IntoServer = new IntoServer()
 const fromServer: FromServer | Error = FromServer.create()
