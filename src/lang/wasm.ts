@@ -43,6 +43,7 @@ import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+import { getChangedSettingsAtLevel } from 'lib/settings/settingsUtils'
 
 export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
@@ -494,17 +495,20 @@ export const _executor = async (
     return Promise.reject(programMemoryOverride)
 
   try {
-    let settings = default_app_settings()
+    let jsAppSettings = default_app_settings()
     if (!TEST) {
       const getSettingsState = import('components/SettingsAuthProvider').then(
         (module) => module.getSettingsState
       )
-      settings = (await getSettingsState)() || defaultAppSettings()
+      const settings = (await getSettingsState)()
+      if (settings) {
+        jsAppSettings = getChangedSettingsAtLevel(settings, 'user')
+      }
     }
     const execState: RawExecState = await execute(
       JSON.stringify(node),
       JSON.stringify(programMemoryOverride?.toRaw() || null),
-      JSON.stringify(settings),
+      JSON.stringify({ settings: jsAppSettings }),
       engineCommandManager,
       fileSystemManager
     )
