@@ -1,6 +1,6 @@
 //! Wasm bindings for `kcl`.
 
-use std::{str::FromStr, sync::Arc};
+use std::sync::Arc;
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
@@ -56,10 +56,10 @@ pub async fn clear_scene_and_bust_cache(
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn execute_wasm(
+pub async fn execute(
     program_ast_json: &str,
     program_memory_override_str: &str,
-    units: &str,
+    settings: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     fs_manager: kcl_lib::wasm_engine::FileSystemManager,
 ) -> Result<JsValue, String> {
@@ -73,11 +73,11 @@ pub async fn execute_wasm(
     // You cannot override the memory in non-mock mode.
     let is_mock = program_memory_override.is_some();
 
-    let units = kcl_lib::UnitLength::from_str(units).map_err(|e| e.to_string())?;
+    let settings: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
     let ctx = if is_mock {
-        kcl_lib::ExecutorContext::new_mock(fs_manager, units).await?
+        kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?
     } else {
-        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, units).await?
+        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?
     };
 
     let mut exec_state = ExecState::default();
@@ -299,7 +299,7 @@ impl ServerConfig {
 pub async fn kcl_lsp_run(
     config: ServerConfig,
     engine_manager: Option<kcl_lib::wasm_engine::EngineCommandManager>,
-    units: &str,
+    settings: Option<String>,
     token: String,
     baseurl: String,
 ) -> Result<(), JsValue> {
@@ -312,8 +312,12 @@ pub async fn kcl_lsp_run(
     } = config;
 
     let executor_ctx = if let Some(engine_manager) = engine_manager {
-        let units = kcl_lib::UnitLength::from_str(units).map_err(|e| e.to_string())?;
-        Some(kcl_lib::ExecutorContext::new(engine_manager, fs.clone(), units).await?)
+        let settings: kcl_lib::Configuration = if let Some(settings) = settings {
+            serde_json::from_str(&settings).map_err(|e| e.to_string())?
+        } else {
+            Default::default()
+        };
+        Some(kcl_lib::ExecutorContext::new(engine_manager, fs.clone(), settings.into()).await?)
     } else {
         None
     };

@@ -19,6 +19,7 @@ import {
 } from 'editor/plugins/lsp/types'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { err, reportRejection } from 'lib/trap'
+import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 
 const intoServer: IntoServer = new IntoServer()
 const fromServer: FromServer | Error = FromServer.create()
@@ -46,14 +47,12 @@ export async function copilotLspRun(
 
 export async function kclLspRun(
   config: ServerConfig,
-  engineCommandManager: EngineCommandManager | null,
   token: string,
-  baseUnit: string,
   baseUrl: string
 ) {
   try {
     console.log('start kcl lsp')
-    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, baseUrl)
+    await kcl_lsp_run(config, null, undefined, token, baseUrl)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
@@ -82,13 +81,7 @@ onmessage = function (event: MessageEvent) {
           switch (worker) {
             case LspWorker.Kcl:
               const kclData = eventData as KclWorkerOptions
-              await kclLspRun(
-                config,
-                null,
-                kclData.token,
-                kclData.baseUnit,
-                kclData.apiBaseUrl
-              )
+              await kclLspRun(config, kclData.token, kclData.apiBaseUrl)
               break
             case LspWorker.Copilot:
               let copilotData = eventData as CopilotWorkerOptions
