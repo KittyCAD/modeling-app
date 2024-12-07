@@ -1631,7 +1631,6 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
-        println!("Settings: {:?}", settings);
         let (ws, _headers) = client
             .modeling()
             .commands_ws(
