@@ -8,7 +8,6 @@ import init, {
   get_tangential_arc_to_info,
   program_memory_init,
   make_default_planes,
-  modify_grid,
   coredump,
   toml_stringify,
   default_app_settings,
@@ -552,20 +551,6 @@ export const makeDefaultPlanes = async (
   } catch (e) {
     // TODO: do something real with the error.
     console.log('make default planes error', e)
-    return Promise.reject(e)
-  }
-}
-
-export const modifyGrid = async (
-  engineCommandManager: EngineCommandManager,
-  hidden: boolean
-): Promise<void> => {
-  try {
-    await modify_grid(engineCommandManager, hidden)
-    return
-  } catch (e) {
-    // TODO: do something real with the error.
-    console.log('modify grid error', e)
     return Promise.reject(e)
   }
 }
