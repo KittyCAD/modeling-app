@@ -1,7 +1,7 @@
 import init, {
   parse_wasm,
   recast_wasm,
-  execute_wasm,
+  execute,
   kcl_lint,
   modify_ast_for_sketch_wasm,
   is_points_ccw,
@@ -44,6 +44,7 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
+export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
 export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
@@ -493,18 +494,17 @@ export const _executor = async (
     return Promise.reject(programMemoryOverride)
 
   try {
-    let baseUnit = 'mm'
+    let settings = default_app_settings()
     if (!TEST) {
       const getSettingsState = import('components/SettingsAuthProvider').then(
         (module) => module.getSettingsState
       )
-      baseUnit =
-        (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
+      settings = (await getSettingsState)() || defaultAppSettings()
     }
-    const execState: RawExecState = await execute_wasm(
+    const execState: RawExecState = await execute(
       JSON.stringify(node),
       JSON.stringify(programMemoryOverride?.toRaw() || null),
-      baseUnit,
+      JSON.stringify(settings),
       engineCommandManager,
       fileSystemManager
     )

@@ -1684,7 +1684,7 @@ impl ExecutorContext {
     pub async fn new(
         engine_manager: crate::engine::conn_wasm::EngineCommandManager,
         fs_manager: crate::fs::wasm::FileSystemManager,
-        units: UnitLength,
+        settings: ExecutorSettings,
     ) -> Result<Self, String> {
         Ok(ExecutorContext {
             engine: Arc::new(Box::new(
@@ -1694,16 +1694,16 @@ impl ExecutorContext {
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
             stdlib: Arc::new(StdLib::new()),
-            settings: ExecutorSettings {
-                units,
-                ..Default::default()
-            },
+            settings,
             context_type: ContextType::Live,
         })
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub async fn new_mock(fs_manager: crate::fs::wasm::FileSystemManager, units: UnitLength) -> Result<Self, String> {
+    pub async fn new_mock(
+        fs_manager: crate::fs::wasm::FileSystemManager,
+        settings: ExecutorSettings,
+    ) -> Result<Self, String> {
         Ok(ExecutorContext {
             engine: Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -1712,10 +1712,7 @@ impl ExecutorContext {
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
             stdlib: Arc::new(StdLib::new()),
-            settings: ExecutorSettings {
-                units,
-                ..Default::default()
-            },
+            settings,
             context_type: ContextType::Mock,
         })
     }
