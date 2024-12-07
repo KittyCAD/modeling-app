@@ -156,10 +156,44 @@ export const SettingsAuthProviderBase = ({
             id: `${event.type}.success`,
           })
         },
-        'Execute AST': () => {
-          kclManager.executeCode(true).catch((e) => {
+        'Execute AST': ({ context, event }) => {
+          try {
+            const relevantSetting = (s: typeof settings) => {
+              return (
+                s.modeling?.defaultUnit?.current !==
+                  context.modeling.defaultUnit.current ||
+                s.modeling.showScaleGrid.current !==
+                  context.modeling.showScaleGrid.current ||
+                s.modeling?.highlightEdges.current !==
+                  context.modeling.highlightEdges.current
+              )
+            }
+
+            const allSettingsIncludesUnitChange =
+              event.type === 'Set all settings' &&
+              relevantSetting(event.settings)
+            const resetSettingsIncludesUnitChange =
+              event.type === 'Reset settings' && relevantSetting(settings)
+
+            if (
+              event.type === 'set.modeling.defaultUnit' ||
+              event.type === 'set.modeling.showScaleGrid' ||
+              event.type === 'set.modeling.highlightEdges' ||
+              allSettingsIncludesUnitChange ||
+              resetSettingsIncludesUnitChange
+            ) {
+              // Unit changes requires a re-exec of code
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              kclManager.executeCode(true)
+            } else {
+              // For any future logging we'd like to do
+              // console.log(
+              //   'Not re-executing AST because the settings change did not affect the code interpretation'
+              // )
+            }
+          } catch (e) {
             console.error('Error executing AST after settings change', e)
-          })
+          }
         },
         async persistSettings({ context, event }) {
           // Without this, when a user changes the file, it'd
