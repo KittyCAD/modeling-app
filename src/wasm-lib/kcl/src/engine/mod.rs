@@ -158,6 +158,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         settings: &crate::ExecutorSettings,
         source_range: SourceRange,
     ) -> Result<(), crate::errors::KclError> {
+        // Set the edge visibility.
         self.set_edge_visibility(settings.highlight_edges, source_range).await?;
 
         // Change the units.
@@ -577,9 +578,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             }),
         )
         .await?;
-
-        // Flush the batch queue.
-        self.flush_batch(false, source_range).await?;
 
         Ok(())
     }
