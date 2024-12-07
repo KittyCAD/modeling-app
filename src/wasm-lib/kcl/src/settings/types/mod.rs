@@ -376,8 +376,8 @@ impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
 /// The types of controls for how to navigate the 3D view.
 #[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
 #[ts(export)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
+#[serde(rename_all = "lowercase")]
+#[display(style = "lowercase")]
 pub enum MouseControlType {
     #[default]
     #[display("kittycad")]
