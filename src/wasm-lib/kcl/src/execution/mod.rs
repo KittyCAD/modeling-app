@@ -124,10 +124,8 @@ impl ProgramMemory {
         Ok(())
     }
 
-    pub fn add_or_update_tag(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
-        self.environments[self.current_env.index()].insert(tag.to_string(), KclValue::TagIdentifier(Box::new(value)));
-
-        Ok(())
+    pub fn add_tag(&mut self, tag: &str, value: TagIdentifier, source_range: SourceRange) -> Result<(), KclError> {
+        self.add(tag, KclValue::TagIdentifier(Box::new(value)), source_range)
     }
 
     /// Get a value from the program memory.
@@ -844,7 +842,7 @@ impl GetTangentialInfoFromPathsResult {
 
 impl Sketch {
     pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path) {
-        let mut tag_identifier: TagIdentifier = tag.into();
+        let mut tag_identifier = TagIdentifier::from(tag);
         let base = current_path.get_base();
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
