@@ -1653,11 +1653,6 @@ impl ExecutorContext {
         let engine: Arc<Box<dyn EngineManager>> =
             Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
 
-        // Set the edge visibility.
-        engine
-            .set_edge_visibility(settings.highlight_edges, Default::default())
-            .await?;
-
         Ok(Self {
             engine,
             fs: Arc::new(FileManager::new()),
