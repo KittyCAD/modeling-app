@@ -1631,6 +1631,7 @@ impl ExecutorContext {
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        println!("Settings: {:?}", settings);
         let (ws, _headers) = client
             .modeling()
             .commands_ws(
@@ -1908,6 +1909,12 @@ impl ExecutorContext {
         exec_state.add_module(std::path::PathBuf::from(""));
         // Before we even start executing the program, set the units.
         self.engine.set_units(self.settings.units, Default::default()).await?;
+
+        // Until the bug is fixed in the engine, we need to set the grid visibility here.
+        // see: https://github.com/KittyCAD/engine/issues/2915
+        self.engine
+            .modify_grid(!self.settings.show_grid, Default::default())
+            .await?;
 
         self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
             .await?;
