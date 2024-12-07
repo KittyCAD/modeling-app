@@ -503,4 +503,46 @@ impl KclValue {
             .await
         }
     }
+
+    /// If this is a function, call it by applying keyword arguments.
+    /// If it's not a function, returns an error.
+    pub async fn call_fn_kw(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: ExecutorContext,
+        callsite: SourceRange,
+    ) -> Result<Option<KclValue>, KclError> {
+        let KclValue::Function {
+            func,
+            expression,
+            memory: closure_memory,
+            meta,
+        } = &self
+        else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "cannot call this because it isn't a function".to_string(),
+                source_ranges: vec![callsite],
+            }));
+        };
+        if let Some(func) = func {
+            func(
+                todo!("kw args"),
+                closure_memory.as_ref().clone(),
+                expression.clone(),
+                meta.clone(),
+                exec_state,
+                ctx,
+            )
+            .await
+        } else {
+            crate::execution::call_user_defined_function(
+                todo!("kw args"),
+                closure_memory.as_ref(),
+                expression.as_ref(),
+                exec_state,
+                &ctx,
+            )
+            .await
+        }
+    }
 }
