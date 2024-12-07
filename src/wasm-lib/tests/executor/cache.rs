@@ -96,7 +96,7 @@ async fn kcl_test_cache_change_units_changes_output() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_cache_change_grid_visualizes_grid() {
+async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
     let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
   |> line([10.50433, -1.19122], %)
@@ -108,7 +108,47 @@ async fn kcl_test_cache_change_grid_visualizes_grid() {
 "#;
 
     let result = cache_test(
-        "change_grid_visualizes_grid",
+        "change_grid_visualizes_grid_off_to_on",
+        vec![
+            Variation {
+                code,
+                settings: &kcl_lib::ExecutorSettings {
+                    show_grid: false,
+                    ..Default::default()
+                },
+            },
+            Variation {
+                code,
+                settings: &kcl_lib::ExecutorSettings {
+                    show_grid: true,
+                    ..Default::default()
+                },
+            },
+        ],
+    )
+    .await
+    .unwrap();
+
+    let first = result.first().unwrap();
+    let second = result.last().unwrap();
+
+    assert!(first.1 != second.1);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
+    let code = r#"part001 = startSketchOn('XY')
+  |> startProfileAt([5.5229, 5.25217], %)
+  |> line([10.50433, -1.19122], %)
+  |> line([8.01362, -5.48731], %)
+  |> line([-1.02877, -6.76825], %)
+  |> line([-11.53311, 2.81559], %)
+  |> close(%)
+  |> extrude(4, %)
+"#;
+
+    let result = cache_test(
+        "change_grid_visualizes_grid_on_to_off",
         vec![
             Variation {
                 code,
