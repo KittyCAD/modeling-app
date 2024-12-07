@@ -2121,7 +2121,7 @@ impl ExecutorContext {
         let item = match init {
             Expr::None(none) => KclValue::from(none),
             Expr::Literal(literal) => KclValue::from(literal),
-            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
+            Expr::TagDeclarator(tag) => KclValue::from(tag),
             Expr::Identifier(identifier) => {
                 let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 value.clone()
