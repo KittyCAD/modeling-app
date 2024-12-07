@@ -1,5 +1,5 @@
-// A function with an optional tag parameter.
-fn myCircle(sk, tag?) {
+// A function with a tag parameter.
+fn myCircle(sk, tag) {
   return circle({ radius = 4, center = [0, 0] }, sk, tag)
 }
 

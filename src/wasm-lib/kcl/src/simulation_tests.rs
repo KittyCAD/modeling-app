@@ -1512,8 +1512,6 @@ mod tag_can_be_proxied_through_parameter {
     }
 
     /// Test that parsing and unparsing KCL produces the original KCL input.
-    // TODO: This fails.
-    #[ignore]
     #[test]
     fn unparse() {
         super::unparse(TEST_NAME)
