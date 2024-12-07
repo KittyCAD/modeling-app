@@ -578,11 +578,8 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
-
         // Flush the batch queue.
-        self.flush_batch(false, source_range).await
-
-
+        self.flush_batch(false, source_range).await?;
 
         Ok(())
     }
