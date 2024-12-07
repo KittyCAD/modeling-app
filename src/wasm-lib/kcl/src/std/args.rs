@@ -42,14 +42,19 @@ impl Arg {
     }
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct KwArgs {
+    /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
+    pub unlabeled: Option<Arg>,
+    /// Labeled args.
+    pub labeled: HashMap<String, Arg>,
+}
+
 #[derive(Debug, Clone)]
 pub struct Args {
     /// Positional args.
     pub args: Vec<Arg>,
-    /// Keyword args.
-    pub kw_args: HashMap<String, Arg>,
-    /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
-    pub unlabeled_kw_arg: Option<Arg>,
+    pub kw_args: KwArgs,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
 }
@@ -59,23 +64,16 @@ impl Args {
         Self {
             args,
             kw_args: Default::default(),
-            unlabeled_kw_arg: Default::default(),
             source_range,
             ctx,
         }
     }
 
     /// Collect the given keyword arguments.
-    pub fn new_kw(
-        kw_args: HashMap<String, Arg>,
-        unlabeled_kw_arg: Option<Arg>,
-        source_range: SourceRange,
-        ctx: ExecutorContext,
-    ) -> Self {
+    pub fn new_kw(kw_args: KwArgs, source_range: SourceRange, ctx: ExecutorContext) -> Self {
         Self {
             args: Default::default(),
             kw_args,
-            unlabeled_kw_arg,
             source_range,
             ctx,
         }
@@ -88,7 +86,6 @@ impl Args {
         Ok(Self {
             args: Vec::new(),
             kw_args: Default::default(),
-            unlabeled_kw_arg: Default::default(),
             source_range: SourceRange::default(),
             ctx: ExecutorContext {
                 engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
@@ -105,7 +102,10 @@ impl Args {
     where
         T: FromKclValue<'a>,
     {
-        self.kw_args.get(label).and_then(|arg| T::from_kcl_val(&arg.value))
+        self.kw_args
+            .labeled
+            .get(label)
+            .and_then(|arg| T::from_kcl_val(&arg.value))
     }
 
     /// Get a keyword argument. If not set, returns Err.
@@ -126,7 +126,7 @@ impl Args {
     where
         T: FromKclValue<'a>,
     {
-        let Some(ref arg) = self.unlabeled_kw_arg else {
+        let Some(ref arg) = self.kw_args.unlabeled else {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![self.source_range],
                 message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
