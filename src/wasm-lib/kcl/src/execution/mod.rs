@@ -124,7 +124,7 @@ impl ProgramMemory {
         Ok(())
     }
 
-    pub fn update_tag(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
+    pub fn add_or_update_tag(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
         self.environments[self.current_env.index()].insert(tag.to_string(), KclValue::TagIdentifier(Box::new(value)));
 
         Ok(())

@@ -483,7 +483,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     match result {
         KclValue::Sketch { value: ref mut sketch } => {
             for (_, tag) in sketch.tags.iter() {
-                exec_state.memory.update_tag(&tag.value, tag.clone())?;
+                exec_state.memory.add_or_update_tag(&tag.value, tag.clone())?;
             }
         }
         KclValue::Solid(ref mut solid) => {
@@ -521,7 +521,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     info.sketch = solid.id;
                     t.info = Some(info);
 
-                    exec_state.memory.update_tag(&tag.name, t.clone())?;
+                    exec_state.memory.add_or_update_tag(&tag.name, t.clone())?;
 
                     // update the sketch tags.
                     solid.sketch.tags.insert(tag.name.clone(), t);
