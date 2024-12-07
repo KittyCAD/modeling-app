@@ -23,7 +23,6 @@ import {
   engineCommandManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
 import {
@@ -134,17 +133,6 @@ export const SettingsAuthProviderBase = ({
           sceneInfra.theme = opposingTheme
           sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
         },
-        setEngineEdges: ({ context }) => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          engineCommandManager.sendSceneCommand({
-            cmd_id: uuidv4(),
-            type: 'modeling_cmd_req',
-            cmd: {
-              type: 'edge_lines_visible' as any, // TODO update kittycad.ts to get this new command type
-              hidden: !context.modeling.highlightEdges.current,
-            },
-          })
-        },
         toastSuccess: ({ event }) => {
           if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [
@@ -168,34 +156,10 @@ export const SettingsAuthProviderBase = ({
             id: `${event.type}.success`,
           })
         },
-        'Execute AST': ({ context, event }) => {
-          try {
-            const allSettingsIncludesUnitChange =
-              event.type === 'Set all settings' &&
-              event.settings?.modeling?.defaultUnit?.current !==
-                context.modeling.defaultUnit.current
-            const resetSettingsIncludesUnitChange =
-              event.type === 'Reset settings' &&
-              context.modeling.defaultUnit.current !==
-                settings?.modeling?.defaultUnit?.default
-
-            if (
-              event.type === 'set.modeling.defaultUnit' ||
-              allSettingsIncludesUnitChange ||
-              resetSettingsIncludesUnitChange
-            ) {
-              // Unit changes requires a re-exec of code
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              kclManager.executeCode(true)
-            } else {
-              // For any future logging we'd like to do
-              // console.log(
-              //   'Not re-executing AST because the settings change did not affect the code interpretation'
-              // )
-            }
-          } catch (e) {
+        'Execute AST': () => {
+          kclManager.executeCode(true).catch((e) => {
             console.error('Error executing AST after settings change', e)
-          }
+          })
         },
         async persistSettings({ context, event }) {
           // Without this, when a user changes the file, it'd
