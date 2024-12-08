@@ -51,6 +51,7 @@ import {
 } from 'lang/modifyAst'
 import {
   applyEdgeTreatmentToSelection,
+  ChamferParameters,
   EdgeTreatmentType,
   FilletParameters,
 } from 'lang/modifyAst/addEdgeTreatment'
@@ -262,6 +263,7 @@ export type ModelingMachineEvent =
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
+  | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | {
@@ -757,6 +759,30 @@ export const modelingMachine = setup({
       }
 
       // Apply fillet to selection
+      const applyEdgeTreatmentToSelectionResult = applyEdgeTreatmentToSelection(
+        ast,
+        selection,
+        parameters
+      )
+      if (err(applyEdgeTreatmentToSelectionResult))
+        return applyEdgeTreatmentToSelectionResult
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+    },
+    'AST chamfer': ({ event }) => {
+      if (event.type !== 'Chamfer') return
+      if (!event.data) return
+
+      // Extract inputs
+      const ast = kclManager.ast
+      const { selection, length } = event.data
+      const parameters: ChamferParameters = {
+        type: EdgeTreatmentType.Chamfer,
+        length,
+      }
+
+      // Apply chamfer to selection
       const applyEdgeTreatmentToSelectionResult = applyEdgeTreatmentToSelection(
         ast,
         selection,
@@ -1634,6 +1660,13 @@ export const modelingMachine = setup({
           target: 'idle',
           guard: 'has valid edge treatment selection',
           actions: ['AST fillet'],
+          reenter: false,
+        },
+
+        Chamfer: {
+          target: 'idle',
+          guard: 'has valid edge treatment selection',
+          actions: ['AST chamfer'],
           reenter: false,
         },
 

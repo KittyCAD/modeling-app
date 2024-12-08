@@ -91,6 +91,49 @@ extrude001 = extrude(-10, sketch001)`
     )
   })
 
+  test('Chamfer from command bar', async ({ page }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-5, -5], %)
+  |> line([0, 10], %)
+  |> line([10, 0], %)
+  |> line([0, -10], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg01)
+  |> close(%)
+extrude001 = extrude(-10, sketch001)
+  |> fillet({
+       radius = 3,
+       tags = [getNextAdjacentEdge(seg01)]
+     }, %)`
+      )
+    })
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+    await u.waitForAuthSkipAppStart()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const selectSegment = () => page.getByText(`line([0, -10], %)`).click()
+
+    await selectSegment()
+    await page.waitForTimeout(100)
+    await page.getByRole('button', { name: 'Chamfer' }).click()
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter') // skip selection
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter') // accept default radius
+    await page.waitForTimeout(100)
+    await page.keyboard.press('Enter') // submit
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-activeLine')).toContainText(
+      `chamfer({ length = ${KCL_DEFAULT_LENGTH}, tags = [seg02] }, %)`
+    )
+  })
+
   test('Command bar can change a setting, and switch back and forth between arguments', async ({
     page,
   }) => {
