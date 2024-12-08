@@ -904,7 +904,7 @@ sketch002 = startSketchOn(extrude001, $seg01)
     ).not.toBeDisabled()
   })
 
-  test('Fillet button states test', async ({ page }) => {
+  test('Fillet and Chamfer button states test', async ({ page }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -929,23 +929,28 @@ sketch002 = startSketchOn(extrude001, $seg01)
     const selectClose = () => page.getByText(`close(%)`).click()
     const clickEmpty = () => page.mouse.click(950, 100)
 
-    // expect fillet button without any bodies in the scene
+    // test without any bodies in the scene
     await selectSegment()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Chamfer' })).toBeDisabled()
     await clickEmpty()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Chamfer' })).toBeDisabled()
 
-    // test fillet button with the body in the scene
+    // add a body and retest
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
 extrude001 = extrude(10, sketch001)`
     await u.codeLocator.clear()
     await u.codeLocator.fill(codeToAdd)
     await selectSegment()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+    await expect(page.getByRole('button', { name: 'Chamfer' })).toBeEnabled()
     await selectClose()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Chamfer' })).toBeDisabled()
     await clickEmpty()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
+    await expect(page.getByRole('button', { name: 'Chamfer' })).toBeEnabled()
   })
 
   const removeAfterFirstParenthesis = (inputString: string) => {
