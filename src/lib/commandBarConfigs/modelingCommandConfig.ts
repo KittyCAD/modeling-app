@@ -320,7 +320,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Fillet: {
     description: 'Fillet edge',
-    icon: 'fillet',
+    icon: 'fillet3d',
     status: 'development',
     needsReview: true,
     args: {
