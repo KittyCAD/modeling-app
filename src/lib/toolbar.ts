@@ -180,9 +180,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'chamfer',
-        onClick: () => console.error('Chamfer not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Chamfer', groupId: 'modeling' },
+          }),
         icon: 'chamfer3d',
-        status: 'kcl-only',
+        status: DEV ? 'available' : 'kcl-only',
         title: 'Chamfer',
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
