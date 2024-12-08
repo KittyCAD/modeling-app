@@ -15,6 +15,8 @@ use crate::{
     source_range::ModuleId,
 };
 
+use super::TokenStream;
+
 lazy_static! {
     pub(crate) static ref RESERVED_WORDS: FnvHashMap<&'static str, TokenType> = {
         let mut set = FnvHashMap::default();
@@ -62,19 +64,19 @@ lazy_static! {
     };
 }
 
-pub fn lex(i: &str, module_id: ModuleId) -> Result<Vec<Token>, ParseError<Input<'_>, ContextError>> {
+pub(super) fn lex(i: &str, module_id: ModuleId) -> Result<TokenStream, ParseError<Input<'_>, ContextError>> {
     let state = State::new(module_id);
     let input = Input {
         input: Located::new(i),
         state,
     };
-    repeat(0.., token).parse(input)
+    Ok(TokenStream::new(repeat(0.., token).parse(input)?))
 }
 
-pub type Input<'a> = Stateful<Located<&'a str>, State>;
+pub(super) type Input<'a> = Stateful<Located<&'a str>, State>;
 
 #[derive(Debug, Clone)]
-pub struct State {
+pub(super) struct State {
     pub module_id: ModuleId,
 }
 
@@ -84,7 +86,7 @@ impl State {
     }
 }
 
-pub fn token(i: &mut Input<'_>) -> PResult<Token> {
+pub(super) fn token(i: &mut Input<'_>) -> PResult<Token> {
     match winnow::combinator::dispatch! {peek(any);
         '"' | '\'' => string,
         '/' => alt((line_comment, block_comment, operator)),
@@ -518,7 +520,7 @@ mod tests {
                 module_id,
             },
         ];
-        assert_tokens(expected, actual);
+        assert_tokens(expected, actual.tokens);
     }
 
     #[test]
@@ -591,7 +593,7 @@ mod tests {
                 module_id,
             },
         ];
-        assert_tokens(expected, actual);
+        assert_tokens(expected, actual.tokens);
     }
     #[test]
     fn test_program2() {
@@ -1400,7 +1402,7 @@ show(part001)"#;
             },
         ];
         let actual = lex(program, module_id).unwrap();
-        assert_tokens(expected, actual);
+        assert_tokens(expected, actual.tokens);
     }
 
     #[test]
@@ -1761,7 +1763,7 @@ const things = "things"
                 value: "// this is also a comment".to_owned(),
             },
         ];
-        assert_tokens(expected, actual);
+        assert_tokens(expected, actual.tokens);
     }
 
     #[test]
@@ -1849,20 +1851,20 @@ const things = "things"
             },
         ];
         let actual = lex(program, module_id).unwrap();
-        assert_tokens(expected, actual);
+        assert_tokens(expected, actual.tokens);
     }
 
     #[test]
     fn test_kitt() {
         let program = include_str!("../../../../tests/executor/inputs/kittycad_svg.kcl");
         let actual = lex(program, ModuleId::default()).unwrap();
-        assert_eq!(actual.len(), 5103);
+        assert_eq!(actual.as_slice().len(), 5103);
     }
     #[test]
     fn test_pipes_on_pipes() {
         let program = include_str!("../../../../tests/executor/inputs/pipes_on_pipes.kcl");
         let actual = lex(program, ModuleId::default()).unwrap();
-        assert_eq!(actual.len(), 17841);
+        assert_eq!(actual.as_slice().len(), 17841);
     }
     #[test]
     fn test_lexer_negative_word() {
@@ -1884,7 +1886,7 @@ const things = "things"
                 module_id,
             },
         ];
-        assert_tokens(expected, actual);
+        assert_tokens(expected, actual.tokens);
     }
 
     #[test]
@@ -1898,7 +1900,7 @@ const things = "things"
             end: 2,
             module_id,
         }];
-        assert_eq!(actual, expected);
+        assert_eq!(actual.tokens, expected);
     }
 
     #[test]
@@ -1943,7 +1945,7 @@ const things = "things"
             },
         ];
 
-        assert_tokens(expected, actual);
+        assert_tokens(expected, actual.tokens);
     }
 
     #[test]
@@ -1957,7 +1959,7 @@ const things = "things"
             end: 6,
             module_id,
         };
-        assert_eq!(actual[0], expected);
+        assert_eq!(actual.tokens[0], expected);
     }
 
     #[test]
@@ -1971,6 +1973,6 @@ const things = "things"
             end: 6,
             module_id,
         };
-        assert_eq!(actual[0], expected);
+        assert_eq!(actual.tokens[0], expected);
     }
 }

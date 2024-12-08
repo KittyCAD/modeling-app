@@ -47,7 +47,7 @@ fn read(filename: &'static str, test_name: &str) -> String {
 
 fn parse(test_name: &str) {
     let input = read("input.kcl", test_name);
-    let tokens = crate::parsing::token::lexer(&input, ModuleId::default()).unwrap();
+    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
 
     // Parse the tokens into an AST.
     let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
