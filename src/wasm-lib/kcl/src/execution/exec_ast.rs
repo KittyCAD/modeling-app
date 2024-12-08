@@ -10,7 +10,7 @@ use crate::{
     parsing::ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
         CallExpressionKw, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-        ObjectExpression, PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
+        ObjectExpression, PipeExpression, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{
@@ -483,7 +483,15 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     match result {
         KclValue::Sketch { value: ref mut sketch } => {
             for (_, tag) in sketch.tags.iter() {
-                exec_state.memory.update_tag(&tag.value, tag.clone())?;
+                let source_range = tag
+                    .meta
+                    .first()
+                    .cloned()
+                    .unwrap_or_else(|| Metadata {
+                        source_range: Default::default(),
+                    })
+                    .source_range;
+                exec_state.memory.add_tag(&tag.value, tag.clone(), source_range)?;
             }
         }
         KclValue::Solid(ref mut solid) => {
@@ -521,7 +529,9 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     info.sketch = solid.id;
                     t.info = Some(info);
 
-                    exec_state.memory.update_tag(&tag.name, t.clone())?;
+                    exec_state
+                        .memory
+                        .add_tag(&tag.name, t.clone(), SourceRange::from(&tag))?;
 
                     // update the sketch tags.
                     solid.sketch.tags.insert(tag.name.clone(), t);
@@ -540,22 +550,6 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
         _ => {}
     }
     Ok(())
-}
-
-impl Node<TagDeclarator> {
-    pub async fn execute(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
-        let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
-            value: self.name.clone(),
-            info: None,
-            meta: vec![Metadata {
-                source_range: self.into(),
-            }],
-        }));
-
-        exec_state.memory.add(&self.name, memory_item.clone(), self.into())?;
-
-        Ok(self.into())
-    }
 }
 
 impl Node<ArrayExpression> {
