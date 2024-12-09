@@ -45,7 +45,7 @@ export default class CodeManager {
     } else if (storedCode === null) {
       this.code = bracket
     } else {
-      this.code = storedCode
+      this.code = storedCode || ''
     }
   }
 
@@ -55,6 +55,10 @@ export default class CodeManager {
 
   get code(): string {
     return this._code
+  }
+
+  localStoragePersistCode(): string {
+    return safeLSGetItem(PERSIST_CODE_KEY) || ''
   }
 
   registerCallBacks({ setCode }: { setCode: (arg: string) => void }) {
@@ -165,7 +169,7 @@ export default class CodeManager {
 }
 
 function safeLSGetItem(key: string) {
-  if (typeof window === 'undefined') return null
+  if (typeof window === 'undefined') return
   return localStorage?.getItem(key)
 }
 

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import fsp from 'fs/promises'
 import { uuidv4 } from 'lib/utils'
 import {
@@ -6,37 +6,27 @@ import {
   darkModePlaneColorXZ,
   executorInputPath,
   getUtils,
-  setup,
-  setupElectron,
-  tearDown,
 } from './test-utils'
+
 import { join } from 'path'
 
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
-
 test.describe('Editor tests', () => {
-  test('can comment out code with ctrl+/', async ({ page }) => {
+  test('can comment out code with ctrl+/', async ({ page, homePage }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)`)
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
 
     await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('/')
@@ -44,11 +34,11 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XY')
-    |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
-    // |> close(%)`)
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  // |> close(%)`)
 
     // uncomment the code
     await page.keyboard.down('ControlOrMeta')
@@ -57,61 +47,63 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XY')
-    |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
-    |> close(%)`)
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
   })
 
   test('if you click the format button it formats your code', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)`)
-    await page.locator('#code-pane button:first-child').click()
-    await page.locator('button:has-text("Format code")').click()
-
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
     |> line([-20, 0], %)
     |> close(%)`)
+    await page.locator('#code-pane button:first-child').click()
+    await page.locator('button:has-text("Format code")').click()
+
+    await expect(page.locator('.cm-content'))
+      .toHaveText(`sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
   })
 
   test('if you click the format button it formats your code and executes so lints are still there', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch_001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)`)
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`)
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -135,11 +127,11 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch_001 = startSketchOn('XY')
-    |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
-    |> close(%)`)
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -151,29 +143,27 @@ test.describe('Editor tests', () => {
     ).toBeVisible()
   })
 
-  test('fold gutters work', async ({ page }) => {
-    const u = await getUtils(page)
-
+  test('fold gutters work', async ({ page, homePage }) => {
     const fullCode = `sketch001 = startSketchOn('XY')
-     |> startProfileAt([-10, -10], %)
-     |> line([20, 0], %)
-     |> line([0, 20], %)
-     |> line([-20, 0], %)
-     |> close(%)`
+   |> startProfileAt([-10, -10], %)
+   |> line([20, 0], %)
+   |> line([0, 20], %)
+   |> line([-20, 0], %)
+   |> close(%)`
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XY')
-     |> startProfileAt([-10, -10], %)
-     |> line([20, 0], %)
-     |> line([0, 20], %)
-     |> line([-20, 0], %)
-     |> close(%)`
+   |> startProfileAt([-10, -10], %)
+   |> line([20, 0], %)
+   |> line([0, 20], %)
+   |> line([-20, 0], %)
+   |> close(%)`
       )
     })
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // TODO: Jess needs to fix this but you have to mod the code to get them to show
     // up, its an annoying codemirror thing.
@@ -224,22 +214,25 @@ test.describe('Editor tests', () => {
     await expect(foldGutterFoldLine).not.toBeVisible()
   })
 
-  test('hover over functions shows function description', async ({ page }) => {
+  test('hover over functions shows function description', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)`
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`
       )
     })
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -268,23 +261,24 @@ test.describe('Editor tests', () => {
 
   test('if you use the format keyboard binding it formats your code', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)`
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`
       )
       localStorage.setItem('disableAxis', 'true')
     })
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -301,32 +295,33 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XY')
-    |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
-    |> close(%)`)
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
   })
 
   test('if you use the format keyboard binding it formats your code and executes so lints are shown', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch_001 = startSketchOn('XY')
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
-  |> close(%)`
+    |> startProfileAt([-10, -10], %)
+    |> line([20, 0], %)
+    |> line([0, 20], %)
+    |> line([-20, 0], %)
+    |> close(%)`
       )
       localStorage.setItem('disableAxis', 'true')
     })
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -353,11 +348,11 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch_001 = startSketchOn('XY')
-    |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
-    |> close(%)`)
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -369,11 +364,14 @@ test.describe('Editor tests', () => {
     ).toBeVisible()
   })
 
-  test('if you write kcl with lint errors you get lints', async ({ page }) => {
+  test('if you write kcl with lint errors you get lints', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
@@ -409,23 +407,26 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
   })
 
-  test('if you fixup kcl errors you clear lints', async ({ page }) => {
+  test('if you fixup kcl errors you clear lints', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([3.29, 7.86], %)
-  |> line([2.48, 2.44], %)
-  |> line([2.66, 1.17], %)
-  |> close(%)
-  `
+    |> startProfileAt([3.29, 7.86], %)
+    |> line([2.48, 2.44], %)
+    |> line([2.66, 1.17], %)
+    |> close(%)
+    `
       )
     })
 
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -447,11 +448,14 @@ test.describe('Editor tests', () => {
     ).not.toBeVisible()
   })
 
-  test('if you write invalid kcl you get inlined errors', async ({ page }) => {
+  test('if you write invalid kcl you get inlined errors', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -520,34 +524,36 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
   })
 
-  // TODO currently multiple source ranges are not supported
-  test.skip('error with 2 source ranges gets 2 diagnostics', async ({
+  test.fixme('error with 2 source ranges gets 2 diagnostics', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `length = .750
-  width = 0.500
-  height = 0.500
-  dia = 4
-
-  fn squareHole = (l, w) => {
-    squareHoleSketch = startSketchOn('XY')
-    |> startProfileAt([-width / 2, -length / 2], %)
-    |> lineTo([width / 2, -length / 2], %)
-    |> lineTo([width / 2, length / 2], %)
-    |> lineTo([-width / 2, length / 2], %)
-    |> close(%)
-    return squareHoleSketch
-  }
-  `
+    width = 0.500
+    height = 0.500
+    dia = 4
+  
+    fn squareHole = (l, w) => {
+  squareHoleSketch = startSketchOn('XY')
+  |> startProfileAt([-width / 2, -length / 2], %)
+  |> lineTo([width / 2, -length / 2], %)
+  |> lineTo([width / 2, length / 2], %)
+  |> lineTo([-width / 2, length / 2], %)
+  |> close(%)
+  return squareHoleSketch
+    }
+    `
       )
     })
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
+    await page.waitForTimeout(1000)
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -573,9 +579,9 @@ test.describe('Editor tests', () => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
     await page.keyboard.type(`extrusion = startSketchOn('XY')
-    |> circle({ center = [0, 0], radius = dia/2 }, %)
-  |> hole(squareHole(length, width, height), %)
-  |> extrude(height, %)`)
+  |> circle({ center: [0, 0], radius: dia/2 }, %)
+    |> hole(squareHole(length, width, height), %)
+    |> extrude(height, %)`)
 
     // error in gutter
     await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
@@ -588,38 +594,38 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-lint-marker-error')).toHaveCount(2)
   })
   test('if your kcl gets an error from the engine it is inlined', async ({
+    context,
     page,
+    homePage,
   }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
+    await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `box = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([0, 10], %)
-  |> line([10, 0], %)
-  |> line([0, -10], %, $revolveAxis)
-  |> close(%)
-  |> extrude(10, %)
-
-  sketch001 = startSketchOn(box, revolveAxis)
-  |> startProfileAt([5, 10], %)
-  |> line([0, -10], %)
-  |> line([2, 0], %)
-  |> line([0, -10], %)
-  |> close(%)
-  |> revolve({
-  axis = revolveAxis,
-  angle = 90
-  }, %)
-      `
+    |> startProfileAt([0, 0], %)
+    |> line([0, 10], %)
+    |> line([10, 0], %)
+    |> line([0, -10], %, $revolveAxis)
+    |> close(%)
+    |> extrude(10, %)
+  
+    sketch001 = startSketchOn(box, revolveAxis)
+    |> startProfileAt([5, 10], %)
+    |> line([0, -10], %)
+    |> line([2, 0], %)
+    |> line([0, -10], %)
+    |> close(%)
+    |> revolve({
+    axis: revolveAxis,
+    angle: 90
+    }, %)
+    `
       )
     })
 
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await page.goto('/')
-    await u.waitForPageLoad()
+    await homePage.goToModelingScene()
 
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
@@ -630,12 +636,15 @@ test.describe('Editor tests', () => {
     await expect(page.getByText(searchText)).toBeVisible()
   })
   test.describe('Autocomplete works', () => {
-    test('with enter/click to accept the completion', async ({ page }) => {
+    test('with enter/click to accept the completion', async ({
+      page,
+      homePage,
+    }) => {
       const u = await getUtils(page)
       // const PUR = 400 / 37.5 //pixeltoUnitRatio
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      await u.waitForAuthSkipAppStart()
+      await homePage.goToModelingScene()
 
       // tests clicking on an option, selection the first option
       // and arrowing down to an option
@@ -697,19 +706,19 @@ test.describe('Editor tests', () => {
 
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt([3.14, 12], %)
-    |> xLine(5, %) // lin`)
+        |> startProfileAt([3.14, 12], %)
+        |> xLine(5, %) // lin`)
 
       // expect there to be no KCL errors
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
 
-    test('with tab to accept the completion', async ({ page }) => {
+    test('with tab to accept the completion', async ({ page, homePage }) => {
       const u = await getUtils(page)
       // const PUR = 400 / 37.5 //pixeltoUnitRatio
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      await u.waitForAuthSkipAppStart()
+      await homePage.goToModelingScene()
 
       // this test might be brittle as we add and remove functions
       // but should also be easy to update.
@@ -771,26 +780,30 @@ test.describe('Editor tests', () => {
 
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt([3.14, 12], %)
-    |> xLine(5, %) // lin`)
+        |> startProfileAt([3.14, 12], %)
+        |> xLine(5, %) // lin`)
     })
   })
-  test('Can undo a click and point extrude with ctrl+z', async ({ page }) => {
+  test('Can undo a click and point extrude with ctrl+z', async ({
+    page,
+    context,
+    homePage,
+  }) => {
     const u = await getUtils(page)
-    await page.addInitScript(async () => {
+    await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-    |> startProfileAt([4.61, -14.01], %)
-    |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
-    |> close(%)`
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`
       )
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
@@ -843,29 +856,32 @@ test.describe('Editor tests', () => {
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt([4.61, -14.01], %)
-    |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -5.38], %)
-    |> close(%)`)
+  |> startProfileAt([4.61, -14.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -5.38], %)
+  |> close(%)`)
   })
 
-  test('Can undo a sketch modification with ctrl+z', async ({ page }) => {
+  test('Can undo a sketch modification with ctrl+z', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-    |> startProfileAt([4.61, -10.01], %)
-    |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -0.38], %)
-    |> close(%)
-    |> extrude(5, %)`
+  |> startProfileAt([4.61, -10.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -0.38], %)
+  |> close(%)
+  |> extrude(5, %)`
       )
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
@@ -892,7 +908,7 @@ test.describe('Editor tests', () => {
     })
     await page.waitForTimeout(100)
 
-    const startPX = [665, 397]
+    const startPX = [1200 / 2, 500 / 2]
 
     const dragPX = 40
 
@@ -906,9 +922,9 @@ test.describe('Editor tests', () => {
 
     await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-    // drag startProfieAt handle
+    // drag startProfileAt handle
     await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: { x: startPX[0], y: startPX[1] },
+      sourcePosition: { x: startPX[0] + 68, y: startPX[1] + 147 },
       targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
     })
     await page.waitForTimeout(100)
@@ -946,12 +962,12 @@ test.describe('Editor tests', () => {
     // expect the code to have changed
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([7.12, -12.68], %)
-  |> line([15.39, -2.78], %)
-  |> tangentialArcTo([27.6, -3.05], %)
-  |> close(%)
-  |> extrude(5, %)
-`)
+    |> startProfileAt([2.71, -2.71], %)
+    |> line([15.4, -2.78], %)
+    |> tangentialArcTo([27.6, -3.05], %)
+    |> close(%)
+    |> extrude(5, %)
+  `)
 
     // Hit undo
     await page.keyboard.down('Control')
@@ -960,11 +976,11 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([7.12, -12.68], %)
-  |> line([15.39, -2.78], %)
-  |> tangentialArcTo([24.95, -0.38], %)
-  |> close(%)
-  |> extrude(5, %)`)
+    |> startProfileAt([2.71, -2.71], %)
+    |> line([15.4, -2.78], %)
+    |> tangentialArcTo([24.95, -0.38], %)
+    |> close(%)
+    |> extrude(5, %)`)
 
     // Hit undo again.
     await page.keyboard.down('Control')
@@ -973,12 +989,12 @@ test.describe('Editor tests', () => {
 
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([7.12, -12.68], %)
-  |> line([12.73, -0.09], %)
-  |> tangentialArcTo([24.95, -0.38], %)
-  |> close(%)
-  |> extrude(5, %)
-`)
+    |> startProfileAt([2.71, -2.71], %)
+    |> line([12.73, -0.09], %)
+    |> tangentialArcTo([24.95, -0.38], %)
+    |> close(%)
+    |> extrude(5, %)
+  `)
 
     // Hit undo again.
     await page.keyboard.down('Control')
@@ -988,31 +1004,29 @@ test.describe('Editor tests', () => {
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt([4.61, -10.01], %)
-    |> line([12.73, -0.09], %)
-    |> tangentialArcTo([24.95, -0.38], %)
-    |> close(%)
-    |> extrude(5, %)`)
+  |> startProfileAt([4.61, -10.01], %)
+  |> line([12.73, -0.09], %)
+  |> tangentialArcTo([24.95, -0.38], %)
+  |> close(%)
+  |> extrude(5, %)`)
   })
 
   test.fixme(
     `Can use the import stdlib function on a local OBJ file`,
     { tag: '@electron' },
-    async ({ browserName }, testInfo) => {
-      const { electronApp, page } = await setupElectron({
-        testInfo,
-        folderSetupFn: async (dir) => {
-          const bracketDir = join(dir, 'cube')
-          await fsp.mkdir(bracketDir, { recursive: true })
-          await fsp.copyFile(
-            executorInputPath('cube.obj'),
-            join(bracketDir, 'cube.obj')
-          )
-          await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
-        },
+    async ({ page, context }, testInfo) => {
+      await context.folderSetupFn(async (dir) => {
+        const bracketDir = join(dir, 'cube')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('cube.obj'),
+          join(bracketDir, 'cube.obj')
+        )
+        await fsp.writeFile(join(bracketDir, 'main.kcl'), '')
       })
+
       const viewportSize = { width: 1200, height: 500 }
-      await page.setViewportSize(viewportSize)
+      await page.setBodyDimensions(viewportSize)
 
       // Locators and constants
       const u = await getUtils(page)
@@ -1070,8 +1084,6 @@ test.describe('Editor tests', () => {
           })
           .toBeGreaterThan(15)
       })
-
-      await electronApp.close()
     }
   )
 })

@@ -388,23 +388,6 @@ yarn test:unit:local
 
 #### E2E Tests
 
-**Playwright Browser**
-
-These E2E tests run in a browser (without electron).
-There are tests that are skipped if they are ran in a windows OS or Linux OS. We can use playwright tags to implement test skipping.
-
-Breaking down the command `yarn test:playwright:browser:chrome:windows`
-- The application is `playwright`
-- The runtime is a `browser`
-- The specific `browser` is `chrome`
-- The test should run in a `windows` environment. It will skip tests that are broken or flaky in the windows OS.
-
-```
-yarn test:playwright:browser:chrome
-yarn test:playwright:browser:chrome:windows
-yarn test:playwright:browser:chrome:ubuntu
-```
-
 **Playwright Electron**
 
 These E2E tests run in electron. There are tests that are skipped if they are ran in a windows, linux, or macos environment. We can use playwright tags to implement test skipping.
