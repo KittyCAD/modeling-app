@@ -5,34 +5,38 @@ import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
 import { isSolid2D, isSegment, isSweep } from 'lang/std/artifactGraph'
 
-// Takes a callback function and wraps it around enable_dry_run and disable_dry_run
-export const dryRunWrapper = async (callback: () => Promise<any>) => {
-  try {
-    await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'enable_dry_run' },
-    })
-    // Race condition ?????
-    // What if concurrent does this and our app works because of it!
-    // engineCommandManager.dryRunOn()
-    // engineCommandManager.dryRunOff()
-    // global singleton
-    const result = await callback()
-    return result
-  } catch (e) {
-    console.error(e)
-  } finally {
+export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
+  for (let tries = 0; tries < numberOfRetries; tries++) {
     try {
       await engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: { type: 'disable_dry_run' },
       })
+      // Exit out since the command was successfull
+      return
     } catch (e) {
       console.error(e)
       console.error('disable_dry_run failed. This is bad!')
     }
+  }
+}
+
+// Takes a callback function and wraps it around enable_dry_run and disable_dry_run
+export const dryRunWrapper = async (callback: () => Promise<any>) => {
+  // Gotcha: What about race conditions?
+  try {
+    await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'enable_dry_run' },
+    })
+    const result = await callback()
+    return result
+  } catch (e) {
+    console.error(e)
+  } finally {
+    await disableDryRunWithRetry(5)
   }
 }
 
