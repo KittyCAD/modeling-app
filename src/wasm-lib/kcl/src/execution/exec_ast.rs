@@ -382,6 +382,7 @@ impl Node<CallExpressionKw> {
             }
         }
         let fn_args = fn_args; // remove mutability
+        let tag_declarator_args = tag_declarator_args; // remove mutability
 
         // Evaluate the unlabeled first param, if any exists.
         let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
@@ -438,6 +439,7 @@ impl Node<CallExpression> {
             }
             fn_args.push(arg);
         }
+        let tag_declarator_args = tag_declarator_args; // remove mutability
 
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
