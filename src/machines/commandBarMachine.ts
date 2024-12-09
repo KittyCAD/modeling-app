@@ -234,8 +234,8 @@ export const commandBarMachine = setup({
             argName in event.data.argDefaultValues
               ? event.data.argDefaultValues[argName]
               : arg.skip && 'defaultValue' in arg
-                ? arg.defaultValue
-                : undefined
+              ? arg.defaultValue
+              : undefined
         }
         return args
       },
@@ -257,7 +257,7 @@ export const commandBarMachine = setup({
           event: CommandBarMachineEvent | undefined
         }
       }) => {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
           if (!input || input?.event?.type !== 'Submit argument') {
             toast.error(`Unable to validate, wrong event type.`)
             return reject(`Unable to validate, wrong event type`)
@@ -281,26 +281,29 @@ export const commandBarMachine = setup({
             argConfig?.inputType === 'selection' &&
             argConfig?.validation
           ) {
-            const result = argConfig.validation
-              ? await argConfig.validation({ context, data })
-              : true
-
-            if (typeof result === 'boolean' && result === true) {
-              return resolve(data)
-            } else {
-              // validation failed
-              if (typeof result === 'string') {
-                // The result of the validation is the error message
-                toast.error(result)
-                return reject(
-                  `unable to validate ${argName}, Message: ${result}`
-                )
-              } else {
-                // Default message if there is not a custom one sent
-                toast.error(`Unable to validate ${argName}`)
+            argConfig
+              .validation({ context, data })
+              .then((result) => {
+                if (typeof result === 'boolean' && result === true) {
+                  return resolve(data)
+                } else {
+                  // validation failed
+                  if (typeof result === 'string') {
+                    // The result of the validation is the error message
+                    toast.error(result)
+                    return reject(
+                      `unable to validate ${argName}, Message: ${result}`
+                    )
+                  } else {
+                    // Default message if there is not a custom one sent
+                    toast.error(`Unable to validate ${argName}`)
+                    return reject(`unable to validate ${argName}}`)
+                  }
+                }
+              })
+              .catch(() => {
                 return reject(`unable to validate ${argName}}`)
-              }
-            }
+              })
           } else {
             // Missing several requirements for validate argument, just bypass
             return resolve(data)
@@ -310,7 +313,7 @@ export const commandBarMachine = setup({
     ),
     'Validate all arguments': fromPromise(
       ({ input }: { input: CommandBarContext }) => {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
           for (const [argName, argConfig] of Object.entries(
             input.selectedCommand!.args!
           )) {

@@ -391,6 +391,7 @@ export const modelingMachine = setup({
   guards: {
     'Selection is on face': () => false,
     'has valid sweep selection': () => false,
+    'has valid revolve selection': () => false,
     'has valid loft selection': () => false,
     'has valid edge treatment selection': () => false,
     'Has exportable geometry': () => false,
@@ -1626,7 +1627,7 @@ export const modelingMachine = setup({
 
         Revolve: {
           target: 'idle',
-          guard: 'has valid sweep selection',
+          guard: 'has valid revolve selection',
           actions: ['AST revolve'],
           reenter: false,
         },

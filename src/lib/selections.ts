@@ -557,17 +557,26 @@ function nodeHasCircle(node: CommonASTNode) {
 }
 
 export function canSweepSelection(selection: Selections) {
-  return true
   const commonNodes = selection.graphSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
   )
-  // TODO Kevin: create a new one for revolve. You can revolve an extruded edge.
   return (
     !!isSketchPipe(selection) &&
     commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
     (commonNodes.every((n) => nodeHasClose(n)) ||
       commonNodes.every((n) => nodeHasCircle(n))) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
+export function canRevolveSelection(selection: Selections) {
+  const commonNodes = selection.graphSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  return (
+    !!isSketchPipe(selection) &&
+    (commonNodes.every((n) => nodeHasClose(n)) ||
+      commonNodes.every((n) => nodeHasCircle(n)))
   )
 }
 

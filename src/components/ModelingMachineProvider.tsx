@@ -51,6 +51,7 @@ import {
   Selections,
   updateSelections,
   canLoftSelection,
+  canRevolveSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -567,6 +568,26 @@ export const ModelingMachineProvider = ({
           if (!isSketchPipe(selectionRanges)) return false
 
           const canSweep = canSweepSelection(selectionRanges)
+          if (err(canSweep)) return false
+          return canSweep
+        },
+        'has valid revolve selection': ({ context: { selectionRanges } }) => {
+          // A user can begin extruding if they either have 1+ faces selected or nothing selected
+          // TODO: I believe this guard only allows for extruding a single face at a time
+          const hasNoSelection =
+            selectionRanges.graphSelections.length === 0 ||
+            isRangeBetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+
+          if (hasNoSelection) {
+            // they have no selection, we should enable the button
+            // so they can select the face through the cmdbar
+            // BUT only if there's extrudable geometry
+            return doesSceneHaveSweepableSketch(kclManager.ast)
+          }
+          if (!isSketchPipe(selectionRanges)) return false
+
+          const canSweep = canRevolveSelection(selectionRanges)
           if (err(canSweep)) return false
           return canSweep
         },

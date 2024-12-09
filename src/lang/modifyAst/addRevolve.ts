@@ -141,8 +141,7 @@ export function revolveSketch(
   const pathToRevolveArg: PathToNode = [
     ['body', ''],
     [sketchIndexInBody + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
