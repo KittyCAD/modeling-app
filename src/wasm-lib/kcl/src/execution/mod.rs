@@ -128,14 +128,12 @@ impl ProgramMemory {
         self.add(tag, KclValue::TagIdentifier(Box::new(value)), source_range)
     }
 
-    pub fn update_tag_if_defined(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
+    pub fn update_tag_if_defined(&mut self, tag: &str, value: TagIdentifier) {
         if !self.environments[self.current_env.index()].contains_key(tag) {
             // Do nothing if the tag isn't defined.
-            return Ok(());
+            return;
         }
         self.environments[self.current_env.index()].insert(tag.to_string(), KclValue::TagIdentifier(Box::new(value)));
-
-        Ok(())
     }
 
     /// Get a value from the program memory.
