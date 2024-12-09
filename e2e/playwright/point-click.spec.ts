@@ -768,3 +768,168 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
     })
   })
 })
+
+const shellPointAndClickCapCases = [
+  { shouldPreselect: true },
+  { shouldPreselect: false },
+]
+shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
+  test(`Shell point-and-click cap (preselected sketches: ${shouldPreselect})`, async ({
+    app,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn('XZ')
+    |> circle({ center = [0, 0], radius = 30 }, %)
+    extrude001 = extrude(30, sketch001)
+    `
+    await app.initialise(initialCode)
+
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 575, y: 200 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const shellDeclaration =
+      "shell001 = shell({ faces = ['end'], thickness = 5 }, extrude001)"
+
+    await test.step(`Look for the grey of the shape`, async () => {
+      await scene.expectPixelColor([127, 127, 127], testPoint, 15)
+    })
+
+    if (!shouldPreselect) {
+      await test.step(`Go through the command bar flow without preselected faces`, async () => {
+        await toolbar.shellButton.click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Thickness: '',
+          },
+          highlightedHeaderArg: 'selection',
+          commandName: 'Shell',
+        })
+        await clickOnCap()
+        await app.page.waitForTimeout(500)
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Selection: '1 cap',
+            Thickness: '5',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.progressCmdBar()
+      })
+    } else {
+      await test.step(`Preselect the cap`, async () => {
+        await clickOnCap()
+        await app.page.waitForTimeout(500)
+      })
+
+      await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
+        await toolbar.shellButton.click()
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Selection: '1 cap',
+            Thickness: '5',
+          },
+          commandName: 'Shell',
+        })
+        await cmdBar.progressCmdBar()
+      })
+    }
+
+    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+      await editor.expectEditor.toContain(shellDeclaration)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [shellDeclaration],
+        highlightedCode: '',
+      })
+      await scene.expectPixelColor([146, 146, 146], testPoint, 15)
+    })
+  })
+})
+
+test('Shell point-and-click wall', async ({
+  app,
+  page,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  const initialCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-20, 20], %)
+  |> xLine(40, %)
+  |> yLine(-60, %)
+  |> xLine(-40, %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(40, sketch001)
+  `
+  await app.initialise(initialCode)
+
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 580, y: 180 }
+  const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const [clickOnWall] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 70)
+  const mutatedCode = 'xLine(-40, %, $seg01)'
+  const shellDeclaration =
+    "shell001 = shell({  faces = ['end', seg01],  thickness = 5}, extrude001)"
+  const formattedOutLastLine = '}, extrude001)'
+
+  await test.step(`Look for the grey of the shape`, async () => {
+    await scene.expectPixelColor([99, 99, 99], testPoint, 15)
+  })
+
+  await test.step(`Go through the command bar flow, selecting a wall and keeping default thickness`, async () => {
+    await toolbar.shellButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Thickness: '',
+      },
+      highlightedHeaderArg: 'selection',
+      commandName: 'Shell',
+    })
+    await clickOnCap()
+    await page.keyboard.down('Shift')
+    await clickOnWall()
+    await app.page.waitForTimeout(500)
+    await page.keyboard.up('Shift')
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      headerArguments: {
+        Selection: '1 cap, 1 face',
+        Thickness: '5',
+      },
+      commandName: 'Shell',
+    })
+    await cmdBar.progressCmdBar()
+  })
+
+  await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+    await editor.expectEditor.toContain(mutatedCode)
+    await editor.expectEditor.toContain(shellDeclaration)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [formattedOutLastLine],
+      highlightedCode: '',
+    })
+    await scene.expectPixelColor([49, 49, 49], testPoint, 15)
+  })
+})

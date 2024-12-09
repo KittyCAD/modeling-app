@@ -8,11 +8,16 @@ import { getSystemTheme } from 'lib/theme'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 import { roundOff } from 'lib/utils'
 import { varMentions } from 'lib/varCompletionExtension'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import styles from './CommandBarKclInput.module.css'
 import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
 import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { useSelector } from '@xstate/react'
+
+const machineContextSelector = (snapshot?: {
+  context: Record<string, unknown>
+}) => snapshot?.context
 
 function CommandBarKclInput({
   arg,
@@ -31,12 +36,44 @@ function CommandBarKclInput({
     arg.name
   ] as KclCommandValue | undefined
   const { settings } = useSettingsAuthContext()
-  const defaultValue = (arg.defaultValue as string) || ''
+  const argMachineContext = useSelector(
+    arg.machineActor,
+    machineContextSelector
+  )
+  const defaultValue = useMemo(
+    () =>
+      arg.defaultValue
+        ? arg.defaultValue instanceof Function
+          ? arg.defaultValue(commandBarState.context, argMachineContext)
+          : arg.defaultValue
+        : '',
+    [arg.defaultValue, commandBarState.context, argMachineContext]
+  )
+  const initialVariableName = useMemo(() => {
+    // Use the configured variable name if it exists
+    if (arg.variableName !== undefined) {
+      return arg.variableName instanceof Function
+        ? arg.variableName(commandBarState.context, argMachineContext)
+        : arg.variableName
+    }
+    // or derive it from the previously set value or the argument name
+    return previouslySetValue && 'variableName' in previouslySetValue
+      ? previouslySetValue.variableName
+      : arg.name
+  }, [
+    arg.variableName,
+    commandBarState.context,
+    argMachineContext,
+    arg.name,
+    previouslySetValue,
+  ])
   const [value, setValue] = useState(
     previouslySetValue?.valueText || defaultValue || ''
   )
   const [createNewVariable, setCreateNewVariable] = useState(
-    previouslySetValue && 'variableName' in previouslySetValue
+    (previouslySetValue && 'variableName' in previouslySetValue) ||
+      arg.createVariableByDefault ||
+      false
   )
   const [canSubmit, setCanSubmit] = useState(true)
   useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
@@ -52,10 +89,7 @@ function CommandBarKclInput({
     isNewVariableNameUnique,
   } = useCalculateKclExpression({
     value,
-    initialVariableName:
-      previouslySetValue && 'variableName' in previouslySetValue
-        ? previouslySetValue.variableName
-        : arg.name,
+    initialVariableName,
   })
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,

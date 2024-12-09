@@ -155,7 +155,22 @@ export type CommandArgumentConfig<
         context: CommandBarContext
       }) => Promise<boolean | string>
     }
-  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
+  | {
+      inputType: 'kcl'
+      createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+    }
   | {
       inputType: 'string'
       defaultValue?:
@@ -236,7 +251,22 @@ export type CommandArgument<
         context: CommandBarContext
       }) => Promise<boolean | string>
     }
-  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
+  | {
+      inputType: 'kcl'
+      createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+    }
   | {
       inputType: 'string'
       defaultValue?:

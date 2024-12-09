@@ -1517,6 +1517,11 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             *a = Some(alias);
         }
 
+        ParseContext::warn(CompilationError::err(
+            SourceRange::new(start, path.end, path.module_id),
+            "Importing a whole module is experimental, likely to be buggy, and likely to change",
+        ));
+
         if a.is_none()
             && (!path_string.ends_with(".kcl")
                 || path_string.starts_with("_")
@@ -1717,11 +1722,10 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             "an identifier, which becomes name you're binding the value to",
         ))
         .parse_next(i)?;
-    let (kind, mut start, dec_end, module_id) = if let Some((kind, token)) = &decl_token {
-        (*kind, token.start, token.end, token.module_id)
+    let (kind, mut start, dec_end) = if let Some((kind, token)) = &decl_token {
+        (*kind, token.start, token.end)
     } else {
-        // TODO warn on const
-        (VariableKind::Const, id.start, id.end, id.module_id)
+        (VariableKind::Const, id.start, id.end)
     };
     if let Some(token) = visibility_token {
         start = token.start;
@@ -1743,7 +1747,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             let ctxt_end = val.as_ref().map(|e| e.end()).unwrap_or(t.end);
             ParseContext::warn(CompilationError::with_suggestion(
                 t.as_source_range(),
-                Some(SourceRange::new(id.start, ctxt_end, module_id)),
+                Some(SourceRange::new(id.start, ctxt_end, id.module_id)),
                 "Unnecessary `=` in function declaration",
                 Some(("Remove `=`", "")),
                 Tag::Unnecessary,
@@ -1755,30 +1759,52 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
         equals(i)?;
         ignore_whitespace(i);
 
-        expression
+        let val = expression
             .try_map(|val| {
                 // Function bodies can be used if and only if declaring a function.
                 // Check the 'if' direction:
                 if matches!(val, Expr::FunctionExpression(_)) {
                     return Err(CompilationError::fatal(
-                        SourceRange::new(start, dec_end, module_id),
+                        SourceRange::new(start, dec_end, id.module_id),
                         format!("Expected a `fn` variable kind, found: `{}`", kind),
                     ));
                 }
                 Ok(val)
             })
             .context(expected("a KCL value, which is being bound to a variable"))
-            .parse_next(i)
+            .parse_next(i);
+
+        if let Some((_, tok)) = decl_token {
+            ParseContext::warn(CompilationError::with_suggestion(
+                tok.as_source_range(),
+                Some(SourceRange::new(
+                    id.start,
+                    val.as_ref().map(|e| e.end()).unwrap_or(dec_end),
+                    id.module_id,
+                )),
+                format!(
+                    "Using `{}` to declare constants is deprecated; no keyword is required",
+                    tok.value
+                ),
+                Some((format!("Remove `{}`", tok.value), "")),
+                Tag::Deprecated,
+            ));
+        }
+
+        val
     }
     .map_err(|e| e.cut())?;
 
     let end = val.end();
     Ok(Box::new(Node {
+        start,
+        end,
+        module_id: id.module_id,
         inner: VariableDeclaration {
             declaration: Node {
                 start: id.start,
                 end,
-                module_id,
+                module_id: id.module_id,
                 inner: VariableDeclarator {
                     id,
                     init: val,
@@ -1789,9 +1815,6 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             kind,
             digest: None,
         },
-        start,
-        end,
-        module_id,
     }))
 }
 
@@ -2593,9 +2616,9 @@ mod tests {
     fn test_comments_in_function1() {
         let test_program = r#"() {
             // comment 0
-            const a = 1
+            a = 1
             // comment 1
-            const b = 2
+            b = 2
             // comment 2
             return 1
         }"#;
@@ -2614,7 +2637,7 @@ mod tests {
     #[test]
     fn test_comments_in_function2() {
         let test_program = r#"() {
-  const yo = { a = { b = { c = '123' } } } /* block
+  yo = { a = { b = { c = '123' } } } /* block
 comment */
 }"#;
         let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
@@ -2629,7 +2652,7 @@ comment */
         let test_program = r#"
 /* comment at start */
 
-const mySk1 = startSketchAt([0, 0])"#;
+mySk1 = startSketchAt([0, 0])"#;
         let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
         let program = program.parse(&tokens).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;
@@ -2648,7 +2671,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_comment_in_pipe() {
-        let tokens = crate::parsing::token::lexer(r#"const x = y() |> /*hi*/ z(%)"#, ModuleId::default()).unwrap();
+        let tokens = crate::parsing::token::lexer(r#"x = y() |> /*hi*/ z(%)"#, ModuleId::default()).unwrap();
         let mut body = program.parse(&tokens).unwrap().inner.body;
         let BodyItem::VariableDeclaration(item) = body.remove(0) else {
             panic!("expected vardec");
@@ -2774,10 +2797,10 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn many_comments() {
         let test_program = r#"// this is a comment
-  const yo = { a = { b = { c = '123' } } } /* block
+  yo = { a = { b = { c = '123' } } } /* block
   comment */
 
-  const key = 'c'
+  key = 'c'
   // this is also a comment
   return things
 "#;
@@ -2811,8 +2834,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                         },
                         digest: None,
                     },
-                    63,
-                    85,
+                    57,
+                    79,
                     module_id,
                 ),
                 Node::new(
@@ -2820,8 +2843,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                         value: NonCodeValue::NewLine,
                         digest: None,
                     },
-                    85,
-                    89,
+                    79,
+                    83,
                     module_id,
                 )
             ]),
@@ -2837,8 +2860,8 @@ const mySk1 = startSketchAt([0, 0])"#;
                     },
                     digest: None,
                 },
-                106,
-                132,
+                94,
+                120,
                 module_id,
             )]),
             non_code_meta.non_code_nodes.get(&1),
@@ -2847,7 +2870,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn inline_block_comments() {
-        let test_program = r#"const yo = 3 /* block
+        let test_program = r#"yo = 3 /* block
   comment */
   return 1"#;
 
@@ -2912,10 +2935,10 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn assign_brackets() {
         for (i, test_input) in [
-            "const thickness_squared = (1 + 1)",
-            "const thickness_squared = ( 1 + 1)",
-            "const thickness_squared = (1 + 1 )",
-            "const thickness_squared = ( 1 + 1 )",
+            "thickness_squared = (1 + 1)",
+            "thickness_squared = ( 1 + 1)",
+            "thickness_squared = (1 + 1 )",
+            "thickness_squared = ( 1 + 1 )",
         ]
         .into_iter()
         .enumerate()
@@ -2937,7 +2960,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_function_call() {
-        for (i, test_input) in ["const x = f(1)", "const x = f( 1 )"].into_iter().enumerate() {
+        for (i, test_input) in ["x = f(1)", "x = f( 1 )"].into_iter().enumerate() {
             let tokens = crate::parsing::token::lexer(test_input, ModuleId::default()).unwrap();
             let _actual = match declaration.parse(&tokens) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
@@ -3259,7 +3282,7 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_declaration() {
-        let tests = ["const myVar = 5", "const myVar=5", "const myVar =5", "const myVar= 5"];
+        let tests = ["myVar = 5", "myVar=5", "myVar =5", "myVar= 5"];
         for test in tests {
             // Run the original parser
             let tokens = crate::parsing::token::lexer(test, ModuleId::default()).unwrap();
@@ -3517,7 +3540,7 @@ const mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_parse_half_pipe_small() {
         assert_err_contains(
-            "const secondExtrude = startSketchOn('XY')
+            "secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |",
             "Unexpected token: |",
@@ -3526,20 +3549,20 @@ const mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_parse_member_expression_double_nested_braces() {
-        let code = r#"const prop = yo["one"][two]"#;
+        let code = r#"prop = yo["one"][two]"#;
         crate::parsing::top_level_parse(code).unwrap();
     }
 
     #[test]
     fn test_parse_member_expression_binary_expression_period_number_first() {
-        let code = r#"const obj = { a: 1, b: 2 }
-const height = 1 - obj.a"#;
+        let code = r#"obj = { a: 1, b: 2 }
+height = 1 - obj.a"#;
         crate::parsing::top_level_parse(code).unwrap();
     }
 
     #[test]
     fn test_parse_member_expression_allowed_type_in_expression() {
-        let code = r#"const obj = { thing: 1 }
+        let code = r#"obj = { thing: 1 }
 startSketchOn(obj.sketch)"#;
 
         crate::parsing::top_level_parse(code).unwrap();
@@ -3547,36 +3570,36 @@ startSketchOn(obj.sketch)"#;
 
     #[test]
     fn test_parse_member_expression_binary_expression_brace_number_first() {
-        let code = r#"const obj = { a: 1, b: 2 }
-const height = 1 - obj["a"]"#;
+        let code = r#"obj = { a: 1, b: 2 }
+height = 1 - obj["a"]"#;
         crate::parsing::top_level_parse(code).unwrap();
     }
 
     #[test]
     fn test_parse_member_expression_binary_expression_brace_number_second() {
-        let code = r#"const obj = { a: 1, b: 2 }
-const height = obj["a"] - 1"#;
+        let code = r#"obj = { a: 1, b: 2 }
+height = obj["a"] - 1"#;
         crate::parsing::top_level_parse(code).unwrap();
     }
 
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_first() {
-        let code = r#"const obj = { a: 1, b: 2 }
-const height = [1 - obj["a"], 0]"#;
+        let code = r#"obj = { a: 1, b: 2 }
+height = [1 - obj["a"], 0]"#;
         crate::parsing::top_level_parse(code).unwrap();
     }
 
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_second() {
-        let code = r#"const obj = { a: 1, b: 2 }
-const height = [obj["a"] - 1, 0]"#;
+        let code = r#"obj = { a: 1, b: 2 }
+height = [obj["a"] - 1, 0]"#;
         crate::parsing::top_level_parse(code).unwrap();
     }
 
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_second_missing_space() {
-        let code = r#"const obj = { a: 1, b: 2 }
-const height = [obj["a"] -1, 0]"#;
+        let code = r#"obj = { a: 1, b: 2 }
+height = [obj["a"] -1, 0]"#;
         crate::parsing::top_level_parse(code).unwrap();
     }
 
@@ -3592,9 +3615,9 @@ const height = [obj["a"] -1, 0]"#;
 
     #[test]
     fn test_parse_half_pipe() {
-        let code = "const height = 10
+        let code = "height = 10
 
-const firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |> line([0, 8], %)
   |> line([20, 0], %)
@@ -3602,7 +3625,7 @@ const firstExtrude = startSketchOn('XY')
   |> close(%)
   |> extrude(2, %)
 
-const secondExtrude = startSketchOn('XY')
+secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
   |";
         assert_err_contains(code, "Unexpected token: |");
@@ -3647,10 +3670,10 @@ const secondExtrude = startSketchOn('XY')
 
     #[test]
     fn test_parse_negative_in_array_binary_expression() {
-        let code = r#"const leg1 = 5
-const thickness = 0.56
+        let code = r#"leg1 = 5
+thickness = 0.56
 
-const bracket = [-leg2 + thickness, 0]
+bracket = [-leg2 + thickness, 0]
 "#;
         crate::parsing::top_level_parse(code).unwrap();
     }
@@ -3883,6 +3906,13 @@ e
     }
 
     #[test]
+    fn warn_import() {
+        let some_program_string = r#"import "foo.kcl""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1);
+    }
+
+    #[test]
     fn zero_param_function() {
         let code = r#"
         fn firstPrimeNumber = () => {
@@ -4009,7 +4039,7 @@ thing(false)
 
     #[test]
     fn random_words_fail() {
-        let test_program = r#"const part001 = startSketchOn('-XZ')
+        let test_program = r#"part001 = startSketchOn('-XZ')
     |> startProfileAt([8.53, 11.8], %)
     asdasd asdasd
     |> line([11.12, -14.82], %)
@@ -4023,7 +4053,7 @@ thing(false)
     #[test]
     fn test_member_expression_sketch() {
         let some_program_string = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -4032,18 +4062,18 @@ thing(false)
   return sg
 }
 
-const b1 = cube([0,0], 10)
-const b2 = cube([3,3], 4)
+b1 = cube([0,0], 10)
+b2 = cube([3,3], 4)
 
-const pt1 = b1[0]
-const pt2 = b2[0]
+pt1 = b1[0]
+pt2 = b2[0]
 "#;
         crate::parsing::top_level_parse(some_program_string).unwrap();
     }
 
     #[test]
     fn test_math_with_stdlib() {
-        let some_program_string = r#"const d2r = pi() / 2
+        let some_program_string = r#"d2r = pi() / 2
 let other_thing = 2 * cos(3)"#;
         crate::parsing::top_level_parse(some_program_string).unwrap();
     }
@@ -4051,7 +4081,7 @@ let other_thing = 2 * cos(3)"#;
     #[test]
     fn test_negative_arguments() {
         let some_program_string = r#"fn box = (p, h, l, w) => {
- const myBox = startSketchOn('XY')
+ myBox = startSketchOn('XY')
     |> startProfileAt(p, %)
     |> line([0, l], %)
     |> line([w, 0], %)
@@ -4253,6 +4283,26 @@ int(42.3)"#;
 }"#
         );
     }
+
+    #[test]
+    fn warn_const() {
+        let some_program_string = r#"const foo = 0
+let bar = 1
+var baz = 2
+"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 3);
+        let replaced = errs[2].apply_suggestion(some_program_string).unwrap();
+        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
+        let replaced = errs[0].apply_suggestion(&replaced).unwrap();
+        assert_eq!(
+            replaced,
+            r#" foo = 0
+ bar = 1
+ baz = 2
+"#
+        );
+    }
 }
 
 #[cfg(test)]
@@ -4324,19 +4374,19 @@ mod snapshot_tests {
 
     snapshot_test!(
         a,
-        r#"const boxSketch = startSketchAt([0, 0])
+        r#"boxSketch = startSketchAt([0, 0])
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
     |> extrude(10, %)
 "#
     );
-    snapshot_test!(b, "const myVar = min(5 , -legLen(5, 4))"); // Space before comma
+    snapshot_test!(b, "myVar = min(5 , -legLen(5, 4))"); // Space before comma
 
-    snapshot_test!(c, "const myVar = min(-legLen(5, 4), 5)");
-    snapshot_test!(d, "const myVar = 5 + 6 |> myFunc(45, %)");
+    snapshot_test!(c, "myVar = min(-legLen(5, 4), 5)");
+    snapshot_test!(d, "myVar = 5 + 6 |> myFunc(45, %)");
     snapshot_test!(e, "let x = 1 * (3 - 4)");
-    snapshot_test!(f, r#"const x = 1 // this is an inline comment"#);
+    snapshot_test!(f, r#"x = 1 // this is an inline comment"#);
     snapshot_test!(
         g,
         r#"fn x = () => {
@@ -4344,57 +4394,57 @@ mod snapshot_tests {
         return sg
       }"#
     );
-    snapshot_test!(d2, r#"const x = -leg2 + thickness"#);
+    snapshot_test!(d2, r#"x = -leg2 + thickness"#);
     snapshot_test!(
         h,
-        r#"const obj = { a: 1, b: 2 }
-    const height = 1 - obj.a"#
+        r#"obj = { a: 1, b: 2 }
+    height = 1 - obj.a"#
     );
     snapshot_test!(
         i,
-        r#"const obj = { a: 1, b: 2 }
-     const height = 1 - obj["a"]"#
+        r#"obj = { a: 1, b: 2 }
+     height = 1 - obj["a"]"#
     );
     snapshot_test!(
         j,
-        r#"const obj = { a: 1, b: 2 }
-    const height = obj["a"] - 1"#
+        r#"obj = { a: 1, b: 2 }
+    height = obj["a"] - 1"#
     );
     snapshot_test!(
         k,
-        r#"const obj = { a: 1, b: 2 }
-    const height = [1 - obj["a"], 0]"#
+        r#"obj = { a: 1, b: 2 }
+    height = [1 - obj["a"], 0]"#
     );
     snapshot_test!(
         l,
-        r#"const obj = { a: 1, b: 2 }
-    const height = [obj["a"] - 1, 0]"#
+        r#"obj = { a: 1, b: 2 }
+    height = [obj["a"] - 1, 0]"#
     );
     snapshot_test!(
         m,
-        r#"const obj = { a: 1, b: 2 }
-    const height = [obj["a"] -1, 0]"#
+        r#"obj = { a: 1, b: 2 }
+    height = [obj["a"] -1, 0]"#
     );
-    snapshot_test!(n, "const height = 1 - obj.a");
-    snapshot_test!(o, "const six = 1 + 2 + 3");
-    snapshot_test!(p, "const five = 3 * 1 + 2");
-    snapshot_test!(q, r#"const height = [ obj["a"], 0 ]"#);
+    snapshot_test!(n, "height = 1 - obj.a");
+    snapshot_test!(o, "six = 1 + 2 + 3");
+    snapshot_test!(p, "five = 3 * 1 + 2");
+    snapshot_test!(q, r#"height = [ obj["a"], 0 ]"#);
     snapshot_test!(
         r,
-        r#"const obj = { a: 1, b: 2 }
-    const height = obj["a"]"#
+        r#"obj = { a: 1, b: 2 }
+    height = obj["a"]"#
     );
-    snapshot_test!(s, r#"const prop = yo["one"][two]"#);
-    snapshot_test!(t, r#"const pt1 = b1[x]"#);
-    snapshot_test!(u, "const prop = yo.one.two.three.four");
-    snapshot_test!(v, r#"const pt1 = b1[0]"#);
-    snapshot_test!(w, r#"const pt1 = b1['zero']"#);
-    snapshot_test!(x, r#"const pt1 = b1.zero"#);
-    snapshot_test!(y, "const sg = startSketchAt(pos)");
-    snapshot_test!(z, "const sg = startSketchAt(pos) |> line([0, -scale], %)");
-    snapshot_test!(aa, r#"const sg = -scale"#);
+    snapshot_test!(s, r#"prop = yo["one"][two]"#);
+    snapshot_test!(t, r#"pt1 = b1[x]"#);
+    snapshot_test!(u, "prop = yo.one.two.three.four");
+    snapshot_test!(v, r#"pt1 = b1[0]"#);
+    snapshot_test!(w, r#"pt1 = b1['zero']"#);
+    snapshot_test!(x, r#"pt1 = b1.zero"#);
+    snapshot_test!(y, "sg = startSketchAt(pos)");
+    snapshot_test!(z, "sg = startSketchAt(pos) |> line([0, -scale], %)");
+    snapshot_test!(aa, r#"sg = -scale"#);
     snapshot_test!(ab, "lineTo({ to: [0, -1] })");
-    snapshot_test!(ac, "const myArray = [0..10]");
+    snapshot_test!(ac, "myArray = [0..10]");
     snapshot_test!(
         ad,
         r#"
@@ -4412,25 +4462,22 @@ mod snapshot_tests {
     );
     snapshot_test!(
         af,
-        r#"const mySketch = startSketchAt([0,0])
+        r#"mySketch = startSketchAt([0,0])
         |> lineTo([0, 1], %, $myPath)
         |> lineTo([1, 1], %)
         |> lineTo([1, 0], %, $rightPath)
         |> close(%)"#
     );
-    snapshot_test!(
-        ag,
-        "const mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)"
-    );
-    snapshot_test!(ah, "const myBox = startSketchAt(p)");
-    snapshot_test!(ai, r#"const myBox = f(1) |> g(2, %)"#);
-    snapshot_test!(aj, r#"const myBox = startSketchAt(p) |> line([0, l], %)"#);
+    snapshot_test!(ag, "mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)");
+    snapshot_test!(ah, "myBox = startSketchAt(p)");
+    snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
+    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line([0, l], %)"#);
     snapshot_test!(ak, "lineTo({ to: [0, 1] })");
     snapshot_test!(al, "lineTo({ to: [0, 1], from: [3, 3] })");
     snapshot_test!(am, "lineTo({to:[0, 1]})");
     snapshot_test!(an, "lineTo({ to: [0, 1], from: [3, 3]})");
     snapshot_test!(ao, "lineTo({ to: [0, 1],from: [3, 3] })");
-    snapshot_test!(ap, "const mySketch = startSketchAt([0,0])");
+    snapshot_test!(ap, "mySketch = startSketchAt([0,0])");
     snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);
     snapshot_test!(at, "line([0, l], %)");
@@ -4473,7 +4520,7 @@ mod snapshot_tests {
     snapshot_test!(
         ba,
         r#"
-const sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn('XY')
   // |> arc({
   //   angleEnd: 270,
   //   angleStart: 450,
@@ -4484,12 +4531,12 @@ const sketch001 = startSketchOn('XY')
     snapshot_test!(
         bb,
         r#"
-const my14 = 4 ^ 2 - 3 ^ 2 * 2
+my14 = 4 ^ 2 - 3 ^ 2 * 2
 "#
     );
     snapshot_test!(
         bc,
-        r#"const x = if true {
+        r#"x = if true {
             3
         } else {
             4
@@ -4497,7 +4544,7 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
     );
     snapshot_test!(
         bd,
-        r#"const x = if true {
+        r#"x = if true {
             3
         } else if func(radius) {
             4
@@ -4508,7 +4555,7 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
     snapshot_test!(be, "let x = 3 == 3");
     snapshot_test!(bf, "let x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
-    snapshot_test!(bh, "const obj = {center : [10, 10], radius: 5}");
+    snapshot_test!(bh, "obj = {center : [10, 10], radius: 5}");
     snapshot_test!(
         bi,
         r#"x = 3
