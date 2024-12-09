@@ -1,4 +1,4 @@
-import { APP_VERSION, PACKAGE_NAME } from 'routes/Settings'
+import { APP_VERSION, IS_NIGHTLY } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { PATHS } from 'lib/paths'
@@ -67,7 +67,7 @@ export function LowerRightControls({
   }
 
   const releaseUrl = `https://github.com/KittyCAD/modeling-app/releases/tag/${
-    PACKAGE_NAME.indexOf('-nightly') > -1 ? 'nightly-' : ''
+    IS_NIGHTLY ? 'nightly-' : ''
   }v${APP_VERSION}`
 
   return (
