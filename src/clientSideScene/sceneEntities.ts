@@ -701,8 +701,7 @@ export class SceneEntities {
       'VariableDeclaration'
     )
     if (trap(_node1)) return Promise.reject(_node1)
-    const variableDeclarationName =
-      _node1.node?.declarations?.[0]?.id?.name || ''
+    const variableDeclarationName = _node1.node?.declaration.id?.name || ''
 
     const sg = sketchFromKclValue(
       kclManager.programMemory.get(variableDeclarationName),
@@ -902,10 +901,9 @@ export class SceneEntities {
       'VariableDeclaration'
     )
     if (trap(_node1)) return Promise.reject(_node1)
-    const variableDeclarationName =
-      _node1.node?.declarations?.[0]?.id?.name || ''
-    const startSketchOn = _node1.node?.declarations
-    const startSketchOnInit = startSketchOn?.[0]?.init
+    const variableDeclarationName = _node1.node?.declaration.id?.name || ''
+    const startSketchOn = _node1.node?.declaration
+    const startSketchOnInit = startSketchOn?.init
 
     const tags: [string, string, string] = [
       findUniqueName(_ast, 'rectangleSegmentA'),
@@ -913,7 +911,7 @@ export class SceneEntities {
       findUniqueName(_ast, 'rectangleSegmentC'),
     ]
 
-    startSketchOn[0].init = createPipeExpression([
+    startSketchOn.init = createPipeExpression([
       startSketchOnInit,
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
@@ -943,7 +941,7 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = _node.node?.declaration.init
 
         const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
         const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
@@ -992,7 +990,7 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = _node.node?.declaration.init
 
         if (sketchInit.type !== 'PipeExpression') {
           return
@@ -1058,10 +1056,9 @@ export class SceneEntities {
     if (trap(_node1)) return Promise.reject(_node1)
 
     // startSketchOn already exists
-    const variableDeclarationName =
-      _node1.node?.declarations?.[0]?.id?.name || ''
-    const startSketchOn = _node1.node?.declarations
-    const startSketchOnInit = startSketchOn?.[0]?.init
+    const variableDeclarationName = _node1.node?.declaration.id?.name || ''
+    const startSketchOn = _node1.node?.declaration
+    const startSketchOnInit = startSketchOn?.init
 
     const tags: [string, string, string] = [
       findUniqueName(_ast, 'rectangleSegmentA'),
@@ -1069,7 +1066,7 @@ export class SceneEntities {
       findUniqueName(_ast, 'rectangleSegmentC'),
     ]
 
-    startSketchOn[0].init = createPipeExpression([
+    startSketchOn.init = createPipeExpression([
       startSketchOnInit,
       ...getRectangleCallExpressions(rectangleOrigin, tags),
     ])
@@ -1099,7 +1096,7 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return Promise.reject(_node)
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = _node.node?.declaration.init
 
         const x = (args.intersectionPoint.twoD.x || 0) - rectangleOrigin[0]
         const y = (args.intersectionPoint.twoD.y || 0) - rectangleOrigin[1]
@@ -1155,7 +1152,7 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = _node.node?.declaration.init
 
         if (sketchInit.type === 'PipeExpression') {
           updateCenterRectangleSketch(
@@ -1224,12 +1221,11 @@ export class SceneEntities {
       'VariableDeclaration'
     )
     if (trap(_node1)) return Promise.reject(_node1)
-    const variableDeclarationName =
-      _node1.node?.declarations?.[0]?.id?.name || ''
-    const startSketchOn = _node1.node?.declarations
-    const startSketchOnInit = startSketchOn?.[0]?.init
+    const variableDeclarationName = _node1.node?.declaration.id?.name || ''
+    const startSketchOn = _node1.node?.declaration
+    const startSketchOnInit = startSketchOn?.init
 
-    startSketchOn[0].init = createPipeExpression([
+    startSketchOn.init = createPipeExpression([
       startSketchOnInit,
       createCallExpressionStdLib('circle', [
         createObjectExpression({
@@ -1271,7 +1267,7 @@ export class SceneEntities {
         )
         let modded = structuredClone(truncatedAst)
         if (trap(_node)) return
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = _node.node.declaration.init
 
         const x = (args.intersectionPoint.twoD.x || 0) - circleCenter[0]
         const y = (args.intersectionPoint.twoD.y || 0) - circleCenter[1]
@@ -1339,7 +1335,7 @@ export class SceneEntities {
           'VariableDeclaration'
         )
         if (trap(_node)) return
-        const sketchInit = _node.node?.declarations?.[0]?.init
+        const sketchInit = _node.node?.declaration.init
 
         let modded = structuredClone(_ast)
         if (sketchInit.type === 'PipeExpression') {
@@ -2060,7 +2056,7 @@ function prepareTruncatedMemoryAndAst(
     'VariableDeclaration'
   )
   if (err(_node)) return _node
-  const variableDeclarationName = _node.node?.declarations?.[0]?.id?.name || ''
+  const variableDeclarationName = _node.node?.declaration.id?.name || ''
   const sg = sketchFromKclValue(
     programMemory.get(variableDeclarationName),
     variableDeclarationName
@@ -2085,7 +2081,7 @@ function prepareTruncatedMemoryAndAst(
       ])
     }
     ;(
-      (_ast.body[bodyIndex] as VariableDeclaration).declarations[0]
+      (_ast.body[bodyIndex] as VariableDeclaration).declaration
         .init as PipeExpression
     ).body.push(newSegment)
     // update source ranges to section we just added.
@@ -2096,19 +2092,19 @@ function prepareTruncatedMemoryAndAst(
     const updatedSrcRangeAst = pResult.program
 
     const lastPipeItem = (
-      (updatedSrcRangeAst.body[bodyIndex] as VariableDeclaration)
-        .declarations[0].init as PipeExpression
+      (updatedSrcRangeAst.body[bodyIndex] as VariableDeclaration).declaration
+        .init as PipeExpression
     ).body.slice(-1)[0]
 
     ;(
-      (_ast.body[bodyIndex] as VariableDeclaration).declarations[0]
+      (_ast.body[bodyIndex] as VariableDeclaration).declaration
         .init as PipeExpression
     ).body.slice(-1)[0].start = lastPipeItem.start
 
     _ast.end = lastPipeItem.end
     const varDec = _ast.body[bodyIndex] as Node<VariableDeclaration>
     varDec.end = lastPipeItem.end
-    const declarator = varDec.declarations[0]
+    const declarator = varDec.declaration
     declarator.end = lastPipeItem.end
     const init = declarator.init as Node<PipeExpression>
     init.end = lastPipeItem.end
@@ -2145,7 +2141,7 @@ function prepareTruncatedMemoryAndAst(
     if (node.type !== 'VariableDeclaration') {
       continue
     }
-    const name = node.declarations[0].id.name
+    const name = node.declaration.id.name
     const memoryItem = programMemory.get(name)
     if (!memoryItem) {
       continue

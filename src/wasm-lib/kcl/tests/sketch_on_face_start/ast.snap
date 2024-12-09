@@ -1,298 +1,293 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing sketch_on_face_start.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
-        "declarations": [
-          {
-            "end": 175,
-            "id": {
-              "end": 7,
-              "name": "cube",
-              "start": 3,
-              "type": "Identifier"
-            },
-            "init": {
-              "body": {
-                "body": [
-                  {
-                    "declarations": [
-                      {
-                        "end": 160,
-                        "id": {
-                          "end": 26,
-                          "name": "sg",
-                          "start": 24,
-                          "type": "Identifier"
-                        },
-                        "init": {
-                          "body": [
+        "declaration": {
+          "end": 175,
+          "id": {
+            "end": 7,
+            "name": "cube",
+            "start": 3,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "declaration": {
+                    "end": 160,
+                    "id": {
+                      "end": 26,
+                      "name": "sg",
+                      "start": 24,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": [
+                        {
+                          "arguments": [
                             {
-                              "arguments": [
-                                {
-                                  "end": 47,
-                                  "raw": "'XY'",
-                                  "start": 43,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": "XY"
-                                }
-                              ],
-                              "callee": {
-                                "end": 42,
-                                "name": "startSketchOn",
-                                "start": 29,
-                                "type": "Identifier"
-                              },
-                              "end": 48,
-                              "start": 29,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
+                              "end": 47,
+                              "raw": "'XY'",
+                              "start": 43,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": "XY"
+                            }
+                          ],
+                          "callee": {
+                            "end": 42,
+                            "name": "startSketchOn",
+                            "start": 29,
+                            "type": "Identifier"
+                          },
+                          "end": 48,
+                          "start": 29,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 74,
+                              "name": "pos",
+                              "start": 71,
+                              "type": "Identifier",
+                              "type": "Identifier"
                             },
                             {
-                              "arguments": [
+                              "end": 77,
+                              "start": 76,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 70,
+                            "name": "startProfileAt",
+                            "start": 56,
+                            "type": "Identifier"
+                          },
+                          "end": 78,
+                          "start": 56,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "elements": [
                                 {
-                                  "end": 74,
-                                  "name": "pos",
-                                  "start": 71,
+                                  "end": 93,
+                                  "raw": "0",
+                                  "start": 92,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 0.0
+                                },
+                                {
+                                  "end": 100,
+                                  "name": "scale",
+                                  "start": 95,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                }
+                              ],
+                              "end": 101,
+                              "start": 91,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            },
+                            {
+                              "end": 104,
+                              "start": 103,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 90,
+                            "name": "line",
+                            "start": 86,
+                            "type": "Identifier"
+                          },
+                          "end": 105,
+                          "start": 86,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "elements": [
+                                {
+                                  "end": 124,
+                                  "name": "scale",
+                                  "start": 119,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 {
-                                  "end": 77,
-                                  "start": 76,
-                                  "type": "PipeSubstitution",
-                                  "type": "PipeSubstitution"
+                                  "end": 127,
+                                  "raw": "0",
+                                  "start": 126,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 0.0
                                 }
                               ],
-                              "callee": {
-                                "end": 70,
-                                "name": "startProfileAt",
-                                "start": 56,
-                                "type": "Identifier"
-                              },
-                              "end": 78,
-                              "start": 56,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
+                              "end": 128,
+                              "start": 118,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
                             },
                             {
-                              "arguments": [
-                                {
-                                  "elements": [
-                                    {
-                                      "end": 93,
-                                      "raw": "0",
-                                      "start": 92,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": 0.0
-                                    },
-                                    {
-                                      "end": 100,
-                                      "name": "scale",
-                                      "start": 95,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    }
-                                  ],
-                                  "end": 101,
-                                  "start": 91,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
-                                {
-                                  "end": 104,
-                                  "start": 103,
-                                  "type": "PipeSubstitution",
-                                  "type": "PipeSubstitution"
-                                }
-                              ],
-                              "callee": {
-                                "end": 90,
-                                "name": "line",
-                                "start": 86,
-                                "type": "Identifier"
-                              },
-                              "end": 105,
-                              "start": 86,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
-                            },
-                            {
-                              "arguments": [
-                                {
-                                  "elements": [
-                                    {
-                                      "end": 124,
-                                      "name": "scale",
-                                      "start": 119,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    {
-                                      "end": 127,
-                                      "raw": "0",
-                                      "start": 126,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": 0.0
-                                    }
-                                  ],
-                                  "end": 128,
-                                  "start": 118,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
-                                {
-                                  "end": 131,
-                                  "start": 130,
-                                  "type": "PipeSubstitution",
-                                  "type": "PipeSubstitution"
-                                }
-                              ],
-                              "callee": {
-                                "end": 117,
-                                "name": "line",
-                                "start": 113,
-                                "type": "Identifier"
-                              },
-                              "end": 132,
-                              "start": 113,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
-                            },
-                            {
-                              "arguments": [
-                                {
-                                  "elements": [
-                                    {
-                                      "end": 147,
-                                      "raw": "0",
-                                      "start": 146,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": 0.0
-                                    },
-                                    {
-                                      "argument": {
-                                        "end": 155,
-                                        "name": "scale",
-                                        "start": 150,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "end": 155,
-                                      "operator": "-",
-                                      "start": 149,
-                                      "type": "UnaryExpression",
-                                      "type": "UnaryExpression"
-                                    }
-                                  ],
-                                  "end": 156,
-                                  "start": 145,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
-                                {
-                                  "end": 159,
-                                  "start": 158,
-                                  "type": "PipeSubstitution",
-                                  "type": "PipeSubstitution"
-                                }
-                              ],
-                              "callee": {
-                                "end": 144,
-                                "name": "line",
-                                "start": 140,
-                                "type": "Identifier"
-                              },
-                              "end": 160,
-                              "start": 140,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
+                              "end": 131,
+                              "start": 130,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
                             }
                           ],
-                          "end": 160,
-                          "start": 29,
-                          "type": "PipeExpression",
-                          "type": "PipeExpression"
+                          "callee": {
+                            "end": 117,
+                            "name": "line",
+                            "start": 113,
+                            "type": "Identifier"
+                          },
+                          "end": 132,
+                          "start": 113,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
-                        "start": 24,
-                        "type": "VariableDeclarator"
-                      }
-                    ],
-                    "end": 160,
-                    "kind": "const",
-                    "start": 24,
-                    "type": "VariableDeclaration",
-                    "type": "VariableDeclaration"
-                  },
-                  {
-                    "argument": {
-                      "end": 173,
-                      "name": "sg",
-                      "start": 171,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    "end": 173,
-                    "start": 164,
-                    "type": "ReturnStatement",
-                    "type": "ReturnStatement"
-                  }
-                ],
-                "end": 175,
-                "nonCodeMeta": {
-                  "nonCodeNodes": {
-                    "0": [
-                      {
-                        "end": 164,
-                        "start": 160,
-                        "type": "NonCodeNode",
-                        "value": {
-                          "type": "newLine"
+                        {
+                          "arguments": [
+                            {
+                              "elements": [
+                                {
+                                  "end": 147,
+                                  "raw": "0",
+                                  "start": 146,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 0.0
+                                },
+                                {
+                                  "argument": {
+                                    "end": 155,
+                                    "name": "scale",
+                                    "start": 150,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "end": 155,
+                                  "operator": "-",
+                                  "start": 149,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
+                                }
+                              ],
+                              "end": 156,
+                              "start": 145,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            },
+                            {
+                              "end": 159,
+                              "start": 158,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 144,
+                            "name": "line",
+                            "start": 140,
+                            "type": "Identifier"
+                          },
+                          "end": 160,
+                          "start": 140,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         }
-                      }
-                    ]
+                      ],
+                      "end": 160,
+                      "start": 29,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "start": 24,
+                    "type": "VariableDeclarator"
                   },
-                  "startNodes": []
-                },
-                "start": 20
-              },
-              "end": 175,
-              "params": [
-                {
-                  "type": "Parameter",
-                  "identifier": {
-                    "end": 11,
-                    "name": "pos",
-                    "start": 8,
-                    "type": "Identifier"
-                  }
+                  "end": 160,
+                  "kind": "const",
+                  "start": 24,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
                 },
                 {
-                  "type": "Parameter",
-                  "identifier": {
-                    "end": 18,
-                    "name": "scale",
-                    "start": 13,
+                  "argument": {
+                    "end": 173,
+                    "name": "sg",
+                    "start": 171,
+                    "type": "Identifier",
                     "type": "Identifier"
-                  }
+                  },
+                  "end": 173,
+                  "start": 164,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
                 }
               ],
-              "start": 7,
-              "type": "FunctionExpression",
-              "type": "FunctionExpression"
+              "end": 175,
+              "nonCodeMeta": {
+                "nonCodeNodes": {
+                  "0": [
+                    {
+                      "end": 164,
+                      "start": 160,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ]
+                },
+                "startNodes": []
+              },
+              "start": 20
             },
-            "start": 3,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "end": 175,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 11,
+                  "name": "pos",
+                  "start": 8,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 18,
+                  "name": "scale",
+                  "start": 13,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 7,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 3,
+          "type": "VariableDeclarator"
+        },
         "end": 175,
         "kind": "fn",
         "start": 0,
@@ -300,121 +295,119 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 236,
-            "id": {
-              "end": 183,
-              "name": "part001",
-              "start": 176,
-              "type": "Identifier"
-            },
-            "init": {
-              "body": [
-                {
-                  "arguments": [
-                    {
-                      "elements": [
-                        {
-                          "end": 193,
-                          "raw": "0",
-                          "start": 192,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 0.0
-                        },
-                        {
-                          "end": 196,
-                          "raw": "0",
-                          "start": 195,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 0.0
-                        }
-                      ],
-                      "end": 197,
-                      "start": 191,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    {
-                      "end": 201,
-                      "raw": "20",
-                      "start": 199,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": 20.0
-                    }
-                  ],
-                  "callee": {
-                    "end": 190,
-                    "name": "cube",
-                    "start": 186,
-                    "type": "Identifier"
-                  },
-                  "end": 202,
-                  "start": 186,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "end": 215,
-                      "start": 214,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 213,
-                    "name": "close",
-                    "start": 208,
-                    "type": "Identifier"
-                  },
-                  "end": 216,
-                  "start": 208,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "end": 232,
-                      "raw": "20",
-                      "start": 230,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": 20.0
-                    },
-                    {
-                      "end": 235,
-                      "start": 234,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 229,
-                    "name": "extrude",
-                    "start": 222,
-                    "type": "Identifier"
-                  },
-                  "end": 236,
-                  "start": 222,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                }
-              ],
-              "end": 236,
-              "start": 186,
-              "type": "PipeExpression",
-              "type": "PipeExpression"
-            },
+        "declaration": {
+          "end": 236,
+          "id": {
+            "end": 183,
+            "name": "part001",
             "start": 176,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 193,
+                        "raw": "0",
+                        "start": 192,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      },
+                      {
+                        "end": 196,
+                        "raw": "0",
+                        "start": 195,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      }
+                    ],
+                    "end": 197,
+                    "start": 191,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 201,
+                    "raw": "20",
+                    "start": 199,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 20.0
+                  }
+                ],
+                "callee": {
+                  "end": 190,
+                  "name": "cube",
+                  "start": 186,
+                  "type": "Identifier"
+                },
+                "end": 202,
+                "start": 186,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 215,
+                    "start": 214,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 213,
+                  "name": "close",
+                  "start": 208,
+                  "type": "Identifier"
+                },
+                "end": 216,
+                "start": 208,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 232,
+                    "raw": "20",
+                    "start": 230,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 20.0
+                  },
+                  {
+                    "end": 235,
+                    "start": 234,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 229,
+                  "name": "extrude",
+                  "start": 222,
+                  "type": "Identifier"
+                },
+                "end": 236,
+                "start": 222,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 236,
+            "start": 186,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 176,
+          "type": "VariableDeclarator"
+        },
         "end": 236,
         "kind": "const",
         "start": 176,
@@ -422,287 +415,285 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 410,
-            "id": {
-              "end": 245,
-              "name": "part002",
-              "start": 238,
-              "type": "Identifier"
-            },
-            "init": {
-              "body": [
-                {
-                  "arguments": [
-                    {
-                      "end": 269,
-                      "name": "part001",
-                      "start": 262,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    },
-                    {
-                      "end": 278,
-                      "raw": "\"start\"",
-                      "start": 271,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": "start"
-                    }
-                  ],
-                  "callee": {
-                    "end": 261,
-                    "name": "startSketchOn",
-                    "start": 248,
-                    "type": "Identifier"
-                  },
-                  "end": 279,
-                  "start": 248,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "elements": [
-                        {
-                          "end": 302,
-                          "raw": "0",
-                          "start": 301,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 0.0
-                        },
-                        {
-                          "end": 305,
-                          "raw": "0",
-                          "start": 304,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 0.0
-                        }
-                      ],
-                      "end": 306,
-                      "start": 300,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    {
-                      "end": 309,
-                      "start": 308,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 299,
-                    "name": "startProfileAt",
-                    "start": 285,
-                    "type": "Identifier"
-                  },
-                  "end": 310,
-                  "start": 285,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "elements": [
-                        {
-                          "end": 323,
-                          "raw": "0",
-                          "start": 322,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 0.0
-                        },
-                        {
-                          "end": 327,
-                          "raw": "10",
-                          "start": 325,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 10.0
-                        }
-                      ],
-                      "end": 328,
-                      "start": 321,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    {
-                      "end": 331,
-                      "start": 330,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 320,
-                    "name": "line",
-                    "start": 316,
-                    "type": "Identifier"
-                  },
-                  "end": 332,
-                  "start": 316,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "elements": [
-                        {
-                          "end": 346,
-                          "raw": "10",
-                          "start": 344,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 10.0
-                        },
-                        {
-                          "end": 349,
-                          "raw": "0",
-                          "start": 348,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 0.0
-                        }
-                      ],
-                      "end": 350,
-                      "start": 343,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    {
-                      "end": 353,
-                      "start": 352,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 342,
-                    "name": "line",
-                    "start": 338,
-                    "type": "Identifier"
-                  },
-                  "end": 354,
-                  "start": 338,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "elements": [
-                        {
-                          "end": 367,
-                          "raw": "0",
-                          "start": 366,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 0.0
-                        },
-                        {
-                          "argument": {
-                            "end": 372,
-                            "raw": "10",
-                            "start": 370,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": 10.0
-                          },
-                          "end": 372,
-                          "operator": "-",
-                          "start": 369,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
-                        }
-                      ],
-                      "end": 373,
-                      "start": 365,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    },
-                    {
-                      "end": 376,
-                      "start": 375,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 364,
-                    "name": "line",
-                    "start": 360,
-                    "type": "Identifier"
-                  },
-                  "end": 377,
-                  "start": 360,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "end": 390,
-                      "start": 389,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 388,
-                    "name": "close",
-                    "start": 383,
-                    "type": "Identifier"
-                  },
-                  "end": 391,
-                  "start": 383,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                },
-                {
-                  "arguments": [
-                    {
-                      "end": 406,
-                      "raw": "5",
-                      "start": 405,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": 5.0
-                    },
-                    {
-                      "end": 409,
-                      "start": 408,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 404,
-                    "name": "extrude",
-                    "start": 397,
-                    "type": "Identifier"
-                  },
-                  "end": 410,
-                  "start": 397,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                }
-              ],
-              "end": 410,
-              "start": 248,
-              "type": "PipeExpression",
-              "type": "PipeExpression"
-            },
+        "declaration": {
+          "end": 410,
+          "id": {
+            "end": 245,
+            "name": "part002",
             "start": 238,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 269,
+                    "name": "part001",
+                    "start": 262,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  {
+                    "end": 278,
+                    "raw": "\"start\"",
+                    "start": 271,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "start"
+                  }
+                ],
+                "callee": {
+                  "end": 261,
+                  "name": "startSketchOn",
+                  "start": 248,
+                  "type": "Identifier"
+                },
+                "end": 279,
+                "start": 248,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 302,
+                        "raw": "0",
+                        "start": 301,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      },
+                      {
+                        "end": 305,
+                        "raw": "0",
+                        "start": 304,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      }
+                    ],
+                    "end": 306,
+                    "start": 300,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 309,
+                    "start": 308,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 299,
+                  "name": "startProfileAt",
+                  "start": 285,
+                  "type": "Identifier"
+                },
+                "end": 310,
+                "start": 285,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 323,
+                        "raw": "0",
+                        "start": 322,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      },
+                      {
+                        "end": 327,
+                        "raw": "10",
+                        "start": 325,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 10.0
+                      }
+                    ],
+                    "end": 328,
+                    "start": 321,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 331,
+                    "start": 330,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 320,
+                  "name": "line",
+                  "start": 316,
+                  "type": "Identifier"
+                },
+                "end": 332,
+                "start": 316,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 346,
+                        "raw": "10",
+                        "start": 344,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 10.0
+                      },
+                      {
+                        "end": 349,
+                        "raw": "0",
+                        "start": 348,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      }
+                    ],
+                    "end": 350,
+                    "start": 343,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 353,
+                    "start": 352,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 342,
+                  "name": "line",
+                  "start": 338,
+                  "type": "Identifier"
+                },
+                "end": 354,
+                "start": 338,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 367,
+                        "raw": "0",
+                        "start": 366,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      },
+                      {
+                        "argument": {
+                          "end": 372,
+                          "raw": "10",
+                          "start": 370,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": 10.0
+                        },
+                        "end": 372,
+                        "operator": "-",
+                        "start": 369,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    ],
+                    "end": 373,
+                    "start": 365,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 376,
+                    "start": 375,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 364,
+                  "name": "line",
+                  "start": 360,
+                  "type": "Identifier"
+                },
+                "end": 377,
+                "start": 360,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 390,
+                    "start": 389,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 388,
+                  "name": "close",
+                  "start": 383,
+                  "type": "Identifier"
+                },
+                "end": 391,
+                "start": 383,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 406,
+                    "raw": "5",
+                    "start": 405,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 5.0
+                  },
+                  {
+                    "end": 409,
+                    "start": 408,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 404,
+                  "name": "extrude",
+                  "start": 397,
+                  "type": "Identifier"
+                },
+                "end": 410,
+                "start": 397,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 410,
+            "start": 248,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 238,
+          "type": "VariableDeclarator"
+        },
         "end": 410,
         "kind": "const",
         "start": 238,

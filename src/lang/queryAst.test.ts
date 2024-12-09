@@ -17,6 +17,7 @@ import {
   doesSceneHaveSweepableSketch,
   traverse,
   getNodeFromPath,
+  doesSceneHaveExtrudedSketch,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -230,8 +231,7 @@ describe('testing getNodePathFromSourceRange', () => {
     expect(result).toEqual([
       ['body', ''],
       [0, 'index'],
-      ['declarations', 'VariableDeclaration'],
-      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['body', 'PipeExpression'],
       [2, 'index'],
@@ -250,8 +250,7 @@ describe('testing getNodePathFromSourceRange', () => {
     const expected = [
       ['body', ''],
       [0, 'index'],
-      ['declarations', 'VariableDeclaration'],
-      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['body', 'PipeExpression'],
       [3, 'index'],
@@ -293,8 +292,7 @@ describe('testing getNodePathFromSourceRange', () => {
     expect(result).toEqual([
       ['body', ''],
       [1, 'index'],
-      ['declarations', 'VariableDeclaration'],
-      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['cond', 'IfExpression'],
       ['left', 'BinaryExpression'],
@@ -324,8 +322,7 @@ describe('testing getNodePathFromSourceRange', () => {
     expect(result).toEqual([
       ['body', ''],
       [1, 'index'],
-      ['declarations', 'VariableDeclaration'],
-      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['then_val', 'IfExpression'],
       ['body', 'IfExpression'],
@@ -353,7 +350,8 @@ describe('testing getNodePathFromSourceRange', () => {
     expect(result).toEqual([
       ['body', ''],
       [0, 'index'],
-      ['items', 'ImportStatement'],
+      ['selector', 'ImportStatement'],
+      ['items', 'ImportSelector'],
       [1, 'index'],
       ['name', 'ImportItem'],
     ])
@@ -653,6 +651,38 @@ extrude001 = extrude(10, sketch001)
 `
     const ast = assertParse(exampleCode)
     const extrudable = doesSceneHaveSweepableSketch(ast)
+    expect(extrudable).toBeFalsy()
+  })
+})
+
+describe('Testing doesSceneHaveExtrudedSketch', () => {
+  it('finds extruded sketch as variable', async () => {
+    const exampleCode = `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+extrude001 = extrude(1, sketch001)
+`
+    const ast = assertParse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveExtrudedSketch(ast)
+    expect(extrudable).toBeTruthy()
+  })
+  it('finds extruded sketch in pipe', async () => {
+    const exampleCode = `extrude001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> extrude(1, %)
+`
+    const ast = assertParse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveExtrudedSketch(ast)
+    expect(extrudable).toBeTruthy()
+  })
+  it('finds no extrusion with sketch only', async () => {
+    const exampleCode = `extrude001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+`
+    const ast = assertParse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveExtrudedSketch(ast)
     expect(extrudable).toBeFalsy()
   })
 })

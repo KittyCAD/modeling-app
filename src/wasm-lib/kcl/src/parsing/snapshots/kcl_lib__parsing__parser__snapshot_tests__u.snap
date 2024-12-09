@@ -1,95 +1,91 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3957
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 34,
-          "id": {
-            "end": 10,
-            "name": "prop",
-            "start": 6,
-            "type": "Identifier"
-          },
-          "init": {
+      "declaration": {
+        "end": 28,
+        "id": {
+          "end": 4,
+          "name": "prop",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "computed": false,
+          "end": 28,
+          "object": {
             "computed": false,
-            "end": 34,
+            "end": 23,
             "object": {
               "computed": false,
-              "end": 29,
+              "end": 17,
               "object": {
                 "computed": false,
-                "end": 23,
+                "end": 13,
                 "object": {
-                  "computed": false,
-                  "end": 19,
-                  "object": {
-                    "end": 15,
-                    "name": "yo",
-                    "start": 13,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "property": {
-                    "end": 19,
-                    "name": "one",
-                    "start": 16,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  },
-                  "start": 13,
-                  "type": "MemberExpression",
-                  "type": "MemberExpression"
-                },
-                "property": {
-                  "end": 23,
-                  "name": "two",
-                  "start": 20,
+                  "end": 9,
+                  "name": "yo",
+                  "start": 7,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
-                "start": 13,
+                "property": {
+                  "end": 13,
+                  "name": "one",
+                  "start": 10,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "start": 7,
                 "type": "MemberExpression",
                 "type": "MemberExpression"
               },
               "property": {
-                "end": 29,
-                "name": "three",
-                "start": 24,
+                "end": 17,
+                "name": "two",
+                "start": 14,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 13,
+              "start": 7,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             "property": {
-              "end": 34,
-              "name": "four",
-              "start": 30,
+              "end": 23,
+              "name": "three",
+              "start": 18,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 13,
+            "start": 7,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
-      "end": 34,
+          "property": {
+            "end": 28,
+            "name": "four",
+            "start": 24,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "start": 7,
+          "type": "MemberExpression",
+          "type": "MemberExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 28,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 34,
+  "end": 28,
   "start": 0
 }

@@ -1,68 +1,64 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3946
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 24,
-          "id": {
-            "end": 12,
-            "name": "height",
-            "start": 6,
-            "type": "Identifier"
+      "declaration": {
+        "end": 18,
+        "id": {
+          "end": 6,
+          "name": "height",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "end": 18,
+          "left": {
+            "end": 10,
+            "raw": "1",
+            "start": 9,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 1.0
           },
-          "init": {
-            "end": 24,
-            "left": {
+          "operator": "-",
+          "right": {
+            "computed": false,
+            "end": 18,
+            "object": {
               "end": 16,
-              "raw": "1",
-              "start": 15,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 1.0
+              "name": "obj",
+              "start": 13,
+              "type": "Identifier",
+              "type": "Identifier"
             },
-            "operator": "-",
-            "right": {
-              "computed": false,
-              "end": 24,
-              "object": {
-                "end": 22,
-                "name": "obj",
-                "start": 19,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "property": {
-                "end": 24,
-                "name": "a",
-                "start": 23,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "start": 19,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+            "property": {
+              "end": 18,
+              "name": "a",
+              "start": 17,
+              "type": "Identifier",
+              "type": "Identifier"
             },
-            "start": 15,
-            "type": "BinaryExpression",
-            "type": "BinaryExpression"
+            "start": 13,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
           },
-          "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
-      "end": 24,
+          "start": 9,
+          "type": "BinaryExpression",
+          "type": "BinaryExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 18,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 24,
+  "end": 18,
   "start": 0
 }

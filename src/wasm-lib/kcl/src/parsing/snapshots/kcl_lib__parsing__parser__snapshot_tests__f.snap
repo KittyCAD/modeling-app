@@ -1,47 +1,43 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3907
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 11,
-          "id": {
-            "end": 7,
-            "name": "x",
-            "start": 6,
-            "type": "Identifier"
-          },
-          "init": {
-            "end": 11,
-            "raw": "1",
-            "start": 10,
-            "type": "Literal",
-            "type": "Literal",
-            "value": 1.0
-          },
-          "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
-      "end": 11,
+      "declaration": {
+        "end": 5,
+        "id": {
+          "end": 1,
+          "name": "x",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "end": 5,
+          "raw": "1",
+          "start": 4,
+          "type": "Literal",
+          "type": "Literal",
+          "value": 1.0
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 5,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 40,
+  "end": 34,
   "nonCodeMeta": {
     "nonCodeNodes": {
       "0": [
         {
-          "end": 40,
-          "start": 11,
+          "end": 34,
+          "start": 5,
           "type": "NonCodeNode",
           "value": {
             "type": "inlineComment",

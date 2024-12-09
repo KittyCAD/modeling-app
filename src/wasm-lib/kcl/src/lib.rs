@@ -60,10 +60,8 @@ mod coredump;
 mod docs;
 mod engine;
 mod errors;
-mod executor;
+mod execution;
 mod fs;
-mod function_param;
-mod kcl_value;
 pub mod lint;
 mod log;
 mod lsp;
@@ -84,23 +82,22 @@ mod wasm;
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError};
-pub use executor::{ExecState, ExecutorContext, ExecutorSettings};
+pub use execution::{
+    cache::{CacheInformation, OldAstState},
+    ExecState, ExecutorContext, ExecutorSettings,
+};
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
-pub use parsing::ast::{
-    cache::{CacheInformation, OldAstState},
-    modify::modify_ast_for_sketch,
-    types::FormatOptions,
-};
+pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::{ModuleId, SourceRange};
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    pub use crate::executor::{DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch};
+    pub use crate::execution::{DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch};
 }
 
 #[cfg(target_arch = "wasm32")]

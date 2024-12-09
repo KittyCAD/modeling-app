@@ -6,8 +6,7 @@ use super::{
 };
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue},
-    function_param::FunctionParam,
+    execution::{ExecState, FunctionParam, KclValue},
     source_range::SourceRange,
 };
 

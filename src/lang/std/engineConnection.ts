@@ -1399,7 +1399,6 @@ export class EngineCommandManager extends EventTarget {
   }
 
   private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
-  private modifyGrid: (hidden: boolean) => Promise<void> | null = () => null
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
@@ -1432,7 +1431,6 @@ export class EngineCommandManager extends EventTarget {
     height,
     token,
     makeDefaultPlanes,
-    modifyGrid,
     settings = {
       pool: null,
       theme: Themes.Dark,
@@ -1452,14 +1450,12 @@ export class EngineCommandManager extends EventTarget {
     height: number
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
-    modifyGrid: (hidden: boolean) => Promise<void>
     settings?: SettingsViaQueryString
   }) {
     if (settings) {
       this.settings = settings
     }
     this.makeDefaultPlanes = makeDefaultPlanes
-    this.modifyGrid = modifyGrid
     if (width === 0 || height === 0) {
       return
     }
@@ -1539,21 +1535,15 @@ export class EngineCommandManager extends EventTarget {
           type: 'default_camera_get_settings',
         },
       })
-      // We want modify the grid first because we don't want it to flash.
-      // Ideally these would already be default hidden in engine (TODO do
-      // that) https://github.com/KittyCAD/engine/issues/2282
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.modifyGrid(!this.settings.showScaleGrid)?.then(async () => {
-        await this.initPlanes()
-        setIsStreamReady(true)
+      await this.initPlanes()
+      setIsStreamReady(true)
 
-        // Other parts of the application should use this to react on scene ready.
-        this.dispatchEvent(
-          new CustomEvent(EngineCommandManagerEvents.SceneReady, {
-            detail: this.engineConnection,
-          })
-        )
-      })
+      // Other parts of the application should use this to react on scene ready.
+      this.dispatchEvent(
+        new CustomEvent(EngineCommandManagerEvents.SceneReady, {
+          detail: this.engineConnection,
+        })
+      )
     }
 
     this.engineConnection.addEventListener(
@@ -1878,17 +1868,6 @@ export class EngineCommandManager extends EventTarget {
       await this.initPlanes()
     }
     return JSON.stringify(this.defaultPlanes)
-  }
-  clearScene(): void {
-    const deleteCmd: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'scene_clear_all',
-      },
-    }
-    this.clearDefaultPlanes()
-    this.engineConnection?.send(deleteCmd)
   }
   addCommandLog(message: CommandLog) {
     if (this.commandLogs.length > 500) {
@@ -2221,15 +2200,6 @@ export class EngineCommandManager extends EventTarget {
         color: getThemeColorForEngine(opposingTheme),
       },
     }).catch(reportRejection)
-  }
-
-  /**
-   * Set the visibility of the scale grid in the engine scene.
-   * @param visible - whether to show or hide the scale grid
-   */
-  setScaleGridVisibility(visible: boolean) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.modifyGrid(!visible)
   }
 
   // Some "objects" have the same source range, such as sketch_mode_start and start_path.

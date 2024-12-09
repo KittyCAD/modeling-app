@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Error from executing array_index_oob.kcl
-snapshot_kind: text
 ---
 KCL UndefinedValue error
 

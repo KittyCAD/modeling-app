@@ -1,6 +1,6 @@
 //! The executor for the AST.
 
-use std::{collections::HashSet, sync::Arc};
+use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
@@ -20,14 +20,21 @@ use serde::{Deserialize, Serialize};
 type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
-pub use crate::kcl_value::KclValue;
+pub use function_param::FunctionParam;
+pub use kcl_value::{KclObjectFields, KclValue};
+
+pub(crate) mod cache;
+mod exec_ast;
+mod function_param;
+mod kcl_value;
+
 use crate::{
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
+    execution::cache::{CacheInformation, CacheResult},
     fs::{FileManager, FileSystem},
-    parsing::ast::{
-        cache::{get_changed_program, CacheInformation},
-        types::{BodyItem, Expr, FunctionExpression, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode},
+    parsing::ast::types::{
+        BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode,
     },
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
@@ -50,7 +57,7 @@ pub struct ExecState {
     /// expression.  If we're not currently in a pipeline, this will be None.
     pub pipe_value: Option<KclValue>,
     /// Identifiers that have been exported from the current module.
-    pub module_exports: HashSet<String>,
+    pub module_exports: Vec<String>,
     /// The stack of import statements for detecting circular module imports.
     /// If this is empty, we're not currently executing an import statement.
     pub import_stack: Vec<std::path::PathBuf>,
@@ -61,7 +68,7 @@ pub struct ExecState {
 }
 
 impl ExecState {
-    pub fn add_module(&mut self, path: std::path::PathBuf) -> ModuleId {
+    fn add_module(&mut self, path: std::path::PathBuf) -> ModuleId {
         // Need to avoid borrowing self in the closure.
         let new_module_id = ModuleId::from_usize(self.path_to_source_id.len());
         let mut is_new = false;
@@ -1498,6 +1505,9 @@ pub struct ExecutorSettings {
     /// Should engine store this for replay?
     /// If so, under what name?
     pub replay: Option<String>,
+    /// The directory of the current project.  This is used for resolving import
+    /// paths.  If None is given, the current working directory is used.
+    pub project_directory: Option<PathBuf>,
 }
 
 impl Default for ExecutorSettings {
@@ -1508,6 +1518,7 @@ impl Default for ExecutorSettings {
             enable_ssao: false,
             show_grid: false,
             replay: None,
+            project_directory: None,
         }
     }
 }
@@ -1520,6 +1531,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
             replay: None,
+            project_directory: None,
         }
     }
 }
@@ -1532,6 +1544,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             enable_ssao: config.settings.modeling.enable_ssao.into(),
             show_grid: config.settings.modeling.show_scale_grid,
             replay: None,
+            project_directory: None,
         }
     }
 }
@@ -1544,6 +1557,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             enable_ssao: modeling.enable_ssao.into(),
             show_grid: modeling.show_scale_grid,
             replay: None,
+            project_directory: None,
         }
     }
 }
@@ -1639,17 +1653,6 @@ impl ExecutorContext {
         let engine: Arc<Box<dyn EngineManager>> =
             Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
 
-        // Set the edge visibility.
-        engine
-            .batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                &ModelingCmd::from(mcmd::EdgeLinesVisible {
-                    hidden: !settings.highlight_edges,
-                }),
-            )
-            .await?;
-
         Ok(Self {
             engine,
             fs: Arc::new(FileManager::new()),
@@ -1676,7 +1679,7 @@ impl ExecutorContext {
     pub async fn new(
         engine_manager: crate::engine::conn_wasm::EngineCommandManager,
         fs_manager: crate::fs::wasm::FileSystemManager,
-        units: UnitLength,
+        settings: ExecutorSettings,
     ) -> Result<Self, String> {
         Ok(ExecutorContext {
             engine: Arc::new(Box::new(
@@ -1686,16 +1689,16 @@ impl ExecutorContext {
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
             stdlib: Arc::new(StdLib::new()),
-            settings: ExecutorSettings {
-                units,
-                ..Default::default()
-            },
+            settings,
             context_type: ContextType::Live,
         })
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub async fn new_mock(fs_manager: crate::fs::wasm::FileSystemManager, units: UnitLength) -> Result<Self, String> {
+    pub async fn new_mock(
+        fs_manager: crate::fs::wasm::FileSystemManager,
+        settings: ExecutorSettings,
+    ) -> Result<Self, String> {
         Ok(ExecutorContext {
             engine: Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -1704,10 +1707,7 @@ impl ExecutorContext {
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
             stdlib: Arc::new(StdLib::new()),
-            settings: ExecutorSettings {
-                units,
-                ..Default::default()
-            },
+            settings,
             context_type: ContextType::Mock,
         })
     }
@@ -1774,6 +1774,7 @@ impl ExecutorContext {
                 enable_ssao: false,
                 show_grid: false,
                 replay: None,
+                project_directory: None,
             },
             None,
             engine_addr,
@@ -1785,7 +1786,7 @@ impl ExecutorContext {
     pub async fn reset_scene(
         &self,
         exec_state: &mut ExecState,
-        source_range: crate::executor::SourceRange,
+        source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
         self.engine
             .clear_scene(&mut exec_state.id_generator, source_range)
@@ -1794,6 +1795,71 @@ impl ExecutorContext {
         // We do not create the planes here as the post hook in wasm will do that
         // AND if we aren't in wasm it doesn't really matter.
         Ok(())
+    }
+    // Given an old ast, old program memory and new ast, find the parts of the code that need to be
+    // re-executed.
+    // This function should never error, because in the case of any internal error, we should just pop
+    // the cache.
+    pub async fn get_changed_program(&self, info: CacheInformation) -> Option<CacheResult> {
+        let Some(old) = info.old else {
+            // We have no old info, we need to re-execute the whole thing.
+            return Some(CacheResult {
+                clear_scene: true,
+                program: info.new_ast,
+            });
+        };
+
+        // If the settings are different we might need to bust the cache.
+        // We specifically do this before checking if they are the exact same.
+        if old.settings != self.settings {
+            // If the units are different we need to re-execute the whole thing.
+            if old.settings.units != self.settings.units {
+                return Some(CacheResult {
+                    clear_scene: true,
+                    program: info.new_ast,
+                });
+            }
+
+            // If anything else is different we do not need to re-execute, but rather just
+            // run the settings again.
+
+            if self
+                .engine
+                .reapply_settings(&self.settings, Default::default())
+                .await
+                .is_err()
+            {
+                // Bust the cache, we errored.
+                return Some(CacheResult {
+                    clear_scene: true,
+                    program: info.new_ast,
+                });
+            }
+        }
+
+        // If the ASTs are the EXACT same we return None.
+        // We don't even need to waste time computing the digests.
+        if old.ast == info.new_ast {
+            return None;
+        }
+
+        let mut old_ast = old.ast.inner;
+        old_ast.compute_digest();
+        let mut new_ast = info.new_ast.inner.clone();
+        new_ast.compute_digest();
+
+        // Check if the digest is the same.
+        if old_ast.digest == new_ast.digest {
+            return None;
+        }
+
+        // Check if the changes were only to Non-code areas, like comments or whitespace.
+
+        // For any unhandled cases just re-execute the whole thing.
+        Some(CacheResult {
+            clear_scene: true,
+            program: info.new_ast,
+        })
     }
 
     /// Perform the execution of a program.
@@ -1815,7 +1881,7 @@ impl ExecutorContext {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Get the program that actually changed from the old and new information.
-        let cache_result = get_changed_program(cache_info.clone(), &self.settings);
+        let cache_result = self.get_changed_program(cache_info.clone()).await;
 
         // Check if we don't need to re-execute.
         let Some(cache_result) = cache_result else {
@@ -1832,25 +1898,11 @@ impl ExecutorContext {
 
         // TODO: Use the top-level file's path.
         exec_state.add_module(std::path::PathBuf::from(""));
-        // Before we even start executing the program, set the units.
-        self.engine
-            .batch_modeling_cmd(
-                exec_state.id_generator.next_uuid(),
-                SourceRange::default(),
-                &ModelingCmd::from(mcmd::SetSceneUnits {
-                    unit: match self.settings.units {
-                        UnitLength::Cm => kcmc::units::UnitLength::Centimeters,
-                        UnitLength::Ft => kcmc::units::UnitLength::Feet,
-                        UnitLength::In => kcmc::units::UnitLength::Inches,
-                        UnitLength::M => kcmc::units::UnitLength::Meters,
-                        UnitLength::Mm => kcmc::units::UnitLength::Millimeters,
-                        UnitLength::Yd => kcmc::units::UnitLength::Yards,
-                    },
-                }),
-            )
-            .await?;
 
-        self.inner_execute(&cache_result.program, exec_state, crate::executor::BodyType::Root)
+        // Re-apply the settings, in case the cache was busted.
+        self.engine.reapply_settings(&self.settings, Default::default()).await?;
+
+        self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
             .await?;
         let session_data = self.engine.get_session_data();
         Ok(session_data)
@@ -1870,91 +1922,66 @@ impl ExecutorContext {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
                     let source_range = SourceRange::from(import_stmt);
-                    let path = import_stmt.path.clone();
-                    // Empty path is used by the top-level module.
-                    if path.is_empty() {
-                        return Err(KclError::Semantic(KclErrorDetails {
-                            message: "import path cannot be empty".to_owned(),
-                            source_ranges: vec![source_range],
-                        }));
-                    }
-                    let resolved_path = std::path::PathBuf::from(&path);
-                    if exec_state.import_stack.contains(&resolved_path) {
-                        return Err(KclError::ImportCycle(KclErrorDetails {
-                            message: format!(
-                                "circular import of modules is not allowed: {} -> {}",
-                                exec_state
-                                    .import_stack
-                                    .iter()
-                                    .map(|p| p.as_path().to_string_lossy())
-                                    .collect::<Vec<_>>()
-                                    .join(" -> "),
-                                resolved_path.to_string_lossy()
-                            ),
-                            source_ranges: vec![import_stmt.into()],
-                        }));
-                    }
-                    let module_id = exec_state.add_module(resolved_path.clone());
-                    let source = self.fs.read_to_string(&resolved_path, source_range).await?;
-                    // TODO handle parsing errors properly
-                    let program = crate::parsing::parse_str(&source, module_id).parse_errs_as_err()?;
-                    let (module_memory, module_exports) = {
-                        exec_state.import_stack.push(resolved_path.clone());
-                        let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
-                        let original_memory = std::mem::take(&mut exec_state.memory);
-                        let original_exports = std::mem::take(&mut exec_state.module_exports);
-                        let result = self
-                            .inner_execute(&program, exec_state, crate::executor::BodyType::Root)
-                            .await;
-                        let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
-                        let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
-                        self.engine.replace_execution_kind(original_execution);
-                        exec_state.import_stack.pop();
+                    let (module_memory, module_exports) =
+                        self.open_module(&import_stmt.path, exec_state, source_range).await?;
 
-                        result.map_err(|err| {
-                            if let KclError::ImportCycle(_) = err {
-                                // It was an import cycle.  Keep the original message.
-                                err.override_source_ranges(vec![source_range])
-                            } else {
-                                KclError::Semantic(KclErrorDetails {
-                                    message: format!(
-                                        "Error loading imported file. Open it to view more details. {path}: {}",
-                                        err.message()
-                                    ),
-                                    source_ranges: vec![source_range],
-                                })
+                    match &import_stmt.selector {
+                        ImportSelector::List { items } => {
+                            for import_item in items {
+                                // Extract the item from the module.
+                                let item =
+                                    module_memory
+                                        .get(&import_item.name.name, import_item.into())
+                                        .map_err(|_err| {
+                                            KclError::UndefinedValue(KclErrorDetails {
+                                                message: format!("{} is not defined in module", import_item.name.name),
+                                                source_ranges: vec![SourceRange::from(&import_item.name)],
+                                            })
+                                        })?;
+                                // Check that the item is allowed to be imported.
+                                if !module_exports.contains(&import_item.name.name) {
+                                    return Err(KclError::Semantic(KclErrorDetails {
+                                        message: format!(
+                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                            import_item.name.name
+                                        ),
+                                        source_ranges: vec![SourceRange::from(&import_item.name)],
+                                    }));
+                                }
+
+                                // Add the item to the current module.
+                                exec_state.memory.add(
+                                    import_item.identifier(),
+                                    item.clone(),
+                                    SourceRange::from(&import_item.name),
+                                )?;
+
+                                if let ItemVisibility::Export = import_stmt.visibility {
+                                    exec_state.module_exports.push(import_item.identifier().to_owned());
+                                }
                             }
-                        })?;
+                        }
+                        ImportSelector::Glob(_) => {
+                            for name in module_exports.iter() {
+                                let item = module_memory.get(name, source_range).map_err(|_err| {
+                                    KclError::Internal(KclErrorDetails {
+                                        message: format!("{} is not defined in module (but was exported?)", name),
+                                        source_ranges: vec![source_range],
+                                    })
+                                })?;
+                                exec_state.memory.add(name, item.clone(), source_range)?;
 
-                        (module_memory, module_exports)
-                    };
-                    for import_item in &import_stmt.items {
-                        // Extract the item from the module.
-                        let item = module_memory
-                            .get(&import_item.name.name, import_item.into())
-                            .map_err(|_err| {
-                                KclError::UndefinedValue(KclErrorDetails {
-                                    message: format!("{} is not defined in module", import_item.name.name),
-                                    source_ranges: vec![SourceRange::from(&import_item.name)],
-                                })
-                            })?;
-                        // Check that the item is allowed to be imported.
-                        if !module_exports.contains(&import_item.name.name) {
+                                if let ItemVisibility::Export = import_stmt.visibility {
+                                    exec_state.module_exports.push(name.clone());
+                                }
+                            }
+                        }
+                        ImportSelector::None(_) => {
                             return Err(KclError::Semantic(KclErrorDetails {
-                                message: format!(
-                                    "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                    import_item.name.name
-                                ),
-                                source_ranges: vec![SourceRange::from(&import_item.name)],
+                                message: "Importing whole module is not yet implemented, sorry.".to_owned(),
+                                source_ranges: vec![source_range],
                             }));
                         }
-
-                        // Add the item to the current module.
-                        exec_state.memory.add(
-                            import_item.identifier(),
-                            item.clone(),
-                            SourceRange::from(&import_item.name),
-                        )?;
                     }
                     last_expr = None;
                 }
@@ -1971,34 +1998,23 @@ impl ExecutorContext {
                     );
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
-                    for declaration in &variable_declaration.declarations {
-                        let var_name = declaration.id.name.to_string();
-                        let source_range = SourceRange::from(&declaration.init);
-                        let metadata = Metadata { source_range };
+                    let var_name = variable_declaration.declaration.id.name.to_string();
+                    let source_range = SourceRange::from(&variable_declaration.declaration.init);
+                    let metadata = Metadata { source_range };
 
-                        let memory_item = self
-                            .execute_expr(
-                                &declaration.init,
-                                exec_state,
-                                &metadata,
-                                StatementKind::Declaration { name: &var_name },
-                            )
-                            .await?;
-                        let is_function = memory_item.is_function();
-                        exec_state.memory.add(&var_name, memory_item, source_range)?;
-                        // Track exports.
-                        match variable_declaration.visibility {
-                            ItemVisibility::Export => {
-                                if !is_function {
-                                    return Err(KclError::Semantic(KclErrorDetails {
-                                        message: "Only functions can be exported".to_owned(),
-                                        source_ranges: vec![source_range],
-                                    }));
-                                }
-                                exec_state.module_exports.insert(var_name);
-                            }
-                            ItemVisibility::Default => {}
-                        }
+                    let memory_item = self
+                        .execute_expr(
+                            &variable_declaration.declaration.init,
+                            exec_state,
+                            &metadata,
+                            StatementKind::Declaration { name: &var_name },
+                        )
+                        .await?;
+                    exec_state.memory.add(&var_name, memory_item, source_range)?;
+
+                    // Track exports.
+                    if let ItemVisibility::Export = variable_declaration.visibility {
+                        exec_state.module_exports.push(var_name);
                     }
                     last_expr = None;
                 }
@@ -2031,6 +2047,68 @@ impl ExecutorContext {
         }
 
         Ok(last_expr)
+    }
+
+    async fn open_module(
+        &self,
+        path: &str,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<(ProgramMemory, Vec<String>), KclError> {
+        let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
+            project_dir.join(path)
+        } else {
+            std::path::PathBuf::from(&path)
+        };
+
+        if exec_state.import_stack.contains(&resolved_path) {
+            return Err(KclError::ImportCycle(KclErrorDetails {
+                message: format!(
+                    "circular import of modules is not allowed: {} -> {}",
+                    exec_state
+                        .import_stack
+                        .iter()
+                        .map(|p| p.as_path().to_string_lossy())
+                        .collect::<Vec<_>>()
+                        .join(" -> "),
+                    resolved_path.to_string_lossy()
+                ),
+                source_ranges: vec![source_range],
+            }));
+        }
+        let module_id = exec_state.add_module(resolved_path.clone());
+        let source = self.fs.read_to_string(&resolved_path, source_range).await?;
+        // TODO handle parsing errors properly
+        let program = crate::parsing::parse_str(&source, module_id).parse_errs_as_err()?;
+
+        exec_state.import_stack.push(resolved_path.clone());
+        let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
+        let original_memory = std::mem::take(&mut exec_state.memory);
+        let original_exports = std::mem::take(&mut exec_state.module_exports);
+        let result = self
+            .inner_execute(&program, exec_state, crate::execution::BodyType::Root)
+            .await;
+        let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
+        let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
+        self.engine.replace_execution_kind(original_execution);
+        exec_state.import_stack.pop();
+
+        result.map_err(|err| {
+            if let KclError::ImportCycle(_) = err {
+                // It was an import cycle.  Keep the original message.
+                err.override_source_ranges(vec![source_range])
+            } else {
+                KclError::Semantic(KclErrorDetails {
+                    message: format!(
+                        "Error loading imported file. Open it to view more details. {path}: {}",
+                        err.message()
+                    ),
+                    source_ranges: vec![source_range],
+                })
+            }
+        })?;
+
+        Ok((module_memory, module_exports))
     }
 
     pub async fn execute_expr<'a>(
@@ -2099,28 +2177,13 @@ impl ExecutorContext {
         self.settings.units = units;
     }
 
-    /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(
-        &self,
-        program: &Program,
-        exec_state: &mut ExecState,
-    ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.execute_and_prepare(program, exec_state).await
-    }
-
-    /// Execute the program, return the interpreter and outputs.
-    pub async fn execute_and_prepare(
-        &self,
-        program: &Program,
-        exec_state: &mut ExecState,
-    ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.run(program.clone().into(), exec_state).await?;
-
+    /// Get a snapshot of the current scene.
+    pub async fn prepare_snapshot(&self) -> std::result::Result<TakeSnapshot, ExecError> {
         // Zoom to fit.
         self.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
-                crate::executor::SourceRange::default(),
+                crate::execution::SourceRange::default(),
                 ModelingCmd::from(mcmd::ZoomToFit {
                     object_ids: Default::default(),
                     animated: false,
@@ -2134,7 +2197,7 @@ impl ExecutorContext {
             .engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
-                crate::executor::SourceRange::default(),
+                crate::execution::SourceRange::default(),
                 ModelingCmd::from(mcmd::TakeSnapshot {
                     format: ImageFormat::Png,
                 }),
@@ -2150,6 +2213,17 @@ impl ExecutorContext {
             )));
         };
         Ok(contents)
+    }
+
+    /// Execute the program, then get a PNG screenshot.
+    pub async fn execute_and_prepare_snapshot(
+        &self,
+        program: &Program,
+        exec_state: &mut ExecState,
+    ) -> std::result::Result<TakeSnapshot, ExecError> {
+        self.run(program.clone().into(), exec_state).await?;
+
+        self.prepare_snapshot().await
     }
 }
 
@@ -2247,9 +2321,12 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Node, Parameter};
+    use crate::{
+        parsing::ast::types::{DefaultParamVal, Identifier, Node, Parameter},
+        OldAstState,
+    };
 
-    pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
+    pub async fn parse_execute(code: &str) -> Result<(Program, ExecutorContext, ExecState)> {
         let program = Program::parse_no_errs(code)?;
 
         let ctx = ExecutorContext {
@@ -2260,9 +2337,9 @@ mod tests {
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::default();
-        ctx.run(program.into(), &mut exec_state).await?;
+        ctx.run(program.clone().into(), &mut exec_state).await?;
 
-        Ok(exec_state.memory)
+        Ok((program, ctx, exec_state))
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
@@ -2673,36 +2750,39 @@ let shape = layer() |> patternTransform(10, transform, %)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(5.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(5.0, mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(7.4, mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(1.0, mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
         let ast = r#"const myVar = pi() * 2"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(std::f64::consts::TAU, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            std::f64::consts::TAU,
+            mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(&memory, "thing").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(7.4, mem_get_json(&exec_state.memory, "thing").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2741,11 +2821,11 @@ fn check = (x) => {
 }
 check(false)
 "#;
-        let mem = parse_execute(ast).await.unwrap();
-        assert_eq!(false, mem_get_json(&mem, "notTrue").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(&mem, "notFalse").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(&mem, "c").as_bool().unwrap());
-        assert_eq!(false, mem_get_json(&mem, "d").as_bool().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(false, mem_get_json(&exec_state.memory, "notTrue").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(&exec_state.memory, "notFalse").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(&exec_state.memory, "c").as_bool().unwrap());
+        assert_eq!(false, mem_get_json(&exec_state.memory, "d").as_bool().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3124,5 +3204,311 @@ let w = f() + f()
         };
         let json = serde_json::to_string(&mem).unwrap();
         assert_eq!(json, r#"{"type":"Solids","value":[]}"#);
+    }
+
+    // Easy case where we have no old ast and memory.
+    // We need to re-execute everything.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_no_old_information() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+        let (program, ctx, _) = parse_execute(new).await.unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: None,
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert!(result.is_some());
+
+        let result = result.unwrap();
+
+        assert_eq!(result.program, program.ast);
+        assert!(result.clear_scene);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_changed_whitespace() {
+        let old = r#" // Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program_old, ctx, exec_state) = parse_execute(old).await.unwrap();
+
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program_old.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program_new.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_changed_code_comment_start_of_program() {
+        let old = r#" // Removed the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, ctx, exec_state) = parse_execute(old).await.unwrap();
+
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program_new.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_changed_code_comments() {
+        let old = r#" // Removed the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %) // my thing
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, ctx, exec_state) = parse_execute(old).await.unwrap();
+
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program_new.ast.clone(),
+            })
+            .await;
+
+        assert!(result.is_some());
+
+        let result = result.unwrap();
+
+        assert_eq!(result.program, program_new.ast);
+        assert!(result.clear_scene);
+    }
+
+    // Changing the units with the exact same file should bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_units() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        // Change the settings to cm.
+        ctx.settings.units = crate::UnitLength::Cm;
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert!(result.is_some());
+
+        let result = result.unwrap();
+
+        assert_eq!(result.program, program.ast);
+        assert!(result.clear_scene);
+    }
+
+    // Changing the grid settings with the exact same file should NOT bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_grid_setting() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        // Change the settings.
+        ctx.settings.show_grid = !ctx.settings.show_grid;
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    // Changing the edge visibility settings with the exact same file should NOT bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        // Change the settings.
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
     }
 }

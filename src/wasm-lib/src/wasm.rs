@@ -1,10 +1,12 @@
 //! Wasm bindings for `kcl`.
 
-use std::{str::FromStr, sync::Arc};
+use std::sync::Arc;
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program};
+use kcl_lib::{
+    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program,
+};
 use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
@@ -22,18 +24,48 @@ async fn read_old_ast_memory() -> Option<OldAstState> {
     lock.clone()
 }
 
+async fn bust_cache() {
+    // We don't use the cache in mock mode.
+    let mut current_cache = OLD_AST_MEMORY.write().await;
+    // Set the cache to None.
+    *current_cache = None;
+}
+
+// wasm_bindgen wrapper for clearing the scene and busting the cache.
+#[wasm_bindgen]
+pub async fn clear_scene_and_bust_cache(
+    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
+) -> Result<(), String> {
+    console_error_panic_hook::set_once();
+
+    // Bust the cache.
+    bust_cache().await;
+
+    let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
+        .await
+        .map_err(|e| format!("{:?}", e))?;
+
+    let mut id_generator: IdGenerator = Default::default();
+    engine
+        .clear_scene(&mut id_generator, Default::default())
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn execute_wasm(
-    program_str: &str,
+pub async fn execute(
+    program_ast_json: &str,
     program_memory_override_str: &str,
-    units: &str,
+    settings: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     fs_manager: kcl_lib::wasm_engine::FileSystemManager,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let program: Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
     let program_memory_override: Option<kcl_lib::exec::ProgramMemory> =
         serde_json::from_str(program_memory_override_str).map_err(|e| e.to_string())?;
 
@@ -41,15 +73,14 @@ pub async fn execute_wasm(
     // You cannot override the memory in non-mock mode.
     let is_mock = program_memory_override.is_some();
 
-    let units = kcl_lib::UnitLength::from_str(units).map_err(|e| e.to_string())?;
+    let settings: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
     let ctx = if is_mock {
-        kcl_lib::ExecutorContext::new_mock(fs_manager, units).await?
+        kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?
     } else {
-        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, units).await?
+        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?
     };
 
-    let mut exec_state = ExecState { ..ExecState::default() };
-
+    let mut exec_state = ExecState::default();
     let mut old_ast_memory = None;
 
     // Populate from the old exec state if it exists.
@@ -75,10 +106,7 @@ pub async fn execute_wasm(
         .map_err(String::from)
     {
         if !is_mock {
-            // We don't use the cache in mock mode.
-            let mut current_cache = OLD_AST_MEMORY.write().await;
-            // Set the cache to None.
-            *current_cache = None;
+            bust_cache().await;
         }
 
         // Throw the error.
@@ -107,10 +135,10 @@ pub async fn execute_wasm(
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn kcl_lint(program_str: &str) -> Result<JsValue, JsValue> {
+pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
 
-    let program: Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
     let mut findings = vec![];
     for discovered_finding in program.lint_all().into_iter().flatten() {
         findings.push(discovered_finding);
@@ -140,35 +168,18 @@ pub async fn make_default_planes(
     JsValue::from_serde(&default_planes).map_err(|e| e.to_string())
 }
 
-// wasm_bindgen wrapper for modifying the grid
-#[wasm_bindgen]
-pub async fn modify_grid(
-    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
-    hidden: bool,
-) -> Result<(), String> {
-    console_error_panic_hook::set_once();
-    // deserialize the ast from a stringified json
-
-    let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-    engine.modify_grid(hidden).await.map_err(String::from)?;
-
-    Ok(())
-}
-
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
 pub async fn modify_ast_for_sketch_wasm(
     manager: kcl_lib::wasm_engine::EngineCommandManager,
-    program_str: &str,
+    program_ast_json: &str,
     sketch_name: &str,
     plane_type: &str,
     sketch_id: &str,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let mut program: Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let mut program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
 
     let plane: kcl_lib::exec::PlaneType = serde_json::from_str(plane_type).map_err(|e| e.to_string())?;
 
@@ -215,10 +226,10 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
 }
 
 #[wasm_bindgen]
-pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
+pub fn parse_wasm(kcl_program_source: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let (program, errs) = Program::parse(js).map_err(String::from)?;
+    let (program, errs) = Program::parse(kcl_program_source).map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&(program, errs)).map_err(|e| e.to_string())
@@ -268,7 +279,7 @@ impl ServerConfig {
 pub async fn kcl_lsp_run(
     config: ServerConfig,
     engine_manager: Option<kcl_lib::wasm_engine::EngineCommandManager>,
-    units: &str,
+    settings: Option<String>,
     token: String,
     baseurl: String,
 ) -> Result<(), JsValue> {
@@ -281,8 +292,12 @@ pub async fn kcl_lsp_run(
     } = config;
 
     let executor_ctx = if let Some(engine_manager) = engine_manager {
-        let units = kcl_lib::UnitLength::from_str(units).map_err(|e| e.to_string())?;
-        Some(kcl_lib::ExecutorContext::new(engine_manager, fs.clone(), units).await?)
+        let settings: kcl_lib::Configuration = if let Some(settings) = settings {
+            serde_json::from_str(&settings).map_err(|e| e.to_string())?
+        } else {
+            Default::default()
+        };
+        Some(kcl_lib::ExecutorContext::new(engine_manager, fs.clone(), settings.into()).await?)
     } else {
         None
     };

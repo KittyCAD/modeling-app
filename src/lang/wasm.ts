@@ -1,14 +1,13 @@
 import init, {
   parse_wasm,
   recast_wasm,
-  execute_wasm,
+  execute,
   kcl_lint,
   modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
   program_memory_init,
   make_default_planes,
-  modify_grid,
   coredump,
   toml_stringify,
   default_app_settings,
@@ -16,6 +15,7 @@ import init, {
   parse_project_settings,
   default_project_settings,
   base64_decode,
+  clear_scene_and_bust_cache,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -42,7 +42,9 @@ import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+import { getChangedSettingsAtLevel } from 'lib/settings/settingsUtils'
 
+export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
 export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
@@ -492,18 +494,20 @@ export const _executor = async (
     return Promise.reject(programMemoryOverride)
 
   try {
-    let baseUnit = 'mm'
+    let jsAppSettings = default_app_settings()
     if (!TEST) {
       const getSettingsState = import('components/SettingsAuthProvider').then(
         (module) => module.getSettingsState
       )
-      baseUnit =
-        (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
+      const settings = (await getSettingsState)()
+      if (settings) {
+        jsAppSettings = getChangedSettingsAtLevel(settings, 'user')
+      }
     }
-    const execState: RawExecState = await execute_wasm(
+    const execState: RawExecState = await execute(
       JSON.stringify(node),
       JSON.stringify(programMemoryOverride?.toRaw() || null),
-      baseUnit,
+      JSON.stringify({ settings: jsAppSettings }),
       engineCommandManager,
       fileSystemManager
     )
@@ -547,20 +551,6 @@ export const makeDefaultPlanes = async (
   } catch (e) {
     // TODO: do something real with the error.
     console.log('make default planes error', e)
-    return Promise.reject(e)
-  }
-}
-
-export const modifyGrid = async (
-  engineCommandManager: EngineCommandManager,
-  hidden: boolean
-): Promise<void> => {
-  try {
-    await modify_grid(engineCommandManager, hidden)
-    return
-  } catch (e) {
-    // TODO: do something real with the error.
-    console.log('modify grid error', e)
     return Promise.reject(e)
   }
 }
@@ -696,6 +686,21 @@ export function tomlStringify(toml: any): string | Error {
 
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
+}
+
+export async function clearSceneAndBustCache(
+  engineCommandManager: EngineCommandManager
+): Promise<null | Error> {
+  try {
+    await clear_scene_and_bust_cache(engineCommandManager)
+  } catch (e: any) {
+    console.error('clear_scene_and_bust_cache: error', e)
+    return Promise.reject(
+      new Error(`Error on clear_scene_and_bust_cache: ${e}`)
+    )
+  }
+
+  return null
 }
 
 export function parseAppSettings(
