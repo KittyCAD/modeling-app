@@ -1,97 +1,93 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3995
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 49,
-          "id": {
-            "end": 11,
-            "name": "myBox",
-            "start": 6,
-            "type": "Identifier"
-          },
-          "init": {
-            "body": [
-              {
-                "arguments": [
-                  {
-                    "end": 29,
-                    "name": "p",
-                    "start": 28,
-                    "type": "Identifier",
-                    "type": "Identifier"
-                  }
-                ],
-                "callee": {
-                  "end": 27,
-                  "name": "startSketchAt",
-                  "start": 14,
-                  "type": "Identifier"
-                },
-                "end": 30,
-                "start": 14,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "end": 41,
-                        "raw": "0",
-                        "start": 40,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": 0.0
-                      },
-                      {
-                        "end": 44,
-                        "name": "l",
-                        "start": 43,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "end": 45,
-                    "start": 39,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 48,
-                    "start": 47,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 38,
-                  "name": "line",
-                  "start": 34,
-                  "type": "Identifier"
-                },
-                "end": 49,
-                "start": 34,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              }
-            ],
-            "end": 49,
-            "start": 14,
-            "type": "PipeExpression",
-            "type": "PipeExpression"
-          },
+      "declaration": {
+        "end": 49,
+        "id": {
+          "end": 11,
+          "name": "myBox",
           "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "type": "Identifier"
+        },
+        "init": {
+          "body": [
+            {
+              "arguments": [
+                {
+                  "end": 29,
+                  "name": "p",
+                  "start": 28,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
+              ],
+              "callee": {
+                "end": 27,
+                "name": "startSketchAt",
+                "start": 14,
+                "type": "Identifier"
+              },
+              "end": 30,
+              "start": 14,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "elements": [
+                    {
+                      "end": 41,
+                      "raw": "0",
+                      "start": 40,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": 0.0
+                    },
+                    {
+                      "end": 44,
+                      "name": "l",
+                      "start": 43,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  ],
+                  "end": 45,
+                  "start": 39,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                },
+                {
+                  "end": 48,
+                  "start": 47,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
+              ],
+              "callee": {
+                "end": 38,
+                "name": "line",
+                "start": 34,
+                "type": "Identifier"
+              },
+              "end": 49,
+              "start": 34,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            }
+          ],
+          "end": 49,
+          "start": 14,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
       "end": 49,
       "kind": "const",
       "start": 0,

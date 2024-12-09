@@ -155,7 +155,6 @@ export class CameraControls {
       this.camera.zoom = camProps.zoom || 1
     }
     this.camera.updateProjectionMatrix()
-    console.log('doing this thing', camProps)
     this.update(true)
   }
 

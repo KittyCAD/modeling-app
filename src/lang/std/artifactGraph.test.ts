@@ -1,4 +1,4 @@
-import { makeDefaultPlanes, parse, initPromise, Program } from 'lang/wasm'
+import { makeDefaultPlanes, assertParse, initPromise, Program } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import {
   OrderedCommand,
@@ -148,11 +148,7 @@ beforeAll(async () => {
         ][]
         const cacheToWriteToFileTemp: Partial<CacheShape> = {}
         for (const [codeKey, code] of cacheEntries) {
-          const ast = parse(code)
-          if (err(ast)) {
-            console.error(ast)
-            return Promise.reject(ast)
-          }
+          const ast = assertParse(code)
           await kclManager.executeAst({ ast })
 
           cacheToWriteToFileTemp[codeKey] = {
@@ -403,11 +399,7 @@ describe('capture graph of sketchOnFaceOnFace...', () => {
 })
 
 function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
-  const ast = parse(codeKey)
-  if (err(ast)) {
-    console.error(ast)
-    throw ast
-  }
+  const ast = assertParse(codeKey)
   const file = fs.readFileSync(fullPath, 'utf-8')
   const parsed: CacheShape = JSON.parse(file)
   // these either already exist from the last run, or were created in

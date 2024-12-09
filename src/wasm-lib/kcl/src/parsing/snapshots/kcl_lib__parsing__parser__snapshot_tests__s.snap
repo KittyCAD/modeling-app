@@ -1,61 +1,57 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3955
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
+      "declaration": {
+        "end": 27,
+        "id": {
+          "end": 10,
+          "name": "prop",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "computed": true,
           "end": 27,
-          "id": {
-            "end": 10,
-            "name": "prop",
-            "start": 6,
-            "type": "Identifier"
-          },
-          "init": {
-            "computed": true,
-            "end": 27,
+          "object": {
+            "computed": false,
+            "end": 22,
             "object": {
-              "computed": false,
-              "end": 22,
-              "object": {
-                "end": 15,
-                "name": "yo",
-                "start": 13,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "property": {
-                "end": 21,
-                "raw": "\"one\"",
-                "start": 16,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "one"
-              },
+              "end": 15,
+              "name": "yo",
               "start": 13,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
-            },
-            "property": {
-              "end": 26,
-              "name": "two",
-              "start": 23,
               "type": "Identifier",
               "type": "Identifier"
+            },
+            "property": {
+              "end": 21,
+              "raw": "\"one\"",
+              "start": 16,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "one"
             },
             "start": 13,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "property": {
+            "end": 26,
+            "name": "two",
+            "start": 23,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "start": 13,
+          "type": "MemberExpression",
+          "type": "MemberExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
       "end": 27,
       "kind": "const",
       "start": 0,

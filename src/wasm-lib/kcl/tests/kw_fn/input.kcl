@@ -1,0 +1,5 @@
+fn increment(@x) {
+  return x + 1
+}
+
+two = increment(1)

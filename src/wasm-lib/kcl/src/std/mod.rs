@@ -9,7 +9,6 @@ pub mod extrude;
 pub mod fillet;
 pub mod helix;
 pub mod import;
-pub mod kcl_stdlib;
 pub mod loft;
 pub mod math;
 pub mod mirror;
@@ -37,9 +36,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, KclValue, ProgramMemory},
+    execution::{ExecState, KclValue, ProgramMemory},
     parsing::ast::types::FunctionExpression,
-    std::kcl_stdlib::KclStdLibFn,
 };
 
 pub type StdFn = fn(
@@ -167,15 +165,11 @@ pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
 
 pub struct StdLib {
     pub fns: IndexMap<String, Box<dyn StdLibFn>>,
-    pub kcl_fns: IndexMap<String, Box<dyn KclStdLibFn>>,
 }
 
 impl std::fmt::Debug for StdLib {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("StdLib")
-            .field("fns.len()", &self.fns.len())
-            .field("kcl_fns.len()", &self.kcl_fns.len())
-            .finish()
+        f.debug_struct("StdLib").field("fns.len()", &self.fns.len()).finish()
     }
 }
 
@@ -187,44 +181,28 @@ impl StdLib {
             .map(|internal_fn| (internal_fn.name(), internal_fn))
             .collect();
 
-        let kcl_internal_fns: [Box<dyn KclStdLibFn>; 0] = [];
-        let kcl_fns = kcl_internal_fns
-            .into_iter()
-            .map(|internal_fn| (internal_fn.name(), internal_fn))
-            .collect();
-
-        Self { fns, kcl_fns }
+        Self { fns }
     }
 
     // Get the combined hashmaps.
     pub fn combined(&self) -> IndexMap<String, Box<dyn StdLibFn>> {
-        let mut combined = self.fns.clone();
-        for (k, v) in self.kcl_fns.clone() {
-            combined.insert(k, v.std_lib());
-        }
-        combined
+        self.fns.clone()
     }
 
     pub fn get(&self, name: &str) -> Option<Box<dyn StdLibFn>> {
         self.fns.get(name).cloned()
     }
 
-    pub fn get_kcl(&self, name: &str) -> Option<Box<dyn KclStdLibFn>> {
-        self.kcl_fns.get(name).cloned()
-    }
-
     pub fn get_either(&self, name: &str) -> FunctionKind {
         if let Some(f) = self.get(name) {
             FunctionKind::Core(f)
-        } else if let Some(f) = self.get_kcl(name) {
-            FunctionKind::Std(f)
         } else {
             FunctionKind::UserDefined
         }
     }
 
     pub fn contains_key(&self, key: &str) -> bool {
-        self.fns.contains_key(key) || self.kcl_fns.contains_key(key)
+        self.fns.contains_key(key)
     }
 }
 
@@ -237,7 +215,6 @@ impl Default for StdLib {
 #[derive(Debug)]
 pub enum FunctionKind {
     Core(Box<dyn StdLibFn>),
-    Std(Box<dyn KclStdLibFn>),
     UserDefined,
 }
 
@@ -318,7 +295,7 @@ pub enum Primitive {
 
 /// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
-    pub func: Option<&'a crate::executor::MemoryFunction>,
+    pub func: Option<&'a crate::execution::MemoryFunction>,
     pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }

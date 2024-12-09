@@ -20,7 +20,8 @@ use sha2::Digest;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
-        CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
+        CodeAction, CodeActionKind, CodeActionOrCommand, CodeActionParams, CodeActionResponse, CompletionItem,
+        CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
         DeleteFilesParams, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
         DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
         DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
@@ -41,13 +42,17 @@ use tower_lsp::{
 };
 
 use crate::{
+    errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
-        ast::types::{Expr, Node, VariableKind},
+        ast::{
+            cache::{CacheInformation, OldAstState},
+            types::{Expr, Node, VariableKind},
+        },
         token::TokenType,
         PIPE_OPERATOR,
     },
-    ExecState, ModuleId, Program, SourceRange,
+    ModuleId, Program, SourceRange,
 };
 
 lazy_static::lazy_static! {
@@ -103,8 +108,14 @@ pub struct Backend {
     pub token_map: DashMap<String, Vec<crate::parsing::token::Token>>,
     /// AST maps.
     pub ast_map: DashMap<String, Node<crate::parsing::ast::types::Program>>,
+    /// Last successful execution.
+    /// This gets set to None when execution errors, or we want to bust the cache on purpose to
+    /// force a re-execution.
+    /// We do not need to manually bust the cache for changed units, that's handled by the cache
+    /// information.
+    pub last_successful_ast_state: Arc<RwLock<Option<OldAstState>>>,
     /// Memory maps.
-    pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
+    pub memory_map: DashMap<String, crate::execution::ProgramMemory>,
     /// Current code.
     pub code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
@@ -118,7 +129,7 @@ pub struct Backend {
     /// If we can send telemetry for this user.
     pub can_send_telemetry: bool,
     /// Optional executor context to use if we want to execute the code.
-    pub executor_ctx: Arc<RwLock<Option<crate::executor::ExecutorContext>>>,
+    pub executor_ctx: Arc<RwLock<Option<crate::execution::ExecutorContext>>>,
     /// If we are currently allowed to execute the ast.
     pub can_execute: Arc<RwLock<bool>>,
 
@@ -129,7 +140,7 @@ impl Backend {
     #[cfg(target_arch = "wasm32")]
     pub fn new_wasm(
         client: Client,
-        executor_ctx: Option<crate::executor::ExecutorContext>,
+        executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::wasm::FileSystemManager,
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
@@ -146,7 +157,7 @@ impl Backend {
     #[cfg(not(target_arch = "wasm32"))]
     pub fn new(
         client: Client,
-        executor_ctx: Option<crate::executor::ExecutorContext>,
+        executor_ctx: Option<crate::execution::ExecutorContext>,
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
     ) -> Result<Self, String> {
@@ -161,7 +172,7 @@ impl Backend {
 
     fn with_file_manager(
         client: Client,
-        executor_ctx: Option<crate::executor::ExecutorContext>,
+        executor_ctx: Option<crate::execution::ExecutorContext>,
         fs: crate::fs::FileManager,
         zoo_client: kittycad::Client,
         can_send_telemetry: bool,
@@ -187,8 +198,15 @@ impl Backend {
             diagnostics_map: Default::default(),
             symbols_map: Default::default(),
             semantic_tokens_map: Default::default(),
+            last_successful_ast_state: Default::default(),
             is_initialized: Default::default(),
         })
+    }
+
+    fn remove_from_ast_maps(&self, filename: &str) {
+        self.ast_map.remove(filename);
+        self.symbols_map.remove(filename);
+        self.memory_map.remove(filename);
     }
 }
 
@@ -254,6 +272,13 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
+        if force {
+            // Bust the execution cache.
+            let mut old_ast_state = self.last_successful_ast_state.write().await;
+            *old_ast_state = None;
+            drop(old_ast_state);
+        }
+
         let filename = params.uri.to_string();
         // We already updated the code map in the shared backend.
 
@@ -264,17 +289,15 @@ impl crate::lsp::backend::Backend for Backend {
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
                 self.token_map.remove(&filename);
-                self.ast_map.remove(&filename);
-                self.symbols_map.remove(&filename);
+                self.remove_from_ast_maps(&filename);
                 self.semantic_tokens_map.remove(&filename);
-                self.memory_map.remove(&filename);
                 return;
             }
         };
 
         // Try to get the memory for the current code.
         let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
-            *memory != crate::executor::ProgramMemory::default()
+            *memory != crate::execution::ProgramMemory::default()
         } else {
             false
         };
@@ -300,17 +323,26 @@ impl crate::lsp::backend::Backend for Backend {
         }
 
         // Lets update the ast.
-        let result = crate::parsing::parse_tokens(tokens.clone());
-        // TODO handle parse errors properly
-        let mut ast = match result.parse_errs_as_err() {
-            Ok(ast) => ast,
+
+        let (ast, errs) = match crate::parsing::parse_tokens(tokens.clone()).0 {
+            Ok(result) => result,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
-                self.ast_map.remove(&filename);
-                self.symbols_map.remove(&filename);
-                self.memory_map.remove(&filename);
+                self.remove_from_ast_maps(&filename);
                 return;
             }
+        };
+
+        self.add_to_diagnostics(&params, &errs, true).await;
+
+        if errs.iter().any(|e| e.severity == crate::errors::Severity::Fatal) {
+            self.remove_from_ast_maps(&filename);
+            return;
+        }
+
+        let Some(mut ast) = ast else {
+            self.remove_from_ast_maps(&filename);
+            return;
         };
 
         // Here we will want to store the digest and compare, but for now
@@ -327,7 +359,7 @@ impl crate::lsp::backend::Backend for Backend {
             None => true,
         };
 
-        if !ast_changed && !force && has_memory && !self.has_diagnostics(params.uri.as_ref()).await {
+        if !ast_changed && !force && has_memory {
             // Return early if the ast did not change and we don't need to force.
             return;
         }
@@ -374,7 +406,7 @@ impl Backend {
         *self.can_execute.read().await
     }
 
-    pub async fn executor_ctx(&self) -> tokio::sync::RwLockReadGuard<'_, Option<crate::executor::ExecutorContext>> {
+    pub async fn executor_ctx(&self) -> tokio::sync::RwLockReadGuard<'_, Option<crate::execution::ExecutorContext>> {
         self.executor_ctx.read().await
     }
 
@@ -659,22 +691,42 @@ impl Backend {
             return Ok(());
         }
 
-        let mut exec_state = ExecState::default();
+        let mut last_successful_ast_state = self.last_successful_ast_state.write().await;
 
-        // Clear the scene, before we execute so it's not fugly as shit.
-        executor_ctx
-            .engine
-            .clear_scene(&mut exec_state.id_generator, SourceRange::default())
-            .await?;
+        let mut exec_state = if let Some(last_successful_ast_state) = last_successful_ast_state.clone() {
+            last_successful_ast_state.exec_state
+        } else {
+            Default::default()
+        };
 
-        if let Err(err) = executor_ctx.run(ast, &mut exec_state).await {
+        if let Err(err) = executor_ctx
+            .run(
+                CacheInformation {
+                    old: last_successful_ast_state.clone(),
+                    new_ast: ast.ast.clone(),
+                },
+                &mut exec_state,
+            )
+            .await
+        {
             self.memory_map.remove(params.uri.as_str());
             self.add_to_diagnostics(params, &[err], false).await;
+
+            // Update the last successful ast state to be None.
+            *last_successful_ast_state = None;
 
             // Since we already published the diagnostics we don't really care about the error
             // string.
             return Err(anyhow::anyhow!("failed to execute code"));
         }
+
+        // Update the last successful ast state.
+        *last_successful_ast_state = Some(OldAstState {
+            ast: ast.ast.clone(),
+            exec_state: exec_state.clone(),
+            settings: executor_ctx.settings.clone(),
+        });
+        drop(last_successful_ast_state);
 
         self.memory_map
             .insert(params.uri.to_string(), exec_state.memory.clone());
@@ -819,7 +871,7 @@ impl Backend {
 
             // Try to get the memory for the current code.
             let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
-                *memory != crate::executor::ProgramMemory::default()
+                *memory != crate::execution::ProgramMemory::default()
             } else {
                 false
             };
@@ -1379,6 +1431,41 @@ impl LanguageServer for Backend {
         }
 
         Ok(Some(folding_ranges))
+    }
+
+    async fn code_action(&self, params: CodeActionParams) -> RpcResult<Option<CodeActionResponse>> {
+        let actions = params
+            .context
+            .diagnostics
+            .into_iter()
+            .filter_map(|diagnostic| {
+                let suggestion = diagnostic
+                    .data
+                    .as_ref()
+                    .and_then(|data| serde_json::from_value::<Suggestion>(data.clone()).ok())?;
+                let edit = TextEdit {
+                    range: diagnostic.range,
+                    new_text: suggestion.insert,
+                };
+                let changes = HashMap::from([(params.text_document.uri.clone(), vec![edit])]);
+                Some(CodeActionOrCommand::CodeAction(CodeAction {
+                    title: suggestion.title,
+                    kind: Some(CodeActionKind::QUICKFIX),
+                    diagnostics: Some(vec![diagnostic]),
+                    edit: Some(WorkspaceEdit {
+                        changes: Some(changes),
+                        document_changes: None,
+                        change_annotations: None,
+                    }),
+                    command: None,
+                    is_preferred: Some(true),
+                    disabled: None,
+                    data: None,
+                }))
+            })
+            .collect();
+
+        Ok(Some(actions))
     }
 }
 

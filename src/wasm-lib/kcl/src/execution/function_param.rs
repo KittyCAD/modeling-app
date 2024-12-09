@@ -2,7 +2,7 @@ use schemars::JsonSchema;
 
 use crate::{
     errors::KclError,
-    executor::{
+    execution::{
         call_user_defined_function, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory,
     },
     parsing::ast::types::FunctionExpression,

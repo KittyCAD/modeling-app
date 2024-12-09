@@ -273,7 +273,7 @@ export function getPathToExtrudeForSegmentSelection(
     'VariableDeclaration'
   )
   if (err(varDecNode)) return varDecNode
-  const sketchVar = varDecNode.node.declarations[0].id.name
+  const sketchVar = varDecNode.node.declaration.id.name
 
   const sketch = sketchFromKclValue(
     kclManager.programMemory.get(sketchVar),
@@ -367,7 +367,7 @@ function locateExtrudeDeclarator(
   if (err(nodeOfExtrudeCall)) return nodeOfExtrudeCall
 
   const { node: extrudeVarDecl } = nodeOfExtrudeCall
-  const extrudeDeclarator = extrudeVarDecl.declarations[0]
+  const extrudeDeclarator = extrudeVarDecl.declaration
   if (!extrudeDeclarator) {
     return new Error('Extrude Declarator not found.')
   }

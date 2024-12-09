@@ -10,7 +10,7 @@ import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
-import { engineCommandManager } from 'lib/singletons'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
@@ -68,8 +68,7 @@ function AppLogoLink({
       data-testid="app-logo"
       onClick={() => {
         onProjectClose(file || null, project?.path || null, false)
-        // Clear the scene and end the session.
-        engineCommandManager.endSession()
+        kclManager.switchedFiles = true
       }}
       to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
@@ -190,8 +189,7 @@ function ProjectMenuPopover({
           className: !isDesktop() ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
-            // Clear the scene and end the session.
-            engineCommandManager.endSession()
+            kclManager.switchedFiles = true
           },
         },
       ].filter(

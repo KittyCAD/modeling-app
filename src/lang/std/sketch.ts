@@ -222,7 +222,7 @@ const commonConstraintInfoHelper = (
         code.slice(input1.start, input1.end),
         stdLibFnName,
         isArr ? abbreviatedInputs[0].arrayInput : abbreviatedInputs[0].objInput,
-        [input1.start, input1.end],
+        [input1.start, input1.end, true],
         pathToFirstArg
       )
     )
@@ -234,7 +234,7 @@ const commonConstraintInfoHelper = (
         code.slice(input2.start, input2.end),
         stdLibFnName,
         isArr ? abbreviatedInputs[1].arrayInput : abbreviatedInputs[1].objInput,
-        [input2.start, input2.end],
+        [input2.start, input2.end, true],
         pathToSecondArg
       )
     )
@@ -266,7 +266,7 @@ const horzVertConstraintInfoHelper = (
       callee.name,
       stdLibFnName,
       undefined,
-      [callee.start, callee.end],
+      [callee.start, callee.end, true],
       pathToCallee
     ),
     constrainInfo(
@@ -275,7 +275,7 @@ const horzVertConstraintInfoHelper = (
       code.slice(firstArg.start, firstArg.end),
       stdLibFnName,
       abbreviatedInput,
-      [firstArg.start, firstArg.end],
+      [firstArg.start, firstArg.end, true],
       pathToFirstArg
     ),
   ]
@@ -905,7 +905,7 @@ export const tangentialArcTo: SketchLineHelper = {
         callee.name,
         'tangentialArcTo',
         undefined,
-        [callee.start, callee.end],
+        [callee.start, callee.end, true],
         pathToCallee
       ),
       constrainInfo(
@@ -914,7 +914,7 @@ export const tangentialArcTo: SketchLineHelper = {
         code.slice(firstArg.elements[0].start, firstArg.elements[0].end),
         'tangentialArcTo',
         0,
-        [firstArg.elements[0].start, firstArg.elements[0].end],
+        [firstArg.elements[0].start, firstArg.elements[0].end, true],
         pathToFirstArg
       ),
       constrainInfo(
@@ -923,7 +923,7 @@ export const tangentialArcTo: SketchLineHelper = {
         code.slice(firstArg.elements[1].start, firstArg.elements[1].end),
         'tangentialArcTo',
         1,
-        [firstArg.elements[1].start, firstArg.elements[1].end],
+        [firstArg.elements[1].start, firstArg.elements[1].end, true],
         pathToSecondArg
       ),
     ]
@@ -1052,7 +1052,7 @@ export const circle: SketchLineHelper = {
         code.slice(radiusDetails.expr.start, radiusDetails.expr.end),
         'circle',
         'radius',
-        [radiusDetails.expr.start, radiusDetails.expr.end],
+        [radiusDetails.expr.start, radiusDetails.expr.end, true],
         pathToRadiusLiteral
       ),
       {
@@ -1064,6 +1064,7 @@ export const circle: SketchLineHelper = {
         sourceRange: [
           centerDetails.expr.elements[0].start,
           centerDetails.expr.elements[0].end,
+          true,
         ],
         pathToNode: pathToXArg,
         value: code.slice(
@@ -1085,6 +1086,7 @@ export const circle: SketchLineHelper = {
         sourceRange: [
           centerDetails.expr.elements[1].start,
           centerDetails.expr.elements[1].end,
+          true,
         ],
         pathToNode: pathToYArg,
         value: code.slice(
@@ -1699,7 +1701,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     if (err(nodeMeta2)) return nodeMeta2
 
     const { node: varDec } = nodeMeta2
-    const varName = varDec.declarations[0].id.name
+    const varName = varDec.declaration.id.name
     const sketch = sketchFromKclValue(
       previousProgramMemory.get(varName),
       varName
@@ -1761,7 +1763,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
           code.slice(angle.start, angle.end),
           'angledLineThatIntersects',
           'angle',
-          [angle.start, angle.end],
+          [angle.start, angle.end, true],
           pathToAngleProp
         )
       )
@@ -1780,7 +1782,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
           code.slice(offset.start, offset.end),
           'angledLineThatIntersects',
           'offset',
-          [offset.start, offset.end],
+          [offset.start, offset.end, true],
           pathToOffsetProp
         )
       )
@@ -1799,7 +1801,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
         code.slice(tag.start, tag.end),
         'angledLineThatIntersects',
         'intersectTag',
-        [tag.start, tag.end],
+        [tag.start, tag.end, true],
         pathToTagProp
       )
       returnVal.push(info)

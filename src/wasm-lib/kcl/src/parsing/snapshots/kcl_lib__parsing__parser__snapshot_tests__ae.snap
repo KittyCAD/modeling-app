@@ -1,63 +1,58 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3974
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 49,
-          "id": {
-            "end": 8,
-            "name": "thing",
-            "start": 3,
-            "type": "Identifier"
-          },
-          "init": {
-            "body": {
-              "body": [
-                {
-                  "argument": {
-                    "end": 43,
-                    "raw": "true",
-                    "start": 39,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": true
-                  },
-                  "end": 43,
-                  "start": 32,
-                  "type": "ReturnStatement",
-                  "type": "ReturnStatement"
-                }
-              ],
-              "end": 49,
-              "start": 22
-            },
-            "end": 49,
-            "params": [
+      "declaration": {
+        "end": 49,
+        "id": {
+          "end": 8,
+          "name": "thing",
+          "start": 3,
+          "type": "Identifier"
+        },
+        "init": {
+          "body": {
+            "body": [
               {
-                "type": "Parameter",
-                "identifier": {
-                  "end": 17,
-                  "name": "param",
-                  "start": 12,
-                  "type": "Identifier"
+                "argument": {
+                  "end": 43,
+                  "raw": "true",
+                  "start": 39,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": true
                 },
-                "optional": false
+                "end": 43,
+                "start": 32,
+                "type": "ReturnStatement",
+                "type": "ReturnStatement"
               }
             ],
-            "start": 11,
-            "type": "FunctionExpression",
-            "type": "FunctionExpression"
+            "end": 49,
+            "start": 22
           },
-          "start": 3,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "end": 49,
+          "params": [
+            {
+              "type": "Parameter",
+              "identifier": {
+                "end": 17,
+                "name": "param",
+                "start": 12,
+                "type": "Identifier"
+              }
+            }
+          ],
+          "start": 11,
+          "type": "FunctionExpression",
+          "type": "FunctionExpression"
+        },
+        "start": 3,
+        "type": "VariableDeclarator"
+      },
       "end": 49,
       "kind": "fn",
       "start": 0,

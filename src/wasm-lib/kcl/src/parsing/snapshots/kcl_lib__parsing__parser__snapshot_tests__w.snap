@@ -1,47 +1,43 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3959
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
+      "declaration": {
+        "end": 22,
+        "id": {
+          "end": 9,
+          "name": "pt1",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "computed": false,
           "end": 22,
-          "id": {
-            "end": 9,
-            "name": "pt1",
-            "start": 6,
+          "object": {
+            "end": 14,
+            "name": "b1",
+            "start": 12,
+            "type": "Identifier",
             "type": "Identifier"
           },
-          "init": {
-            "computed": false,
-            "end": 22,
-            "object": {
-              "end": 14,
-              "name": "b1",
-              "start": 12,
-              "type": "Identifier",
-              "type": "Identifier"
-            },
-            "property": {
-              "end": 21,
-              "raw": "'zero'",
-              "start": 15,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "zero"
-            },
-            "start": 12,
-            "type": "MemberExpression",
-            "type": "MemberExpression"
+          "property": {
+            "end": 21,
+            "raw": "'zero'",
+            "start": 15,
+            "type": "Literal",
+            "type": "Literal",
+            "value": "zero"
           },
-          "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "start": 12,
+          "type": "MemberExpression",
+          "type": "MemberExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
       "end": 22,
       "kind": "const",
       "start": 0,
