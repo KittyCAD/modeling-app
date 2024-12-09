@@ -26,7 +26,17 @@ test.describe('Testing constraints', () => {
     })
 
     const u = await getUtils(page)
-    const PUR = 400 / 37.5 //pixeltoUnitRatio
+    // constants and locators
+    const lengthValue = {
+      old: '20',
+      new: '25',
+    }
+    const cmdBarKclInput = page
+      .getByTestId('cmd-bar-arg-value')
+      .getByRole('textbox')
+    const cmdBarSubmitButton = page.getByRole('button', {
+      name: 'arrow right Continue',
+    })
     await page.setViewportSize({ width: 1200, height: 500 })
 
     await u.waitForAuthSkipAppStart()
@@ -36,26 +46,26 @@ test.describe('Testing constraints', () => {
     await u.closeDebugPanel()
 
     // Click the line of code for line.
-    await page.getByText(`line([0, 20], %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    // TODO remove this and reinstate `await topHorzSegmentClick()`
+    await page.getByText(`line([0, ${lengthValue.old}], %)`).click()
     await page.waitForTimeout(100)
 
     // enter sketch again
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
     await page.waitForTimeout(500) // wait for animation
-
-    const startXPx = 500
-    await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
-    await page.keyboard.down('Shift')
-    await page.mouse.click(834, 244)
-    await page.keyboard.up('Shift')
-
     await page
       .getByRole('button', { name: 'dimension Length', exact: true })
       .click()
-    await page.getByText('Add constraining value').click()
+    await expect(cmdBarKclInput).toHaveText('20')
+    await cmdBarKclInput.fill(lengthValue.new)
+    await expect(
+      page.getByText(`Can't calculate`),
+      `Something went wrong with the KCL expression evaluation`
+    ).not.toBeVisible()
+    await cmdBarSubmitButton.click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
+      `length001 = ${lengthValue.new}sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -66,7 +76,6 @@ test.describe('Testing constraints', () => {
     await page.waitForTimeout(500) // wait for animation
 
     // Exit sketch
-    await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
     await page.keyboard.press('Escape')
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
@@ -524,7 +533,7 @@ part002 = startSketchOn('XZ')
       })
     }
   })
-  test.describe('Test Angle/Length constraint single selection', () => {
+  test.describe('Test Angle constraint single selection', () => {
     const cases = [
       {
         testName: 'Angle - Add variable',
@@ -536,18 +545,6 @@ part002 = startSketchOn('XZ')
         testName: 'Angle - No variable',
         addVariable: false,
         constraint: 'angle',
-        value: '83, 78.33',
-      },
-      {
-        testName: 'Length - Add variable',
-        addVariable: true,
-        constraint: 'length',
-        value: '83, length001',
-      },
-      {
-        testName: 'Length - No variable',
-        addVariable: false,
-        constraint: 'length',
         value: '83, 78.33',
       },
     ] as const
@@ -597,6 +594,90 @@ part002 = startSketchOn('XZ')
         await page
           .getByRole('button', { name: 'Add constraining value' })
           .click()
+
+        const changedCode = `|> angledLine([${value}], %)`
+        await expect(page.locator('.cm-content')).toContainText(changedCode)
+        // checking active assures the cursor is where it should be
+        await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
+
+        // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+      })
+    }
+  })
+  test.describe('Test Length constraint single selection', () => {
+    const cases = [
+      {
+        testName: 'Length - Add variable',
+        addVariable: true,
+        constraint: 'length',
+        value: '83, length001',
+      },
+      {
+        testName: 'Length - No variable',
+        addVariable: false,
+        constraint: 'length',
+        value: '83, 78.33',
+      },
+    ] as const
+    for (const { testName, addVariable, value, constraint } of cases) {
+      test(`${testName}`, async ({ page }) => {
+        // constants and locators
+        const cmdBarKclInput = page
+          .getByTestId('cmd-bar-arg-value')
+          .getByRole('textbox')
+        const cmdBarKclVariableNameInput =
+          page.getByPlaceholder('Variable name')
+        const cmdBarSubmitButton = page.getByRole('button', {
+          name: 'arrow right Continue',
+        })
+
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `yo = 5
+part001 = startSketchOn('XZ')
+  |> startProfileAt([-7.54, -26.74], %)
+  |> line([74.36, 130.4], %)
+  |> line([78.92, -120.11], %)
+  |> line([9.16, 77.79], %)
+  |> line([51.19, 48.97], %)
+part002 = startSketchOn('XZ')
+  |> startProfileAt([299.05, 231.45], %)
+  |> xLine(-425.34, %, $seg_what)
+  |> yLine(-264.06, %)
+  |> xLine(segLen(seg_what), %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+
+        await u.waitForAuthSkipAppStart()
+
+        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+        const line3 = await u.getSegmentBodyCoords(
+          `[data-overlay-index="${2}"]`
+        )
+
+        await page.mouse.click(line3.x, line3.y)
+        await page
+          .getByRole('button', {
+            name: 'Length: open menu',
+          })
+          .click()
+        await page.getByTestId('dropdown-constraint-' + constraint).click()
+
+        if (!addVariable) {
+          await test.step(`Clear the variable input`, async () => {
+            await cmdBarKclVariableNameInput.clear()
+            await cmdBarKclVariableNameInput.press('Backspace')
+          })
+        }
+        await expect(cmdBarKclInput).toHaveText('78.33')
+        await cmdBarSubmitButton.click()
 
         const changedCode = `|> angledLine([${value}], %)`
         await expect(page.locator('.cm-content')).toContainText(changedCode)
@@ -868,6 +949,15 @@ part002 = startSketchOn('XZ')
   |> line([3.13, -2.4], %)`
       )
     })
+
+    // constants and locators
+    const cmdBarKclInput = page
+      .getByTestId('cmd-bar-arg-value')
+      .getByRole('textbox')
+    const cmdBarSubmitButton = page.getByRole('button', {
+      name: 'arrow right Continue',
+    })
+
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
 
@@ -928,8 +1018,8 @@ part002 = startSketchOn('XZ')
     // await page.getByRole('button', { name: 'length', exact: true }).click()
     await page.getByTestId('dropdown-constraint-length').click()
 
-    await page.getByLabel('length Value').fill('10')
-    await page.getByRole('button', { name: 'Add constraining value' }).click()
+    await cmdBarKclInput.fill('10')
+    await cmdBarSubmitButton.click()
 
     activeLinesContent = await page.locator('.cm-activeLine').all()
     await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
