@@ -9,7 +9,7 @@ Just like patternTransform, but works on 2D sketches not 3D solids.
 
 
 ```js
-patternTransform2d(total_instances: u32, transform_function: FunctionParam, solid_set: SketchSet) -> [Sketch]
+patternTransform2d(total_instances: integer, transform_function: FunctionParam, solid_set: SketchSet) -> [Sketch]
 ```
 
 
@@ -17,7 +17,7 @@ patternTransform2d(total_instances: u32, transform_function: FunctionParam, soli
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `total_instances` | `u32` |  | Yes |
+| `total_instances` | `integer` |  | Yes |
 | `transform_function` | `FunctionParam` |  | Yes |
 | `solid_set` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
 

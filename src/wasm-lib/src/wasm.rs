@@ -85,7 +85,7 @@ pub async fn execute(
 
     // Populate from the old exec state if it exists.
     if let Some(program_memory_override) = program_memory_override {
-        exec_state.memory = program_memory_override;
+        exec_state.mod_local.memory = program_memory_override;
     } else {
         // If we are in mock mode, we don't want to use any cache.
         if let Some(old) = read_old_ast_memory().await {

@@ -22,6 +22,7 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use function_param::FunctionParam;
 pub use kcl_value::{KclObjectFields, KclValue};
+use uuid::Uuid;
 
 pub(crate) mod cache;
 mod exec_ast;
@@ -34,7 +35,8 @@ use crate::{
     execution::cache::{CacheInformation, CacheResult},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{
-        BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode,
+        BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, Program as AstProgram,
+        TagDeclarator, TagNode,
     },
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
@@ -43,14 +45,32 @@ use crate::{
 };
 
 /// State for executing a program.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecState {
-    /// Program variable bindings.
-    pub memory: ProgramMemory,
+    pub global: GlobalState,
+    pub mod_local: ModuleState,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct GlobalState {
     /// The stable artifact ID generator.
     pub id_generator: IdGenerator,
+    /// Map from source file absolute path to module ID.
+    pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
+    /// Map from module ID to module info.
+    pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+}
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ModuleState {
+    /// Program variable bindings.
+    pub memory: ProgramMemory,
     /// Dynamic state that follows dynamic flow of the program.
     pub dynamic_state: DynamicState,
     /// The current value of the pipe operator returned from the previous
@@ -61,26 +81,80 @@ pub struct ExecState {
     /// The stack of import statements for detecting circular module imports.
     /// If this is empty, we're not currently executing an import statement.
     pub import_stack: Vec<std::path::PathBuf>,
-    /// Map from source file absolute path to module ID.
-    pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
-    /// Map from module ID to module info.
-    pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+}
+
+impl Default for ExecState {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ExecState {
-    fn add_module(&mut self, path: std::path::PathBuf) -> ModuleId {
+    pub fn new() -> Self {
+        let mut global = GlobalState {
+            id_generator: Default::default(),
+            path_to_source_id: Default::default(),
+            module_infos: Default::default(),
+        };
+
+        let root_path = PathBuf::new();
+        let root_id = ModuleId::default();
+        global.module_infos.insert(
+            root_id,
+            ModuleInfo {
+                id: root_id,
+                path: root_path.clone(),
+                parsed: None,
+            },
+        );
+        global.path_to_source_id.insert(root_path, root_id);
+
+        ExecState {
+            global,
+            mod_local: ModuleState::default(),
+        }
+    }
+
+    pub fn memory(&self) -> &ProgramMemory {
+        &self.mod_local.memory
+    }
+
+    pub fn mut_memory(&mut self) -> &mut ProgramMemory {
+        &mut self.mod_local.memory
+    }
+
+    pub fn next_uuid(&mut self) -> Uuid {
+        self.global.id_generator.next_uuid()
+    }
+
+    async fn add_module(
+        &mut self,
+        path: std::path::PathBuf,
+        ctxt: &ExecutorContext,
+        source_range: SourceRange,
+    ) -> Result<ModuleId, KclError> {
         // Need to avoid borrowing self in the closure.
-        let new_module_id = ModuleId::from_usize(self.path_to_source_id.len());
+        let new_module_id = ModuleId::from_usize(self.global.path_to_source_id.len());
         let mut is_new = false;
-        let id = *self.path_to_source_id.entry(path.clone()).or_insert_with(|| {
+        let id = *self.global.path_to_source_id.entry(path.clone()).or_insert_with(|| {
             is_new = true;
             new_module_id
         });
+
         if is_new {
-            let module_info = ModuleInfo { id, path };
-            self.module_infos.insert(id, module_info);
+            let source = ctxt.fs.read_to_string(&path, source_range).await?;
+            // TODO handle parsing errors properly
+            let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
+
+            let module_info = ModuleInfo {
+                id,
+                path,
+                parsed: Some(parsed),
+            };
+            self.global.module_infos.insert(id, module_info);
         }
-        id
+
+        Ok(id)
     }
 }
 
@@ -156,6 +230,13 @@ impl ProgramMemory {
             message: format!("memory item key `{}` is not defined", var),
             source_ranges: vec![source_range],
         }))
+    }
+
+    /// Returns all bindings in the current scope.
+    #[allow(dead_code)]
+    fn get_all_cur_scope(&self) -> IndexMap<String, KclValue> {
+        let env = &self.environments[self.current_env.index()];
+        env.bindings.clone()
     }
 
     /// Find all solids in the memory that are on a specific sketch id.
@@ -273,18 +354,14 @@ pub struct DynamicState {
 }
 
 impl DynamicState {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     #[must_use]
-    pub fn merge(&self, memory: &ProgramMemory) -> Self {
+    fn merge(&self, memory: &ProgramMemory) -> Self {
         let mut merged = self.clone();
         merged.append(memory);
         merged
     }
 
-    pub fn append(&mut self, memory: &ProgramMemory) {
+    fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
                 if let KclValue::Solid(eg) = item {
@@ -294,7 +371,7 @@ impl DynamicState {
         }
     }
 
-    pub fn edge_cut_ids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<uuid::Uuid> {
+    pub(crate) fn edge_cut_ids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<uuid::Uuid> {
         self.solid_ids
             .iter()
             .flat_map(|eg| {
@@ -552,7 +629,7 @@ pub struct Plane {
 
 impl Plane {
     pub(crate) fn from_plane_data(value: crate::std::sketch::PlaneData, exec_state: &mut ExecState) -> Self {
-        let id = exec_state.id_generator.next_uuid();
+        let id = exec_state.global.id_generator.next_uuid();
         match value {
             crate::std::sketch::PlaneData::XY => Plane {
                 id,
@@ -1000,13 +1077,14 @@ pub enum BodyType {
 
 /// Info about a module.  Right now, this is pretty minimal.  We hope to cache
 /// modules here in the future.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ModuleInfo {
     /// The ID of the module.
     id: ModuleId,
     /// Absolute path of the module's source file.
     path: std::path::PathBuf,
+    parsed: Option<Node<AstProgram>>,
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
@@ -1795,7 +1873,7 @@ impl ExecutorContext {
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
         self.engine
-            .clear_scene(&mut exec_state.id_generator, source_range)
+            .clear_scene(&mut exec_state.global.id_generator, source_range)
             .await?;
 
         // We do not create the planes here as the post hook in wasm will do that
@@ -1899,11 +1977,8 @@ impl ExecutorContext {
             // anyways and from the TS side we override memory and don't want to clear it.
             self.reset_scene(exec_state, Default::default()).await?;
             // Pop the execution state, since we are starting fresh.
-            *exec_state = Default::default();
+            *exec_state = ExecState::default();
         }
-
-        // TODO: Use the top-level file's path.
-        exec_state.add_module(std::path::PathBuf::from(""));
 
         // Re-apply the settings, in case the cache was busted.
         self.engine.reapply_settings(&self.settings, Default::default()).await?;
@@ -1928,11 +2003,13 @@ impl ExecutorContext {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
                     let source_range = SourceRange::from(import_stmt);
-                    let (module_memory, module_exports) =
-                        self.open_module(&import_stmt.path, exec_state, source_range).await?;
+                    let module_id = self.open_module(&import_stmt.path, exec_state, source_range).await?;
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
+                            let (_, module_memory, module_exports) = self
+                                .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
+                                .await?;
                             for import_item in items {
                                 // Extract the item from the module.
                                 let item =
@@ -1956,18 +2033,24 @@ impl ExecutorContext {
                                 }
 
                                 // Add the item to the current module.
-                                exec_state.memory.add(
+                                exec_state.mut_memory().add(
                                     import_item.identifier(),
                                     item.clone(),
                                     SourceRange::from(&import_item.name),
                                 )?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state.module_exports.push(import_item.identifier().to_owned());
+                                    exec_state
+                                        .mod_local
+                                        .module_exports
+                                        .push(import_item.identifier().to_owned());
                                 }
                             }
                         }
                         ImportSelector::Glob(_) => {
+                            let (_, module_memory, module_exports) = self
+                                .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
+                                .await?;
                             for name in module_exports.iter() {
                                 let item = module_memory.get(name, source_range).map_err(|_err| {
                                     KclError::Internal(KclErrorDetails {
@@ -1975,18 +2058,20 @@ impl ExecutorContext {
                                         source_ranges: vec![source_range],
                                     })
                                 })?;
-                                exec_state.memory.add(name, item.clone(), source_range)?;
+                                exec_state.mut_memory().add(name, item.clone(), source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state.module_exports.push(name.clone());
+                                    exec_state.mod_local.module_exports.push(name.clone());
                                 }
                             }
                         }
-                        ImportSelector::None(_) => {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                message: "Importing whole module is not yet implemented, sorry.".to_owned(),
-                                source_ranges: vec![source_range],
-                            }));
+                        ImportSelector::None { .. } => {
+                            let name = import_stmt.module_name().unwrap();
+                            let item = KclValue::Module {
+                                value: module_id,
+                                meta: vec![source_range.into()],
+                            };
+                            exec_state.mut_memory().add(&name, item, source_range)?;
                         }
                     }
                     last_expr = None;
@@ -2016,11 +2101,11 @@ impl ExecutorContext {
                             StatementKind::Declaration { name: &var_name },
                         )
                         .await?;
-                    exec_state.memory.add(&var_name, memory_item, source_range)?;
+                    exec_state.mut_memory().add(&var_name, memory_item, source_range)?;
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
-                        exec_state.module_exports.push(var_name);
+                        exec_state.mod_local.module_exports.push(var_name);
                     }
                     last_expr = None;
                 }
@@ -2034,7 +2119,7 @@ impl ExecutorContext {
                             StatementKind::Expression,
                         )
                         .await?;
-                    exec_state.memory.return_ = Some(value);
+                    exec_state.mut_memory().return_ = Some(value);
                     last_expr = None;
                 }
             }
@@ -2060,18 +2145,19 @@ impl ExecutorContext {
         path: &str,
         exec_state: &mut ExecState,
         source_range: SourceRange,
-    ) -> Result<(ProgramMemory, Vec<String>), KclError> {
+    ) -> Result<ModuleId, KclError> {
         let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
             project_dir.join(path)
         } else {
             std::path::PathBuf::from(&path)
         };
 
-        if exec_state.import_stack.contains(&resolved_path) {
+        if exec_state.mod_local.import_stack.contains(&resolved_path) {
             return Err(KclError::ImportCycle(KclErrorDetails {
                 message: format!(
                     "circular import of modules is not allowed: {} -> {}",
                     exec_state
+                        .mod_local
                         .import_stack
                         .iter()
                         .map(|p| p.as_path().to_string_lossy())
@@ -2082,31 +2168,44 @@ impl ExecutorContext {
                 source_ranges: vec![source_range],
             }));
         }
-        let module_id = exec_state.add_module(resolved_path.clone());
-        let source = self.fs.read_to_string(&resolved_path, source_range).await?;
-        // TODO handle parsing errors properly
-        let program = crate::parsing::parse_str(&source, module_id).parse_errs_as_err()?;
+        exec_state.add_module(resolved_path.clone(), self, source_range).await
+    }
 
-        exec_state.import_stack.push(resolved_path.clone());
-        let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
-        let original_memory = std::mem::take(&mut exec_state.memory);
-        let original_exports = std::mem::take(&mut exec_state.module_exports);
+    async fn exec_module(
+        &self,
+        module_id: ModuleId,
+        exec_state: &mut ExecState,
+        exec_kind: ExecutionKind,
+        source_range: SourceRange,
+    ) -> Result<(Option<KclValue>, ProgramMemory, Vec<String>), KclError> {
+        // TODO It sucks that we have to clone the whole module AST here
+        let info = exec_state.global.module_infos[&module_id].clone();
+
+        let mut local_state = ModuleState {
+            import_stack: exec_state.mod_local.import_stack.clone(),
+            ..Default::default()
+        };
+        local_state.import_stack.push(info.path.clone());
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        let original_execution = self.engine.replace_execution_kind(exec_kind);
+
+        // The unwrap here is safe since we only elide the AST for the top module.
         let result = self
-            .inner_execute(&program, exec_state, crate::execution::BodyType::Root)
+            .inner_execute(&info.parsed.unwrap(), exec_state, crate::execution::BodyType::Root)
             .await;
-        let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
-        let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
-        self.engine.replace_execution_kind(original_execution);
-        exec_state.import_stack.pop();
 
-        result.map_err(|err| {
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        self.engine.replace_execution_kind(original_execution);
+
+        let result = result.map_err(|err| {
             if let KclError::ImportCycle(_) = err {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])
             } else {
                 KclError::Semantic(KclErrorDetails {
                     message: format!(
-                        "Error loading imported file. Open it to view more details. {path}: {}",
+                        "Error loading imported file. Open it to view more details. {}: {}",
+                        info.path.display(),
                         err.message()
                     ),
                     source_ranges: vec![source_range],
@@ -2114,7 +2213,7 @@ impl ExecutorContext {
             }
         })?;
 
-        Ok((module_memory, module_exports))
+        Ok((result, local_state.memory, local_state.module_exports))
     }
 
     #[async_recursion]
@@ -2130,8 +2229,23 @@ impl ExecutorContext {
             Expr::Literal(literal) => KclValue::from(literal),
             Expr::TagDeclarator(tag) => KclValue::from(tag),
             Expr::Identifier(identifier) => {
-                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
-                value.clone()
+                let value = exec_state.memory().get(&identifier.name, identifier.into())?.clone();
+                if let KclValue::Module { value: module_id, meta } = value {
+                    let (result, _, _) = self
+                        .exec_module(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
+                        .await?;
+                    result.ok_or_else(|| {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!(
+                                "Evaluating module `{}` as part of an assembly did not produce a result",
+                                identifier.name
+                            ),
+                            source_ranges: vec![metadata.source_range, meta[0].source_range],
+                        })
+                    })?
+                } else {
+                    value
+                }
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
@@ -2142,7 +2256,7 @@ impl ExecutorContext {
                     expression: function_expression.clone(),
                     meta: vec![metadata.to_owned()],
                     func: None,
-                    memory: Box::new(exec_state.memory.clone()),
+                    memory: Box::new(exec_state.memory().clone()),
                 }
             }
             Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
@@ -2159,7 +2273,7 @@ impl ExecutorContext {
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                StatementKind::Expression => match exec_state.pipe_value.clone() {
+                StatementKind::Expression => match exec_state.mod_local.pipe_value.clone() {
                     Some(x) => x,
                     None => {
                         return Err(KclError::Semantic(KclErrorDetails {
@@ -2179,7 +2293,9 @@ impl ExecutorContext {
                 let result = self
                     .execute_expr(&expr.expr, exec_state, metadata, statement_kind)
                     .await?;
-                exec_state.memory.add(&expr.label.name, result.clone(), init.into())?;
+                exec_state
+                    .mut_memory()
+                    .add(&expr.label.name, result.clone(), init.into())?;
                 // TODO this lets us use the label as a variable name, but not as a tag in most cases
                 result
             }
@@ -2364,12 +2480,12 @@ pub(crate) async fn call_user_defined_function(
 
     // Execute the function body using the memory we just created.
     let (result, fn_memory) = {
-        let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
+        let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
         let result = ctx
             .inner_execute(&function_expression.body, exec_state, BodyType::Block)
             .await;
         // Restore the previous memory.
-        let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
+        let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
 
         (result, fn_memory)
     };
@@ -2394,12 +2510,12 @@ pub(crate) async fn call_user_defined_function_kw(
 
     // Execute the function body using the memory we just created.
     let (result, fn_memory) = {
-        let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
+        let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
         let result = ctx
             .inner_execute(&function_expression.body, exec_state, BodyType::Block)
             .await;
         // Restore the previous memory.
-        let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
+        let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
 
         (result, fn_memory)
     };
@@ -2424,7 +2540,7 @@ mod tests {
         OldAstState,
     };
 
-    pub async fn parse_execute(code: &str) -> Result<(Program, ExecutorContext, ExecState)> {
+    async fn parse_execute(code: &str) -> Result<(Program, ExecutorContext, ExecState)> {
         let program = Program::parse_no_errs(code)?;
 
         let ctx = ExecutorContext {
@@ -2441,6 +2557,7 @@ mod tests {
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
+    #[track_caller]
     fn mem_get_json(memory: &ProgramMemory, name: &str) -> KclValue {
         memory.get(name, SourceRange::default()).unwrap().to_owned()
     }
@@ -2849,21 +2966,21 @@ let shape = layer() |> patternTransform(10, transform, %)
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(5.0, mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap());
+        assert_eq!(5.0, mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap());
+        assert_eq!(7.4, mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap());
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2872,7 +2989,7 @@ let shape = layer() |> patternTransform(10, transform, %)
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,
-            mem_get_json(&exec_state.memory, "myVar").as_f64().unwrap()
+            mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap()
         );
     }
 
@@ -2880,7 +2997,7 @@ let shape = layer() |> patternTransform(10, transform, %)
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(&exec_state.memory, "thing").as_f64().unwrap());
+        assert_eq!(7.4, mem_get_json(exec_state.memory(), "thing").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2920,10 +3037,10 @@ fn check = (x) => {
 check(false)
 "#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
-        assert_eq!(false, mem_get_json(&exec_state.memory, "notTrue").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(&exec_state.memory, "notFalse").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(&exec_state.memory, "c").as_bool().unwrap());
-        assert_eq!(false, mem_get_json(&exec_state.memory, "d").as_bool().unwrap());
+        assert_eq!(false, mem_get_json(exec_state.memory(), "notTrue").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(exec_state.memory(), "notFalse").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(exec_state.memory(), "c").as_bool().unwrap());
+        assert_eq!(false, mem_get_json(exec_state.memory(), "d").as_bool().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]

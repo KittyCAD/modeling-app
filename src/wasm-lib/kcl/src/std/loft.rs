@@ -155,7 +155,7 @@ async fn inner_loft(
     // Get the loft data.
     let data = data.unwrap_or_default();
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::Loft {

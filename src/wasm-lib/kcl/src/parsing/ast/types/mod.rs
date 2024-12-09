@@ -1225,7 +1225,7 @@ pub enum ImportSelector {
     Glob(Node<()>),
     /// Import the module itself (the param is an optional alias).
     /// E.g., `import "foo.kcl" as bar`
-    None(Option<Node<Identifier>>),
+    None { alias: Option<Node<Identifier>> },
 }
 
 impl ImportSelector {
@@ -1244,8 +1244,8 @@ impl ImportSelector {
                 None
             }
             ImportSelector::Glob(_) => None,
-            ImportSelector::None(None) => None,
-            ImportSelector::None(Some(alias)) => {
+            ImportSelector::None { alias: None } => None,
+            ImportSelector::None { alias: Some(alias) } => {
                 let alias_source_range = SourceRange::from(&*alias);
                 if !alias_source_range.contains(pos) {
                     return None;
@@ -1264,8 +1264,8 @@ impl ImportSelector {
                 }
             }
             ImportSelector::Glob(_) => {}
-            ImportSelector::None(None) => {}
-            ImportSelector::None(Some(alias)) => alias.rename(old_name, new_name),
+            ImportSelector::None { alias: None } => {}
+            ImportSelector::None { alias: Some(alias) } => alias.rename(old_name, new_name),
         }
     }
 }
@@ -1296,7 +1296,7 @@ impl Node<ImportStatement> {
                 false
             }
             ImportSelector::Glob(_) => false,
-            ImportSelector::None(_) => name == self.module_name().unwrap(),
+            ImportSelector::None { .. } => name == self.module_name().unwrap(),
         }
     }
 
@@ -1304,7 +1304,7 @@ impl Node<ImportStatement> {
     /// Validated during parsing and guaranteed to return `Some` if the statement imports
     /// the module itself (i.e., self.selector is ImportSelector::None).
     pub fn module_name(&self) -> Option<String> {
-        if let ImportSelector::None(Some(alias)) = &self.selector {
+        if let ImportSelector::None { alias: Some(alias) } = &self.selector {
             return Some(alias.name.clone());
         }
 
