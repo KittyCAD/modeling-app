@@ -6,51 +6,51 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 27,
+        "end": 21,
         "id": {
-          "end": 7,
+          "end": 1,
           "name": "x",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
-          "end": 27,
+          "end": 21,
           "left": {
             "argument": {
-              "end": 15,
+              "end": 9,
               "name": "leg2",
-              "start": 11,
+              "start": 5,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "end": 15,
+            "end": 9,
             "operator": "-",
-            "start": 10,
+            "start": 4,
             "type": "UnaryExpression",
             "type": "UnaryExpression"
           },
           "operator": "+",
           "right": {
-            "end": 27,
+            "end": 21,
             "name": "thickness",
-            "start": 18,
+            "start": 12,
             "type": "Identifier",
             "type": "Identifier"
           },
-          "start": 10,
+          "start": 4,
           "type": "BinaryExpression",
           "type": "BinaryExpression"
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 27,
+      "end": 21,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 27,
+  "end": 21,
   "start": 0
 }

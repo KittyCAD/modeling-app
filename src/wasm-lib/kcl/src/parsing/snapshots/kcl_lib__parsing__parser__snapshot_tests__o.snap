@@ -6,61 +6,61 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 21,
+        "end": 15,
         "id": {
-          "end": 9,
+          "end": 3,
           "name": "six",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
-          "end": 21,
+          "end": 15,
           "left": {
-            "end": 17,
+            "end": 11,
             "left": {
-              "end": 13,
+              "end": 7,
               "raw": "1",
-              "start": 12,
+              "start": 6,
               "type": "Literal",
               "type": "Literal",
               "value": 1.0
             },
             "operator": "+",
             "right": {
-              "end": 17,
+              "end": 11,
               "raw": "2",
-              "start": 16,
+              "start": 10,
               "type": "Literal",
               "type": "Literal",
               "value": 2.0
             },
-            "start": 12,
+            "start": 6,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
           "operator": "+",
           "right": {
-            "end": 21,
+            "end": 15,
             "raw": "3",
-            "start": 20,
+            "start": 14,
             "type": "Literal",
             "type": "Literal",
             "value": 3.0
           },
-          "start": 12,
+          "start": 6,
           "type": "BinaryExpression",
           "type": "BinaryExpression"
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 21,
+      "end": 15,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 21,
+  "end": 15,
   "start": 0
 }

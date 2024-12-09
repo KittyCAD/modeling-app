@@ -6,38 +6,38 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 11,
+        "end": 5,
         "id": {
-          "end": 7,
+          "end": 1,
           "name": "x",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
-          "end": 11,
+          "end": 5,
           "raw": "1",
-          "start": 10,
+          "start": 4,
           "type": "Literal",
           "type": "Literal",
           "value": 1.0
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 11,
+      "end": 5,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 40,
+  "end": 34,
   "nonCodeMeta": {
     "nonCodeNodes": {
       "0": [
         {
-          "end": 40,
-          "start": 11,
+          "end": 34,
+          "start": 5,
           "type": "NonCodeNode",
           "value": {
             "type": "inlineComment",
