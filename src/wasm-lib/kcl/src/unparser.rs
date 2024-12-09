@@ -166,7 +166,11 @@ pub(crate) enum ExprContext {
 }
 
 impl Expr {
-    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
+    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, mut ctxt: ExprContext) -> String {
+        let was_decl = matches!(ctxt, ExprContext::Decl);
+        if was_decl {
+            ctxt = ExprContext::Other;
+        }
         match &self {
             Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
             Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt),
@@ -175,11 +179,7 @@ impl Expr {
             Expr::MemberExpression(mem_exp) => mem_exp.recast(),
             Expr::Literal(literal) => literal.recast(),
             Expr::FunctionExpression(func_exp) => {
-                let mut result = if ctxt == ExprContext::Decl {
-                    String::new()
-                } else {
-                    "fn".to_owned()
-                };
+                let mut result = if was_decl { String::new() } else { "fn".to_owned() };
                 result += &func_exp.recast(options, indentation_level);
                 result
             }
@@ -2168,6 +2168,28 @@ sketch002 = startSketchOn({
         let ast = crate::parsing::top_level_parse(input).unwrap();
         let actual = ast.recast(&FormatOptions::new(), 0);
         assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn unparse_fn_unnamed() {
+        let input = r#"squares_out = reduce(arr, 0, fn(i, squares) {
+  return 1
+})
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
+    fn unparse_fn_named() {
+        let input = r#"fn f(x) {
+  return 1
+}
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
     }
 
     #[test]
