@@ -234,8 +234,8 @@ export const commandBarMachine = setup({
             argName in event.data.argDefaultValues
               ? event.data.argDefaultValues[argName]
               : arg.skip && 'defaultValue' in arg
-                ? arg.defaultValue
-                : undefined
+              ? arg.defaultValue
+              : undefined
         }
         return args
       },
@@ -252,15 +252,26 @@ export const commandBarMachine = setup({
       ({
         input,
       }: {
-        input: { context: CommandBarContext; event: CommandBarMachineEvent }
+        input: {
+          context: CommandBarContext | undefined
+          event: CommandBarMachineEvent | undefined
+        }
       }) => {
         return new Promise(async (resolve, reject) => {
-          if (input.event.type !== 'Submit argument') {
+          if (!input || input?.event?.type !== 'Submit argument') {
             toast.error(`Unable to validate, wrong event type.`)
             reject(`Unable to validate, wrong event type`)
             return
           }
+
           const context = input?.context
+
+          if (!context) {
+            toast.error(`Unable to validate, wrong argument.`)
+            reject(`Unable to validate, wrong argument`)
+            return
+          }
+
           const data = input.event.data
           const argName = context.currentArgument?.name
           const args = context?.selectedCommand?.args
@@ -492,7 +503,8 @@ export const commandBarMachine = setup({
             src: 'Validate argument',
             id: 'validateSingleArgument',
             input: ({ event, context }) => {
-              if (event.type !== 'Submit argument') return {}
+              if (event.type !== 'Submit argument')
+                return { event: undefined, context: undefined }
               return { event, context }
             },
             onDone: {
