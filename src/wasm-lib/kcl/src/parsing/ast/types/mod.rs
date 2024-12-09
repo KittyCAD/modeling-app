@@ -1228,6 +1228,7 @@ impl ImportSelector {
 pub struct ImportStatement {
     pub selector: ImportSelector,
     pub path: String,
+    #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]

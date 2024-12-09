@@ -15,8 +15,7 @@ description: Result of parsing import_glob.kcl
         },
         "start": 0,
         "type": "ImportStatement",
-        "type": "ImportStatement",
-        "visibility": "default"
+        "type": "ImportStatement"
       }
     ],
     "end": 36,
