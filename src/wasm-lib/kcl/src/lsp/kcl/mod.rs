@@ -444,7 +444,7 @@ impl Backend {
             let token_modifiers_bitset = if let Some(ast) = self.ast_map.get(params.uri.as_str()) {
                 let token_index = Arc::new(Mutex::new(token_type_index));
                 let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
-                crate::walk::walk(&ast, &|node: crate::walk::Node| {
+                crate::walk::walk(&ast, |node: crate::walk::Node| {
                     let Ok(node_range): Result<SourceRange, _> = (&node).try_into() else {
                         return Ok(true);
                     };

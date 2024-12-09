@@ -73,7 +73,7 @@ const bar = 2
 "
         );
 
-        walk(&program, &|node| {
+        walk(&program, |node| {
             if let Node::VariableDeclarator(vd) = node {
                 if vd.id.name == "foo" {
                     return Ok::<bool, anyhow::Error>(false);

@@ -104,8 +104,8 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
             }
             Node::IfExpression(n) => {
                 let mut children = n.else_ifs.iter().map(|v| v.into()).collect::<Vec<Node>>();
-                children.insert(0, (&n.cond).as_ref().into());
-                children.push((&n.final_else).as_ref().into());
+                children.insert(0, n.cond.as_ref().into());
+                children.push(n.final_else.as_ref().into());
                 children
             }
             Node::VariableDeclaration(n) => vec![(&n.declaration).into()],
