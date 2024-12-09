@@ -42,8 +42,6 @@ export const settingsMachine = setup({
     setClientTheme: () => {},
     'Execute AST': () => {},
     toastSuccess: () => {},
-    setEngineEdges: () => {},
-    setEngineScaleGridVisibility: () => {},
     setClientSideSceneUnits: () => {},
     persistSettings: () => {},
     resetSettings: assign(({ context, event }) => {
@@ -172,7 +170,7 @@ export const settingsMachine = setup({
         'set.modeling.highlightEdges': {
           target: 'persisting settings',
 
-          actions: ['setSettingAtLevel', 'toastSuccess', 'setEngineEdges'],
+          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
 
         'Reset settings': {
@@ -201,11 +199,7 @@ export const settingsMachine = setup({
 
         'set.modeling.showScaleGrid': {
           target: 'persisting settings',
-          actions: [
-            'setSettingAtLevel',
-            'toastSuccess',
-            'setEngineScaleGridVisibility',
-          ],
+          actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
       },
     },
