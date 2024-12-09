@@ -271,7 +271,7 @@ export const AllSettingsFields = forwardRef(
               , and start a discussion if you don't see it! Your feedback will
               help us prioritize what to build next.
             </p>
-            {IS_NIGHTLY && (
+            {!IS_NIGHTLY && (
               <p className="max-w-2xl mt-6">
                 Want to experience the latest and (hopefully) greatest from our
                 main development branch?{' '}
