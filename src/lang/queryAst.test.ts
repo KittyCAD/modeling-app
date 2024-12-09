@@ -11,6 +11,7 @@ import {
   doesSceneHaveSweepableSketch,
   traverse,
   getNodeFromPath,
+  doesSceneHaveExtrudedSketch,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -652,6 +653,38 @@ extrude001 = extrude(10, sketch001)
     const ast = parse(exampleCode)
     if (err(ast)) throw ast
     const extrudable = doesSceneHaveSweepableSketch(ast)
+    expect(extrudable).toBeFalsy()
+  })
+})
+
+describe('Testing doesSceneHaveExtrudedSketch', () => {
+  it('finds extruded sketch as variable', async () => {
+    const exampleCode = `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+extrude001 = extrude(1, sketch001)
+`
+    const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveExtrudedSketch(ast)
+    expect(extrudable).toBeTruthy()
+  })
+  it('finds extruded sketch in pipe', async () => {
+    const exampleCode = `extrude001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> extrude(1, %)
+`
+    const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveExtrudedSketch(ast)
+    expect(extrudable).toBeTruthy()
+  })
+  it('finds no extrusion with sketch only', async () => {
+    const exampleCode = `extrude001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+`
+    const ast = parse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveExtrudedSketch(ast)
     expect(extrudable).toBeFalsy()
   })
 })
