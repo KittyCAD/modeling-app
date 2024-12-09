@@ -76,7 +76,6 @@ import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
-  isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
