@@ -32,7 +32,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{DefaultPlanes, IdGenerator, Point3d},
+    execution::{DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 

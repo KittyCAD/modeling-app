@@ -7,7 +7,7 @@ use tower_lsp::{
 };
 
 use crate::{
-    executor::ProgramMemory,
+    execution::ProgramMemory,
     lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
     parsing::ast::types::{Node, Program},
 };

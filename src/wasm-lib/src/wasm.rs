@@ -4,7 +4,9 @@ use std::{str::FromStr, sync::Arc};
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program};
+use kcl_lib::{
+    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program,
+};
 use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
@@ -22,10 +24,40 @@ async fn read_old_ast_memory() -> Option<OldAstState> {
     lock.clone()
 }
 
+async fn bust_cache() {
+    // We don't use the cache in mock mode.
+    let mut current_cache = OLD_AST_MEMORY.write().await;
+    // Set the cache to None.
+    *current_cache = None;
+}
+
+// wasm_bindgen wrapper for clearing the scene and busting the cache.
+#[wasm_bindgen]
+pub async fn clear_scene_and_bust_cache(
+    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
+) -> Result<(), String> {
+    console_error_panic_hook::set_once();
+
+    // Bust the cache.
+    bust_cache().await;
+
+    let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
+        .await
+        .map_err(|e| format!("{:?}", e))?;
+
+    let mut id_generator: IdGenerator = Default::default();
+    engine
+        .clear_scene(&mut id_generator, Default::default())
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
 pub async fn execute_wasm(
-    program_str: &str,
+    program_ast_json: &str,
     program_memory_override_str: &str,
     units: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
@@ -33,7 +65,7 @@ pub async fn execute_wasm(
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let program: Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
     let program_memory_override: Option<kcl_lib::exec::ProgramMemory> =
         serde_json::from_str(program_memory_override_str).map_err(|e| e.to_string())?;
 
@@ -48,8 +80,7 @@ pub async fn execute_wasm(
         kcl_lib::ExecutorContext::new(engine_manager, fs_manager, units).await?
     };
 
-    let mut exec_state = ExecState { ..ExecState::default() };
-
+    let mut exec_state = ExecState::default();
     let mut old_ast_memory = None;
 
     // Populate from the old exec state if it exists.
@@ -75,10 +106,7 @@ pub async fn execute_wasm(
         .map_err(String::from)
     {
         if !is_mock {
-            // We don't use the cache in mock mode.
-            let mut current_cache = OLD_AST_MEMORY.write().await;
-            // Set the cache to None.
-            *current_cache = None;
+            bust_cache().await;
         }
 
         // Throw the error.
@@ -107,10 +135,10 @@ pub async fn execute_wasm(
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn kcl_lint(program_str: &str) -> Result<JsValue, JsValue> {
+pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
 
-    let program: Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
     let mut findings = vec![];
     for discovered_finding in program.lint_all().into_iter().flatten() {
         findings.push(discovered_finding);
@@ -161,14 +189,14 @@ pub async fn modify_grid(
 #[wasm_bindgen]
 pub async fn modify_ast_for_sketch_wasm(
     manager: kcl_lib::wasm_engine::EngineCommandManager,
-    program_str: &str,
+    program_ast_json: &str,
     sketch_name: &str,
     plane_type: &str,
     sketch_id: &str,
 ) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let mut program: Program = serde_json::from_str(program_str).map_err(|e| e.to_string())?;
+    let mut program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
 
     let plane: kcl_lib::exec::PlaneType = serde_json::from_str(plane_type).map_err(|e| e.to_string())?;
 
@@ -215,10 +243,10 @@ pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
 }
 
 #[wasm_bindgen]
-pub fn parse_wasm(js: &str) -> Result<JsValue, String> {
+pub fn parse_wasm(kcl_program_source: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let (program, errs) = Program::parse(js).map_err(String::from)?;
+    let (program, errs) = Program::parse(kcl_program_source).map_err(String::from)?;
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&(program, errs)).map_err(|e| e.to_string())

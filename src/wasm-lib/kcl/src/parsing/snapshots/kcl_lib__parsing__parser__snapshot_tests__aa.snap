@@ -1,39 +1,35 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3963
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 17,
-          "id": {
-            "end": 8,
-            "name": "sg",
-            "start": 6,
+      "declaration": {
+        "end": 17,
+        "id": {
+          "end": 8,
+          "name": "sg",
+          "start": 6,
+          "type": "Identifier"
+        },
+        "init": {
+          "argument": {
+            "end": 17,
+            "name": "scale",
+            "start": 12,
+            "type": "Identifier",
             "type": "Identifier"
           },
-          "init": {
-            "argument": {
-              "end": 17,
-              "name": "scale",
-              "start": 12,
-              "type": "Identifier",
-              "type": "Identifier"
-            },
-            "end": 17,
-            "operator": "-",
-            "start": 11,
-            "type": "UnaryExpression",
-            "type": "UnaryExpression"
-          },
-          "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "end": 17,
+          "operator": "-",
+          "start": 11,
+          "type": "UnaryExpression",
+          "type": "UnaryExpression"
+        },
+        "start": 6,
+        "type": "VariableDeclarator"
+      },
       "end": 17,
       "kind": "const",
       "start": 0,

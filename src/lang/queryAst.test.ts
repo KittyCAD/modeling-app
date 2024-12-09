@@ -230,8 +230,7 @@ describe('testing getNodePathFromSourceRange', () => {
     expect(result).toEqual([
       ['body', ''],
       [0, 'index'],
-      ['declarations', 'VariableDeclaration'],
-      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['body', 'PipeExpression'],
       [2, 'index'],
@@ -250,8 +249,7 @@ describe('testing getNodePathFromSourceRange', () => {
     const expected = [
       ['body', ''],
       [0, 'index'],
-      ['declarations', 'VariableDeclaration'],
-      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['body', 'PipeExpression'],
       [3, 'index'],
@@ -293,8 +291,7 @@ describe('testing getNodePathFromSourceRange', () => {
     expect(result).toEqual([
       ['body', ''],
       [1, 'index'],
-      ['declarations', 'VariableDeclaration'],
-      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['cond', 'IfExpression'],
       ['left', 'BinaryExpression'],
@@ -324,8 +321,7 @@ describe('testing getNodePathFromSourceRange', () => {
     expect(result).toEqual([
       ['body', ''],
       [1, 'index'],
-      ['declarations', 'VariableDeclaration'],
-      [0, 'index'],
+      ['declaration', 'VariableDeclaration'],
       ['init', ''],
       ['then_val', 'IfExpression'],
       ['body', 'IfExpression'],
@@ -353,7 +349,8 @@ describe('testing getNodePathFromSourceRange', () => {
     expect(result).toEqual([
       ['body', ''],
       [0, 'index'],
-      ['items', 'ImportStatement'],
+      ['selector', 'ImportStatement'],
+      ['items', 'ImportSelector'],
       [1, 'index'],
       ['name', 'ImportItem'],
     ])

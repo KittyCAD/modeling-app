@@ -4,14 +4,19 @@ use async_recursion::async_recursion;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier},
+    execution::{
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
+    },
     parsing::ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
         CallExpressionKw, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-        ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
+        ObjectExpression, PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
-    std::{args::Arg, FunctionKind},
+    std::{
+        args::{Arg, KwArgs},
+        FunctionKind,
+    },
 };
 
 const FLOAT_TO_INT_MAX_DELTA: f64 = 0.01;
@@ -386,7 +391,14 @@ impl Node<CallExpressionKw> {
             None
         };
 
-        let args = crate::std::Args::new_kw(fn_args, unlabeled, self.into(), ctx.clone());
+        let args = crate::std::Args::new_kw(
+            KwArgs {
+                unlabeled,
+                labeled: fn_args,
+            },
+            self.into(),
+            ctx.clone(),
+        );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
@@ -805,5 +817,12 @@ impl Property {
             Property::UInt(_) => "number",
             Property::String(_) => "string",
         }
+    }
+}
+
+impl Node<PipeExpression> {
+    #[async_recursion]
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 }

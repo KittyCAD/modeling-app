@@ -2500,7 +2500,7 @@ export function canRectangleOrCircleTool({
   // This should not be returning false, and it should be caught
   // but we need to simulate old behavior to move on.
   if (err(node)) return false
-  return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
+  return node.node?.declaration.init.type !== 'PipeExpression'
 }
 
 /** If the sketch contains `close` or `circle` stdlib functions it must be closed */
@@ -2517,8 +2517,8 @@ export function isClosedSketch({
   // This should not be returning false, and it should be caught
   // but we need to simulate old behavior to move on.
   if (err(node)) return false
-  if (node.node?.declarations?.[0]?.init.type !== 'PipeExpression') return false
-  return node.node.declarations[0].init.body.some(
+  if (node.node?.declaration.init.type !== 'PipeExpression') return false
+  return node.node.declaration.init.body.some(
     (node) =>
       node.type === 'CallExpression' &&
       (node.callee.name === 'close' || node.callee.name === 'circle')

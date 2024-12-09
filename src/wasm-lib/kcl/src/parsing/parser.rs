@@ -19,11 +19,11 @@ use crate::{
         ast::types::{
             ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, BoxNode,
             CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
-            FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportStatement,
-            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-            NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-            PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator, UnaryExpression, UnaryOperator,
-            VariableDeclaration, VariableDeclarator, VariableKind,
+            FnArgPrimitive, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector,
+            ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
+            MemberObject, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty,
+            Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement, Shebang, TagDeclarator,
+            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenType},
@@ -1217,7 +1217,6 @@ fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
 // the large_enum_variant lint below introduces a LOT of code complexity in a
 // match!() that's super clean that isn't worth it for the marginal space
 // savings. revisit if that's a lie.
-
 #[derive(Debug)]
 #[allow(clippy::large_enum_variant)]
 enum WithinFunction {
@@ -1238,7 +1237,8 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
-        token if token.declaration_keyword().is_some() || token.visibility_keyword().is_some() =>
+        token if token.visibility_keyword().is_some() => (alt((declaration.map(BodyItem::VariableDeclaration), import_stmt.map(BodyItem::ImportStatement))), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
+        token if token.declaration_keyword().is_some() =>
             (declaration.map(BodyItem::VariableDeclaration), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         token if token.value == "import" && matches!(token.token_type, TokenType::Keyword) =>
             (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
@@ -1407,7 +1407,22 @@ fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
     ))
 }
 
+fn import_items(i: TokenSlice) -> PResult<NodeList<ImportItem>> {
+    separated(1.., import_item, comma_sep)
+        .parse_next(i)
+        .map_err(|e| e.cut())
+}
+
+fn glob(i: TokenSlice) -> PResult<Token> {
+    one_of((TokenType::Operator, "*"))
+        .context(expected("the multiple import operator, *"))
+        .parse_next(i)
+}
+
 fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
+    let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
+        .parse_next(i)?
+        .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
     let import_token = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "import" {
@@ -1421,38 +1436,63 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         })
         .context(expected("the 'import' keyword"))
         .parse_next(i)?;
-    let start = import_token.start;
+
+    let module_id = import_token.module_id;
+    let start = visibility_token.unwrap_or(import_token).start;
 
     require_whitespace(i)?;
 
-    let items = separated(1.., import_item, comma_sep)
-        .parse_next(i)
-        .map_err(|e| e.cut())?;
+    let (mut selector, path) = alt((
+        string_literal.map(|s| (ImportSelector::None(None), Some(s))),
+        glob.map(|t| {
+            let s = t.as_source_range();
+            (
+                ImportSelector::Glob(Node::new((), s.start(), s.end(), s.module_id())),
+                None,
+            )
+        }),
+        import_items.map(|items| (ImportSelector::List { items }, None)),
+    ))
+    .parse_next(i)?;
 
-    require_whitespace(i)?;
+    let path = match path {
+        Some(path) => path,
+        None => {
+            require_whitespace(i)?;
+            any.try_map(|token: Token| {
+                if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
+                    Ok(())
+                } else {
+                    Err(CompilationError::fatal(
+                        token.as_source_range(),
+                        format!("{} is not the 'from' keyword", token.value.as_str()),
+                    ))
+                }
+            })
+            .context(expected("the 'from' keyword"))
+            .parse_next(i)
+            .map_err(|e| e.cut())?;
 
-    any.try_map(|token: Token| {
-        if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "from" {
-            Ok(())
-        } else {
-            Err(CompilationError::fatal(
-                token.as_source_range(),
-                format!("{} is not the 'from' keyword", token.value.as_str()),
-            ))
+            require_whitespace(i)?;
+
+            string_literal(i)?
         }
-    })
-    .context(expected("the 'from' keyword"))
-    .parse_next(i)
-    .map_err(|e| e.cut())?;
+    };
 
-    require_whitespace(i)?;
-
-    let path = string_literal(i)?;
-    let end = path.end;
+    let mut end: usize = path.end;
     let path_string = match path.inner.value {
         LiteralValue::String(s) => s,
         _ => unreachable!(),
     };
+    if path_string.is_empty() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(path.start, path.end, path.module_id),
+                "import path cannot be empty",
+            )
+            .into(),
+        ));
+    }
     if path_string
         .chars()
         .any(|c| !c.is_ascii_alphanumeric() && c != '_' && c != '-' && c != '.')
@@ -1465,16 +1505,44 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             .into(),
         ));
     }
+
+    if let ImportSelector::None(ref mut a) = selector {
+        if let Some(alias) = opt(preceded(
+            (whitespace, import_as_keyword, whitespace),
+            identifier.context(expected("an identifier to alias the import")),
+        ))
+        .parse_next(i)?
+        {
+            end = alias.end;
+            *a = Some(alias);
+        }
+
+        if a.is_none()
+            && (!path_string.ends_with(".kcl")
+                || path_string.starts_with("_")
+                || path_string.contains('-')
+                || path_string[0..path_string.len() - 4].contains('.'))
+        {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    SourceRange::new(path.start, path.end, path.module_id),
+                    "import path is not a valid identifier and must be aliased.".to_owned(),
+                )
+                .into(),
+            ));
+        }
+    }
+
     Ok(Node::boxed(
         ImportStatement {
-            items,
+            selector,
+            visibility,
             path: path_string,
-            raw_path: path.inner.raw,
             digest: None,
         },
         start,
         end,
-        import_token.module_id,
+        module_id,
     ))
 }
 
@@ -1707,7 +1775,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     let end = val.end();
     Ok(Box::new(Node {
         inner: VariableDeclaration {
-            declarations: vec![Node {
+            declaration: Node {
                 start: id.start,
                 end,
                 module_id,
@@ -1716,7 +1784,7 @@ fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                     init: val,
                     digest: None,
                 },
-            }],
+            },
             visibility,
             kind,
             digest: None,
@@ -1787,22 +1855,59 @@ impl TryFrom<Token> for Node<TagDeclarator> {
     type Error = CompilationError;
 
     fn try_from(token: Token) -> Result<Self, Self::Error> {
-        if token.token_type == TokenType::Word {
-            Ok(Node::new(
-                TagDeclarator {
-                    // We subtract 1 from the start because the tag starts with a `$`.
-                    name: token.value,
-                    digest: None,
-                },
-                token.start - 1,
-                token.end,
-                token.module_id,
-            ))
-        } else {
-            Err(CompilationError::fatal(
+        match token.token_type {
+            TokenType::Word => {
+                Ok(Node::new(
+                    TagDeclarator {
+                        // We subtract 1 from the start because the tag starts with a `$`.
+                        name: token.value,
+                        digest: None,
+                    },
+                    token.start - 1,
+                    token.end,
+                    token.module_id,
+                ))
+            }
+            TokenType::Number => Err(CompilationError::fatal(
+                token.as_source_range(),
+                format!(
+                    "Tag names must not start with a number. Tag starts with `{}`",
+                    token.value.as_str()
+                ),
+            )),
+
+            // e.g. `line(%, $)` or `line(%, $ , 5)`
+            TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationError::fatal(
+                token.as_source_range(),
+                "Tag names must not be empty".to_string(),
+            )),
+
+            TokenType::Type => Err(CompilationError::fatal(
                 token.as_source_range(),
                 format!("Cannot assign a tag to a reserved keyword: {}", token.value.as_str()),
-            ))
+            )),
+
+            TokenType::Bang
+            | TokenType::At
+            | TokenType::Hash
+            | TokenType::Colon
+            | TokenType::Period
+            | TokenType::Operator
+            | TokenType::DoublePeriod
+            | TokenType::QuestionMark
+            | TokenType::BlockComment
+            | TokenType::Function
+            | TokenType::String
+            | TokenType::Dollar
+            | TokenType::Keyword
+            | TokenType::Unknown
+            | TokenType::LineComment => Err(CompilationError::fatal(
+                token.as_source_range(),
+                // this is `start with` because if most of these cases are in the middle, it ends
+                // up hitting a different error path(e.g. including a bang) or being valid(e.g. including a comment) since it will get broken up into
+                // multiple tokens
+                format!("Tag names must not start with a {}", token.token_type),
+            )),
         }
     }
 }
@@ -1826,7 +1931,8 @@ fn tag(i: TokenSlice) -> PResult<Node<TagDeclarator>> {
     let tag_declarator = any
         .try_map(Node::<TagDeclarator>::try_from)
         .context(expected("a tag, e.g. '$seg01' or '$line01'"))
-        .parse_next(i)?;
+        .parse_next(i)
+        .map_err(|e| e.cut())?;
     // Now that we've parsed a tag declarator, verify that it's not a stdlib
     // name.  If it is, stop backtracking.
     tag_declarator
@@ -2074,6 +2180,11 @@ fn question_mark(i: TokenSlice) -> PResult<()> {
     Ok(())
 }
 
+fn at_sign(i: TokenSlice) -> PResult<()> {
+    TokenType::At.parse_from(i)?;
+    Ok(())
+}
+
 fn fun(i: TokenSlice) -> PResult<Token> {
     any.try_map(|token: Token| match token.token_type {
         TokenType::Keyword if token.value == "fn" => Ok(token),
@@ -2146,13 +2257,15 @@ fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
 }
 
 struct ParamDescription {
+    labeled: bool,
     arg_name: Token,
     type_: std::option::Option<FnArgType>,
     is_optional: bool,
 }
 
 fn parameter(i: TokenSlice) -> PResult<ParamDescription> {
-    let (arg_name, optional, _, type_) = (
+    let (found_at_sign, arg_name, optional, _, type_) = (
+        opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
         opt(whitespace),
@@ -2160,6 +2273,7 @@ fn parameter(i: TokenSlice) -> PResult<ParamDescription> {
     )
         .parse_next(i)?;
     Ok(ParamDescription {
+        labeled: found_at_sign.is_none(),
         arg_name,
         type_,
         is_optional: optional.is_some(),
@@ -2178,6 +2292,7 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
         .into_iter()
         .map(
             |ParamDescription {
+                 labeled,
                  arg_name,
                  type_,
                  is_optional,
@@ -2193,13 +2308,22 @@ fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
                     } else {
                         None
                     },
-                    labeled: true,
+                    labeled,
                     digest: None,
                 })
             },
         )
         .collect::<Result<_, _>>()
         .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
+
+    // Make sure the only unlabeled parameter is the first one.
+    if let Some(param) = params.iter().skip(1).find(|param| !param.labeled) {
+        let source_range = SourceRange::from(param);
+        return Err(ErrMode::Cut(ContextError::from(CompilationError::fatal(
+            source_range,
+            "Only the first parameter can be declared unlabeled",
+        ))));
+    }
 
     // Make sure optional parameters are last.
     if let Err(e) = optional_after_required(&params) {
@@ -2304,6 +2428,7 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
+
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         let just_args: Vec<_> = args.iter().collect();
         typecheck_all(std_fn, &just_args)?;
@@ -2383,10 +2508,11 @@ mod tests {
         // example, "return" is the problem.
         assert!(
             err.message.starts_with("Unexpected token: ")
+                || err.message.starts_with("= is not")
                 || err
                     .message
                     .starts_with("Cannot assign a variable to a reserved keyword: "),
-            "Error message is: {}",
+            "Error message is: `{}`",
             err.message,
         );
     }
@@ -2449,7 +2575,7 @@ mod tests {
         let tokens = crate::parsing::token::lexer("x = 4", ModuleId::default()).unwrap();
         let vardec = declaration(&mut tokens.as_slice()).unwrap();
         assert_eq!(vardec.inner.kind, VariableKind::Const);
-        let vardec = vardec.declarations.first().unwrap();
+        let vardec = &vardec.declaration;
         assert_eq!(vardec.id.name, "x");
         let Expr::Literal(init_val) = &vardec.init else {
             panic!("weird init value")
@@ -2524,10 +2650,10 @@ const mySk1 = startSketchAt([0, 0])"#;
     fn test_comment_in_pipe() {
         let tokens = crate::parsing::token::lexer(r#"const x = y() |> /*hi*/ z(%)"#, ModuleId::default()).unwrap();
         let mut body = program.parse(&tokens).unwrap().inner.body;
-        let BodyItem::VariableDeclaration(mut item) = body.remove(0) else {
+        let BodyItem::VariableDeclaration(item) = body.remove(0) else {
             panic!("expected vardec");
         };
-        let val = item.declarations.remove(0).inner.init;
+        let val = item.inner.declaration.inner.init;
         let Expr::PipeExpression(pipe) = val else {
             panic!("expected pipe");
         };
@@ -2795,14 +2921,14 @@ const mySk1 = startSketchAt([0, 0])"#;
         .enumerate()
         {
             let tokens = crate::parsing::token::lexer(test_input, ModuleId::default()).unwrap();
-            let mut actual = match declaration.parse(&tokens) {
+            let actual = match declaration.parse(&tokens) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
-            let Expr::BinaryExpression(_expr) = actual.declarations.remove(0).inner.init else {
+            let Expr::BinaryExpression(_expr) = &actual.declaration.inner.init else {
                 panic!(
                     "Expected test {i} to be a binary expression but it wasn't, it was {:?}",
-                    actual.declarations[0]
+                    actual.declaration
                 );
             };
             // TODO: check both sides are 1... probably not necessary but should do.
@@ -3144,16 +3270,15 @@ const mySk1 = startSketchAt([0, 0])"#;
             };
 
             // Run the second parser, check it matches the first parser.
-            let mut actual = declaration.parse(&tokens).unwrap();
+            let actual = declaration.parse(&tokens).unwrap();
             assert_eq!(expected, actual);
 
             // Inspect its output in more detail.
             assert_eq!(actual.inner.kind, VariableKind::Const);
             assert_eq!(actual.start, 0);
-            assert_eq!(actual.declarations.len(), 1);
-            let decl = actual.declarations.pop().unwrap();
+            let decl = &actual.declaration;
             assert_eq!(decl.id.name, "myVar");
-            let Expr::Literal(value) = decl.inner.init else {
+            let Expr::Literal(value) = &decl.inner.init else {
                 panic!("value should be a literal")
             };
             assert_eq!(value.end, test.len());
@@ -3368,12 +3493,18 @@ const mySk1 = startSketchAt([0, 0])"#;
     }
 
     #[track_caller]
-    fn assert_err(p: &str, msg: &str, src: [usize; 2]) {
+    fn assert_err(p: &str, msg: &str, src_expected: [usize; 2]) {
         let result = crate::parsing::top_level_parse(p);
         let err = result.unwrap_errs().next().unwrap();
         assert_eq!(err.message, msg);
-        assert_eq!(err.source_range.start(), src[0]);
-        assert_eq!(err.source_range.end(), src[1]);
+        let src_actual = [err.source_range.start(), err.source_range.end()];
+        assert_eq!(
+            src_expected,
+            src_actual,
+            "expected error would highlight {} but it actually highlighted {}",
+            &p[src_expected[0]..src_expected[1]],
+            &p[src_actual[0]..src_actual[1]],
+        );
     }
 
     #[track_caller]
@@ -3480,6 +3611,20 @@ const secondExtrude = startSketchOn('XY')
     #[test]
     fn test_parse_greater_bang() {
         assert_err(">!", "Unexpected token: >", [0, 1]);
+    }
+
+    #[test]
+    fn test_parse_unlabeled_param_not_allowed() {
+        assert_err(
+            "fn f(@x, @y) { return 1 }",
+            "Only the first parameter can be declared unlabeled",
+            [9, 11],
+        );
+        assert_err(
+            "fn f(x, @y) { return 1 }",
+            "Only the first parameter can be declared unlabeled",
+            [8, 10],
+        );
     }
 
     #[test]
@@ -3695,6 +3840,46 @@ e
             "Cannot assign a variable to a reserved keyword: cos",
             [12, 15],
         )
+    }
+
+    #[test]
+    fn bad_imports() {
+        assert_err(
+            r#"import cube from "../cube.kcl""#,
+            "import path may only contain alphanumeric characters, underscore, hyphen, and period. Files in other directories are not yet supported.",
+            [17, 30],
+        );
+        assert_err(
+            r#"import * as foo from "dsfs""#,
+            "as is not the 'from' keyword",
+            [9, 11],
+        );
+        assert_err(r#"import a from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
+        assert_err(r#"import * from "dsfs" as b"#, "Unexpected token: as", [21, 23]);
+        assert_err(r#"import a from b"#, "invalid string literal", [14, 15]);
+        assert_err(r#"import * "dsfs""#, "\"dsfs\" is not the 'from' keyword", [9, 15]);
+        assert_err(r#"import from "dsfs""#, "\"dsfs\" is not the 'from' keyword", [12, 18]);
+        assert_err(r#"import "dsfs.kcl" as *"#, "Unexpected token: as", [18, 20]);
+        assert_err(
+            r#"import "dsfs""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 13],
+        );
+        assert_err(
+            r#"import "foo.bar.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 20],
+        );
+        assert_err(
+            r#"import "_foo.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 17],
+        );
+        assert_err(
+            r#"import "foo-bar.kcl""#,
+            "import path is not a valid identifier and must be aliased.",
+            [7, 20],
+        );
     }
 
     #[test]
@@ -3927,12 +4112,108 @@ let myBox = box([0,0], -3, -16, -10)
     }
 
     #[test]
-    fn test_parse_empty_tag() {
+    fn test_parse_empty_tag_brace() {
         let some_program_string = r#"startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $)
-"#;
-        assert_err(some_program_string, "Unexpected token: |>", [57, 59]);
+    |> line(%, $)
+    "#;
+        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+    }
+    #[test]
+    fn test_parse_empty_tag_whitespace() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $ ,01)
+    "#;
+        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+    }
+
+    #[test]
+    fn test_parse_empty_tag_comma() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $,)
+    "#;
+        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_digit() {
+        let some_program_string = r#"
+    startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $01)"#;
+        assert_err(
+            some_program_string,
+            "Tag names must not start with a number. Tag starts with `01`",
+            [74, 76],
+        );
+    }
+    #[test]
+    fn test_parse_tag_including_digit() {
+        let some_program_string = r#"
+    startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $var01)"#;
+        assert_no_err(some_program_string);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_bang() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $!var,01)
+    "#;
+        assert_err(some_program_string, "Tag names must not start with a bang", [69, 70]);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_dollar() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $$,01)
+    "#;
+        assert_err(some_program_string, "Tag names must not start with a dollar", [69, 70]);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_fn() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $fn,01)
+    "#;
+        assert_err(some_program_string, "Tag names must not start with a keyword", [69, 71]);
+    }
+    #[test]
+    fn test_parse_tag_starting_with_a_comment() {
+        let some_program_string = r#"startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(%, $//
+    ,01)
+    "#;
+        assert_err(
+            some_program_string,
+            "Tag names must not start with a lineComment",
+            [69, 71],
+        );
+    }
+
+    #[test]
+    fn test_parse_tag_starting_with_reserved_type() {
+        let some_program_string = r#"
+    startSketchOn('XY')
+    |> line(%, $sketch)
+    "#;
+        assert_err(
+            some_program_string,
+            "Cannot assign a tag to a reserved keyword: sketch",
+            [41, 47],
+        );
+    }
+    #[test]
+    fn test_parse_tag_with_reserved_in_middle_works() {
+        let some_program_string = r#"
+    startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line([5, 5], %, $sketching)
+    "#;
+        assert_no_err(some_program_string);
     }
 
     #[test]
@@ -4235,6 +4516,8 @@ const my14 = 4 ^ 2 - 3 ^ 2 * 2
     );
     snapshot_test!(kw_function_unnamed_first, r#"val = foo(x, y: z)"#);
     snapshot_test!(kw_function_all_named, r#"val = foo(x: a, y: b)"#);
+    snapshot_test!(kw_function_decl_all_labeled, r#"fn foo(x, y) { return 1 }"#);
+    snapshot_test!(kw_function_decl_first_unlabeled, r#"fn foo(@x, y) { return 1 }"#);
 }
 
 #[allow(unused)]

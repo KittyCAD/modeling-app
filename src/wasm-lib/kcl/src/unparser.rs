@@ -3,10 +3,10 @@ use std::fmt::Write;
 use crate::parsing::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportStatement,
-        ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
-        NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator, UnaryExpression,
-        VariableDeclaration, VariableKind,
+        CallExpressionKw, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportSelector,
+        ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
+        MemberObject, Node, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator,
+        UnaryExpression, VariableDeclaration, VariableKind,
     },
     PIPE_OPERATOR,
 };
@@ -123,20 +123,37 @@ impl NonCodeValue {
 impl ImportStatement {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        let mut string = format!("{}import ", indentation);
-        for (i, item) in self.items.iter().enumerate() {
-            if i > 0 {
-                string.push_str(", ");
-            }
-            string.push_str(&item.name.name);
-            if let Some(alias) = &item.alias {
-                // If the alias is the same, don't output it.
-                if item.name.name != alias.name {
-                    string.push_str(&format!(" as {}", alias.name));
+        let vis = if self.visibility == ItemVisibility::Export {
+            "export "
+        } else {
+            ""
+        };
+        let mut string = format!("{}{}import ", vis, indentation);
+        match &self.selector {
+            ImportSelector::List { items } => {
+                for (i, item) in items.iter().enumerate() {
+                    if i > 0 {
+                        string.push_str(", ");
+                    }
+                    string.push_str(&item.name.name);
+                    if let Some(alias) = &item.alias {
+                        // If the alias is the same, don't output it.
+                        if item.name.name != alias.name {
+                            string.push_str(&format!(" as {}", alias.name));
+                        }
+                    }
                 }
+                string.push_str(" from ");
             }
+            ImportSelector::Glob(_) => string.push_str("* from "),
+            ImportSelector::None(_) => {}
         }
-        string.push_str(&format!(" from {}", self.raw_path));
+        string.push_str(&format!("\"{}\"", self.path));
+
+        if let ImportSelector::None(Some(alias)) = &self.selector {
+            string.push_str(" as ");
+            string.push_str(&alias.name);
+        }
         string
     }
 }
@@ -253,27 +270,26 @@ impl LabeledArg {
 impl VariableDeclaration {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         let indentation = options.get_indentation(indentation_level);
-        let output = match self.visibility {
+        let mut output = match self.visibility {
             ItemVisibility::Default => String::new(),
             ItemVisibility::Export => "export ".to_owned(),
         };
-        self.declarations.iter().fold(output, |mut output, declaration| {
-            let (keyword, eq) = match self.kind {
-                VariableKind::Fn => ("fn ", ""),
-                VariableKind::Const => ("", " = "),
-            };
-            let _ = write!(
-                output,
-                "{}{keyword}{}{eq}{}",
-                indentation,
-                declaration.id.name,
-                declaration
-                    .init
-                    .recast(options, indentation_level, ExprContext::Decl)
-                    .trim()
-            );
-            output
-        })
+
+        let (keyword, eq) = match self.kind {
+            VariableKind::Fn => ("fn ", ""),
+            VariableKind::Const => ("", " = "),
+        };
+        let _ = write!(
+            output,
+            "{}{keyword}{}{eq}{}",
+            indentation,
+            self.declaration.id.name,
+            self.declaration
+                .init
+                .recast(options, indentation_level, ExprContext::Decl)
+                .trim()
+        );
+        output
     }
 }
 
@@ -643,7 +659,11 @@ impl FunctionExpression {
 
 impl Parameter {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let mut result = self.identifier.name.clone();
+        let mut result = format!(
+            "{}{}",
+            if self.labeled { "" } else { "@" },
+            self.identifier.name.clone()
+        );
         if let Some(ty) = &self.type_ {
             result += ": ";
             result += &ty.recast(options, indentation_level);
@@ -721,6 +741,13 @@ import a, b from "a.kcl"
 import a as aaa, b from "a.kcl"
 import a, b as bbb from "a.kcl"
 import a as aaa, b as bbb from "a.kcl"
+import "a_b.kcl"
+import "a-b.kcl" as b
+import * from "a.kcl"
+export import a as aaa from "a.kcl"
+export import a, b from "a.kcl"
+export import a as aaa, b from "a.kcl"
+export import a, b as bbb from "a.kcl"
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);

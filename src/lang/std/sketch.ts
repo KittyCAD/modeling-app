@@ -1701,7 +1701,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
     if (err(nodeMeta2)) return nodeMeta2
 
     const { node: varDec } = nodeMeta2
-    const varName = varDec.declarations[0].id.name
+    const varName = varDec.declaration.id.name
     const sketch = sketchFromKclValue(
       previousProgramMemory.get(varName),
       varName

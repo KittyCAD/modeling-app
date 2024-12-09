@@ -67,8 +67,7 @@ export function startSketchOnDefault(
   let pathToNode: PathToNode = [
     ['body', ''],
     [sketchIndex, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
 
@@ -95,7 +94,7 @@ export function addStartProfileAt(
     return new Error('variableDeclaration.init.type !== PipeExpression')
   }
   const _node = { ...node }
-  const init = variableDeclaration.declarations[0].init
+  const init = variableDeclaration.declaration.init
   const startProfileAt = createCallExpressionStdLib('startProfileAt', [
     createArrayExpression([
       createLiteral(roundOff(at[0])),
@@ -106,7 +105,7 @@ export function addStartProfileAt(
   if (init.type === 'PipeExpression') {
     init.body.splice(1, 0, startProfileAt)
   } else {
-    variableDeclaration.declarations[0].init = createPipeExpression([
+    variableDeclaration.declaration.init = createPipeExpression([
       init,
       startProfileAt,
     ])
@@ -150,8 +149,7 @@ export function addSketchTo(
   let pathToNode: PathToNode = [
     ['body', ''],
     [sketchIndex, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
   if (axis !== 'xy') {
@@ -334,8 +332,7 @@ export function extrudeSketch(
   const pathToExtrudeArg: PathToNode = [
     ['body', ''],
     [sketchIndexInBody + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
@@ -365,8 +362,7 @@ export function loftSketches(
   const pathToNode: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
@@ -461,8 +457,7 @@ export function revolveSketch(
   const pathToRevolveArg: PathToNode = [
     ['body', ''],
     [sketchIndexInBody + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
@@ -548,8 +543,7 @@ export function sketchOnExtrudedFace(
   const newpathToNode: PathToNode = [
     ['body', ''],
     [expressionIndex + 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    [0, 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
 
@@ -586,8 +580,7 @@ export function addOffsetPlane({
   const pathToNode: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
@@ -843,17 +836,15 @@ export function createVariableDeclaration(
     end: 0,
     moduleId: 0,
 
-    declarations: [
-      {
-        type: 'VariableDeclarator',
-        start: 0,
-        end: 0,
-        moduleId: 0,
+    declaration: {
+      type: 'VariableDeclarator',
+      start: 0,
+      end: 0,
+      moduleId: 0,
 
-        id: createIdentifier(varName),
-        init,
-      },
-    ],
+      id: createIdentifier(varName),
+      init,
+    },
     visibility,
     kind,
   }
@@ -1165,7 +1156,7 @@ export async function deleteFromSelection(
     traverse(astClone, {
       enter: (node, path) => {
         if (node.type === 'VariableDeclaration') {
-          const dec = node.declarations[0]
+          const dec = node.declaration
           if (
             dec.init.type === 'CallExpression' &&
             (dec.init.callee.name === 'extrude' ||
@@ -1200,7 +1191,7 @@ export async function deleteFromSelection(
             enter: (node, path) => {
               ;(async () => {
                 if (node.type === 'VariableDeclaration') {
-                  currentVariableName = node.declarations[0].id.name
+                  currentVariableName = node.declaration.id.name
                 }
                 if (
                   // match startSketchOn(${extrudeNameToDelete})

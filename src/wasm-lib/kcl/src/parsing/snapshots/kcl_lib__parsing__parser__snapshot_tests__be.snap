@@ -1,48 +1,44 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 4076
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 14,
-          "id": {
-            "end": 5,
-            "name": "x",
-            "start": 4,
-            "type": "Identifier"
-          },
-          "init": {
-            "end": 14,
-            "left": {
-              "end": 9,
-              "raw": "3",
-              "start": 8,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 3.0
-            },
-            "operator": "==",
-            "right": {
-              "end": 14,
-              "raw": "3",
-              "start": 13,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 3.0
-            },
-            "start": 8,
-            "type": "BinaryExpression",
-            "type": "BinaryExpression"
-          },
+      "declaration": {
+        "end": 14,
+        "id": {
+          "end": 5,
+          "name": "x",
           "start": 4,
-          "type": "VariableDeclarator"
-        }
-      ],
+          "type": "Identifier"
+        },
+        "init": {
+          "end": 14,
+          "left": {
+            "end": 9,
+            "raw": "3",
+            "start": 8,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 3.0
+          },
+          "operator": "==",
+          "right": {
+            "end": 14,
+            "raw": "3",
+            "start": 13,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 3.0
+          },
+          "start": 8,
+          "type": "BinaryExpression",
+          "type": "BinaryExpression"
+        },
+        "start": 4,
+        "type": "VariableDeclarator"
+      },
       "end": 14,
       "kind": "const",
       "start": 0,
