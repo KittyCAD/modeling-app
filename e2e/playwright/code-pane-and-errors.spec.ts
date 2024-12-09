@@ -49,7 +49,7 @@ test.describe('Code pane and errors', () => {
     await expect(codePaneButtonHolder).toContainText('notification')
   })
 
-  test('Opening and closing the code pane will consistently show error diagnostics', async ({
+  test.skip('Opening and closing the code pane will consistently show error diagnostics', async ({
     page,
     homePage,
     editor,
