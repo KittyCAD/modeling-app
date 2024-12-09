@@ -6,44 +6,44 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 17,
+        "end": 11,
         "id": {
-          "end": 9,
+          "end": 3,
           "name": "pt1",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
           "computed": true,
-          "end": 17,
+          "end": 11,
           "object": {
-            "end": 14,
+            "end": 8,
             "name": "b1",
-            "start": 12,
+            "start": 6,
             "type": "Identifier",
             "type": "Identifier"
           },
           "property": {
-            "end": 16,
+            "end": 10,
             "name": "x",
-            "start": 15,
+            "start": 9,
             "type": "Identifier",
             "type": "Identifier"
           },
-          "start": 12,
+          "start": 6,
           "type": "MemberExpression",
           "type": "MemberExpression"
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 17,
+      "end": 11,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 17,
+  "end": 11,
   "start": 0
 }

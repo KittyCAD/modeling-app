@@ -45,14 +45,11 @@ use crate::{
     errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
-        ast::{
-            cache::{CacheInformation, OldAstState},
-            types::{Expr, Node, VariableKind},
-        },
+        ast::types::{Expr, Node, VariableKind},
         token::TokenType,
         PIPE_OPERATOR,
     },
-    ModuleId, Program, SourceRange,
+    CacheInformation, ModuleId, OldAstState, Program, SourceRange,
 };
 
 lazy_static::lazy_static! {

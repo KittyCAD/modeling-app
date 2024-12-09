@@ -6,85 +6,85 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 42,
+        "end": 36,
         "id": {
-          "end": 9,
+          "end": 3,
           "name": "obj",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
-          "end": 42,
+          "end": 36,
           "properties": [
             {
-              "end": 30,
+              "end": 24,
               "key": {
-                "end": 19,
+                "end": 13,
                 "name": "center",
-                "start": 13,
+                "start": 7,
                 "type": "Identifier"
               },
-              "start": 13,
+              "start": 7,
               "type": "ObjectProperty",
               "value": {
                 "elements": [
                   {
-                    "end": 25,
+                    "end": 19,
                     "raw": "10",
-                    "start": 23,
+                    "start": 17,
                     "type": "Literal",
                     "type": "Literal",
                     "value": 10.0
                   },
                   {
-                    "end": 29,
+                    "end": 23,
                     "raw": "10",
-                    "start": 27,
+                    "start": 21,
                     "type": "Literal",
                     "type": "Literal",
                     "value": 10.0
                   }
                 ],
-                "end": 30,
-                "start": 22,
+                "end": 24,
+                "start": 16,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
             },
             {
-              "end": 41,
+              "end": 35,
               "key": {
-                "end": 38,
+                "end": 32,
                 "name": "radius",
-                "start": 32,
+                "start": 26,
                 "type": "Identifier"
               },
-              "start": 32,
+              "start": 26,
               "type": "ObjectProperty",
               "value": {
-                "end": 41,
+                "end": 35,
                 "raw": "5",
-                "start": 40,
+                "start": 34,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 5.0
               }
             }
           ],
-          "start": 12,
+          "start": 6,
           "type": "ObjectExpression",
           "type": "ObjectExpression"
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 42,
+      "end": 36,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 42,
+  "end": 36,
   "start": 0
 }

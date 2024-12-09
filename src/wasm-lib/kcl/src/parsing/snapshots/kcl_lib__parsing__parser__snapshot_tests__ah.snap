@@ -6,44 +6,44 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 30,
+        "end": 24,
         "id": {
-          "end": 11,
+          "end": 5,
           "name": "myBox",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
           "arguments": [
             {
-              "end": 29,
+              "end": 23,
               "name": "p",
-              "start": 28,
+              "start": 22,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 27,
+            "end": 21,
             "name": "startSketchAt",
-            "start": 14,
+            "start": 8,
             "type": "Identifier"
           },
-          "end": 30,
-          "start": 14,
+          "end": 24,
+          "start": 8,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 30,
+      "end": 24,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 30,
+  "end": 24,
   "start": 0
 }

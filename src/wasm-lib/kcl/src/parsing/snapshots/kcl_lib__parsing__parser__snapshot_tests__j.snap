@@ -6,21 +6,40 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 26,
+        "end": 20,
         "id": {
-          "end": 9,
+          "end": 3,
           "name": "obj",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
-          "end": 26,
+          "end": 20,
           "properties": [
+            {
+              "end": 12,
+              "key": {
+                "end": 9,
+                "name": "a",
+                "start": 8,
+                "type": "Identifier"
+              },
+              "start": 8,
+              "type": "ObjectProperty",
+              "value": {
+                "end": 12,
+                "raw": "1",
+                "start": 11,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 1.0
+              }
+            },
             {
               "end": 18,
               "key": {
                 "end": 15,
-                "name": "a",
+                "name": "b",
                 "start": 14,
                 "type": "Identifier"
               },
@@ -28,41 +47,22 @@ expression: actual
               "type": "ObjectProperty",
               "value": {
                 "end": 18,
-                "raw": "1",
-                "start": 17,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 1.0
-              }
-            },
-            {
-              "end": 24,
-              "key": {
-                "end": 21,
-                "name": "b",
-                "start": 20,
-                "type": "Identifier"
-              },
-              "start": 20,
-              "type": "ObjectProperty",
-              "value": {
-                "end": 24,
                 "raw": "2",
-                "start": 23,
+                "start": 17,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 2.0
               }
             }
           ],
-          "start": 12,
+          "start": 6,
           "type": "ObjectExpression",
           "type": "ObjectExpression"
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 26,
+      "end": 20,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
@@ -70,60 +70,60 @@ expression: actual
     },
     {
       "declaration": {
-        "end": 58,
+        "end": 46,
         "id": {
-          "end": 43,
+          "end": 31,
           "name": "height",
-          "start": 37,
+          "start": 25,
           "type": "Identifier"
         },
         "init": {
-          "end": 58,
+          "end": 46,
           "left": {
             "computed": false,
-            "end": 54,
+            "end": 42,
             "object": {
-              "end": 49,
+              "end": 37,
               "name": "obj",
-              "start": 46,
+              "start": 34,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 53,
+              "end": 41,
               "raw": "\"a\"",
-              "start": 50,
+              "start": 38,
               "type": "Literal",
               "type": "Literal",
               "value": "a"
             },
-            "start": 46,
+            "start": 34,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
           "operator": "-",
           "right": {
-            "end": 58,
+            "end": 46,
             "raw": "1",
-            "start": 57,
+            "start": 45,
             "type": "Literal",
             "type": "Literal",
             "value": 1.0
           },
-          "start": 46,
+          "start": 34,
           "type": "BinaryExpression",
           "type": "BinaryExpression"
         },
-        "start": 37,
+        "start": 25,
         "type": "VariableDeclarator"
       },
-      "end": 58,
+      "end": 46,
       "kind": "const",
-      "start": 31,
+      "start": 25,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 58,
+  "end": 46,
   "start": 0
 }

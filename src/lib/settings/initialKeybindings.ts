@@ -12,7 +12,7 @@ export type InteractionMapItem = {
  * Controls both the available names for interaction map categories
  * and the order in which they are displayed.
  */
-export const interactionMapCategories = [
+const interactionMapCategories = [
   'Sketching',
   'Modeling',
   'Command Palette',

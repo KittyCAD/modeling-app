@@ -645,7 +645,7 @@ async fn test_kcl_lsp_completions() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const thing= 1
+                text: r#"thing= 1
 st"#
                 .to_string(),
             },
@@ -688,7 +688,7 @@ async fn test_kcl_lsp_completions_empty_in_comment() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const thing= 1 // st"#.to_string(),
+                text: r#"thing= 1 // st"#.to_string(),
             },
         })
         .await;
@@ -700,7 +700,7 @@ async fn test_kcl_lsp_completions_empty_in_comment() {
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
                     uri: "file:///test.kcl".try_into().unwrap(),
                 },
-                position: tower_lsp::lsp_types::Position { line: 0, character: 19 },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 13 },
             },
             context: None,
             partial_result_params: Default::default(),
@@ -723,7 +723,7 @@ async fn test_kcl_lsp_completions_tags() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const part001 = startSketchOn('XY')
+                text: r#"part001 = startSketchOn('XY')
   |> startProfileAt([11.19, 28.35], %)
   |> line([28.67, -13.25], %, $here)
   |> line([-4.12, -22.81], %)
@@ -1058,7 +1058,7 @@ async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const part001 = startSketchOn('XY')
+                text: r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %, $seg01)
@@ -1066,8 +1066,8 @@ async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
   |> close(%)
   |> extrude(3.14, %)
 
-const thing = {blah: "foo"}
-const bar = thing.blah
+thing = {blah: "foo"}
+bar = thing.blah
 
 fn myFn = (param1) => {
     return param1
@@ -1230,7 +1230,7 @@ async fn test_kcl_lsp_semantic_tokens_multiple_comments() {
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
-const sphereDia = 0.5"#
+sphereDia = 0.5"#
                     .to_string(),
             },
         })
@@ -1251,7 +1251,7 @@ const sphereDia = 0.5"#
 
     // Check the semantic tokens.
     if let tower_lsp::lsp_types::SemanticTokensResult::Tokens(semantic_tokens) = semantic_tokens {
-        assert_eq!(semantic_tokens.data.len(), 7);
+        assert_eq!(semantic_tokens.data.len(), 6);
         assert_eq!(semantic_tokens.data[0].length, 15);
         assert_eq!(semantic_tokens.data[0].delta_start, 0);
         assert_eq!(semantic_tokens.data[0].delta_line, 0);
@@ -1279,36 +1279,27 @@ const sphereDia = 0.5"#
                 .get_semantic_token_type_index(&SemanticTokenType::COMMENT)
                 .unwrap()
         );
-        assert_eq!(semantic_tokens.data[3].length, 5);
+        assert_eq!(semantic_tokens.data[3].length, 9);
         assert_eq!(semantic_tokens.data[3].delta_start, 0);
         assert_eq!(semantic_tokens.data[3].delta_line, 1);
         assert_eq!(
             semantic_tokens.data[3].token_type,
             server
-                .get_semantic_token_type_index(&SemanticTokenType::KEYWORD)
-                .unwrap()
-        );
-        assert_eq!(semantic_tokens.data[4].length, 9);
-        assert_eq!(semantic_tokens.data[4].delta_start, 6);
-        assert_eq!(semantic_tokens.data[4].delta_line, 0);
-        assert_eq!(
-            semantic_tokens.data[4].token_type,
-            server
                 .get_semantic_token_type_index(&SemanticTokenType::VARIABLE)
                 .unwrap()
         );
-        assert_eq!(semantic_tokens.data[5].length, 1);
-        assert_eq!(semantic_tokens.data[5].delta_start, 10);
+        assert_eq!(semantic_tokens.data[4].length, 1);
+        assert_eq!(semantic_tokens.data[4].delta_start, 10);
         assert_eq!(
-            semantic_tokens.data[5].token_type,
+            semantic_tokens.data[4].token_type,
             server
                 .get_semantic_token_type_index(&SemanticTokenType::OPERATOR)
                 .unwrap()
         );
-        assert_eq!(semantic_tokens.data[6].length, 3);
-        assert_eq!(semantic_tokens.data[6].delta_start, 2);
+        assert_eq!(semantic_tokens.data[5].length, 3);
+        assert_eq!(semantic_tokens.data[5].delta_start, 2);
         assert_eq!(
-            semantic_tokens.data[6].token_type,
+            semantic_tokens.data[5].token_type,
             server
                 .get_semantic_token_type_index(&SemanticTokenType::NUMBER)
                 .unwrap()
@@ -1329,7 +1320,7 @@ async fn test_kcl_lsp_document_symbol() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const myVar = 1
+                text: r#"myVar = 1
 startSketchOn('XY')"#
                     .to_string(),
             },
@@ -1369,7 +1360,7 @@ async fn test_kcl_lsp_document_symbol_tag() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const part001 = startSketchOn('XY')
+                text: r#"part001 = startSketchOn('XY')
   |> startProfileAt([11.19, 28.35], %)
   |> line([28.67, -13.25], %, $here)
   |> line([-4.12, -22.81], %)
@@ -1466,13 +1457,13 @@ async fn test_kcl_lsp_formatting_extra_parens() {
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads. 
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
-const sphereDia = 0.5
-const insideDia = 1
-const thickness = 0.25
-const overHangLength = .4
+sphereDia = 0.5
+insideDia = 1
+thickness = 0.25
+overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
-const insideRevolve = startSketchOn('XZ')
+insideRevolve = startSketchOn('XZ')
   |> startProfileAt([insideDia / 2, 0], %)
   |> line([0, thickness + sphereDia / 2], %)
   |> line([overHangLength, 0], %)
@@ -1486,7 +1477,7 @@ const insideRevolve = startSketchOn('XZ')
   |> revolve({ axis: 'y' }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
-const sphere = startSketchOn('XZ')
+sphere = startSketchOn('XZ')
   |> startProfileAt([
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
@@ -1508,7 +1499,7 @@ const sphere = startSketchOn('XZ')
      }, %)
 
 // Sketch and revolve the outside bearing
-const outsideRevolve = startSketchOn('XZ')
+outsideRevolve = startSketchOn('XZ')
   |> startProfileAt([
        insideDia / 2 + thickness + sphereDia,
        0
@@ -1638,7 +1629,7 @@ async fn test_kcl_lsp_rename() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const thing= 1"#.to_string(),
+                text: r#"thing= 1"#.to_string(),
             },
         })
         .await;
@@ -1650,7 +1641,7 @@ async fn test_kcl_lsp_rename() {
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
                     uri: "file:///test.kcl".try_into().unwrap(),
                 },
-                position: tower_lsp::lsp_types::Position { line: 0, character: 8 },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
             },
             new_name: "newName".to_string(),
             work_done_progress_params: Default::default(),
@@ -1667,7 +1658,7 @@ async fn test_kcl_lsp_rename() {
         vec![tower_lsp::lsp_types::TextEdit {
             range: tower_lsp::lsp_types::Range {
                 start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
-                end: tower_lsp::lsp_types::Position { line: 0, character: 13 }
+                end: tower_lsp::lsp_types::Position { line: 0, character: 7 }
             },
             new_text: "newName = 1\n".to_string()
         }]
@@ -1773,7 +1764,7 @@ async fn test_kcl_lsp_diagnostic_has_lints() {
                 uri: "file:///testlint.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"let THING = 10"#.to_string(),
+                text: r#"THING = 10"#.to_string(),
             },
         })
         .await;
@@ -1859,7 +1850,7 @@ async fn test_copilot_lsp_completions_raw() {
     let completions = server
         .get_completions(
             "kcl".to_string(),
-            r#"const bracket = startSketchOn('XY')
+            r#"bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   "#
             .to_string(),
@@ -1878,7 +1869,7 @@ async fn test_copilot_lsp_completions_raw() {
     let completions_hit_cache = server
         .get_completions(
             "kcl".to_string(),
-            r#"const bracket = startSketchOn('XY')
+            r#"bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   "#
             .to_string(),
@@ -1918,7 +1909,7 @@ async fn test_copilot_lsp_completions() {
             path: "file:///test.copilot".to_string(),
             position: crate::lsp::copilot::types::CopilotPosition { line: 3, character: 3 },
             relative_path: "test.copilot".to_string(),
-            source: r#"const bracket = startSketchOn('XY')
+            source: r#"bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   
   |> close(%)
@@ -2066,7 +2057,7 @@ async fn test_lsp_initialized() {
 async fn test_kcl_lsp_on_change_update_ast() {
     let server = kcl_lsp_server(false).await.unwrap();
 
-    let same_text = r#"const thing = 1"#.to_string();
+    let same_text = r#"thing = 1"#.to_string();
 
     // Send open file.
     server
@@ -2102,7 +2093,7 @@ async fn test_kcl_lsp_on_change_update_ast() {
     assert_eq!(ast, server.ast_map.get("file:///test.kcl").unwrap().clone());
 
     // Update the text.
-    let new_text = r#"const thing = 2"#.to_string();
+    let new_text = r#"thing = 2"#.to_string();
     // Send change file.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
@@ -2128,7 +2119,7 @@ async fn test_kcl_lsp_on_change_update_ast() {
 async fn kcl_test_kcl_lsp_on_change_update_memory() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let same_text = r#"const thing = 1"#.to_string();
+    let same_text = r#"thing = 1"#.to_string();
 
     // Send open file.
     server
@@ -2164,7 +2155,7 @@ async fn kcl_test_kcl_lsp_on_change_update_memory() {
     assert_eq!(memory, server.memory_map.get("file:///test.kcl").unwrap().clone());
 
     // Update the text.
-    let new_text = r#"const thing = 2"#.to_string();
+    let new_text = r#"thing = 2"#.to_string();
     // Send change file.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
@@ -2188,7 +2179,7 @@ async fn kcl_test_kcl_lsp_update_units() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let same_text = r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -2196,7 +2187,7 @@ async fn kcl_test_kcl_lsp_update_units() {
 
   return sg
 }
-const part001 = cube([0,0], 20)
+part001 = cube([0,0], 20)
     |> close(%)
     |> extrude(20, %)"#
         .to_string();
@@ -2215,7 +2206,7 @@ const part001 = cube([0,0], 20)
 
     // Get the tokens.
     let tokens = server.token_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(tokens.len(), 124);
+    assert_eq!(tokens.len(), 120);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2305,7 +2296,7 @@ async fn test_kcl_lsp_diagnostics_on_parse_error() {
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Update the text.
-    let new_text = r#"const thing = 2"#.to_string();
+    let new_text = r#"thing = 2"#.to_string();
     // Send change file.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
@@ -2336,7 +2327,7 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const part001 = startSketchOn('XY')
+                text: r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2356,7 +2347,7 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Update the text.
-    let new_text = r#"const part001 = startSketchOn('XY')
+    let new_text = r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2394,7 +2385,7 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: r#"const part001 = startSketchOn('XY')
+                text: r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2443,7 +2434,7 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
 async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2536,7 +2527,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
 async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2624,7 +2615,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
 async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexecute_on_unit_change() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2715,7 +2706,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexe
 async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_on_unit_change() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2785,7 +2776,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_
 async fn kcl_test_kcl_lsp_cant_execute_set() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -2982,7 +2973,7 @@ async fn test_kcl_lsp_folding() {
 async fn kcl_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
     let server = kcl_lsp_server(false).await.unwrap();
 
-    let code = r#"const part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -3036,8 +3027,8 @@ async fn kcl_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagno
 async fn kcl_test_kcl_lsp_code_with_lint_and_ast_unchanged_but_has_diagnostics_reparse() {
     let server = kcl_lsp_server(false).await.unwrap();
 
-    let code = r#"const LINT = 1
-const part001 = startSketchOn('XY')
+    let code = r#"LINT = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -3090,8 +3081,8 @@ const part001 = startSketchOn('XY')
 async fn kcl_test_kcl_lsp_code_with_lint_and_parse_error_and_ast_unchanged_but_has_diagnostics_reparse() {
     let server = kcl_lsp_server(false).await.unwrap();
 
-    let code = r#"const LINT = 1
-const part001 = startSketchOn('XY')
+    let code = r#"LINT = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -3145,8 +3136,8 @@ const part001 = startSketchOn('XY')
 async fn kcl_test_kcl_lsp_code_lint_and_ast_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const LINT = 1
-const part001 = startSketchOn('XY')
+    let code = r#"LINT = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %, $seg01)
@@ -3210,8 +3201,8 @@ const part001 = startSketchOn('XY')
 async fn kcl_test_kcl_lsp_code_lint_reexecute_new_lint() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const LINT = 1
-const part001 = startSketchOn('XY')
+    let code = r#"LINT = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %, $seg01)
@@ -3253,14 +3244,14 @@ const part001 = startSketchOn('XY')
             content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
                 range: None,
                 range_length: None,
-                text: r#"const part001 = startSketchOn('XY')
+                text: r#"part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %, $seg01)
   |> line([-20, 0], %, $seg01)
   |> close(%)
   |> extrude(3.14, %)
-const NEW_LINT = 1"#
+NEW_LINT = 1"#
                     .to_string(),
             }],
         })
@@ -3283,8 +3274,8 @@ const NEW_LINT = 1"#
 async fn kcl_test_kcl_lsp_code_lint_reexecute_new_ast_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const LINT = 1
-const part001 = startSketchOn('XY')
+    let code = r#"LINT = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %, $seg01)
@@ -3326,14 +3317,14 @@ const part001 = startSketchOn('XY')
             content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
                 range: None,
                 range_length: None,
-                text: r#"const part001 = startSketchOn('XY')
+                text: r#"part001 = startSketchOn('XY')
   |> ^^^^startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %, $seg01)
   |> line([-20, 0], %, $seg01)
   |> close(%)
   |> extrude(3.14, %)
-const NEW_LINT = 1"#
+NEW_LINT = 1"#
                     .to_string(),
             }],
         })
@@ -3356,8 +3347,8 @@ const NEW_LINT = 1"#
 async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_parse_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const LINT = 1
-const part001 = startSketchOn('XY')
+    let code = r#"LINT = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -3408,14 +3399,14 @@ const part001 = startSketchOn('XY')
             content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
                 range: None,
                 range_length: None,
-                text: r#"const part001 = startSketchOn('XY')
+                text: r#"part001 = startSketchOn('XY')
   |> ^^^^startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
   |> line([-20, 0], %)
   |> close(%)
   |> extrude(3.14, %)
-const NEW_LINT = 1"#
+NEW_LINT = 1"#
                     .to_string(),
             }],
         })
@@ -3447,8 +3438,8 @@ const NEW_LINT = 1"#
 async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_execution_error() {
     let server = kcl_lsp_server(true).await.unwrap();
 
-    let code = r#"const LINT = 1
-const part001 = startSketchOn('XY')
+    let code = r#"LINT = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %)
   |> line([0, 20], %)
@@ -3503,8 +3494,8 @@ const part001 = startSketchOn('XY')
             content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
                 range: None,
                 range_length: None,
-                text: r#"const LINT = 1
-const part001 = startSketchOn('XY')
+                text: r#"LINT = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line([20, 0], %, $seg01)
   |> line([0, 20], %, $seg01)
@@ -3552,7 +3543,7 @@ async fn kcl_test_kcl_lsp_completions_number_literal() {
                 uri: "file:///test.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: "const thing = 10".to_string(),
+                text: "thing = 10".to_string(),
             },
         })
         .await;
@@ -3563,7 +3554,7 @@ async fn kcl_test_kcl_lsp_completions_number_literal() {
                 text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
                     uri: "file:///test.kcl".try_into().unwrap(),
                 },
-                position: tower_lsp::lsp_types::Position { line: 0, character: 15 },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 10 },
             },
             context: None,
             partial_result_params: Default::default(),

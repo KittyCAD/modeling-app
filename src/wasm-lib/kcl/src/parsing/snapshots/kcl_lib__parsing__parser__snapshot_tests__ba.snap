@@ -6,11 +6,11 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 132,
+        "end": 126,
         "id": {
-          "end": 16,
+          "end": 10,
           "name": "sketch001",
-          "start": 7,
+          "start": 1,
           "type": "Identifier"
         },
         "init": {
@@ -18,53 +18,53 @@ expression: actual
             {
               "arguments": [
                 {
-                  "end": 37,
+                  "end": 31,
                   "raw": "'XY'",
-                  "start": 33,
+                  "start": 27,
                   "type": "Literal",
                   "type": "Literal",
                   "value": "XY"
                 }
               ],
               "callee": {
-                "end": 32,
+                "end": 26,
                 "name": "startSketchOn",
-                "start": 19,
+                "start": 13,
                 "type": "Identifier"
               },
-              "end": 38,
-              "start": 19,
+              "end": 32,
+              "start": 13,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "end": 131,
-                  "start": 130,
+                  "end": 125,
+                  "start": 124,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               ],
               "callee": {
-                "end": 129,
+                "end": 123,
                 "name": "startProfileAt",
-                "start": 115,
+                "start": 109,
                 "type": "Identifier"
               },
-              "end": 132,
-              "start": 115,
+              "end": 126,
+              "start": 109,
               "type": "CallExpression",
               "type": "CallExpression"
             }
           ],
-          "end": 132,
+          "end": 126,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "0": [
                 {
-                  "end": 52,
-                  "start": 41,
+                  "end": 46,
+                  "start": 35,
                   "type": "NonCodeNode",
                   "value": {
                     "type": "blockComment",
@@ -73,8 +73,8 @@ expression: actual
                   }
                 },
                 {
-                  "end": 74,
-                  "start": 55,
+                  "end": 68,
+                  "start": 49,
                   "type": "NonCodeNode",
                   "value": {
                     "type": "blockComment",
@@ -83,8 +83,8 @@ expression: actual
                   }
                 },
                 {
-                  "end": 98,
-                  "start": 77,
+                  "end": 92,
+                  "start": 71,
                   "type": "NonCodeNode",
                   "value": {
                     "type": "blockComment",
@@ -93,8 +93,8 @@ expression: actual
                   }
                 },
                 {
-                  "end": 109,
-                  "start": 101,
+                  "end": 103,
+                  "start": 95,
                   "type": "NonCodeNode",
                   "value": {
                     "type": "blockComment",
@@ -106,20 +106,20 @@ expression: actual
             },
             "startNodes": []
           },
-          "start": 19,
+          "start": 13,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 7,
+        "start": 1,
         "type": "VariableDeclarator"
       },
-      "end": 132,
+      "end": 126,
       "kind": "const",
       "start": 1,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 133,
+  "end": 127,
   "start": 0
 }

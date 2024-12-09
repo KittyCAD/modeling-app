@@ -22,7 +22,7 @@ import {
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
-import { Selections } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { isOverlap } from 'lib/utils'
@@ -40,7 +40,6 @@ beforeAll(async () => {
       makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
       setMediaStream: () => {},
       setIsStreamReady: () => {},
-      modifyGrid: async () => {},
       callbackOnEngineLiteConnect: () => {
         resolve(true)
       },
@@ -118,13 +117,8 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length,
     true,
   ]
-  const selection: Selections = {
-    graphSelections: [
-      {
-        codeRef: codeRefFromRange(segmentRange, ast),
-      },
-    ],
-    otherSelections: [],
+  const selection: Selection = {
+    codeRef: codeRefFromRange(segmentRange, ast),
   }
 
   // executeAst and artifactGraph
