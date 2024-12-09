@@ -258,6 +258,7 @@ export const commandBarMachine = setup({
           if (input.event.type !== 'Submit argument') {
             toast.error(`Unable to validate, wrong event type.`)
             reject(`Unable to validate, wrong event type`)
+            return
           }
           const context = input?.context
           const data = input.event.data
@@ -268,6 +269,7 @@ export const commandBarMachine = setup({
           if (
             context.currentArgument &&
             context.selectedCommand &&
+            argConfig?.inputType === 'selection' &&
             argConfig?.validation
           ) {
             const result = argConfig.validation
