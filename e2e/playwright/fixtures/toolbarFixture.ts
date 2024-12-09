@@ -7,6 +7,7 @@ export class ToolbarFixture {
 
   extrudeButton!: Locator
   loftButton!: Locator
+  shellButton!: Locator
   offsetPlaneButton!: Locator
   startSketchBtn!: Locator
   lineBtn!: Locator
@@ -28,6 +29,7 @@ export class ToolbarFixture {
     this.page = page
     this.extrudeButton = page.getByTestId('extrude')
     this.loftButton = page.getByTestId('loft')
+    this.shellButton = page.getByTestId('shell')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.startSketchBtn = page.getByTestId('sketch')
     this.lineBtn = page.getByTestId('line')
