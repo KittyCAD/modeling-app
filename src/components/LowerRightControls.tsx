@@ -1,4 +1,4 @@
-import { APP_VERSION } from 'routes/Settings'
+import { APP_VERSION, PACKAGE_NAME } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { PATHS } from 'lib/paths'
@@ -73,9 +73,9 @@ export function LowerRightControls({
         {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
         <a
           onClick={openExternalBrowserIfDesktop(
-            `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`
+            `https://github.com/KittyCAD/modeling-app/releases/tag/${PACKAGE_NAME.indexOf('-nightly') === -1 && 'nightly-'}v${APP_VERSION}`
           )}
-          href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
+          href={`https://github.com/KittyCAD/modeling-app/releases/tag/${PACKAGE_NAME.indexOf('-nightly') === -1 && 'nightly-'}v${APP_VERSION}`}
           target="_blank"
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
