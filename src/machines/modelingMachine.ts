@@ -1,7 +1,6 @@
 import {
   PathToNode,
   ProgramMemory,
-  VariableDeclaration,
   VariableDeclarator,
   parse,
   recast,

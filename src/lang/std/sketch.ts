@@ -310,7 +310,7 @@ export const lineTo: SketchLineHelper = {
       'VariableDeclaration'
     )
     if (err(varDec)) return varDec
-    const dec = varDec.node.declarations[0]
+    const dec = varDec.node.declaration
 
     const newVals: [Expr, Expr] = [
       createLiteral(roundOff(to[0], 2)),
@@ -679,7 +679,7 @@ export const xLine: SketchLineHelper = {
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const varDec = getNode<VariableDeclaration>('VariableDeclaration')
     if (err(varDec)) return varDec
-    const dec = varDec.node.declarations[0]
+    const dec = varDec.node.declaration
 
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
 
@@ -755,7 +755,7 @@ export const yLine: SketchLineHelper = {
     const getNode = getNodeFromPathCurry(_node, pathToNode)
     const varDec = getNode<VariableDeclaration>('VariableDeclaration')
     if (err(varDec)) return varDec
-    const dec = varDec.node.declarations[0]
+    const dec = varDec.node.declaration
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
     if (replaceExistingCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)

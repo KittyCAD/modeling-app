@@ -1,11 +1,4 @@
-import {
-  Expr,
-  parse,
-  PathToNode,
-  Program,
-  recast,
-  SourceRange,
-} from 'lang/wasm'
+import { Expr, PathToNode, Program, SourceRange } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
@@ -980,7 +973,7 @@ const isExprSafe = (index: number): boolean => {
     return false
   }
   if (expr.type === 'VariableDeclaration') {
-    const init = expr.declarations?.[0]?.init
+    const init = expr.declaration?.init
     if (!init) return false
     if (init.type === 'CallExpression') {
       return false
@@ -1041,19 +1034,6 @@ export function getPathsFromPlaneArtifact(planeArtifact: PlaneArtifact) {
     if ('codeRef' in path && path.codeRef) {
       // TODO should figure out why upstream the path is bad
       const isNodePathBad = path.codeRef.pathToNode.length < 2
-      if (isNodePathBad) {
-        const code = recast(kclManager.ast)
-        if (err(code)) continue
-        const newAst = parse(code)
-        if (err(newAst)) continue
-        console.log(
-          'bad path',
-          path.codeRef.pathToNode,
-          getNodePathFromSourceRange(newAst, path.codeRef.range),
-          code.slice(path.codeRef.range[0], path.codeRef.range[1]),
-          newAst
-        )
-      }
       nodePaths.push(
         isNodePathBad
           ? getNodePathFromSourceRange(kclManager.ast, path.codeRef.range)

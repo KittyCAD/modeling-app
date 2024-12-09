@@ -1059,18 +1059,19 @@ export class SceneEntities {
     )
 
     if (trap(justCreatedNode)) return Promise.reject(justCreatedNode)
-    const startProfileAt = justCreatedNode.node?.declarations
+    const startProfileAt = justCreatedNode.node?.declaration
     // than add the rest of the profile so we can "animate" it
     // as draft segments
-    startProfileAt[0].init = createPipeExpression([
-      startProfileAt?.[0].init,
+    startProfileAt.init = createPipeExpression([
+      startProfileAt?.init,
       ...getRectangleCallExpressions(rectangleOrigin, tag),
     ])
 
     const code = recast(_ast)
-    _recastAst = parse(code)
-    if (trap(_recastAst)) return Promise.reject(_recastAst)
-    _ast = _recastAst
+    const _recastAst = parse(code)
+    if (trap(_recastAst) || !resultIsOk(_recastAst))
+      return Promise.reject(_recastAst)
+    _ast = _recastAst.program
 
     const { programMemoryOverride, truncatedAst } = await this.setupSketch({
       sketchEntryNodePath: updatedEntryNodePath,
@@ -1181,7 +1182,6 @@ export class SceneEntities {
           engineCommandManager: this.engineCommandManager,
           // We make sure to send an empty program memory to denote we mean mock mode.
           programMemoryOverride,
-          idGenerator: kclManager.execState.idGenerator,
         })
         const programMemory = execState.memory
 
@@ -1269,11 +1269,11 @@ export class SceneEntities {
     )
 
     if (trap(justCreatedNode)) return Promise.reject(justCreatedNode)
-    const startProfileAt = justCreatedNode.node?.declarations
+    const startProfileAt = justCreatedNode.node?.declaration
     // than add the rest of the profile so we can "animate" it
     // as draft segments
-    startProfileAt[0].init = createPipeExpression([
-      startProfileAt?.[0].init,
+    startProfileAt.init = createPipeExpression([
+      startProfileAt?.init,
       ...getRectangleCallExpressions(rectangleOrigin, tag),
     ])
     const code = recast(_ast)
@@ -1401,7 +1401,6 @@ export class SceneEntities {
             engineCommandManager: this.engineCommandManager,
             // We make sure to send an empty program memory to denote we mean mock mode.
             programMemoryOverride,
-            idGenerator: kclManager.execState.idGenerator,
           })
           const programMemory = execState.memory
 
