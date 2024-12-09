@@ -167,8 +167,11 @@ pub(crate) enum ExprContext {
 
 impl Expr {
     pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, mut ctxt: ExprContext) -> String {
-        let was_decl = matches!(ctxt, ExprContext::Decl);
-        if was_decl {
+        let is_decl = matches!(ctxt, ExprContext::Decl);
+        if is_decl {
+            // Just because this expression is being bound to a variable, doesn't mean that every child
+            // expression is being bound. So, reset the expression context if necessary.
+            // This will still preserve the "::Pipe" context though.
             ctxt = ExprContext::Other;
         }
         match &self {
@@ -179,7 +182,7 @@ impl Expr {
             Expr::MemberExpression(mem_exp) => mem_exp.recast(),
             Expr::Literal(literal) => literal.recast(),
             Expr::FunctionExpression(func_exp) => {
-                let mut result = if was_decl { String::new() } else { "fn".to_owned() };
+                let mut result = if is_decl { String::new() } else { "fn".to_owned() };
                 result += &func_exp.recast(options, indentation_level);
                 result
             }
