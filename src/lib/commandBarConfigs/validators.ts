@@ -13,7 +13,7 @@ export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
         cmd_id: uuidv4(),
         cmd: { type: 'disable_dry_run' },
       })
-      // Exit out since the command was successfull
+      // Exit out since the command was successful
       return
     } catch (e) {
       console.error(e)
