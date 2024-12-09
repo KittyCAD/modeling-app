@@ -2,6 +2,8 @@ import { Models } from '@kittycad/lib'
 import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
+import { Selections } from 'lib/selections'
+import { isSolid2D, isSegment, isSweep } from 'lang/std/artifactGraph'
 
 // Takes a callback function and wraps it around enable_dry_run and disable_dry_run
 export const dryRunWrapper = async (callback: () => Promise<any>) => {
@@ -34,16 +36,44 @@ export const dryRunWrapper = async (callback: () => Promise<any>) => {
   }
 }
 
+function isSelections(selections: unknown): selections is Selections {
+  return (
+    (selections as Selections).graphSelections !== undefined &&
+    (selections as Selections).otherSelections !== undefined
+  )
+}
+
 export const revolveAxisValidator = async ({
   data,
   context,
 }: {
-  data: any
+  data: { [key: string]: Selections }
   context: CommandBarContext
 }): Promise<boolean | string> => {
-  const sketchSelection =
-    context.argumentsToSubmit.selection.graphSelections[0].artifact.pathId
-  let edgeSelection = data.axis.graphSelections[0].artifact.id
+  if (!isSelections(context.argumentsToSubmit.selection)) {
+    return 'Unable to revolve, selections are missing'
+  }
+  const artifact =
+    context.argumentsToSubmit.selection.graphSelections[0].artifact
+
+  if (!artifact) {
+    return 'Unable to revolve, sketch not found'
+  }
+
+  if (!(isSolid2D(artifact) || isSegment(artifact) || isSweep(artifact))) {
+    return 'Unable to revolve, sketch has no path'
+  }
+
+  const sketchSelection = artifact.pathId
+  let edgeSelection = data.axis.graphSelections[0].artifact?.id
+
+  if (!sketchSelection) {
+    return 'Unable to revolve, sketch is missing'
+  }
+
+  if (!edgeSelection) {
+    return 'Unable to revolve, edge is missing'
+  }
 
   const angleInDegrees: Models['Angle_type'] = {
     unit: 'degrees',
