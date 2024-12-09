@@ -51,6 +51,8 @@ export function addShell({
 
     pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
     // Get the sketch ref from the selection
+    // TODO: this assumes the segment is piped directly from the sketch, with no intermediate `VariableDeclarator` between.
+    // We must find a technique for these situations that is robust to intermediate declarations
     const sketchNode = getNodeFromPath<VariableDeclarator>(
       modifiedAst,
       graphSelection.codeRef.pathToNode,
@@ -61,7 +63,7 @@ export function addShell({
     }
 
     const selectedArtifact = graphSelection.artifact
-    if (!selectedArtifact || !selectedArtifact) {
+    if (!selectedArtifact) {
       return new Error('Bad artifact')
     }
 

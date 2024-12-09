@@ -283,7 +283,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Shell: {
     description: 'Hollow out a 3D solid.',
-    icon: 'loft',
+    icon: 'shell',
     needsReview: true,
     args: {
       selection: {

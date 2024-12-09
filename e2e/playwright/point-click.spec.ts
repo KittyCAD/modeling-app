@@ -825,7 +825,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
         await cmdBar.progressCmdBar()
       })
     } else {
-      await test.step(`Preselect the two sketches`, async () => {
+      await test.step(`Preselect the cap`, async () => {
         await clickOnCap()
       })
 
