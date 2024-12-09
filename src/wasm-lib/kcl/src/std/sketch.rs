@@ -27,9 +27,6 @@ use crate::{
     },
 };
 
-type KPoint3D = kcmc::shared::Point3d<LengthUnit>;
-type KPoint3D2 = kcmc::shared::Point3d<f64>;
-
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
