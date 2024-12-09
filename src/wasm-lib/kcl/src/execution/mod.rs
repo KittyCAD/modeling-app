@@ -128,6 +128,16 @@ impl ProgramMemory {
         self.add(tag, KclValue::TagIdentifier(Box::new(value)), source_range)
     }
 
+    pub fn update_tag_if_defined(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
+        if !self.environments[self.current_env.index()].contains_key(tag) {
+            // Do nothing if the tag isn't defined.
+            return Ok(());
+        }
+        self.environments[self.current_env.index()].insert(tag.to_string(), KclValue::TagIdentifier(Box::new(value)));
+
+        Ok(())
+    }
+
     /// Get a value from the program memory.
     /// Return Err if not found.
     pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
@@ -2924,8 +2934,10 @@ let notTagDeclarator = !myTagDeclarator";
         );
 
         let code9 = "
-let myTagDeclarator = $myTag
-let notTagIdentifier = !myTag";
+sk = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 0], %, $myTag)
+notTagIdentifier = !myTag";
         let tag_identifier_err = parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
