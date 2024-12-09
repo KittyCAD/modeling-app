@@ -1085,9 +1085,12 @@ export const ModelingMachineProvider = ({
               return Promise.reject(new Error('Unexpected compilation error'))
             let parsed = pResult.program
 
-            let result = {
+            let result: {
+              modifiedAst: Node<Program>
+              pathToReplaced: PathToNode | null
+            } = {
               modifiedAst: parsed,
-              pathToReplaced: null as null | PathToNode,
+              pathToReplaced: null,
             }
             // If the user provided a constant name,
             // we need to insert the named constant
