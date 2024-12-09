@@ -118,7 +118,7 @@ test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
-   await context.folderSetupFn((dir) => {
+   await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
@@ -202,7 +202,7 @@ test(
   'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
-    await context.folderSetupFn((dir) => {
+    await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
@@ -279,7 +279,7 @@ test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    await context.folderSetupFn((dir) => {
+    await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
@@ -350,7 +350,7 @@ test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    await context.folderSetupFn((dir) => {
+    await context.folderSetupFn(async (dir) => {
       const bracketDir = join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
