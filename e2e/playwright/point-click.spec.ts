@@ -812,6 +812,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
           commandName: 'Shell',
         })
         await clickOnCap()
+        await app.page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
@@ -827,6 +828,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
     } else {
       await test.step(`Preselect the cap`, async () => {
         await clickOnCap()
+        await app.page.waitForTimeout(500)
       })
 
       await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
