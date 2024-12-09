@@ -950,7 +950,7 @@ test(
 
 test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   // FIXME: Skip on macos its being weird.
-  test.skip(process.platform === 'darwin', 'Skip on macos')
+  // test.skip(process.platform === 'darwin', 'Skip on macos')
 
   test('Grid turned off to on via command bar', async ({ page }) => {
     const u = await getUtils(page)
@@ -991,14 +991,19 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
     await cmdSearchBar.fill(commandName)
     await expect(commandOption).toBeVisible()
     await commandOption.click()
-    const toggleInput = page.getByPlaceholder('On')
+
+    const toggleInput = page.getByPlaceholder('Off')
     await expect(toggleInput).toBeVisible()
     await expect(toggleInput).toBeFocused()
 
     // Select On
     await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
     await expect(page.getByRole('option', { name: 'Off' })).toHaveAttribute(
+      'data-headlessui-state',
+      'active selected'
+    )
+    await page.keyboard.press('ArrowUp')
+    await expect(page.getByRole('option', { name: 'On' })).toHaveAttribute(
       'data-headlessui-state',
       'active'
     )
