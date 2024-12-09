@@ -1,39 +1,67 @@
 use anyhow::Result;
 
-use crate::{
-    // parsing::ast::types::{
-    //     BinaryPart, BodyItem, Expr, IfExpression, LiteralIdentifier, MemberExpression, MemberObject, NodeRef,
-    //     ObjectExpression, ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
-    // },
-    walk::Node,
-};
+use crate::walk::Node;
 
-/// Implemented on [Node] to handle recursing into the AST, as well as helpers
-/// for traversing the tree.
-pub trait WalkableAst<'tree> {
+/// Walk-specific trait adding the ability to traverse the KCL AST.
+///
+/// This trait is implemented on [Node] to handle the fairly tricky bit of
+/// recursing into the AST in a single place, as well as helpers for traversing
+/// the tree. for callers to use.
+pub trait Visitable<'tree> {
+    /// Return a `Vec<Node>` for all *direct* children of this AST node. This
+    /// should only contain direct descendants.
     fn children(&self) -> Vec<Node<'tree>>;
+
+    /// Return `self` as a [Node]. Generally speaking, the [Visitable] trait
+    /// is only going to be implemented on [Node], so this is purely used by
+    /// helpers that are generic over a [Visitable] and want to deref back
+    /// into a [Node].
     fn node(&self) -> Node<'tree>;
 
+    /// Call the provided [Visitor] in order to Visit `self`. This will
+    /// only be called on `self` -- the [Visitor] is responsible for
+    /// recursing into any children, if desired.
     fn visit<VisitorT>(&self, visitor: VisitorT) -> Result<bool, VisitorT::Error>
     where
-        VisitorT: AstVisitor<'tree>,
+        VisitorT: Visitor<'tree>,
     {
-        let children = self.children();
-        visitor.visit(self.node(), &children)
+        visitor.visit_node(self.node())
     }
 }
 
-/// Function to be called on AST.
-pub trait AstVisitor<'tree> {
+/// Trait used to enable visiting members of KCL AST.
+///
+/// Implementing this trait enables the implementor to be invoked over
+/// members of KCL AST by using the [Visitable::visit] function on
+/// a [Node].
+pub trait Visitor<'tree> {
+    /// Error type returned by the [Self::visit] function.
     type Error;
 
-    /// Return true to stop walking nodes.
-    fn visit(&self, node: Node<'tree>, children: &[Node<'tree>]) -> Result<bool, Self::Error>;
+    /// Visit a KCL AST [Node].
+    ///
+    /// In general, implementers likely wish to check to see if a Node is what
+    /// they're looking for, and either decend into that [Node]'s children (by
+    /// calling [Visitable::children] on [Node] to get children nodes,
+    /// calling [Visitable::visit] on each node of interest), or preform
+    /// some action.
+    fn visit_node(&self, node: Node<'tree>) -> Result<bool, Self::Error>;
 }
 
-impl<'tree> WalkableAst<'tree> for Node<'tree> {
+impl<'a, FnT, ErrorT> Visitor<'a> for FnT
+where
+    FnT: Fn(Node<'a>) -> Result<bool, ErrorT>,
+{
+    type Error = ErrorT;
+
+    fn visit_node(&self, n: Node<'a>) -> Result<bool, ErrorT> {
+        self(n)
+    }
+}
+
+impl<'tree> Visitable<'tree> for Node<'tree> {
     fn node(&self) -> Node<'tree> {
-        self.clone()
+        *self
     }
 
     fn children(&self) -> Vec<Node<'tree>> {
@@ -141,17 +169,17 @@ fn crow3() {
             n: Box<Mutex<usize>>,
         }
 
-        impl<'tree> AstVisitor<'tree> for &CountCrows {
+        impl<'tree> Visitor<'tree> for &CountCrows {
             type Error = ();
 
-            fn visit(&self, node: Node<'tree>, children: &[Node<'tree>]) -> Result<bool, Self::Error> {
+            fn visit_node(&self, node: Node<'tree>) -> Result<bool, Self::Error> {
                 if let Node::VariableDeclarator(vd) = node {
                     if vd.id.name.starts_with("crow") {
                         *self.n.lock().unwrap() += 1;
                     }
                 }
 
-                for child in children.iter() {
+                for child in node.children().iter() {
                     if !child.visit(*self)? {
                         return Ok(false);
                     }
@@ -163,7 +191,7 @@ fn crow3() {
 
         let prog: Node = (&program).into();
         let count_crows: CountCrows = Default::default();
-        WalkableAst::visit(&prog, &count_crows).unwrap();
+        Visitable::visit(&prog, &count_crows).unwrap();
         assert_eq!(*count_crows.n.lock().unwrap(), 4);
     }
 }

@@ -1,46 +1,46 @@
 use anyhow::Result;
 
-use super::ast_walk_new::{AstVisitor, WalkableAst};
+use super::ast_visitor::{Visitable, Visitor};
 use crate::{
-    parsing::ast::types::{
-        BinaryPart, BodyItem, Expr, IfExpression, LiteralIdentifier, MemberExpression, MemberObject, NodeRef,
-        ObjectExpression, ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
-    },
+    parsing::ast::types::{NodeRef, Program},
     walk::Node,
 };
 
-/// Old walk trait
+/// *DEPRECATED* Walk trait.
+///
+/// This was written before [Visitor], which is the better way to traverse
+/// a AST.
+///
+/// This trait continues to exist in order to not change all the linter
+/// as we refine the walk code.
+///
+/// This, internally, uses the new [Visitor] trait, and is only provided as
+/// a stub until we migrate all existing code off this trait. As soon as we
+/// no longer see deprecation warnings, we ought to remove this trait and file.
 #[deprecated]
 pub trait Walker<'a> {
-    /// Walk will visit every element of the AST.
+    /// Walk will visit every element of the AST, recursing through the
+    /// whole tree.
     fn walk(&self, n: Node<'a>) -> Result<bool>;
 }
 
-impl<'a, FnT> Walker<'a> for FnT
+impl<'tree, VisitorT> Walker<'tree> for VisitorT
 where
-    FnT: Fn(Node<'a>) -> Result<bool>,
+    VisitorT: Visitor<'tree>,
+    VisitorT: Clone,
+    anyhow::Error: From<VisitorT::Error>,
+    VisitorT::Error: Send,
+    VisitorT::Error: Sync,
 {
-    fn walk(&self, n: Node<'a>) -> Result<bool> {
-        self(n)
-    }
-}
-
-impl<'tree, WalkerT> AstVisitor<'tree> for WalkerT
-where
-    WalkerT: Walker<'tree>,
-{
-    type Error = anyhow::Error;
-
-    fn visit(&self, n: Node<'tree>, children: &[Node<'tree>]) -> Result<bool> {
-        if !Walker::walk(self, n)? {
+    fn walk(&self, n: Node<'tree>) -> Result<bool> {
+        if !n.visit(self.clone())? {
             return Ok(false);
         }
-        for child in children {
-            if !Walker::walk(self, child.clone())? {
+        for child in n.children() {
+            if !child.visit(self.clone())? {
                 return Ok(false);
             }
         }
-
         Ok(true)
     }
 }
@@ -51,7 +51,7 @@ where
     WalkT: Walker<'a>,
 {
     let prog: Node = prog.into();
-    WalkableAst::visit(&prog, f)
+    f.walk(prog)
 }
 
 #[cfg(test)]
@@ -76,7 +76,7 @@ const bar = 2
         walk(&program, &|node| {
             if let Node::VariableDeclarator(vd) = node {
                 if vd.id.name == "foo" {
-                    return Ok(false);
+                    return Ok::<bool, anyhow::Error>(false);
                 }
                 panic!("walk didn't stop");
             }

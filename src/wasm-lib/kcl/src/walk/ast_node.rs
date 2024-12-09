@@ -5,7 +5,7 @@ use crate::{
 
 /// The "Node" type wraps all the AST elements we're able to find in a KCL
 /// file. Tokens we walk through will be one of these.
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum Node<'a> {
     Program(NodeRef<'a, types::Program>),
 

@@ -195,7 +195,7 @@ impl Node<Program> {
                 }
                 _ => {}
             }
-            Ok(true)
+            Ok::<bool, anyhow::Error>(true)
         })?;
         let x = completions.lock().unwrap();
         Ok(x.clone())
@@ -215,7 +215,7 @@ impl Node<Program> {
                 }
                 _ => {}
             }
-            Ok(true)
+            Ok::<bool, anyhow::Error>(true)
         })?;
         let x = symbols.lock().unwrap();
         Ok(x.clone())
@@ -230,7 +230,7 @@ impl Node<Program> {
         crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
             let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             findings.append(&mut rule.check(node)?);
-            Ok(true)
+            Ok::<bool, anyhow::Error>(true)
         })?;
         let x = v.lock().unwrap();
         Ok(x.clone())
