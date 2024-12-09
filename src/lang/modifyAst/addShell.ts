@@ -111,8 +111,7 @@ export function addShell({
   const pathToNode: PathToNode = [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
