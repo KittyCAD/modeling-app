@@ -8,7 +8,6 @@ use std::{
 };
 
 use anyhow::Result;
-
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -2831,6 +2830,18 @@ impl Parameter {
     /// Is the parameter optional?
     pub fn optional(&self) -> bool {
         self.default_value.is_some()
+    }
+}
+
+impl From<&Parameter> for SourceRange {
+    fn from(p: &Parameter) -> Self {
+        let sr = Self::from(&p.identifier);
+        // If it's unlabelled, the span should start 1 char earlier than the identifier,
+        // to include the '@' symbol.
+        if !p.labeled {
+            return Self::new(sr.start() - 1, sr.end(), sr.module_id());
+        }
+        sr
     }
 }
 
