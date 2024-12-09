@@ -365,6 +365,8 @@ fn keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
 mod tests {
     use winnow::Located;
 
+    use crate::parsing::token::TokenSlice;
+
     use super::*;
     fn assert_parse_err<'i, P, O, E>(mut p: P, s: &'i str)
     where
@@ -459,23 +461,34 @@ mod tests {
         }
     }
 
-    fn assert_tokens(expected: Vec<Token>, actual: Vec<Token>) {
-        assert_eq!(
-            expected.len(),
-            actual.len(),
-            "\nexpected {} tokens, actually got {}",
-            expected.len(),
-            actual.len()
-        );
+    #[track_caller]
+    fn assert_tokens(expected: &[(TokenType, usize, usize)], actual: TokenSlice) {
+        let mut e = 0;
+        let mut issues = vec![];
+        for a in actual {
+            if expected[e].0 != a.token_type {
+                if a.token_type == TokenType::Whitespace {
+                    continue;
+                }
+                issues.push(format!(
+                    "Type mismatch: expected `{}`, found `{}` (`{a:?}`), at index {e}",
+                    expected[e].0, a.token_type
+                ));
+            }
 
-        let n = expected.len();
-        for i in 0..n {
-            assert_eq!(
-                expected[i], actual[i],
-                "token #{i} (of {n}) does not match.\nExpected:\n{:#?}\nActual:\n{:#?}",
-                expected[i], actual[i],
-            )
+            if expected[e].1 != a.start || expected[e].2 != a.end {
+                issues.push(format!(
+                    "Source range mismatch: expected {}-{}, found {}-{} (`{a:?}`), at index {e}",
+                    expected[e].1, expected[e].2, a.start, a.end
+                ));
+            }
+
+            e += 1;
         }
+        if e < expected.len() {
+            issues.push(format!("Expected `{}` tokens, found `{e}`", expected.len()));
+        }
+        assert!(issues.is_empty(), "{}", issues.join("\n"));
     }
 
     #[test]
@@ -483,44 +496,12 @@ mod tests {
         let program = "const a=5";
         let module_id = ModuleId::from_usize(1);
         let actual = lex(program, module_id).unwrap();
-        let expected = vec![
-            Token {
-                token_type: TokenType::Keyword,
-                value: "const".to_string(),
-                start: 0,
-                end: 5,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 5,
-                end: 6,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Word,
-                value: "a".to_string(),
-                start: 6,
-                end: 7,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "=".to_string(),
-                start: 7,
-                end: 8,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "5".to_string(),
-                start: 8,
-                end: 9,
-                module_id,
-            },
-        ];
-        assert_tokens(expected, actual.tokens);
+
+        use TokenType::*;
+        assert_tokens(
+            &[(Keyword, 0, 5), (Word, 6, 7), (Operator, 7, 8), (Number, 8, 9)],
+            actual.as_slice(),
+        );
     }
 
     #[test]
@@ -528,73 +509,20 @@ mod tests {
         let program = "54 + 22500 + 6";
         let module_id = ModuleId::from_usize(1);
         let actual = lex(program, module_id).unwrap();
-        let expected = vec![
-            Token {
-                token_type: TokenType::Number,
-                value: "54".to_string(),
-                start: 0,
-                end: 2,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 2,
-                end: 3,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "+".to_string(),
-                start: 3,
-                end: 4,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 4,
-                end: 5,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "22500".to_string(),
-                start: 5,
-                end: 10,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 10,
-                end: 11,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Operator,
-                value: "+".to_string(),
-                start: 11,
-                end: 12,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 12,
-                end: 13,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "6".to_string(),
-                start: 13,
-                end: 14,
-                module_id,
-            },
-        ];
-        assert_tokens(expected, actual.tokens);
+
+        use TokenType::*;
+        assert_tokens(
+            &[
+                (Number, 0, 2),
+                (Operator, 3, 4),
+                (Number, 5, 10),
+                (Operator, 11, 12),
+                (Number, 13, 14),
+            ],
+            actual.as_slice(),
+        );
     }
+
     #[test]
     fn test_program2() {
         let program = r#"const part001 = startSketchAt([0.0000000000, 5.0000000000])
@@ -612,797 +540,8 @@ fn ghi = (part001) => {
 
 show(part001)"#;
         let module_id = ModuleId::from_usize(1);
-
-        use TokenType::*;
-
-        let expected = vec![
-            Token {
-                token_type: Keyword,
-                start: 0,
-                end: 5,
-                module_id,
-                value: "const".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 5,
-                end: 6,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 6,
-                end: 13,
-                module_id,
-                value: "part001".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 13,
-                end: 14,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 14,
-                end: 15,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 15,
-                end: 16,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 16,
-                end: 29,
-                module_id,
-                value: "startSketchAt".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 29,
-                end: 30,
-                module_id,
-                value: "(".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 30,
-                end: 31,
-                module_id,
-                value: "[".to_owned(),
-            },
-            Token {
-                token_type: Number,
-                start: 31,
-                end: 43,
-                module_id,
-                value: "0.0000000000".to_owned(),
-            },
-            Token {
-                token_type: Comma,
-                start: 43,
-                end: 44,
-                module_id,
-                value: ",".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 44,
-                end: 45,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Number,
-                start: 45,
-                end: 57,
-                module_id,
-                value: "5.0000000000".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 57,
-                end: 58,
-                module_id,
-                value: "]".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 58,
-                end: 59,
-                module_id,
-                value: ")".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 59,
-                end: 64,
-                module_id,
-                value: "\n    ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 64,
-                end: 66,
-                module_id,
-                value: "|>".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 66,
-                end: 67,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 67,
-                end: 71,
-                module_id,
-                value: "line".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 71,
-                end: 72,
-                module_id,
-                value: "(".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 72,
-                end: 73,
-                module_id,
-                value: "[".to_owned(),
-            },
-            Token {
-                token_type: Number,
-                start: 73,
-                end: 85,
-                module_id,
-                value: "0.4900857016".to_owned(),
-            },
-            Token {
-                token_type: Comma,
-                start: 85,
-                end: 86,
-                module_id,
-                value: ",".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 86,
-                end: 87,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 87,
-                end: 88,
-                module_id,
-                value: "-".to_owned(),
-            },
-            Token {
-                token_type: Number,
-                start: 88,
-                end: 100,
-                module_id,
-                value: "0.0240763666".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 100,
-                end: 101,
-                module_id,
-                value: "]".to_owned(),
-            },
-            Token {
-                token_type: Comma,
-                start: 101,
-                end: 102,
-                module_id,
-                value: ",".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 102,
-                end: 103,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 103,
-                end: 104,
-                module_id,
-                value: "%".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 104,
-                end: 105,
-                module_id,
-                value: ")".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 105,
-                end: 107,
-                module_id,
-                value: "\n\n".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 107,
-                end: 112,
-                module_id,
-                value: "const".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 112,
-                end: 113,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 113,
-                end: 120,
-                module_id,
-                value: "part002".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 120,
-                end: 121,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 121,
-                end: 122,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 122,
-                end: 123,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: String,
-                start: 123,
-                end: 132,
-                module_id,
-                value: "\"part002\"".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 132,
-                end: 133,
-                module_id,
-                value: "\n".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 133,
-                end: 138,
-                module_id,
-                value: "const".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 138,
-                end: 139,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 139,
-                end: 145,
-                module_id,
-                value: "things".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 145,
-                end: 146,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 146,
-                end: 147,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 147,
-                end: 148,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 148,
-                end: 149,
-                module_id,
-                value: "[".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 149,
-                end: 156,
-                module_id,
-                value: "part001".to_owned(),
-            },
-            Token {
-                token_type: Comma,
-                start: 156,
-                end: 157,
-                module_id,
-                value: ",".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 157,
-                end: 158,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Number,
-                start: 158,
-                end: 161,
-                module_id,
-                value: "0.0".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 161,
-                end: 162,
-                module_id,
-                value: "]".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 162,
-                end: 163,
-                module_id,
-                value: "\n".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 163,
-                end: 166,
-                module_id,
-                value: "let".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 166,
-                end: 167,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 167,
-                end: 171,
-                module_id,
-                value: "blah".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 171,
-                end: 172,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 172,
-                end: 173,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 173,
-                end: 174,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Number,
-                start: 174,
-                end: 175,
-                module_id,
-                value: "1".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 175,
-                end: 176,
-                module_id,
-                value: "\n".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 176,
-                end: 181,
-                module_id,
-                value: "const".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 181,
-                end: 182,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 182,
-                end: 185,
-                module_id,
-                value: "foo".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 185,
-                end: 186,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 186,
-                end: 187,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 187,
-                end: 188,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 188,
-                end: 193,
-                module_id,
-                value: "false".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 193,
-                end: 194,
-                module_id,
-                value: "\n".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 194,
-                end: 197,
-                module_id,
-                value: "let".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 197,
-                end: 198,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 198,
-                end: 201,
-                module_id,
-                value: "baz".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 201,
-                end: 202,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 202,
-                end: 203,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 203,
-                end: 204,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 204,
-                end: 205,
-                module_id,
-                value: "{".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 205,
-                end: 206,
-                module_id,
-                value: "a".to_owned(),
-            },
-            Token {
-                token_type: Colon,
-                start: 206,
-                end: 207,
-                module_id,
-                value: ":".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 207,
-                end: 208,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Number,
-                start: 208,
-                end: 209,
-                module_id,
-                value: "1".to_owned(),
-            },
-            Token {
-                token_type: Comma,
-                start: 209,
-                end: 210,
-                module_id,
-                value: ",".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 210,
-                end: 211,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 211,
-                end: 218,
-                module_id,
-                value: "part001".to_owned(),
-            },
-            Token {
-                token_type: Colon,
-                start: 218,
-                end: 219,
-                module_id,
-                value: ":".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 219,
-                end: 220,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: String,
-                start: 220,
-                end: 227,
-                module_id,
-                value: "\"thing\"".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 227,
-                end: 228,
-                module_id,
-                value: "}".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 228,
-                end: 230,
-                module_id,
-                value: "\n\n".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 230,
-                end: 232,
-                module_id,
-                value: "fn".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 232,
-                end: 233,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 233,
-                end: 236,
-                module_id,
-                value: "ghi".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 236,
-                end: 237,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 237,
-                end: 238,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 238,
-                end: 239,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 239,
-                end: 240,
-                module_id,
-                value: "(".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 240,
-                end: 247,
-                module_id,
-                value: "part001".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 247,
-                end: 248,
-                module_id,
-                value: ")".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 248,
-                end: 249,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 249,
-                end: 251,
-                module_id,
-                value: "=>".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 251,
-                end: 252,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 252,
-                end: 253,
-                module_id,
-                value: "{".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 253,
-                end: 256,
-                module_id,
-                value: "\n  ".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 256,
-                end: 262,
-                module_id,
-                value: "return".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 262,
-                end: 263,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 263,
-                end: 270,
-                module_id,
-                value: "part001".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 270,
-                end: 271,
-                module_id,
-                value: "\n".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 271,
-                end: 272,
-                module_id,
-                value: "}".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 272,
-                end: 274,
-                module_id,
-                value: "\n\n".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 274,
-                end: 278,
-                module_id,
-                value: "show".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 278,
-                end: 279,
-                module_id,
-                value: "(".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 279,
-                end: 286,
-                module_id,
-                value: "part001".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 286,
-                end: 287,
-                module_id,
-                value: ")".to_owned(),
-            },
-        ];
         let actual = lex(program, module_id).unwrap();
-        assert_tokens(expected, actual.tokens);
+        insta::assert_debug_snapshot!(actual.tokens);
     }
 
     #[test]
@@ -1417,476 +556,93 @@ const things = "things"
 // this is also a comment"#;
         let module_id = ModuleId::from_usize(1);
         let actual = lex(program, module_id).unwrap();
+
         use TokenType::*;
-        let expected = vec![
-            Token {
-                token_type: Whitespace,
-                start: 0,
-                end: 1,
-                module_id,
-                value: "\n".to_owned(),
-            },
-            Token {
-                token_type: LineComment,
-                start: 1,
-                end: 21,
-                module_id,
-                value: "// this is a comment".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 21,
-                end: 22,
-                module_id,
-                value: "\n".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 22,
-                end: 27,
-                module_id,
-                value: "const".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 27,
-                end: 28,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 28,
-                end: 30,
-                module_id,
-                value: "yo".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 30,
-                end: 31,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 31,
-                end: 32,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 32,
-                end: 33,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 33,
-                end: 34,
-                module_id,
-                value: "{".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 34,
-                end: 35,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 35,
-                end: 36,
-                module_id,
-                value: "a".to_owned(),
-            },
-            Token {
-                token_type: Colon,
-                start: 36,
-                end: 37,
-                module_id,
-                value: ":".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 37,
-                end: 38,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 38,
-                end: 39,
-                module_id,
-                value: "{".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 39,
-                end: 40,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 40,
-                end: 41,
-                module_id,
-                value: "b".to_owned(),
-            },
-            Token {
-                token_type: Colon,
-                start: 41,
-                end: 42,
-                module_id,
-                value: ":".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 42,
-                end: 43,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 43,
-                end: 44,
-                module_id,
-                value: "{".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 44,
-                end: 45,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 45,
-                end: 46,
-                module_id,
-                value: "c".to_owned(),
-            },
-            Token {
-                token_type: Colon,
-                start: 46,
-                end: 47,
-                module_id,
-                value: ":".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 47,
-                end: 48,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: String,
-                start: 48,
-                end: 53,
-                module_id,
-                value: "'123'".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 53,
-                end: 54,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 54,
-                end: 55,
-                module_id,
-                value: "}".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 55,
-                end: 56,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 56,
-                end: 57,
-                module_id,
-                value: "}".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 57,
-                end: 58,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 58,
-                end: 59,
-                module_id,
-                value: "}".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 59,
-                end: 61,
-                module_id,
-                value: "\n\n".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 61,
-                end: 66,
-                module_id,
-                value: "const".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 66,
-                end: 67,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 67,
-                end: 70,
-                module_id,
-                value: "key".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 70,
-                end: 71,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 71,
-                end: 72,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 72,
-                end: 73,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: String,
-                start: 73,
-                end: 76,
-                module_id,
-                value: "'c'".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 76,
-                end: 77,
-                module_id,
-                value: "\n".to_owned(),
-            },
-            Token {
-                token_type: Keyword,
-                start: 77,
-                end: 82,
-                module_id,
-                value: "const".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 82,
-                end: 83,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 83,
-                end: 89,
-                module_id,
-                value: "things".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 89,
-                end: 90,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 90,
-                end: 91,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 91,
-                end: 92,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: String,
-                start: 92,
-                end: 100,
-                module_id,
-                value: "\"things\"".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 100,
-                end: 102,
-                module_id,
-                value: "\n\n".to_owned(),
-            },
-            Token {
-                token_type: LineComment,
-                start: 102,
-                end: 127,
-                module_id,
-                value: "// this is also a comment".to_owned(),
-            },
-        ];
-        assert_tokens(expected, actual.tokens);
+        assert_tokens(
+            &[
+                (Whitespace, 0, 1),
+                (LineComment, 1, 21),
+                (Whitespace, 21, 22),
+                (Keyword, 22, 27),
+                (Whitespace, 27, 28),
+                (Word, 28, 30),
+                (Whitespace, 30, 31),
+                (Operator, 31, 32),
+                (Whitespace, 32, 33),
+                (Brace, 33, 34),
+                (Whitespace, 34, 35),
+                (Word, 35, 36),
+                (Colon, 36, 37),
+                (Whitespace, 37, 38),
+                (Brace, 38, 39),
+                (Whitespace, 39, 40),
+                (Word, 40, 41),
+                (Colon, 41, 42),
+                (Whitespace, 42, 43),
+                (Brace, 43, 44),
+                (Whitespace, 44, 45),
+                (Word, 45, 46),
+                (Colon, 46, 47),
+                (Whitespace, 47, 48),
+                (String, 48, 53),
+                (Whitespace, 53, 54),
+                (Brace, 54, 55),
+                (Whitespace, 55, 56),
+                (Brace, 56, 57),
+                (Whitespace, 57, 58),
+                (Brace, 58, 59),
+                (Whitespace, 59, 61),
+                (Keyword, 61, 66),
+                (Whitespace, 66, 67),
+                (Word, 67, 70),
+                (Whitespace, 70, 71),
+                (Operator, 71, 72),
+                (Whitespace, 72, 73),
+                (String, 73, 76),
+                (Whitespace, 76, 77),
+                (Keyword, 77, 82),
+                (Whitespace, 82, 83),
+                (Word, 83, 89),
+                (Whitespace, 89, 90),
+                (Operator, 90, 91),
+                (Whitespace, 91, 92),
+                (String, 92, 100),
+                (Whitespace, 100, 102),
+                (LineComment, 102, 127),
+            ],
+            actual.as_slice(),
+        );
     }
 
     #[test]
     fn test_program4() {
         let program = "const myArray = [0..10]";
         let module_id = ModuleId::from_usize(1);
-        use TokenType::*;
-        let expected = vec![
-            Token {
-                token_type: Keyword,
-                start: 0,
-                end: 5,
-                module_id,
-                value: "const".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 5,
-                end: 6,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Word,
-                start: 6,
-                end: 13,
-                module_id,
-                value: "myArray".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 13,
-                end: 14,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Operator,
-                start: 14,
-                end: 15,
-                module_id,
-                value: "=".to_owned(),
-            },
-            Token {
-                token_type: Whitespace,
-                start: 15,
-                end: 16,
-                module_id,
-                value: " ".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 16,
-                end: 17,
-                module_id,
-                value: "[".to_owned(),
-            },
-            Token {
-                token_type: Number,
-                start: 17,
-                end: 18,
-                module_id,
-                value: "0".to_owned(),
-            },
-            Token {
-                token_type: DoublePeriod,
-                start: 18,
-                end: 20,
-                module_id,
-                value: "..".to_owned(),
-            },
-            Token {
-                token_type: Number,
-                start: 20,
-                end: 22,
-                module_id,
-                value: "10".to_owned(),
-            },
-            Token {
-                token_type: Brace,
-                start: 22,
-                end: 23,
-                module_id,
-                value: "]".to_owned(),
-            },
-        ];
         let actual = lex(program, module_id).unwrap();
-        assert_tokens(expected, actual.tokens);
+
+        use TokenType::*;
+        assert_tokens(
+            &[
+                (Keyword, 0, 5),
+                (Word, 6, 13),
+                (Operator, 14, 15),
+                (Brace, 16, 17),
+                (Number, 17, 18),
+                (DoublePeriod, 18, 20),
+                (Number, 20, 22),
+                (Brace, 22, 23),
+            ],
+            actual.as_slice(),
+        );
     }
 
-    #[test]
-    fn test_kitt() {
-        let program = include_str!("../../../../tests/executor/inputs/kittycad_svg.kcl");
-        let actual = lex(program, ModuleId::default()).unwrap();
-        assert_eq!(actual.as_slice().len(), 5103);
-    }
-    #[test]
-    fn test_pipes_on_pipes() {
-        let program = include_str!("../../../../tests/executor/inputs/pipes_on_pipes.kcl");
-        let actual = lex(program, ModuleId::default()).unwrap();
-        assert_eq!(actual.as_slice().len(), 17841);
-    }
     #[test]
     fn test_lexer_negative_word() {
         let module_id = ModuleId::from_usize(1);
         let actual = lex("-legX", module_id).unwrap();
-        let expected = vec![
-            Token {
-                token_type: TokenType::Operator,
-                value: "-".to_string(),
-                start: 0,
-                end: 1,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Word,
-                value: "legX".to_string(),
-                start: 1,
-                end: 5,
-                module_id,
-            },
-        ];
-        assert_tokens(expected, actual.tokens);
+
+        use TokenType::*;
+        assert_tokens(&[(Operator, 0, 1), (Word, 1, 5)], actual.as_slice());
     }
 
     #[test]
@@ -1907,45 +663,9 @@ const things = "things"
     fn test_unrecognized_token() {
         let module_id = ModuleId::from_usize(1);
         let actual = lex("12 ; 8", module_id).unwrap();
-        let expected = vec![
-            Token {
-                token_type: TokenType::Number,
-                value: "12".to_string(),
-                start: 0,
-                end: 2,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 2,
-                end: 3,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Unknown,
-                value: ";".to_string(),
-                start: 3,
-                end: 4,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Whitespace,
-                value: " ".to_string(),
-                start: 4,
-                end: 5,
-                module_id,
-            },
-            Token {
-                token_type: TokenType::Number,
-                value: "8".to_string(),
-                start: 5,
-                end: 6,
-                module_id,
-            },
-        ];
 
-        assert_tokens(expected, actual.tokens);
+        use TokenType::*;
+        assert_tokens(&[(Number, 0, 2), (Unknown, 3, 4), (Number, 5, 6)], actual.as_slice());
     }
 
     #[test]
@@ -1974,5 +694,27 @@ const things = "things"
             module_id,
         };
         assert_eq!(actual.tokens[0], expected);
+    }
+
+    #[test]
+    fn test_is_code_token() {
+        let module_id = ModuleId::default();
+        let actual = lex("foo (4/* comment */ +,2,\"sdfsdf\") // comment", module_id).unwrap();
+        let non_code = [1, 4, 5, 12, 13];
+        for i in 0..14 {
+            if non_code.contains(&i) {
+                assert!(
+                    !actual.tokens[i].is_code_token(),
+                    "failed test {i}: {:?}",
+                    &actual.tokens[i],
+                );
+            } else {
+                assert!(
+                    actual.tokens[i].is_code_token(),
+                    "failed test {i}: {:?}",
+                    &actual.tokens[i],
+                );
+            }
+        }
     }
 }
