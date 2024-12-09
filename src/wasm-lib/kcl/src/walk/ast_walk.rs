@@ -15,9 +15,7 @@ use crate::{
 /// as we refine the walk code.
 ///
 /// This, internally, uses the new [Visitor] trait, and is only provided as
-/// a stub until we migrate all existing code off this trait. As soon as we
-/// no longer see deprecation warnings, we ought to remove this trait and file.
-#[deprecated]
+/// a stub until we migrate all existing code off this trait.
 pub trait Walker<'a> {
     /// Walk will visit every element of the AST, recursing through the
     /// whole tree.
