@@ -126,11 +126,7 @@ jobs:
           destination: 'dl.kittycad.io/releases/modeling-app'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
-        run: |
-          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/last_download.json" --async
-          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-linux-arm64.yml" --async
-          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest-mac.yml" --async
-          gcloud compute url-maps invalidate-cdn-cache dl-url-map --path="/releases/modeling-app/latest.yml" --async
+        run: yarn files:invalidate-bucket
 
       - name: Upload release files to Github
         if: ${{ github.event_name == 'release' }}

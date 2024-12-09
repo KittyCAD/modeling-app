@@ -15,7 +15,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
+    execution::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
     parsing::ast::types::TagNode,
     std::Args,
 };

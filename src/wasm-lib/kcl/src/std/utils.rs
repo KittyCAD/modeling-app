@@ -4,7 +4,7 @@ use kittycad_modeling_cmds::shared::Angle;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::Point2d,
+    execution::Point2d,
     source_range::SourceRange,
 };
 

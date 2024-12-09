@@ -4,14 +4,19 @@ use async_recursion::async_recursion;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier},
+    execution::{
+        BodyType, ExecState, ExecutorContext, KclValue, Metadata, StatementKind, TagEngineInfo, TagIdentifier,
+    },
     parsing::ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, CallExpression,
-        CallExpressionKw, Expr, IfExpression, KclNone, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject,
-        Node, ObjectExpression, TagDeclarator, UnaryExpression, UnaryOperator,
+        CallExpressionKw, Expr, IfExpression, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Node,
+        ObjectExpression, PipeExpression, TagDeclarator, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
-    std::{args::Arg, FunctionKind},
+    std::{
+        args::{Arg, KwArgs},
+        FunctionKind,
+    },
 };
 
 const FLOAT_TO_INT_MAX_DELTA: f64 = 0.01;
@@ -386,7 +391,14 @@ impl Node<CallExpressionKw> {
             None
         };
 
-        let args = crate::std::Args::new_kw(fn_args, unlabeled, self.into(), ctx.clone());
+        let args = crate::std::Args::new_kw(
+            KwArgs {
+                unlabeled,
+                labeled: fn_args,
+            },
+            self.into(),
+            ctx.clone(),
+        );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
@@ -397,7 +409,6 @@ impl Node<CallExpressionKw> {
             FunctionKind::UserDefined => {
                 todo!("Part of modeling-app#4600: Support keyword arguments for user-defined functions")
             }
-            FunctionKind::Std(_) => todo!("There is no KCL std anymore, it's all core."),
         }
     }
 }
@@ -428,88 +439,6 @@ impl Node<CallExpression> {
                 update_memory_for_tags_of_geometry(&mut result, exec_state)?;
                 Ok(result)
             }
-            FunctionKind::Std(func) => {
-                let function_expression = func.function();
-                let (required_params, optional_params) =
-                    function_expression.required_and_optional_params().map_err(|e| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!("Error getting parts of function: {}", e),
-                            source_ranges: vec![self.into()],
-                        })
-                    })?;
-                if fn_args.len() < required_params.len() || fn_args.len() > function_expression.params.len() {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "this function expected {} arguments, got {}",
-                            required_params.len(),
-                            fn_args.len(),
-                        ),
-                        source_ranges: vec![self.into()],
-                    }));
-                }
-
-                // Add the arguments to the memory.
-                let mut fn_memory = exec_state.memory.clone();
-                for (index, param) in required_params.iter().enumerate() {
-                    fn_memory.add(
-                        &param.identifier.name,
-                        fn_args.get(index).unwrap().value.clone(),
-                        param.identifier.clone().into(),
-                    )?;
-                }
-                // Add the optional arguments to the memory.
-                for (index, param) in optional_params.iter().enumerate() {
-                    if let Some(arg) = fn_args.get(index + required_params.len()) {
-                        fn_memory.add(
-                            &param.identifier.name,
-                            arg.value.clone(),
-                            param.identifier.clone().into(),
-                        )?;
-                    } else {
-                        fn_memory.add(
-                            &param.identifier.name,
-                            KclValue::KclNone {
-                                value: KclNone::new(),
-                                meta: vec![self.into()],
-                            },
-                            param.identifier.clone().into(),
-                        )?;
-                    }
-                }
-
-                let fn_dynamic_state = exec_state.dynamic_state.clone();
-                // TODO: Shouldn't we merge program memory into fn_dynamic_state
-                // here?
-
-                // Call the stdlib function
-                let p = &func.function().body;
-
-                let (exec_result, fn_memory) = {
-                    let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
-                    let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
-                    let result = ctx.inner_execute(p, exec_state, BodyType::Block).await;
-                    exec_state.dynamic_state = previous_dynamic_state;
-                    let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
-                    (result, fn_memory)
-                };
-
-                match exec_result {
-                    Ok(_) => {}
-                    Err(err) => {
-                        // We need to override the source ranges so we don't get the embedded kcl
-                        // function from the stdlib.
-                        return Err(err.override_source_ranges(vec![self.into()]));
-                    }
-                };
-                let out = fn_memory.return_;
-                let result = out.ok_or_else(|| {
-                    KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of stdlib function {} is undefined", fn_name),
-                        source_ranges: vec![self.into()],
-                    })
-                })?;
-                Ok(result)
-            }
             FunctionKind::UserDefined => {
                 let source_range = SourceRange::from(self);
                 // Clone the function so that we can use a mutable reference to
@@ -521,6 +450,7 @@ impl Node<CallExpression> {
                     let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
                     let result = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
                         // Add the call expression to the source ranges.
+                        // TODO currently ignored by the frontend
                         e.add_source_ranges(vec![source_range])
                     });
                     exec_state.dynamic_state = previous_dynamic_state;
@@ -887,5 +817,12 @@ impl Property {
             Property::UInt(_) => "number",
             Property::String(_) => "string",
         }
+    }
+}
+
+impl Node<PipeExpression> {
+    #[async_recursion]
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 }

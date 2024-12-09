@@ -13,7 +13,9 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet},
+    execution::{
+        ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet,
+    },
     std::Args,
 };
 
@@ -228,7 +230,7 @@ pub(crate) async fn do_post_extrude(
                     | Path::TangentialArc { .. }
                     | Path::TangentialArcTo { .. }
                     | Path::Circle { .. } => {
-                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
+                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
                             geo_meta: GeoMeta {
@@ -239,7 +241,7 @@ pub(crate) async fn do_post_extrude(
                         Some(extrude_surface)
                     }
                     Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
-                        let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                        let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
                             geo_meta: GeoMeta {
@@ -253,7 +255,7 @@ pub(crate) async fn do_post_extrude(
             } else if args.ctx.is_mock() {
                 // Only pre-populate the extrude surface if we are in mock mode.
 
-                let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                     // pushing this values with a fake face_id to make extrudes mock-execute safe
                     face_id: exec_state.id_generator.next_uuid(),
                     tag: path.get_base().tag.clone(),

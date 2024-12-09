@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{
+    execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
         Solid, TagEngineInfo, TagIdentifier,
     },
@@ -2257,7 +2257,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use crate::{
-        executor::TagIdentifier,
+        execution::TagIdentifier,
         std::sketch::{calculate_circle_center, PlaneData},
     };
 

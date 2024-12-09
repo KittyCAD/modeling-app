@@ -3,8 +3,8 @@ mod test_examples_min {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_mock_example_min0() {
         let program =
-            crate::Program::parse("This is another code block.\nyes sirrr.\nmin").unwrap();
-        let ctx = crate::executor::ExecutorContext {
+            crate::Program::parse_no_errs("This is another code block.\nyes sirrr.\nmin").unwrap();
+        let ctx = crate::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
                     .await
@@ -13,9 +13,9 @@ mod test_examples_min {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ContextType::Mock,
+            context_type: crate::execution::ContextType::Mock,
         };
-        ctx.run(&program, &mut crate::ExecState::default())
+        ctx.run(program.into(), &mut crate::ExecState::default())
             .await
             .unwrap();
     }
@@ -23,10 +23,13 @@ mod test_examples_min {
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn kcl_test_example_min0() {
         let code = "This is another code block.\nyes sirrr.\nmin";
-        let result =
-            crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
-                .await
-                .unwrap();
+        let result = crate::test_server::execute_and_snapshot(
+            code,
+            crate::settings::types::UnitLength::Mm,
+            None,
+        )
+        .await
+        .unwrap();
         twenty_twenty::assert_image(
             &format!("tests/outputs/{}.png", "serial_test_example_min0"),
             &result,
@@ -36,8 +39,9 @@ mod test_examples_min {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_mock_example_min1() {
-        let program = crate::Program::parse("This is code.\nIt does other shit.\nmin").unwrap();
-        let ctx = crate::executor::ExecutorContext {
+        let program =
+            crate::Program::parse_no_errs("This is code.\nIt does other shit.\nmin").unwrap();
+        let ctx = crate::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
                     .await
@@ -46,9 +50,9 @@ mod test_examples_min {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ContextType::Mock,
+            context_type: crate::execution::ContextType::Mock,
         };
-        ctx.run(&program, &mut crate::ExecState::default())
+        ctx.run(program.into(), &mut crate::ExecState::default())
             .await
             .unwrap();
     }
@@ -56,10 +60,13 @@ mod test_examples_min {
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn kcl_test_example_min1() {
         let code = "This is code.\nIt does other shit.\nmin";
-        let result =
-            crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
-                .await
-                .unwrap();
+        let result = crate::test_server::execute_and_snapshot(
+            code,
+            crate::settings::types::UnitLength::Mm,
+            None,
+        )
+        .await
+        .unwrap();
         twenty_twenty::assert_image(
             &format!("tests/outputs/{}.png", "serial_test_example_min1"),
             &result,
@@ -78,12 +85,12 @@ pub(crate) struct Min {}
 #[doc = "Std lib function: min\nThis is some function.\nIt does shit."]
 pub(crate) const Min: Min = Min {};
 fn boxed_min(
-    exec_state: &mut crate::executor::ExecState,
+    exec_state: &mut crate::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-                Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>,
+                Output = anyhow::Result<crate::execution::KclValue, crate::errors::KclError>,
             > + Send
             + '_,
     >,
@@ -155,7 +162,7 @@ impl crate::docs::StdLibFn for Min {
         code_blocks
             .iter()
             .map(|cb| {
-                let program = crate::Program::parse(cb).unwrap();
+                let program = crate::Program::parse_no_errs(cb).unwrap();
                 let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
                 program.ast.recast(&options, 0)

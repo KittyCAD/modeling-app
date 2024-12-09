@@ -5,7 +5,12 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, Expr } from 'lang/wasm'
+import {
+  CallExpression,
+  SourceRange,
+  Expr,
+  defaultSourceRange,
+} from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { isNonNullable, uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
@@ -266,7 +271,7 @@ export function getEventForSegmentSelection(
         selectionType: 'singleCodeCursor',
         selection: {
           codeRef: {
-            range: [node.node.start, node.node.end],
+            range: [node.node.start, node.node.end, true],
             pathToNode: group.userData.pathToNode,
           },
         },
@@ -309,10 +314,11 @@ export function handleSelectionBatch({
       selectionToEngine.push({
         type: 'default',
         id: artifact?.id,
-        range: getCodeRefsByArtifactId(
-          artifact.id,
-          engineCommandManager.artifactGraph
-        )?.[0].range || [0, 0],
+        range:
+          getCodeRefsByArtifactId(
+            artifact.id,
+            engineCommandManager.artifactGraph
+          )?.[0].range || defaultSourceRange(),
       })
   })
   const engineEvents: Models['WebSocketRequest_type'][] =
@@ -376,10 +382,10 @@ export function processCodeMirrorRanges({
   if (!isChange) return null
   const codeBasedSelections: Selections['graphSelections'] =
     codeMirrorRanges.map(({ from, to }) => {
-      const pathToNode = getNodePathFromSourceRange(ast, [from, to])
+      const pathToNode = getNodePathFromSourceRange(ast, [from, to, true])
       return {
         codeRef: {
-          range: [from, to],
+          range: [from, to, true],
           pathToNode,
         },
       }
@@ -442,7 +448,7 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     if (err(nodeMeta)) return
     const node = nodeMeta.node
     const groupHasCursor = codeBasedSelections.some((selection) => {
-      return isOverlap(selection?.codeRef?.range, [node.start, node.end])
+      return isOverlap(selection?.codeRef?.range, [node.start, node.end, true])
     })
 
     const color = groupHasCursor
@@ -936,7 +942,7 @@ export function updateSelections(
       return {
         artifact: artifact,
         codeRef: {
-          range: [node.start, node.end],
+          range: [node.start, node.end, true],
           pathToNode: pathToNode,
         },
       }
@@ -950,7 +956,7 @@ export function updateSelections(
     if (err(node)) return node
     pathToNodeBasedSelections.push({
       codeRef: {
-        range: [node.node.start, node.node.end],
+        range: [node.node.start, node.node.end, true],
         pathToNode: pathToNode,
       },
     })

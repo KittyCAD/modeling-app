@@ -16,6 +16,7 @@ import {
   sketchFromKclValue,
   sketchFromKclValueOptional,
   SourceRange,
+  sourceRangeFromRust,
   SyntaxType,
   VariableDeclaration,
   VariableDeclarator,
@@ -258,34 +259,26 @@ function moreNodePathFromSourceRange(
     return moreNodePathFromSourceRange(expression, sourceRange, path)
   }
   if (_node.type === 'VariableDeclaration' && isInRange) {
-    const declarations = _node.declarations
+    const declaration = _node.declaration
 
-    for (let decIndex = 0; decIndex < declarations.length; decIndex++) {
-      const declaration = declarations[decIndex]
-      if (declaration.start <= start && declaration.end >= end) {
-        path.push(['declarations', 'VariableDeclaration'])
-        path.push([decIndex, 'index'])
-        const init = declaration.init
-        if (init.start <= start && init.end >= end) {
-          path.push(['init', ''])
-          return moreNodePathFromSourceRange(init, sourceRange, path)
-        }
+    if (declaration.start <= start && declaration.end >= end) {
+      path.push(['declaration', 'VariableDeclaration'])
+      const init = declaration.init
+      if (init.start <= start && init.end >= end) {
+        path.push(['init', ''])
+        return moreNodePathFromSourceRange(init, sourceRange, path)
       }
     }
   }
   if (_node.type === 'VariableDeclaration' && isInRange) {
-    const declarations = _node.declarations
+    const declaration = _node.declaration
 
-    for (let decIndex = 0; decIndex < declarations.length; decIndex++) {
-      const declaration = declarations[decIndex]
-      if (declaration.start <= start && declaration.end >= end) {
-        const init = declaration.init
-        if (init.start <= start && init.end >= end) {
-          path.push(['declarations', 'VariableDeclaration'])
-          path.push([decIndex, 'index'])
-          path.push(['init', ''])
-          return moreNodePathFromSourceRange(init, sourceRange, path)
-        }
+    if (declaration.start <= start && declaration.end >= end) {
+      const init = declaration.init
+      if (init.start <= start && init.end >= end) {
+        path.push(['declaration', 'VariableDeclaration'])
+        path.push(['init', ''])
+        return moreNodePathFromSourceRange(init, sourceRange, path)
       }
     }
     return path
@@ -379,24 +372,31 @@ function moreNodePathFromSourceRange(
   }
 
   if (_node.type === 'ImportStatement' && isInRange) {
-    const { items } = _node
-    for (let i = 0; i < items.length; i++) {
-      const item = items[i]
-      if (item.start <= start && item.end >= end) {
-        path.push(['items', 'ImportStatement'])
-        path.push([i, 'index'])
-        if (item.name.start <= start && item.name.end >= end) {
-          path.push(['name', 'ImportItem'])
+    if (_node.selector && _node.selector.type === 'List') {
+      path.push(['selector', 'ImportStatement'])
+      const { items } = _node.selector
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        if (item.start <= start && item.end >= end) {
+          path.push(['items', 'ImportSelector'])
+          path.push([i, 'index'])
+          if (item.name.start <= start && item.name.end >= end) {
+            path.push(['name', 'ImportItem'])
+            return path
+          }
+          if (
+            item.alias &&
+            item.alias.start <= start &&
+            item.alias.end >= end
+          ) {
+            path.push(['alias', 'ImportItem'])
+            return path
+          }
           return path
         }
-        if (item.alias && item.alias.start <= start && item.alias.end >= end) {
-          path.push(['alias', 'ImportItem'])
-          return path
-        }
-        return path
       }
+      return path
     }
-    return path
   }
 
   console.error('not implemented: ' + node.type)
@@ -450,13 +450,10 @@ export function traverse(
     traverse(node, option, pathToNode)
 
   if (_node.type === 'VariableDeclaration') {
-    _node.declarations.forEach((declaration, index) =>
-      _traverse(declaration, [
-        ...pathToNode,
-        ['declarations', 'VariableDeclaration'],
-        [index, 'index'],
-      ])
-    )
+    _traverse(_node.declaration, [
+      ...pathToNode,
+      ['declaration', 'VariableDeclaration'],
+    ])
   } else if (_node.type === 'VariableDeclarator') {
     _traverse(_node.init, [...pathToNode, ['init', '']])
   } else if (_node.type === 'PipeExpression') {
@@ -566,7 +563,7 @@ export function findAllPreviousVariablesPath(
   const variables: PrevVariable<any>[] = []
   bodyItems?.forEach?.((item) => {
     if (item.type !== 'VariableDeclaration' || item.end > startRange) return
-    const varName = item.declarations[0].id.name
+    const varName = item.declaration.id.name
     const varValue = programMemory?.get(varName)
     if (!varValue || typeof varValue?.value !== type) return
     variables.push({
@@ -669,7 +666,7 @@ export function isNodeSafeToReplacePath(
 
 export function isNodeSafeToReplace(
   ast: Node<Program>,
-  sourceRange: [number, number]
+  sourceRange: SourceRange
 ):
   | {
       isSafe: boolean
@@ -760,7 +757,7 @@ export function isLinesParallelAndConstrained(
     const _varDec = getNodeFromPath(ast, primaryPath, 'VariableDeclaration')
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
-    const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
+    const varName = (varDec as VariableDeclaration)?.declaration.id?.name
     const sg = sketchFromKclValue(programMemory?.get(varName), varName)
     if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
@@ -821,7 +818,7 @@ export function isLinesParallelAndConstrained(
     return {
       isParallelAndConstrained,
       selection: {
-        codeRef: codeRefFromRange(prevSourceRange, ast),
+        codeRef: codeRefFromRange(sourceRangeFromRust(prevSourceRange), ast),
         artifact: artifactGraph.get(prevSegment.__geoMeta.id),
       },
     }
@@ -880,7 +877,7 @@ export function hasExtrudeSketch({
   }
   const varDec = varDecMeta.node
   if (varDec.type !== 'VariableDeclaration') return false
-  const varName = varDec.declarations[0].id.name
+  const varName = varDec.declaration.id.name
   const varValue = programMemory?.get(varName)
   return (
     varValue?.type === 'Solid' ||
@@ -957,7 +954,8 @@ export function findUsesOfTagInPipe(
         return
       const tagArgValue =
         tagArg.type === 'TagDeclarator' ? String(tagArg.value) : tagArg.name
-      if (tagArgValue === tag) dependentRanges.push([node.start, node.end])
+      if (tagArgValue === tag)
+        dependentRanges.push([node.start, node.end, true])
     },
   })
   return dependentRanges

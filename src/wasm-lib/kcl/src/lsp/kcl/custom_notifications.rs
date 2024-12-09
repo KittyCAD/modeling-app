@@ -19,7 +19,7 @@ impl Notification for AstUpdated {
 pub enum MemoryUpdated {}
 
 impl Notification for MemoryUpdated {
-    type Params = crate::executor::ProgramMemory;
+    type Params = crate::execution::ProgramMemory;
     const METHOD: &'static str = "kcl/memoryUpdated";
 }
 

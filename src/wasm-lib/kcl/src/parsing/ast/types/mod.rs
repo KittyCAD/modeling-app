@@ -8,8 +8,6 @@ use std::{
 };
 
 use anyhow::Result;
-use async_recursion::async_recursion;
-use databake::*;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -18,7 +16,7 @@ use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
 
-use super::{digest::Digest, execute::execute_pipe_body};
+use super::digest::Digest;
 pub use crate::parsing::ast::types::{
     condition::{ElseIf, IfExpression},
     literal_value::LiteralValue,
@@ -27,10 +25,9 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    executor::{ExecState, ExecutorContext, KclValue, Metadata, TagIdentifier},
+    execution::{KclValue, Metadata, TagIdentifier},
     parsing::PIPE_OPERATOR,
     source_range::{ModuleId, SourceRange},
-    std::kcl_stdlib::KclStdLibFn,
 };
 
 mod condition;
@@ -42,8 +39,7 @@ pub enum Definition<'a> {
     Import(NodeRef<'a, ImportStatement>),
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Node<T> {
@@ -169,8 +165,7 @@ pub type NodeList<T> = Vec<Node<T>>;
 pub type NodeRef<'a, T> = &'a Node<T>;
 
 /// A KCL program top level, or function body.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Program {
@@ -470,11 +465,9 @@ impl Program {
                     continue;
                 }
                 BodyItem::VariableDeclaration(ref mut variable_declaration) => {
-                    for declaration in &mut variable_declaration.declarations {
-                        if declaration.id.name == name {
-                            *declaration = declarator;
-                            return;
-                        }
+                    if variable_declaration.declaration.id.name == name {
+                        variable_declaration.declaration = declarator;
+                        return;
                     }
                 }
                 BodyItem::ReturnStatement(_return_statement) => continue,
@@ -505,20 +498,16 @@ impl Program {
         for item in &self.body {
             match item {
                 BodyItem::ImportStatement(stmt) => {
-                    for import_item in &stmt.items {
-                        if import_item.identifier() == name {
-                            return Some(Definition::Import(stmt.as_ref()));
-                        }
+                    if stmt.get_variable(name) {
+                        return Some(Definition::Import(stmt));
                     }
                 }
                 BodyItem::ExpressionStatement(_expression_statement) => {
                     continue;
                 }
                 BodyItem::VariableDeclaration(variable_declaration) => {
-                    for declaration in &variable_declaration.declarations {
-                        if declaration.id.name == name {
-                            return Some(Definition::Variable(declaration));
-                        }
+                    if variable_declaration.declaration.id.name == name {
+                        return Some(Definition::Variable(&variable_declaration.declaration));
                     }
                 }
                 BodyItem::ReturnStatement(_return_statement) => continue,
@@ -535,8 +524,7 @@ impl Program {
 /// ```python,no_run
 /// #!/usr/bin/env python
 /// ```
-#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Shebang {
     pub content: String,
@@ -548,8 +536,7 @@ impl Shebang {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BodyItem {
@@ -592,8 +579,7 @@ impl From<&BodyItem> for SourceRange {
 }
 
 /// An expression can be evaluated to yield a single KCL value.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Expr {
@@ -819,8 +805,7 @@ impl From<&Expr> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum BinaryPart {
@@ -951,8 +936,7 @@ impl BinaryPart {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct NonCodeNode {
@@ -1013,8 +997,7 @@ impl NonCodeNode {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum CommentStyle {
@@ -1024,8 +1007,7 @@ pub enum CommentStyle {
     Block,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum NonCodeValue {
@@ -1062,8 +1044,7 @@ pub enum NonCodeValue {
     NewLine,
 }
 
-#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
@@ -1131,14 +1112,13 @@ impl NonCodeMeta {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ImportItem {
     /// Name of the item to import.
     pub name: Node<Identifier>,
-    /// Rename the item using an identifier after "as".
+    /// Rename the item using an identifier after `as`.
     pub alias: Option<Node<Identifier>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1184,14 +1164,72 @@ impl ImportItem {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
+pub enum ImportSelector {
+    /// A comma-separated list of names and possible aliases to import (may be a single item, but never zero).
+    /// E.g., `import bar as baz from "foo.kcl"`
+    List { items: NodeList<ImportItem> },
+    /// Import all public items from a module.
+    /// E.g., `import * from "foo.kcl"`
+    Glob(Node<()>),
+    /// Import the module itself (the param is an optional alias).
+    /// E.g., `import "foo.kcl" as bar`
+    None(Option<Node<Identifier>>),
+}
+
+impl ImportSelector {
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        match self {
+            ImportSelector::List { items } => {
+                for item in items {
+                    let source_range = SourceRange::from(&*item);
+                    if source_range.contains(pos) {
+                        let old_name = item.rename_symbol(new_name, pos);
+                        if old_name.is_some() {
+                            return old_name;
+                        }
+                    }
+                }
+                None
+            }
+            ImportSelector::Glob(_) => None,
+            ImportSelector::None(None) => None,
+            ImportSelector::None(Some(alias)) => {
+                let alias_source_range = SourceRange::from(&*alias);
+                if !alias_source_range.contains(pos) {
+                    return None;
+                }
+                let old_name = std::mem::replace(&mut alias.name, new_name.to_owned());
+                Some(old_name)
+            }
+        }
+    }
+
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        match self {
+            ImportSelector::List { items } => {
+                for item in items {
+                    item.rename_identifiers(old_name, new_name);
+                }
+            }
+            ImportSelector::Glob(_) => {}
+            ImportSelector::None(None) => {}
+            ImportSelector::None(Some(alias)) => alias.rename(old_name, new_name),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ImportStatement {
-    pub items: NodeList<ImportItem>,
+    pub selector: ImportSelector,
     pub path: String,
-    pub raw_path: String,
+    #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
+    pub visibility: ItemVisibility,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -1199,6 +1237,41 @@ pub struct ImportStatement {
 }
 
 impl Node<ImportStatement> {
+    pub fn get_variable(&self, name: &str) -> bool {
+        match &self.selector {
+            ImportSelector::List { items } => {
+                for import_item in items {
+                    if import_item.identifier() == name {
+                        return true;
+                    }
+                }
+                false
+            }
+            ImportSelector::Glob(_) => false,
+            ImportSelector::None(_) => name == self.module_name().unwrap(),
+        }
+    }
+
+    /// Get the name of the module object for this import.
+    /// Validated during parsing and guaranteed to return `Some` if the statement imports
+    /// the module itself (i.e., self.selector is ImportSelector::None).
+    pub fn module_name(&self) -> Option<String> {
+        if let ImportSelector::None(Some(alias)) = &self.selector {
+            return Some(alias.name.clone());
+        }
+
+        let mut parts = self.path.split('.');
+        let name = parts.next()?;
+        let ext = parts.next()?;
+        let rest = parts.next();
+
+        if rest.is_some() || ext != "kcl" {
+            return None;
+        }
+
+        Some(name.to_owned())
+    }
+
     pub fn get_constraint_level(&self) -> ConstraintLevel {
         ConstraintLevel::Full {
             source_ranges: vec![self.into()],
@@ -1206,29 +1279,17 @@ impl Node<ImportStatement> {
     }
 
     pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
-        for item in &mut self.items {
-            let source_range = SourceRange::from(&*item);
-            if source_range.contains(pos) {
-                let old_name = item.rename_symbol(new_name, pos);
-                if old_name.is_some() {
-                    return old_name;
-                }
-            }
-        }
-        None
+        self.selector.rename_symbol(new_name, pos)
     }
 }
 
 impl ImportStatement {
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        for item in &mut self.items {
-            item.rename_identifiers(old_name, new_name);
-        }
+        self.selector.rename_identifiers(old_name, new_name);
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ExpressionStatement {
@@ -1239,8 +1300,7 @@ pub struct ExpressionStatement {
     pub digest: Option<Digest>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpression {
@@ -1252,8 +1312,7 @@ pub struct CallExpression {
     pub digest: Option<Digest>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct CallExpressionKw {
@@ -1267,8 +1326,7 @@ pub struct CallExpressionKw {
     pub digest: Option<Digest>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabeledArg {
@@ -1454,11 +1512,6 @@ pub enum Function {
         /// The function.
         func: Box<dyn StdLibFn>,
     },
-    /// A stdlib function written in KCL.
-    StdLibKcl {
-        /// The function.
-        func: Box<dyn KclStdLibFn>,
-    },
     /// A function that is defined in memory.
     #[default]
     InMemory,
@@ -1474,10 +1527,7 @@ impl PartialEq for Function {
     }
 }
 
-#[derive(
-    Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake,
-)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -1493,12 +1543,11 @@ impl ItemVisibility {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclaration {
-    pub declarations: NodeList<VariableDeclarator>,
+    pub declaration: Node<VariableDeclarator>,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
     pub kind: VariableKind, // Change to enum if there are specific values
@@ -1510,33 +1559,29 @@ pub struct VariableDeclaration {
 
 impl From<&Node<VariableDeclaration>> for Vec<CompletionItem> {
     fn from(declaration: &Node<VariableDeclaration>) -> Self {
-        let mut completions = vec![];
-        for variable in &declaration.declarations {
-            completions.push(CompletionItem {
-                label: variable.id.name.to_string(),
-                label_details: None,
-                kind: Some(match declaration.inner.kind {
-                    VariableKind::Const => CompletionItemKind::CONSTANT,
-                    VariableKind::Fn => CompletionItemKind::FUNCTION,
-                }),
-                detail: Some(declaration.inner.kind.to_string()),
-                documentation: None,
-                deprecated: None,
-                preselect: None,
-                sort_text: None,
-                filter_text: None,
-                insert_text: None,
-                insert_text_format: None,
-                insert_text_mode: None,
-                text_edit: None,
-                additional_text_edits: None,
-                command: None,
-                commit_characters: None,
-                data: None,
-                tags: None,
-            })
-        }
-        completions
+        vec![CompletionItem {
+            label: declaration.declaration.id.name.to_string(),
+            label_details: None,
+            kind: Some(match declaration.inner.kind {
+                VariableKind::Const => CompletionItemKind::CONSTANT,
+                VariableKind::Fn => CompletionItemKind::FUNCTION,
+            }),
+            detail: Some(declaration.inner.kind.to_string()),
+            documentation: None,
+            deprecated: None,
+            preselect: None,
+            sort_text: None,
+            filter_text: None,
+            insert_text: None,
+            insert_text_format: None,
+            insert_text_mode: None,
+            text_edit: None,
+            additional_text_edits: None,
+            command: None,
+            commit_characters: None,
+            data: None,
+            tags: None,
+        }]
     }
 }
 
@@ -1570,13 +1615,11 @@ impl Node<VariableDeclaration> {
             return None;
         }
 
-        for declaration in &mut self.declarations {
-            let declaration_source_range: SourceRange = declaration.id.clone().into();
-            if declaration_source_range.contains(pos) {
-                let old_name = declaration.id.name.clone();
-                declaration.id.name = new_name.to_string();
-                return Some(old_name);
-            }
+        let declaration_source_range: SourceRange = self.declaration.id.clone().into();
+        if declaration_source_range.contains(pos) {
+            let old_name = self.declaration.id.name.clone();
+            self.declaration.id.name = new_name.to_string();
+            return Some(old_name);
         }
 
         None
@@ -1584,9 +1627,9 @@ impl Node<VariableDeclaration> {
 }
 
 impl VariableDeclaration {
-    pub fn new(declarations: NodeList<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
+    pub fn new(declaration: Node<VariableDeclarator>, visibility: ItemVisibility, kind: VariableKind) -> Self {
         Self {
-            declarations,
+            declaration,
             visibility,
             kind,
             digest: None,
@@ -1594,18 +1637,14 @@ impl VariableDeclaration {
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        for declaration in &mut self.declarations {
-            declaration.init.replace_value(source_range, new_value.clone());
-        }
+        self.declaration.init.replace_value(source_range, new_value.clone());
     }
 
     /// Returns an Expr that includes the given character position.
     pub fn get_expr_for_position(&self, pos: usize) -> Option<&Expr> {
-        for declaration in &self.declarations {
-            let source_range: SourceRange = declaration.into();
-            if source_range.contains(pos) {
-                return Some(&declaration.init);
-            }
+        let source_range: SourceRange = self.declaration.clone().into();
+        if source_range.contains(pos) {
+            return Some(&self.declaration.init);
         }
 
         None
@@ -1613,77 +1652,69 @@ impl VariableDeclaration {
 
     /// Returns an Expr that includes the given character position.
     pub fn get_mut_expr_for_position(&mut self, pos: usize) -> Option<&mut Expr> {
-        for declaration in &mut self.declarations {
-            let source_range: SourceRange = declaration.clone().into();
-            if source_range.contains(pos) {
-                return Some(&mut declaration.init);
-            }
+        let source_range: SourceRange = self.declaration.clone().into();
+        if source_range.contains(pos) {
+            return Some(&mut self.declaration.init);
         }
 
         None
     }
 
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        for declaration in &mut self.declarations {
-            // Skip the init for the variable with the new name since it is the one we are renaming.
-            if declaration.id.name == new_name {
-                continue;
-            }
-
-            declaration.init.rename_identifiers(old_name, new_name);
+        // Skip the init for the variable with the new name since it is the one we are renaming.
+        if self.declaration.id.name != new_name {
+            self.declaration.init.rename_identifiers(old_name, new_name);
         }
     }
 
     pub fn get_lsp_symbols(&self, code: &str) -> Vec<DocumentSymbol> {
-        let mut symbols = vec![];
+        let source_range: SourceRange = self.declaration.clone().into();
+        let inner_source_range: SourceRange = self.declaration.id.clone().into();
 
-        for declaration in &self.declarations {
-            let source_range: SourceRange = declaration.into();
-            let inner_source_range: SourceRange = declaration.id.clone().into();
+        let mut symbol_kind = match self.kind {
+            VariableKind::Fn => SymbolKind::FUNCTION,
+            VariableKind::Const => SymbolKind::CONSTANT,
+        };
 
-            let mut symbol_kind = match self.kind {
-                VariableKind::Fn => SymbolKind::FUNCTION,
-                VariableKind::Const => SymbolKind::CONSTANT,
-            };
-
-            let children = match &declaration.init {
-                Expr::FunctionExpression(function_expression) => {
-                    symbol_kind = SymbolKind::FUNCTION;
-                    let mut children = vec![];
-                    for param in &function_expression.params {
-                        let param_source_range: SourceRange = (&param.identifier).into();
-                        #[allow(deprecated)]
-                        children.push(DocumentSymbol {
-                            name: param.identifier.name.clone(),
-                            detail: None,
-                            kind: SymbolKind::CONSTANT,
-                            range: param_source_range.to_lsp_range(code),
-                            selection_range: param_source_range.to_lsp_range(code),
-                            children: None,
-                            tags: None,
-                            deprecated: None,
-                        });
-                    }
-                    children
+        let children = match &self.declaration.init {
+            Expr::FunctionExpression(function_expression) => {
+                symbol_kind = SymbolKind::FUNCTION;
+                let mut children = vec![];
+                for param in &function_expression.params {
+                    let param_source_range: SourceRange = (&param.identifier).into();
+                    #[allow(deprecated)]
+                    children.push(DocumentSymbol {
+                        name: param.identifier.name.clone(),
+                        detail: None,
+                        kind: SymbolKind::CONSTANT,
+                        range: param_source_range.to_lsp_range(code),
+                        selection_range: param_source_range.to_lsp_range(code),
+                        children: None,
+                        tags: None,
+                        deprecated: None,
+                    });
                 }
-                Expr::ObjectExpression(object_expression) => {
-                    symbol_kind = SymbolKind::OBJECT;
-                    let mut children = vec![];
-                    for property in &object_expression.properties {
-                        children.extend(property.get_lsp_symbols(code));
-                    }
-                    children
+                children
+            }
+            Expr::ObjectExpression(object_expression) => {
+                symbol_kind = SymbolKind::OBJECT;
+                let mut children = vec![];
+                for property in &object_expression.properties {
+                    children.extend(property.get_lsp_symbols(code));
                 }
-                Expr::ArrayExpression(_) => {
-                    symbol_kind = SymbolKind::ARRAY;
-                    vec![]
-                }
-                _ => vec![],
-            };
+                children
+            }
+            Expr::ArrayExpression(_) => {
+                symbol_kind = SymbolKind::ARRAY;
+                vec![]
+            }
+            _ => vec![],
+        };
 
+        vec![
             #[allow(deprecated)]
-            symbols.push(DocumentSymbol {
-                name: declaration.id.name.clone(),
+            DocumentSymbol {
+                name: self.declaration.id.name.clone(),
                 detail: Some(self.kind.to_string()),
                 kind: symbol_kind,
                 range: source_range.to_lsp_range(code),
@@ -1691,15 +1722,12 @@ impl VariableDeclaration {
                 children: Some(children),
                 tags: None,
                 deprecated: None,
-            });
-        }
-
-        symbols
+            },
+        ]
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -1739,8 +1767,7 @@ impl VariableKind {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct VariableDeclarator {
@@ -1768,8 +1795,7 @@ impl VariableDeclarator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Literal {
@@ -1825,8 +1851,7 @@ impl From<&BoxNode<Literal>> for KclValue {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Identifier {
@@ -1863,8 +1888,7 @@ impl Identifier {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake, Eq)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct TagDeclarator {
@@ -1971,8 +1995,7 @@ impl TagDeclarator {
     }
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct PipeSubstitution {
@@ -1993,8 +2016,7 @@ impl From<Node<PipeSubstitution>> for Expr {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ArrayExpression {
@@ -2065,8 +2087,7 @@ impl ArrayExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ArrayRangeExpression {
@@ -2130,8 +2151,7 @@ impl ArrayRangeExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct ObjectExpression {
@@ -2196,8 +2216,7 @@ impl ObjectExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ObjectProperty {
@@ -2241,8 +2260,7 @@ impl ObjectProperty {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum MemberObject {
@@ -2288,8 +2306,7 @@ impl From<&MemberObject> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum LiteralIdentifier {
@@ -2325,8 +2342,7 @@ impl From<&LiteralIdentifier> for SourceRange {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct MemberExpression {
@@ -2384,8 +2400,7 @@ pub struct ObjectKeyInfo {
     pub computed: bool,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct BinaryExpression {
@@ -2452,8 +2467,7 @@ impl BinaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2565,8 +2579,7 @@ impl BinaryOperator {
         }
     }
 }
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct UnaryExpression {
@@ -2611,8 +2624,7 @@ impl UnaryExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, FromStr, Display)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
@@ -2636,8 +2648,7 @@ impl UnaryOperator {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct PipeExpression {
@@ -2673,11 +2684,6 @@ impl Node<PipeExpression> {
         }
 
         constraint_levels.get_constraint_level(self.into())
-    }
-
-    #[async_recursion]
-    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        execute_pipe_body(exec_state, &self.body, self.into(), ctx).await
     }
 }
 
@@ -2716,8 +2722,7 @@ impl PipeExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake, FromStr, Display)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, FromStr, Display)]
 #[serde(tag = "type")]
 #[display(style = "snake_case")]
 pub enum FnArgPrimitive {
@@ -2753,8 +2758,7 @@ impl FnArgPrimitive {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema)]
 #[serde(tag = "type")]
 pub enum FnArgType {
     /// A primitive type.
@@ -2767,9 +2771,38 @@ pub enum FnArgType {
     },
 }
 
+/// Default value for a parameter of a KCL function.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
+pub enum DefaultParamVal {
+    KclNone(KclNone),
+    Literal(Literal),
+}
+
+// TODO: This should actually take metadata.
+impl From<DefaultParamVal> for KclValue {
+    fn from(v: DefaultParamVal) -> Self {
+        match v {
+            DefaultParamVal::KclNone(kcl_none) => Self::KclNone {
+                value: kcl_none,
+                meta: Default::default(),
+            },
+            DefaultParamVal::Literal(literal) => Self::from_literal(literal.value, Vec::new()),
+        }
+    }
+}
+
+impl DefaultParamVal {
+    /// KCL none.
+    pub(crate) fn none() -> Self {
+        Self::KclNone(KclNone::default())
+    }
+}
+
 /// Parameter of a KCL function.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct Parameter {
@@ -2780,15 +2813,48 @@ pub struct Parameter {
     #[serde(skip)]
     pub type_: Option<FnArgType>,
     /// Is the parameter optional?
-    pub optional: bool,
+    /// If so, what is its default value?
+    /// If this is None, then the parameter is required.
+    /// Defaults to None.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_value: Option<DefaultParamVal>,
+    /// Functions may declare at most one parameter without label, prefixed by '@', and it must be the first parameter.
+    #[serde(default = "return_true", skip_serializing_if = "is_true")]
+    pub labeled: bool,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+impl Parameter {
+    /// Is the parameter optional?
+    pub fn optional(&self) -> bool {
+        self.default_value.is_some()
+    }
+}
+
+impl From<&Parameter> for SourceRange {
+    fn from(p: &Parameter) -> Self {
+        let sr = Self::from(&p.identifier);
+        // If it's unlabelled, the span should start 1 char earlier than the identifier,
+        // to include the '@' symbol.
+        if !p.labeled {
+            return Self::new(sr.start() - 1, sr.end(), sr.module_id());
+        }
+        sr
+    }
+}
+
+fn is_true(b: &bool) -> bool {
+    *b
+}
+
+fn return_true() -> bool {
+    true
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct FunctionExpression {
@@ -2832,13 +2898,13 @@ impl FunctionExpression {
         } = self;
         let mut found_optional = false;
         for param in params {
-            if param.optional {
+            if param.optional() {
                 found_optional = true;
             } else if found_optional {
                 return Err(RequiredParamAfterOptionalParam(Box::new(param.clone())));
             }
         }
-        let boundary = self.params.partition_point(|param| !param.optional);
+        let boundary = self.params.partition_point(|param| !param.optional());
         // SAFETY: split_at panics if the boundary is greater than the length.
         Ok(self.params.split_at(boundary))
     }
@@ -2849,7 +2915,7 @@ impl FunctionExpression {
         let end_of_required_params = self
             .params
             .iter()
-            .position(|param| param.optional)
+            .position(|param| param.optional())
             // If there's no optional params, then all the params are required params.
             .unwrap_or(self.params.len());
         &self.params[..end_of_required_params]
@@ -2874,8 +2940,7 @@ impl FunctionExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Bake)]
-#[databake(path = kcl_lib::ast::types)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct ReturnStatement {
@@ -3241,7 +3306,7 @@ const cylinder = startSketchOn('-XZ')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -3263,7 +3328,7 @@ const cylinder = startSketchOn('-XZ')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -3286,7 +3351,7 @@ const cylinder = startSketchOn('-XZ')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -3307,8 +3372,9 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false,
-                        digest: None
+                        default_value: None,
+                        labeled: true,
+                        digest: None,
                     },
                     Parameter {
                         identifier: Node::new(
@@ -3321,7 +3387,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None
                     },
                     Parameter {
@@ -3335,7 +3402,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true,
+                        labeled: true,
+                        default_value: Some(DefaultParamVal::none()),
                         digest: None
                     }
                 ]
@@ -3357,7 +3425,7 @@ const cylinder = startSketchOn('-XZ')
         let BodyItem::VariableDeclaration(var_decl) = function else {
             panic!("expected a variable declaration")
         };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declarations.first().unwrap().init else {
+        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
             panic!("expected a function expression")
         };
         let params = &func_expr.params;
@@ -3377,7 +3445,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None
                     },
                     Parameter {
@@ -3391,7 +3460,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Array(FnArgPrimitive::String)),
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None
                     },
                     Parameter {
@@ -3405,7 +3475,8 @@ const cylinder = startSketchOn('-XZ')
                             module_id,
                         ),
                         type_: Some(FnArgType::Primitive(FnArgPrimitive::String)),
-                        optional: true,
+                        labeled: true,
+                        default_value: Some(DefaultParamVal::none()),
                         digest: None
                     }
                 ]
@@ -3441,7 +3512,8 @@ const cylinder = startSketchOn('-XZ')
                             digest: None,
                         }),
                         type_: None,
-                        optional: false,
+                        default_value: None,
+                        labeled: true,
                         digest: None,
                     }],
                     body: Node {
@@ -3469,7 +3541,8 @@ const cylinder = startSketchOn('-XZ')
                             digest: None,
                         }),
                         type_: None,
-                        optional: true,
+                        default_value: Some(DefaultParamVal::none()),
+                        labeled: true,
                         digest: None,
                     }],
                     body: Node {
@@ -3498,7 +3571,8 @@ const cylinder = startSketchOn('-XZ')
                                 digest: None,
                             }),
                             type_: None,
-                            optional: false,
+                            default_value: None,
+                            labeled: true,
                             digest: None,
                         },
                         Parameter {
@@ -3507,7 +3581,8 @@ const cylinder = startSketchOn('-XZ')
                                 digest: None,
                             }),
                             type_: None,
-                            optional: true,
+                            default_value: Some(DefaultParamVal::none()),
+                            labeled: true,
                             digest: None,
                         },
                     ],

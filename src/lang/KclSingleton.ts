@@ -1,6 +1,10 @@
 import { executeAst, lintAst } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
-import { KCLError, kclErrorsToDiagnostics } from './errors'
+import {
+  KCLError,
+  complilationErrorsToDiagnostics,
+  kclErrorsToDiagnostics,
+} from './errors'
 import { uuidv4 } from 'lib/utils'
 import { EngineCommandManager } from './std/engineConnection'
 import { err } from 'lib/trap'
@@ -8,6 +12,7 @@ import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
   CallExpression,
+  clearSceneAndBustCache,
   emptyExecState,
   ExecState,
   initPromise,
@@ -51,11 +56,12 @@ export class KclManager {
   private _programMemory: ProgramMemory = ProgramMemory.empty()
   lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
   private _logs: string[] = []
-  private _lints: Diagnostic[] = []
-  private _kclErrors: KCLError[] = []
+  private _diagnostics: Diagnostic[] = []
   private _isExecuting = false
   private _executeIsStale: ExecuteArgs | null = null
   private _wasmInitFailed = true
+  private _hasErrors = false
+  private _switchedFiles = false
 
   engineCommandManager: EngineCommandManager
 
@@ -63,7 +69,7 @@ export class KclManager {
   private _astCallBack: (arg: Node<Program>) => void = () => {}
   private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
-  private _kclErrorsCallBack: (arg: KCLError[]) => void = () => {}
+  private _kclErrorsCallBack: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
 
@@ -75,6 +81,10 @@ export class KclManager {
     this._astCallBack(ast)
   }
 
+  set switchedFiles(switchedFiles: boolean) {
+    this._switchedFiles = switchedFiles
+  }
+
   get programMemory() {
     return this._programMemory
   }
@@ -84,7 +94,7 @@ export class KclManager {
     this._programMemoryCallBack(programMemory)
   }
 
-  set execState(execState) {
+  private set execState(execState) {
     this._execState = execState
     this.programMemory = execState.memory
   }
@@ -101,38 +111,28 @@ export class KclManager {
     this._logsCallBack(logs)
   }
 
-  get lints() {
-    return this._lints
+  get diagnostics() {
+    return this._diagnostics
   }
 
-  set lints(lints) {
-    if (lints === this._lints) return
-    this._lints = lints
-    // Run the lints through the diagnostics.
-    this.kclErrors = this._kclErrors
-  }
-
-  get kclErrors() {
-    return this._kclErrors
-  }
-  set kclErrors(kclErrors) {
-    if (kclErrors === this._kclErrors && this.lints.length === 0) return
-    this._kclErrors = kclErrors
+  set diagnostics(ds) {
+    if (ds === this._diagnostics) return
+    this._diagnostics = ds
     this.setDiagnosticsForCurrentErrors()
-    this._kclErrorsCallBack(kclErrors)
+  }
+
+  addDiagnostics(ds: Diagnostic[]) {
+    if (ds.length === 0) return
+    this.diagnostics = this.diagnostics.concat(ds)
+  }
+
+  hasErrors(): boolean {
+    return this._hasErrors
   }
 
   setDiagnosticsForCurrentErrors() {
-    let diagnostics = kclErrorsToDiagnostics(this.kclErrors)
-    if (this.lints.length > 0) {
-      diagnostics = diagnostics.concat(this.lints)
-    }
-    editorManager?.setDiagnostics(diagnostics)
-  }
-
-  addKclErrors(kclErrors: KCLError[]) {
-    if (kclErrors.length === 0) return
-    this.kclErrors = this.kclErrors.concat(kclErrors)
+    editorManager?.setDiagnostics(this.diagnostics)
+    this._kclErrorsCallBack(this.diagnostics)
   }
 
   get isExecuting() {
@@ -172,8 +172,12 @@ export class KclManager {
     this.engineCommandManager = engineCommandManager
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.ensureWasmInit().then(() => {
-      this.ast = this.safeParse(codeManager.code) || this.ast
+    this.ensureWasmInit().then(async () => {
+      await this.safeParse(codeManager.code).then((ast) => {
+        if (ast) {
+          this.ast = ast
+        }
+      })
     })
   }
 
@@ -188,7 +192,7 @@ export class KclManager {
     setProgramMemory: (arg: ProgramMemory) => void
     setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
-    setKclErrors: (arg: KCLError[]) => void
+    setKclErrors: (errors: Diagnostic[]) => void
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
@@ -217,18 +221,48 @@ export class KclManager {
     }
   }
 
-  safeParse(code: string): Node<Program> | null {
-    const ast = parse(code)
-    this.lints = []
-    this.kclErrors = []
-    if (!err(ast)) return ast
-    const kclerror: KCLError = ast as KCLError
+  // (jess) I'm not in love with this, but it ensures we clear the scene and
+  // bust the cache on
+  // errors from parsing when opening new files.
+  // Why not just clear the cache on all parse errors, you ask? well its actually
+  // really nice to keep the cache on parse errors within the same file, and
+  // only bust on engine errors esp if they take a long time to execute and
+  // you hit the wrong key!
+  private async checkIfSwitchedFilesShouldClear() {
+    // If we were switching files and we hit an error on parse we need to bust
+    // the cache and clear the scene.
+    if (this._hasErrors && this._switchedFiles) {
+      await clearSceneAndBustCache(this.engineCommandManager)
+    } else if (this._switchedFiles) {
+      // Reset the switched files boolean.
+      this._switchedFiles = false
+    }
+  }
 
-    this.addKclErrors([kclerror])
-    // TODO: re-eval if session should end?
-    if (kclerror.msg === 'file is empty')
-      this.engineCommandManager?.endSession()
-    return null
+  async safeParse(code: string): Promise<Node<Program> | null> {
+    const result = parse(code)
+    this.diagnostics = []
+    this._hasErrors = false
+
+    if (err(result)) {
+      const kclerror: KCLError = result as KCLError
+      this.diagnostics = kclErrorsToDiagnostics([kclerror])
+      this._hasErrors = true
+
+      await this.checkIfSwitchedFilesShouldClear()
+      return null
+    }
+
+    this.addDiagnostics(complilationErrorsToDiagnostics(result.errors))
+    this.addDiagnostics(complilationErrorsToDiagnostics(result.warnings))
+    if (result.errors.length > 0) {
+      this._hasErrors = true
+
+      await this.checkIfSwitchedFilesShouldClear()
+      return null
+    }
+
+    return result.program
   }
 
   async ensureWasmInit() {
@@ -267,19 +301,16 @@ export class KclManager {
     this._cancelTokens.set(currentExecutionId, false)
 
     this.isExecuting = true
-    // Make sure we clear before starting again. End session will do this.
-    this.engineCommandManager?.endSession()
     await this.ensureWasmInit()
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
-      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
     })
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
-      this.lints = await lintAst({ ast: ast })
+      this.addDiagnostics(await lintAst({ ast: ast }))
 
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
       setSelectionFilterToDefault(execState.memory, this.engineCommandManager)
@@ -321,9 +352,7 @@ export class KclManager {
 
     this.logs = logs
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
-    this.addKclErrors(isInterrupted ? [] : errors)
-    // Reset the next ID index so that we reuse the previous IDs next time.
-    execState.idGenerator.nextId = 0
+    this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
@@ -355,7 +384,7 @@ export class KclManager {
       console.error(newCode)
       return
     }
-    const newAst = this.safeParse(newCode)
+    const newAst = await this.safeParse(newCode)
     if (!newAst) {
       this.clearAst()
       return
@@ -364,13 +393,13 @@ export class KclManager {
 
     const { logs, errors, execState } = await executeAst({
       ast: newAst,
-      idGenerator: this.execState.idGenerator,
       engineCommandManager: this.engineCommandManager,
-      useFakeExecutor: true,
+      // We make sure to send an empty program memory to denote we mean mock mode.
+      programMemoryOverride: ProgramMemory.empty(),
     })
 
     this._logs = logs
-    this._kclErrors = errors
+    this.addDiagnostics(kclErrorsToDiagnostics(errors))
     this._execState = execState
     this._programMemory = execState.memory
     if (!errors.length) {
@@ -398,7 +427,7 @@ export class KclManager {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,
-            range: [node.start, node.end],
+            range: [node.start, node.end, true],
           },
         })
       }
@@ -410,7 +439,7 @@ export class KclManager {
     })
   }
   async executeCode(zoomToFit?: boolean): Promise<void> {
-    const ast = this.safeParse(codeManager.code)
+    const ast = await this.safeParse(codeManager.code)
     if (!ast) {
       this.clearAst()
       return
@@ -418,9 +447,9 @@ export class KclManager {
     this.ast = { ...ast }
     return this.executeAst({ zoomToFit })
   }
-  format() {
+  async format() {
     const originalCode = codeManager.code
-    const ast = this.safeParse(originalCode)
+    const ast = await this.safeParse(originalCode)
     if (!ast) {
       this.clearAst()
       return
@@ -460,7 +489,7 @@ export class KclManager {
     const newCode = recast(ast)
     if (err(newCode)) return Promise.reject(newCode)
 
-    const astWithUpdatedSource = this.safeParse(newCode)
+    const astWithUpdatedSource = await this.safeParse(newCode)
     if (!astWithUpdatedSource) return Promise.reject(new Error('bad ast'))
     let returnVal: Selections | undefined = undefined
 
@@ -490,7 +519,7 @@ export class KclManager {
         if (start && end) {
           returnVal.graphSelections.push({
             codeRef: {
-              range: [start, end],
+              range: [start, end, true],
               pathToNode: path,
             },
           })

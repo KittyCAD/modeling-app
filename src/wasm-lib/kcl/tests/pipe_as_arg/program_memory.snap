@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing pipe_as_arg.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -33,41 +32,39 @@ snapshot_kind: text
             "body": {
               "body": [
                 {
-                  "declarations": [
-                    {
+                  "declaration": {
+                    "end": 42,
+                    "id": {
+                      "end": 29,
+                      "name": "l",
+                      "start": 28,
+                      "type": "Identifier"
+                    },
+                    "init": {
                       "end": 42,
-                      "id": {
-                        "end": 29,
-                        "name": "l",
-                        "start": 28,
+                      "left": {
+                        "end": 38,
+                        "name": "length",
+                        "start": 32,
+                        "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "init": {
+                      "operator": "/",
+                      "right": {
                         "end": 42,
-                        "left": {
-                          "end": 38,
-                          "name": "length",
-                          "start": 32,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "operator": "/",
-                        "right": {
-                          "end": 42,
-                          "raw": "2",
-                          "start": 41,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 2.0
-                        },
-                        "start": 32,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "raw": "2",
+                        "start": 41,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 2.0
                       },
-                      "start": 28,
-                      "type": "VariableDeclarator"
-                    }
-                  ],
+                      "start": 32,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "start": 28,
+                    "type": "VariableDeclarator"
+                  },
                   "end": 42,
                   "kind": "const",
                   "start": 28,
@@ -75,41 +72,39 @@ snapshot_kind: text
                   "type": "VariableDeclaration"
                 },
                 {
-                  "declarations": [
-                    {
+                  "declaration": {
+                    "end": 58,
+                    "id": {
+                      "end": 46,
+                      "name": "x",
+                      "start": 45,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "computed": false,
                       "end": 58,
-                      "id": {
-                        "end": 46,
-                        "name": "x",
-                        "start": 45,
+                      "object": {
+                        "end": 55,
+                        "name": "center",
+                        "start": 49,
+                        "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "init": {
-                        "computed": false,
-                        "end": 58,
-                        "object": {
-                          "end": 55,
-                          "name": "center",
-                          "start": 49,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "property": {
-                          "end": 57,
-                          "raw": "0",
-                          "start": 56,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 0.0
-                        },
-                        "start": 49,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
+                      "property": {
+                        "end": 57,
+                        "raw": "0",
+                        "start": 56,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
                       },
-                      "start": 45,
-                      "type": "VariableDeclarator"
-                    }
-                  ],
+                      "start": 49,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    "start": 45,
+                    "type": "VariableDeclarator"
+                  },
                   "end": 58,
                   "kind": "const",
                   "start": 45,
@@ -117,41 +112,39 @@ snapshot_kind: text
                   "type": "VariableDeclaration"
                 },
                 {
-                  "declarations": [
-                    {
+                  "declaration": {
+                    "end": 74,
+                    "id": {
+                      "end": 62,
+                      "name": "y",
+                      "start": 61,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "computed": false,
                       "end": 74,
-                      "id": {
-                        "end": 62,
-                        "name": "y",
-                        "start": 61,
+                      "object": {
+                        "end": 71,
+                        "name": "center",
+                        "start": 65,
+                        "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "init": {
-                        "computed": false,
-                        "end": 74,
-                        "object": {
-                          "end": 71,
-                          "name": "center",
-                          "start": 65,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "property": {
-                          "end": 73,
-                          "raw": "1",
-                          "start": 72,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": 1.0
-                        },
-                        "start": 65,
-                        "type": "MemberExpression",
-                        "type": "MemberExpression"
+                      "property": {
+                        "end": 73,
+                        "raw": "1",
+                        "start": 72,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 1.0
                       },
-                      "start": 61,
-                      "type": "VariableDeclarator"
-                    }
-                  ],
+                      "start": 65,
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
+                    },
+                    "start": 61,
+                    "type": "VariableDeclarator"
+                  },
                   "end": 74,
                   "kind": "const",
                   "start": 61,
@@ -159,83 +152,81 @@ snapshot_kind: text
                   "type": "VariableDeclaration"
                 },
                 {
-                  "declarations": [
-                    {
-                      "end": 98,
-                      "id": {
-                        "end": 79,
-                        "name": "p0",
-                        "start": 77,
-                        "type": "Identifier"
-                      },
-                      "init": {
-                        "elements": [
-                          {
-                            "end": 89,
-                            "left": {
-                              "argument": {
-                                "end": 85,
-                                "name": "l",
-                                "start": 84,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "end": 85,
-                              "operator": "-",
-                              "start": 83,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            },
-                            "operator": "+",
-                            "right": {
-                              "end": 89,
-                              "name": "x",
-                              "start": 88,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 83,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          {
-                            "end": 97,
-                            "left": {
-                              "argument": {
-                                "end": 93,
-                                "name": "l",
-                                "start": 92,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "end": 93,
-                              "operator": "-",
-                              "start": 91,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            },
-                            "operator": "+",
-                            "right": {
-                              "end": 97,
-                              "name": "y",
-                              "start": 96,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 91,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          }
-                        ],
-                        "end": 98,
-                        "start": 82,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      },
+                  "declaration": {
+                    "end": 98,
+                    "id": {
+                      "end": 79,
+                      "name": "p0",
                       "start": 77,
-                      "type": "VariableDeclarator"
-                    }
-                  ],
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "elements": [
+                        {
+                          "end": 89,
+                          "left": {
+                            "argument": {
+                              "end": 85,
+                              "name": "l",
+                              "start": 84,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 85,
+                            "operator": "-",
+                            "start": 83,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 89,
+                            "name": "x",
+                            "start": 88,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 83,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        {
+                          "end": 97,
+                          "left": {
+                            "argument": {
+                              "end": 93,
+                              "name": "l",
+                              "start": 92,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 93,
+                            "operator": "-",
+                            "start": 91,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 97,
+                            "name": "y",
+                            "start": 96,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 91,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      ],
+                      "end": 98,
+                      "start": 82,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    },
+                    "start": 77,
+                    "type": "VariableDeclarator"
+                  },
                   "end": 98,
                   "kind": "const",
                   "start": 77,
@@ -243,76 +234,74 @@ snapshot_kind: text
                   "type": "VariableDeclaration"
                 },
                 {
-                  "declarations": [
-                    {
-                      "end": 121,
-                      "id": {
-                        "end": 103,
-                        "name": "p1",
-                        "start": 101,
-                        "type": "Identifier"
-                      },
-                      "init": {
-                        "elements": [
-                          {
-                            "end": 113,
-                            "left": {
-                              "argument": {
-                                "end": 109,
-                                "name": "l",
-                                "start": 108,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "end": 109,
-                              "operator": "-",
-                              "start": 107,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            },
-                            "operator": "+",
-                            "right": {
-                              "end": 113,
-                              "name": "x",
-                              "start": 112,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 107,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          {
-                            "end": 120,
-                            "left": {
-                              "end": 116,
-                              "name": "l",
-                              "start": 115,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "operator": "+",
-                            "right": {
-                              "end": 120,
-                              "name": "y",
-                              "start": 119,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 115,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          }
-                        ],
-                        "end": 121,
-                        "start": 106,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      },
+                  "declaration": {
+                    "end": 121,
+                    "id": {
+                      "end": 103,
+                      "name": "p1",
                       "start": 101,
-                      "type": "VariableDeclarator"
-                    }
-                  ],
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "elements": [
+                        {
+                          "end": 113,
+                          "left": {
+                            "argument": {
+                              "end": 109,
+                              "name": "l",
+                              "start": 108,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 109,
+                            "operator": "-",
+                            "start": 107,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 113,
+                            "name": "x",
+                            "start": 112,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 107,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        {
+                          "end": 120,
+                          "left": {
+                            "end": 116,
+                            "name": "l",
+                            "start": 115,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 120,
+                            "name": "y",
+                            "start": 119,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 115,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      ],
+                      "end": 121,
+                      "start": 106,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    },
+                    "start": 101,
+                    "type": "VariableDeclarator"
+                  },
                   "end": 121,
                   "kind": "const",
                   "start": 101,
@@ -320,69 +309,67 @@ snapshot_kind: text
                   "type": "VariableDeclaration"
                 },
                 {
-                  "declarations": [
-                    {
-                      "end": 143,
-                      "id": {
-                        "end": 126,
-                        "name": "p2",
-                        "start": 124,
-                        "type": "Identifier"
-                      },
-                      "init": {
-                        "elements": [
-                          {
-                            "end": 135,
-                            "left": {
-                              "end": 131,
-                              "name": "l",
-                              "start": 130,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "operator": "+",
-                            "right": {
-                              "end": 135,
-                              "name": "x",
-                              "start": 134,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 130,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          {
-                            "end": 142,
-                            "left": {
-                              "end": 138,
-                              "name": "l",
-                              "start": 137,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "operator": "+",
-                            "right": {
-                              "end": 142,
-                              "name": "y",
-                              "start": 141,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 137,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          }
-                        ],
-                        "end": 143,
-                        "start": 129,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      },
+                  "declaration": {
+                    "end": 143,
+                    "id": {
+                      "end": 126,
+                      "name": "p2",
                       "start": 124,
-                      "type": "VariableDeclarator"
-                    }
-                  ],
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "elements": [
+                        {
+                          "end": 135,
+                          "left": {
+                            "end": 131,
+                            "name": "l",
+                            "start": 130,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 135,
+                            "name": "x",
+                            "start": 134,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 130,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        {
+                          "end": 142,
+                          "left": {
+                            "end": 138,
+                            "name": "l",
+                            "start": 137,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 142,
+                            "name": "y",
+                            "start": 141,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 137,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      ],
+                      "end": 143,
+                      "start": 129,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    },
+                    "start": 124,
+                    "type": "VariableDeclarator"
+                  },
                   "end": 143,
                   "kind": "const",
                   "start": 124,
@@ -390,76 +377,74 @@ snapshot_kind: text
                   "type": "VariableDeclaration"
                 },
                 {
-                  "declarations": [
-                    {
-                      "end": 166,
-                      "id": {
-                        "end": 148,
-                        "name": "p3",
-                        "start": 146,
-                        "type": "Identifier"
-                      },
-                      "init": {
-                        "elements": [
-                          {
-                            "end": 157,
-                            "left": {
-                              "end": 153,
-                              "name": "l",
-                              "start": 152,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "operator": "+",
-                            "right": {
-                              "end": 157,
-                              "name": "x",
-                              "start": 156,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 152,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          },
-                          {
-                            "end": 165,
-                            "left": {
-                              "argument": {
-                                "end": 161,
-                                "name": "l",
-                                "start": 160,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "end": 161,
-                              "operator": "-",
-                              "start": 159,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            },
-                            "operator": "+",
-                            "right": {
-                              "end": 165,
-                              "name": "y",
-                              "start": 164,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 159,
-                            "type": "BinaryExpression",
-                            "type": "BinaryExpression"
-                          }
-                        ],
-                        "end": 166,
-                        "start": 151,
-                        "type": "ArrayExpression",
-                        "type": "ArrayExpression"
-                      },
+                  "declaration": {
+                    "end": 166,
+                    "id": {
+                      "end": 148,
+                      "name": "p3",
                       "start": 146,
-                      "type": "VariableDeclarator"
-                    }
-                  ],
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "elements": [
+                        {
+                          "end": 157,
+                          "left": {
+                            "end": 153,
+                            "name": "l",
+                            "start": 152,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 157,
+                            "name": "x",
+                            "start": 156,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 152,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        {
+                          "end": 165,
+                          "left": {
+                            "argument": {
+                              "end": 161,
+                              "name": "l",
+                              "start": 160,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 161,
+                            "operator": "-",
+                            "start": 159,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "+",
+                          "right": {
+                            "end": 165,
+                            "name": "y",
+                            "start": 164,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 159,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      ],
+                      "end": 166,
+                      "start": 151,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    },
+                    "start": 146,
+                    "type": "VariableDeclarator"
+                  },
                   "end": 166,
                   "kind": "const",
                   "start": 146,
@@ -684,8 +669,7 @@ snapshot_kind: text
                   "name": "length",
                   "start": 8,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               },
               {
                 "type": "Parameter",
@@ -694,8 +678,7 @@ snapshot_kind: text
                   "name": "center",
                   "start": 16,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
             "start": 7,
@@ -788,8 +771,7 @@ snapshot_kind: text
                   "name": "x",
                   "start": 334,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
             "start": 333,
@@ -825,41 +807,39 @@ snapshot_kind: text
                       "body": {
                         "body": [
                           {
-                            "declarations": [
-                              {
+                            "declaration": {
+                              "end": 42,
+                              "id": {
+                                "end": 29,
+                                "name": "l",
+                                "start": 28,
+                                "type": "Identifier"
+                              },
+                              "init": {
                                 "end": 42,
-                                "id": {
-                                  "end": 29,
-                                  "name": "l",
-                                  "start": 28,
+                                "left": {
+                                  "end": 38,
+                                  "name": "length",
+                                  "start": 32,
+                                  "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "init": {
+                                "operator": "/",
+                                "right": {
                                   "end": 42,
-                                  "left": {
-                                    "end": 38,
-                                    "name": "length",
-                                    "start": 32,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "end": 42,
-                                    "raw": "2",
-                                    "start": 41,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": 2.0
-                                  },
-                                  "start": 32,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
+                                  "raw": "2",
+                                  "start": 41,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 2.0
                                 },
-                                "start": 28,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "start": 32,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 28,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 42,
                             "kind": "const",
                             "start": 28,
@@ -867,41 +847,39 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
+                            "declaration": {
+                              "end": 58,
+                              "id": {
+                                "end": 46,
+                                "name": "x",
+                                "start": 45,
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "computed": false,
                                 "end": 58,
-                                "id": {
-                                  "end": 46,
-                                  "name": "x",
-                                  "start": 45,
+                                "object": {
+                                  "end": 55,
+                                  "name": "center",
+                                  "start": 49,
+                                  "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "init": {
-                                  "computed": false,
-                                  "end": 58,
-                                  "object": {
-                                    "end": 55,
-                                    "name": "center",
-                                    "start": 49,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "end": 57,
-                                    "raw": "0",
-                                    "start": 56,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": 0.0
-                                  },
-                                  "start": 49,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
+                                "property": {
+                                  "end": 57,
+                                  "raw": "0",
+                                  "start": 56,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 0.0
                                 },
-                                "start": 45,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "start": 49,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "start": 45,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 58,
                             "kind": "const",
                             "start": 45,
@@ -909,41 +887,39 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
+                            "declaration": {
+                              "end": 74,
+                              "id": {
+                                "end": 62,
+                                "name": "y",
+                                "start": 61,
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "computed": false,
                                 "end": 74,
-                                "id": {
-                                  "end": 62,
-                                  "name": "y",
-                                  "start": 61,
+                                "object": {
+                                  "end": 71,
+                                  "name": "center",
+                                  "start": 65,
+                                  "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "init": {
-                                  "computed": false,
-                                  "end": 74,
-                                  "object": {
-                                    "end": 71,
-                                    "name": "center",
-                                    "start": 65,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "end": 73,
-                                    "raw": "1",
-                                    "start": 72,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": 1.0
-                                  },
-                                  "start": 65,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
+                                "property": {
+                                  "end": 73,
+                                  "raw": "1",
+                                  "start": 72,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 1.0
                                 },
-                                "start": 61,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "start": 65,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "start": 61,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 74,
                             "kind": "const",
                             "start": 61,
@@ -951,83 +927,81 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
-                                "end": 98,
-                                "id": {
-                                  "end": 79,
-                                  "name": "p0",
-                                  "start": 77,
-                                  "type": "Identifier"
-                                },
-                                "init": {
-                                  "elements": [
-                                    {
-                                      "end": 89,
-                                      "left": {
-                                        "argument": {
-                                          "end": 85,
-                                          "name": "l",
-                                          "start": 84,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "end": 85,
-                                        "operator": "-",
-                                        "start": 83,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 89,
-                                        "name": "x",
-                                        "start": 88,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 83,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    {
-                                      "end": 97,
-                                      "left": {
-                                        "argument": {
-                                          "end": 93,
-                                          "name": "l",
-                                          "start": 92,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "end": 93,
-                                        "operator": "-",
-                                        "start": 91,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 97,
-                                        "name": "y",
-                                        "start": 96,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 91,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 98,
-                                  "start": 82,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
+                            "declaration": {
+                              "end": 98,
+                              "id": {
+                                "end": 79,
+                                "name": "p0",
                                 "start": 77,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "elements": [
+                                  {
+                                    "end": 89,
+                                    "left": {
+                                      "argument": {
+                                        "end": 85,
+                                        "name": "l",
+                                        "start": 84,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "end": 85,
+                                      "operator": "-",
+                                      "start": 83,
+                                      "type": "UnaryExpression",
+                                      "type": "UnaryExpression"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 89,
+                                      "name": "x",
+                                      "start": 88,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 83,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "end": 97,
+                                    "left": {
+                                      "argument": {
+                                        "end": 93,
+                                        "name": "l",
+                                        "start": 92,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "end": 93,
+                                      "operator": "-",
+                                      "start": 91,
+                                      "type": "UnaryExpression",
+                                      "type": "UnaryExpression"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 97,
+                                      "name": "y",
+                                      "start": 96,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 91,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                ],
+                                "end": 98,
+                                "start": 82,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              "start": 77,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 98,
                             "kind": "const",
                             "start": 77,
@@ -1035,76 +1009,74 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
-                                "end": 121,
-                                "id": {
-                                  "end": 103,
-                                  "name": "p1",
-                                  "start": 101,
-                                  "type": "Identifier"
-                                },
-                                "init": {
-                                  "elements": [
-                                    {
-                                      "end": 113,
-                                      "left": {
-                                        "argument": {
-                                          "end": 109,
-                                          "name": "l",
-                                          "start": 108,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "end": 109,
-                                        "operator": "-",
-                                        "start": 107,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 113,
-                                        "name": "x",
-                                        "start": 112,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 107,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    {
-                                      "end": 120,
-                                      "left": {
-                                        "end": 116,
-                                        "name": "l",
-                                        "start": 115,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 120,
-                                        "name": "y",
-                                        "start": 119,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 115,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 121,
-                                  "start": 106,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
+                            "declaration": {
+                              "end": 121,
+                              "id": {
+                                "end": 103,
+                                "name": "p1",
                                 "start": 101,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "elements": [
+                                  {
+                                    "end": 113,
+                                    "left": {
+                                      "argument": {
+                                        "end": 109,
+                                        "name": "l",
+                                        "start": 108,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "end": 109,
+                                      "operator": "-",
+                                      "start": 107,
+                                      "type": "UnaryExpression",
+                                      "type": "UnaryExpression"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 113,
+                                      "name": "x",
+                                      "start": 112,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 107,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "end": 120,
+                                    "left": {
+                                      "end": 116,
+                                      "name": "l",
+                                      "start": 115,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 120,
+                                      "name": "y",
+                                      "start": 119,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 115,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                ],
+                                "end": 121,
+                                "start": 106,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              "start": 101,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 121,
                             "kind": "const",
                             "start": 101,
@@ -1112,69 +1084,67 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
-                                "end": 143,
-                                "id": {
-                                  "end": 126,
-                                  "name": "p2",
-                                  "start": 124,
-                                  "type": "Identifier"
-                                },
-                                "init": {
-                                  "elements": [
-                                    {
-                                      "end": 135,
-                                      "left": {
-                                        "end": 131,
-                                        "name": "l",
-                                        "start": 130,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 135,
-                                        "name": "x",
-                                        "start": 134,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 130,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    {
-                                      "end": 142,
-                                      "left": {
-                                        "end": 138,
-                                        "name": "l",
-                                        "start": 137,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 142,
-                                        "name": "y",
-                                        "start": 141,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 137,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 143,
-                                  "start": 129,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
+                            "declaration": {
+                              "end": 143,
+                              "id": {
+                                "end": 126,
+                                "name": "p2",
                                 "start": 124,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "elements": [
+                                  {
+                                    "end": 135,
+                                    "left": {
+                                      "end": 131,
+                                      "name": "l",
+                                      "start": 130,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 135,
+                                      "name": "x",
+                                      "start": 134,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 130,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "end": 142,
+                                    "left": {
+                                      "end": 138,
+                                      "name": "l",
+                                      "start": 137,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 142,
+                                      "name": "y",
+                                      "start": 141,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 137,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                ],
+                                "end": 143,
+                                "start": 129,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              "start": 124,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 143,
                             "kind": "const",
                             "start": 124,
@@ -1182,76 +1152,74 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
-                                "end": 166,
-                                "id": {
-                                  "end": 148,
-                                  "name": "p3",
-                                  "start": 146,
-                                  "type": "Identifier"
-                                },
-                                "init": {
-                                  "elements": [
-                                    {
-                                      "end": 157,
-                                      "left": {
-                                        "end": 153,
-                                        "name": "l",
-                                        "start": 152,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 157,
-                                        "name": "x",
-                                        "start": 156,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 152,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    {
-                                      "end": 165,
-                                      "left": {
-                                        "argument": {
-                                          "end": 161,
-                                          "name": "l",
-                                          "start": 160,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "end": 161,
-                                        "operator": "-",
-                                        "start": 159,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 165,
-                                        "name": "y",
-                                        "start": 164,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 159,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 166,
-                                  "start": 151,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
+                            "declaration": {
+                              "end": 166,
+                              "id": {
+                                "end": 148,
+                                "name": "p3",
                                 "start": 146,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "elements": [
+                                  {
+                                    "end": 157,
+                                    "left": {
+                                      "end": 153,
+                                      "name": "l",
+                                      "start": 152,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 157,
+                                      "name": "x",
+                                      "start": 156,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 152,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "end": 165,
+                                    "left": {
+                                      "argument": {
+                                        "end": 161,
+                                        "name": "l",
+                                        "start": 160,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "end": 161,
+                                      "operator": "-",
+                                      "start": 159,
+                                      "type": "UnaryExpression",
+                                      "type": "UnaryExpression"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 165,
+                                      "name": "y",
+                                      "start": 164,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 159,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                ],
+                                "end": 166,
+                                "start": 151,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              "start": 146,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 166,
                             "kind": "const",
                             "start": 146,
@@ -1476,8 +1444,7 @@ snapshot_kind: text
                             "name": "length",
                             "start": 8,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         },
                         {
                           "type": "Parameter",
@@ -1486,8 +1453,7 @@ snapshot_kind: text
                             "name": "center",
                             "start": 16,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         }
                       ],
                       "start": 7,
@@ -1832,41 +1798,39 @@ snapshot_kind: text
                       "body": {
                         "body": [
                           {
-                            "declarations": [
-                              {
+                            "declaration": {
+                              "end": 42,
+                              "id": {
+                                "end": 29,
+                                "name": "l",
+                                "start": 28,
+                                "type": "Identifier"
+                              },
+                              "init": {
                                 "end": 42,
-                                "id": {
-                                  "end": 29,
-                                  "name": "l",
-                                  "start": 28,
+                                "left": {
+                                  "end": 38,
+                                  "name": "length",
+                                  "start": 32,
+                                  "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "init": {
+                                "operator": "/",
+                                "right": {
                                   "end": 42,
-                                  "left": {
-                                    "end": 38,
-                                    "name": "length",
-                                    "start": 32,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "operator": "/",
-                                  "right": {
-                                    "end": 42,
-                                    "raw": "2",
-                                    "start": 41,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": 2.0
-                                  },
-                                  "start": 32,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
+                                  "raw": "2",
+                                  "start": 41,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 2.0
                                 },
-                                "start": 28,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "start": 32,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              "start": 28,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 42,
                             "kind": "const",
                             "start": 28,
@@ -1874,41 +1838,39 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
+                            "declaration": {
+                              "end": 58,
+                              "id": {
+                                "end": 46,
+                                "name": "x",
+                                "start": 45,
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "computed": false,
                                 "end": 58,
-                                "id": {
-                                  "end": 46,
-                                  "name": "x",
-                                  "start": 45,
+                                "object": {
+                                  "end": 55,
+                                  "name": "center",
+                                  "start": 49,
+                                  "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "init": {
-                                  "computed": false,
-                                  "end": 58,
-                                  "object": {
-                                    "end": 55,
-                                    "name": "center",
-                                    "start": 49,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "end": 57,
-                                    "raw": "0",
-                                    "start": 56,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": 0.0
-                                  },
-                                  "start": 49,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
+                                "property": {
+                                  "end": 57,
+                                  "raw": "0",
+                                  "start": 56,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 0.0
                                 },
-                                "start": 45,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "start": 49,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "start": 45,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 58,
                             "kind": "const",
                             "start": 45,
@@ -1916,41 +1878,39 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
+                            "declaration": {
+                              "end": 74,
+                              "id": {
+                                "end": 62,
+                                "name": "y",
+                                "start": 61,
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "computed": false,
                                 "end": 74,
-                                "id": {
-                                  "end": 62,
-                                  "name": "y",
-                                  "start": 61,
+                                "object": {
+                                  "end": 71,
+                                  "name": "center",
+                                  "start": 65,
+                                  "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "init": {
-                                  "computed": false,
-                                  "end": 74,
-                                  "object": {
-                                    "end": 71,
-                                    "name": "center",
-                                    "start": 65,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "end": 73,
-                                    "raw": "1",
-                                    "start": 72,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": 1.0
-                                  },
-                                  "start": 65,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
+                                "property": {
+                                  "end": 73,
+                                  "raw": "1",
+                                  "start": 72,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 1.0
                                 },
-                                "start": 61,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "start": 65,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "start": 61,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 74,
                             "kind": "const",
                             "start": 61,
@@ -1958,83 +1918,81 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
-                                "end": 98,
-                                "id": {
-                                  "end": 79,
-                                  "name": "p0",
-                                  "start": 77,
-                                  "type": "Identifier"
-                                },
-                                "init": {
-                                  "elements": [
-                                    {
-                                      "end": 89,
-                                      "left": {
-                                        "argument": {
-                                          "end": 85,
-                                          "name": "l",
-                                          "start": 84,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "end": 85,
-                                        "operator": "-",
-                                        "start": 83,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 89,
-                                        "name": "x",
-                                        "start": 88,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 83,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    {
-                                      "end": 97,
-                                      "left": {
-                                        "argument": {
-                                          "end": 93,
-                                          "name": "l",
-                                          "start": 92,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "end": 93,
-                                        "operator": "-",
-                                        "start": 91,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 97,
-                                        "name": "y",
-                                        "start": 96,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 91,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 98,
-                                  "start": 82,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
+                            "declaration": {
+                              "end": 98,
+                              "id": {
+                                "end": 79,
+                                "name": "p0",
                                 "start": 77,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "elements": [
+                                  {
+                                    "end": 89,
+                                    "left": {
+                                      "argument": {
+                                        "end": 85,
+                                        "name": "l",
+                                        "start": 84,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "end": 85,
+                                      "operator": "-",
+                                      "start": 83,
+                                      "type": "UnaryExpression",
+                                      "type": "UnaryExpression"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 89,
+                                      "name": "x",
+                                      "start": 88,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 83,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "end": 97,
+                                    "left": {
+                                      "argument": {
+                                        "end": 93,
+                                        "name": "l",
+                                        "start": 92,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "end": 93,
+                                      "operator": "-",
+                                      "start": 91,
+                                      "type": "UnaryExpression",
+                                      "type": "UnaryExpression"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 97,
+                                      "name": "y",
+                                      "start": 96,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 91,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                ],
+                                "end": 98,
+                                "start": 82,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              "start": 77,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 98,
                             "kind": "const",
                             "start": 77,
@@ -2042,76 +2000,74 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
-                                "end": 121,
-                                "id": {
-                                  "end": 103,
-                                  "name": "p1",
-                                  "start": 101,
-                                  "type": "Identifier"
-                                },
-                                "init": {
-                                  "elements": [
-                                    {
-                                      "end": 113,
-                                      "left": {
-                                        "argument": {
-                                          "end": 109,
-                                          "name": "l",
-                                          "start": 108,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "end": 109,
-                                        "operator": "-",
-                                        "start": 107,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 113,
-                                        "name": "x",
-                                        "start": 112,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 107,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    {
-                                      "end": 120,
-                                      "left": {
-                                        "end": 116,
-                                        "name": "l",
-                                        "start": 115,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 120,
-                                        "name": "y",
-                                        "start": 119,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 115,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 121,
-                                  "start": 106,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
+                            "declaration": {
+                              "end": 121,
+                              "id": {
+                                "end": 103,
+                                "name": "p1",
                                 "start": 101,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "elements": [
+                                  {
+                                    "end": 113,
+                                    "left": {
+                                      "argument": {
+                                        "end": 109,
+                                        "name": "l",
+                                        "start": 108,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "end": 109,
+                                      "operator": "-",
+                                      "start": 107,
+                                      "type": "UnaryExpression",
+                                      "type": "UnaryExpression"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 113,
+                                      "name": "x",
+                                      "start": 112,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 107,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "end": 120,
+                                    "left": {
+                                      "end": 116,
+                                      "name": "l",
+                                      "start": 115,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 120,
+                                      "name": "y",
+                                      "start": 119,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 115,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                ],
+                                "end": 121,
+                                "start": 106,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              "start": 101,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 121,
                             "kind": "const",
                             "start": 101,
@@ -2119,69 +2075,67 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
-                                "end": 143,
-                                "id": {
-                                  "end": 126,
-                                  "name": "p2",
-                                  "start": 124,
-                                  "type": "Identifier"
-                                },
-                                "init": {
-                                  "elements": [
-                                    {
-                                      "end": 135,
-                                      "left": {
-                                        "end": 131,
-                                        "name": "l",
-                                        "start": 130,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 135,
-                                        "name": "x",
-                                        "start": 134,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 130,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    {
-                                      "end": 142,
-                                      "left": {
-                                        "end": 138,
-                                        "name": "l",
-                                        "start": 137,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 142,
-                                        "name": "y",
-                                        "start": 141,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 137,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 143,
-                                  "start": 129,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
+                            "declaration": {
+                              "end": 143,
+                              "id": {
+                                "end": 126,
+                                "name": "p2",
                                 "start": 124,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "elements": [
+                                  {
+                                    "end": 135,
+                                    "left": {
+                                      "end": 131,
+                                      "name": "l",
+                                      "start": 130,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 135,
+                                      "name": "x",
+                                      "start": 134,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 130,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "end": 142,
+                                    "left": {
+                                      "end": 138,
+                                      "name": "l",
+                                      "start": 137,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 142,
+                                      "name": "y",
+                                      "start": 141,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 137,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                ],
+                                "end": 143,
+                                "start": 129,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              "start": 124,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 143,
                             "kind": "const",
                             "start": 124,
@@ -2189,76 +2143,74 @@ snapshot_kind: text
                             "type": "VariableDeclaration"
                           },
                           {
-                            "declarations": [
-                              {
-                                "end": 166,
-                                "id": {
-                                  "end": 148,
-                                  "name": "p3",
-                                  "start": 146,
-                                  "type": "Identifier"
-                                },
-                                "init": {
-                                  "elements": [
-                                    {
-                                      "end": 157,
-                                      "left": {
-                                        "end": 153,
-                                        "name": "l",
-                                        "start": 152,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 157,
-                                        "name": "x",
-                                        "start": 156,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 152,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    },
-                                    {
-                                      "end": 165,
-                                      "left": {
-                                        "argument": {
-                                          "end": 161,
-                                          "name": "l",
-                                          "start": 160,
-                                          "type": "Identifier",
-                                          "type": "Identifier"
-                                        },
-                                        "end": 161,
-                                        "operator": "-",
-                                        "start": 159,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 165,
-                                        "name": "y",
-                                        "start": 164,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "start": 159,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 166,
-                                  "start": 151,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                },
+                            "declaration": {
+                              "end": 166,
+                              "id": {
+                                "end": 148,
+                                "name": "p3",
                                 "start": 146,
-                                "type": "VariableDeclarator"
-                              }
-                            ],
+                                "type": "Identifier"
+                              },
+                              "init": {
+                                "elements": [
+                                  {
+                                    "end": 157,
+                                    "left": {
+                                      "end": 153,
+                                      "name": "l",
+                                      "start": 152,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 157,
+                                      "name": "x",
+                                      "start": 156,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 152,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "end": 165,
+                                    "left": {
+                                      "argument": {
+                                        "end": 161,
+                                        "name": "l",
+                                        "start": 160,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "end": 161,
+                                      "operator": "-",
+                                      "start": 159,
+                                      "type": "UnaryExpression",
+                                      "type": "UnaryExpression"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "end": 165,
+                                      "name": "y",
+                                      "start": 164,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "start": 159,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                ],
+                                "end": 166,
+                                "start": 151,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              },
+                              "start": 146,
+                              "type": "VariableDeclarator"
+                            },
                             "end": 166,
                             "kind": "const",
                             "start": 146,
@@ -2483,8 +2435,7 @@ snapshot_kind: text
                             "name": "length",
                             "start": 8,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         },
                         {
                           "type": "Parameter",
@@ -2493,8 +2444,7 @@ snapshot_kind: text
                             "name": "center",
                             "start": 16,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         }
                       ],
                       "start": 7,
@@ -2587,8 +2537,7 @@ snapshot_kind: text
                             "name": "x",
                             "start": 334,
                             "type": "Identifier"
-                          },
-                          "optional": false
+                          }
                         }
                       ],
                       "start": 333,
@@ -2624,41 +2573,39 @@ snapshot_kind: text
                                 "body": {
                                   "body": [
                                     {
-                                      "declarations": [
-                                        {
+                                      "declaration": {
+                                        "end": 42,
+                                        "id": {
+                                          "end": 29,
+                                          "name": "l",
+                                          "start": 28,
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
                                           "end": 42,
-                                          "id": {
-                                            "end": 29,
-                                            "name": "l",
-                                            "start": 28,
+                                          "left": {
+                                            "end": 38,
+                                            "name": "length",
+                                            "start": 32,
+                                            "type": "Identifier",
                                             "type": "Identifier"
                                           },
-                                          "init": {
+                                          "operator": "/",
+                                          "right": {
                                             "end": 42,
-                                            "left": {
-                                              "end": 38,
-                                              "name": "length",
-                                              "start": 32,
-                                              "type": "Identifier",
-                                              "type": "Identifier"
-                                            },
-                                            "operator": "/",
-                                            "right": {
-                                              "end": 42,
-                                              "raw": "2",
-                                              "start": 41,
-                                              "type": "Literal",
-                                              "type": "Literal",
-                                              "value": 2.0
-                                            },
-                                            "start": 32,
-                                            "type": "BinaryExpression",
-                                            "type": "BinaryExpression"
+                                            "raw": "2",
+                                            "start": 41,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": 2.0
                                           },
-                                          "start": 28,
-                                          "type": "VariableDeclarator"
-                                        }
-                                      ],
+                                          "start": 32,
+                                          "type": "BinaryExpression",
+                                          "type": "BinaryExpression"
+                                        },
+                                        "start": 28,
+                                        "type": "VariableDeclarator"
+                                      },
                                       "end": 42,
                                       "kind": "const",
                                       "start": 28,
@@ -2666,41 +2613,39 @@ snapshot_kind: text
                                       "type": "VariableDeclaration"
                                     },
                                     {
-                                      "declarations": [
-                                        {
+                                      "declaration": {
+                                        "end": 58,
+                                        "id": {
+                                          "end": 46,
+                                          "name": "x",
+                                          "start": 45,
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
+                                          "computed": false,
                                           "end": 58,
-                                          "id": {
-                                            "end": 46,
-                                            "name": "x",
-                                            "start": 45,
+                                          "object": {
+                                            "end": 55,
+                                            "name": "center",
+                                            "start": 49,
+                                            "type": "Identifier",
                                             "type": "Identifier"
                                           },
-                                          "init": {
-                                            "computed": false,
-                                            "end": 58,
-                                            "object": {
-                                              "end": 55,
-                                              "name": "center",
-                                              "start": 49,
-                                              "type": "Identifier",
-                                              "type": "Identifier"
-                                            },
-                                            "property": {
-                                              "end": 57,
-                                              "raw": "0",
-                                              "start": 56,
-                                              "type": "Literal",
-                                              "type": "Literal",
-                                              "value": 0.0
-                                            },
-                                            "start": 49,
-                                            "type": "MemberExpression",
-                                            "type": "MemberExpression"
+                                          "property": {
+                                            "end": 57,
+                                            "raw": "0",
+                                            "start": 56,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": 0.0
                                           },
-                                          "start": 45,
-                                          "type": "VariableDeclarator"
-                                        }
-                                      ],
+                                          "start": 49,
+                                          "type": "MemberExpression",
+                                          "type": "MemberExpression"
+                                        },
+                                        "start": 45,
+                                        "type": "VariableDeclarator"
+                                      },
                                       "end": 58,
                                       "kind": "const",
                                       "start": 45,
@@ -2708,41 +2653,39 @@ snapshot_kind: text
                                       "type": "VariableDeclaration"
                                     },
                                     {
-                                      "declarations": [
-                                        {
+                                      "declaration": {
+                                        "end": 74,
+                                        "id": {
+                                          "end": 62,
+                                          "name": "y",
+                                          "start": 61,
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
+                                          "computed": false,
                                           "end": 74,
-                                          "id": {
-                                            "end": 62,
-                                            "name": "y",
-                                            "start": 61,
+                                          "object": {
+                                            "end": 71,
+                                            "name": "center",
+                                            "start": 65,
+                                            "type": "Identifier",
                                             "type": "Identifier"
                                           },
-                                          "init": {
-                                            "computed": false,
-                                            "end": 74,
-                                            "object": {
-                                              "end": 71,
-                                              "name": "center",
-                                              "start": 65,
-                                              "type": "Identifier",
-                                              "type": "Identifier"
-                                            },
-                                            "property": {
-                                              "end": 73,
-                                              "raw": "1",
-                                              "start": 72,
-                                              "type": "Literal",
-                                              "type": "Literal",
-                                              "value": 1.0
-                                            },
-                                            "start": 65,
-                                            "type": "MemberExpression",
-                                            "type": "MemberExpression"
+                                          "property": {
+                                            "end": 73,
+                                            "raw": "1",
+                                            "start": 72,
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": 1.0
                                           },
-                                          "start": 61,
-                                          "type": "VariableDeclarator"
-                                        }
-                                      ],
+                                          "start": 65,
+                                          "type": "MemberExpression",
+                                          "type": "MemberExpression"
+                                        },
+                                        "start": 61,
+                                        "type": "VariableDeclarator"
+                                      },
                                       "end": 74,
                                       "kind": "const",
                                       "start": 61,
@@ -2750,83 +2693,81 @@ snapshot_kind: text
                                       "type": "VariableDeclaration"
                                     },
                                     {
-                                      "declarations": [
-                                        {
-                                          "end": 98,
-                                          "id": {
-                                            "end": 79,
-                                            "name": "p0",
-                                            "start": 77,
-                                            "type": "Identifier"
-                                          },
-                                          "init": {
-                                            "elements": [
-                                              {
-                                                "end": 89,
-                                                "left": {
-                                                  "argument": {
-                                                    "end": 85,
-                                                    "name": "l",
-                                                    "start": 84,
-                                                    "type": "Identifier",
-                                                    "type": "Identifier"
-                                                  },
-                                                  "end": 85,
-                                                  "operator": "-",
-                                                  "start": 83,
-                                                  "type": "UnaryExpression",
-                                                  "type": "UnaryExpression"
-                                                },
-                                                "operator": "+",
-                                                "right": {
-                                                  "end": 89,
-                                                  "name": "x",
-                                                  "start": 88,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "start": 83,
-                                                "type": "BinaryExpression",
-                                                "type": "BinaryExpression"
-                                              },
-                                              {
-                                                "end": 97,
-                                                "left": {
-                                                  "argument": {
-                                                    "end": 93,
-                                                    "name": "l",
-                                                    "start": 92,
-                                                    "type": "Identifier",
-                                                    "type": "Identifier"
-                                                  },
-                                                  "end": 93,
-                                                  "operator": "-",
-                                                  "start": 91,
-                                                  "type": "UnaryExpression",
-                                                  "type": "UnaryExpression"
-                                                },
-                                                "operator": "+",
-                                                "right": {
-                                                  "end": 97,
-                                                  "name": "y",
-                                                  "start": 96,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "start": 91,
-                                                "type": "BinaryExpression",
-                                                "type": "BinaryExpression"
-                                              }
-                                            ],
-                                            "end": 98,
-                                            "start": 82,
-                                            "type": "ArrayExpression",
-                                            "type": "ArrayExpression"
-                                          },
+                                      "declaration": {
+                                        "end": 98,
+                                        "id": {
+                                          "end": 79,
+                                          "name": "p0",
                                           "start": 77,
-                                          "type": "VariableDeclarator"
-                                        }
-                                      ],
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
+                                          "elements": [
+                                            {
+                                              "end": 89,
+                                              "left": {
+                                                "argument": {
+                                                  "end": 85,
+                                                  "name": "l",
+                                                  "start": 84,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                },
+                                                "end": 85,
+                                                "operator": "-",
+                                                "start": 83,
+                                                "type": "UnaryExpression",
+                                                "type": "UnaryExpression"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 89,
+                                                "name": "x",
+                                                "start": 88,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 83,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            {
+                                              "end": 97,
+                                              "left": {
+                                                "argument": {
+                                                  "end": 93,
+                                                  "name": "l",
+                                                  "start": 92,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                },
+                                                "end": 93,
+                                                "operator": "-",
+                                                "start": 91,
+                                                "type": "UnaryExpression",
+                                                "type": "UnaryExpression"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 97,
+                                                "name": "y",
+                                                "start": 96,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 91,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          ],
+                                          "end": 98,
+                                          "start": 82,
+                                          "type": "ArrayExpression",
+                                          "type": "ArrayExpression"
+                                        },
+                                        "start": 77,
+                                        "type": "VariableDeclarator"
+                                      },
                                       "end": 98,
                                       "kind": "const",
                                       "start": 77,
@@ -2834,76 +2775,74 @@ snapshot_kind: text
                                       "type": "VariableDeclaration"
                                     },
                                     {
-                                      "declarations": [
-                                        {
-                                          "end": 121,
-                                          "id": {
-                                            "end": 103,
-                                            "name": "p1",
-                                            "start": 101,
-                                            "type": "Identifier"
-                                          },
-                                          "init": {
-                                            "elements": [
-                                              {
-                                                "end": 113,
-                                                "left": {
-                                                  "argument": {
-                                                    "end": 109,
-                                                    "name": "l",
-                                                    "start": 108,
-                                                    "type": "Identifier",
-                                                    "type": "Identifier"
-                                                  },
-                                                  "end": 109,
-                                                  "operator": "-",
-                                                  "start": 107,
-                                                  "type": "UnaryExpression",
-                                                  "type": "UnaryExpression"
-                                                },
-                                                "operator": "+",
-                                                "right": {
-                                                  "end": 113,
-                                                  "name": "x",
-                                                  "start": 112,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "start": 107,
-                                                "type": "BinaryExpression",
-                                                "type": "BinaryExpression"
-                                              },
-                                              {
-                                                "end": 120,
-                                                "left": {
-                                                  "end": 116,
-                                                  "name": "l",
-                                                  "start": 115,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "operator": "+",
-                                                "right": {
-                                                  "end": 120,
-                                                  "name": "y",
-                                                  "start": 119,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "start": 115,
-                                                "type": "BinaryExpression",
-                                                "type": "BinaryExpression"
-                                              }
-                                            ],
-                                            "end": 121,
-                                            "start": 106,
-                                            "type": "ArrayExpression",
-                                            "type": "ArrayExpression"
-                                          },
+                                      "declaration": {
+                                        "end": 121,
+                                        "id": {
+                                          "end": 103,
+                                          "name": "p1",
                                           "start": 101,
-                                          "type": "VariableDeclarator"
-                                        }
-                                      ],
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
+                                          "elements": [
+                                            {
+                                              "end": 113,
+                                              "left": {
+                                                "argument": {
+                                                  "end": 109,
+                                                  "name": "l",
+                                                  "start": 108,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                },
+                                                "end": 109,
+                                                "operator": "-",
+                                                "start": 107,
+                                                "type": "UnaryExpression",
+                                                "type": "UnaryExpression"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 113,
+                                                "name": "x",
+                                                "start": 112,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 107,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            {
+                                              "end": 120,
+                                              "left": {
+                                                "end": 116,
+                                                "name": "l",
+                                                "start": 115,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 120,
+                                                "name": "y",
+                                                "start": 119,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 115,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          ],
+                                          "end": 121,
+                                          "start": 106,
+                                          "type": "ArrayExpression",
+                                          "type": "ArrayExpression"
+                                        },
+                                        "start": 101,
+                                        "type": "VariableDeclarator"
+                                      },
                                       "end": 121,
                                       "kind": "const",
                                       "start": 101,
@@ -2911,69 +2850,67 @@ snapshot_kind: text
                                       "type": "VariableDeclaration"
                                     },
                                     {
-                                      "declarations": [
-                                        {
-                                          "end": 143,
-                                          "id": {
-                                            "end": 126,
-                                            "name": "p2",
-                                            "start": 124,
-                                            "type": "Identifier"
-                                          },
-                                          "init": {
-                                            "elements": [
-                                              {
-                                                "end": 135,
-                                                "left": {
-                                                  "end": 131,
-                                                  "name": "l",
-                                                  "start": 130,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "operator": "+",
-                                                "right": {
-                                                  "end": 135,
-                                                  "name": "x",
-                                                  "start": 134,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "start": 130,
-                                                "type": "BinaryExpression",
-                                                "type": "BinaryExpression"
-                                              },
-                                              {
-                                                "end": 142,
-                                                "left": {
-                                                  "end": 138,
-                                                  "name": "l",
-                                                  "start": 137,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "operator": "+",
-                                                "right": {
-                                                  "end": 142,
-                                                  "name": "y",
-                                                  "start": 141,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "start": 137,
-                                                "type": "BinaryExpression",
-                                                "type": "BinaryExpression"
-                                              }
-                                            ],
-                                            "end": 143,
-                                            "start": 129,
-                                            "type": "ArrayExpression",
-                                            "type": "ArrayExpression"
-                                          },
+                                      "declaration": {
+                                        "end": 143,
+                                        "id": {
+                                          "end": 126,
+                                          "name": "p2",
                                           "start": 124,
-                                          "type": "VariableDeclarator"
-                                        }
-                                      ],
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
+                                          "elements": [
+                                            {
+                                              "end": 135,
+                                              "left": {
+                                                "end": 131,
+                                                "name": "l",
+                                                "start": 130,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 135,
+                                                "name": "x",
+                                                "start": 134,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 130,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            {
+                                              "end": 142,
+                                              "left": {
+                                                "end": 138,
+                                                "name": "l",
+                                                "start": 137,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 142,
+                                                "name": "y",
+                                                "start": 141,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 137,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          ],
+                                          "end": 143,
+                                          "start": 129,
+                                          "type": "ArrayExpression",
+                                          "type": "ArrayExpression"
+                                        },
+                                        "start": 124,
+                                        "type": "VariableDeclarator"
+                                      },
                                       "end": 143,
                                       "kind": "const",
                                       "start": 124,
@@ -2981,76 +2918,74 @@ snapshot_kind: text
                                       "type": "VariableDeclaration"
                                     },
                                     {
-                                      "declarations": [
-                                        {
-                                          "end": 166,
-                                          "id": {
-                                            "end": 148,
-                                            "name": "p3",
-                                            "start": 146,
-                                            "type": "Identifier"
-                                          },
-                                          "init": {
-                                            "elements": [
-                                              {
-                                                "end": 157,
-                                                "left": {
-                                                  "end": 153,
-                                                  "name": "l",
-                                                  "start": 152,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "operator": "+",
-                                                "right": {
-                                                  "end": 157,
-                                                  "name": "x",
-                                                  "start": 156,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "start": 152,
-                                                "type": "BinaryExpression",
-                                                "type": "BinaryExpression"
-                                              },
-                                              {
-                                                "end": 165,
-                                                "left": {
-                                                  "argument": {
-                                                    "end": 161,
-                                                    "name": "l",
-                                                    "start": 160,
-                                                    "type": "Identifier",
-                                                    "type": "Identifier"
-                                                  },
-                                                  "end": 161,
-                                                  "operator": "-",
-                                                  "start": 159,
-                                                  "type": "UnaryExpression",
-                                                  "type": "UnaryExpression"
-                                                },
-                                                "operator": "+",
-                                                "right": {
-                                                  "end": 165,
-                                                  "name": "y",
-                                                  "start": 164,
-                                                  "type": "Identifier",
-                                                  "type": "Identifier"
-                                                },
-                                                "start": 159,
-                                                "type": "BinaryExpression",
-                                                "type": "BinaryExpression"
-                                              }
-                                            ],
-                                            "end": 166,
-                                            "start": 151,
-                                            "type": "ArrayExpression",
-                                            "type": "ArrayExpression"
-                                          },
+                                      "declaration": {
+                                        "end": 166,
+                                        "id": {
+                                          "end": 148,
+                                          "name": "p3",
                                           "start": 146,
-                                          "type": "VariableDeclarator"
-                                        }
-                                      ],
+                                          "type": "Identifier"
+                                        },
+                                        "init": {
+                                          "elements": [
+                                            {
+                                              "end": 157,
+                                              "left": {
+                                                "end": 153,
+                                                "name": "l",
+                                                "start": 152,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 157,
+                                                "name": "x",
+                                                "start": 156,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 152,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            },
+                                            {
+                                              "end": 165,
+                                              "left": {
+                                                "argument": {
+                                                  "end": 161,
+                                                  "name": "l",
+                                                  "start": 160,
+                                                  "type": "Identifier",
+                                                  "type": "Identifier"
+                                                },
+                                                "end": 161,
+                                                "operator": "-",
+                                                "start": 159,
+                                                "type": "UnaryExpression",
+                                                "type": "UnaryExpression"
+                                              },
+                                              "operator": "+",
+                                              "right": {
+                                                "end": 165,
+                                                "name": "y",
+                                                "start": 164,
+                                                "type": "Identifier",
+                                                "type": "Identifier"
+                                              },
+                                              "start": 159,
+                                              "type": "BinaryExpression",
+                                              "type": "BinaryExpression"
+                                            }
+                                          ],
+                                          "end": 166,
+                                          "start": 151,
+                                          "type": "ArrayExpression",
+                                          "type": "ArrayExpression"
+                                        },
+                                        "start": 146,
+                                        "type": "VariableDeclarator"
+                                      },
                                       "end": 166,
                                       "kind": "const",
                                       "start": 146,
@@ -3275,8 +3210,7 @@ snapshot_kind: text
                                       "name": "length",
                                       "start": 8,
                                       "type": "Identifier"
-                                    },
-                                    "optional": false
+                                    }
                                   },
                                   {
                                     "type": "Parameter",
@@ -3285,8 +3219,7 @@ snapshot_kind: text
                                       "name": "center",
                                       "start": 16,
                                       "type": "Identifier"
-                                    },
-                                    "optional": false
+                                    }
                                   }
                                 ],
                                 "start": 7,

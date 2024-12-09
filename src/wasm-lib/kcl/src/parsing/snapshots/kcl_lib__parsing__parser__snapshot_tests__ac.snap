@@ -1,55 +1,51 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3965
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
     {
-      "declarations": [
-        {
-          "end": 23,
-          "id": {
-            "end": 13,
-            "name": "myArray",
-            "start": 6,
-            "type": "Identifier"
+      "declaration": {
+        "end": 17,
+        "id": {
+          "end": 7,
+          "name": "myArray",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "init": {
+          "end": 17,
+          "endElement": {
+            "end": 16,
+            "raw": "10",
+            "start": 14,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 10.0
           },
-          "init": {
-            "end": 23,
-            "endElement": {
-              "end": 22,
-              "raw": "10",
-              "start": 20,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 10.0
-            },
-            "endInclusive": true,
-            "start": 16,
-            "startElement": {
-              "end": 18,
-              "raw": "0",
-              "start": 17,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 0.0
-            },
-            "type": "ArrayRangeExpression",
-            "type": "ArrayRangeExpression"
+          "endInclusive": true,
+          "start": 10,
+          "startElement": {
+            "end": 12,
+            "raw": "0",
+            "start": 11,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 0.0
           },
-          "start": 6,
-          "type": "VariableDeclarator"
-        }
-      ],
-      "end": 23,
+          "type": "ArrayRangeExpression",
+          "type": "ArrayRangeExpression"
+        },
+        "start": 0,
+        "type": "VariableDeclarator"
+      },
+      "end": 17,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 23,
+  "end": 17,
   "start": 0
 }
