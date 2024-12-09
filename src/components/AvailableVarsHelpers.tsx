@@ -1,5 +1,11 @@
 import { useEffect, useState, useRef } from 'react'
-import { parse, BinaryPart, Expr, ProgramMemory } from '../lang/wasm'
+import {
+  parse,
+  BinaryPart,
+  Expr,
+  ProgramMemory,
+  resultIsOk,
+} from '../lang/wasm'
 import {
   createIdentifier,
   createLiteral,
@@ -96,7 +102,8 @@ export function useCalc({
 } {
   const { programMemory } = useKclContext()
   const { context } = useModelingContext()
-  const selectionRange = context.selectionRanges.codeBasedSelections[0].range
+  const selectionRange =
+    context.selectionRanges?.graphSelections[0]?.codeRef?.range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -140,8 +147,9 @@ export function useCalc({
   useEffect(() => {
     try {
       const code = `const __result__ = ${value}`
-      const ast = parse(code)
-      if (trap(ast)) return
+      const pResult = parse(code)
+      if (trap(pResult) || !resultIsOk(pResult)) return
+      const ast = pResult.program
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
         const error = _programMem.set(key, {
@@ -155,17 +163,17 @@ export function useCalc({
       executeAst({
         ast,
         engineCommandManager,
-        useFakeExecutor: true,
+        // We make sure to send an empty program memory to denote we mean mock mode.
         programMemoryOverride: kclManager.programMemory.clone(),
       }).then(({ execState }) => {
         const resultDeclaration = ast.body.find(
           (a) =>
             a.type === 'VariableDeclaration' &&
-            a.declarations?.[0]?.id?.name === '__result__'
+            a.declaration.id?.name === '__result__'
         )
         const init =
           resultDeclaration?.type === 'VariableDeclaration' &&
-          resultDeclaration?.declarations?.[0]?.init
+          resultDeclaration?.declaration.init
         const result = execState.memory?.get('__result__')?.value
         setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
         init && setValueNode(init)

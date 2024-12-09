@@ -1,130 +1,123 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing pipe_substitution_inside_function_called_from_pipeline.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
-        "declarations": [
-          {
-            "end": 95,
-            "id": {
-              "end": 65,
-              "name": "f",
-              "start": 64,
-              "type": "Identifier"
-            },
-            "init": {
-              "body": {
-                "body": [
-                  {
-                    "argument": {
-                      "end": 93,
-                      "start": 92,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    },
-                    "end": 93,
-                    "start": 85,
-                    "type": "ReturnStatement",
-                    "type": "ReturnStatement"
-                  }
-                ],
-                "end": 95,
-                "start": 81
-              },
-              "end": 95,
-              "params": [
+        "declaration": {
+          "end": 89,
+          "id": {
+            "end": 65,
+            "name": "f",
+            "start": 64,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
                 {
-                  "type": "Parameter",
-                  "identifier": {
-                    "end": 76,
-                    "name": "ignored",
-                    "start": 69,
-                    "type": "Identifier"
+                  "argument": {
+                    "end": 87,
+                    "start": 86,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
                   },
-                  "optional": false
+                  "end": 87,
+                  "start": 79,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
                 }
               ],
-              "start": 68,
-              "type": "FunctionExpression",
-              "type": "FunctionExpression"
+              "end": 89,
+              "start": 75
             },
-            "start": 64,
-            "type": "VariableDeclarator"
-          }
-        ],
-        "end": 95,
+            "end": 89,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 73,
+                  "name": "ignored",
+                  "start": 66,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 65,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 64,
+          "type": "VariableDeclarator"
+        },
+        "end": 89,
         "kind": "fn",
         "start": 61,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 117,
-            "id": {
-              "end": 103,
-              "name": "answer",
-              "start": 97,
-              "type": "Identifier"
-            },
-            "init": {
-              "body": [
-                {
-                  "end": 107,
-                  "start": 106,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
+        "declaration": {
+          "end": 111,
+          "id": {
+            "end": 97,
+            "name": "answer",
+            "start": 91,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "end": 101,
+                "start": 100,
+                "type": "PipeSubstitution",
+                "type": "PipeSubstitution"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 110,
+                    "start": 109,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 108,
+                  "name": "f",
+                  "start": 107,
+                  "type": "Identifier"
                 },
-                {
-                  "arguments": [
-                    {
-                      "end": 116,
-                      "start": 115,
-                      "type": "PipeSubstitution",
-                      "type": "PipeSubstitution"
-                    }
-                  ],
-                  "callee": {
-                    "end": 114,
-                    "name": "f",
-                    "start": 113,
-                    "type": "Identifier"
-                  },
-                  "end": 117,
-                  "optional": false,
-                  "start": 113,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
-                }
-              ],
-              "end": 117,
-              "start": 106,
-              "type": "PipeExpression",
-              "type": "PipeExpression"
-            },
-            "start": 97,
-            "type": "VariableDeclarator"
-          }
-        ],
-        "end": 117,
+                "end": 111,
+                "start": 107,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 111,
+            "start": 100,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 91,
+          "type": "VariableDeclarator"
+        },
+        "end": 111,
         "kind": "const",
-        "start": 97,
+        "start": 91,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 118,
+    "end": 112,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 97,
-            "start": 95,
+            "end": 91,
+            "start": 89,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

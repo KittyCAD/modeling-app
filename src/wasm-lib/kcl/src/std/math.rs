@@ -3,17 +3,17 @@
 use anyhow::Result;
 use derive_docs::stdlib;
 
-use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue},
+    execution::{ExecState, KclValue},
     std::Args,
 };
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
 pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (n, d) = FromArgs::from_args(&args, 0)?;
+    let n = args.get_unlabeled_kw_arg("number to divide")?;
+    let d = args.get_kw_arg("divisor")?;
     let result = inner_rem(n, d)?;
 
     Ok(args.make_user_val_from_i64(result))
@@ -23,13 +23,15 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// If `num` is negative, the result will be too.
 ///
 /// ```no_run
-/// assertEqual(rem(int( 7), int(4)),  3, 0.01, "remainder is 3")
-/// assertEqual(rem(int(-7), int(4)), -3, 0.01, "remainder is 3")
-/// assertEqual(rem(int( 7), int(-4)), 3, 0.01, "remainder is 3")
+/// assertEqual(rem(7, divisor: 4),  3, 0.01, "remainder is 3")
+/// assertEqual(rem(-7, divisor: 4), -3, 0.01, "remainder is 3")
+/// assertEqual(rem(7, divisor: -4), 3, 0.01, "remainder is 3")
 /// ```
 #[stdlib {
     name = "rem",
     tags = ["math"],
+    keywords = true,
+    unlabeled_first = true,
 }]
 fn inner_rem(num: i64, divisor: i64) -> Result<i64, KclError> {
     Ok(num % divisor)
@@ -49,8 +51,8 @@ pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 30,
-///     length: 3 / cos(toRadians(30)),
+///     angle = 30,
+///     length = 3 / cos(toRadians(30)),
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -79,8 +81,8 @@ pub async fn sin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 50,
-///     length: 15 / sin(toDegrees(135)),
+///     angle = 50,
+///     length = 15 / sin(toDegrees(135)),
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -109,8 +111,8 @@ pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 50,
-///     length: 50 * tan(1/2),
+///     angle = 50,
+///     length = 50 * tan(1/2),
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -138,7 +140,7 @@ pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// const circumference = 70
 ///
 /// const exampleSketch = startSketchOn("XZ")
-///  |> circle({ center: [0, 0], radius: circumference/ (2 * pi()) }, %)
+///  |> circle({ center = [0, 0], radius = circumference/ (2 * pi()) }, %)
 ///
 /// const example = extrude(5, exampleSketch)
 /// ```
@@ -164,8 +166,8 @@ pub async fn sqrt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 50,
-///     length: sqrt(2500),
+///     angle = 50,
+///     length = sqrt(2500),
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -197,13 +199,13 @@ pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([8, 0], %)
 ///   |> angledLine({
-///     angle: abs(myAngle),
-///     length: 5,
+///     angle = abs(myAngle),
+///     length = 5,
 ///   }, %)
 ///   |> line([-5, 0], %)
 ///   |> angledLine({
-///     angle: myAngle,
-///     length: 5,
+///     angle = myAngle,
+///     length = 5,
 ///   }, %)
 ///   |> close(%)
 ///
@@ -215,6 +217,34 @@ pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 }]
 fn inner_abs(num: f64) -> Result<f64, KclError> {
     Ok(num.abs())
+}
+
+/// Round a number to the nearest integer.
+pub async fn round(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let num = args.get_number()?;
+    let result = inner_round(num)?;
+
+    Ok(args.make_user_val_from_f64(result))
+}
+
+/// Round a number to the nearest integer.
+///
+/// ```no_run
+/// const sketch001 = startSketchOn('XZ')
+///    |> startProfileAt([0, 0], %)
+///    |> lineTo([12, 10], %)
+///    |> line([round(7.02986), 0], %)
+///    |> yLineTo(0, %)
+///    |> close(%)
+///
+///  const extrude001 = extrude(5, sketch001)
+/// ```
+#[stdlib {
+    name = "round",
+    tags = ["math"],
+}]
+fn inner_round(num: f64) -> Result<f64, KclError> {
+    Ok(num.round())
 }
 
 /// Compute the largest integer less than or equal to a number.
@@ -287,8 +317,8 @@ pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 70,
-///     length: min(15, 31, 4, 13, 22)
+///     angle = 70,
+///     length = min(15, 31, 4, 13, 22)
 ///   }, %)
 ///   |> line([20, 0], %)
 ///   |> close(%)
@@ -324,8 +354,8 @@ pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 70,
-///     length: max(15, 31, 4, 13, 22)
+///     angle = 70,
+///     length = max(15, 31, 4, 13, 22)
 ///   }, %)
 ///   |> line([20, 0], %)
 ///   |> close(%)
@@ -375,8 +405,8 @@ pub async fn pow(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 50,
-///     length: pow(5, 2),
+///     angle = 50,
+///     length = pow(5, 2),
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -405,8 +435,8 @@ pub async fn acos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: toDegrees(acos(0.5)),
-///     length: 10,
+///     angle = toDegrees(acos(0.5)),
+///     length = 10,
 ///   }, %)
 ///   |> line([5, 0], %)
 ///   |> lineTo([12, 0], %)
@@ -436,8 +466,8 @@ pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: toDegrees(asin(0.5)),
-///     length: 20,
+///     angle = toDegrees(asin(0.5)),
+///     length = 20,
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -466,8 +496,8 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// const sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: toDegrees(atan(1.25)),
-///     length: 20,
+///     angle = toDegrees(atan(1.25)),
+///     length = 20,
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -628,8 +658,8 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 30,
-///     length: 2 * e() ^ 2,
+///     angle = 30,
+///     length = 2 * e() ^ 2,
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -657,8 +687,8 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 50,
-///     length: 10 * tau(),
+///     angle = 50,
+///     length = 10 * tau(),
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -687,8 +717,8 @@ pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 50,
-///     length: 70 * cos(toRadians(45)),
+///     angle = 50,
+///     length = 70 * cos(toRadians(45)),
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
@@ -717,8 +747,8 @@ pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 50,
-///     length: 70 * cos(toDegrees(pi()/4)),
+///     angle = 50,
+///     length = 70 * cos(toDegrees(pi()/4)),
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)

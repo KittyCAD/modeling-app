@@ -1,20 +1,17 @@
 use anyhow::Result;
 use kcl_lib::{
-    ast::{
-        modify::modify_ast_for_sketch,
-        types::{ModuleId, Node, Program},
-    },
-    executor::{ExecutorContext, IdGenerator, KclValue, PlaneType, SourceRange},
+    exec::{KclValue, PlaneType},
+    modify_ast_for_sketch, ExecState, ExecutorContext, ModuleId, Program, SourceRange,
 };
 use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
-async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Node<Program>, ModuleId, uuid::Uuid)> {
-    let module_id = ModuleId::default();
-    let program = kcl_lib::parser::parse(code, module_id)?;
-    let ctx = kcl_lib::executor::ExecutorContext::new_with_default_client(Default::default()).await?;
-    let exec_state = ctx.run(&program, None, IdGenerator::default(), None).await?;
+async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, ModuleId, uuid::Uuid)> {
+    let program = Program::parse_no_errs(code)?;
+    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
+    let mut exec_state = ExecState::default();
+    ctx.run(program.clone().into(), &mut exec_state).await?;
 
     // We need to get the sketch ID.
     // Get the sketch ID from memory.
@@ -56,7 +53,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Node<Program>
         )
         .await?;
 
-    Ok((ctx, program, module_id, sketch_id))
+    Ok((ctx, program, ModuleId::default(), sketch_id))
 }
 
 #[tokio::test(flavor = "multi_thread")]

@@ -4,29 +4,76 @@ use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
+use super::shapes::PolygonType;
 use crate::{
-    ast::types::TagNode,
     errors::{KclError, KclErrorDetails},
-    executor::{
-        ExecState, ExecutorContext, ExtrudeSurface, KclValue, Metadata, Sketch, SketchSet, SketchSurface, Solid,
-        SolidSet, SourceRange, TagIdentifier,
+    execution::{
+        ExecState, ExecutorContext, ExtrudeSurface, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
+        SketchSurface, Solid, SolidSet, TagIdentifier,
     },
-    std::{shapes::SketchOrSurface, sketch::FaceTag, types::Uint, FnAsArg},
+    parsing::ast::types::TagNode,
+    source_range::SourceRange,
+    std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
+    ModuleId,
 };
 
-use super::shapes::PolygonType;
+#[derive(Debug, Clone)]
+pub struct Arg {
+    /// The evaluated argument.
+    pub value: KclValue,
+    /// The source range of the unevaluated argument.
+    pub source_range: SourceRange,
+}
+
+impl Arg {
+    pub fn new(value: KclValue, source_range: SourceRange) -> Self {
+        Self { value, source_range }
+    }
+
+    pub fn synthetic(value: KclValue) -> Self {
+        Self {
+            value,
+            source_range: SourceRange::synthetic(),
+        }
+    }
+
+    pub fn source_ranges(&self) -> Vec<SourceRange> {
+        vec![self.source_range]
+    }
+}
+
+#[derive(Debug, Clone, Default)]
+pub struct KwArgs {
+    /// Unlabeled keyword args. Currently only the first arg can be unlabeled.
+    pub unlabeled: Option<Arg>,
+    /// Labeled args.
+    pub labeled: HashMap<String, Arg>,
+}
 
 #[derive(Debug, Clone)]
 pub struct Args {
-    pub args: Vec<KclValue>,
+    /// Positional args.
+    pub args: Vec<Arg>,
+    pub kw_args: KwArgs,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
 }
 
 impl Args {
-    pub fn new(args: Vec<KclValue>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+    pub fn new(args: Vec<Arg>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
         Self {
             args,
+            kw_args: Default::default(),
+            source_range,
+            ctx,
+        }
+    }
+
+    /// Collect the given keyword arguments.
+    pub fn new_kw(kw_args: KwArgs, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+        Self {
+            args: Default::default(),
+            kw_args,
             source_range,
             ctx,
         }
@@ -38,14 +85,62 @@ impl Args {
 
         Ok(Self {
             args: Vec::new(),
+            kw_args: Default::default(),
             source_range: SourceRange::default(),
             ctx: ExecutorContext {
                 engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
                 fs: Arc::new(crate::fs::FileManager::new()),
                 stdlib: Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
-                context_type: crate::executor::ContextType::Mock,
+                context_type: crate::execution::ContextType::Mock,
             },
+        })
+    }
+
+    /// Get a keyword argument. If not set, returns None.
+    pub(crate) fn get_kw_arg_opt<'a, T>(&'a self, label: &str) -> Option<T>
+    where
+        T: FromKclValue<'a>,
+    {
+        self.kw_args
+            .labeled
+            .get(label)
+            .and_then(|arg| T::from_kcl_val(&arg.value))
+    }
+
+    /// Get a keyword argument. If not set, returns Err.
+    pub(crate) fn get_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
+    where
+        T: FromKclValue<'a>,
+    {
+        self.get_kw_arg_opt(label).ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: format!("This function requires a keyword argument '{label}'"),
+            })
+        })
+    }
+
+    /// Get the unlabeled keyword argument. If not set, returns Err.
+    pub(crate) fn get_unlabeled_kw_arg<'a, T>(&'a self, label: &str) -> Result<T, KclError>
+    where
+        T: FromKclValue<'a>,
+    {
+        let Some(ref arg) = self.kw_args.unlabeled else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
+            }));
+        };
+        T::from_kcl_val(&arg.value).ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                source_ranges: arg.source_ranges(),
+                message: format!(
+                    "Expected a {} but found {}",
+                    type_name::<T>(),
+                    arg.value.human_friendly_type()
+                ),
+            })
         })
     }
 
@@ -78,7 +173,7 @@ impl Args {
         &'a self,
         exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
-    ) -> Result<&'e crate::executor::TagEngineInfo, KclError> {
+    ) -> Result<&'e crate::execution::TagEngineInfo, KclError> {
         if let KclValue::TagIdentifier(t) = exec_state.memory.get(&tag.value, self.source_range)? {
             Ok(t.info.as_ref().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
@@ -98,7 +193,7 @@ impl Args {
         &'a self,
         exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
-    ) -> Result<&'a crate::executor::TagEngineInfo, KclError>
+    ) -> Result<&'a crate::execution::TagEngineInfo, KclError>
     where
         'e: 'a,
     {
@@ -113,7 +208,7 @@ impl Args {
         &'a self,
         exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
-    ) -> Result<&'a crate::executor::TagEngineInfo, KclError>
+    ) -> Result<&'a crate::execution::TagEngineInfo, KclError>
     where
         'e: 'a,
     {
@@ -244,10 +339,10 @@ impl Args {
             .args
             .iter()
             .map(|arg| {
-                let Some(num) = f64::from_kcl_val(arg) else {
+                let Some(num) = f64::from_kcl_val(&arg.value) else {
                     return Err(KclError::Semantic(KclErrorDetails {
-                        source_ranges: arg.metadata().iter().map(|x| x.source_range).collect(),
-                        message: format!("Expected a number but found {}", arg.human_friendly_type()),
+                        source_ranges: arg.source_ranges(),
+                        message: format!("Expected a number but found {}", arg.value.human_friendly_type()),
                     }));
                 };
                 Ok(num)
@@ -509,10 +604,10 @@ impl<'a> FromArgs<'a> for Vec<KclValue> {
                 source_ranges: vec![args.source_range],
             }));
         };
-        let KclValue::Array { value: array, meta: _ } = arg else {
-            let message = format!("Expected an array but found {}", arg.human_friendly_type());
+        let KclValue::Array { value: array, meta: _ } = &arg.value else {
+            let message = format!("Expected an array but found {}", arg.value.human_friendly_type());
             return Err(KclError::Type(KclErrorDetails {
-                source_ranges: arg.metadata().into_iter().map(|m| m.source_range).collect(),
+                source_ranges: arg.source_ranges(),
                 message,
             }));
         };
@@ -531,14 +626,14 @@ where
                 source_ranges: vec![args.source_range],
             }));
         };
-        let Some(val) = T::from_kcl_val(arg) else {
+        let Some(val) = T::from_kcl_val(&arg.value) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
                     type_name::<T>(),
-                    arg.human_friendly_type()
+                    arg.value.human_friendly_type()
                 ),
-                source_ranges: vec![args.source_range],
+                source_ranges: arg.source_ranges(),
             }));
         };
         Ok(val)
@@ -551,17 +646,17 @@ where
 {
     fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
         let Some(arg) = args.args.get(i) else { return Ok(None) };
-        if crate::ast::types::KclNone::from_kcl_val(arg).is_some() {
+        if crate::parsing::ast::types::KclNone::from_kcl_val(&arg.value).is_some() {
             return Ok(None);
         }
-        let Some(val) = T::from_kcl_val(arg) else {
+        let Some(val) = T::from_kcl_val(&arg.value) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type Option<{}> but found {}",
                     type_name::<T>(),
-                    arg.human_friendly_type()
+                    arg.value.human_friendly_type()
                 ),
-                source_ranges: vec![args.source_range],
+                source_ranges: arg.source_ranges(),
             }));
         };
         Ok(Some(val))
@@ -692,7 +787,7 @@ macro_rules! let_field_of {
 impl<'a> FromKclValue<'a> for crate::std::import::ImportFormat {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
-        let_field_of!(obj, typ "type");
+        let_field_of!(obj, typ "format");
         match typ {
             "fbx" => Some(Self::Fbx {}),
             "gltf" => Some(Self::Gltf {}),
@@ -794,7 +889,7 @@ impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::Plane {
+impl<'a> FromKclValue<'a> for crate::execution::Plane {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         if let Some(plane) = arg.as_plane() {
             return Some(plane.clone());
@@ -820,7 +915,7 @@ impl<'a> FromKclValue<'a> for crate::executor::Plane {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::PlaneType {
+impl<'a> FromKclValue<'a> for crate::execution::PlaneType {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let plane_type = match arg.as_str()? {
             "XY" | "xy" => Self::XY,
@@ -896,7 +991,6 @@ impl<'a> FromKclValue<'a> for super::patterns::CircularPattern3dData {
         let_field_of!(obj, instances);
         let_field_of!(obj, arc_degrees "arcDegrees");
         let_field_of!(obj, rotate_duplicates "rotateDuplicates");
-        let instances = Uint::new(instances);
         let_field_of!(obj, axis);
         let_field_of!(obj, center);
         Some(Self {
@@ -915,7 +1009,6 @@ impl<'a> FromKclValue<'a> for super::patterns::CircularPattern2dData {
         let_field_of!(obj, instances);
         let_field_of!(obj, arc_degrees "arcDegrees");
         let_field_of!(obj, rotate_duplicates "rotateDuplicates");
-        let instances = Uint::new(instances);
         let_field_of!(obj, center);
         Some(Self {
             instances,
@@ -931,7 +1024,6 @@ impl<'a> FromKclValue<'a> for super::patterns::LinearPattern3dData {
         let obj = arg.as_object()?;
         let_field_of!(obj, distance);
         let_field_of!(obj, instances);
-        let instances = Uint::new(instances);
         let_field_of!(obj, axis);
         Some(Self {
             instances,
@@ -946,7 +1038,6 @@ impl<'a> FromKclValue<'a> for super::patterns::LinearPattern2dData {
         let obj = arg.as_object()?;
         let_field_of!(obj, distance);
         let_field_of!(obj, instances);
-        let instances = Uint::new(instances);
         let_field_of!(obj, axis);
         Some(Self {
             instances,
@@ -1108,7 +1199,7 @@ impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::Point3d {
+impl<'a> FromKclValue<'a> for crate::execution::Point3d {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 1: object with x/y/z fields
         if let Some(obj) = arg.as_object() {
@@ -1148,7 +1239,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         }
         // Case 2: custom plane
         let obj = arg.as_object()?;
-        let_field_of!(obj, plane, &std::collections::HashMap<String, KclValue>);
+        let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
         let x_axis = plane
             .get("xAxis")
@@ -1174,7 +1265,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::ExtrudePlane {
+impl<'a> FromKclValue<'a> for crate::execution::ExtrudePlane {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, face_id "faceId");
@@ -1184,7 +1275,7 @@ impl<'a> FromKclValue<'a> for crate::executor::ExtrudePlane {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::ExtrudeArc {
+impl<'a> FromKclValue<'a> for crate::execution::ExtrudeArc {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, face_id "faceId");
@@ -1194,12 +1285,11 @@ impl<'a> FromKclValue<'a> for crate::executor::ExtrudeArc {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::GeoMeta {
+impl<'a> FromKclValue<'a> for crate::execution::GeoMeta {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, id);
         let_field_of!(obj, source_range "sourceRange");
-        let source_range = SourceRange(source_range);
         Some(Self {
             id,
             metadata: Metadata { source_range },
@@ -1207,7 +1297,7 @@ impl<'a> FromKclValue<'a> for crate::executor::GeoMeta {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::ChamferSurface {
+impl<'a> FromKclValue<'a> for crate::execution::ChamferSurface {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, face_id "faceId");
@@ -1217,7 +1307,7 @@ impl<'a> FromKclValue<'a> for crate::executor::ChamferSurface {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::FilletSurface {
+impl<'a> FromKclValue<'a> for crate::execution::FilletSurface {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, face_id "faceId");
@@ -1229,10 +1319,10 @@ impl<'a> FromKclValue<'a> for crate::executor::FilletSurface {
 
 impl<'a> FromKclValue<'a> for ExtrudeSurface {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let case1 = crate::executor::ExtrudePlane::from_kcl_val;
-        let case2 = crate::executor::ExtrudeArc::from_kcl_val;
-        let case3 = crate::executor::ChamferSurface::from_kcl_val;
-        let case4 = crate::executor::FilletSurface::from_kcl_val;
+        let case1 = crate::execution::ExtrudePlane::from_kcl_val;
+        let case2 = crate::execution::ExtrudeArc::from_kcl_val;
+        let case3 = crate::execution::ChamferSurface::from_kcl_val;
+        let case4 = crate::execution::FilletSurface::from_kcl_val;
         case1(arg)
             .map(Self::ExtrudePlane)
             .or_else(|| case2(arg).map(Self::ExtrudeArc))
@@ -1241,7 +1331,7 @@ impl<'a> FromKclValue<'a> for ExtrudeSurface {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::EdgeCut {
+impl<'a> FromKclValue<'a> for crate::execution::EdgeCut {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, typ "type");
@@ -1286,25 +1376,38 @@ macro_rules! impl_from_kcl_for_vec {
 }
 
 impl_from_kcl_for_vec!(FaceTag);
-impl_from_kcl_for_vec!(crate::executor::EdgeCut);
-impl_from_kcl_for_vec!(crate::executor::Metadata);
+impl_from_kcl_for_vec!(crate::execution::EdgeCut);
+impl_from_kcl_for_vec!(crate::execution::Metadata);
 impl_from_kcl_for_vec!(super::fillet::EdgeReference);
 impl_from_kcl_for_vec!(ExtrudeSurface);
 impl_from_kcl_for_vec!(Sketch);
 
-impl<'a> FromKclValue<'a> for crate::executor::SourceRange {
+impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        FromKclValue::from_kcl_val(arg).map(crate::executor::SourceRange)
+        let KclValue::Array { value, meta: _ } = arg else {
+            return None;
+        };
+        if value.len() != 3 {
+            return None;
+        }
+        let v0 = value.first()?;
+        let v1 = value.get(1)?;
+        let v2 = value.get(2)?;
+        Some(SourceRange::new(
+            v0.as_usize()?,
+            v1.as_usize()?,
+            ModuleId::from_usize(v2.as_usize()?),
+        ))
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::Metadata {
+impl<'a> FromKclValue<'a> for crate::execution::Metadata {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         FromKclValue::from_kcl_val(arg).map(|sr| Self { source_range: sr })
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::executor::Solid {
+impl<'a> FromKclValue<'a> for crate::execution::Solid {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.as_solid().cloned()
     }
@@ -1313,9 +1416,9 @@ impl<'a> FromKclValue<'a> for crate::executor::Solid {
 impl<'a> FromKclValue<'a> for super::sketch::SketchData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Order is critical since PlaneData is a subset of Plane.
-        let case1 = crate::executor::Plane::from_kcl_val;
+        let case1 = crate::execution::Plane::from_kcl_val;
         let case2 = super::sketch::PlaneData::from_kcl_val;
-        let case3 = crate::executor::Solid::from_kcl_val;
+        let case3 = crate::execution::Solid::from_kcl_val;
         case1(arg)
             .map(Box::new)
             .map(Self::Plane)
@@ -1338,7 +1441,7 @@ impl<'a> FromKclValue<'a> for super::revolve::AxisAndOrigin {
         }
         // Case 2: custom planes.
         let obj = arg.as_object()?;
-        let_field_of!(obj, custom, &HashMap<String, KclValue>);
+        let_field_of!(obj, custom, &KclObjectFields);
         let_field_of!(custom, origin);
         let_field_of!(custom, axis);
         Some(Self::Custom { axis, origin })
@@ -1389,15 +1492,16 @@ impl<'a> FromKclValue<'a> for super::sketch::AngledLineData {
 
 impl<'a> FromKclValue<'a> for i64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Int { value, meta: _ } = arg else {
-            return None;
-        };
-        Some(*value)
+        match arg {
+            KclValue::Number { value, meta: _ } => crate::try_f64_to_i64(*value),
+            KclValue::Int { value, meta: _ } => Some(*value),
+            _ => None,
+        }
     }
 }
 
 impl<'a> FromKclValue<'a> for &'a str {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<&'a str> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::String { value, meta: _ } = arg else {
             return None;
         };
@@ -1405,8 +1509,8 @@ impl<'a> FromKclValue<'a> for &'a str {
     }
 }
 
-impl<'a> FromKclValue<'a> for &'a HashMap<String, KclValue> {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<&'a HashMap<String, KclValue>> {
+impl<'a> FromKclValue<'a> for &'a KclObjectFields {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Object { value, meta: _ } = arg else {
             return None;
         };
@@ -1425,10 +1529,11 @@ impl<'a> FromKclValue<'a> for uuid::Uuid {
 
 impl<'a> FromKclValue<'a> for u32 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Int { value, meta: _ } = arg else {
-            return None;
-        };
-        Some(*value as u32)
+        match arg {
+            KclValue::Number { value, meta: _ } => crate::try_f64_to_u32(*value),
+            KclValue::Int { value, meta: _ } => Some(*value as u32),
+            _ => None,
+        }
     }
 }
 
@@ -1440,10 +1545,11 @@ impl<'a> FromKclValue<'a> for NonZeroU32 {
 
 impl<'a> FromKclValue<'a> for u64 {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Int { value, meta: _ } = arg else {
-            return None;
-        };
-        Some(*value as u64)
+        match arg {
+            KclValue::Number { value, meta: _ } => crate::try_f64_to_u64(*value),
+            KclValue::Int { value, meta: _ } => Some(*value as u64),
+            _ => None,
+        }
     }
 }
 impl<'a> FromKclValue<'a> for f64 {
@@ -1471,7 +1577,7 @@ impl<'a> FromKclValue<'a> for String {
         Some(value.to_owned())
     }
 }
-impl<'a> FromKclValue<'a> for crate::ast::types::KclNone {
+impl<'a> FromKclValue<'a> for crate::parsing::ast::types::KclNone {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::KclNone { value, meta: _ } = arg else {
             return None;

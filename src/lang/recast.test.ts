@@ -1,4 +1,4 @@
-import { parse, Program, recast, initPromise } from './wasm'
+import { assertParse, Program, recast, initPromise } from './wasm'
 import fs from 'node:fs'
 import { err } from 'lib/trap'
 
@@ -63,7 +63,7 @@ log(5, myVar)
   })
   it('function declaration with call', () => {
     const code = [
-      'fn funcN = (a, b) => {',
+      'fn funcN(a, b) {',
       '  return a + b',
       '}',
       'theVar = 60',
@@ -101,7 +101,7 @@ log(5, myVar)
   })
   it('recast BinaryExpression piped into CallExpression', () => {
     const code = [
-      'fn myFn = (a) => {',
+      'fn myFn(a) {',
       '  return a + 1',
       '}',
       'myVar = 5 + 1',
@@ -173,10 +173,10 @@ log(5, myVar)
   it('recast long object execution', () => {
     const code = `three = 3
 yo = {
-  aStr: 'str',
-  anum: 2,
-  identifier: three,
-  binExp: 4 + 5
+  aStr = 'str',
+  anum = 2,
+  identifier = three,
+  binExp = 4 + 5
 }
 `
     const { ast } = code2ast(code)
@@ -185,7 +185,7 @@ yo = {
     expect(recasted).toBe(code)
   })
   it('recast short object execution', () => {
-    const code = `yo = { key: 'val' }
+    const code = `yo = { key = 'val' }
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -193,7 +193,7 @@ yo = {
     expect(recasted).toBe(code)
   })
   it('recast object execution with member expression', () => {
-    const code = `yo = { a: { b: { c: '123' } } }
+    const code = `yo = { a = { b = { c = '123' } } }
 key = 'c'
 myVar = yo.a['b'][key]
 key2 = 'b'
@@ -208,7 +208,7 @@ myVar2 = yo['a'][key2].c
 
 describe('testing recasting with comments and whitespace', () => {
   it('code with comments', () => {
-    const code = `yo = { a: { b: { c: '123' } } }
+    const code = `yo = { a = { b = { c = '123' } } }
 // this is a comment
 key = 'c'
 `
@@ -234,7 +234,7 @@ yo = 'bing'
   })
   it('comments at the start and end', () => {
     const code = `// this is a comment
-yo = { a: { b: { c: '123' } } }
+yo = { a = { b = { c = '123' } } }
 key = 'c'
 
 // this is also a comment
@@ -245,9 +245,9 @@ key = 'c'
     expect(recasted).toBe(code)
   })
   it('comments in a fn block', () => {
-    const code = `fn myFn = () => {
+    const code = `fn myFn() {
   // this is a comment
-  yo = { a: { b: { c: '123' } } }
+  yo = { a = { b = { c = '123' } } }
 
   /* block
   comment */
@@ -357,9 +357,9 @@ describe('it recasts wrapped object expressions in pipe bodies with correct inde
   |> line([0.62, 4.15], %, $seg01)
   |> line([2.77, -1.24], %)
   |> angledLineThatIntersects({
-       angle: 201,
-       offset: -1.35,
-       intersectTag: $seg01
+       angle = 201,
+       offset = -1.35,
+       intersectTag = $seg01
      }, %)
   |> line([-0.42, -1.72], %)
 `
@@ -370,9 +370,9 @@ describe('it recasts wrapped object expressions in pipe bodies with correct inde
   })
   it('recasts wrapped object expressions NOT in pipe body correctly', () => {
     const code = `angledLineThatIntersects({
-  angle: 201,
-  offset: -1.35,
-  intersectTag: $seg01
+  angle = 201,
+  offset = -1.35,
+  intersectTag = $seg01
 }, %)
 `
     const { ast } = code2ast(code)
@@ -394,8 +394,6 @@ describe('it recasts binary expression using brackets where needed', () => {
 // helpers
 
 function code2ast(code: string): { ast: Program } {
-  const ast = parse(code)
-  // eslint-ignore-next-line
-  if (err(ast)) throw ast
+  const ast = assertParse(code)
   return { ast }
 }

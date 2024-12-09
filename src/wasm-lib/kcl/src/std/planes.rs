@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, KclValue, Plane, PlaneType},
+    execution::{ExecState, KclValue, Plane, PlaneType},
     std::{sketch::PlaneData, Args},
 };
 
@@ -74,7 +74,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('XY', 150))
-///     |> circle({ center: [0, 100], radius: 50 }, %)
+///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -90,7 +90,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('XZ', 150))
-///     |> circle({ center: [0, 100], radius: 50 }, %)
+///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -106,7 +106,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('YZ', 150))
-///     |> circle({ center: [0, 100], radius: 50 }, %)
+///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -122,7 +122,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> close(%)
 ///
 /// const circleSketch = startSketchOn(offsetPlane('-XZ', -150))
-///     |> circle({ center: [0, 100], radius: 50 }, %)
+///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
 /// ```
@@ -130,7 +130,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // A circle on the XY plane
 /// startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
-///   |> circle({radius: 10, center: [0, 0]}, %)
+///   |> circle({ radius = 10, center = [0, 0] }, %)
 ///   
 /// // Triangle on the plane 4 units above
 /// startSketchOn(offsetPlane("XY", 4))

@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 
 import {
-  parse,
+  assertParse,
   ProgramMemory,
   Sketch,
   initPromise,
@@ -230,7 +230,7 @@ const newVar = myVar + 1`
     const mem = await exe(code)
     // TODO path to node is probably wrong here, zero indexes are not correct
     expect(mem.get('three')).toEqual({
-      type: 'Int',
+      type: 'Number',
       value: 3,
       __meta: [
         {
@@ -241,9 +241,9 @@ const newVar = myVar + 1`
     expect(mem.get('yo')).toEqual({
       type: 'Array',
       value: [
-        { type: 'Int', value: 1, __meta: [{ sourceRange: [28, 29, 0] }] },
+        { type: 'Number', value: 1, __meta: [{ sourceRange: [28, 29, 0] }] },
         { type: 'String', value: '2', __meta: [{ sourceRange: [31, 34, 0] }] },
-        { type: 'Int', value: 3, __meta: [{ sourceRange: [14, 15, 0] }] },
+        { type: 'Number', value: 3, __meta: [{ sourceRange: [14, 15, 0] }] },
         {
           type: 'Number',
           value: 9,
@@ -274,9 +274,13 @@ const newVar = myVar + 1`
           value: 'str',
           __meta: [{ sourceRange: [34, 39, 0] }],
         },
-        anum: { type: 'Int', value: 2, __meta: [{ sourceRange: [47, 48, 0] }] },
+        anum: {
+          type: 'Number',
+          value: 2,
+          __meta: [{ sourceRange: [47, 48, 0] }],
+        },
         identifier: {
-          type: 'Int',
+          type: 'Number',
           value: 3,
           __meta: [{ sourceRange: [14, 15, 0] }],
         },
@@ -394,7 +398,7 @@ describe('testing math operators', () => {
             sourceRange: [15, 16, 0],
           },
         ],
-        type: 'Int',
+        type: 'Number',
         value: 1,
       },
       {
@@ -468,7 +472,7 @@ describe('Testing Errors', () => {
 const theExtrude = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([-2.4, 5], %)
-  |> line([-0.76], myVarZ, %)
+  |> line(myVarZ, %)
   |> line([5,5], %)
   |> close(%)
   |> extrude(4, %)`
@@ -476,7 +480,7 @@ const theExtrude = startSketchOn('XY')
       new KCLError(
         'undefined_value',
         'memory item key `myVarZ` is not defined',
-        [[129, 135, 0]]
+        [129, 135, true]
       )
     )
   })
@@ -488,7 +492,7 @@ async function exe(
   code: string,
   programMemory: ProgramMemory = ProgramMemory.empty()
 ) {
-  const ast = parse(code)
+  const ast = assertParse(code)
 
   const execState = await enginelessExecutor(ast, programMemory)
   return execState.memory

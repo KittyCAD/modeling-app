@@ -33,8 +33,8 @@ sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([1, 2], %, $seg01)
   |> angledLine({
-       angle: angleToMatchLengthY(seg01, 15, %),
-       length: 5
+       angle = angleToMatchLengthY(seg01, 15, %),
+       length = 5
      }, %)
   |> yLineTo(0, %)
   |> close(%)

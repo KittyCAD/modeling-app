@@ -29,11 +29,11 @@ patternLinear2d(data: LinearPattern2dData, sketch_set: SketchSet) -> [Sketch]
 
 ```js
 exampleSketch = startSketchOn('XZ')
-  |> circle({ center: [0, 0], radius: 1 }, %)
+  |> circle({ center = [0, 0], radius = 1 }, %)
   |> patternLinear2d({
-       axis: [1, 0],
-       instances: 7,
-       distance: 4
+       axis = [1, 0],
+       instances = 7,
+       distance = 4
      }, %)
 
 example = extrude(1, exampleSketch)

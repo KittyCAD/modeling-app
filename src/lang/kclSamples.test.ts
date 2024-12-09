@@ -1,6 +1,5 @@
-import { parse, initPromise, programMemoryInit } from './wasm'
+import { assertParse, initPromise, programMemoryInit } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
-import { assert } from 'vitest'
 // These unit tests makes web requests to a public github repository.
 
 interface KclSampleFile {
@@ -58,8 +57,7 @@ describe('Test KCL Samples from public Github repository', () => {
     files.forEach((file: KclSampleFile) => {
       it(`should parse ${file.filename} without errors`, async () => {
         const code = await getKclSampleCodeFromGithub(file.filename)
-        const parsed = parse(code)
-        assert(!(parsed instanceof Error))
+        assertParse(code)
       }, 1000)
     })
   })
@@ -71,9 +69,8 @@ describe('Test KCL Samples from public Github repository', () => {
         for (let i = 0; i < files.length; i++) {
           const file: KclSampleFile = files[i]
           const code = await getKclSampleCodeFromGithub(file.filename)
-          const parsed = parse(code)
-          assert(!(parsed instanceof Error))
-          await enginelessExecutor(parsed, programMemoryInit())
+          const ast = assertParse(code)
+          await enginelessExecutor(ast, programMemoryInit())
         }
       },
       files.length * 1000

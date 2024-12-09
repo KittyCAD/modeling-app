@@ -1,4 +1,4 @@
-fn cube = (length, center) => {
+fn cube(length, center) {
   l = length / 2
   x = center[0]
   y = center[1]
@@ -8,18 +8,18 @@ fn cube = (length, center) => {
   p3 = [l + x, -l + y]
 
   return startSketchAt(p0)
-  |> lineTo(p1, %)
-  |> lineTo(p2, %)
-  |> lineTo(p3, %)
-  |> lineTo(p0, %)
-  |> close(%)
-  |> extrude(length, %)
+    |> lineTo(p1, %)
+    |> lineTo(p2, %)
+    |> lineTo(p3, %)
+    |> lineTo(p0, %)
+    |> close(%)
+    |> extrude(length, %)
 }
 
-fn double = (x) => {
+fn double(x) {
   return x * 2
 }
-fn width = () => {
+fn width() {
   return 200
 }
 

@@ -1,15 +1,18 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { editorManager, kclManager } from 'lib/singletons'
+import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { useEffect, useRef, useState } from 'react'
 import { trap } from 'lib/trap'
+import { codeToIdSelections } from 'lib/selections'
+import { codeRefFromRange } from 'lang/std/artifactGraph'
+import { defaultSourceRange } from 'lang/wasm'
 
 export function AstExplorer() {
   const { context } = useModelingContext()
   const pathToNode = getNodePathFromSourceRange(
     // TODO maybe need to have callback to make sure it stays in sync
     kclManager.ast,
-    context.selectionRanges.codeBasedSelections?.[0]?.range
+    context.selectionRanges.graphSelections?.[0]?.codeRef?.range
   )
   const [filterKeys, setFilterKeys] = useState<string[]>(['start', 'end'])
 
@@ -45,7 +48,7 @@ export function AstExplorer() {
       <div
         className="h-full relative"
         onMouseLeave={(e) => {
-          editorManager.setHighlightRange([[0, 0]])
+          editorManager.setHighlightRange([defaultSourceRange()])
         }}
       >
         <pre className="text-xs">
@@ -114,21 +117,33 @@ function DisplayObj({
         hasCursor ? 'bg-violet-100/80 dark:bg-violet-100/25' : ''
       }`}
       onMouseEnter={(e) => {
-        editorManager.setHighlightRange([[obj?.start || 0, obj.end]])
+        editorManager.setHighlightRange([[obj?.start || 0, obj.end, true]])
         e.stopPropagation()
       }}
       onMouseMove={(e) => {
         e.stopPropagation()
-        editorManager.setHighlightRange([[obj?.start || 0, obj.end]])
+        editorManager.setHighlightRange([[obj?.start || 0, obj.end, true]])
       }}
       onClick={(e) => {
+        const range: [number, number, boolean] = [
+          obj?.start || 0,
+          obj.end || 0,
+          true,
+        ]
+        const idInfo = codeToIdSelections([
+          { codeRef: codeRefFromRange(range, kclManager.ast) },
+        ])[0]
+        const artifact = engineCommandManager.artifactGraph.get(
+          idInfo?.id || ''
+        )
+        if (!artifact) return
         send({
           type: 'Set selection',
           data: {
             selectionType: 'singleCodeCursor',
             selection: {
-              type: 'default',
-              range: [obj?.start || 0, obj.end || 0],
+              artifact: artifact,
+              codeRef: codeRefFromRange(range, kclManager.ast),
             },
           },
         })

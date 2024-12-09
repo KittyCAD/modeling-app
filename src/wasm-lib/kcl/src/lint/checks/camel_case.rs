@@ -2,10 +2,10 @@ use anyhow::Result;
 use convert_case::Casing;
 
 use crate::{
-    ast::types::{ObjectProperty, VariableDeclarator},
-    executor::SourceRange,
     lint::rule::{def_finding, Discovered, Finding},
+    parsing::ast::types::{ObjectProperty, VariableDeclarator},
     walk::Node,
+    SourceRange,
 };
 
 def_finding!(
@@ -60,11 +60,7 @@ pub fn lint_variables(decl: Node) -> Result<Vec<Discovered>> {
         return Ok(vec![]);
     };
 
-    Ok(decl
-        .declarations
-        .iter()
-        .flat_map(|v| lint_lower_camel_case_var(v).unwrap_or_default())
-        .collect())
+    lint_lower_camel_case_var(&decl.declaration)
 }
 
 pub fn lint_object_properties(decl: Node) -> Result<Vec<Discovered>> {

@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 105
 description: Program memory after executing tangential_arc.kcl
 snapshot_kind: text
 ---
@@ -48,7 +49,7 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 61,
-                104,
+                106,
                 0
               ],
               "tag": null,
@@ -58,8 +59,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                110,
-                127,
+                112,
+                129,
                 0
               ],
               "tag": null,
@@ -95,7 +96,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     61,
-                    104,
+                    106,
                     0
                   ]
                 },
@@ -119,8 +120,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    110,
-                    127,
+                    112,
+                    129,
                     0
                   ]
                 },

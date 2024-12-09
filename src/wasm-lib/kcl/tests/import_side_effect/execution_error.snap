@@ -1,6 +1,13 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Error from executing import_side_effect.kcl
-snapshot_kind: text
 ---
-engine: KclErrorDetails { source_ranges: [SourceRange([0, 40, 0])], message: "Failed to read file `export_side_effect.kcl`: No such file or directory (os error 2)" }
+KCL Semantic error
+
+  × semantic: Error loading imported file. Open it to view more details.
+  │ export_side_effect.kcl: Cannot send modeling commands while importing.
+  │ Wrap your code in a function if you want to import the file.
+   ╭────
+ 1 │ import foo from "export_side_effect.kcl"
+   · ────────────────────────────────────────
+   ╰────

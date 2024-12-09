@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 92
 description: Program memory after executing index_of_array.kcl
 snapshot_kind: text
 ---
@@ -31,8 +32,8 @@ snapshot_kind: text
           "type": "Array",
           "value": [
             {
-              "type": "Int",
-              "value": 90,
+              "type": "Number",
+              "value": 90.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -44,8 +45,8 @@ snapshot_kind: text
               ]
             },
             {
-              "type": "Int",
-              "value": 91,
+              "type": "Number",
+              "value": 91.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -57,8 +58,8 @@ snapshot_kind: text
               ]
             },
             {
-              "type": "Int",
-              "value": 92,
+              "type": "Number",
+              "value": 92.0,
               "__meta": [
                 {
                   "sourceRange": [
@@ -81,8 +82,8 @@ snapshot_kind: text
           ]
         },
         "i": {
-          "type": "Int",
-          "value": 1,
+          "type": "Number",
+          "value": 1.0,
           "__meta": [
             {
               "sourceRange": [
@@ -94,8 +95,8 @@ snapshot_kind: text
           ]
         },
         "result0": {
-          "type": "Int",
-          "value": 91,
+          "type": "Number",
+          "value": 91.0,
           "__meta": [
             {
               "sourceRange": [
@@ -107,8 +108,8 @@ snapshot_kind: text
           ]
         },
         "result1": {
-          "type": "Int",
-          "value": 91,
+          "type": "Number",
+          "value": 91.0,
           "__meta": [
             {
               "sourceRange": [

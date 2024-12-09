@@ -13,7 +13,9 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet},
+    execution::{
+        ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet,
+    },
     std::Args,
 };
 
@@ -35,16 +37,16 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
-///     angleStart: 120,
-///     angleEnd: 0,
-///     radius: 5,
+///     angleStart = 120,
+///     angleEnd = 0,
+///     radius = 5,
 ///   }, %)
 ///   |> line([5, 0], %)
 ///   |> line([0, 10], %)
 ///   |> bezierCurve({
-///     control1: [-10, 0],
-///     control2: [2, 10],
-///     to: [-5, 10],
+///     control1 = [-10, 0],
+///     control2 = [2, 10],
+///     to = [-5, 10],
 ///   }, %)
 ///   |> line([-5, -2], %)
 ///   |> close(%)
@@ -55,16 +57,16 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
 ///   |> arc({
-///     angleStart: 120,
-///     angleEnd: -60,
-///     radius: 5,
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
 ///   }, %)
 ///   |> line([10, 0], %)
 ///   |> line([5, 0], %)
 ///   |> bezierCurve({
-///     control1: [-3, 0],
-///     control2: [2, 10],
-///     to: [-5, 10],
+///     control1 = [-3, 0],
+///     control2 = [2, 10],
+///     to = [-5, 10],
 ///   }, %)
 ///   |> line([-4, 10], %)
 ///   |> line([-5, -2], %)
@@ -228,7 +230,7 @@ pub(crate) async fn do_post_extrude(
                     | Path::TangentialArc { .. }
                     | Path::TangentialArcTo { .. }
                     | Path::Circle { .. } => {
-                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
+                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
                             geo_meta: GeoMeta {
@@ -239,7 +241,7 @@ pub(crate) async fn do_post_extrude(
                         Some(extrude_surface)
                     }
                     Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
-                        let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                        let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
                             geo_meta: GeoMeta {
@@ -253,7 +255,7 @@ pub(crate) async fn do_post_extrude(
             } else if args.ctx.is_mock() {
                 // Only pre-populate the extrude surface if we are in mock mode.
 
-                let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                     // pushing this values with a fake face_id to make extrudes mock-execute safe
                     face_id: exec_state.id_generator.next_uuid(),
                     tag: path.get_base().tag.clone(),
@@ -308,6 +310,10 @@ fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<Extrus
         match face_info.cap {
             ExtrusionFaceCapType::Bottom => faces.start_cap_id = face_info.face_id,
             ExtrusionFaceCapType::Top => faces.end_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Both => {
+                faces.end_cap_id = face_info.face_id;
+                faces.start_cap_id = face_info.face_id;
+            }
             ExtrusionFaceCapType::None => {
                 if let Some(curve_id) = face_info.curve_id {
                     faces.sides.insert(curve_id, face_info.face_id);

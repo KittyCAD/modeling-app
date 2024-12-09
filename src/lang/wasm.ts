@@ -3,7 +3,6 @@ import init, {
   recast_wasm,
   execute_wasm,
   kcl_lint,
-  lexer_wasm,
   modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
@@ -17,6 +16,7 @@ import init, {
   parse_project_settings,
   default_project_settings,
   base64_decode,
+  clear_scene_and_bust_cache,
 } from '../wasm-lib/pkg/wasm_lib'
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -24,7 +24,6 @@ import { EngineCommandManager } from './std/engineConnection'
 import { Discovered } from '../wasm-lib/kcl/bindings/Discovered'
 import { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 import type { Program } from '../wasm-lib/kcl/bindings/Program'
-import type { Token } from '../wasm-lib/kcl/bindings/Token'
 import { Coords2d } from './std/sketch'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { CoreDumpInfo } from 'wasm-lib/kcl/bindings/CoreDumpInfo'
@@ -32,17 +31,18 @@ import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { TEST } from 'env'
-import { err } from 'lib/trap'
+import { err, Reason } from 'lib/trap'
 import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
 import { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
 import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
+import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -86,12 +86,21 @@ export type SyntaxType =
   | 'NonCodeNode'
   | 'UnaryExpression'
 
-export type { SourceRange } from '../wasm-lib/kcl/bindings/SourceRange'
 export type { Path } from '../wasm-lib/kcl/bindings/Path'
 export type { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
 export type { Solid } from '../wasm-lib/kcl/bindings/Solid'
 export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
+
+export type SourceRange = [number, number, boolean]
+
+export function sourceRangeFromRust(s: RustSourceRange): SourceRange {
+  return [s[0], s[1], s[2] === 0]
+}
+
+export function defaultSourceRange(): SourceRange {
+  return [0, 0, true]
+}
 
 export const wasmUrl = () => {
   // For when we're in electron (file based) or web server (network based)
@@ -122,24 +131,79 @@ const initialise = async () => {
 
 export const initPromise = initialise()
 
-export const rangeTypeFix = (ranges: number[][]): [number, number, number][] =>
-  ranges.map(([start, end, moduleId]) => [start, end, moduleId])
+const splitErrors = (
+  input: CompilationError[]
+): { errors: CompilationError[]; warnings: CompilationError[] } => {
+  let errors = []
+  let warnings = []
+  for (const i of input) {
+    if (i.severity === 'Warning') {
+      warnings.push(i)
+    } else {
+      errors.push(i)
+    }
+  }
 
-export const parse = (code: string | Error): Node<Program> | Error => {
+  return { errors, warnings }
+}
+
+export class ParseResult {
+  program: Node<Program> | null
+  errors: CompilationError[]
+  warnings: CompilationError[]
+
+  constructor(
+    program: Node<Program> | null,
+    errors: CompilationError[],
+    warnings: CompilationError[]
+  ) {
+    this.program = program
+    this.errors = errors
+    this.warnings = warnings
+  }
+}
+
+class SuccessParseResult extends ParseResult {
+  program: Node<Program>
+
+  constructor(
+    program: Node<Program>,
+    errors: CompilationError[],
+    warnings: CompilationError[]
+  ) {
+    super(program, errors, warnings)
+    this.program = program
+  }
+}
+
+export function resultIsOk(result: ParseResult): result is SuccessParseResult {
+  return !!result.program && result.errors.length === 0
+}
+
+export const parse = (code: string | Error): ParseResult | Error => {
   if (err(code)) return code
 
   try {
-    const program: Node<Program> = parse_wasm(code)
-    return program
+    const parsed: [Node<Program>, CompilationError[]] = parse_wasm(code)
+    let errs = splitErrors(parsed[1])
+    return new ParseResult(parsed[0], errs.errors, errs.warnings)
   } catch (e: any) {
     // throw e
     const parsed: RustKclError = JSON.parse(e.toString())
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      rangeTypeFix(parsed.sourceRanges)
+      sourceRangeFromRust(parsed.sourceRanges[0])
     )
   }
+}
+
+// Parse and throw an exception if there are any errors (probably not suitable for use outside of testing).
+export const assertParse = (code: string): Node<Program> => {
+  const result = parse(code)
+  // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+  if (err(result) || !resultIsOk(result)) throw result
+  return result.program
 }
 
 export type PathToNode = [string | number, string][]
@@ -152,7 +216,6 @@ export const isPathToNodeNumber = (
 
 export interface ExecState {
   memory: ProgramMemory
-  idGenerator: IdGenerator
 }
 
 /**
@@ -162,21 +225,12 @@ export interface ExecState {
 export function emptyExecState(): ExecState {
   return {
     memory: ProgramMemory.empty(),
-    idGenerator: defaultIdGenerator(),
   }
 }
 
 function execStateFromRaw(raw: RawExecState): ExecState {
   return {
     memory: ProgramMemory.fromRaw(raw.memory),
-    idGenerator: raw.idGenerator,
-  }
-}
-
-export function defaultIdGenerator(): IdGenerator {
-  return {
-    nextId: 0,
-    ids: [],
   }
 }
 
@@ -188,6 +242,19 @@ const ROOT_ENVIRONMENT_REF: EnvironmentRef = 0
 
 function emptyEnvironment(): Environment {
   return { bindings: {}, parent: null }
+}
+
+function emptyRootEnvironment(): Environment {
+  return {
+    // This is dumb this is copied from rust.
+    bindings: {
+      ZERO: { type: 'Number', value: 0.0, __meta: [] },
+      QUARTER_TURN: { type: 'Number', value: 90.0, __meta: [] },
+      HALF_TURN: { type: 'Number', value: 180.0, __meta: [] },
+      THREE_QUARTER_TURN: { type: 'Number', value: 270.0, __meta: [] },
+    },
+    parent: null,
+  }
 }
 
 /**
@@ -212,7 +279,7 @@ export class ProgramMemory {
   }
 
   constructor(
-    environments: Environment[] = [emptyEnvironment()],
+    environments: Environment[] = [emptyRootEnvironment()],
     currentEnv: EnvironmentRef = ROOT_ENVIRONMENT_REF,
     returnVal: KclValue | null = null
   ) {
@@ -365,10 +432,10 @@ export class ProgramMemory {
 }
 
 // TODO: In the future, make the parameter be a KclValue.
-export function sketchFromKclValue(
+export function sketchFromKclValueOptional(
   obj: any,
   varName: string | null
-): Sketch | Error {
+): Sketch | Reason {
   if (obj?.value?.type === 'Sketch') return obj.value
   if (obj?.value?.type === 'Solid') return obj.value.sketch
   if (obj?.type === 'Solid') return obj.sketch
@@ -377,47 +444,53 @@ export function sketchFromKclValue(
   }
   const actualType = obj?.value?.type ?? obj?.type
   if (actualType) {
-    console.log(obj)
-    return new Error(
+    return new Reason(
       `Expected ${varName} to be a sketch or solid, but it was ${actualType} instead.`
     )
   } else {
-    return new Error(`Expected ${varName} to be a sketch, but it wasn't.`)
+    return new Reason(`Expected ${varName} to be a sketch, but it wasn't.`)
   }
+}
+
+// TODO: In the future, make the parameter be a KclValue.
+export function sketchFromKclValue(
+  obj: any,
+  varName: string | null
+): Sketch | Error {
+  const result = sketchFromKclValueOptional(obj, varName)
+  if (result instanceof Reason) {
+    return result.toError()
+  }
+  return result
 }
 
 export const executor = async (
   node: Node<Program>,
-  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
-  idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
-  isMock: boolean = false
+  programMemoryOverride: ProgramMemory | Error | null = null
 ): Promise<ExecState> => {
-  if (err(programMemory)) return Promise.reject(programMemory)
+  if (programMemoryOverride !== null && err(programMemoryOverride))
+    return Promise.reject(programMemoryOverride)
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   engineCommandManager.startNewSession()
   const _programMemory = await _executor(
     node,
-    programMemory,
-    idGenerator,
     engineCommandManager,
-    isMock
+    programMemoryOverride
   )
   await engineCommandManager.waitForAllCommands()
 
-  engineCommandManager.endSession()
   return _programMemory
 }
 
 export const _executor = async (
   node: Node<Program>,
-  programMemory: ProgramMemory | Error = ProgramMemory.empty(),
-  idGenerator: IdGenerator = defaultIdGenerator(),
   engineCommandManager: EngineCommandManager,
-  isMock: boolean
+  programMemoryOverride: ProgramMemory | Error | null = null
 ): Promise<ExecState> => {
-  if (err(programMemory)) return Promise.reject(programMemory)
+  if (programMemoryOverride !== null && err(programMemoryOverride))
+    return Promise.reject(programMemoryOverride)
 
   try {
     let baseUnit = 'mm'
@@ -430,13 +503,10 @@ export const _executor = async (
     }
     const execState: RawExecState = await execute_wasm(
       JSON.stringify(node),
-      JSON.stringify(programMemory.toRaw()),
-      JSON.stringify(idGenerator),
+      JSON.stringify(programMemoryOverride?.toRaw() || null),
       baseUnit,
       engineCommandManager,
-      fileSystemManager,
-      undefined,
-      isMock
+      fileSystemManager
     )
     return execStateFromRaw(execState)
   } catch (e: any) {
@@ -445,7 +515,7 @@ export const _executor = async (
     const kclError = new KCLError(
       parsed.kind,
       parsed.msg,
-      rangeTypeFix(parsed.sourceRanges)
+      sourceRangeFromRust(parsed.sourceRanges[0])
     )
 
     return Promise.reject(kclError)
@@ -496,10 +566,6 @@ export const modifyGrid = async (
   }
 }
 
-export function lexer(str: string): Token[] | Error {
-  return lexer_wasm(str)
-}
-
 export const modifyAstForSketch = async (
   engineCommandManager: EngineCommandManager,
   ast: Node<Program>,
@@ -522,7 +588,7 @@ export const modifyAstForSketch = async (
     const kclError = new KCLError(
       parsed.kind,
       parsed.msg,
-      rangeTypeFix(parsed.sourceRanges)
+      sourceRangeFromRust(parsed.sourceRanges[0])
     )
 
     console.log(kclError)
@@ -590,7 +656,7 @@ export function programMemoryInit(): ProgramMemory | Error {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      rangeTypeFix(parsed.sourceRanges)
+      sourceRangeFromRust(parsed.sourceRanges[0])
     )
   }
 }
@@ -631,6 +697,21 @@ export function tomlStringify(toml: any): string | Error {
 
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
+}
+
+export async function clearSceneAndBustCache(
+  engineCommandManager: EngineCommandManager
+): Promise<null | Error> {
+  try {
+    await clear_scene_and_bust_cache(engineCommandManager)
+  } catch (e: any) {
+    console.error('clear_scene_and_bust_cache: error', e)
+    return Promise.reject(
+      new Error(`Error on clear_scene_and_bust_cache: ${e}`)
+    )
+  }
+
+  return null
 }
 
 export function parseAppSettings(

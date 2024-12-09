@@ -3,10 +3,9 @@ mod test_examples_my_func {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_mock_example_my_func0() {
         let program =
-            crate::parser::top_level_parse("This is another code block.\nyes sirrr.\nmyFunc")
+            crate::Program::parse_no_errs("This is another code block.\nyes sirrr.\nmyFunc")
                 .unwrap();
-        let id_generator = crate::executor::IdGenerator::default();
-        let ctx = crate::executor::ExecutorContext {
+        let ctx = crate::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
                     .await
@@ -15,18 +14,23 @@ mod test_examples_my_func {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ContextType::Mock,
+            context_type: crate::execution::ContextType::Mock,
         };
-        ctx.run(&program, None, id_generator, None).await.unwrap();
+        ctx.run(program.into(), &mut crate::ExecState::default())
+            .await
+            .unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn kcl_test_example_my_func0() {
         let code = "This is another code block.\nyes sirrr.\nmyFunc";
-        let result =
-            crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
-                .await
-                .unwrap();
+        let result = crate::test_server::execute_and_snapshot(
+            code,
+            crate::settings::types::UnitLength::Mm,
+            None,
+        )
+        .await
+        .unwrap();
         twenty_twenty::assert_image(
             &format!("tests/outputs/{}.png", "serial_test_example_my_func0"),
             &result,
@@ -37,9 +41,8 @@ mod test_examples_my_func {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_mock_example_my_func1() {
         let program =
-            crate::parser::top_level_parse("This is code.\nIt does other shit.\nmyFunc").unwrap();
-        let id_generator = crate::executor::IdGenerator::default();
-        let ctx = crate::executor::ExecutorContext {
+            crate::Program::parse_no_errs("This is code.\nIt does other shit.\nmyFunc").unwrap();
+        let ctx = crate::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
                     .await
@@ -48,18 +51,23 @@ mod test_examples_my_func {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ContextType::Mock,
+            context_type: crate::execution::ContextType::Mock,
         };
-        ctx.run(&program, None, id_generator, None).await.unwrap();
+        ctx.run(program.into(), &mut crate::ExecState::default())
+            .await
+            .unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
     async fn kcl_test_example_my_func1() {
         let code = "This is code.\nIt does other shit.\nmyFunc";
-        let result =
-            crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
-                .await
-                .unwrap();
+        let result = crate::test_server::execute_and_snapshot(
+            code,
+            crate::settings::types::UnitLength::Mm,
+            None,
+        )
+        .await
+        .unwrap();
         twenty_twenty::assert_image(
             &format!("tests/outputs/{}.png", "serial_test_example_my_func1"),
             &result,
@@ -78,12 +86,12 @@ pub(crate) struct MyFunc {}
 #[doc = "Std lib function: myFunc\nThis is some function.\nIt does shit."]
 pub(crate) const MyFunc: MyFunc = MyFunc {};
 fn boxed_my_func(
-    exec_state: &mut crate::executor::ExecState,
+    exec_state: &mut crate::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-                Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>,
+                Output = anyhow::Result<crate::execution::KclValue, crate::errors::KclError>,
             > + Send
             + '_,
     >,
@@ -108,6 +116,10 @@ impl crate::docs::StdLibFn for MyFunc {
         vec![]
     }
 
+    fn keyword_arguments(&self) -> bool {
+        false
+    }
+
     fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
@@ -117,6 +129,7 @@ impl crate::docs::StdLibFn for MyFunc {
             type_: "kittycad::types::InputFormat".to_string(),
             schema: generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
             required: false,
+            label_required: true,
         }]
     }
 
@@ -130,6 +143,7 @@ impl crate::docs::StdLibFn for MyFunc {
             type_: "[Sketch]".to_string(),
             schema,
             required: true,
+            label_required: true,
         })
     }
 
@@ -149,10 +163,10 @@ impl crate::docs::StdLibFn for MyFunc {
         code_blocks
             .iter()
             .map(|cb| {
-                let program = crate::parser::top_level_parse(cb).unwrap();
-                let mut options: crate::ast::types::FormatOptions = Default::default();
+                let program = crate::Program::parse_no_errs(cb).unwrap();
+                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
-                program.recast(&options, 0)
+                program.ast.recast(&options, 0)
             })
             .collect::<Vec<String>>()
     }

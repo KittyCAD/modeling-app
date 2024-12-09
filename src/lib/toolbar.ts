@@ -139,9 +139,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'loft',
-        onClick: () => console.error('Loft not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Loft', groupId: 'modeling' },
+          }),
+        disabled: (state) => !state.can({ type: 'Loft' }),
         icon: 'loft',
-        status: 'kcl-only',
+        status: 'available',
         title: 'Loft',
         hotkey: 'L',
         description:
@@ -252,10 +257,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'plane-offset',
-          onClick: () =>
-            console.error('Plane through normal not yet implemented'),
+          onClick: ({ commandBarSend }) => {
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Offset plane', groupId: 'modeling' },
+            })
+          },
+          hotkey: 'O',
           icon: 'plane',
-          status: 'unavailable',
+          status: 'available',
           title: 'Offset plane',
           description: 'Create a plane parallel to an existing plane.',
           links: [],

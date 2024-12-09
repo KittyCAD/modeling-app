@@ -43,8 +43,8 @@ mountingPlateSketch = startSketchOn("XY")
 
 mountingPlate = extrude(thickness, mountingPlateSketch)
   |> fillet({
-       radius: filletRadius,
-       tags: [
+       radius = filletRadius,
+       tags = [
          getNextAdjacentEdge(edge1),
          getNextAdjacentEdge(edge2),
          getNextAdjacentEdge(edge3),
@@ -70,9 +70,9 @@ mountingPlateSketch = startSketchOn("XY")
 
 mountingPlate = extrude(thickness, mountingPlateSketch)
   |> fillet({
-       radius: filletRadius,
-       tolerance: 0.000001,
-       tags: [
+       radius = filletRadius,
+       tolerance = 0.000001,
+       tags = [
          getNextAdjacentEdge(edge1),
          getNextAdjacentEdge(edge2),
          getNextAdjacentEdge(edge3),

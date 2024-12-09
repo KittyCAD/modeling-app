@@ -1,4 +1,5 @@
 //! Functions for the `kcl` lsp server.
+#![allow(dead_code)]
 
 use std::{
     collections::HashMap,
@@ -19,7 +20,8 @@ use sha2::Digest;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
-        CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
+        CodeAction, CodeActionKind, CodeActionOrCommand, CodeActionParams, CodeActionResponse, CompletionItem,
+        CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
         DeleteFilesParams, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
         DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
         DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
@@ -40,11 +42,17 @@ use tower_lsp::{
 };
 
 use crate::{
-    ast::types::{Expr, ModuleId, Node, NodeRef, VariableKind},
-    executor::{IdGenerator, SourceRange},
+    errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
-    parser::PIPE_OPERATOR,
-    token::TokenType,
+    parsing::{
+        ast::{
+            cache::{CacheInformation, OldAstState},
+            types::{Expr, Node, VariableKind},
+        },
+        token::TokenType,
+        PIPE_OPERATOR,
+    },
+    ModuleId, Program, SourceRange,
 };
 
 lazy_static::lazy_static! {
@@ -97,11 +105,17 @@ pub struct Backend {
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
     /// Token maps.
-    pub token_map: DashMap<String, Vec<crate::token::Token>>,
+    pub token_map: DashMap<String, Vec<crate::parsing::token::Token>>,
     /// AST maps.
-    pub ast_map: DashMap<String, Node<crate::ast::types::Program>>,
+    pub ast_map: DashMap<String, Node<crate::parsing::ast::types::Program>>,
+    /// Last successful execution.
+    /// This gets set to None when execution errors, or we want to bust the cache on purpose to
+    /// force a re-execution.
+    /// We do not need to manually bust the cache for changed units, that's handled by the cache
+    /// information.
+    pub last_successful_ast_state: Arc<RwLock<Option<OldAstState>>>,
     /// Memory maps.
-    pub memory_map: DashMap<String, crate::executor::ProgramMemory>,
+    pub memory_map: DashMap<String, crate::execution::ProgramMemory>,
     /// Current code.
     pub code_map: DashMap<String, Vec<u8>>,
     /// Diagnostics.
@@ -115,11 +129,85 @@ pub struct Backend {
     /// If we can send telemetry for this user.
     pub can_send_telemetry: bool,
     /// Optional executor context to use if we want to execute the code.
-    pub executor_ctx: Arc<RwLock<Option<crate::executor::ExecutorContext>>>,
+    pub executor_ctx: Arc<RwLock<Option<crate::execution::ExecutorContext>>>,
     /// If we are currently allowed to execute the ast.
     pub can_execute: Arc<RwLock<bool>>,
 
     pub is_initialized: Arc<RwLock<bool>>,
+}
+
+impl Backend {
+    #[cfg(target_arch = "wasm32")]
+    pub fn new_wasm(
+        client: Client,
+        executor_ctx: Option<crate::execution::ExecutorContext>,
+        fs: crate::fs::wasm::FileSystemManager,
+        zoo_client: kittycad::Client,
+        can_send_telemetry: bool,
+    ) -> Result<Self, String> {
+        Self::with_file_manager(
+            client,
+            executor_ctx,
+            crate::fs::FileManager::new(fs),
+            zoo_client,
+            can_send_telemetry,
+        )
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn new(
+        client: Client,
+        executor_ctx: Option<crate::execution::ExecutorContext>,
+        zoo_client: kittycad::Client,
+        can_send_telemetry: bool,
+    ) -> Result<Self, String> {
+        Self::with_file_manager(
+            client,
+            executor_ctx,
+            crate::fs::FileManager::new(),
+            zoo_client,
+            can_send_telemetry,
+        )
+    }
+
+    fn with_file_manager(
+        client: Client,
+        executor_ctx: Option<crate::execution::ExecutorContext>,
+        fs: crate::fs::FileManager,
+        zoo_client: kittycad::Client,
+        can_send_telemetry: bool,
+    ) -> Result<Self, String> {
+        let stdlib = crate::std::StdLib::new();
+        let stdlib_completions = get_completions_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
+        let stdlib_signatures = get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
+
+        Ok(Self {
+            client,
+            fs: Arc::new(fs),
+            stdlib_completions,
+            stdlib_signatures,
+            zoo_client,
+            can_send_telemetry,
+            can_execute: Arc::new(RwLock::new(executor_ctx.is_some())),
+            executor_ctx: Arc::new(RwLock::new(executor_ctx)),
+            workspace_folders: Default::default(),
+            token_map: Default::default(),
+            ast_map: Default::default(),
+            memory_map: Default::default(),
+            code_map: Default::default(),
+            diagnostics_map: Default::default(),
+            symbols_map: Default::default(),
+            semantic_tokens_map: Default::default(),
+            last_successful_ast_state: Default::default(),
+            is_initialized: Default::default(),
+        })
+    }
+
+    fn remove_from_ast_maps(&self, filename: &str) {
+        self.ast_map.remove(filename);
+        self.symbols_map.remove(filename);
+        self.memory_map.remove(filename);
+    }
 }
 
 // Implement the shared backend trait for the language server.
@@ -184,27 +272,32 @@ impl crate::lsp::backend::Backend for Backend {
     }
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
+        if force {
+            // Bust the execution cache.
+            let mut old_ast_state = self.last_successful_ast_state.write().await;
+            *old_ast_state = None;
+            drop(old_ast_state);
+        }
+
         let filename = params.uri.to_string();
         // We already updated the code map in the shared backend.
 
         // Lets update the tokens.
         let module_id = ModuleId::default();
-        let tokens = match crate::token::lexer(&params.text, module_id) {
+        let tokens = match crate::parsing::token::lexer(&params.text, module_id) {
             Ok(tokens) => tokens,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
                 self.token_map.remove(&filename);
-                self.ast_map.remove(&filename);
-                self.symbols_map.remove(&filename);
+                self.remove_from_ast_maps(&filename);
                 self.semantic_tokens_map.remove(&filename);
-                self.memory_map.remove(&filename);
                 return;
             }
         };
 
         // Try to get the memory for the current code.
         let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
-            *memory != crate::executor::ProgramMemory::default()
+            *memory != crate::execution::ProgramMemory::default()
         } else {
             false
         };
@@ -230,17 +323,26 @@ impl crate::lsp::backend::Backend for Backend {
         }
 
         // Lets update the ast.
-        let parser = crate::parser::Parser::new(tokens.clone());
-        let result = parser.ast();
-        let mut ast = match result {
-            Ok(ast) => ast,
+
+        let (ast, errs) = match crate::parsing::parse_tokens(tokens.clone()).0 {
+            Ok(result) => result,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
-                self.ast_map.remove(&filename);
-                self.symbols_map.remove(&filename);
-                self.memory_map.remove(&filename);
+                self.remove_from_ast_maps(&filename);
                 return;
             }
+        };
+
+        self.add_to_diagnostics(&params, &errs, true).await;
+
+        if errs.iter().any(|e| e.severity == crate::errors::Severity::Fatal) {
+            self.remove_from_ast_maps(&filename);
+            return;
+        }
+
+        let Some(mut ast) = ast else {
+            self.remove_from_ast_maps(&filename);
+            return;
         };
 
         // Here we will want to store the digest and compare, but for now
@@ -257,7 +359,7 @@ impl crate::lsp::backend::Backend for Backend {
             None => true,
         };
 
-        if !ast_changed && !force && has_memory && !self.has_diagnostics(params.uri.as_ref()).await {
+        if !ast_changed && !force && has_memory {
             // Return early if the ast did not change and we don't need to force.
             return;
         }
@@ -289,7 +391,7 @@ impl crate::lsp::backend::Backend for Backend {
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
-        if self.execute(&params, &ast).await.is_err() {
+        if self.execute(&params, &ast.into()).await.is_err() {
             return;
         }
 
@@ -304,11 +406,11 @@ impl Backend {
         *self.can_execute.read().await
     }
 
-    pub async fn executor_ctx(&self) -> tokio::sync::RwLockReadGuard<'_, Option<crate::executor::ExecutorContext>> {
+    pub async fn executor_ctx(&self) -> tokio::sync::RwLockReadGuard<'_, Option<crate::execution::ExecutorContext>> {
         self.executor_ctx.read().await
     }
 
-    async fn update_semantic_tokens(&self, tokens: &[crate::token::Token], params: &TextDocumentItem) {
+    async fn update_semantic_tokens(&self, tokens: &[crate::parsing::token::Token], params: &TextDocumentItem) {
         // Update the semantic tokens map.
         let mut semantic_tokens = vec![];
         let mut last_position = Position::new(0, 0);
@@ -572,7 +674,7 @@ impl Backend {
         self.client.publish_diagnostics(params.uri.clone(), items, None).await;
     }
 
-    async fn execute(&self, params: &TextDocumentItem, ast: NodeRef<'_, crate::ast::types::Program>) -> Result<()> {
+    async fn execute(&self, params: &TextDocumentItem, ast: &Program) -> Result<()> {
         // Check if we can execute.
         if !self.can_execute().await {
             return Ok(());
@@ -589,25 +691,42 @@ impl Backend {
             return Ok(());
         }
 
-        let mut id_generator = IdGenerator::default();
+        let mut last_successful_ast_state = self.last_successful_ast_state.write().await;
 
-        // Clear the scene, before we execute so it's not fugly as shit.
-        executor_ctx
-            .engine
-            .clear_scene(&mut id_generator, SourceRange::default())
-            .await?;
-
-        let exec_state = match executor_ctx.run(ast, None, id_generator, None).await {
-            Ok(exec_state) => exec_state,
-            Err(err) => {
-                self.memory_map.remove(params.uri.as_str());
-                self.add_to_diagnostics(params, &[err], false).await;
-
-                // Since we already published the diagnostics we don't really care about the error
-                // string.
-                return Err(anyhow::anyhow!("failed to execute code"));
-            }
+        let mut exec_state = if let Some(last_successful_ast_state) = last_successful_ast_state.clone() {
+            last_successful_ast_state.exec_state
+        } else {
+            Default::default()
         };
+
+        if let Err(err) = executor_ctx
+            .run(
+                CacheInformation {
+                    old: last_successful_ast_state.clone(),
+                    new_ast: ast.ast.clone(),
+                },
+                &mut exec_state,
+            )
+            .await
+        {
+            self.memory_map.remove(params.uri.as_str());
+            self.add_to_diagnostics(params, &[err], false).await;
+
+            // Update the last successful ast state to be None.
+            *last_successful_ast_state = None;
+
+            // Since we already published the diagnostics we don't really care about the error
+            // string.
+            return Err(anyhow::anyhow!("failed to execute code"));
+        }
+
+        // Update the last successful ast state.
+        *last_successful_ast_state = Some(OldAstState {
+            ast: ast.ast.clone(),
+            exec_state: exec_state.clone(),
+            settings: executor_ctx.settings.clone(),
+        });
+        drop(last_successful_ast_state);
 
         self.memory_map
             .insert(params.uri.to_string(), exec_state.memory.clone());
@@ -752,7 +871,7 @@ impl Backend {
 
             // Try to get the memory for the current code.
             let has_memory = if let Some(memory) = self.memory_map.get(&filename) {
-                *memory != crate::executor::ProgramMemory::default()
+                *memory != crate::execution::ProgramMemory::default()
             } else {
                 false
             };
@@ -971,7 +1090,7 @@ impl LanguageServer for Backend {
         };
 
         match hover {
-            crate::ast::types::Hover::Function { name, range } => {
+            crate::parsing::ast::types::Hover::Function { name, range } => {
                 // Get the docs for this function.
                 let Some(completion) = self.stdlib_completions.get(&name) else {
                     return Ok(None);
@@ -1006,8 +1125,8 @@ impl LanguageServer for Backend {
                     range: Some(range),
                 }))
             }
-            crate::ast::types::Hover::Signature { .. } => Ok(None),
-            crate::ast::types::Hover::Comment { value, range } => Ok(Some(Hover {
+            crate::parsing::ast::types::Hover::Signature { .. } => Ok(None),
+            crate::parsing::ast::types::Hover::Comment { value, range } => Ok(Some(Hover {
                 contents: HoverContents::Markup(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value,
@@ -1165,7 +1284,7 @@ impl LanguageServer for Backend {
         };
 
         match hover {
-            crate::ast::types::Hover::Function { name, range: _ } => {
+            crate::parsing::ast::types::Hover::Function { name, range: _ } => {
                 // Get the docs for this function.
                 let Some(signature) = self.stdlib_signatures.get(&name) else {
                     return Ok(None);
@@ -1173,7 +1292,7 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature.clone()))
             }
-            crate::ast::types::Hover::Signature {
+            crate::parsing::ast::types::Hover::Signature {
                 name,
                 parameter_index,
                 range: _,
@@ -1188,7 +1307,7 @@ impl LanguageServer for Backend {
 
                 Ok(Some(signature))
             }
-            crate::ast::types::Hover::Comment { value: _, range: _ } => {
+            crate::parsing::ast::types::Hover::Comment { value: _, range: _ } => {
                 return Ok(None);
             }
         }
@@ -1237,16 +1356,12 @@ impl LanguageServer for Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(tokens) = crate::token::lexer(current_code, module_id) else {
-            return Ok(None);
-        };
-        let parser = crate::parser::Parser::new(tokens);
-        let Ok(ast) = parser.ast() else {
+        let Ok(ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
         // Now recast it.
         let recast = ast.recast(
-            &crate::ast::types::FormatOptions {
+            &crate::parsing::ast::types::FormatOptions {
                 tab_size: params.options.tab_size as usize,
                 insert_final_newline: params.options.insert_final_newline.unwrap_or(false),
                 use_tabs: !params.options.insert_spaces,
@@ -1275,11 +1390,7 @@ impl LanguageServer for Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(tokens) = crate::token::lexer(current_code, module_id) else {
-            return Ok(None);
-        };
-        let parser = crate::parser::Parser::new(tokens);
-        let Ok(mut ast) = parser.ast() else {
+        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
 
@@ -1320,6 +1431,41 @@ impl LanguageServer for Backend {
         }
 
         Ok(Some(folding_ranges))
+    }
+
+    async fn code_action(&self, params: CodeActionParams) -> RpcResult<Option<CodeActionResponse>> {
+        let actions = params
+            .context
+            .diagnostics
+            .into_iter()
+            .filter_map(|diagnostic| {
+                let suggestion = diagnostic
+                    .data
+                    .as_ref()
+                    .and_then(|data| serde_json::from_value::<Suggestion>(data.clone()).ok())?;
+                let edit = TextEdit {
+                    range: diagnostic.range,
+                    new_text: suggestion.insert,
+                };
+                let changes = HashMap::from([(params.text_document.uri.clone(), vec![edit])]);
+                Some(CodeActionOrCommand::CodeAction(CodeAction {
+                    title: suggestion.title,
+                    kind: Some(CodeActionKind::QUICKFIX),
+                    diagnostics: Some(vec![diagnostic]),
+                    edit: Some(WorkspaceEdit {
+                        changes: Some(changes),
+                        document_changes: None,
+                        change_annotations: None,
+                    }),
+                    command: None,
+                    is_preferred: Some(true),
+                    disabled: None,
+                    data: None,
+                }))
+            })
+            .collect();
+
+        Ok(Some(actions))
     }
 }
 

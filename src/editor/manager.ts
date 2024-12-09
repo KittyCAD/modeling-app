@@ -1,9 +1,9 @@
 import { EditorView, ViewUpdate } from '@codemirror/view'
 import { syntaxTree } from '@codemirror/language'
 import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
-import { engineCommandManager } from 'lib/singletons'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
-import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
+import { Selections, Selection, processCodeMirrorRanges } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
@@ -31,7 +31,7 @@ export default class EditorManager {
   private _isShiftDown: boolean = false
   private _selectionRanges: Selections = {
     otherSelections: [],
-    codeBasedSelections: [],
+    graphSelections: [],
   }
 
   private _lastEvent: { event: string; time: number } | null = null
@@ -138,10 +138,12 @@ export default class EditorManager {
     return this._highlightRange
   }
 
-  setHighlightRange(selections: Array<Selection['range']>): void {
-    this._highlightRange = selections
+  setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
+    this._highlightRange = range.map((s): [number, number] => {
+      return [s[0], s[1]]
+    })
 
-    const selectionsWithSafeEnds = selections.map((s): [number, number] => {
+    const selectionsWithSafeEnds = range.map((s): [number, number] => {
       const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
       return [s[0], safeEnd]
     })
@@ -254,21 +256,23 @@ export default class EditorManager {
   }
 
   selectRange(selections: Selections) {
-    if (selections.codeBasedSelections.length === 0) {
+    if (selections?.graphSelections?.length === 0) {
       return
     }
     let codeBasedSelections = []
-    for (const selection of selections.codeBasedSelections) {
+    for (const selection of selections.graphSelections) {
       codeBasedSelections.push(
-        EditorSelection.range(selection.range[0], selection.range[1])
+        EditorSelection.range(
+          selection.codeRef.range[0],
+          selection.codeRef.range[1]
+        )
       )
     }
 
     codeBasedSelections.push(
       EditorSelection.cursor(
-        selections.codeBasedSelections[
-          selections.codeBasedSelections.length - 1
-        ].range[1]
+        selections.graphSelections[selections.graphSelections.length - 1]
+          .codeRef.range[1]
       )
     )
 
@@ -311,6 +315,7 @@ export default class EditorManager {
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
+      ast: kclManager.ast,
     })
 
     if (!eventInfo) {
