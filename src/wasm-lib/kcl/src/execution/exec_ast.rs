@@ -369,6 +369,7 @@ impl Node<CallExpressionKw> {
 
         // Build a hashmap from argument labels to the final evaluated values.
         let mut fn_args = HashMap::with_capacity(self.arguments.len());
+        let mut tag_declarator_args = Vec::new();
         for arg_expr in &self.arguments {
             let source_range = SourceRange::from(arg_expr.arg.clone());
             let metadata = Metadata { source_range };
@@ -376,6 +377,9 @@ impl Node<CallExpressionKw> {
                 .execute_expr(&arg_expr.arg, exec_state, &metadata, StatementKind::Expression)
                 .await?;
             fn_args.insert(arg_expr.label.name.clone(), Arg::new(value, source_range));
+            if let Expr::TagDeclarator(td) = &arg_expr.arg {
+                tag_declarator_args.push((td.inner.clone(), source_range));
+            }
         }
         let fn_args = fn_args; // remove mutability
 
@@ -399,17 +403,6 @@ impl Node<CallExpressionKw> {
             self.into(),
             ctx.clone(),
         );
-        let tag_declarator_args = args
-            .args
-            .iter()
-            .filter_map(|arg| {
-                let KclValue::TagDeclarator(td) = &arg.value else {
-                    return None;
-                };
-                Some((td.inner.clone(), arg.source_range))
-            })
-            .collect::<Vec<_>>();
-
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
@@ -430,7 +423,7 @@ impl Node<CallExpression> {
         let fn_name = &self.callee.name;
 
         let mut fn_args: Vec<Arg> = Vec::with_capacity(self.arguments.len());
-        let mut tag_declarator_args: Vec<(TagDeclarator, SourceRange)> = Vec::new();
+        let mut tag_declarator_args = Vec::new();
 
         for arg_expr in &self.arguments {
             let metadata = Metadata {
@@ -440,7 +433,7 @@ impl Node<CallExpression> {
                 .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
                 .await?;
             let arg = Arg::new(value, SourceRange::from(arg_expr));
-            if let KclValue::TagDeclarator(td) = &arg.value {
+            if let Expr::TagDeclarator(td) = arg_expr {
                 tag_declarator_args.push((td.inner.clone(), arg.source_range));
             }
             fn_args.push(arg);
@@ -490,6 +483,9 @@ impl Node<CallExpression> {
     }
 }
 
+/// `tag_declarator_args` should only contain tag declarator literals, which
+/// will be defined as local variables.  Non-literals that evaluate to tag
+/// declarators should not be defined.
 fn update_memory_for_tags_of_geometry(
     result: &mut KclValue,
     tag_declarator_args: &[(TagDeclarator, SourceRange)],
