@@ -73,9 +73,9 @@ export function LowerRightControls({
         {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
         <a
           onClick={openExternalBrowserIfDesktop(
-            `https://github.com/KittyCAD/modeling-app/releases/tag/${PACKAGE_NAME.indexOf('-nightly') === -1 && 'nightly-'}v${APP_VERSION}`
+            `https://github.com/KittyCAD/modeling-app/releases/tag/${PACKAGE_NAME.indexOf('-nightly') > -1 ? 'nightly-' : ''}v${APP_VERSION}`
           )}
-          href={`https://github.com/KittyCAD/modeling-app/releases/tag/${PACKAGE_NAME.indexOf('-nightly') === -1 && 'nightly-'}v${APP_VERSION}`}
+          href={`https://github.com/KittyCAD/modeling-app/releases/tag/${PACKAGE_NAME.indexOf('-nightly') > -1 ? 'nightly-' : ''}v${APP_VERSION}`}
           target="_blank"
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
