@@ -54,6 +54,7 @@ import {
   Selections,
   updateSelections,
   canLoftSelection,
+  canShellSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -73,6 +74,7 @@ import {
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
+  doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
   isSingleCursorInPipe,
@@ -587,6 +589,24 @@ export const ModelingMachineProvider = ({
           const canLoft = canLoftSelection(selectionRanges)
           if (err(canLoft)) return false
           return canLoft
+        },
+        'has valid shell selection': ({
+          context: { selectionRanges },
+          event,
+        }) => {
+          const hasNoSelection =
+            selectionRanges.graphSelections.length === 0 ||
+            isRangeBetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+
+          if (hasNoSelection) {
+            return doesSceneHaveExtrudedSketch(kclManager.ast)
+          }
+
+          const canShell = canShellSelection(selectionRanges)
+          console.log('canShellSelection', canShellSelection(selectionRanges))
+          if (err(canShell)) return false
+          return canShell
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },

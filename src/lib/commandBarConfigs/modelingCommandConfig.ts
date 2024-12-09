@@ -39,6 +39,10 @@ export type ModelingCommandSchema = {
   Loft: {
     selection: Selections
   }
+  Shell: {
+    selection: Selections
+    thickness: KclCommandValue
+  }
   Revolve: {
     selection: Selections
     angle: KclCommandValue
@@ -291,6 +295,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
+      },
+    },
+  },
+  Shell: {
+    description: 'Hollow out a 3D solid.',
+    icon: 'shell',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall'],
+        multiple: true,
+        required: true,
+        skip: false,
+      },
+      thickness: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
       },
     },
   },

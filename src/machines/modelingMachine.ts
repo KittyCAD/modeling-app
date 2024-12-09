@@ -80,6 +80,7 @@ import { ToolbarModeName } from 'lib/toolbar'
 import { quaternionFromUpNForward } from 'clientSideScene/helpers'
 import { Vector3 } from 'three'
 import { MachineManager } from 'components/MachineManagerProvider'
+import { addShell } from 'lang/modifyAst/addShell'
 import { KclCommandValue } from 'lib/commandTypes'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
@@ -264,6 +265,7 @@ export type ModelingMachineEvent =
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
+  | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
@@ -393,6 +395,7 @@ export const modelingMachine = setup({
     'Selection is on face': () => false,
     'has valid sweep selection': () => false,
     'has valid loft selection': () => false,
+    'has valid shell selection': () => false,
     'has valid edge treatment selection': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
@@ -1593,6 +1596,66 @@ export const modelingMachine = setup({
         }
       }
     ),
+    shellAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Shell'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection, thickness } = input
+
+        // Insert the thickness variable if it exists
+        if (
+          'variableName' in thickness &&
+          thickness.variableName &&
+          thickness.insertIndex !== undefined
+        ) {
+          const newBody = [...ast.body]
+          newBody.splice(
+            thickness.insertIndex,
+            0,
+            thickness.variableDeclarationAst
+          )
+          ast.body = newBody
+        }
+
+        // Perform the shell op
+        const shellResult = addShell({
+          node: ast,
+          selection,
+          artifactGraph: engineCommandManager.artifactGraph,
+          thickness:
+            'variableName' in thickness
+              ? thickness.variableIdentifierAst
+              : thickness.valueAst,
+        })
+        if (err(shellResult)) {
+          return err(shellResult)
+        }
+
+        const updateAstResult = await kclManager.updateAst(
+          shellResult.modifiedAst,
+          true,
+          {
+            focusPath: [shellResult.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
   },
   // end services
 }).createMachine({
@@ -1631,6 +1694,13 @@ export const modelingMachine = setup({
 
         Loft: {
           target: 'Applying loft',
+          guard: 'has valid loft selection',
+          reenter: true,
+        },
+
+        Shell: {
+          target: 'Applying shell',
+          guard: 'has valid shell selection',
           reenter: true,
         },
 
@@ -2394,6 +2464,19 @@ export const modelingMachine = setup({
         id: 'loftAstMod',
         input: ({ event }) => {
           if (event.type !== 'Loft') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying shell': {
+      invoke: {
+        src: 'shellAstMod',
+        id: 'shellAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Shell') return undefined
           return event.data
         },
         onDone: ['idle'],
