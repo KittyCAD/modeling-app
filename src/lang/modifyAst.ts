@@ -1337,8 +1337,7 @@ export function updateSketchNodePathsWithInsertIndex({
   const newExpressionPathToNode: PathToNode = [
     ['body', ''],
     [insertIndex, 'index'],
-    ['declarations', 'VariableDeclaration'],
-    ['0', 'index'],
+    ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
   ]
   let updatedSketchNodePaths = structuredClone(sketchNodePaths)
