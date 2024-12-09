@@ -6,11 +6,11 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 49,
+        "end": 43,
         "id": {
-          "end": 11,
+          "end": 5,
           "name": "myBox",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
@@ -18,21 +18,21 @@ expression: actual
             {
               "arguments": [
                 {
-                  "end": 29,
+                  "end": 23,
                   "name": "p",
-                  "start": 28,
+                  "start": 22,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
               ],
               "callee": {
-                "end": 27,
+                "end": 21,
                 "name": "startSketchAt",
-                "start": 14,
+                "start": 8,
                 "type": "Identifier"
               },
-              "end": 30,
-              "start": 14,
+              "end": 24,
+              "start": 8,
               "type": "CallExpression",
               "type": "CallExpression"
             },
@@ -41,60 +41,60 @@ expression: actual
                 {
                   "elements": [
                     {
-                      "end": 41,
+                      "end": 35,
                       "raw": "0",
-                      "start": 40,
+                      "start": 34,
                       "type": "Literal",
                       "type": "Literal",
                       "value": 0.0
                     },
                     {
-                      "end": 44,
+                      "end": 38,
                       "name": "l",
-                      "start": 43,
+                      "start": 37,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   ],
-                  "end": 45,
-                  "start": 39,
+                  "end": 39,
+                  "start": 33,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 },
                 {
-                  "end": 48,
-                  "start": 47,
+                  "end": 42,
+                  "start": 41,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               ],
               "callee": {
-                "end": 38,
+                "end": 32,
                 "name": "line",
-                "start": 34,
+                "start": 28,
                 "type": "Identifier"
               },
-              "end": 49,
-              "start": 34,
+              "end": 43,
+              "start": 28,
               "type": "CallExpression",
               "type": "CallExpression"
             }
           ],
-          "end": 49,
-          "start": 14,
+          "end": 43,
+          "start": 8,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 49,
+      "end": 43,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 49,
+  "end": 43,
   "start": 0
 }
