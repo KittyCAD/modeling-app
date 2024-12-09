@@ -793,12 +793,12 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
     const shellDeclaration =
       "shell001 = shell({ faces = ['end'], thickness = 5 }, extrude001)"
 
-    await test.step(`Look for the white of the sketch001 shape`, async () => {
+    await test.step(`Look for the grey of the shape`, async () => {
       await scene.expectPixelColor([127, 127, 127], testPoint, 15)
     })
 
     if (!shouldPreselect) {
-      await test.step(`Go through the command bar flow without preselected sketches`, async () => {
+      await test.step(`Go through the command bar flow without preselected faces`, async () => {
         await toolbar.shellButton.click()
         await cmdBar.expectState({
           stage: 'arguments',
@@ -829,7 +829,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
         await clickOnCap()
       })
 
-      await test.step(`Go through the command bar flow with preselected sketches`, async () => {
+      await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
         await toolbar.shellButton.click()
         await cmdBar.progressCmdBar()
         await cmdBar.progressCmdBar()
@@ -885,7 +885,7 @@ extrude001 = extrude(40, sketch001)
     "shell001 = shell({  faces = ['end', seg01],  thickness = 5}, extrude001)"
   const formattedOutLastLine = '}, extrude001)'
 
-  await test.step(`Look for the white of the sketch001 shape`, async () => {
+  await test.step(`Look for the grey of the shape`, async () => {
     await scene.expectPixelColor([99, 99, 99], testPoint, 15)
   })
 
