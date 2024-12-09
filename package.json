@@ -186,7 +186,7 @@
     "autoprefixer": "^10.4.19",
     "d3-force": "^3.0.0",
     "electron": "^32.1.2",
-    "electron-builder": "^24.13.3",
+    "electron-builder": "^25.1.8",
     "electron-notarize": "^1.2.2",
     "eslint": "^8.0.1",
     "eslint-config-react-app": "^7.0.1",
