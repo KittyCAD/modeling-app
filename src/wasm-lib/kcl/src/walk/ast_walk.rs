@@ -35,7 +35,7 @@ where
             return Ok(false);
         }
         for child in n.children() {
-            if !child.visit(self.clone())? {
+            if !Self::walk(self, child)? {
                 return Ok(false);
             }
         }
