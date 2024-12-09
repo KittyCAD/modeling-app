@@ -234,8 +234,8 @@ export const commandBarMachine = setup({
             argName in event.data.argDefaultValues
               ? event.data.argDefaultValues[argName]
               : arg.skip && 'defaultValue' in arg
-              ? arg.defaultValue
-              : undefined
+                ? arg.defaultValue
+                : undefined
         }
         return args
       },
@@ -260,16 +260,14 @@ export const commandBarMachine = setup({
         return new Promise(async (resolve, reject) => {
           if (!input || input?.event?.type !== 'Submit argument') {
             toast.error(`Unable to validate, wrong event type.`)
-            reject(`Unable to validate, wrong event type`)
-            return
+            return reject(`Unable to validate, wrong event type`)
           }
 
           const context = input?.context
 
           if (!context) {
             toast.error(`Unable to validate, wrong argument.`)
-            reject(`Unable to validate, wrong argument`)
-            return
+            return reject(`Unable to validate, wrong argument`)
           }
 
           const data = input.event.data
@@ -288,22 +286,24 @@ export const commandBarMachine = setup({
               : true
 
             if (typeof result === 'boolean' && result === true) {
-              resolve(data)
+              return resolve(data)
             } else {
               // validation failed
               if (typeof result === 'string') {
                 // The result of the validation is the error message
                 toast.error(result)
-                reject(`unable to validate ${argName}, Message: ${result}`)
+                return reject(
+                  `unable to validate ${argName}, Message: ${result}`
+                )
               } else {
                 // Default message if there is not a custom one sent
                 toast.error(`Unable to validate ${argName}`)
-                reject(`unable to validate ${argName}}`)
+                return reject(`unable to validate ${argName}}`)
               }
             }
           } else {
             // Missing several requirements for validate argument, just bypass
-            resolve(data)
+            return resolve(data)
           }
         })
       }
