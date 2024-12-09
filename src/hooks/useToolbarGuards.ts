@@ -24,6 +24,8 @@ export function useConvertToVariable(range?: SourceRange) {
   }, [enable])
 
   useEffect(() => {
+    // Return early if there are no selection ranges for whatever reason
+    if (!context.selectionRanges) return
     const parsed = ast
 
     const meta = isNodeSafeToReplace(
