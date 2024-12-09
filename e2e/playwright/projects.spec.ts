@@ -117,26 +117,23 @@ test(
 test(
   'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: '@electron' },
-  async ({ browserName }, testInfo) => {
-    const { electronApp, page } = await setupElectron({
-      testInfo,
-      folderSetupFn: async (dir) => {
-        const bracketDir = join(dir, 'bracket')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-          join(bracketDir, 'main.kcl')
-        )
-        const errorDir = join(dir, 'broken-code')
-        await fsp.mkdir(errorDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('broken-code-test.kcl'),
-          join(errorDir, 'main.kcl')
-        )
-      },
+  async ({ context, page }, testInfo) => {
+   await context.folderSetupFn((dir) => {
+      const bracketDir = join(dir, 'bracket')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        join(bracketDir, 'main.kcl')
+      )
+      const errorDir = join(dir, 'broken-code')
+      await fsp.mkdir(errorDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('broken-code-test.kcl'),
+        join(errorDir, 'main.kcl')
+      )
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
     page.on('console', console.log)
@@ -198,31 +195,26 @@ test(
         })
         .toBeLessThan(15)
     })
-
-    await electronApp.close()
   }
 )
 
 test(
   'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
   { tag: '@electron' },
-  async ({ browserName }, testInfo) => {
-    const { electronApp, page } = await setupElectron({
-      testInfo,
-      folderSetupFn: async (dir) => {
-        const bracketDir = join(dir, 'bracket')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-          join(bracketDir, 'main.kcl')
-        )
-        const emptyDir = join(dir, 'empty')
-        await fsp.mkdir(emptyDir, { recursive: true })
-        await fsp.writeFile(join(emptyDir, 'main.kcl'), '')
-      },
+  async ({ context, page }, testInfo) => {
+    await context.folderSetupFn((dir) => {
+      const bracketDir = join(dir, 'bracket')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        join(bracketDir, 'main.kcl')
+      )
+      const emptyDir = join(dir, 'empty')
+      await fsp.mkdir(emptyDir, { recursive: true })
+      await fsp.writeFile(join(emptyDir, 'main.kcl'), '')
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
     page.on('console', console.log)
@@ -280,8 +272,6 @@ test(
         })
         .toBeLessThan(15)
     })
-
-    await electronApp.close()
   }
 )
 
@@ -289,21 +279,18 @@ test(
   'open a file in a project works and renders, open empty file, it should clear the scene',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    const { electronApp, page } = await setupElectron({
-      testInfo,
-      folderSetupFn: async (dir) => {
-        const bracketDir = join(dir, 'bracket')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-          join(bracketDir, 'main.kcl')
-        )
+    await context.folderSetupFn((dir) => {
+      const bracketDir = join(dir, 'bracket')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        join(bracketDir, 'main.kcl')
+      )
 
-        await fsp.writeFile(join(bracketDir, 'empty.kcl'), '')
-      },
+      await fsp.writeFile(join(bracketDir, 'empty.kcl'), '')
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
     page.on('console', console.log)
@@ -356,8 +343,6 @@ test(
       await expect(u.codeLocator).toContainText('')
       expect(u.codeLocator.innerHTML.length).toBeLessThan(2)
     })
-
-    await electronApp.close()
   }
 )
 
@@ -365,23 +350,20 @@ test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {
-    const { electronApp, page } = await setupElectron({
-      testInfo,
-      folderSetupFn: async (dir) => {
-        const bracketDir = join(dir, 'bracket')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-          join(bracketDir, 'main.kcl')
-        )
-        await fsp.copyFile(
-          executorInputPath('broken-code-test.kcl'),
-          join(bracketDir, 'broken-code-test.kcl')
-        )
-      },
+    await context.folderSetupFn((dir) => {
+      const bracketDir = join(dir, 'bracket')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        join(bracketDir, 'main.kcl')
+      )
+      await fsp.copyFile(
+        executorInputPath('broken-code-test.kcl'),
+        join(bracketDir, 'broken-code-test.kcl')
+      )
     })
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
     page.on('console', console.log)
@@ -438,8 +420,6 @@ test(
         })
         .toBeLessThan(15)
     })
-
-    await electronApp.close()
   }
 )
 
