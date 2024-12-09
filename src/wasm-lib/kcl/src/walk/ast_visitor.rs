@@ -31,7 +31,7 @@ pub trait Visitable<'tree> {
 
 /// Trait used to enable visiting members of KCL AST.
 ///
-/// Implementing this trait enables the implementor to be invoked over
+/// Implementing this trait enables the implementer to be invoked over
 /// members of KCL AST by using the [Visitable::visit] function on
 /// a [Node].
 pub trait Visitor<'tree> {
@@ -41,9 +41,9 @@ pub trait Visitor<'tree> {
     /// Visit a KCL AST [Node].
     ///
     /// In general, implementers likely wish to check to see if a Node is what
-    /// they're looking for, and either decend into that [Node]'s children (by
+    /// they're looking for, and either descend into that [Node]'s children (by
     /// calling [Visitable::children] on [Node] to get children nodes,
-    /// calling [Visitable::visit] on each node of interest), or preform
+    /// calling [Visitable::visit] on each node of interest), or perform
     /// some action.
     fn visit_node(&self, node: Node<'tree>) -> Result<bool, Self::Error>;
 }
