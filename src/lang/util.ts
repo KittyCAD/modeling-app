@@ -58,7 +58,7 @@ export function isCursorInSketchCommandRange(
 ): string | false {
   const overlappingEntries = filterArtifacts(
     {
-      types: ['segment', 'path'],
+      types: ['segment', 'path', 'plane'],
       predicate: (artifact) => {
         return selectionRanges.graphSelections.some(
           (selection) =>

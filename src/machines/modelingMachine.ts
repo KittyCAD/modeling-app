@@ -2739,16 +2739,21 @@ export function isEditingExistingSketch({
   )
   if (variableDeclaration instanceof Error) return false
   if (variableDeclaration.node.type !== 'VariableDeclarator') return false
-  const pipeExpression = variableDeclaration.node.init
-  if (pipeExpression.type !== 'PipeExpression') return false
-  const hasStartProfileAt = pipeExpression.body.some(
+  const maybePipeExpression = variableDeclaration.node.init
+  if (
+    maybePipeExpression.type === 'CallExpression' &&
+    maybePipeExpression.callee.name === 'startProfileAt'
+  )
+    return true
+  if (maybePipeExpression.type !== 'PipeExpression') return false
+  const hasStartProfileAt = maybePipeExpression.body.some(
     (item) =>
       item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
   )
-  const hasCircle = pipeExpression.body.some(
+  const hasCircle = maybePipeExpression.body.some(
     (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
   )
-  return (hasStartProfileAt && pipeExpression.body.length > 1) || hasCircle
+  return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
 }
 export function pipeHasCircle({
   sketchDetails,

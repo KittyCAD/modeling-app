@@ -114,9 +114,9 @@ test.describe('Sketch tests', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61, -14.01], %)
-  |> xLine(12.73, %)
-  |> tangentialArcTo([24.95, -5.38], %)`
+  |> startProfileAt([2.61, -4.01], %)
+  |> xLine(8.73, %)
+  |> tangentialArcTo([8.33, -1.31], %)`
       )
     })
 
@@ -126,7 +126,7 @@ test.describe('Sketch tests', () => {
 
     await expect(async () => {
       await page.mouse.click(700, 200)
-      await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+      await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeEnabled({ timeout: 1000 })
@@ -135,7 +135,7 @@ test.describe('Sketch tests', () => {
 
     await page.waitForTimeout(600) // wait for animation
 
-    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+    await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('ArrowUp')
@@ -149,8 +149,12 @@ test.describe('Sketch tests', () => {
 
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
     await page.waitForTimeout(100)
+    // click start profileAt handle to continue profile
+    await page.mouse.click(702, 407)
+    await page.waitForTimeout(100)
 
     await expect(async () => {
+      // click to add segment
       await page.mouse.click(700, 200)
 
       await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
@@ -159,7 +163,7 @@ test.describe('Sketch tests', () => {
   |> yLine(12.34, %)
 
 `)
-    }).toPass({ timeout: 40_000, intervals: [1_000] })
+    }).toPass({ timeout: 5_000, intervals: [1_000] })
   })
   test('Can exit selection of face', async ({ page }) => {
     // Load the app with the code panes

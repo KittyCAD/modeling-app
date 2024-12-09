@@ -638,8 +638,6 @@ export const ModelingMachineProvider = ({
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
-          if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
-            return false
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactGraph,
             selectionRanges

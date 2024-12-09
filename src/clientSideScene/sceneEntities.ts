@@ -341,6 +341,9 @@ export class SceneEntities {
       from: [point.x, point.y],
       scale,
       theme: sceneInfra._theme,
+      // default is 12, this makes the draft point pop a bit more,
+      // especially when snapping to the startProfileAt handle as it's it was the exact same size
+      size: 16,
     })
     draftPoint.layers.set(SKETCH_LAYER)
     group.add(draftPoint)
@@ -407,12 +410,15 @@ export class SceneEntities {
 
         const arrowHead = getParentGroup(args.intersects[0].object, [ARROWHEAD])
         const parent = getParentGroup(
-          arrowHead,
+          args.intersects[0].object,
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
         if (
           !axisIntersection &&
-          !(parent?.userData?.isLastInProfile && arrowHead)
+          !(
+            parent?.userData?.isLastInProfile &&
+            (arrowHead || parent?.name === PROFILE_START)
+          )
         )
           return
         const { intersectionPoint } = args
@@ -424,6 +430,8 @@ export class SceneEntities {
           snappedPoint.setComponent(0, 0)
         } else if (arrowHead) {
           snappedPoint.set(arrowHead.position.x, arrowHead.position.y)
+        } else if (parent?.name === PROFILE_START) {
+          snappedPoint.set(parent.position.x, parent.position.y)
         }
         // Either create a new one or update the existing one
         const draftPoint = this.getDraftPoint()
@@ -462,11 +470,8 @@ export class SceneEntities {
         if (!intersectionPoint?.twoD || !sketchDetails?.sketchEntryNodePath)
           return
 
-        const arrowHead = getParentGroup(args?.intersects?.[0]?.object, [
-          ARROWHEAD,
-        ])
         const parent = getParentGroup(
-          arrowHead,
+          args?.intersects?.[0]?.object,
           SEGMENT_BODIES_PLUS_PROFILE_START
         )
         if (parent?.userData?.isLastInProfile) {
@@ -620,6 +625,9 @@ export class SceneEntities {
         _profileStart.traverse((child) => {
           child.layers.set(SKETCH_LAYER)
         })
+        if (!sketch.paths.length) {
+          _profileStart.userData.isLastInProfile = true
+        }
         group.add(_profileStart)
         this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
       }
