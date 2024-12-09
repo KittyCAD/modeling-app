@@ -86,7 +86,14 @@ test.describe('Testing segment overlays', () => {
           await page.getByTestId('constraint-symbol-popover').count()
         ).toBeGreaterThan(0)
         await unconstrainedLocator.click()
-        await page.getByText('Add variable').click()
+        await expect(
+          page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+        ).toBeFocused()
+        await page
+          .getByRole('button', {
+            name: 'arrow right Continue',
+          })
+          .click()
         await editor.expectEditor.toContain(expectFinal, {
           shouldNormalise: true,
         })
@@ -149,7 +156,14 @@ test.describe('Testing segment overlays', () => {
           await page.getByTestId('constraint-symbol-popover').count()
         ).toBeGreaterThan(0)
         await unconstrainedLocator.click()
-        await page.getByText('Add variable').click()
+        await expect(
+          page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+        ).toBeFocused()
+        await page
+          .getByRole('button', {
+            name: 'arrow right Continue',
+          })
+          .click()
         await editor.expectEditor.toContain(expectAfterUnconstrained, {
           shouldNormalise: true,
         })

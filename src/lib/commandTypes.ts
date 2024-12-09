@@ -148,7 +148,22 @@ export type CommandArgumentConfig<
       selectionTypes: Artifact['type'][]
       multiple: boolean
     }
-  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
+  | {
+      inputType: 'kcl'
+      createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+    }
   | {
       inputType: 'string'
       defaultValue?:
@@ -222,7 +237,22 @@ export type CommandArgument<
       selectionTypes: Artifact['type'][]
       multiple: boolean
     }
-  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
+  | {
+      inputType: 'kcl'
+      createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+    }
   | {
       inputType: 'string'
       defaultValue?:
