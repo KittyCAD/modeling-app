@@ -1,27 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed import_side_effect.kcl
-snapshot_kind: text
 ---
-[
-  {
-    "isError": true,
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          95,
-          99,
-          1
-        ]
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [
-      81,
-      100,
-      1
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  }
-]
+[]

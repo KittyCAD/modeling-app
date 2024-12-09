@@ -29,7 +29,7 @@ impl BinaryPart {
         match self {
             BinaryPart::Literal(literal) => Ok(literal.into()),
             BinaryPart::Identifier(identifier) => {
-                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
+                let value = exec_state.memory().get(&identifier.name, identifier.into())?;
                 Ok(value.clone())
             }
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
@@ -47,7 +47,7 @@ impl Node<MemberExpression> {
         let array = match &self.object {
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
             MemberObject::Identifier(identifier) => {
-                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
+                let value = exec_state.memory().get(&identifier.name, identifier.into())?;
                 value.clone()
             }
         };
@@ -75,7 +75,7 @@ impl Node<MemberExpression> {
             // TODO: Don't use recursion here, use a loop.
             MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
             MemberObject::Identifier(identifier) => {
-                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
+                let value = exec_state.memory().get(&identifier.name, identifier.into())?;
                 value.clone()
             }
         };
@@ -310,11 +310,11 @@ pub(crate) async fn execute_pipe_body(
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
     // should use the previous child expression for %.
     // This means there's no more need for the previous pipe_value from the parent AST node above this one.
-    let previous_pipe_value = std::mem::replace(&mut exec_state.pipe_value, Some(output));
+    let previous_pipe_value = std::mem::replace(&mut exec_state.mod_local.pipe_value, Some(output));
     // Evaluate remaining elements.
     let result = inner_execute_pipe_body(exec_state, body, ctx).await;
     // Restore the previous pipe value.
-    exec_state.pipe_value = previous_pipe_value;
+    exec_state.mod_local.pipe_value = previous_pipe_value;
 
     result
 }
@@ -340,10 +340,10 @@ async fn inner_execute_pipe_body(
         let output = ctx
             .execute_expr(expression, exec_state, &metadata, StatementKind::Expression)
             .await?;
-        exec_state.pipe_value = Some(output);
+        exec_state.mod_local.pipe_value = Some(output);
     }
     // Safe to unwrap here, because pipe_value always has something pushed in when the `match first` executes.
-    let final_output = exec_state.pipe_value.take().unwrap();
+    let final_output = exec_state.mod_local.pipe_value.take().unwrap();
     Ok(final_output)
 }
 
@@ -417,7 +417,7 @@ impl Node<CallExpressionKw> {
                         // before running, and we will likely want to use the
                         // return value. The call takes ownership of the args,
                         // so we need to build the op before the call.
-                        exec_state.operations.push(op);
+                        exec_state.mod_local.operations.push(op);
                     }
                     result
                 };
@@ -431,8 +431,8 @@ impl Node<CallExpressionKw> {
                 let source_range = SourceRange::from(self);
                 // Clone the function so that we can use a mutable reference to
                 // exec_state.
-                let func = exec_state.memory.get(fn_name, source_range)?.clone();
-                let fn_dynamic_state = exec_state.dynamic_state.merge(&exec_state.memory);
+                let func = exec_state.memory().get(fn_name, source_range)?.clone();
+                let fn_dynamic_state = exec_state.mod_local.dynamic_state.merge(exec_state.memory());
 
                 // Track call operation.
                 let op_labeled_args = args
@@ -441,16 +441,20 @@ impl Node<CallExpressionKw> {
                     .iter()
                     .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
                     .collect();
-                exec_state.operations.push(Operation::UserDefinedFunctionCall {
-                    name: Some(fn_name.clone()),
-                    function_source_range: func.function_def_source_range().unwrap_or_default(),
-                    unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
-                    labeled_args: op_labeled_args,
-                    source_range: callsite,
-                });
+                exec_state
+                    .mod_local
+                    .operations
+                    .push(Operation::UserDefinedFunctionCall {
+                        name: Some(fn_name.clone()),
+                        function_source_range: func.function_def_source_range().unwrap_or_default(),
+                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        labeled_args: op_labeled_args,
+                        source_range: callsite,
+                    });
 
                 let return_value = {
-                    let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
+                    let previous_dynamic_state =
+                        std::mem::replace(&mut exec_state.mod_local.dynamic_state, fn_dynamic_state);
                     let result = func
                         .call_fn_kw(args, exec_state, ctx.clone(), callsite)
                         .await
@@ -459,7 +463,7 @@ impl Node<CallExpressionKw> {
                             // TODO currently ignored by the frontend
                             e.add_source_ranges(vec![source_range])
                         });
-                    exec_state.dynamic_state = previous_dynamic_state;
+                    exec_state.mod_local.dynamic_state = previous_dynamic_state;
                     result?
                 };
 
@@ -476,7 +480,10 @@ impl Node<CallExpressionKw> {
                 })?;
 
                 // Track return operation.
-                exec_state.operations.push(Operation::UserDefinedFunctionReturn);
+                exec_state
+                    .mod_local
+                    .operations
+                    .push(Operation::UserDefinedFunctionReturn);
 
                 Ok(result)
             }
@@ -537,7 +544,7 @@ impl Node<CallExpression> {
                         // before running, and we will likely want to use the
                         // return value. The call takes ownership of the args,
                         // so we need to build the op before the call.
-                        exec_state.operations.push(op);
+                        exec_state.mod_local.operations.push(op);
                     }
                     result
                 };
@@ -551,27 +558,31 @@ impl Node<CallExpression> {
                 let source_range = SourceRange::from(self);
                 // Clone the function so that we can use a mutable reference to
                 // exec_state.
-                let func = exec_state.memory.get(fn_name, source_range)?.clone();
-                let fn_dynamic_state = exec_state.dynamic_state.merge(&exec_state.memory);
+                let func = exec_state.memory().get(fn_name, source_range)?.clone();
+                let fn_dynamic_state = exec_state.mod_local.dynamic_state.merge(exec_state.memory());
 
                 // Track call operation.
-                exec_state.operations.push(Operation::UserDefinedFunctionCall {
-                    name: Some(fn_name.clone()),
-                    function_source_range: func.function_def_source_range().unwrap_or_default(),
-                    unlabeled_arg: None,
-                    // TODO: Add the arguments for legacy positional parameters.
-                    labeled_args: Default::default(),
-                    source_range: callsite,
-                });
+                exec_state
+                    .mod_local
+                    .operations
+                    .push(Operation::UserDefinedFunctionCall {
+                        name: Some(fn_name.clone()),
+                        function_source_range: func.function_def_source_range().unwrap_or_default(),
+                        unlabeled_arg: None,
+                        // TODO: Add the arguments for legacy positional parameters.
+                        labeled_args: Default::default(),
+                        source_range: callsite,
+                    });
 
                 let return_value = {
-                    let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
+                    let previous_dynamic_state =
+                        std::mem::replace(&mut exec_state.mod_local.dynamic_state, fn_dynamic_state);
                     let result = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
                         // Add the call expression to the source ranges.
                         // TODO currently ignored by the frontend
                         e.add_source_ranges(vec![source_range])
                     });
-                    exec_state.dynamic_state = previous_dynamic_state;
+                    exec_state.mod_local.dynamic_state = previous_dynamic_state;
                     result?
                 };
 
@@ -588,7 +599,10 @@ impl Node<CallExpression> {
                 })?;
 
                 // Track return operation.
-                exec_state.operations.push(Operation::UserDefinedFunctionReturn);
+                exec_state
+                    .mod_local
+                    .operations
+                    .push(Operation::UserDefinedFunctionReturn);
 
                 Ok(result)
             }
@@ -604,7 +618,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     match result {
         KclValue::Sketch { value: ref mut sketch } => {
             for (_, tag) in sketch.tags.iter() {
-                exec_state.memory.update_tag(&tag.value, tag.clone())?;
+                exec_state.mut_memory().update_tag(&tag.value, tag.clone())?;
             }
         }
         KclValue::Solid(ref mut solid) => {
@@ -642,7 +656,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     info.sketch = solid.id;
                     t.info = Some(info);
 
-                    exec_state.memory.update_tag(&tag.name, t.clone())?;
+                    exec_state.mut_memory().update_tag(&tag.name, t.clone())?;
 
                     // update the sketch tags.
                     solid.sketch.tags.insert(tag.name.clone(), t);
@@ -650,11 +664,8 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
             }
 
             // Find the stale sketch in memory and update it.
-            if let Some(current_env) = exec_state
-                .memory
-                .environments
-                .get_mut(exec_state.memory.current_env.index())
-            {
+            let cur_env_index = exec_state.memory().current_env.index();
+            if let Some(current_env) = exec_state.mut_memory().environments.get_mut(cur_env_index) {
                 current_env.update_sketch_tags(&solid.sketch);
             }
         }
@@ -673,7 +684,9 @@ impl Node<TagDeclarator> {
             }],
         }));
 
-        exec_state.memory.add(&self.name, memory_item.clone(), self.into())?;
+        exec_state
+            .mut_memory()
+            .add(&self.name, memory_item.clone(), self.into())?;
 
         Ok(self.into())
     }
@@ -868,7 +881,7 @@ impl Property {
                     Ok(Property::String(name.to_string()))
                 } else {
                     // Actually evaluate memory to compute the property.
-                    let prop = exec_state.memory.get(name, property_src)?;
+                    let prop = exec_state.memory().get(name, property_src)?;
                     jvalue_to_prop(prop, property_sr, name)
                 }
             }

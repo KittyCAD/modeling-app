@@ -259,7 +259,7 @@ export function emptyExecState(): ExecState {
 
 function execStateFromRaw(raw: RawExecState): ExecState {
   return {
-    memory: ProgramMemory.fromRaw(raw.memory),
+    memory: ProgramMemory.fromRaw(raw.modLocal.memory),
   }
 }
 
