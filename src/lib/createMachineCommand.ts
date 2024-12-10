@@ -155,6 +155,8 @@ export function buildCommandArgument<
   context: ContextFrom<T>,
   machineActor: Actor<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
+  // GOTCHA: modelingCommandConfig is not a 1:1 mapping to this baseCommandArgument
+  // You need to manually add key/value pairs here.
   const baseCommandArgument = {
     description: arg.description,
     required: arg.required,
@@ -181,10 +183,13 @@ export function buildCommandArgument<
       ...baseCommandArgument,
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
+      validation: arg.validation,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
   } else if (arg.inputType === 'kcl') {
     return {
       inputType: arg.inputType,
+      createVariableByDefault: arg.createVariableByDefault,
+      variableName: arg.variableName,
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }

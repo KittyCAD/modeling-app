@@ -53,6 +53,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
   LOFT: 'loft',
+  SHELL: 'shell',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
   PLANE: 'plane',
@@ -110,3 +111,10 @@ export const KCL_SAMPLES_MANIFEST_URLS = {
 
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
+
+/** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
+export const KCL_AXIS_X = 'X'
+export const KCL_AXIS_Y = 'Y'
+export const KCL_AXIS_NEG_X = '-X'
+export const KCL_AXIS_NEG_Y = '-Y'
+export const KCL_DEFAULT_AXIS = 'X'

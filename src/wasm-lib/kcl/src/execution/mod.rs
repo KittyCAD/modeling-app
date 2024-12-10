@@ -125,10 +125,16 @@ impl ProgramMemory {
         Ok(())
     }
 
-    pub fn update_tag(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
-        self.environments[self.current_env.index()].insert(tag.to_string(), KclValue::TagIdentifier(Box::new(value)));
+    pub fn add_tag(&mut self, tag: &str, value: TagIdentifier, source_range: SourceRange) -> Result<(), KclError> {
+        self.add(tag, KclValue::TagIdentifier(Box::new(value)), source_range)
+    }
 
-        Ok(())
+    pub fn update_tag_if_defined(&mut self, tag: &str, value: TagIdentifier) {
+        if !self.environments[self.current_env.index()].contains_key(tag) {
+            // Do nothing if the tag isn't defined.
+            return;
+        }
+        self.environments[self.current_env.index()].insert(tag.to_string(), KclValue::TagIdentifier(Box::new(value)));
     }
 
     /// Get a value from the program memory.
@@ -845,7 +851,7 @@ impl GetTangentialInfoFromPathsResult {
 
 impl Sketch {
     pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path) {
-        let mut tag_identifier: TagIdentifier = tag.into();
+        let mut tag_identifier = TagIdentifier::from(tag);
         let base = current_path.get_base();
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
@@ -2085,7 +2091,7 @@ impl ExecutorContext {
         let item = match init {
             Expr::None(none) => KclValue::from(none),
             Expr::Literal(literal) => KclValue::from(literal),
-            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
+            Expr::TagDeclarator(tag) => KclValue::from(tag),
             Expr::Identifier(identifier) => {
                 let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 value.clone()
@@ -2247,6 +2253,59 @@ fn assign_args_to_params(
     Ok(fn_memory)
 }
 
+fn assign_args_to_params_kw(
+    function_expression: NodeRef<'_, FunctionExpression>,
+    mut args: crate::std::args::KwArgs,
+    mut fn_memory: ProgramMemory,
+) -> Result<ProgramMemory, KclError> {
+    // Add the arguments to the memory.  A new call frame should have already
+    // been created.
+    let source_ranges = vec![function_expression.into()];
+    for param in function_expression.params.iter() {
+        if param.labeled {
+            let arg = args.labeled.get(&param.identifier.name);
+            let arg_val = match arg {
+                Some(arg) => arg.value.clone(),
+                None => match param.default_value {
+                    Some(ref default_val) => KclValue::from(default_val.clone()),
+                    None => {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            source_ranges,
+                            message: format!(
+                                "This function requires a parameter {}, but you haven't passed it one.",
+                                param.identifier.name
+                            ),
+                        }));
+                    }
+                },
+            };
+            fn_memory.add(&param.identifier.name, arg_val, (&param.identifier).into())?;
+        } else {
+            let Some(unlabeled) = args.unlabeled.take() else {
+                let param_name = &param.identifier.name;
+                return Err(if args.labeled.contains_key(param_name) {
+                    KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        message: format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
+                    })
+                } else {
+                    KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        message: "This function expects an unlabeled first parameter, but you haven't passed it one."
+                            .to_owned(),
+                    })
+                });
+            };
+            fn_memory.add(
+                &param.identifier.name,
+                unlabeled.value.clone(),
+                (&param.identifier).into(),
+            )?;
+        }
+    }
+    Ok(fn_memory)
+}
+
 pub(crate) async fn call_user_defined_function(
     args: Vec<Arg>,
     memory: &ProgramMemory,
@@ -2261,6 +2320,36 @@ pub(crate) async fn call_user_defined_function(
     let body_env = body_memory.new_env_for_call(memory.current_env);
     body_memory.current_env = body_env;
     let fn_memory = assign_args_to_params(function_expression, args, body_memory)?;
+
+    // Execute the function body using the memory we just created.
+    let (result, fn_memory) = {
+        let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
+        let result = ctx
+            .inner_execute(&function_expression.body, exec_state, BodyType::Block)
+            .await;
+        // Restore the previous memory.
+        let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
+
+        (result, fn_memory)
+    };
+
+    result.map(|_| fn_memory.return_)
+}
+
+pub(crate) async fn call_user_defined_function_kw(
+    args: crate::std::args::KwArgs,
+    memory: &ProgramMemory,
+    function_expression: NodeRef<'_, FunctionExpression>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<Option<KclValue>, KclError> {
+    // Create a new environment to execute the function body in so that local
+    // variables shadow variables in the parent scope.  The new environment's
+    // parent should be the environment of the closure.
+    let mut body_memory = memory.clone();
+    let body_env = body_memory.new_env_for_call(memory.current_env);
+    body_memory.current_env = body_env;
+    let fn_memory = assign_args_to_params_kw(function_expression, args, body_memory)?;
 
     // Execute the function body using the memory we just created.
     let (result, fn_memory) = {
@@ -2888,8 +2977,10 @@ let notTagDeclarator = !myTagDeclarator";
         );
 
         let code9 = "
-let myTagDeclarator = $myTag
-let notTagIdentifier = !myTag";
+sk = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 0], %, $myTag)
+notTagIdentifier = !myTag";
         let tag_identifier_err = parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.

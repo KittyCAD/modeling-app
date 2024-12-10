@@ -32,8 +32,14 @@ export function mouseControlsToCameraSystem(
   mouseControl: MouseControlType | undefined
 ): CameraSystem | undefined {
   switch (mouseControl) {
+    // TODO: understand why the values come back without underscores and fix the root cause
+    // @ts-ignore: TS2678
+    case 'kittycad':
     case 'kitty_cad':
       return 'KittyCAD'
+    // TODO: understand why the values come back without underscores and fix the root cause
+    // @ts-ignore: TS2678
+    case 'onshape':
     case 'on_shape':
       return 'OnShape'
     case 'trackpad_friendly':
@@ -44,6 +50,9 @@ export function mouseControlsToCameraSystem(
       return 'NX'
     case 'creo':
       return 'Creo'
+    // TODO: understand why the values come back without underscores and fix the root cause
+    // @ts-ignore: TS2678
+    case 'autocad':
     case 'auto_cad':
       return 'AutoCAD'
     default:

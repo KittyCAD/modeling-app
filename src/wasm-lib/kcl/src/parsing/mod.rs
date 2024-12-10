@@ -2,7 +2,7 @@ use crate::{
     errors::{CompilationError, KclError, KclErrorDetails},
     parsing::{
         ast::types::{Node, Program},
-        token::{Token, TokenType},
+        token::TokenStream,
     },
     source_range::{ModuleId, SourceRange},
 };
@@ -34,15 +34,13 @@ pub fn top_level_parse(code: &str) -> ParseResult {
 
 /// Parse the given KCL code into an AST.
 pub fn parse_str(code: &str, module_id: ModuleId) -> ParseResult {
-    let tokens = pr_try!(crate::parsing::token::lexer(code, module_id));
+    let tokens = pr_try!(crate::parsing::token::lex(code, module_id));
     parse_tokens(tokens)
 }
 
 /// Parse the supplied tokens into an AST.
-pub fn parse_tokens(tokens: Vec<Token>) -> ParseResult {
-    let (tokens, unknown_tokens): (Vec<Token>, Vec<Token>) = tokens
-        .into_iter()
-        .partition(|token| token.token_type != TokenType::Unknown);
+pub fn parse_tokens(mut tokens: TokenStream) -> ParseResult {
+    let unknown_tokens = tokens.remove_unknown();
 
     if !unknown_tokens.is_empty() {
         let source_ranges = unknown_tokens.iter().map(SourceRange::from).collect();
@@ -69,7 +67,7 @@ pub fn parse_tokens(tokens: Vec<Token>) -> ParseResult {
         return Node::<Program>::default().into();
     }
 
-    parser::run_parser(&mut tokens.as_slice())
+    parser::run_parser(tokens.as_slice())
 }
 
 /// Result of parsing.

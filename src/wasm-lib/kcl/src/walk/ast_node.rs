@@ -5,7 +5,7 @@ use crate::{
 
 /// The "Node" type wraps all the AST elements we're able to find in a KCL
 /// file. Tokens we walk through will be one of these.
-#[derive(Clone, Debug)]
+#[derive(Copy, Clone, Debug)]
 pub enum Node<'a> {
     Program(NodeRef<'a, types::Program>),
 
@@ -31,6 +31,7 @@ pub enum Node<'a> {
     MemberExpression(NodeRef<'a, types::MemberExpression>),
     UnaryExpression(NodeRef<'a, types::UnaryExpression>),
     IfExpression(NodeRef<'a, types::IfExpression>),
+    ElseIf(&'a types::ElseIf),
 
     Parameter(&'a types::Parameter),
 
@@ -38,11 +39,22 @@ pub enum Node<'a> {
 
     MemberObject(&'a types::MemberObject),
     LiteralIdentifier(&'a types::LiteralIdentifier),
+
+    KclNone(&'a types::KclNone),
 }
 
-impl From<&Node<'_>> for SourceRange {
-    fn from(node: &Node) -> Self {
-        match node {
+/// Returned during source_range conversion.
+#[derive(Debug)]
+pub enum AstNodeError {
+    /// Returned if we try and [SourceRange] a [types::KclNone].
+    NoSourceForAKclNone,
+}
+
+impl TryFrom<&Node<'_>> for SourceRange {
+    type Error = AstNodeError;
+
+    fn try_from(node: &Node) -> Result<Self, Self::Error> {
+        Ok(match node {
             Node::Program(n) => SourceRange::from(*n),
             Node::ImportStatement(n) => SourceRange::from(*n),
             Node::ExpressionStatement(n) => SourceRange::from(*n),
@@ -68,6 +80,62 @@ impl From<&Node<'_>> for SourceRange {
             Node::MemberObject(m) => SourceRange::new(m.start(), m.end(), m.module_id()),
             Node::IfExpression(n) => SourceRange::from(*n),
             Node::LiteralIdentifier(l) => SourceRange::new(l.start(), l.end(), l.module_id()),
+
+            // This is broken too
+            Node::ElseIf(n) => SourceRange::new(n.cond.start(), n.cond.end(), n.cond.module_id()),
+
+            // The KclNone type here isn't an actual node, so it has no
+            // start/end information.
+            Node::KclNone(_) => return Err(Self::Error::NoSourceForAKclNone),
+        })
+    }
+}
+
+impl<'tree> From<&'tree types::BodyItem> for Node<'tree> {
+    fn from(node: &'tree types::BodyItem) -> Self {
+        match node {
+            types::BodyItem::ImportStatement(v) => v.as_ref().into(),
+            types::BodyItem::ExpressionStatement(v) => v.into(),
+            types::BodyItem::VariableDeclaration(v) => v.as_ref().into(),
+            types::BodyItem::ReturnStatement(v) => v.into(),
+        }
+    }
+}
+
+impl<'tree> From<&'tree types::Expr> for Node<'tree> {
+    fn from(node: &'tree types::Expr) -> Self {
+        match node {
+            types::Expr::Literal(lit) => lit.as_ref().into(),
+            types::Expr::TagDeclarator(tag) => tag.as_ref().into(),
+            types::Expr::Identifier(id) => id.as_ref().into(),
+            types::Expr::BinaryExpression(be) => be.as_ref().into(),
+            types::Expr::FunctionExpression(fe) => fe.as_ref().into(),
+            types::Expr::CallExpression(ce) => ce.as_ref().into(),
+            types::Expr::CallExpressionKw(ce) => ce.as_ref().into(),
+            types::Expr::PipeExpression(pe) => pe.as_ref().into(),
+            types::Expr::PipeSubstitution(ps) => ps.as_ref().into(),
+            types::Expr::ArrayExpression(ae) => ae.as_ref().into(),
+            types::Expr::ArrayRangeExpression(are) => are.as_ref().into(),
+            types::Expr::ObjectExpression(oe) => oe.as_ref().into(),
+            types::Expr::MemberExpression(me) => me.as_ref().into(),
+            types::Expr::UnaryExpression(ue) => ue.as_ref().into(),
+            types::Expr::IfExpression(e) => e.as_ref().into(),
+            types::Expr::None(n) => n.into(),
+        }
+    }
+}
+
+impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
+    fn from(node: &'tree types::BinaryPart) -> Self {
+        match node {
+            types::BinaryPart::Literal(lit) => lit.as_ref().into(),
+            types::BinaryPart::Identifier(id) => id.as_ref().into(),
+            types::BinaryPart::BinaryExpression(be) => be.as_ref().into(),
+            types::BinaryPart::CallExpression(ce) => ce.as_ref().into(),
+            types::BinaryPart::CallExpressionKw(ce) => ce.as_ref().into(),
+            types::BinaryPart::UnaryExpression(ue) => ue.as_ref().into(),
+            types::BinaryPart::MemberExpression(me) => me.as_ref().into(),
+            types::BinaryPart::IfExpression(e) => e.as_ref().into(),
         }
     }
 }
@@ -116,4 +184,6 @@ impl_from!(Node, ObjectProperty);
 impl_from_ref!(Node, Parameter);
 impl_from_ref!(Node, MemberObject);
 impl_from!(Node, IfExpression);
+impl_from!(Node, ElseIf);
 impl_from_ref!(Node, LiteralIdentifier);
+impl_from!(Node, KclNone);

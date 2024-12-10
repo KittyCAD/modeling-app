@@ -7,7 +7,7 @@ import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
-
+import { CommandBarContext } from 'machines/commandBarMachine'
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = [
@@ -147,8 +147,30 @@ export type CommandArgumentConfig<
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
       multiple: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
-  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
+  | {
+      inputType: 'kcl'
+      createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+    }
   | {
       inputType: 'string'
       defaultValue?:
@@ -221,8 +243,30 @@ export type CommandArgument<
       inputType: 'selection'
       selectionTypes: Artifact['type'][]
       multiple: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
-  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
+  | {
+      inputType: 'kcl'
+      createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+    }
   | {
       inputType: 'string'
       defaultValue?:

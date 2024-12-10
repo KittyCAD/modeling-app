@@ -1,9 +1,15 @@
 import { Models } from '@kittycad/lib'
+import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
+import { transformAstSketchLines } from 'lang/std/sketchcombos'
+import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
+import { revolveAxisValidator } from './validators'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -34,9 +40,14 @@ export type ModelingCommandSchema = {
   Loft: {
     selection: Selections
   }
+  Shell: {
+    selection: Selections
+    thickness: KclCommandValue
+  }
   Revolve: {
     selection: Selections
     angle: KclCommandValue
+    axis: Selections
   }
   Fillet: {
     // todo
@@ -49,6 +60,18 @@ export type ModelingCommandSchema = {
   }
   'change tool': {
     tool: SketchTool
+  }
+  'Constrain length': {
+    selection: Selections
+    length: KclCommandValue
+  }
+  'Constrain with named value': {
+    currentValue: {
+      valueText: string
+      pathToNode: PathToNode
+      variableName: string
+    }
+    namedValue: KclCommandValue
   }
   'Text-to-CAD': {
     prompt: string
@@ -277,6 +300,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  Shell: {
+    description: 'Hollow out a 3D solid.',
+    icon: 'shell',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall'],
+        multiple: true,
+        required: true,
+        skip: false,
+      },
+      thickness: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
   // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
@@ -289,6 +331,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+      },
+      axis: {
+        required: true,
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        multiple: false,
+        validation: revolveAxisValidator,
       },
       angle: {
         inputType: 'kcl',
@@ -334,6 +383,88 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+    },
+  },
+  'Constrain length': {
+    description: 'Constrain the length of one or more segments.',
+    icon: 'dimension',
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['segment'],
+        multiple: false,
+        required: true,
+        skip: true,
+      },
+      length: {
+        inputType: 'kcl',
+        required: true,
+        createVariableByDefault: true,
+        defaultValue(_, machineContext) {
+          const selectionRanges = machineContext?.selectionRanges
+          if (!selectionRanges) return KCL_DEFAULT_LENGTH
+          const angleLength = angleLengthInfo({
+            selectionRanges,
+            angleOrLength: 'setLength',
+          })
+          if (err(angleLength)) return KCL_DEFAULT_LENGTH
+          const { transforms } = angleLength
+
+          // QUESTION: is it okay to reference kclManager here? will its state be up to date?
+          const sketched = transformAstSketchLines({
+            ast: structuredClone(kclManager.ast),
+            selectionRanges,
+            transformInfos: transforms,
+            programMemory: kclManager.programMemory,
+            referenceSegName: '',
+          })
+          if (err(sketched)) return KCL_DEFAULT_LENGTH
+          const { valueUsedInTransform } = sketched
+          return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
+        },
+      },
+    },
+  },
+  'Constrain with named value': {
+    description: 'Constrain a value by making it a named constant.',
+    icon: 'make-variable',
+    args: {
+      currentValue: {
+        description:
+          'Path to the node in the AST to constrain. This is never shown to the user.',
+        inputType: 'text',
+        required: false,
+        skip: true,
+      },
+      namedValue: {
+        inputType: 'kcl',
+        required: true,
+        createVariableByDefault: true,
+        variableName(commandBarContext, machineContext) {
+          const { currentValue } = commandBarContext.argumentsToSubmit
+          if (
+            !currentValue ||
+            !(currentValue instanceof Object) ||
+            !('variableName' in currentValue) ||
+            typeof currentValue.variableName !== 'string'
+          ) {
+            return 'value'
+          }
+          return currentValue.variableName
+        },
+        defaultValue: (commandBarContext) => {
+          const { currentValue } = commandBarContext.argumentsToSubmit
+          if (
+            !currentValue ||
+            !(currentValue instanceof Object) ||
+            !('valueText' in currentValue) ||
+            typeof currentValue.valueText !== 'string'
+          ) {
+            return KCL_DEFAULT_LENGTH
+          }
+          return currentValue.valueText
+        },
       },
     },
   },

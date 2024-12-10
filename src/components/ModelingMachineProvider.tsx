@@ -41,7 +41,10 @@ import {
   angleBetweenInfo,
   applyConstraintAngleBetween,
 } from './Toolbar/SetAngleBetween'
-import { applyConstraintAngleLength } from './Toolbar/setAngleLength'
+import {
+  applyConstraintAngleLength,
+  applyConstraintLength,
+} from './Toolbar/setAngleLength'
 import {
   canSweepSelection,
   handleSelectionBatch,
@@ -51,6 +54,8 @@ import {
   Selections,
   updateSelections,
   canLoftSelection,
+  canRevolveSelection,
+  canShellSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -62,13 +67,15 @@ import {
   getSketchOrientationDetails,
 } from 'clientSideScene/sceneEntities'
 import {
-  moveValueIntoNewVariablePath,
+  insertNamedConstant,
+  replaceValueAtNodePath,
   sketchOnExtrudedFace,
   sketchOnOffsetPlane,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { Program, parse, recast, resultIsOk } from 'lang/wasm'
+import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
+  doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
   isSingleCursorInPipe,
@@ -79,7 +86,6 @@ import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
-import { getVarNameModal } from 'hooks/useToolbarGuards'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
@@ -570,6 +576,26 @@ export const ModelingMachineProvider = ({
           if (err(canSweep)) return false
           return canSweep
         },
+        'has valid revolve selection': ({ context: { selectionRanges } }) => {
+          // A user can begin extruding if they either have 1+ faces selected or nothing selected
+          // TODO: I believe this guard only allows for extruding a single face at a time
+          const hasNoSelection =
+            selectionRanges.graphSelections.length === 0 ||
+            isRangeBetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+
+          if (hasNoSelection) {
+            // they have no selection, we should enable the button
+            // so they can select the face through the cmdbar
+            // BUT only if there's extrudable geometry
+            return doesSceneHaveSweepableSketch(kclManager.ast)
+          }
+          if (!isSketchPipe(selectionRanges)) return false
+
+          const canSweep = canRevolveSelection(selectionRanges)
+          if (err(canSweep)) return false
+          return canSweep
+        },
         'has valid loft selection': ({ context: { selectionRanges } }) => {
           const hasNoSelection =
             selectionRanges.graphSelections.length === 0 ||
@@ -584,6 +610,24 @@ export const ModelingMachineProvider = ({
           const canLoft = canLoftSelection(selectionRanges)
           if (err(canLoft)) return false
           return canLoft
+        },
+        'has valid shell selection': ({
+          context: { selectionRanges },
+          event,
+        }) => {
+          const hasNoSelection =
+            selectionRanges.graphSelections.length === 0 ||
+            isRangeBetweenCharacters(selectionRanges) ||
+            isSelectionLastLine(selectionRanges, codeManager.code)
+
+          if (hasNoSelection) {
+            return doesSceneHaveExtrudedSketch(kclManager.ast)
+          }
+
+          const canShell = canShellSelection(selectionRanges)
+          console.log('canShellSelection', canShellSelection(selectionRanges))
+          if (err(canShell)) return false
+          return canShell
         },
         'has valid selection for deletion': ({
           context: { selectionRanges },
@@ -869,12 +913,18 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'Get length info': fromPromise(
-          async ({ input: { selectionRanges, sketchDetails } }) => {
-            const { modifiedAst, pathToNodeMap } =
-              await applyConstraintAngleLength({
-                selectionRanges,
-              })
+        astConstrainLength: fromPromise(
+          async ({
+            input: { selectionRanges, sketchDetails, lengthValue },
+          }) => {
+            if (!lengthValue)
+              return Promise.reject(new Error('No length value'))
+            const constraintResult = await applyConstraintLength({
+              selectionRanges,
+              length: lengthValue,
+            })
+            if (err(constraintResult)) return Promise.reject(constraintResult)
+            const { modifiedAst, pathToNodeMap } = constraintResult
             const pResult = parse(recast(modifiedAst))
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
@@ -1043,38 +1093,88 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
-        'Get convert to variable info': fromPromise(
+        'Apply named value constraint': fromPromise(
           async ({ input: { selectionRanges, sketchDetails, data } }) => {
-            if (!sketchDetails)
+            if (!sketchDetails) {
               return Promise.reject(new Error('No sketch details'))
-            const { variableName } = await getVarNameModal({
-              valueName: data?.variableName || 'var',
-            })
+            }
+            if (!data) {
+              return Promise.reject(new Error('No data from command flow'))
+            }
             let pResult = parse(recast(kclManager.ast))
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             let parsed = pResult.program
 
-            const { modifiedAst: _modifiedAst, pathToReplacedNode } =
-              moveValueIntoNewVariablePath(
-                parsed,
-                kclManager.programMemory,
-                data?.pathToNode || [],
-                variableName
+            let result: {
+              modifiedAst: Node<Program>
+              pathToReplaced: PathToNode | null
+            } = {
+              modifiedAst: parsed,
+              pathToReplaced: null,
+            }
+            // If the user provided a constant name,
+            // we need to insert the named constant
+            // and then replace the node with the constant's name.
+            if ('variableName' in data.namedValue) {
+              const astAfterReplacement = replaceValueAtNodePath({
+                ast: parsed,
+                pathToNode: data.currentValue.pathToNode,
+                newExpressionString: data.namedValue.variableName,
+              })
+              if (trap(astAfterReplacement)) {
+                return Promise.reject(astAfterReplacement)
+              }
+              const parseResultAfterInsertion = parse(
+                recast(
+                  insertNamedConstant({
+                    node: astAfterReplacement.modifiedAst,
+                    newExpression: data.namedValue,
+                  })
+                )
               )
-            pResult = parse(recast(_modifiedAst))
+              if (
+                trap(parseResultAfterInsertion) ||
+                !resultIsOk(parseResultAfterInsertion)
+              )
+                return Promise.reject(parseResultAfterInsertion)
+              result = {
+                modifiedAst: parseResultAfterInsertion.program,
+                pathToReplaced: astAfterReplacement.pathToReplaced,
+              }
+            } else if ('valueText' in data.namedValue) {
+              // If they didn't provide a constant name,
+              // just replace the node with the value.
+              const astAfterReplacement = replaceValueAtNodePath({
+                ast: parsed,
+                pathToNode: data.currentValue.pathToNode,
+                newExpressionString: data.namedValue.valueText,
+              })
+              if (trap(astAfterReplacement)) {
+                return Promise.reject(astAfterReplacement)
+              }
+              // The `replacer` function returns a pathToNode that assumes
+              // an identifier is also being inserted into the AST, creating an off-by-one error.
+              // This corrects that error, but TODO we should fix this upstream
+              // to avoid this kind of error in the future.
+              astAfterReplacement.pathToReplaced[1][0] =
+                (astAfterReplacement.pathToReplaced[1][0] as number) - 1
+              result = astAfterReplacement
+            }
+
+            pResult = parse(recast(result.modifiedAst))
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             parsed = pResult.program
 
             if (trap(parsed)) return Promise.reject(parsed)
             parsed = parsed as Node<Program>
-            if (!pathToReplacedNode)
+            if (!result.pathToReplaced)
               return Promise.reject(new Error('No path to replaced node'))
 
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                pathToReplacedNode || [],
+                result.pathToReplaced || [],
                 parsed,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1087,7 +1187,7 @@ export const ModelingMachineProvider = ({
             )
 
             const selection = updateSelections(
-              { 0: pathToReplacedNode },
+              { 0: result.pathToReplaced },
               selectionRanges,
               updatedAst.newAst
             )
@@ -1095,7 +1195,7 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedPathToNode: pathToReplacedNode,
+              updatedPathToNode: result.pathToReplaced,
             }
           }
         ),
