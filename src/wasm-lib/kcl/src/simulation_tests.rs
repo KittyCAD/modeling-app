@@ -47,7 +47,7 @@ fn read(filename: &'static str, test_name: &str) -> String {
 
 fn parse(test_name: &str) {
     let input = read("input.kcl", test_name);
-    let tokens = crate::parsing::token::lexer(&input, ModuleId::default()).unwrap();
+    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
 
     // Parse the tokens into an AST.
     let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
@@ -1500,5 +1500,110 @@ mod kw_fn {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
+    }
+}
+mod tag_can_be_proxied_through_parameter {
+    const TEST_NAME: &str = "tag_can_be_proxied_through_parameter";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod tag_proxied_through_function_does_not_define_var {
+    const TEST_NAME: &str = "tag_proxied_through_function_does_not_define_var";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod kw_fn_too_few_args {
+    const TEST_NAME: &str = "kw_fn_too_few_args";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod kw_fn_unlabeled_but_has_label {
+    const TEST_NAME: &str = "kw_fn_unlabeled_but_has_label";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod kw_fn_with_defaults {
+    const TEST_NAME: &str = "kw_fn_with_defaults";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
     }
 }

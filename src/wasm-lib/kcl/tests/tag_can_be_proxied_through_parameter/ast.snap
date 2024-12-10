@@ -1,0 +1,586 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing tag_can_be_proxied_through_parameter.kcl
+snapshot_kind: text
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 118,
+          "id": {
+            "end": 47,
+            "name": "myCircle",
+            "start": 39,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "arguments": [
+                      {
+                        "end": 106,
+                        "properties": [
+                          {
+                            "end": 87,
+                            "key": {
+                              "end": 83,
+                              "name": "radius",
+                              "start": 77,
+                              "type": "Identifier"
+                            },
+                            "start": 77,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "end": 87,
+                              "raw": "4",
+                              "start": 86,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": 4.0
+                            }
+                          },
+                          {
+                            "end": 104,
+                            "key": {
+                              "end": 95,
+                              "name": "center",
+                              "start": 89,
+                              "type": "Identifier"
+                            },
+                            "start": 89,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "elements": [
+                                {
+                                  "end": 100,
+                                  "raw": "0",
+                                  "start": 99,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 0.0
+                                },
+                                {
+                                  "end": 103,
+                                  "raw": "0",
+                                  "start": 102,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": 0.0
+                                }
+                              ],
+                              "end": 104,
+                              "start": 98,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "start": 75,
+                        "type": "ObjectExpression",
+                        "type": "ObjectExpression"
+                      },
+                      {
+                        "end": 110,
+                        "name": "sk",
+                        "start": 108,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      {
+                        "end": 115,
+                        "name": "tag",
+                        "start": 112,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      }
+                    ],
+                    "callee": {
+                      "end": 74,
+                      "name": "circle",
+                      "start": 68,
+                      "type": "Identifier"
+                    },
+                    "end": 116,
+                    "start": 68,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  },
+                  "end": 116,
+                  "start": 61,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 118,
+              "start": 57
+            },
+            "end": 118,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 50,
+                  "name": "sk",
+                  "start": 48,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 55,
+                  "name": "tag",
+                  "start": 52,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 47,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 39,
+          "type": "VariableDeclarator"
+        },
+        "end": 118,
+        "kind": "fn",
+        "start": 36,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 223,
+          "id": {
+            "end": 122,
+            "name": "c1",
+            "start": 120,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 143,
+                    "raw": "'XY'",
+                    "start": 139,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "XY"
+                  }
+                ],
+                "callee": {
+                  "end": 138,
+                  "name": "startSketchOn",
+                  "start": 125,
+                  "type": "Identifier"
+                },
+                "end": 144,
+                "start": 125,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 167,
+                        "raw": "0",
+                        "start": 166,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      },
+                      {
+                        "end": 170,
+                        "raw": "0",
+                        "start": 169,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      }
+                    ],
+                    "end": 171,
+                    "start": 165,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 174,
+                    "start": 173,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 164,
+                  "name": "startProfileAt",
+                  "start": 150,
+                  "type": "Identifier"
+                },
+                "end": 175,
+                "start": 150,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 191,
+                    "start": 190,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 198,
+                    "start": 193,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "mine"
+                  }
+                ],
+                "callee": {
+                  "end": 189,
+                  "name": "myCircle",
+                  "start": 181,
+                  "type": "Identifier"
+                },
+                "end": 199,
+                "start": 181,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 223,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "2": [
+                  {
+                    "end": 223,
+                    "start": 199,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "The tag can be used.",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
+            "start": 125,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 120,
+          "type": "VariableDeclarator"
+        },
+        "end": 223,
+        "kind": "const",
+        "start": 120,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 257,
+          "id": {
+            "end": 228,
+            "name": "ang1",
+            "start": 224,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "computed": false,
+                "end": 256,
+                "object": {
+                  "computed": false,
+                  "end": 251,
+                  "object": {
+                    "end": 246,
+                    "name": "c1",
+                    "start": 244,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "property": {
+                    "end": 251,
+                    "name": "tags",
+                    "start": 247,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 244,
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
+                },
+                "property": {
+                  "end": 256,
+                  "name": "mine",
+                  "start": 252,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "start": 244,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
+              }
+            ],
+            "callee": {
+              "end": 243,
+              "name": "tangentToEnd",
+              "start": 231,
+              "type": "Identifier"
+            },
+            "end": 257,
+            "start": 231,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 224,
+          "type": "VariableDeclarator"
+        },
+        "end": 257,
+        "kind": "const",
+        "start": 224,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 384,
+          "id": {
+            "end": 307,
+            "name": "c2",
+            "start": 305,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "end": 328,
+                    "raw": "'XY'",
+                    "start": 324,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": "XY"
+                  }
+                ],
+                "callee": {
+                  "end": 323,
+                  "name": "startSketchOn",
+                  "start": 310,
+                  "type": "Identifier"
+                },
+                "end": 329,
+                "start": 310,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 352,
+                        "raw": "0",
+                        "start": 351,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      },
+                      {
+                        "end": 355,
+                        "raw": "0",
+                        "start": 354,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": 0.0
+                      }
+                    ],
+                    "end": 356,
+                    "start": 350,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 359,
+                    "start": 358,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 349,
+                  "name": "startProfileAt",
+                  "start": 335,
+                  "type": "Identifier"
+                },
+                "end": 360,
+                "start": 335,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 376,
+                    "start": 375,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 383,
+                    "start": 378,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "mine"
+                  }
+                ],
+                "callee": {
+                  "end": 374,
+                  "name": "myCircle",
+                  "start": 366,
+                  "type": "Identifier"
+                },
+                "end": 384,
+                "start": 366,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 384,
+            "start": 310,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 305,
+          "type": "VariableDeclarator"
+        },
+        "end": 384,
+        "kind": "const",
+        "start": 305,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 418,
+          "id": {
+            "end": 389,
+            "name": "ang2",
+            "start": 385,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "computed": false,
+                "end": 417,
+                "object": {
+                  "computed": false,
+                  "end": 412,
+                  "object": {
+                    "end": 407,
+                    "name": "c2",
+                    "start": 405,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "property": {
+                    "end": 412,
+                    "name": "tags",
+                    "start": 408,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "start": 405,
+                  "type": "MemberExpression",
+                  "type": "MemberExpression"
+                },
+                "property": {
+                  "end": 417,
+                  "name": "mine",
+                  "start": 413,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "start": 405,
+                "type": "MemberExpression",
+                "type": "MemberExpression"
+              }
+            ],
+            "callee": {
+              "end": 404,
+              "name": "tangentToEnd",
+              "start": 392,
+              "type": "Identifier"
+            },
+            "end": 418,
+            "start": 392,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 385,
+          "type": "VariableDeclarator"
+        },
+        "end": 418,
+        "kind": "const",
+        "start": 385,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 419,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 120,
+            "start": 118,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "2": [
+          {
+            "end": 304,
+            "start": 257,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "The same tag declarator can be used again.",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 35,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "A function with a tag parameter.",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

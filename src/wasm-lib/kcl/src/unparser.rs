@@ -3,10 +3,10 @@ use std::fmt::Write;
 use crate::parsing::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportSelector,
-        ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
-        MemberObject, Node, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator,
-        UnaryExpression, VariableDeclaration, VariableKind,
+        CallExpressionKw, DefaultParamVal, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression,
+        ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue,
+        MemberExpression, MemberObject, Node, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program,
+        TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     PIPE_OPERATOR,
 };
@@ -166,7 +166,14 @@ pub(crate) enum ExprContext {
 }
 
 impl Expr {
-    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
+    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, mut ctxt: ExprContext) -> String {
+        let is_decl = matches!(ctxt, ExprContext::Decl);
+        if is_decl {
+            // Just because this expression is being bound to a variable, doesn't mean that every child
+            // expression is being bound. So, reset the expression context if necessary.
+            // This will still preserve the "::Pipe" context though.
+            ctxt = ExprContext::Other;
+        }
         match &self {
             Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
             Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt),
@@ -175,11 +182,7 @@ impl Expr {
             Expr::MemberExpression(mem_exp) => mem_exp.recast(),
             Expr::Literal(literal) => literal.recast(),
             Expr::FunctionExpression(func_exp) => {
-                let mut result = if ctxt == ExprContext::Decl {
-                    String::new()
-                } else {
-                    "fn".to_owned()
-                };
+                let mut result = if is_decl { String::new() } else { "fn".to_owned() };
                 result += &func_exp.recast(options, indentation_level);
                 result
             }
@@ -659,15 +662,18 @@ impl FunctionExpression {
 
 impl Parameter {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let mut result = format!(
-            "{}{}",
-            if self.labeled { "" } else { "@" },
-            self.identifier.name.clone()
-        );
+        let at_sign = if self.labeled { "" } else { "@" };
+        let identifier = &self.identifier.name;
+        let question_mark = if self.default_value.is_some() { "?" } else { "" };
+        let mut result = format!("{at_sign}{identifier}{question_mark}");
         if let Some(ty) = &self.type_ {
             result += ": ";
             result += &ty.recast(options, indentation_level);
         }
+        if let Some(DefaultParamVal::Literal(ref literal)) = self.default_value {
+            let lit = literal.recast();
+            result.push_str(&format!(" = {lit}"));
+        };
 
         result
     }
@@ -2134,8 +2140,10 @@ fn f() {
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(raw, ModuleId::default()).unwrap();
-            let literal = crate::parsing::parser::unsigned_number_literal.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(raw, ModuleId::default()).unwrap();
+            let literal = crate::parsing::parser::unsigned_number_literal
+                .parse(tokens.as_slice())
+                .unwrap();
             assert_eq!(
                 literal.recast(),
                 expected,
@@ -2171,6 +2179,28 @@ sketch002 = startSketchOn({
     }
 
     #[test]
+    fn unparse_fn_unnamed() {
+        let input = r#"squares_out = reduce(arr, 0, fn(i, squares) {
+  return 1
+})
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
+    fn unparse_fn_named() {
+        let input = r#"fn f(x) {
+  return 1
+}
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
     fn recast_objects_with_comments() {
         use winnow::Parser;
         for (i, (input, expected, reason)) in [(
@@ -2191,9 +2221,9 @@ sketch002 = startSketchOn({
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-            crate::parsing::parser::print_tokens(&tokens);
-            let expr = crate::parsing::parser::object.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+            crate::parsing::parser::print_tokens(tokens.as_slice());
+            let expr = crate::parsing::parser::object.parse(tokens.as_slice()).unwrap();
             assert_eq!(
                 expr.recast(&FormatOptions::new(), 0, ExprContext::Other),
                 expected,
@@ -2289,8 +2319,10 @@ sketch002 = startSketchOn({
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-            let expr = crate::parsing::parser::array_elem_by_elem.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+            let expr = crate::parsing::parser::array_elem_by_elem
+                .parse(tokens.as_slice())
+                .unwrap();
             assert_eq!(
                 expr.recast(&FormatOptions::new(), 0, ExprContext::Other),
                 expected,

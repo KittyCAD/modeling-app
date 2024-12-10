@@ -10,7 +10,7 @@ interface AllKeybindingsFieldsProps {}
 
 export const AllKeybindingsFields = forwardRef(
   (
-    props: AllKeybindingsFieldsProps,
+    _props: AllKeybindingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
     // This is how we will get the interaction map from the context
@@ -25,7 +25,7 @@ export const AllKeybindingsFields = forwardRef(
             .map(([category, categoryItems]) => (
               <div className="flex flex-col gap-4 px-2 pr-4">
                 <h2
-                  id={`category-${category}`}
+                  id={`category-${category.replaceAll(/\s/g, '-')}`}
                   className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
                 >
                   {category}

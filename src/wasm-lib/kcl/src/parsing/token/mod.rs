@@ -1,28 +1,221 @@
-use std::str::FromStr;
+// Clippy does not agree with rustc here for some reason.
+#![allow(clippy::needless_lifetimes)]
+
+use std::{fmt, iter::Enumerate, num::NonZeroUsize};
 
 use anyhow::Result;
-use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use parse_display::Display;
 use tower_lsp::lsp_types::SemanticTokenType;
-use winnow::{error::ParseError, stream::ContainsToken};
+use winnow::{
+    self,
+    error::ParseError,
+    stream::{ContainsToken, Stream},
+};
 
 use crate::{
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
     source_range::{ModuleId, SourceRange},
 };
+use tokeniser::Input;
 
 mod tokeniser;
 
-// Re-export
-pub use tokeniser::Input;
 #[cfg(test)]
 pub(crate) use tokeniser::RESERVED_WORDS;
 
+#[derive(Clone, Debug, PartialEq)]
+pub(crate) struct TokenStream {
+    tokens: Vec<Token>,
+}
+
+impl TokenStream {
+    fn new(tokens: Vec<Token>) -> Self {
+        Self { tokens }
+    }
+
+    pub(super) fn remove_unknown(&mut self) -> Vec<Token> {
+        let tokens = std::mem::take(&mut self.tokens);
+        let (tokens, unknown_tokens): (Vec<Token>, Vec<Token>) = tokens
+            .into_iter()
+            .partition(|token| token.token_type != TokenType::Unknown);
+        self.tokens = tokens;
+        unknown_tokens
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &Token> {
+        self.tokens.iter()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.tokens.is_empty()
+    }
+
+    pub fn as_slice(&self) -> TokenSlice {
+        TokenSlice::from(self)
+    }
+}
+
+impl<'a> From<&'a TokenStream> for TokenSlice<'a> {
+    fn from(stream: &'a TokenStream) -> Self {
+        TokenSlice {
+            start: 0,
+            end: stream.tokens.len(),
+            stream,
+        }
+    }
+}
+
+impl IntoIterator for TokenStream {
+    type Item = Token;
+
+    type IntoIter = std::vec::IntoIter<Token>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.tokens.into_iter()
+    }
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct TokenSlice<'a> {
+    stream: &'a TokenStream,
+    start: usize,
+    end: usize,
+}
+
+impl<'a> std::ops::Deref for TokenSlice<'a> {
+    type Target = [Token];
+
+    fn deref(&self) -> &Self::Target {
+        &self.stream.tokens[self.start..self.end]
+    }
+}
+
+impl<'a> TokenSlice<'a> {
+    pub fn token(&self, i: usize) -> &Token {
+        &self.stream.tokens[i + self.start]
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &Token> {
+        (**self).iter()
+    }
+
+    pub fn without_ends(&self) -> Self {
+        Self {
+            start: self.start + 1,
+            end: self.end - 1,
+            stream: self.stream,
+        }
+    }
+}
+
+impl<'a> IntoIterator for TokenSlice<'a> {
+    type Item = &'a Token;
+
+    type IntoIter = std::slice::Iter<'a, Token>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.stream.tokens[self.start..self.end].iter()
+    }
+}
+
+impl<'a> Stream for TokenSlice<'a> {
+    type Token = Token;
+    type Slice = Self;
+    type IterOffsets = Enumerate<std::vec::IntoIter<Token>>;
+    type Checkpoint = Checkpoint;
+
+    fn iter_offsets(&self) -> Self::IterOffsets {
+        #[allow(clippy::unnecessary_to_owned)]
+        self.to_vec().into_iter().enumerate()
+    }
+
+    fn eof_offset(&self) -> usize {
+        self.len()
+    }
+
+    fn next_token(&mut self) -> Option<Self::Token> {
+        let token = self.first()?.clone();
+        self.start += 1;
+        Some(token)
+    }
+
+    fn offset_for<P>(&self, predicate: P) -> Option<usize>
+    where
+        P: Fn(Self::Token) -> bool,
+    {
+        self.iter().position(|b| predicate(b.clone()))
+    }
+
+    fn offset_at(&self, tokens: usize) -> Result<usize, winnow::error::Needed> {
+        if let Some(needed) = tokens.checked_sub(self.len()).and_then(NonZeroUsize::new) {
+            Err(winnow::error::Needed::Size(needed))
+        } else {
+            Ok(tokens)
+        }
+    }
+
+    fn next_slice(&mut self, offset: usize) -> Self::Slice {
+        assert!(self.start + offset <= self.end);
+
+        let next = TokenSlice {
+            stream: self.stream,
+            start: self.start,
+            end: self.start + offset,
+        };
+        self.start += offset;
+        next
+    }
+
+    fn checkpoint(&self) -> Self::Checkpoint {
+        Checkpoint(self.start, self.end)
+    }
+
+    fn reset(&mut self, checkpoint: &Self::Checkpoint) {
+        self.start = checkpoint.0;
+        self.end = checkpoint.1;
+    }
+
+    fn raw(&self) -> &dyn fmt::Debug {
+        self
+    }
+}
+
+impl<'a> winnow::stream::Offset for TokenSlice<'a> {
+    fn offset_from(&self, start: &Self) -> usize {
+        self.start - start.start
+    }
+}
+
+impl<'a> winnow::stream::Offset<Checkpoint> for TokenSlice<'a> {
+    fn offset_from(&self, start: &Checkpoint) -> usize {
+        self.start - start.0
+    }
+}
+
+impl winnow::stream::Offset for Checkpoint {
+    fn offset_from(&self, start: &Self) -> usize {
+        self.0 - start.0
+    }
+}
+
+impl<'a> winnow::stream::StreamIsPartial for TokenSlice<'a> {
+    type PartialState = ();
+
+    fn complete(&mut self) -> Self::PartialState {}
+
+    fn restore_partial(&mut self, _: Self::PartialState) {}
+
+    fn is_partial_supported() -> bool {
+        false
+    }
+}
+
+#[derive(Clone, Debug)]
+pub struct Checkpoint(usize, usize);
+
 /// The types of tokens.
-#[derive(Debug, PartialEq, Eq, Copy, Clone, Deserialize, Serialize, JsonSchema, FromStr, Display)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, PartialEq, Eq, Copy, Clone, Display)]
 #[display(style = "camelCase")]
 pub enum TokenType {
     /// A number.
@@ -73,6 +266,8 @@ pub enum TokenType {
 impl TryFrom<TokenType> for SemanticTokenType {
     type Error = anyhow::Error;
     fn try_from(token_type: TokenType) -> Result<Self> {
+        // If you return a new kind of `SemanticTokenType`, make sure to update `SEMANTIC_TOKEN_TYPES`
+        // in the LSP implementation.
         Ok(match token_type {
             TokenType::Number => Self::NUMBER,
             TokenType::Word => Self::VARIABLE,
@@ -102,52 +297,6 @@ impl TryFrom<TokenType> for SemanticTokenType {
 }
 
 impl TokenType {
-    // This is for the lsp server.
-    // Don't call this function directly in the code use a lazy_static instead
-    // like we do in the lsp server.
-    pub fn all_semantic_token_types() -> Result<Vec<SemanticTokenType>> {
-        let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
-        let mut generator = schemars::gen::SchemaGenerator::new(settings);
-
-        let schema = TokenType::json_schema(&mut generator);
-        let schemars::schema::Schema::Object(o) = &schema else {
-            anyhow::bail!("expected object schema: {:#?}", schema);
-        };
-        let Some(subschemas) = &o.subschemas else {
-            anyhow::bail!("expected subschemas: {:#?}", schema);
-        };
-        let Some(one_ofs) = &subschemas.one_of else {
-            anyhow::bail!("expected one_of: {:#?}", schema);
-        };
-
-        let mut semantic_tokens = vec![];
-        for one_of in one_ofs {
-            let schemars::schema::Schema::Object(o) = one_of else {
-                anyhow::bail!("expected object one_of: {:#?}", one_of);
-            };
-
-            let Some(enum_values) = o.enum_values.as_ref() else {
-                anyhow::bail!("expected enum values: {:#?}", o);
-            };
-
-            if enum_values.len() > 1 {
-                anyhow::bail!("expected only one enum value: {:#?}", o);
-            }
-
-            if enum_values.is_empty() {
-                anyhow::bail!("expected at least one enum value: {:#?}", o);
-            }
-
-            let label = TokenType::from_str(&enum_values[0].to_string().replace('"', ""))?;
-            if let Ok(semantic_token_type) = SemanticTokenType::try_from(label) {
-                semantic_tokens.push(semantic_token_type);
-            }
-        }
-
-        Ok(semantic_tokens)
-    }
-
     pub fn is_whitespace(&self) -> bool {
         matches!(self, Self::Whitespace)
     }
@@ -157,17 +306,15 @@ impl TokenType {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Deserialize, Serialize, Clone)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Token {
-    #[serde(rename = "type")]
     pub token_type: TokenType,
     /// Offset in the source code where this token begins.
     pub start: usize,
     /// Offset in the source code where this token ends.
     pub end: usize,
-    #[serde(default, skip_serializing_if = "ModuleId::is_top_level")]
-    pub module_id: ModuleId,
-    pub value: String,
+    pub(super) module_id: ModuleId,
+    pub(super) value: String,
 }
 
 impl ContainsToken<Token> for (TokenType, &str) {
@@ -249,7 +396,7 @@ impl From<&Token> for SourceRange {
     }
 }
 
-pub fn lexer(s: &str, module_id: ModuleId) -> Result<Vec<Token>, KclError> {
+pub fn lex(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
     tokeniser::lex(s, module_id).map_err(From::from)
 }
 
@@ -279,17 +426,5 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
             source_ranges: vec![SourceRange::new(offset, offset + 1, module_id)],
             message: format!("found unknown token '{}'", bad_token),
         })
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // We have this as a test so we can ensure it never panics with an unwrap in the server.
-    #[test]
-    fn test_token_type_to_semantic_token_type() {
-        let semantic_types = TokenType::all_semantic_token_types().unwrap();
-        assert!(!semantic_types.is_empty());
     }
 }

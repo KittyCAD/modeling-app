@@ -82,16 +82,15 @@ mod wasm;
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError};
-pub use execution::{ExecState, ExecutorContext, ExecutorSettings};
+pub use execution::{
+    cache::{CacheInformation, OldAstState},
+    ExecState, ExecutorContext, ExecutorSettings,
+};
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
     kcl::{Backend as KclLspBackend, Server as KclLspServerSubCommand},
 };
-pub use parsing::ast::{
-    cache::{CacheInformation, OldAstState},
-    modify::modify_ast_for_sketch,
-    types::FormatOptions,
-};
+pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::{ModuleId, SourceRange};
 
@@ -138,7 +137,7 @@ pub use lsp::test_util::kcl_lsp_server;
 impl Program {
     pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationError>), KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lexer(input, module_id)?;
+        let tokens = parsing::token::lex(input, module_id)?;
         let (ast, errs) = parsing::parse_tokens(tokens).0?;
 
         Ok((ast.map(|ast| Program { ast }), errs))
@@ -146,7 +145,7 @@ impl Program {
 
     pub fn parse_no_errs(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
-        let tokens = parsing::token::lexer(input, module_id)?;
+        let tokens = parsing::token::lex(input, module_id)?;
         let ast = parsing::parse_tokens(tokens).parse_errs_as_err()?;
 
         Ok(Program { ast })
