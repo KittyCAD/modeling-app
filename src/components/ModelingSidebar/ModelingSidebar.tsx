@@ -247,7 +247,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
               <ModelingPane
                 key={pane.id}
                 icon={pane.icon}
-                title=""
+                title={pane.sidebarName}
                 onClose={() => {}}
                 id={`${pane.id}-pane`}
               >
