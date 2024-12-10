@@ -596,7 +596,13 @@ export function findAllPreviousVariables(
 type ReplacerFn = (
   _ast: Node<Program>,
   varName: string
-) => { modifiedAst: Node<Program>; pathToReplaced: PathToNode } | Error
+) =>
+  | {
+      modifiedAst: Node<Program>
+      pathToReplaced: PathToNode
+      exprInsertIndex: number
+    }
+  | Error
 
 export function isNodeSafeToReplacePath(
   ast: Program,
@@ -648,7 +654,7 @@ export function isNodeSafeToReplacePath(
     if (err(_nodeToReplace)) return _nodeToReplace
     const nodeToReplace = _nodeToReplace.node as any
     nodeToReplace[last[0]] = identifier
-    return { modifiedAst: _ast, pathToReplaced }
+    return { modifiedAst: _ast, pathToReplaced, exprInsertIndex: index }
   }
 
   const hasPipeSub = isTypeInValue(finVal as Expr, 'PipeSubstitution')

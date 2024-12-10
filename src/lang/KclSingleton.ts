@@ -353,11 +353,11 @@ export class KclManager {
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     this.execState = execState
     // updateArtifactGraph relies on updated executeState/programMemory
-    await this.engineCommandManager.updateArtifactGraph(this.ast)
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
     }
     this.ast = { ...ast }
+    await this.engineCommandManager.updateArtifactGraph(this.ast)
     this._executeCallback()
     if (!isInterrupted)
       sceneInfra.modelingSend({ type: 'code edit during sketch' })

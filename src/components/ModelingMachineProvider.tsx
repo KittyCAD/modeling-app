@@ -614,7 +614,6 @@ export const ModelingMachineProvider = ({
           }
 
           const canShell = canShellSelection(selectionRanges)
-          console.log('canShellSelection', canShellSelection(selectionRanges))
           if (err(canShell)) return false
           return canShell
         },
@@ -1193,9 +1192,11 @@ export const ModelingMachineProvider = ({
             let result: {
               modifiedAst: Node<Program>
               pathToReplaced: PathToNode | null
+              exprInsertIndex: number
             } = {
               modifiedAst: parsed,
               pathToReplaced: null,
+              exprInsertIndex: -1,
             }
             // If the user provided a constant name,
             // we need to insert the named constant
@@ -1225,6 +1226,7 @@ export const ModelingMachineProvider = ({
               result = {
                 modifiedAst: parseResultAfterInsertion.program,
                 pathToReplaced: astAfterReplacement.pathToReplaced,
+                exprInsertIndex: astAfterReplacement.exprInsertIndex,
               }
             } else if ('valueText' in data.namedValue) {
               // If they didn't provide a constant name,
@@ -1255,12 +1257,22 @@ export const ModelingMachineProvider = ({
             parsed = parsed as Node<Program>
             if (!result.pathToReplaced)
               return Promise.reject(new Error('No path to replaced node'))
+            const {
+              updatedSketchEntryNodePath,
+              updatedSketchNodePaths,
+              updatedPlaneNodePath,
+            } = updateSketchDetailsNodePaths({
+              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
+              sketchNodePaths: sketchDetails.sketchNodePaths,
+              planeNodePath: sketchDetails.planeNodePath,
+              exprInsertIndex: result.exprInsertIndex,
+            })
 
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                result.pathToReplaced || [],
-                sketchDetails.sketchNodePaths,
-                sketchDetails.planeNodePath,
+                updatedSketchEntryNodePath,
+                updatedSketchNodePaths,
+                updatedPlaneNodePath,
                 parsed,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1281,7 +1293,9 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedSketchEntryNodePath: result.pathToReplaced,
+              updatedSketchEntryNodePath,
+              updatedSketchNodePaths,
+              updatedPlaneNodePath,
             }
           }
         ),

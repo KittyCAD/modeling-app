@@ -1259,12 +1259,15 @@ extrude001 = extrude(50, sketch001)
 
     await page.waitForTimeout(600)
 
+    const firstClickCoords = { x: 650, y: 200 } as const
     // Place a point because the line tool will exit if no points are pressed
-    await page.mouse.click(650, 200)
+    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
     await page.waitForTimeout(600)
 
     // Code before exiting the tool
-    let previousCodeContent = await page.locator('.cm-content').innerText()
+    let previousCodeContent = (
+      await page.locator('.cm-content').innerText()
+    ).replace(/\s+/g, '')
 
     // deselect the line tool by clicking it
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -1276,13 +1279,22 @@ extrude001 = extrude(50, sketch001)
     await page.mouse.click(750, 200)
     await page.waitForTimeout(100)
 
-    // expect no change
-    await expect(page.locator('.cm-content')).toHaveText(previousCodeContent)
+    await expect
+      .poll(async () => {
+        let str = await page.locator('.cm-content').innerText()
+        str = str.replace(/\s+/g, '')
+        return str
+      })
+      .toBe(previousCodeContent)
 
     // select line tool again
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
     await u.closeDebugPanel()
+
+    // Click to continue profile
+    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
+    await page.waitForTimeout(100)
 
     // line tool should work as expected again
     await page.mouse.click(700, 200)
