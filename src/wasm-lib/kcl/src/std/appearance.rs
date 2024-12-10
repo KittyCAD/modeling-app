@@ -108,6 +108,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///
 /// ```no_run
 /// /// You can set the appearance before or after you shell it will yield the same result.
+/// /// This example shows setting the appearance _after_ the shell.
 /// const firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
@@ -129,6 +130,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///
 /// ```no_run
 /// /// You can set the appearance before or after you shell it will yield the same result.
+/// /// This example shows setting the appearance _before_ the shell.
 /// const firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
@@ -149,7 +151,8 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```
 ///
 /// ```no_run
-/// /// Color a 3D pattern, _before_ the pattern.
+/// /// Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
+/// /// This example shows _before_ the pattern.
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 2], %)
@@ -171,7 +174,8 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```
 ///
 /// ```no_run
-/// /// Color a 3D pattern, _after_ the pattern.
+/// /// Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
+/// /// This example shows _after_ the pattern.
 /// const exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 2], %)
