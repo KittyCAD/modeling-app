@@ -40,6 +40,7 @@ beforeAll(async () => {
       makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
       setMediaStream: () => {},
       setIsStreamReady: () => {},
+      modifyGrid: async () => {},
       callbackOnEngineLiteConnect: () => {
         resolve(true)
       },

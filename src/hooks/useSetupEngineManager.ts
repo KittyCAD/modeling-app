@@ -2,7 +2,7 @@ import { useLayoutEffect, useEffect, useRef } from 'react'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
-import { makeDefaultPlanes } from 'lang/wasm'
+import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { useAppState, useAppStream } from 'AppState'
@@ -55,6 +55,9 @@ export function useSetupEngineManager(
       settings,
       makeDefaultPlanes: () => {
         return makeDefaultPlanes(kclManager.engineCommandManager)
+      },
+      modifyGrid: (hidden: boolean) => {
+        return modifyGrid(kclManager.engineCommandManager, hidden)
       },
     })
     hasSetNonZeroDimensions.current = true

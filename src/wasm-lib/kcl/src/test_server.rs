@@ -55,11 +55,7 @@ async fn do_execute_and_snapshot(
     program: Program,
 ) -> Result<(crate::execution::ExecState, image::DynamicImage), ExecError> {
     let mut exec_state = Default::default();
-    let snapshot_png_bytes = ctx
-        .execute_and_prepare_snapshot(&program, &mut exec_state)
-        .await?
-        .contents
-        .0;
+    let snapshot_png_bytes = ctx.execute_and_prepare(&program, &mut exec_state).await?.contents.0;
 
     // Decode the snapshot, return it.
     let img = image::ImageReader::new(std::io::Cursor::new(snapshot_png_bytes))
