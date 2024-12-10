@@ -82,7 +82,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
-///  |> appearance({color: '#ff0000', metalness: 50, roughness: 50, opacity: 100})
+///  |> appearance({color: '#ff0000', metalness: 50, roughness: 50, opacity: 100}, %)
 /// ```
 #[stdlib {
     name = "appearance",
