@@ -78,52 +78,195 @@ snapshot_kind: text
       },
       {
         "declaration": {
-          "end": 55,
+          "end": 77,
           "id": {
-            "end": 40,
+            "end": 43,
+            "name": "add",
+            "start": 40,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "end": 75,
+                    "left": {
+                      "end": 67,
+                      "name": "x",
+                      "start": 66,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "+",
+                    "right": {
+                      "end": 75,
+                      "name": "delta",
+                      "start": 70,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "start": 66,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "end": 75,
+                  "start": 59,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 77,
+              "start": 55
+            },
+            "end": 77,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 46,
+                  "name": "x",
+                  "start": 45,
+                  "type": "Identifier"
+                },
+                "labeled": false
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 53,
+                  "name": "delta",
+                  "start": 48,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 43,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 40,
+          "type": "VariableDeclarator"
+        },
+        "end": 77,
+        "kind": "fn",
+        "start": 37,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 97,
+          "id": {
+            "end": 82,
             "name": "two",
-            "start": 37,
+            "start": 79,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 54,
+                "end": 96,
                 "raw": "1",
-                "start": 53,
+                "start": 95,
                 "type": "Literal",
                 "type": "Literal",
                 "value": 1.0
               }
             ],
             "callee": {
-              "end": 52,
+              "end": 94,
               "name": "increment",
-              "start": 43,
+              "start": 85,
               "type": "Identifier"
             },
-            "end": 55,
-            "start": 43,
+            "end": 97,
+            "start": 85,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 37,
+          "start": 79,
           "type": "VariableDeclarator"
         },
-        "end": 55,
+        "end": 97,
         "kind": "const",
-        "start": 37,
+        "start": 79,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 122,
+          "id": {
+            "end": 103,
+            "name": "three",
+            "start": 98,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "delta"
+                },
+                "arg": {
+                  "end": 121,
+                  "raw": "2",
+                  "start": 120,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 2.0
+                }
+              }
+            ],
+            "callee": {
+              "end": 109,
+              "name": "add",
+              "start": 106,
+              "type": "Identifier"
+            },
+            "end": 122,
+            "start": 106,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 111,
+              "raw": "1",
+              "start": 110,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 1.0
+            }
+          },
+          "start": 98,
+          "type": "VariableDeclarator"
+        },
+        "end": 122,
+        "kind": "const",
+        "start": 98,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 56,
+    "end": 123,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
             "end": 37,
             "start": 35,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "1": [
+          {
+            "end": 79,
+            "start": 77,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
