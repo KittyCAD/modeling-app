@@ -444,9 +444,38 @@ export class KclManager {
       this.clearAst()
       return
     }
+
+    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, zoomToFit)
+
     this.ast = { ...ast }
     return this.executeAst({ zoomToFit })
   }
+  /**
+   * This will override the zoom to fit to zoom into the model if the previous AST was empty.
+   * Workflows this improves,
+   *  When someone comments the entire file then uncomments the entire file it zooms to the model
+   *  When someone CRTL+A and deletes the code then adds the code back it zooms to the model
+   *  When someone CRTL+A and copies new code into the editor it zooms to the model
+   */
+  tryToZoomToFitOnCodeUpdate(
+    ast: Node<Program>,
+    zoomToFit: boolean | undefined
+  ) {
+    const isAstEmpty = this._isAstEmpty(this._ast)
+    const isRequestedAstEmpty = this._isAstEmpty(ast)
+
+    // If the AST went from empty to not empty or
+    // If the user has all of the content selected and they copy new code in
+    if (
+      (isAstEmpty && !isRequestedAstEmpty) ||
+      editorManager.isAllTextSelected
+    ) {
+      return true
+    }
+
+    return zoomToFit
+  }
+
   async format() {
     const originalCode = codeManager.code
     const ast = await this.safeParse(originalCode)
@@ -620,7 +649,8 @@ export class KclManager {
     })
   }
 
-  // Determines if there is no KCL code which means it is executing a blank KCL file
+  // An AST is empty if there are 0 lines of code in the editor or if all of the code is commented out
+  // This code will not tell you which scenario only if the AST evaluates to empty
   _isAstEmpty(ast: Node<Program>) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
   }
