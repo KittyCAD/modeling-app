@@ -82,7 +82,7 @@ tower-lsp = { version = "0.20.0", default-features = false, features = [
 ] }
 wasm-bindgen = "0.2.99"
 wasm-bindgen-futures = "0.4.49"
-web-sys = { version = "0.3.72", features = ["console"] }
+web-sys = { version = "0.3.76", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 approx = "0.5"
