@@ -32,6 +32,7 @@ pub enum Node<'a> {
     UnaryExpression(NodeRef<'a, types::UnaryExpression>),
     IfExpression(NodeRef<'a, types::IfExpression>),
     ElseIf(&'a types::ElseIf),
+    LabelledExpression(NodeRef<'a, types::LabelledExpression>),
 
     Parameter(&'a types::Parameter),
 
@@ -79,6 +80,7 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::ObjectProperty(n) => SourceRange::from(*n),
             Node::MemberObject(m) => SourceRange::new(m.start(), m.end(), m.module_id()),
             Node::IfExpression(n) => SourceRange::from(*n),
+            Node::LabelledExpression(n) => SourceRange::from(*n),
             Node::LiteralIdentifier(l) => SourceRange::new(l.start(), l.end(), l.module_id()),
 
             // This is broken too
@@ -120,6 +122,7 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
             types::Expr::MemberExpression(me) => me.as_ref().into(),
             types::Expr::UnaryExpression(ue) => ue.as_ref().into(),
             types::Expr::IfExpression(e) => e.as_ref().into(),
+            types::Expr::LabelledExpression(e) => e.as_ref().into(),
             types::Expr::None(n) => n.into(),
         }
     }
@@ -185,5 +188,6 @@ impl_from_ref!(Node, Parameter);
 impl_from_ref!(Node, MemberObject);
 impl_from!(Node, IfExpression);
 impl_from!(Node, ElseIf);
+impl_from!(Node, LabelledExpression);
 impl_from_ref!(Node, LiteralIdentifier);
 impl_from!(Node, KclNone);
