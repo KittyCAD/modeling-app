@@ -1,5 +1,7 @@
 import { LspWorkerEventType } from '@kittycad/codemirror-lsp-client'
 
+import { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
+
 export enum LspWorker {
   Kcl = 'kcl',
   Copilot = 'copilot',
@@ -7,6 +9,7 @@ export enum LspWorker {
 export interface KclWorkerOptions {
   wasmUrl: string
   token: string
+  baseUnit: UnitLength
   apiBaseUrl: string
 }
 
