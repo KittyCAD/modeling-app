@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use anyhow::Result;
 
 use crate::{
-    ast::types::{BinaryPart, Expr, LiteralValue, ObjectExpression, UnaryOperator},
     lint::rule::{def_finding, Discovered, Finding},
+    parsing::ast::types::{BinaryPart, Expr, LiteralValue, ObjectExpression, UnaryOperator},
     walk::Node,
     SourceRange,
 };

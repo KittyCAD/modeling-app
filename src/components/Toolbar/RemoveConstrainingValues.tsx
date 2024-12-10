@@ -40,7 +40,10 @@ export function removeConstrainingValuesInfo({
         otherSelections: [],
         graphSelections: nodes.map(
           (node): Selection => ({
-            codeRef: codeRefFromRange([node.start, node.end], kclManager.ast),
+            codeRef: codeRefFromRange(
+              [node.start, node.end, true],
+              kclManager.ast
+            ),
           })
         ),
       }

@@ -32,7 +32,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{DefaultPlanes, IdGenerator, Point3d},
+    execution::{DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -116,6 +116,61 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
+
+        Ok(())
+    }
+
+    /// Set the visibility of edges.
+    async fn set_edge_visibility(
+        &self,
+        visible: bool,
+        source_range: SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
+        self.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            source_range,
+            &ModelingCmd::from(mcmd::EdgeLinesVisible { hidden: !visible }),
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    async fn set_units(
+        &self,
+        units: crate::UnitLength,
+        source_range: SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
+        // Before we even start executing the program, set the units.
+        self.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            source_range,
+            &ModelingCmd::from(mcmd::SetSceneUnits { unit: units.into() }),
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    /// Re-run the command to apply the settings.
+    async fn reapply_settings(
+        &self,
+        settings: &crate::ExecutorSettings,
+        source_range: SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
+        // Set the edge visibility.
+        self.set_edge_visibility(settings.highlight_edges, source_range).await?;
+
+        // Change the units.
+        self.set_units(settings.units, source_range).await?;
+
+        // Send the command to show the grid.
+        self.modify_grid(!settings.show_grid, source_range).await?;
+
+        // We do not have commands for changing ssao on the fly.
+
+        // Flush the batch queue, so the settings are applied right away.
+        self.flush_batch(false, source_range).await?;
 
         Ok(())
     }
@@ -342,92 +397,80 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
-        let plane_settings: HashMap<PlaneName, (Uuid, Point3d, Point3d, Option<Color>)> = HashMap::from([
+        let plane_settings: Vec<(PlaneName, Uuid, Point3d, Point3d, Option<Color>)> = vec![
             (
                 PlaneName::Xy,
-                (
-                    id_generator.next_uuid(),
-                    Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                    Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                    Some(Color {
-                        r: 0.7,
-                        g: 0.28,
-                        b: 0.28,
-                        a: 0.4,
-                    }),
-                ),
+                id_generator.next_uuid(),
+                Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Some(Color {
+                    r: 0.7,
+                    g: 0.28,
+                    b: 0.28,
+                    a: 0.4,
+                }),
             ),
             (
                 PlaneName::Yz,
-                (
-                    id_generator.next_uuid(),
-                    Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                    Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    Some(Color {
-                        r: 0.28,
-                        g: 0.7,
-                        b: 0.28,
-                        a: 0.4,
-                    }),
-                ),
+                id_generator.next_uuid(),
+                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Some(Color {
+                    r: 0.28,
+                    g: 0.7,
+                    b: 0.28,
+                    a: 0.4,
+                }),
             ),
             (
                 PlaneName::Xz,
-                (
-                    id_generator.next_uuid(),
-                    Point3d { x: 1.0, y: 0.0, z: 0.0 },
-                    Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    Some(Color {
-                        r: 0.28,
-                        g: 0.28,
-                        b: 0.7,
-                        a: 0.4,
-                    }),
-                ),
+                id_generator.next_uuid(),
+                Point3d { x: 1.0, y: 0.0, z: 0.0 },
+                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                Some(Color {
+                    r: 0.28,
+                    g: 0.28,
+                    b: 0.7,
+                    a: 0.4,
+                }),
             ),
             (
                 PlaneName::NegXy,
-                (
-                    id_generator.next_uuid(),
-                    Point3d {
-                        x: -1.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    Point3d { x: 0.0, y: 1.0, z: 0.0 },
-                    None,
-                ),
+                id_generator.next_uuid(),
+                Point3d {
+                    x: -1.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                Point3d { x: 0.0, y: 1.0, z: 0.0 },
+                None,
             ),
             (
                 PlaneName::NegYz,
-                (
-                    id_generator.next_uuid(),
-                    Point3d {
-                        x: 0.0,
-                        y: -1.0,
-                        z: 0.0,
-                    },
-                    Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    None,
-                ),
+                id_generator.next_uuid(),
+                Point3d {
+                    x: 0.0,
+                    y: -1.0,
+                    z: 0.0,
+                },
+                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                None,
             ),
             (
                 PlaneName::NegXz,
-                (
-                    id_generator.next_uuid(),
-                    Point3d {
-                        x: -1.0,
-                        y: 0.0,
-                        z: 0.0,
-                    },
-                    Point3d { x: 0.0, y: 0.0, z: 1.0 },
-                    None,
-                ),
+                id_generator.next_uuid(),
+                Point3d {
+                    x: -1.0,
+                    y: 0.0,
+                    z: 0.0,
+                },
+                Point3d { x: 0.0, y: 0.0, z: 1.0 },
+                None,
             ),
-        ]);
+        ];
 
         let mut planes = HashMap::new();
-        for (name, (plane_id, x_axis, y_axis, color)) in plane_settings {
+        for (name, plane_id, x_axis, y_axis, color) in plane_settings {
             planes.insert(
                 name,
                 self.make_default_plane(plane_id, x_axis, y_axis, color, source_range)
@@ -475,6 +518,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         responses: HashMap<uuid::Uuid, BatchResponse>,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         // Iterate over the responses and check for errors.
+        #[expect(
+            clippy::iter_over_hash_type,
+            reason = "modeling command uses a HashMap and keys are random, so we don't really have a choice"
+        )]
         for (cmd_id, resp) in responses.iter() {
             match resp {
                 BatchResponse::Success { response } => {
@@ -512,11 +559,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }))
     }
 
-    async fn modify_grid(&self, hidden: bool) -> Result<(), KclError> {
+    async fn modify_grid(&self, hidden: bool, source_range: SourceRange) -> Result<(), KclError> {
         // Hide/show the grid.
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            Default::default(),
+            source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_OBJECT_ID,
@@ -527,15 +574,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Hide/show the grid scale text.
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            Default::default(),
+            source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_SCALE_TEXT_OBJECT_ID,
             }),
         )
         .await?;
-
-        self.flush_batch(false, Default::default()).await?;
 
         Ok(())
     }

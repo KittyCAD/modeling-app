@@ -1,0 +1,5 @@
+export three = 3
+
+export fn foo() {
+  return 42
+}

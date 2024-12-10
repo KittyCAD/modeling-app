@@ -139,9 +139,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'loft',
-        onClick: () => console.error('Loft not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Loft', groupId: 'modeling' },
+          }),
+        disabled: (state) => !state.can({ type: 'Loft' }),
         icon: 'loft',
-        status: 'kcl-only',
+        status: 'available',
         title: 'Loft',
         hotkey: 'L',
         description:
@@ -185,9 +190,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'shell',
-        onClick: () => console.error('Shell not yet implemented'),
+        onClick: ({ commandBarSend }) => {
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Shell', groupId: 'modeling' },
+          })
+        },
+        disabled: (state) => !state.can({ type: 'Shell' }),
         icon: 'shell',
-        status: 'kcl-only',
+        status: 'available',
         title: 'Shell',
         description: 'Hollow out a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/shell' }],
@@ -529,13 +540,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'constraint-length',
-          disabled: (state) =>
-            !(
-              state.matches({ Sketch: 'SketchIdle' }) &&
-              state.can({ type: 'Constrain length' })
-            ),
-          onClick: ({ modelingSend }) =>
-            modelingSend({ type: 'Constrain length' }),
+          disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: {
+                name: 'Constrain length',
+                groupId: 'modeling',
+              },
+            }),
           icon: 'dimension',
           status: 'available',
           title: 'Length',

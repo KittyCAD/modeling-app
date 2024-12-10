@@ -53,7 +53,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       settings: settings.context,
       platform: getPlatformString(),
     }),
-    [kclContext.errors, settings.context]
+    [kclContext.diagnostics, settings.context]
   )
 
   const sidebarActions: SidebarAction[] = [

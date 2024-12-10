@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import { trap } from 'lib/trap'
 import { codeToIdSelections } from 'lib/selections'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
+import { defaultSourceRange } from 'lang/wasm'
 
 export function AstExplorer() {
   const { context } = useModelingContext()
@@ -46,7 +47,7 @@ export function AstExplorer() {
       <div
         className="h-full relative"
         onMouseLeave={(e) => {
-          editorManager.setHighlightRange([[0, 0]])
+          editorManager.setHighlightRange([defaultSourceRange()])
         }}
       >
         <pre className="text-xs">
@@ -115,15 +116,19 @@ function DisplayObj({
         hasCursor ? 'bg-violet-100/80 dark:bg-violet-100/25' : ''
       }`}
       onMouseEnter={(e) => {
-        editorManager.setHighlightRange([[obj?.start || 0, obj.end]])
+        editorManager.setHighlightRange([[obj?.start || 0, obj.end, true]])
         e.stopPropagation()
       }}
       onMouseMove={(e) => {
         e.stopPropagation()
-        editorManager.setHighlightRange([[obj?.start || 0, obj.end]])
+        editorManager.setHighlightRange([[obj?.start || 0, obj.end, true]])
       }}
       onClick={(e) => {
-        const range: [number, number] = [obj?.start || 0, obj.end || 0]
+        const range: [number, number, boolean] = [
+          obj?.start || 0,
+          obj.end || 0,
+          true,
+        ]
         const idInfo = codeToIdSelections([
           { codeRef: codeRefFromRange(range, kclManager.ast) },
         ])[0]

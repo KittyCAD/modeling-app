@@ -1,4 +1,4 @@
-import { parse, Program, recast, initPromise } from './wasm'
+import { assertParse, Program, recast, initPromise } from './wasm'
 import fs from 'node:fs'
 import { err } from 'lib/trap'
 
@@ -394,8 +394,6 @@ describe('it recasts binary expression using brackets where needed', () => {
 // helpers
 
 function code2ast(code: string): { ast: Program } {
-  const ast = parse(code)
-  // eslint-ignore-next-line
-  if (err(ast)) throw ast
+  const ast = assertParse(code)
   return { ast }
 }

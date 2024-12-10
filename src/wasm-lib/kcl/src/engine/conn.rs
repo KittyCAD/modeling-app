@@ -22,7 +22,7 @@ use super::ExecutionKind;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::{DefaultPlanes, IdGenerator},
+    execution::{DefaultPlanes, IdGenerator},
     SourceRange,
 };
 
@@ -213,7 +213,12 @@ impl EngineConnection {
                             WebSocketResponse::Success(SuccessWebSocketResponse {
                                 resp: OkWebSocketResponseData::ModelingBatch { responses },
                                 ..
-                            }) => {
+                            }) =>
+                            {
+                                #[expect(
+                                    clippy::iter_over_hash_type,
+                                    reason = "modeling command uses a HashMap and keys are random, so we don't really have a choice"
+                                )]
                                 for (resp_id, batch_response) in responses {
                                     let id: uuid::Uuid = (*resp_id).into();
                                     match batch_response {

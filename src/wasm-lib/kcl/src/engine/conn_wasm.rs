@@ -11,7 +11,7 @@ use wasm_bindgen::prelude::*;
 use crate::{
     engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
-    executor::{DefaultPlanes, IdGenerator},
+    execution::{DefaultPlanes, IdGenerator},
     SourceRange,
 };
 

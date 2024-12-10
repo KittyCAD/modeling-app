@@ -943,6 +943,110 @@ sketch002 = startSketchOn(extrude001, 'END')
 `.replace(/\s/g, '')
     )
   })
+
+  /* TODO: once we fix bug turn on.
+   test('empty-scene default-planes act as expected when spaces in file', async ({
+    page,
+    browserName,
+  }) => {
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const unHoveredColor: [number, number, number] = [47, 47, 93]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await u.openAndClearDebugPanel()
+
+    // Fill with spaces
+    await u.codeLocator.fill(`               
+`)
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+  })
+
+  test('empty-scene default-planes act as expected when only code comments in file', async ({
+    page,
+    browserName,
+  }) => {
+
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1200, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const unHoveredColor: [number, number, number] = [47, 47, 93]
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await u.openAndClearDebugPanel()
+
+    // Fill with spaces
+    await u.codeLocator.fill(`// this is a code comments ya nerds
+`)
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await page.waitForTimeout(200)
+
+    // color should not change for having been hovered
+    expect(
+      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+    ).toBeLessThan(8)
+  })*/
+
   test('empty-scene default-planes act as expected', async ({
     page,
     browserName,

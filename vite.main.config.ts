@@ -2,7 +2,7 @@ import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig, mergeConfig } from 'vite'
 import { configDefaults } from 'vitest/config'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import vitePluginEslint from 'vite-plugin-eslint'
+import vitePluginEslint from '@nabla/vite-plugin-eslint'
 import vitePluginPackageVersion from 'vite-plugin-package-version'
 import {
   getBuildConfig,

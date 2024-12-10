@@ -1,29 +1,30 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing import_side_effect.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
         "end": 40,
-        "items": [
-          {
-            "alias": null,
-            "end": 10,
-            "name": {
-              "end": 10,
-              "name": "foo",
-              "start": 7,
-              "type": "Identifier"
-            },
-            "start": 7,
-            "type": "ImportItem"
-          }
-        ],
         "path": "export_side_effect.kcl",
-        "raw_path": "\"export_side_effect.kcl\"",
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 10,
+              "name": {
+                "end": 10,
+                "name": "foo",
+                "start": 7,
+                "type": "Identifier"
+              },
+              "start": 7,
+              "type": "ImportItem"
+            }
+          ]
+        },
         "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"

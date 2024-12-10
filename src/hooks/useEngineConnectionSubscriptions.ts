@@ -18,7 +18,7 @@ import {
 import { err, reportRejection } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { CallExpression } from 'lang/wasm'
+import { CallExpression, defaultSourceRange } from 'lang/wasm'
 import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
 
 export function useEngineConnectionSubscriptions() {
@@ -46,7 +46,7 @@ export function useEngineConnectionSubscriptions() {
           (editorManager.highlightRange[0][0] !== 0 &&
             editorManager.highlightRange[0][1] !== 0)
         ) {
-          editorManager.setHighlightRange([[0, 0]])
+          editorManager.setHighlightRange([defaultSourceRange()])
         }
       },
     })
@@ -201,7 +201,7 @@ export function useEngineConnectionSubscriptions() {
               const { z_axis, y_axis, origin } = faceInfo
               const sketchPathToNode = getNodePathFromSourceRange(
                 kclManager.ast,
-                err(codeRef) ? [0, 0] : codeRef.range
+                err(codeRef) ? defaultSourceRange() : codeRef.range
               )
 
               const getEdgeCutMeta = (): null | EdgeCutInfo => {

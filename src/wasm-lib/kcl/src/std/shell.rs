@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, Solid, SolidSet},
+    execution::{ExecState, KclValue, Solid, SolidSet},
     std::{sketch::FaceTag, Args},
 };
 

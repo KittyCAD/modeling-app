@@ -1,33 +1,30 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing tan_arc_x_line.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
-        "declarations": [
-          {
-            "end": 10,
-            "id": {
-              "end": 6,
-              "name": "startX",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "init": {
-              "end": 10,
-              "raw": "0",
-              "start": 9,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 0.0
-            },
+        "declaration": {
+          "end": 10,
+          "id": {
+            "end": 6,
+            "name": "startX",
             "start": 0,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 10,
+            "raw": "0",
+            "start": 9,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 0.0
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
         "end": 10,
         "kind": "const",
         "start": 0,
@@ -35,27 +32,25 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 21,
-            "id": {
-              "end": 17,
-              "name": "startY",
-              "start": 11,
-              "type": "Identifier"
-            },
-            "init": {
-              "end": 21,
-              "raw": "0",
-              "start": 20,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 0.0
-            },
+        "declaration": {
+          "end": 21,
+          "id": {
+            "end": 17,
+            "name": "startY",
             "start": 11,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 21,
+            "raw": "0",
+            "start": 20,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 0.0
+          },
+          "start": 11,
+          "type": "VariableDeclarator"
+        },
         "end": 21,
         "kind": "const",
         "start": 11,
@@ -63,27 +58,25 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 39,
-            "id": {
-              "end": 33,
-              "name": "angleOffset",
-              "start": 22,
-              "type": "Identifier"
-            },
-            "init": {
-              "end": 39,
-              "raw": "135",
-              "start": 36,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 135.0
-            },
+        "declaration": {
+          "end": 39,
+          "id": {
+            "end": 33,
+            "name": "angleOffset",
             "start": 22,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 39,
+            "raw": "135",
+            "start": 36,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 135.0
+          },
+          "start": 22,
+          "type": "VariableDeclarator"
+        },
         "end": 39,
         "kind": "const",
         "start": 22,
@@ -91,27 +84,25 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 45,
-            "id": {
-              "end": 41,
-              "name": "r",
-              "start": 40,
-              "type": "Identifier"
-            },
-            "init": {
-              "end": 45,
-              "raw": "1",
-              "start": 44,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 1.0
-            },
+        "declaration": {
+          "end": 45,
+          "id": {
+            "end": 41,
+            "name": "r",
             "start": 40,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 45,
+            "raw": "1",
+            "start": 44,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 1.0
+          },
+          "start": 40,
+          "type": "VariableDeclarator"
+        },
         "end": 45,
         "kind": "const",
         "start": 40,
@@ -119,27 +110,25 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 62,
-            "id": {
-              "end": 56,
-              "name": "angleStart",
-              "start": 46,
-              "type": "Identifier"
-            },
-            "init": {
-              "end": 62,
-              "raw": "110",
-              "start": 59,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 110.0
-            },
+        "declaration": {
+          "end": 62,
+          "id": {
+            "end": 56,
+            "name": "angleStart",
             "start": 46,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 62,
+            "raw": "110",
+            "start": 59,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 110.0
+          },
+          "start": 46,
+          "type": "VariableDeclarator"
+        },
         "end": 62,
         "kind": "const",
         "start": 46,

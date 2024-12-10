@@ -18,7 +18,7 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, ImportedGeometry, KclValue},
+    execution::{ExecState, ImportedGeometry, KclValue},
     fs::FileSystem,
     std::Args,
 };

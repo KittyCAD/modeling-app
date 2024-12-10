@@ -1,5 +1,5 @@
 import {
-  parse,
+  assertParse,
   Sketch,
   recast,
   initPromise,
@@ -31,12 +31,11 @@ async function testingSwapSketchFnCall({
   constraintType: ConstraintType
 }): Promise<{
   newCode: string
-  originalRange: [number, number]
+  originalRange: [number, number, boolean]
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
-  const range: SourceRange = [startIndex, startIndex + callToSwap.length]
-  const ast = parse(inputCode)
-  if (err(ast)) return Promise.reject(ast)
+  const range: SourceRange = [startIndex, startIndex + callToSwap.length, true]
+  const ast = assertParse(inputCode)
 
   const execState = await enginelessExecutor(ast)
   const selections = {
@@ -370,13 +369,13 @@ part001 = startSketchOn('XY')
   |> line([2.14, 1.35], %) // normal-segment
   |> xLine(3.54, %)`
   it('normal case works', async () => {
-    const execState = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
     const index = code.indexOf('// normal-segment') - 7
     const sg = sketchFromKclValue(
       execState.memory.get('part001'),
       'part001'
     ) as Sketch
-    const _segment = getSketchSegmentFromSourceRange(sg, [index, index])
+    const _segment = getSketchSegmentFromSourceRange(sg, [index, index, true])
     if (err(_segment)) throw _segment
     const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
@@ -387,11 +386,11 @@ part001 = startSketchOn('XY')
     })
   })
   it('verify it works when the segment is in the `start` property', async () => {
-    const execState = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
       sketchFromKclValue(execState.memory.get('part001'), 'part001') as Sketch,
-      [index, index]
+      [index, index, true]
     )
     if (err(_segment)) throw _segment
     const { __geoMeta, ...segment } = _segment.segment

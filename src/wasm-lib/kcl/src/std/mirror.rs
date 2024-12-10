@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, KclValue, Sketch, SketchSet},
+    execution::{ExecState, KclValue, Sketch, SketchSet},
     std::{revolve::AxisOrEdgeReference, Args},
 };
 

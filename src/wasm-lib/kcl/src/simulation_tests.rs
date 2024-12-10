@@ -1,8 +1,10 @@
+use std::path::Path;
+
 use insta::rounded_redaction;
 
 use crate::{
-    ast::types::{Node, Program},
     errors::KclError,
+    parsing::ast::types::{Node, Program},
     source_range::ModuleId,
 };
 
@@ -45,10 +47,10 @@ fn read(filename: &'static str, test_name: &str) -> String {
 
 fn parse(test_name: &str) {
     let input = read("input.kcl", test_name);
-    let tokens = crate::token::lexer(&input, ModuleId::default()).unwrap();
+    let tokens = crate::parsing::token::lexer(&input, ModuleId::default()).unwrap();
 
     // Parse the tokens into an AST.
-    let parse_res = Result::<_, KclError>::Ok(crate::parser::parse_tokens(tokens).unwrap());
+    let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
     assert_snapshot(test_name, "Result of parsing", || {
         insta::assert_json_snapshot!("ast", parse_res);
     });
@@ -82,8 +84,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
     };
 
     // Run the program.
-    let exec_res =
-        crate::test_server::execute_and_snapshot_ast(ast.into(), crate::settings::types::UnitLength::Mm).await;
+    let exec_res = crate::test_server::execute_and_snapshot_ast(
+        ast.into(),
+        crate::settings::types::UnitLength::Mm,
+        Some(Path::new("tests").join(test_name)),
+    )
+    .await;
     match exec_res {
         Ok((program_memory, png)) => {
             if render_to_png {
@@ -637,6 +643,48 @@ mod import_cycle1 {
 }
 mod import_constant {
     const TEST_NAME: &str = "import_constant";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_export {
+    const TEST_NAME: &str = "import_export";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_glob {
+    const TEST_NAME: &str = "import_glob";
 
     /// Test parsing KCL.
     #[test]
@@ -1414,6 +1462,27 @@ mod i_shape {
 }
 mod kittycad_svg {
     const TEST_NAME: &str = "kittycad_svg";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod kw_fn {
+    const TEST_NAME: &str = "kw_fn";
 
     /// Test parsing KCL.
     #[test]

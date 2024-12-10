@@ -158,7 +158,7 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
     };
     let RequestBody { kcl_program, test_name } = body;
 
-    let program = match Program::parse(&kcl_program) {
+    let program = match Program::parse_no_errs(&kcl_program) {
         Ok(pr) => pr,
         Err(e) => return bad_request(format!("Parse error: {e}")),
     };

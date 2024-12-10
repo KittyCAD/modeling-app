@@ -137,6 +137,335 @@ test(
 )
 
 test(
+  'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const bracketDir = join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(bracketDir, 'main.kcl')
+        )
+        const errorDir = join(dir, 'broken-code')
+        await fsp.mkdir(errorDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('broken-code-test.kcl'),
+          join(errorDir, 'main.kcl')
+        )
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+
+    page.on('console', console.log)
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the bracket project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+    })
+
+    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
+      await page.getByTestId('app-logo').click()
+
+      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
+      await expect(page.getByText('broken-code')).toBeVisible()
+      await expect(page.getByText('bracket')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
+    })
+    await test.step('opening broken code project should clear the scene and show the error', async () => {
+      // Go back home.
+      await expect(page.getByText('broken-code')).toBeVisible()
+
+      await page.getByText('broken-code').click()
+
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+      // error text on hover
+      await page.hover('.cm-lint-marker-error')
+      const crypticErrorText = `Expected a tag declarator`
+      await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+
+      // black pixel means the scene has been cleared.
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [30, 30, 30]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const bracketDir = join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(bracketDir, 'main.kcl')
+        )
+        const emptyDir = join(dir, 'empty')
+        await fsp.mkdir(emptyDir, { recursive: true })
+        await fsp.writeFile(join(emptyDir, 'main.kcl'), '')
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+
+    page.on('console', console.log)
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the bracket project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+    })
+
+    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
+      await page.getByTestId('app-logo').click()
+
+      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
+      await expect(page.getByText('empty')).toBeVisible()
+      await expect(page.getByText('bracket')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
+    })
+    await test.step('opening empty code project should clear the scene', async () => {
+      // Go back home.
+      await expect(page.getByText('empty')).toBeVisible()
+
+      await page.getByText('empty').click()
+
+      // Ensure the code is empty.
+      await expect(u.codeLocator).toContainText('')
+      expect(u.codeLocator.innerHTML.length).toBeLessThan(2)
+
+      // planes colors means the scene has been cleared.
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [92, 53, 53]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'open a file in a project works and renders, open empty file, it should clear the scene',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const bracketDir = join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(bracketDir, 'main.kcl')
+        )
+
+        await fsp.writeFile(join(bracketDir, 'empty.kcl'), '')
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+
+    page.on('console', console.log)
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the bracket project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+    })
+    await test.step('creating a empty file should clear the scene', async () => {
+      // open the file pane.
+      await page.getByTestId('files-pane-button').click()
+
+      // OPen the other file.
+      const file = page.getByRole('button', { name: 'empty.kcl' })
+      await expect(file).toBeVisible()
+
+      await file.click()
+
+      // planes colors means the scene has been cleared.
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [92, 53, 53]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+
+      // Ensure the code is empty.
+      await expect(u.codeLocator).toContainText('')
+      expect(u.codeLocator.innerHTML.length).toBeLessThan(2)
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
+  'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
+  { tag: '@electron' },
+  async ({ browserName }, testInfo) => {
+    const { electronApp, page } = await setupElectron({
+      testInfo,
+      folderSetupFn: async (dir) => {
+        const bracketDir = join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          join(bracketDir, 'main.kcl')
+        )
+        await fsp.copyFile(
+          executorInputPath('broken-code-test.kcl'),
+          join(bracketDir, 'broken-code-test.kcl')
+        )
+      },
+    })
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+
+    page.on('console', console.log)
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the bracket project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('bracket')).toBeVisible()
+
+      await page.getByText('bracket').click()
+
+      await expect(page.getByTestId('loading')).toBeAttached()
+      await expect(page.getByTestId('loading')).not.toBeAttached({
+        timeout: 20_000,
+      })
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+    })
+    await test.step('opening broken code file should clear the scene and show the error', async () => {
+      // open the file pane.
+      await page.getByTestId('files-pane-button').click()
+
+      // OPen the other file.
+      const file = page.getByRole('button', { name: 'broken-code-test.kcl' })
+      await expect(file).toBeVisible()
+
+      await file.click()
+
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+
+      // error text on hover
+      await page.hover('.cm-lint-marker-error')
+      const crypticErrorText = `Expected a tag declarator`
+      await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+
+      // black pixel means the scene has been cleared.
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [30, 30, 30]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
+    })
+
+    await electronApp.close()
+  }
+)
+
+test(
   'when code with error first loads you get errors in console',
   { tag: '@electron' },
   async ({ browserName }, testInfo) => {

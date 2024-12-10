@@ -23,7 +23,7 @@ test.describe('Test toggling perspective', () => {
       y: screenHeight * 0.4,
     }
     const backgroundColor: [number, number, number] = [29, 29, 29]
-    const xzPlaneColor: [number, number, number] = [50, 50, 99]
+    const xzPlaneColor: [number, number, number] = [82, 55, 96]
     const locationToHaveColor = async (color: [number, number, number]) => {
       return u.getGreatestPixDiff(checkedScreenLocation, color)
     }

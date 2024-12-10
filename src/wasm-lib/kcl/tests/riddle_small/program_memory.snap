@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing riddle_small.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -413,8 +414,7 @@ description: Program memory after executing riddle_small.kcl
                   "name": "s",
                   "start": 21,
                   "type": "Identifier"
-                },
-                "optional": false
+                }
               }
             ],
             "start": 20,

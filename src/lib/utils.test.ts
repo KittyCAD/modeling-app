@@ -9,13 +9,13 @@ import {
 import { SourceRange } from '../lang/wasm'
 
 describe('testing isOverlapping', () => {
-  testBothOrders([0, 3], [3, 10])
-  testBothOrders([0, 5], [3, 4])
-  testBothOrders([0, 5], [5, 10])
-  testBothOrders([0, 5], [6, 10], false)
-  testBothOrders([0, 5], [-1, 1])
-  testBothOrders([0, 5], [-1, 0])
-  testBothOrders([0, 5], [-2, -1], false)
+  testBothOrders([0, 3, true], [3, 10, true])
+  testBothOrders([0, 5, true], [3, 4, true])
+  testBothOrders([0, 5, true], [5, 10, true])
+  testBothOrders([0, 5, true], [6, 10, true], false)
+  testBothOrders([0, 5, true], [-1, 1, true])
+  testBothOrders([0, 5, true], [-1, 0, true])
+  testBothOrders([0, 5, true], [-2, -1, true], false)
 })
 
 function testBothOrders(a: SourceRange, b: SourceRange, result = true) {

@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use crate::{
-    ast::types::{
+    parsing::ast::types::{
         BinaryPart, BodyItem, Expr, IfExpression, LiteralIdentifier, MemberExpression, MemberObject, NodeRef,
         ObjectExpression, ObjectProperty, Parameter, Program, UnaryExpression, VariableDeclarator,
     },
@@ -314,12 +314,8 @@ where
             if !f.walk(vd.as_ref().into())? {
                 return Ok(false);
             }
-            for dec in &vd.declarations {
-                if !walk_variable_declarator(dec, f)? {
-                    return Ok(false);
-                }
-            }
-            Ok(true)
+
+            walk_variable_declarator(&vd.declaration, f)
         }
         BodyItem::ReturnStatement(rs) => {
             if !f.walk(rs.into())? {
@@ -336,7 +332,7 @@ mod tests {
 
     macro_rules! kcl {
         ( $kcl:expr ) => {{
-            $crate::parser::top_level_parse($kcl).unwrap()
+            $crate::parsing::top_level_parse($kcl).unwrap()
         }};
     }
 

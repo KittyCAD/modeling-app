@@ -13,7 +13,6 @@ import {
   listProjects,
   readAppSettingsFile,
 } from './desktop'
-import { engineCommandManager } from './singletons'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -116,9 +115,6 @@ export async function createAndOpenNewTutorialProject({
   ) => void
   navigate: (path: string) => void
 }) {
-  // Clear the scene and end the session.
-  engineCommandManager.endSession()
-
   // Create a new project with the onboarding project name
   const configuration = await readAppSettingsFile()
   const projects = await listProjects(configuration)

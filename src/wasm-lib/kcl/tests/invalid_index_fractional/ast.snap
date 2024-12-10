@@ -1,58 +1,54 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 52
 description: Result of parsing invalid_index_fractional.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
-        "declarations": [
-          {
-            "end": 15,
-            "id": {
-              "end": 3,
-              "name": "arr",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "init": {
-              "elements": [
-                {
-                  "end": 8,
-                  "raw": "1",
-                  "start": 7,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 1.0
-                },
-                {
-                  "end": 11,
-                  "raw": "2",
-                  "start": 10,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 2.0
-                },
-                {
-                  "end": 14,
-                  "raw": "3",
-                  "start": 13,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 3.0
-                }
-              ],
-              "end": 15,
-              "start": 6,
-              "type": "ArrayExpression",
-              "type": "ArrayExpression"
-            },
+        "declaration": {
+          "end": 15,
+          "id": {
+            "end": 3,
+            "name": "arr",
             "start": 0,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "elements": [
+              {
+                "end": 8,
+                "raw": "1",
+                "start": 7,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 1.0
+              },
+              {
+                "end": 11,
+                "raw": "2",
+                "start": 10,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 2.0
+              },
+              {
+                "end": 14,
+                "raw": "3",
+                "start": 13,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 3.0
+              }
+            ],
+            "end": 15,
+            "start": 6,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
         "end": 15,
         "kind": "const",
         "start": 0,
@@ -60,41 +56,39 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
+        "declaration": {
+          "end": 28,
+          "id": {
+            "end": 17,
+            "name": "x",
+            "start": 16,
+            "type": "Identifier"
+          },
+          "init": {
+            "computed": false,
             "end": 28,
-            "id": {
-              "end": 17,
-              "name": "x",
-              "start": 16,
+            "object": {
+              "end": 23,
+              "name": "arr",
+              "start": 20,
+              "type": "Identifier",
               "type": "Identifier"
             },
-            "init": {
-              "computed": false,
-              "end": 28,
-              "object": {
-                "end": 23,
-                "name": "arr",
-                "start": 20,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "property": {
-                "end": 27,
-                "raw": "1.2",
-                "start": 24,
-                "type": "Literal",
-                "type": "Literal",
-                "value": 1.2
-              },
-              "start": 20,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+            "property": {
+              "end": 27,
+              "raw": "1.2",
+              "start": 24,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 1.2
             },
-            "start": 16,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "start": 20,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 16,
+          "type": "VariableDeclarator"
+        },
         "end": 28,
         "kind": "const",
         "start": 16,

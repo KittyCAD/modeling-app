@@ -5,7 +5,12 @@ import {
   kclManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { CallExpression, SourceRange, Expr } from 'lang/wasm'
+import {
+  CallExpression,
+  SourceRange,
+  Expr,
+  defaultSourceRange,
+} from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { isNonNullable, uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
@@ -266,7 +271,7 @@ export function getEventForSegmentSelection(
         selectionType: 'singleCodeCursor',
         selection: {
           codeRef: {
-            range: [node.node.start, node.node.end],
+            range: [node.node.start, node.node.end, true],
             pathToNode: group.userData.pathToNode,
           },
         },
@@ -309,10 +314,11 @@ export function handleSelectionBatch({
       selectionToEngine.push({
         type: 'default',
         id: artifact?.id,
-        range: getCodeRefsByArtifactId(
-          artifact.id,
-          engineCommandManager.artifactGraph
-        )?.[0].range || [0, 0],
+        range:
+          getCodeRefsByArtifactId(
+            artifact.id,
+            engineCommandManager.artifactGraph
+          )?.[0].range || defaultSourceRange(),
       })
   })
   const engineEvents: Models['WebSocketRequest_type'][] =
@@ -376,10 +382,10 @@ export function processCodeMirrorRanges({
   if (!isChange) return null
   const codeBasedSelections: Selections['graphSelections'] =
     codeMirrorRanges.map(({ from, to }) => {
-      const pathToNode = getNodePathFromSourceRange(ast, [from, to])
+      const pathToNode = getNodePathFromSourceRange(ast, [from, to, true])
       return {
         codeRef: {
-          range: [from, to],
+          range: [from, to, true],
           pathToNode,
         },
       }
@@ -442,7 +448,7 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     if (err(nodeMeta)) return
     const node = nodeMeta.node
     const groupHasCursor = codeBasedSelections.some((selection) => {
-      return isOverlap(selection?.codeRef?.range, [node.start, node.end])
+      return isOverlap(selection?.codeRef?.range, [node.start, node.end, true])
     })
 
     const color = groupHasCursor
@@ -529,6 +535,10 @@ function nodeHasExtrude(node: CommonASTNode) {
     doesPipeHaveCallExp({
       calleeName: 'revolve',
       ...node,
+    }) ||
+    doesPipeHaveCallExp({
+      calleeName: 'loft',
+      ...node,
     })
   )
 }
@@ -556,6 +566,33 @@ export function canSweepSelection(selection: Selections) {
     (commonNodes.every((n) => nodeHasClose(n)) ||
       commonNodes.every((n) => nodeHasCircle(n))) &&
     commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
+export function canLoftSelection(selection: Selections) {
+  const commonNodes = selection.graphSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  return (
+    !!isCursorInSketchCommandRange(
+      engineCommandManager.artifactGraph,
+      selection
+    ) &&
+    commonNodes.length > 1 &&
+    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
+    commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n)) &&
+    commonNodes.every((n) => !nodeHasExtrude(n))
+  )
+}
+
+export function canShellSelection(selection: Selections) {
+  const commonNodes = selection.graphSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  return commonNodes.every(
+    (n) =>
+      n.selection.artifact?.type === 'cap' ||
+      n.selection.artifact?.type === 'wall'
   )
 }
 
@@ -593,12 +630,29 @@ export function getSelectionCountByType(
     }
   })
 
-  selection.graphSelections.forEach((selection) => {
-    if (!selection.artifact) {
-      incrementOrInitializeSelectionType('other')
-      return
+  selection.graphSelections.forEach((graphSelection) => {
+    if (!graphSelection.artifact) {
+      /**
+       * TODO: remove this heuristic-based selection type detection.
+       * Currently, if you've created a sketch and have not left sketch mode,
+       * the selection will be a segment selection with no artifact.
+       * This is because the mock execution does not update the artifact graph.
+       * Once we move the artifactGraph creation to WASM, we can remove this,
+       * as the artifactGraph will always be up-to-date.
+       */
+      if (isSingleCursorInPipe(selection, kclManager.ast)) {
+        incrementOrInitializeSelectionType('segment')
+        return
+      } else {
+        console.warn(
+          'Selection is outside of a sketch but has no artifact. Sketch segment selections are the only kind that can have a valid selection with no artifact.',
+          JSON.stringify(graphSelection)
+        )
+        incrementOrInitializeSelectionType('other')
+        return
+      }
     }
-    incrementOrInitializeSelectionType(selection.artifact.type)
+    incrementOrInitializeSelectionType(graphSelection.artifact.type)
   })
 
   return selectionsByType
@@ -905,7 +959,7 @@ export function updateSelections(
       return {
         artifact: artifact,
         codeRef: {
-          range: [node.start, node.end],
+          range: [node.start, node.end, true],
           pathToNode: pathToNode,
         },
       }
@@ -919,7 +973,7 @@ export function updateSelections(
     if (err(node)) return node
     pathToNodeBasedSelections.push({
       codeRef: {
-        range: [node.node.start, node.node.end],
+        range: [node.node.start, node.node.end, true],
         pathToNode: pathToNode,
       },
     })

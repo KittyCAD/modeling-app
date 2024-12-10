@@ -1,5 +1,5 @@
 use crate::{
-    ast::types::{self, NodeRef},
+    parsing::ast::types::{self, NodeRef},
     source_range::SourceRange,
 };
 

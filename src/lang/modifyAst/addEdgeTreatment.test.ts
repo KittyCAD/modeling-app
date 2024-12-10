@@ -1,5 +1,5 @@
 import {
-  parse,
+  assertParse,
   recast,
   initPromise,
   PathToNode,
@@ -22,7 +22,7 @@ import {
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
-import { Selections } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { isOverlap } from 'lib/utils'
@@ -40,7 +40,6 @@ beforeAll(async () => {
       makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
       setMediaStream: () => {},
       setIsStreamReady: () => {},
-      modifyGrid: async () => {},
       callbackOnEngineLiteConnect: () => {
         resolve(true)
       },
@@ -78,9 +77,10 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     code: string,
     expectedExtrudeSnippet: string
   ): CallExpression | PipeExpression | Error {
-    const extrudeRange: [number, number] = [
+    const extrudeRange: [number, number, boolean] = [
       code.indexOf(expectedExtrudeSnippet),
       code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length,
+      true,
     ]
     const expectedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
     const expectedExtrudeNodeResult = getNodeFromPath<
@@ -109,22 +109,16 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   }
 
   // ast
-  const astOrError = parse(code)
-  if (err(astOrError)) return new Error('AST not found')
-  const ast = astOrError
+  const ast = assertParse(code)
 
   // selection
-  const segmentRange: [number, number] = [
+  const segmentRange: [number, number, boolean] = [
     code.indexOf(selectedSegmentSnippet),
     code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length,
+    true,
   ]
-  const selection: Selections = {
-    graphSelections: [
-      {
-        codeRef: codeRefFromRange(segmentRange, ast),
-      },
-    ],
-    otherSelections: [],
+  const selection: Selection = {
+    codeRef: codeRefFromRange(segmentRange, ast),
   }
 
   // executeAst and artifactGraph
@@ -263,17 +257,14 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   expectedCode: string
 ) => {
   // ast
-  const astOrError = parse(code)
-  if (err(astOrError)) {
-    return new Error('AST not found')
-  }
-  const ast = astOrError
+  const ast = assertParse(code)
 
   // selection
-  const segmentRanges: Array<[number, number]> = selectionSnippets.map(
+  const segmentRanges: Array<[number, number, boolean]> = selectionSnippets.map(
     (selectionSnippet) => [
       code.indexOf(selectionSnippet),
       code.indexOf(selectionSnippet) + selectionSnippet.length,
+      true,
     ]
   )
 
@@ -603,12 +594,12 @@ extrude001 = extrude(-5, sketch001)
      }, %)
 `
   it('should correctly identify getOppositeEdge and baseEdge edges', () => {
-    const ast = parse(code)
-    if (err(ast)) return
+    const ast = assertParse(code)
     const lineOfInterest = `line([7.11, 3.48], %, $seg01)`
-    const range: [number, number] = [
+    const range: [number, number, boolean] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
+      true,
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
@@ -622,12 +613,12 @@ extrude001 = extrude(-5, sketch001)
     expect(edges).toEqual(['getOppositeEdge', 'baseEdge'])
   })
   it('should correctly identify getPreviousAdjacentEdge edges', () => {
-    const ast = parse(code)
-    if (err(ast)) return
+    const ast = assertParse(code)
     const lineOfInterest = `line([-6.37, 3.88], %, $seg02)`
-    const range: [number, number] = [
+    const range: [number, number, boolean] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
+      true,
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
@@ -641,12 +632,12 @@ extrude001 = extrude(-5, sketch001)
     expect(edges).toEqual(['getPreviousAdjacentEdge'])
   })
   it('should correctly identify no edges', () => {
-    const ast = parse(code)
-    if (err(ast)) return
+    const ast = assertParse(code)
     const lineOfInterest = `line([-3.29, -13.85], %)`
-    const range: [number, number] = [
+    const range: [number, number, boolean] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
+      true,
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
@@ -667,19 +658,15 @@ describe('Testing button states', () => {
     segmentSnippet: string,
     expectedState: boolean
   ) => {
-    // ast
-    const astOrError = parse(code)
-    if (err(astOrError)) {
-      return new Error('AST not found')
-    }
-    const ast = astOrError
+    const ast = assertParse(code)
 
-    const range: [number, number] = segmentSnippet
+    const range: [number, number, boolean] = segmentSnippet
       ? [
           code.indexOf(segmentSnippet),
           code.indexOf(segmentSnippet) + segmentSnippet.length,
+          true,
         ]
-      : [ast.end, ast.end] // empty line in the end of the code
+      : [ast.end, ast.end, true] // empty line in the end of the code
 
     const selectionRanges: Selections = {
       graphSelections: [

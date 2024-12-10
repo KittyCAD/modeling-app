@@ -1,5 +1,6 @@
-use kcl_to_core::*;
 use std::{env, fs};
+
+use kcl_to_core::*;
 
 #[tokio::main]
 async fn main() {

@@ -3,109 +3,109 @@ export const bracket = `// Shelf Bracket
 
 
 // Define constants
-const sigmaAllow = 35000 // psi (6061-T6 aluminum)
-const width = 6 // inch
-const p = 300 // Force on shelf - lbs
-const factorOfSafety = 1.2 // FOS of 1.2
-const shelfMountL = 5 // inches
-const wallMountL = 2 // inches
-const shelfDepth = 12 // Shelf is 12 inches in depth from the wall
-const moment = shelfDepth * p // assume the force is applied at the end of the shelf to be conservative (lb-in)
+sigmaAllow = 35000 // psi (6061-T6 aluminum)
+width = 6 // inch
+p = 300 // Force on shelf - lbs
+factorOfSafety = 1.2 // FOS of 1.2
+shelfMountL = 5 // inches
+wallMountL = 2 // inches
+shelfDepth = 12 // Shelf is 12 inches in depth from the wall
+moment = shelfDepth * p // assume the force is applied at the end of the shelf to be conservative (lb-in)
 
 
-const filletRadius = .375 // inches
-const extFilletRadius = .25 // inches
-const mountingHoleDiameter = 0.5 // inches
+filletRadius = .375 // inches
+extFilletRadius = .25 // inches
+mountingHoleDiameter = 0.5 // inches
 
 
 // Calculate required thickness of bracket
-const thickness = sqrt(moment * factorOfSafety * 6 / (sigmaAllow * width)) // this is the calculation of two brackets holding up the shelf (inches)
+thickness = sqrt(moment * factorOfSafety * 6 / (sigmaAllow * width)) // this is the calculation of two brackets holding up the shelf (inches)
 
 
 // Sketch the bracket body and fillet the inner and outer edges of the bend
-const bracketLeg1Sketch = startSketchOn('XY')
+bracketLeg1Sketch = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([shelfMountL - filletRadius, 0], %, $fillet1)
   |> line([0, width], %, $fillet2)
   |> line([-shelfMountL + filletRadius, 0], %)
   |> close(%)
   |> hole(circle({
-       center: [1, 1],
-       radius: mountingHoleDiameter / 2
+       center = [1, 1],
+       radius = mountingHoleDiameter / 2
      }, %), %)
   |> hole(circle({
-       center: [shelfMountL - 1.5, width - 1],
-       radius: mountingHoleDiameter / 2
+       center = [shelfMountL - 1.5, width - 1],
+       radius = mountingHoleDiameter / 2
      }, %), %)
   |> hole(circle({
-       center: [1, width - 1],
-       radius: mountingHoleDiameter / 2
+       center = [1, width - 1],
+       radius = mountingHoleDiameter / 2
      }, %), %)
   |> hole(circle({
-       center: [shelfMountL - 1.5, 1],
-       radius: mountingHoleDiameter / 2
+       center = [shelfMountL - 1.5, 1],
+       radius = mountingHoleDiameter / 2
      }, %), %)
 
 // Extrude the leg 2 bracket sketch
-const bracketLeg1Extrude = extrude(thickness, bracketLeg1Sketch)
+bracketLeg1Extrude = extrude(thickness, bracketLeg1Sketch)
   |> fillet({
-       radius: extFilletRadius,
-       tags: [
+       radius = extFilletRadius,
+       tags = [
          getNextAdjacentEdge(fillet1),
          getNextAdjacentEdge(fillet2)
        ]
      }, %)
 
 // Sketch the fillet arc
-const filletSketch = startSketchOn('XZ')
+filletSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([0, thickness], %)
   |> arc({
-       angleEnd: 180,
-       angleStart: 90,
-       radius: filletRadius + thickness
+       angleEnd = 180,
+       angleStart = 90,
+       radius = filletRadius + thickness
      }, %)
   |> line([thickness, 0], %)
   |> arc({
-       angleEnd: 90,
-       angleStart: 180,
-       radius: filletRadius
+       angleEnd = 90,
+       angleStart = 180,
+       radius = filletRadius
      }, %)
 
 // Sketch the bend
-const filletExtrude = extrude(-width, filletSketch)
+filletExtrude = extrude(-width, filletSketch)
 
 // Create a custom plane for the leg that sits on the wall
-const customPlane = {
-  plane: {
-    origin: { x: -filletRadius, y: 0, z: 0 },
-    xAxis: { x: 0, y: 1, z: 0 },
-    yAxis: { x: 0, y: 0, z: 1 },
-    zAxis: { x: 1, y: 0, z: 0 }
+customPlane = {
+  plane = {
+    origin = { x = -filletRadius, y = 0, z = 0 },
+    xAxis = { x = 0, y = 1, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 1, y = 0, z = 0 }
   }
 }
 
 // Create a sketch for the second leg
-const bracketLeg2Sketch = startSketchOn(customPlane)
+bracketLeg2Sketch = startSketchOn(customPlane)
   |> startProfileAt([0, -filletRadius], %)
   |> line([width, 0], %)
   |> line([0, -wallMountL], %, $fillet3)
   |> line([-width, 0], %, $fillet4)
   |> close(%)
   |> hole(circle({
-       center: [1, -1.5],
-       radius: mountingHoleDiameter / 2
+       center = [1, -1.5],
+       radius = mountingHoleDiameter / 2
      }, %), %)
   |> hole(circle({
-       center: [5, -1.5],
-       radius: mountingHoleDiameter / 2
+       center = [5, -1.5],
+       radius = mountingHoleDiameter / 2
      }, %), %)
 
 // Extrude the second leg
-const bracketLeg2Extrude = extrude(-thickness, bracketLeg2Sketch)
+bracketLeg2Extrude = extrude(-thickness, bracketLeg2Sketch)
   |> fillet({
-       radius: extFilletRadius,
-       tags: [
+       radius = extFilletRadius,
+       tags = [
          getNextAdjacentEdge(fillet3),
          getNextAdjacentEdge(fillet4)
        ]
@@ -135,8 +135,8 @@ function findLineInExampleCode({
 }
 
 export const bracketWidthConstantLine = findLineInExampleCode({
-  searchText: 'const width',
+  searchText: 'width =',
 })
 export const bracketThicknessCalculationLine = findLineInExampleCode({
-  searchText: 'const thickness',
+  searchText: 'thickness =',
 })

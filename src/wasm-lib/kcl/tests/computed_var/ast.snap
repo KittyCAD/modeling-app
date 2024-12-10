@@ -1,65 +1,62 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing computed_var.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
-        "declarations": [
-          {
-            "end": 56,
-            "id": {
-              "end": 40,
-              "name": "arr",
-              "start": 37,
-              "type": "Identifier"
-            },
-            "init": {
-              "elements": [
-                {
-                  "end": 45,
-                  "raw": "0",
-                  "start": 44,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 0.0
-                },
-                {
-                  "end": 48,
-                  "raw": "0",
-                  "start": 47,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 0.0
-                },
-                {
-                  "end": 51,
-                  "raw": "0",
-                  "start": 50,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 0.0
-                },
-                {
-                  "end": 55,
-                  "raw": "10",
-                  "start": 53,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 10.0
-                }
-              ],
-              "end": 56,
-              "start": 43,
-              "type": "ArrayExpression",
-              "type": "ArrayExpression"
-            },
+        "declaration": {
+          "end": 56,
+          "id": {
+            "end": 40,
+            "name": "arr",
             "start": 37,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "elements": [
+              {
+                "end": 45,
+                "raw": "0",
+                "start": 44,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 0.0
+              },
+              {
+                "end": 48,
+                "raw": "0",
+                "start": 47,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 0.0
+              },
+              {
+                "end": 51,
+                "raw": "0",
+                "start": 50,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 0.0
+              },
+              {
+                "end": 55,
+                "raw": "10",
+                "start": 53,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 10.0
+              }
+            ],
+            "end": 56,
+            "start": 43,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 37,
+          "type": "VariableDeclarator"
+        },
         "end": 56,
         "kind": "const",
         "start": 37,
@@ -67,27 +64,25 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 62,
-            "id": {
-              "end": 58,
-              "name": "i",
-              "start": 57,
-              "type": "Identifier"
-            },
-            "init": {
-              "end": 62,
-              "raw": "3",
-              "start": 61,
-              "type": "Literal",
-              "type": "Literal",
-              "value": 3.0
-            },
+        "declaration": {
+          "end": 62,
+          "id": {
+            "end": 58,
+            "name": "i",
             "start": 57,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 62,
+            "raw": "3",
+            "start": 61,
+            "type": "Literal",
+            "type": "Literal",
+            "value": 3.0
+          },
+          "start": 57,
+          "type": "VariableDeclarator"
+        },
         "end": 62,
         "kind": "const",
         "start": 57,
@@ -95,40 +90,38 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
+        "declaration": {
+          "end": 75,
+          "id": {
+            "end": 66,
+            "name": "ten",
+            "start": 63,
+            "type": "Identifier"
+          },
+          "init": {
+            "computed": true,
             "end": 75,
-            "id": {
-              "end": 66,
-              "name": "ten",
-              "start": 63,
+            "object": {
+              "end": 72,
+              "name": "arr",
+              "start": 69,
+              "type": "Identifier",
               "type": "Identifier"
             },
-            "init": {
-              "computed": true,
-              "end": 75,
-              "object": {
-                "end": 72,
-                "name": "arr",
-                "start": 69,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "property": {
-                "end": 74,
-                "name": "i",
-                "start": 73,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "start": 69,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+            "property": {
+              "end": 74,
+              "name": "i",
+              "start": 73,
+              "type": "Identifier",
+              "type": "Identifier"
             },
-            "start": 63,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "start": 69,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 63,
+          "type": "VariableDeclarator"
+        },
         "end": 75,
         "kind": "const",
         "start": 63,
@@ -187,27 +180,25 @@ snapshot_kind: text
         "type": "ExpressionStatement"
       },
       {
-        "declarations": [
-          {
-            "end": 126,
-            "id": {
-              "end": 118,
-              "name": "p",
-              "start": 117,
-              "type": "Identifier"
-            },
-            "init": {
-              "end": 126,
-              "raw": "\"foo\"",
-              "start": 121,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "foo"
-            },
+        "declaration": {
+          "end": 126,
+          "id": {
+            "end": 118,
+            "name": "p",
             "start": 117,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 126,
+            "raw": "\"foo\"",
+            "start": 121,
+            "type": "Literal",
+            "type": "Literal",
+            "value": "foo"
+          },
+          "start": 117,
+          "type": "VariableDeclarator"
+        },
         "end": 126,
         "kind": "const",
         "start": 117,
@@ -215,65 +206,63 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
-            "end": 153,
-            "id": {
-              "end": 130,
-              "name": "obj",
-              "start": 127,
-              "type": "Identifier"
-            },
-            "init": {
-              "end": 153,
-              "properties": [
-                {
-                  "end": 142,
-                  "key": {
-                    "end": 138,
-                    "name": "foo",
-                    "start": 135,
-                    "type": "Identifier"
-                  },
-                  "start": 135,
-                  "type": "ObjectProperty",
-                  "value": {
-                    "end": 142,
-                    "raw": "1",
-                    "start": 141,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": 1.0
-                  }
-                },
-                {
-                  "end": 151,
-                  "key": {
-                    "end": 147,
-                    "name": "bar",
-                    "start": 144,
-                    "type": "Identifier"
-                  },
-                  "start": 144,
-                  "type": "ObjectProperty",
-                  "value": {
-                    "end": 151,
-                    "raw": "0",
-                    "start": 150,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": 0.0
-                  }
-                }
-              ],
-              "start": 133,
-              "type": "ObjectExpression",
-              "type": "ObjectExpression"
-            },
+        "declaration": {
+          "end": 153,
+          "id": {
+            "end": 130,
+            "name": "obj",
             "start": 127,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 153,
+            "properties": [
+              {
+                "end": 142,
+                "key": {
+                  "end": 138,
+                  "name": "foo",
+                  "start": 135,
+                  "type": "Identifier"
+                },
+                "start": 135,
+                "type": "ObjectProperty",
+                "value": {
+                  "end": 142,
+                  "raw": "1",
+                  "start": 141,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 1.0
+                }
+              },
+              {
+                "end": 151,
+                "key": {
+                  "end": 147,
+                  "name": "bar",
+                  "start": 144,
+                  "type": "Identifier"
+                },
+                "start": 144,
+                "type": "ObjectProperty",
+                "value": {
+                  "end": 151,
+                  "raw": "0",
+                  "start": 150,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": 0.0
+                }
+              }
+            ],
+            "start": 133,
+            "type": "ObjectExpression",
+            "type": "ObjectExpression"
+          },
+          "start": 127,
+          "type": "VariableDeclarator"
+        },
         "end": 153,
         "kind": "const",
         "start": 127,
@@ -281,40 +270,38 @@ snapshot_kind: text
         "type": "VariableDeclaration"
       },
       {
-        "declarations": [
-          {
+        "declaration": {
+          "end": 166,
+          "id": {
+            "end": 157,
+            "name": "one",
+            "start": 154,
+            "type": "Identifier"
+          },
+          "init": {
+            "computed": true,
             "end": 166,
-            "id": {
-              "end": 157,
-              "name": "one",
-              "start": 154,
+            "object": {
+              "end": 163,
+              "name": "obj",
+              "start": 160,
+              "type": "Identifier",
               "type": "Identifier"
             },
-            "init": {
-              "computed": true,
-              "end": 166,
-              "object": {
-                "end": 163,
-                "name": "obj",
-                "start": 160,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "property": {
-                "end": 165,
-                "name": "p",
-                "start": 164,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "start": 160,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+            "property": {
+              "end": 165,
+              "name": "p",
+              "start": 164,
+              "type": "Identifier",
+              "type": "Identifier"
             },
-            "start": 154,
-            "type": "VariableDeclarator"
-          }
-        ],
+            "start": 160,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          },
+          "start": 154,
+          "type": "VariableDeclarator"
+        },
         "end": 166,
         "kind": "const",
         "start": 154,

@@ -18,7 +18,7 @@ pub fn bench_execute(c: &mut Criterion) {
             let rt = Runtime::new().unwrap();
             // Spawn a future onto the runtime
             b.iter(|| {
-                rt.block_on(test_server::execute_and_snapshot(s, Mm)).unwrap();
+                rt.block_on(test_server::execute_and_snapshot(s, Mm, None)).unwrap();
             });
         });
         group.finish();
@@ -38,7 +38,7 @@ pub fn bench_lego(c: &mut Criterion) {
             let code = LEGO_PROGRAM.replace("{{N}}", &size.to_string());
             // Spawn a future onto the runtime
             b.iter(|| {
-                rt.block_on(test_server::execute_and_snapshot(&code, Mm)).unwrap();
+                rt.block_on(test_server::execute_and_snapshot(&code, Mm, None)).unwrap();
             });
         });
     }

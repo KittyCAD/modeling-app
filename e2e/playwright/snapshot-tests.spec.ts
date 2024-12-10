@@ -950,7 +950,75 @@ test(
 
 test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   // FIXME: Skip on macos its being weird.
-  test.skip(process.platform === 'darwin', 'Skip on macos')
+  // test.skip(process.platform === 'darwin', 'Skip on macos')
+
+  test('Grid turned off to on via command bar', async ({ page }) => {
+    const u = await getUtils(page)
+    const stream = page.getByTestId('stream')
+    const mask = [
+      page.locator('#app-header'),
+      page.locator('#sidebar-top-ribbon'),
+      page.locator('#sidebar-bottom-ribbon'),
+    ]
+
+    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.goto('/')
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    // wait for execution done
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(1)
+    await u.closeDebugPanel()
+    await u.closeKclCodePanel()
+    // TODO: Find a way to truly know that the objects have finished
+    // rendering, because an execution-done message is not sufficient.
+    await page.waitForTimeout(1000)
+
+    // Open the command bar.
+    await page
+      .getByRole('button', { name: 'Commands', exact: false })
+      .or(page.getByRole('button', { name: '⌘K' }))
+      .click()
+    const commandName = 'show scale grid'
+    const commandOption = page.getByRole('option', {
+      name: commandName,
+      exact: false,
+    })
+    const cmdSearchBar = page.getByPlaceholder('Search commands')
+    // This selector changes after we set the setting
+    await cmdSearchBar.fill(commandName)
+    await expect(commandOption).toBeVisible()
+    await commandOption.click()
+
+    const toggleInput = page.getByPlaceholder('Off')
+    await expect(toggleInput).toBeVisible()
+    await expect(toggleInput).toBeFocused()
+
+    // Select On
+    await page.keyboard.press('ArrowDown')
+    await expect(page.getByRole('option', { name: 'Off' })).toHaveAttribute(
+      'data-headlessui-state',
+      'active selected'
+    )
+    await page.keyboard.press('ArrowUp')
+    await expect(page.getByRole('option', { name: 'On' })).toHaveAttribute(
+      'data-headlessui-state',
+      'active'
+    )
+    await page.keyboard.press('Enter')
+
+    // Check the toast appeared
+    await expect(
+      page.getByText(`Set show scale grid to "true" as a user default`)
+    ).toBeVisible()
+
+    await expect(stream).toHaveScreenshot({
+      maxDiffPixels: 100,
+      mask,
+    })
+  })
 
   test('Grid turned off', async ({ page }) => {
     const u = await getUtils(page)
