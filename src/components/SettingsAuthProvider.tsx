@@ -1,5 +1,5 @@
 import { trap } from 'lib/trap'
-import { useMachine } from '@xstate/react'
+import { useMachine, useSelector } from '@xstate/react'
 import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
 import { PATHS, BROWSER_PATH } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
@@ -54,11 +54,15 @@ type SettingsAuthContextType = {
   settings: MachineContext<typeof settingsMachine>
 }
 
-// a little hacky for sure, open to changing it
-// this implies that we should only even have one instance of this provider mounted at any one time
-// but I think that's a safe assumption
-let settingsStateRef: ContextFrom<typeof settingsMachine> | undefined
-export const getSettingsState = () => settingsStateRef
+/**
+ * This variable is used to store the last snapshot of the settings context
+ * for use outside of React, such as in `wasm.ts`. It is updated every time
+ * the settings machine changes with `useSelector`.
+ * TODO: when we decouple XState from React, we can just subscribe to the actor directly from `wasm.ts`
+ */
+export let lastSettingsContextSnapshot:
+  | ContextFrom<typeof settingsMachine>
+  | undefined
 
 export const SettingsAuthContext = createContext({} as SettingsAuthContextType)
 
@@ -207,7 +211,10 @@ export const SettingsAuthProviderBase = ({
     }),
     { input: loadedSettings }
   )
-  settingsStateRef = settingsState.context
+  // Any time the actor changes, update the settings state for external use
+  useSelector(settingsActor, (s) => {
+    lastSettingsContextSnapshot = s.context
+  })
 
   useEffect(() => {
     if (!isDesktop()) return

@@ -42,7 +42,7 @@ import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
-import { getChangedSettingsAtLevel } from 'lib/settings/settingsUtils'
+import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 
 export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
@@ -496,12 +496,11 @@ export const _executor = async (
   try {
     let jsAppSettings = default_app_settings()
     if (!TEST) {
-      const getSettingsState = import('components/SettingsAuthProvider').then(
-        (module) => module.getSettingsState
-      )
-      const settings = (await getSettingsState)()
-      if (settings) {
-        jsAppSettings = getChangedSettingsAtLevel(settings, 'user')
+      const lastSettingsSnapshot = await import(
+        'components/SettingsAuthProvider'
+      ).then((module) => module.lastSettingsContextSnapshot)
+      if (lastSettingsSnapshot) {
+        jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
       }
     }
     const execState: RawExecState = await execute(
