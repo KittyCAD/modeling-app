@@ -1,5 +1,3 @@
-mod cache;
-
 use kcl_lib::{
     test_server::{execute_and_snapshot, execute_and_snapshot_no_auth},
     UnitLength,
@@ -7,7 +5,7 @@ use kcl_lib::{
 
 /// The minimum permissible difference between asserted twenty-twenty images.
 /// i.e. how different the current model snapshot can be from the previous saved one.
-pub(crate) const MIN_DIFF: f64 = 0.99;
+const MIN_DIFF: f64 = 0.99;
 
 macro_rules! kcl_input {
     ($file:literal) => {
@@ -15,11 +13,8 @@ macro_rules! kcl_input {
     };
 }
 
-pub(crate) fn assert_out(test_name: &str, result: &image::DynamicImage) -> String {
-    let path = format!("tests/executor/outputs/{test_name}.png");
-    twenty_twenty::assert_image(&path, result, MIN_DIFF);
-
-    path
+fn assert_out(test_name: &str, result: &image::DynamicImage) {
+    twenty_twenty::assert_image(format!("tests/executor/outputs/{test_name}.png"), result, MIN_DIFF);
 }
 
 #[tokio::test(flavor = "multi_thread")]

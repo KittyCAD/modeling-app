@@ -1,3 +1,4 @@
+pub(crate) mod cache;
 pub(crate) mod digest;
 pub mod modify;
 pub mod types;

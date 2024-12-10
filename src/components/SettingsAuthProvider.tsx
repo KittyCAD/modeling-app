@@ -23,6 +23,7 @@ import {
   engineCommandManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
+import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
 import {
@@ -128,10 +129,26 @@ export const SettingsAuthProviderBase = ({
             .setTheme(context.app.theme.current)
             .catch(reportRejection)
         },
+        setEngineScaleGridVisibility: ({ context }) => {
+          engineCommandManager.setScaleGridVisibility(
+            context.modeling.showScaleGrid.current
+          )
+        },
         setClientTheme: ({ context }) => {
           const opposingTheme = getOppositeTheme(context.app.theme.current)
           sceneInfra.theme = opposingTheme
           sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+        },
+        setEngineEdges: ({ context }) => {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          engineCommandManager.sendSceneCommand({
+            cmd_id: uuidv4(),
+            type: 'modeling_cmd_req',
+            cmd: {
+              type: 'edge_lines_visible' as any, // TODO update kittycad.ts to get this new command type
+              hidden: !context.modeling.highlightEdges.current,
+            },
+          })
         },
         toastSuccess: ({ event }) => {
           if (!('data' in event)) return
@@ -158,27 +175,17 @@ export const SettingsAuthProviderBase = ({
         },
         'Execute AST': ({ context, event }) => {
           try {
-            const relevantSetting = (s: typeof settings) => {
-              return (
-                s.modeling?.defaultUnit?.current !==
-                  context.modeling.defaultUnit.current ||
-                s.modeling.showScaleGrid.current !==
-                  context.modeling.showScaleGrid.current ||
-                s.modeling?.highlightEdges.current !==
-                  context.modeling.highlightEdges.current
-              )
-            }
-
             const allSettingsIncludesUnitChange =
               event.type === 'Set all settings' &&
-              relevantSetting(event.settings)
+              event.settings?.modeling?.defaultUnit?.current !==
+                context.modeling.defaultUnit.current
             const resetSettingsIncludesUnitChange =
-              event.type === 'Reset settings' && relevantSetting(settings)
+              event.type === 'Reset settings' &&
+              context.modeling.defaultUnit.current !==
+                settings?.modeling?.defaultUnit?.default
 
             if (
               event.type === 'set.modeling.defaultUnit' ||
-              event.type === 'set.modeling.showScaleGrid' ||
-              event.type === 'set.modeling.highlightEdges' ||
               allSettingsIncludesUnitChange ||
               resetSettingsIncludesUnitChange
             ) {

@@ -45,11 +45,14 @@ use crate::{
     errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
-        ast::types::{Expr, Node, VariableKind},
+        ast::{
+            cache::{CacheInformation, OldAstState},
+            types::{Expr, Node, VariableKind},
+        },
         token::TokenStream,
         PIPE_OPERATOR,
     },
-    CacheInformation, ModuleId, OldAstState, Program, SourceRange,
+    ModuleId, Program, SourceRange,
 };
 const SEMANTIC_TOKEN_TYPES: [SemanticTokenType; 10] = [
     SemanticTokenType::NUMBER,
