@@ -61,7 +61,7 @@ assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
 // an anonymous `add` function as its parameter, instead of declaring a
 // named function outside.
 arr = [1, 2, 3]
-sum = reduce(arr, 0, (i, result_so_far) {
+sum = reduce(arr, 0, fn(i, result_so_far) {
   return i + result_so_far
 })
 
@@ -84,7 +84,7 @@ fn decagon(radius) {
   // Use a `reduce` to draw the remaining decagon sides.
   // For each number in the array 1..10, run the given function,
   // which takes a partially-sketched decagon and adds one more edge to it.
-  fullDecagon = reduce([1..10], startOfDecagonSketch, (i, partialDecagon) {
+  fullDecagon = reduce([1..10], startOfDecagonSketch, fn(i, partialDecagon) {
     // Draw one edge of the decagon.
     x = cos(stepAngle * i) * radius
     y = sin(stepAngle * i) * radius
