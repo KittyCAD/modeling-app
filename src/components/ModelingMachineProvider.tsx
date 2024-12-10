@@ -665,10 +665,11 @@ export const ModelingMachineProvider = ({
               // this assumes no changes have been made to the sketch besides what we did when entering the sketch
               // i.e. doesn't account for user's adding code themselves, maybe we need store a flag userEditedSinceSketchMode?
               const newAst = structuredClone(kclManager.ast)
-              const varDecIndex = sketchDetails.sketchEntryNodePath[1][0]
+              const varDecIndex = sketchDetails.planeNodePath[1][0]
               // remove body item at varDecIndex
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
               await kclManager.executeAstMock(newAst)
+              await codeManager.updateEditorWithAstAndWriteToFile(newAst)
             }
             sceneInfra.setCallbacks({
               onClick: () => {},
