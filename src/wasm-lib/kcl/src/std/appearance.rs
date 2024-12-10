@@ -106,6 +106,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```
 ///
 /// ```no_run
+/// /// You can set the appearance before or after you shell it will yield the same result.
 /// const firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
@@ -114,7 +115,6 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///     |> close(%)
 ///     |> extrude(6, %)
 ///
-/// // Remove the end face for the extrusion.
 /// shell({
 ///     faces = ['end'],
 ///     thickness = 0.25,
@@ -124,6 +124,27 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///         metalness = 90,
 ///         roughness = 90
 ///     }, %)
+/// ```
+///
+/// ```no_run
+/// /// You can set the appearance before or after you shell it will yield the same result.
+/// const firstSketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %)
+///     |> close(%)
+///     |> extrude(6, %)
+///     |> appearance({
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     }, %)
+///
+/// shell({
+///     faces = ['end'],
+///     thickness = 0.25,
+/// }, firstSketch)
 /// ```
 #[stdlib {
     name = "appearance",
