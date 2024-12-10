@@ -2284,10 +2284,11 @@ struct ParamDescription {
 }
 
 fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
-    let (found_at_sign, arg_name, question_mark, type_, _ws, default_literal) = (
+    let (found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
         opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
+        opt(whitespace),
         opt((colon, opt(whitespace), argument_type).map(|tup| tup.2)),
         opt(whitespace),
         opt((equals, opt(whitespace), literal).map(|(_, _, literal)| literal)),
