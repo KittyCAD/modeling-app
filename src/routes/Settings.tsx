@@ -30,6 +30,12 @@ export const PACKAGE_NAME = isDesktop()
   ? window.electron.packageJson.name
   : 'zoo-modeling-app'
 
+export const IS_NIGHTLY = PACKAGE_NAME.indexOf('-nightly') > -1
+
+export const RELEASE_URL = `https://github.com/KittyCAD/modeling-app/releases/tag/${
+  IS_NIGHTLY ? 'nightly-' : ''
+}v${APP_VERSION}`
+
 export const Settings = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
