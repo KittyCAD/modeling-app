@@ -79,7 +79,10 @@ kittycad = { version = "0.3.28", default-features = false, features = ["js", "re
 kittycad-modeling-cmds = { version = "0.2.77", features = ["websocket"] }
 
 [workspace.lints.clippy]
+assertions_on_result_states = "warn"
+dbg_macro = "warn"
 iter_over_hash_type = "warn"
+lossy_float_literal = "warn"
 
 [[test]]
 name = "executor"
