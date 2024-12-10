@@ -4,6 +4,7 @@ use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
+use cad_op::Operation;
 use indexmap::IndexMap;
 use kcmc::{
     each_cmd as mcmd,
@@ -24,6 +25,7 @@ pub use function_param::FunctionParam;
 pub use kcl_value::{KclObjectFields, KclValue};
 
 pub(crate) mod cache;
+mod cad_op;
 mod exec_ast;
 mod function_param;
 mod kcl_value;
@@ -65,6 +67,9 @@ pub struct ExecState {
     pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
 }
 
 impl ExecState {
