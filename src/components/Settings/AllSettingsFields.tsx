@@ -13,7 +13,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { ActionButton } from 'components/ActionButton'
 import { SettingsFieldInput } from './SettingsFieldInput'
 import toast from 'react-hot-toast'
-import { APP_VERSION, IS_NIGHTLY, RELEASE_URL } from 'routes/Settings'
+import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from 'routes/Settings'
 import { PATHS } from 'lib/paths'
 import {
   createAndOpenNewTutorialProject,
@@ -246,8 +246,8 @@ export const AllSettingsFields = forwardRef(
                   to inject the version from package.json */}
               App version {APP_VERSION}.{' '}
               <a
-                onClick={openExternalBrowserIfDesktop(RELEASE_URL)}
-                href={RELEASE_URL}
+                onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
+                href={getReleaseUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
               >
