@@ -1,0 +1,11 @@
+// A function with a tag parameter.
+fn myCircle(sk, tag) {
+  c = circle({ radius = 4, center = [0, 0] }, sk, tag)
+  // This should not be allowed.
+  ang = tangentToEnd(mine)
+  return [c, ang]
+}
+
+c1 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> myCircle(%, $mine)
