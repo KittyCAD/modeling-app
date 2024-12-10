@@ -61,6 +61,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 ///
 /// ```no_run
+/// /// Add color to an extruded solid.
 /// const exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([10, 0], %)
@@ -69,7 +70,39 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
-///  |> appearance({color: '#ff0000', metalness: 50, roughness: 50}, %)
+///  |> appearance({color= '#ff0000', metalness= 50, roughness= 50}, %)
+/// ```
+///
+/// ```no_run
+/// /// Add color to a revolved solid.
+/// sketch001 = startSketchOn('XY')
+///     |> circle({ center = [15, 0], radius = 5 }, %)
+///     |> revolve({ angle = 360, axis = 'y' }, %)
+///     |> appearance({
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     }, %)
+/// ```
+///
+/// ```no_run
+/// /// Add color to different solids.
+/// fn cube(center) {
+///    return startSketchOn('XY')
+///    |> startProfileAt([center[0] - 10, center[1] - 10], %)
+///    |> lineTo([center[0] + 10, center[1] - 10], %)
+///     |> lineTo([center[0] + 10, center[1] + 10], %)
+///     |> lineTo([center[0] - 10, center[1] + 10], %)
+///     |> close(%)
+///    |> extrude(10, %)
+/// }
+///
+/// const example0 = cube([0, 0])
+///  const example1 = cube([20, 0])
+///  const example2 = cube([40, 0])
+///
+///  appearance({color= '#ff0000', metalness= 50, roughness= 50}, [example0, example1])
+///  appearance({color= '#00ff00', metalness= 50, roughness= 50}, example2)
 /// ```
 #[stdlib {
     name = "appearance",
