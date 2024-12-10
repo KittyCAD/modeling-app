@@ -72,6 +72,10 @@ pub enum KclValue {
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     Function {
+        /// Adam Chalmers speculation:
+        /// Reference to a KCL stdlib function (written in Rust).
+        /// Some if the KCL value is an alias of a stdlib function,
+        /// None if it's a KCL function written/declared in KCL.
         #[serde(skip)]
         func: Option<MemoryFunction>,
         #[schemars(skip)]
@@ -495,6 +499,41 @@ impl KclValue {
         } else {
             crate::execution::call_user_defined_function(
                 args,
+                closure_memory.as_ref(),
+                expression.as_ref(),
+                exec_state,
+                &ctx,
+            )
+            .await
+        }
+    }
+
+    /// If this is a function, call it by applying keyword arguments.
+    /// If it's not a function, returns an error.
+    pub async fn call_fn_kw(
+        &self,
+        args: crate::std::Args,
+        exec_state: &mut ExecState,
+        ctx: ExecutorContext,
+        callsite: SourceRange,
+    ) -> Result<Option<KclValue>, KclError> {
+        let KclValue::Function {
+            func,
+            expression,
+            memory: closure_memory,
+            meta: _,
+        } = &self
+        else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "cannot call this because it isn't a function".to_string(),
+                source_ranges: vec![callsite],
+            }));
+        };
+        if let Some(_func) = func {
+            todo!("Implement calling KCL stdlib fns that are aliased. Part of https://github.com/KittyCAD/modeling-app/issues/4600");
+        } else {
+            crate::execution::call_user_defined_function_kw(
+                args.kw_args,
                 closure_memory.as_ref(),
                 expression.as_ref(),
                 exec_state,

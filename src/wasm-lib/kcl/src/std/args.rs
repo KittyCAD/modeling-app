@@ -50,6 +50,13 @@ pub struct KwArgs {
     pub labeled: HashMap<String, Arg>,
 }
 
+impl KwArgs {
+    /// How many arguments are there?
+    pub fn len(&self) -> usize {
+        self.labeled.len() + if self.unlabeled.is_some() { 1 } else { 0 }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Args {
     /// Positional args.
