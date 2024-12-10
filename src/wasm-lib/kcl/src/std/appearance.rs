@@ -108,6 +108,17 @@ async fn inner_appearance(data: AppearanceData, solid_set: SolidSet, args: Args)
         )
         .await?;
 
+        if let Some(opacity) = data.opacity {
+            args.batch_modeling_cmd(
+                uuid::Uuid::new_v4(),
+                ModelingCmd::from(mcmd::EntitySetOpacity {
+                    entity_id: solid.id,
+                    opacity: opacity as f32 / 100.0,
+                }),
+            )
+            .await?;
+        }
+
         // Idk if we want to actually modify the memory for the colors, but I'm not right now since
         // I can't think of a use case for it.
     }
