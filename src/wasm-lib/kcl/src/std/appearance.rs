@@ -104,6 +104,27 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///  appearance({color= '#ff0000', metalness= 50, roughness= 50}, [example0, example1])
 ///  appearance({color= '#00ff00', metalness= 50, roughness= 50}, example2)
 /// ```
+///
+/// ```no_run
+/// const firstSketch = startSketchOn('XY')
+///     |> startProfileAt([-12, 12], %)
+///     |> line([24, 0], %)
+///     |> line([0, -24], %)
+///     |> line([-24, 0], %)
+///     |> close(%)
+///     |> extrude(6, %)
+///
+/// // Remove the end face for the extrusion.
+/// shell({
+///     faces = ['end'],
+///     thickness = 0.25,
+/// }, firstSketch)
+///     |> appearance({
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     }, %)
+/// ```
 #[stdlib {
     name = "appearance",
 }]
