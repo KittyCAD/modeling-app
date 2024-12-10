@@ -135,7 +135,9 @@ test.describe('verify sketch on chamfer works', () => {
           pixelDiff: 50,
         })
         await rectangle2ndClick()
-        await editor.expectEditor.toContain(afterRectangle2ndClickSnippet)
+        await editor.expectEditor.toContain(afterRectangle2ndClickSnippet, {
+          shouldNormalise: true,
+        })
       })
 
       await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
@@ -177,18 +179,13 @@ test.describe('verify sketch on chamfer works', () => {
 
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, seg03)',
-        afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
-        afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
-    |> angledLine([
-         segAng(rectangleSegmentA002) - 90,
-         105.26
-       ], %, $rectangleSegmentB001)
-    |> angledLine([
-         segAng(rectangleSegmentA002),
-         -segLen(rectangleSegmentA002)
-       ], %, $rectangleSegmentC001)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`,
+        afterRectangle1stClickSnippet:
+          'startProfileAt([205.96, 254.59], sketch002)',
+        afterRectangle2ndClickSnippet: `angledLine([0,11.39],%,$rectangleSegmentA002)
+        |>angledLine([segAng(rectangleSegmentA002)-90,105.26],%)
+        |>angledLine([segAng(rectangleSegmentA002),-segLen(rectangleSegmentA002)],%)
+        |>lineTo([profileStartX(%),profileStartY(%)],%)
+        |>close(%)`,
       })
 
       await sketchOnAChamfer({
@@ -209,19 +206,16 @@ test.describe('verify sketch on chamfer works', () => {
 
         afterChamferSelectSnippet:
           'sketch003 = startSketchOn(extrude001, seg04)',
-        afterRectangle1stClickSnippet: 'startProfileAt([-209.64, 255.28], %)',
-        afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
-    |> angledLine([
-         segAng(rectangleSegmentA003) - 90,
-         106.84
-       ], %, $rectangleSegmentB002)
-    |> angledLine([
-         segAng(rectangleSegmentA003),
-         -segLen(rectangleSegmentA003)
-       ], %, $rectangleSegmentC002)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`,
+        afterRectangle1stClickSnippet:
+          'startProfileAt([-209.64, 255.28], sketch003)',
+        afterRectangle2ndClickSnippet: `angledLine([0,11.56],%,$rectangleSegmentA003)
+        |>angledLine([segAng(rectangleSegmentA003)-90,106.84],%)
+        |>angledLine([segAng(rectangleSegmentA003),-segLen(rectangleSegmentA003)],%)
+        |>lineTo([profileStartX(%),profileStartY(%)],%)
+        |>close(%)`,
       })
+
+      // angledLine([0,11.16],%,$rectangleSegmentA004)|>angledLine([segAng(rectangleSegmentA004)-90,103.07],%)|>angledLine([segAng(rectangleSegmentA004),-segLen(rectangleSegmentA004)],%)|>lineTo([profileStartX(%),profileStartY(%)],%)|>close(%)
       await sketchOnAChamfer({
         clickCoords: { x: 677, y: 87 },
         cameraPos: { x: -6200, y: 1500, z: 6200 },
@@ -234,19 +228,14 @@ test.describe('verify sketch on chamfer works', () => {
          ]
        }, %)`,
         afterChamferSelectSnippet:
-          'sketch003 = startSketchOn(extrude001, seg04)',
-        afterRectangle1stClickSnippet: 'startProfileAt([-209.64, 255.28], %)',
-        afterRectangle2ndClickSnippet: `angledLine([0, 11.56], %, $rectangleSegmentA003)
-    |> angledLine([
-         segAng(rectangleSegmentA003) - 90,
-         106.84
-       ], %, $rectangleSegmentB002)
-    |> angledLine([
-         segAng(rectangleSegmentA003),
-         -segLen(rectangleSegmentA003)
-       ], %, $rectangleSegmentC002)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`,
+          'sketch004 = startSketchOn(extrude001, seg05)',
+        afterRectangle1stClickSnippet:
+          'startProfileAt([82.57, 322.96], sketch004)',
+        afterRectangle2ndClickSnippet: `angledLine([0,11.16],%,$rectangleSegmentA004)
+        |>angledLine([segAng(rectangleSegmentA004)-90,103.07],%)
+        |>angledLine([segAng(rectangleSegmentA004),-segLen(rectangleSegmentA004)],%)
+        |>lineTo([profileStartX(%),profileStartY(%)],%)|
+        >close(%)`,
       })
       /// last one
       await sketchOnAChamfer({
@@ -259,104 +248,97 @@ test.describe('verify sketch on chamfer works', () => {
        }, %)`,
         afterChamferSelectSnippet:
           'sketch005 = startSketchOn(extrude001, seg06)',
-        afterRectangle1stClickSnippet: 'startProfileAt([-23.43, 19.69], %)',
-        afterRectangle2ndClickSnippet: `angledLine([0, 9.1], %, $rectangleSegmentA005)
-
-    |> angledLine([
-         segAng(rectangleSegmentA005) - 90,
-         84.07
-       ], %, $rectangleSegmentB004)
-    |> angledLine([
-         segAng(rectangleSegmentA005),
-         -segLen(rectangleSegmentA005)
-       ], %, $rectangleSegmentC004)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`,
+        afterRectangle1stClickSnippet:
+          'startProfileAt([-23.43, 19.69], sketch005)',
+        afterRectangle2ndClickSnippet: `angledLine([0,9.1],%,$rectangleSegmentA005)
+        |>angledLine([segAng(rectangleSegmentA005)-90,84.07],%)
+        |>angledLine([segAng(rectangleSegmentA005),-segLen(rectangleSegmentA005)],%)
+        |>lineTo([profileStartX(%),profileStartY(%)],%)
+        |>close(%)`,
       })
 
       await test.step('verify at the end of the test that final code is what is expected', async () => {
         await editor.expectEditor.toContain(
           `sketch001 = startSketchOn('XZ')
-
-      |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-      |> angledLine([0, 268.43], %, $rectangleSegmentA001)
-      |> angledLine([
-           segAng(rectangleSegmentA001) - 90,
-           217.26
-         ], %, $seg01)
-      |> angledLine([
-           segAng(rectangleSegmentA001),
-           -segLen(rectangleSegmentA001)
-         ], %, $yo)
-      |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
-      |> close(%)
-    extrude001 = extrude(100, sketch001)
-      |> chamfer({
-           length = 30,
-           tags = [getOppositeEdge(seg01)]
-         }, %, $seg03)
-      |> chamfer({ length = 30, tags = [seg01] }, %, $seg04)
-      |> chamfer({
-           length = 30,
-           tags = [getNextAdjacentEdge(seg02)]
-         }, %, $seg05)
-      |> chamfer({
-           length = 30,
-           tags = [getNextAdjacentEdge(yo)]
-         }, %, $seg06)
-    sketch005 = startSketchOn(extrude001, seg06)
-      |> startProfileAt([-23.43, 19.69], %)
-      |> angledLine([0, 9.1], %, $rectangleSegmentA005)
-      |> angledLine([
-           segAng(rectangleSegmentA005) - 90,
-           84.07
-         ], %, $rectangleSegmentB004)
-      |> angledLine([
-           segAng(rectangleSegmentA005),
-           -segLen(rectangleSegmentA005)
-         ], %, $rectangleSegmentC004)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
-      |> close(%)
-    sketch004 = startSketchOn(extrude001, seg05)
-      |> startProfileAt([82.57, 322.96], %)
-      |> angledLine([0, 11.16], %, $rectangleSegmentA004)
-      |> angledLine([
-           segAng(rectangleSegmentA004) - 90,
-           103.07
-         ], %, $rectangleSegmentB003)
-      |> angledLine([
-           segAng(rectangleSegmentA004),
-           -segLen(rectangleSegmentA004)
-         ], %, $rectangleSegmentC003)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
-      |> close(%)
-    sketch003 = startSketchOn(extrude001, seg04)
-      |> startProfileAt([-209.64, 255.28], %)
-      |> angledLine([0, 11.56], %, $rectangleSegmentA003)
-      |> angledLine([
-           segAng(rectangleSegmentA003) - 90,
-           106.84
-         ], %, $rectangleSegmentB002)
-      |> angledLine([
-           segAng(rectangleSegmentA003),
-           -segLen(rectangleSegmentA003)
-         ], %, $rectangleSegmentC002)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
-      |> close(%)
-    sketch002 = startSketchOn(extrude001, seg03)
-      |> startProfileAt([205.96, 254.59], %)
-      |> angledLine([0, 11.39], %, $rectangleSegmentA002)
-      |> angledLine([
-           segAng(rectangleSegmentA002) - 90,
-           105.26
-         ], %, $rectangleSegmentB001)
-      |> angledLine([
-           segAng(rectangleSegmentA002),
-           -segLen(rectangleSegmentA002)
-         ], %, $rectangleSegmentC001)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
-      |> close(%)
-    `,
+  |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
+  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       217.26
+     ], %, $seg01)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $yo)
+  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
+  |> close(%)
+extrude001 = extrude(100, sketch001)
+  |> chamfer({
+       length = 30,
+       tags = [getOppositeEdge(seg01)]
+     }, %, $seg03)
+  |> chamfer({ length = 30, tags = [seg01] }, %, $seg04)
+  |> chamfer({
+       length = 30,
+       tags = [getNextAdjacentEdge(seg02)]
+     }, %, $seg05)
+  |> chamfer({
+       length = 30,
+       tags = [getNextAdjacentEdge(yo)]
+     }, %, $seg06)
+sketch005 = startSketchOn(extrude001, seg06)
+profile004 = startProfileAt([-23.43, 19.69], sketch005)
+  |> angledLine([0, 9.1], %, $rectangleSegmentA005)
+  |> angledLine([
+       segAng(rectangleSegmentA005) - 90,
+       84.07
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA005),
+       -segLen(rectangleSegmentA005)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+sketch004 = startSketchOn(extrude001, seg05)
+profile003 = startProfileAt([82.57, 322.96], sketch004)
+  |> angledLine([0, 11.16], %, $rectangleSegmentA004)
+  |> angledLine([
+       segAng(rectangleSegmentA004) - 90,
+       103.07
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA004),
+       -segLen(rectangleSegmentA004)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+sketch003 = startSketchOn(extrude001, seg04)
+profile002 = startProfileAt([-209.64, 255.28], sketch003)
+  |> angledLine([0, 11.56], %, $rectangleSegmentA003)
+  |> angledLine([
+       segAng(rectangleSegmentA003) - 90,
+       106.84
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA003),
+       -segLen(rectangleSegmentA003)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+sketch002 = startSketchOn(extrude001, seg03)
+profile001 = startProfileAt([205.96, 254.59], sketch002)
+  |> angledLine([0, 11.39], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       105.26
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`,
           { shouldNormalise: true }
         )
       })
@@ -392,18 +374,13 @@ test.describe('verify sketch on chamfer works', () => {
         beforeChamferSnippetEnd: '}, extrude001)',
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, seg03)',
-        afterRectangle1stClickSnippet: 'startProfileAt([205.96, 254.59], %)',
-        afterRectangle2ndClickSnippet: `angledLine([0, 11.39], %, $rectangleSegmentA002)
-    |> angledLine([
-         segAng(rectangleSegmentA002) - 90,
-         105.26
-       ], %, $rectangleSegmentB001)
-    |> angledLine([
-         segAng(rectangleSegmentA002),
-         -segLen(rectangleSegmentA002)
-       ], %, $rectangleSegmentC001)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`,
+        afterRectangle1stClickSnippet:
+          'startProfileAt([205.96, 254.59], sketch002)',
+        afterRectangle2ndClickSnippet: `angledLine([0,11.39],%,$rectangleSegmentA002)
+        |>angledLine([segAng(rectangleSegmentA002)-90,105.26],%)
+        |>angledLine([segAng(rectangleSegmentA002),-segLen(rectangleSegmentA002)],%)
+        |>lineTo([profileStartX(%),profileStartY(%)],%)
+        |>close(%)`,
       })
       await editor.expectEditor.toContain(
         `sketch001 = startSketchOn('XZ')
@@ -433,16 +410,16 @@ chamf = chamfer({
        ]
      }, %)
 sketch002 = startSketchOn(extrude001, seg03)
-  |> startProfileAt([205.96, 254.59], %)
+profile001 = startProfileAt([205.96, 254.59], sketch002)
   |> angledLine([0, 11.39], %, $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) - 90,
        105.26
-     ], %, $rectangleSegmentB001)
+     ], %)
   |> angledLine([
        segAng(rectangleSegmentA002),
        -segLen(rectangleSegmentA002)
-     ], %, $rectangleSegmentC001)
+     ], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 `,
@@ -504,10 +481,10 @@ test(`Verify axis, origin, and horizontal snapping`, async ({
 
   const expectedCodeSnippets = {
     sketchOnXzPlane: `sketch001 = startSketchOn('XZ')`,
-    pointAtOrigin: `startProfileAt([${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}], %)`,
+    pointAtOrigin: `startProfileAt([${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}], sketch001)`,
     segmentOnXAxis: `xLine(${xAxisSloppy.kcl[0]}, %)`,
-    afterSegmentDraggedOffYAxis: `startProfileAt([${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}], %)`,
-    afterSegmentDraggedOnYAxis: `startProfileAt([${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}], %)`,
+    afterSegmentDraggedOffYAxis: `startProfileAt([${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}], sketch001)`,
+    afterSegmentDraggedOnYAxis: `startProfileAt([${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}], sketch001)`,
   }
 
   await app.initialise()

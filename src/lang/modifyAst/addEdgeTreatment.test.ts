@@ -275,7 +275,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   const selection: Selections = {
     graphSelections: segmentRanges.map((segmentRange) => {
       const maybeArtifact = [...artifactGraph].find(([, a]) => {
-        if (!('codeRef' in a)) return false
+        if (!('codeRef' in a && a.codeRef)) return false
         return isOverlap(a.codeRef.range, segmentRange)
       })
       return {
@@ -487,8 +487,8 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> chamfer({ length: 5, tags: [seg01] }, %)
-  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg02] }, %)`
+  |> chamfer({ length = 5, tags = [seg01] }, %)
+  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg02] }, %)`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,

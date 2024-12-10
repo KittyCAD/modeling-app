@@ -33,6 +33,7 @@ import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
+import { FunctionExpression } from 'wasm-lib/kcl/bindings/FunctionExpression'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -596,7 +597,13 @@ export function findAllPreviousVariables(
 type ReplacerFn = (
   _ast: Node<Program>,
   varName: string
-) => { modifiedAst: Node<Program>; pathToReplaced: PathToNode } | Error
+) =>
+  | {
+      modifiedAst: Node<Program>
+      pathToReplaced: PathToNode
+      exprInsertIndex: number
+    }
+  | Error
 
 export function isNodeSafeToReplacePath(
   ast: Program,
@@ -648,7 +655,7 @@ export function isNodeSafeToReplacePath(
     if (err(_nodeToReplace)) return _nodeToReplace
     const nodeToReplace = _nodeToReplace.node as any
     nodeToReplace[last[0]] = identifier
-    return { modifiedAst: _ast, pathToReplaced }
+    return { modifiedAst: _ast, pathToReplaced, exprInsertIndex: index }
   }
 
   const hasPipeSub = isTypeInValue(finVal as Expr, 'PipeSubstitution')
@@ -1100,4 +1107,19 @@ export function getObjExprProperty(
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }
+}
+
+export function isCursorInFunctionDefinition(
+  ast: Node<Program>,
+  selectionRanges: Selection
+): boolean {
+  if (!selectionRanges?.codeRef?.pathToNode) return false
+  const node = getNodeFromPath<FunctionExpression>(
+    ast,
+    selectionRanges.codeRef.pathToNode,
+    'FunctionExpression'
+  )
+  if (err(node)) return false
+  if (node.node.type === 'FunctionExpression') return true
+  return false
 }

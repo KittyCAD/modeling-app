@@ -446,8 +446,7 @@ test(
 
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    code += `
-  |> startProfileAt([7.19, -9.7], %)`
+    code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
     await expect(page.locator('.cm-content')).toHaveText(code)
     await page.waitForTimeout(100)
 
@@ -468,6 +467,10 @@ test(
     await page
       .getByRole('button', { name: 'arc Tangential Arc', exact: true })
       .click()
+
+    // click to continue profile
+    await page.mouse.move(813, 392, { steps: 10 })
+    await page.waitForTimeout(100)
 
     await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
 
@@ -591,8 +594,7 @@ test(
       mask: [page.getByTestId('model-state-indicator')],
     })
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')
-  |> circle({ center = [14.44, -2.44], radius = 1 }, %)`
+      `sketch001 = startSketchOn('XZ')profile001 = circle({ center = [14.44, -2.44], radius = 1 }, sketch001)`
     )
   }
 )
@@ -602,7 +604,7 @@ test.describe(
   { tag: '@snapshot' },
   () => {
     // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+    // test.skip(process.platform === 'darwin', 'Skip on macos')
 
     test('Inch scale', async ({ page }) => {
       const u = await getUtils(page)
@@ -636,8 +638,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `
-  |> startProfileAt([7.19, -9.7], %)`
+      code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -653,6 +654,10 @@ test.describe(
       await page
         .getByRole('button', { name: 'arc Tangential Arc', exact: true })
         .click()
+      await page.waitForTimeout(100)
+
+      // click to continue profile
+      await page.mouse.click(813, 392)
       await page.waitForTimeout(100)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
@@ -741,8 +746,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `
-  |> startProfileAt([182.59, -246.32], %)`
+      code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -758,6 +762,10 @@ test.describe(
       await page
         .getByRole('button', { name: 'arc Tangential Arc', exact: true })
         .click()
+      await page.waitForTimeout(100)
+
+      // click to continue profile
+      await page.mouse.click(813, 392)
       await page.waitForTimeout(100)
 
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
