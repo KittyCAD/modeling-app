@@ -52,7 +52,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let re = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
     if !re.is_match(&data.color) {
         return Err(KclError::Semantic(KclErrorDetails {
-            message: format!("Invalid hex color (`{}`)", data.color),
+            message: format!("Invalid hex color (`{}`), try something like `#fff000`", data.color),
             source_ranges: vec![args.source_range],
         }));
     }
