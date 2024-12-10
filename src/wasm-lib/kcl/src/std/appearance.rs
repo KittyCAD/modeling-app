@@ -60,6 +60,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
 ///
+/// This will work on any solid, including extruded solids, revolved solids, and shelled solids.
 /// ```no_run
 /// /// Add color to an extruded solid.
 /// const exampleSketch = startSketchOn("XZ")
