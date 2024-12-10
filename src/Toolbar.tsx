@@ -1,6 +1,6 @@
 import { useRef, useMemo, memo } from 'react'
 import { isCursorInSketchCommandRange } from 'lang/util'
-import { engineCommandManager } from 'lib/singletons'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
@@ -21,6 +21,7 @@ import {
 } from 'lib/toolbar'
 import { isDesktop } from 'lib/isDesktop'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { isCursorInFunctionDefinition } from 'lang/queryAst'
 
 export function Toolbar({
   className = '',
@@ -37,6 +38,13 @@ export function Toolbar({
     '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
 
   const sketchPathId = useMemo(() => {
+    if (
+      isCursorInFunctionDefinition(
+        kclManager.ast,
+        context.selectionRanges.graphSelections[0]
+      )
+    )
+      return false
     return isCursorInSketchCommandRange(
       engineCommandManager.artifactGraph,
       context.selectionRanges

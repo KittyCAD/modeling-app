@@ -33,6 +33,7 @@ import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
+import { FunctionExpression } from 'wasm-lib/kcl/bindings/FunctionExpression'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1106,4 +1107,19 @@ export function getObjExprProperty(
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }
+}
+
+export function isCursorInFunctionDefinition(
+  ast: Node<Program>,
+  selectionRanges: Selection
+): boolean {
+  if (!selectionRanges?.codeRef?.pathToNode) return false
+  const node = getNodeFromPath<FunctionExpression>(
+    ast,
+    selectionRanges.codeRef.pathToNode,
+    'FunctionExpression'
+  )
+  if (err(node)) return false
+  if (node.node.type === 'FunctionExpression') return true
+  return false
 }

@@ -72,10 +72,20 @@ import {
   sketchOnOffsetPlane,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
+import {
+  PathToNode,
+  Program,
+  VariableDeclaration,
+  parse,
+  recast,
+  resultIsOk,
+} from 'lang/wasm'
 import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
+  getNodeFromPath,
+  isCursorInFunctionDefinition,
+  traverse,
 } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
@@ -636,6 +646,13 @@ export const ModelingMachineProvider = ({
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
+          if (
+            isCursorInFunctionDefinition(
+              kclManager.ast,
+              selectionRanges.graphSelections[0]
+            )
+          )
+            return false
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactGraph,
             selectionRanges
@@ -666,6 +683,27 @@ export const ModelingMachineProvider = ({
               // i.e. doesn't account for user's adding code themselves, maybe we need store a flag userEditedSinceSketchMode?
               const newAst = structuredClone(kclManager.ast)
               const varDecIndex = sketchDetails.planeNodePath[1][0]
+
+              const varDec = getNodeFromPath<VariableDeclaration>(
+                newAst,
+                sketchDetails.planeNodePath,
+                'VariableDeclaration'
+              )
+              if (err(varDec)) return reject(new Error('No varDec'))
+              const variableName = varDec.node.declaration.id.name
+              let isIdentifierUsed = false
+              traverse(newAst, {
+                enter: (node) => {
+                  if (
+                    node.type === 'Identifier' &&
+                    node.name === variableName
+                  ) {
+                    isIdentifierUsed = true
+                  }
+                },
+              })
+              if (isIdentifierUsed) return
+
               // remove body item at varDecIndex
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
               await kclManager.executeAstMock(newAst)
