@@ -2280,23 +2280,34 @@ struct ParamDescription {
     labeled: bool,
     arg_name: Token,
     type_: std::option::Option<FnArgType>,
-    is_optional: bool,
+    default_value: Option<DefaultParamVal>,
 }
 
 fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
-    let (found_at_sign, arg_name, optional, _, type_) = (
+    let (found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
         opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
         opt(whitespace),
         opt((colon, opt(whitespace), argument_type).map(|tup| tup.2)),
+        opt(whitespace),
+        opt((equals, opt(whitespace), literal).map(|(_, _, literal)| literal)),
     )
         .parse_next(i)?;
     Ok(ParamDescription {
         labeled: found_at_sign.is_none(),
         arg_name,
         type_,
-        is_optional: optional.is_some(),
+        default_value: match (question_mark.is_some(), default_literal) {
+            (true, Some(lit)) => Some(DefaultParamVal::Literal(lit.inner)),
+            (true, None) => Some(DefaultParamVal::none()),
+            (false, None) => None,
+            (false, Some(lit)) => {
+                let msg = "You're trying to set a default value for an argument, but only optional arguments can have default values, and this argument is mandatory. Try putting a ? after the argument name, to make the argument optional.";
+                let e = CompilationError::fatal((&lit).into(), msg);
+                return Err(ErrMode::Backtrack(ContextError::from(e)));
+            }
+        },
     })
 }
 
@@ -2315,7 +2326,7 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                  labeled,
                  arg_name,
                  type_,
-                 is_optional,
+                 default_value,
              }| {
                 let identifier =
                     Node::<Identifier>::try_from(arg_name).and_then(Node::<Identifier>::into_valid_binding_name)?;
@@ -2323,11 +2334,7 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                 Ok(Parameter {
                     identifier,
                     type_,
-                    default_value: if is_optional {
-                        Some(DefaultParamVal::none())
-                    } else {
-                        None
-                    },
+                    default_value,
                     labeled,
                     digest: None,
                 })
@@ -4459,6 +4466,11 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
     snapshot_test!(kw_function_all_named, r#"val = foo(x: a, y: b)"#);
     snapshot_test!(kw_function_decl_all_labeled, r#"fn foo(x, y) { return 1 }"#);
     snapshot_test!(kw_function_decl_first_unlabeled, r#"fn foo(@x, y) { return 1 }"#);
+    snapshot_test!(kw_function_decl_with_default_no_type, r#"fn foo(x? = 2) { return 1 }"#);
+    snapshot_test!(
+        kw_function_decl_with_default_and_type,
+        r#"fn foo(x?: number = 2) { return 1 }"#
+    );
 }
 
 #[allow(unused)]
