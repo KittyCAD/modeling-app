@@ -40,7 +40,7 @@ pub enum Node<'a> {
     KclNone(&'a types::KclNone),
 }
 
-impl<'tree> Node<'tree> {
+impl Node<'_> {
     /// Return the digest of the [Node], pulling the underlying Digest from
     /// the AST types.
     ///
