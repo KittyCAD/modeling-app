@@ -42,12 +42,12 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
+import { revolveSketch } from 'lang/modifyAst/addRevolve'
 import {
   addOffsetPlane,
   deleteFromSelection,
   extrudeSketch,
   loftSketches,
-  revolveSketch,
 } from 'lang/modifyAst'
 import {
   applyEdgeTreatmentToSelection,
@@ -394,6 +394,7 @@ export const modelingMachine = setup({
   guards: {
     'Selection is on face': () => false,
     'has valid sweep selection': () => false,
+    'has valid revolve selection': () => false,
     'has valid loft selection': () => false,
     'has valid shell selection': () => false,
     'has valid edge treatment selection': () => false,
@@ -682,7 +683,7 @@ export const modelingMachine = setup({
       if (event.type !== 'Revolve') return
       ;(async () => {
         if (!event.data) return
-        const { selection, angle } = event.data
+        const { selection, angle, axis } = event.data
         let ast = kclManager.ast
         if (
           'variableName' in angle &&
@@ -693,15 +694,21 @@ export const modelingMachine = setup({
           newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
           ast.body = newBody
         }
+
+        // This is the selection of the sketch that will be revolved
         const pathToNode = getNodePathFromSourceRange(
           ast,
           selection.graphSelections[0]?.codeRef.range
         )
+
         const revolveSketchRes = revolveSketch(
           ast,
           pathToNode,
           false,
-          'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst
+          'variableName' in angle
+            ? angle.variableIdentifierAst
+            : angle.valueAst,
+          axis
         )
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
@@ -1687,7 +1694,7 @@ export const modelingMachine = setup({
 
         Revolve: {
           target: 'idle',
-          guard: 'has valid sweep selection',
+          guard: 'has valid revolve selection',
           actions: ['AST revolve'],
           reenter: false,
         },
