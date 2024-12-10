@@ -53,11 +53,6 @@ process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
 process.env.VITE_KC_SKIP_AUTH ??= 'false'
 process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  app.quit()
-}
-
 const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
 
 /// Register our application to handle all "electron-fiddle://" protocols.
