@@ -22,8 +22,8 @@ use crate::{
 #[serde(rename_all = "camelCase")]
 pub struct AppearanceData {
     /// Color of the new material, a hex string like "#ff0000".
-    #[schemars(inner(regex(pattern = "#[0-9a-fA-F]{6}")))]
-    pub color: Option<String>,
+    #[schemars(regex(pattern = "#[0-9a-fA-F]{6}"))]
+    pub color: String,
     /// Metalness of the new material, a percentage like 95.7.
     #[validate(range(min = 0.0, max = 100.0))]
     pub metalness: Option<f64>,
@@ -40,14 +40,6 @@ pub struct AppearanceData {
 pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid_set): (AppearanceData, SolidSet) = args.get_data_and_solid_set()?;
 
-    // Make sure they set at least one of the appearance properties.
-    if data.color.is_none() && data.metalness.is_none() && data.roughness.is_none() && data.opacity.is_none() {
-        return Err(KclError::Semantic(KclErrorDetails {
-            message: "You must set at least one of the appearance properties.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
     // Validate the data.
     data.validate().map_err(|err| {
         KclError::Semantic(KclErrorDetails {
@@ -57,14 +49,12 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
     })?;
 
     // Make sure the color if set is valid.
-    if let Some(color) = &data.color {
-        let re = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
-        if !re.is_match(color) {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Invalid hex color (`{}`)", color),
-                source_ranges: vec![args.source_range],
-            }));
-        }
+    let re = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
+    if !re.is_match(&data.color) {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: format!("Invalid hex color (`{}`)", data.color),
+            source_ranges: vec![args.source_range],
+        }));
     }
 
     let result = inner_appearance(data, solid_set, args).await?;
@@ -92,36 +82,27 @@ async fn inner_appearance(data: AppearanceData, solid_set: SolidSet, args: Args)
 
     for solid in &solids {
         // Set the material properties.
-        let color = if let Some(color) = &data.color {
-            let rgb = rgba_simple::RGB::<f32>::from_hex(color).map_err(|err| {
-                KclError::Semantic(KclErrorDetails {
-                    message: format!("Invalid hex color (`{}`): {}", color, err),
-                    source_ranges: vec![args.source_range],
-                })
-            })?;
-
-            Some(Color {
-                r: rgb.red,
-                g: rgb.green,
-                b: rgb.blue,
-                a: data.opacity.unwrap_or(1.0) as f32,
+        let rgb = rgba_simple::RGB::<f32>::from_hex(&data.color).map_err(|err| {
+            KclError::Semantic(KclErrorDetails {
+                message: format!("Invalid hex color (`{}`): {}", data.color, err),
+                source_ranges: vec![args.source_range],
             })
-        } else {
-            None
+        })?;
+
+        let color = Color {
+            r: rgb.red,
+            g: rgb.green,
+            b: rgb.blue,
+            a: data.opacity.unwrap_or(100.0) as f32 / 100.0,
         };
 
         args.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
                 object_id: solid.id,
-                color: color.unwrap_or(Color {
-                    r: 1.0,
-                    g: 1.0,
-                    b: 1.0,
-                    a: 1.0,
-                }),
-                metalness: data.metalness.unwrap_or_default() as f32,
-                roughness: data.roughness.unwrap_or_default() as f32,
+                color,
+                metalness: data.metalness.unwrap_or_default() as f32 / 100.0,
+                roughness: data.roughness.unwrap_or_default() as f32 / 100.0,
                 ambient_occlusion: 0.0,
             }),
         )
