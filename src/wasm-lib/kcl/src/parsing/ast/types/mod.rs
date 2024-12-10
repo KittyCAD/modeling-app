@@ -184,7 +184,7 @@ impl Node<Program> {
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
         let completions = Arc::new(Mutex::new(vec![]));
-        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             match node {
                 crate::walk::Node::TagDeclarator(tag) => {
@@ -195,7 +195,7 @@ impl Node<Program> {
                 }
                 _ => {}
             }
-            Ok(true)
+            Ok::<bool, anyhow::Error>(true)
         })?;
         let x = completions.lock().unwrap();
         Ok(x.clone())
@@ -204,7 +204,7 @@ impl Node<Program> {
     /// Returns all the lsp symbols in the program.
     pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
         let symbols = Arc::new(Mutex::new(vec![]));
-        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             match node {
                 crate::walk::Node::TagDeclarator(tag) => {
@@ -215,7 +215,7 @@ impl Node<Program> {
                 }
                 _ => {}
             }
-            Ok(true)
+            Ok::<bool, anyhow::Error>(true)
         })?;
         let x = symbols.lock().unwrap();
         Ok(x.clone())
@@ -227,10 +227,10 @@ impl Node<Program> {
         RuleT: crate::lint::Rule<'a>,
     {
         let v = Arc::new(Mutex::new(vec![]));
-        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             findings.append(&mut rule.check(node)?);
-            Ok(true)
+            Ok::<bool, anyhow::Error>(true)
         })?;
         let x = v.lock().unwrap();
         Ok(x.clone())
