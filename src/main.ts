@@ -218,6 +218,7 @@ ipcMain.handle('kittycad', (event, data) => {
     )(data.args)
 })
 
+// Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
 ipcMain.handle('find_machine_api', () => {
   const timeoutAfterMs = 5000
   return new Promise((resolve, reject) => {
@@ -228,7 +229,6 @@ ipcMain.handle('find_machine_api', () => {
       console.error(error)
       resolve(null)
     })
-    console.log('Looking for machine API...')
     bonjourEt.find(
       { protocol: 'tcp', type: 'machine-api' },
       (service: Service) => {
