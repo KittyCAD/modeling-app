@@ -26,7 +26,7 @@ use crate::{
             UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
-        token::{Token, TokenType},
+        token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
     unparser::ExprContext,
@@ -37,8 +37,6 @@ thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
     static CTXT: RefCell<Option<ParseContext>> = const { RefCell::new(None) };
 }
-
-pub type TokenSlice<'slice, 'input> = &'slice mut &'input [Token];
 
 pub fn run_parser(i: TokenSlice) -> super::ParseResult {
     let _stats = crate::log::LogPerfStats::new("Parsing");
@@ -122,13 +120,13 @@ pub(crate) struct ContextError<C = StrContext> {
     pub cause: Option<CompilationError>,
 }
 
-impl From<winnow::error::ParseError<&[Token], ContextError>> for CompilationError {
-    fn from(err: winnow::error::ParseError<&[Token], ContextError>) -> Self {
+impl From<winnow::error::ParseError<TokenSlice<'_>, ContextError>> for CompilationError {
+    fn from(err: winnow::error::ParseError<TokenSlice<'_>, ContextError>) -> Self {
         let Some(last_token) = err.input().last() else {
             return CompilationError::fatal(Default::default(), "file is empty");
         };
 
-        let (input, offset, err) = (err.input().to_vec(), err.offset(), err.into_inner());
+        let (input, offset, err) = (err.input(), err.offset(), err.clone().into_inner());
 
         if let Some(e) = err.cause {
             return e;
@@ -146,7 +144,7 @@ impl From<winnow::error::ParseError<&[Token], ContextError>> for CompilationErro
             );
         }
 
-        let bad_token = &input[offset];
+        let bad_token = input.token(offset);
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
         CompilationError::fatal(
@@ -227,7 +225,7 @@ fn expected(what: &'static str) -> StrContext {
     StrContext::Expected(StrContextValue::Description(what))
 }
 
-fn program(i: TokenSlice) -> PResult<Node<Program>> {
+fn program(i: &mut TokenSlice) -> PResult<Node<Program>> {
     let shebang = opt(shebang).parse_next(i)?;
     let mut out: Node<Program> = function_body.parse_next(i)?;
     out.shebang = shebang;
@@ -239,7 +237,7 @@ fn program(i: TokenSlice) -> PResult<Node<Program>> {
     Ok(out)
 }
 
-fn pipe_surrounded_by_whitespace(i: TokenSlice) -> PResult<()> {
+fn pipe_surrounded_by_whitespace(i: &mut TokenSlice) -> PResult<()> {
     (
         repeat(0.., whitespace).map(|_: Vec<_>| ()),
         pipe_operator,
@@ -255,10 +253,10 @@ fn count_in(target: char, s: &str) -> usize {
 }
 
 /// Matches all four cases of NonCodeValue
-fn non_code_node(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
+fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     /// Matches one case of NonCodeValue
     /// See docstring on [NonCodeValue::NewLineBlockComment] for why that case is different to the others.
-    fn non_code_node_leading_whitespace(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
+    fn non_code_node_leading_whitespace(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
         let leading_whitespace = one_of(TokenType::Whitespace)
             .context(expected("whitespace, with a newline"))
             .parse_next(i)?;
@@ -288,7 +286,7 @@ fn non_code_node(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
 }
 
 // Matches remaining three cases of NonCodeValue
-fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
+fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     any.verify_map(|token: Token| {
         if token.is_code_token() {
             None
@@ -322,7 +320,7 @@ fn non_code_node_no_leading_whitespace(i: TokenSlice) -> PResult<Node<NonCodeNod
     .parse_next(i)
 }
 
-fn pipe_expression(i: TokenSlice) -> PResult<Node<PipeExpression>> {
+fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
     let mut non_code_meta = NonCodeMeta::default();
     let (head, noncode): (_, Vec<_>) = terminated(
         (
@@ -394,7 +392,7 @@ fn pipe_expression(i: TokenSlice) -> PResult<Node<PipeExpression>> {
     })
 }
 
-fn bool_value(i: TokenSlice) -> PResult<BoxNode<Literal>> {
+fn bool_value(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Keyword if token.value == "true" => Ok((true, token)),
@@ -418,7 +416,7 @@ fn bool_value(i: TokenSlice) -> PResult<BoxNode<Literal>> {
     )))
 }
 
-fn literal(i: TokenSlice) -> PResult<BoxNode<Literal>> {
+fn literal(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
     alt((string_literal, unsigned_number_literal))
         .map(Box::new)
         .context(expected("a KCL literal, like 'myPart' or 3"))
@@ -426,7 +424,7 @@ fn literal(i: TokenSlice) -> PResult<BoxNode<Literal>> {
 }
 
 /// Parse a KCL string literal
-fn string_literal(i: TokenSlice) -> PResult<Node<Literal>> {
+fn string_literal(i: &mut TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::String => {
@@ -453,7 +451,7 @@ fn string_literal(i: TokenSlice) -> PResult<Node<Literal>> {
 }
 
 /// Parse a KCL literal number, with no - sign.
-pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
+pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Literal>> {
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
@@ -480,7 +478,7 @@ pub(crate) fn unsigned_number_literal(i: TokenSlice) -> PResult<Node<Literal>> {
 }
 
 /// Parse a KCL operator that takes a left- and right-hand side argument.
-fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
+fn binary_operator(i: &mut TokenSlice) -> PResult<BinaryOperator> {
     any.try_map(|token: Token| {
         if !matches!(token.token_type, TokenType::Operator) {
             return Err(CompilationError::fatal(
@@ -515,7 +513,7 @@ fn binary_operator(i: TokenSlice) -> PResult<BinaryOperator> {
 }
 
 /// Parse a KCL operand that can be used with an operator.
-fn operand(i: TokenSlice) -> PResult<BinaryPart> {
+fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
     const TODO_783: &str = "found a value, but this kind of value cannot be used as the operand to an operator yet (see https://github.com/KittyCAD/modeling-app/issues/783)";
     let op = possible_operands
         .try_map(|part| {
@@ -565,7 +563,7 @@ fn operand(i: TokenSlice) -> PResult<BinaryPart> {
 }
 
 impl TokenType {
-    fn parse_from(self, i: TokenSlice) -> PResult<Token> {
+    fn parse_from(self, i: &mut TokenSlice) -> PResult<Token> {
         any.try_map(|token: Token| {
             if token.token_type == self {
                 Ok(token)
@@ -585,7 +583,7 @@ impl TokenType {
 }
 
 /// Parse some whitespace (i.e. at least one whitespace token)
-fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
+fn whitespace(i: &mut TokenSlice) -> PResult<Vec<Token>> {
     repeat(
         1..,
         any.try_map(|token: Token| {
@@ -609,7 +607,7 @@ fn whitespace(i: TokenSlice) -> PResult<Vec<Token>> {
 
 /// A shebang is a line at the start of a file that starts with `#!`.
 /// If the shebang is present it takes up the whole line.
-fn shebang(i: TokenSlice) -> PResult<Node<Shebang>> {
+fn shebang(i: &mut TokenSlice) -> PResult<Node<Shebang>> {
     // Parse the hash and the bang.
     hash.parse_next(i)?;
     let tok = bang.parse_next(i)?;
@@ -642,7 +640,7 @@ pub enum NonCodeOr<T> {
 }
 
 /// Parse a KCL array of elements.
-fn array(i: TokenSlice) -> PResult<Expr> {
+fn array(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         array_empty.map(Box::new).map(Expr::ArrayExpression),
         array_elem_by_elem.map(Box::new).map(Expr::ArrayExpression),
@@ -652,7 +650,7 @@ fn array(i: TokenSlice) -> PResult<Expr> {
 }
 
 /// Match an empty array.
-fn array_empty(i: TokenSlice) -> PResult<Node<ArrayExpression>> {
+fn array_empty(i: &mut TokenSlice) -> PResult<Node<ArrayExpression>> {
     let open = open_bracket(i)?;
     let start = open.start;
     ignore_whitespace(i);
@@ -670,7 +668,7 @@ fn array_empty(i: TokenSlice) -> PResult<Node<ArrayExpression>> {
 }
 
 /// Match something that separates elements of an array.
-fn array_separator(i: TokenSlice) -> PResult<()> {
+fn array_separator(i: &mut TokenSlice) -> PResult<()> {
     alt((
         // Normally you need a comma.
         comma_sep,
@@ -680,7 +678,7 @@ fn array_separator(i: TokenSlice) -> PResult<()> {
     .parse_next(i)
 }
 
-pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<Node<ArrayExpression>> {
+pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpression>> {
     let open = open_bracket(i)?;
     let start = open.start;
     ignore_whitespace(i);
@@ -728,7 +726,7 @@ pub(crate) fn array_elem_by_elem(i: TokenSlice) -> PResult<Node<ArrayExpression>
     ))
 }
 
-fn array_end_start(i: TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
+fn array_end_start(i: &mut TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
     let open = open_bracket(i)?;
     let start = open.start;
     ignore_whitespace(i);
@@ -752,7 +750,7 @@ fn array_end_start(i: TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
     ))
 }
 
-fn object_property_same_key_and_val(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
+fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     Ok(Node {
@@ -767,7 +765,7 @@ fn object_property_same_key_and_val(i: TokenSlice) -> PResult<Node<ObjectPropert
     })
 }
 
-fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
+fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     // Temporarily accept both `:` and `=` for compatibility.
@@ -808,7 +806,7 @@ fn object_property(i: TokenSlice) -> PResult<Node<ObjectProperty>> {
 }
 
 /// Match something that separates properties of an object.
-fn property_separator(i: TokenSlice) -> PResult<()> {
+fn property_separator(i: &mut TokenSlice) -> PResult<()> {
     alt((
         // Normally you need a comma.
         comma_sep,
@@ -819,7 +817,7 @@ fn property_separator(i: TokenSlice) -> PResult<()> {
 }
 
 /// Parse a KCL object value.
-pub(crate) fn object(i: TokenSlice) -> PResult<Node<ObjectExpression>> {
+pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
     let open = open_brace(i)?;
     let start = open.start;
     ignore_whitespace(i);
@@ -874,7 +872,7 @@ pub(crate) fn object(i: TokenSlice) -> PResult<Node<ObjectExpression>> {
 }
 
 /// Parse the % symbol, used to substitute a curried argument from a |> (pipe).
-fn pipe_sub(i: TokenSlice) -> PResult<Node<PipeSubstitution>> {
+fn pipe_sub(i: &mut TokenSlice) -> PResult<Node<PipeSubstitution>> {
     any.try_map(|token: Token| {
         if matches!(token.token_type, TokenType::Operator) && token.value == PIPE_SUBSTITUTION_OPERATOR {
             Ok(Node::new(
@@ -897,7 +895,7 @@ fn pipe_sub(i: TokenSlice) -> PResult<Node<PipeSubstitution>> {
     .parse_next(i)
 }
 
-fn else_if(i: TokenSlice) -> PResult<Node<ElseIf>> {
+fn else_if(i: &mut TokenSlice) -> PResult<Node<ElseIf>> {
     let else_ = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "else" {
@@ -948,7 +946,7 @@ fn else_if(i: TokenSlice) -> PResult<Node<ElseIf>> {
     ))
 }
 
-fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
+fn if_expr(i: &mut TokenSlice) -> PResult<BoxNode<IfExpression>> {
     let if_ = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "if" {
@@ -1016,7 +1014,7 @@ fn if_expr(i: TokenSlice) -> PResult<BoxNode<IfExpression>> {
     ))
 }
 
-fn function_expr(i: TokenSlice) -> PResult<Expr> {
+fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
     let (result, has_arrow) = function_decl.parse_next(i)?;
@@ -1032,8 +1030,8 @@ fn function_expr(i: TokenSlice) -> PResult<Expr> {
 //     const x = arg0 + arg1;
 //     return x
 // }
-fn function_decl(i: TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
-    fn return_type(i: TokenSlice) -> PResult<FnArgType> {
+fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
+    fn return_type(i: &mut TokenSlice) -> PResult<FnArgType> {
         colon(i)?;
         ignore_whitespace(i);
         argument_type(i)
@@ -1081,7 +1079,7 @@ fn function_decl(i: TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
 }
 
 /// E.g. `person.name`
-fn member_expression_dot(i: TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
+fn member_expression_dot(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     period.parse_next(i)?;
     let property = alt((
         sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
@@ -1093,7 +1091,7 @@ fn member_expression_dot(i: TokenSlice) -> PResult<(LiteralIdentifier, usize, bo
 }
 
 /// E.g. `people[0]` or `people[i]` or `people['adam']`
-fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
+fn member_expression_subscript(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
     let property = alt((
         sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
@@ -1109,7 +1107,7 @@ fn member_expression_subscript(i: TokenSlice) -> PResult<(LiteralIdentifier, usi
 
 /// Get a property of an object, or an index of an array, or a member of a collection.
 /// Can be arbitrarily nested, e.g. `people[i]['adam'].age`.
-fn member_expression(i: TokenSlice) -> PResult<Node<MemberExpression>> {
+fn member_expression(i: &mut TokenSlice) -> PResult<Node<MemberExpression>> {
     // This is an identifier, followed by a sequence of members (aka properties)
     // First, the identifier.
     let id = identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
@@ -1159,7 +1157,7 @@ fn member_expression(i: TokenSlice) -> PResult<Node<MemberExpression>> {
 
 /// Find a noncode node which occurs just after a body item,
 /// such that if the noncode item is a comment, it might be an inline comment.
-fn noncode_just_after_code(i: TokenSlice) -> PResult<Node<NonCodeNode>> {
+fn noncode_just_after_code(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     let ws = opt(whitespace).parse_next(i)?;
 
     // What is the preceding whitespace like?
@@ -1233,7 +1231,7 @@ impl WithinFunction {
     }
 }
 
-fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
+fn body_items_within_function(i: &mut TokenSlice) -> PResult<WithinFunction> {
     // Any of the body item variants, each of which can optionally be followed by a comment.
     // If there is a comment, it may be preceded by whitespace.
     let item = dispatch! {peek(any);
@@ -1265,7 +1263,7 @@ fn body_items_within_function(i: TokenSlice) -> PResult<WithinFunction> {
 }
 
 /// Parse the body of a user-defined function.
-fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
+fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
     let leading_whitespace_start = alt((
         peek(non_code_node).map(|_| None),
         // Subtract 1 from `t.start` to match behaviour of the old parser.
@@ -1407,19 +1405,19 @@ fn function_body(i: TokenSlice) -> PResult<Node<Program>> {
     ))
 }
 
-fn import_items(i: TokenSlice) -> PResult<NodeList<ImportItem>> {
+fn import_items(i: &mut TokenSlice) -> PResult<NodeList<ImportItem>> {
     separated(1.., import_item, comma_sep)
         .parse_next(i)
         .map_err(|e| e.cut())
 }
 
-fn glob(i: TokenSlice) -> PResult<Token> {
+fn glob(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, "*"))
         .context(expected("the multiple import operator, *"))
         .parse_next(i)
 }
 
-fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
+fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
         .parse_next(i)?
         .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
@@ -1551,7 +1549,7 @@ fn import_stmt(i: TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     ))
 }
 
-fn import_item(i: TokenSlice) -> PResult<Node<ImportItem>> {
+fn import_item(i: &mut TokenSlice) -> PResult<Node<ImportItem>> {
     let name = identifier.context(expected("an identifier to import")).parse_next(i)?;
     let start = name.start;
     let module_id = name.module_id;
@@ -1577,7 +1575,7 @@ fn import_item(i: TokenSlice) -> PResult<Node<ImportItem>> {
     ))
 }
 
-fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
+fn import_as_keyword(i: &mut TokenSlice) -> PResult<Token> {
     any.try_map(|token: Token| {
         if matches!(token.token_type, TokenType::Keyword | TokenType::Word) && token.value == "as" {
             Ok(token)
@@ -1593,7 +1591,7 @@ fn import_as_keyword(i: TokenSlice) -> PResult<Token> {
 }
 
 /// Parse a return statement of a user-defined function, e.g. `return x`.
-fn return_stmt(i: TokenSlice) -> PResult<Node<ReturnStatement>> {
+fn return_stmt(i: &mut TokenSlice) -> PResult<Node<ReturnStatement>> {
     let ret = any
         .try_map(|token: Token| {
             if matches!(token.token_type, TokenType::Keyword) && token.value == "return" {
@@ -1620,7 +1618,7 @@ fn return_stmt(i: TokenSlice) -> PResult<Node<ReturnStatement>> {
 }
 
 /// Parse a KCL expression.
-fn expression(i: TokenSlice) -> PResult<Expr> {
+fn expression(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         pipe_expression.map(Box::new).map(Expr::PipeExpression),
         expression_but_not_pipe,
@@ -1629,7 +1627,7 @@ fn expression(i: TokenSlice) -> PResult<Expr> {
     .parse_next(i)
 }
 
-fn expression_but_not_pipe(i: TokenSlice) -> PResult<Expr> {
+fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         binary_expression.map(Box::new).map(Expr::BinaryExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
@@ -1639,7 +1637,7 @@ fn expression_but_not_pipe(i: TokenSlice) -> PResult<Expr> {
     .parse_next(i)
 }
 
-fn unnecessarily_bracketed(i: TokenSlice) -> PResult<Expr> {
+fn unnecessarily_bracketed(i: &mut TokenSlice) -> PResult<Expr> {
     delimited(
         terminated(open_paren, opt(whitespace)),
         expression,
@@ -1648,7 +1646,7 @@ fn unnecessarily_bracketed(i: TokenSlice) -> PResult<Expr> {
     .parse_next(i)
 }
 
-fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
+fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         member_expression.map(Box::new).map(Expr::MemberExpression),
         bool_value.map(Expr::Literal),
@@ -1668,7 +1666,7 @@ fn expr_allowed_in_pipe_expr(i: TokenSlice) -> PResult<Expr> {
     .parse_next(i)
 }
 
-fn possible_operands(i: TokenSlice) -> PResult<Expr> {
+fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         bool_value.map(Expr::Literal),
@@ -1686,7 +1684,7 @@ fn possible_operands(i: TokenSlice) -> PResult<Expr> {
 }
 
 /// Parse an item visibility specifier, e.g. export.
-fn item_visibility(i: TokenSlice) -> PResult<(ItemVisibility, Token)> {
+fn item_visibility(i: &mut TokenSlice) -> PResult<(ItemVisibility, Token)> {
     any.verify_map(|token: Token| {
         if token.token_type == TokenType::Keyword && token.value == "export" {
             Some((ItemVisibility::Export, token))
@@ -1698,7 +1696,7 @@ fn item_visibility(i: TokenSlice) -> PResult<(ItemVisibility, Token)> {
     .parse_next(i)
 }
 
-fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
+fn declaration_keyword(i: &mut TokenSlice) -> PResult<(VariableKind, Token)> {
     let res = any
         .verify_map(|token: Token| token.declaration_keyword().map(|kw| (kw, token)))
         .parse_next(i)?;
@@ -1706,7 +1704,7 @@ fn declaration_keyword(i: TokenSlice) -> PResult<(VariableKind, Token)> {
 }
 
 /// Parse a variable/constant declaration.
-fn declaration(i: TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
+fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
     let (visibility, visibility_token) = opt(terminated(item_visibility, whitespace))
         .parse_next(i)?
         .map_or((ItemVisibility::Default, None), |pair| (pair.0, Some(pair.1)));
@@ -1845,13 +1843,13 @@ impl TryFrom<Token> for Node<Identifier> {
 }
 
 /// Parse a KCL identifier (name of a constant/variable/function)
-fn identifier(i: TokenSlice) -> PResult<Node<Identifier>> {
+fn identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     any.try_map(Node::<Identifier>::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
         .parse_next(i)
 }
 
-fn sketch_keyword(i: TokenSlice) -> PResult<Node<Identifier>> {
+fn sketch_keyword(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     any.try_map(|token: Token| {
         if token.token_type == TokenType::Type && token.value == "sketch" {
             Ok(Node::new(
@@ -1949,7 +1947,7 @@ impl Node<TagDeclarator> {
 }
 
 /// Parse a Kcl tag that starts with a `$`.
-fn tag(i: TokenSlice) -> PResult<Node<TagDeclarator>> {
+fn tag(i: &mut TokenSlice) -> PResult<Node<TagDeclarator>> {
     dollar.parse_next(i)?;
     let tag_declarator = any
         .try_map(Node::<TagDeclarator>::try_from)
@@ -1964,21 +1962,21 @@ fn tag(i: TokenSlice) -> PResult<Node<TagDeclarator>> {
 }
 
 /// Helper function. Matches any number of whitespace tokens and ignores them.
-fn ignore_whitespace(i: TokenSlice) {
+fn ignore_whitespace(i: &mut TokenSlice) {
     let _: PResult<()> = repeat(0.., whitespace).parse_next(i);
 }
 
 // A helper function to ignore a trailing comma.
-fn ignore_trailing_comma(i: TokenSlice) {
+fn ignore_trailing_comma(i: &mut TokenSlice) {
     let _ = opt(comma).parse_next(i);
 }
 
 /// Matches at least 1 whitespace.
-fn require_whitespace(i: TokenSlice) -> PResult<()> {
+fn require_whitespace(i: &mut TokenSlice) -> PResult<()> {
     repeat(1.., whitespace).parse_next(i)
 }
 
-fn unary_expression(i: TokenSlice) -> PResult<Node<UnaryExpression>> {
+fn unary_expression(i: &mut TokenSlice) -> PResult<Node<UnaryExpression>> {
     const EXPECTED: &str = "expected a unary operator (like '-', the negative-numeric operator),";
     let (operator, op_token) = any
         .try_map(|token: Token| match token.token_type {
@@ -2008,7 +2006,7 @@ fn unary_expression(i: TokenSlice) -> PResult<Node<UnaryExpression>> {
 /// Consume tokens that make up a binary expression, but don't actually return them.
 /// Why not?
 /// Because this is designed to be used with .take() within the `binary_expression` parser.
-fn binary_expression_tokens(i: TokenSlice) -> PResult<Vec<BinaryExpressionToken>> {
+fn binary_expression_tokens(i: &mut TokenSlice) -> PResult<Vec<BinaryExpressionToken>> {
     let first = operand.parse_next(i).map(BinaryExpressionToken::from)?;
     let remaining: Vec<_> = repeat(
         1..,
@@ -2028,7 +2026,7 @@ fn binary_expression_tokens(i: TokenSlice) -> PResult<Vec<BinaryExpressionToken>
 }
 
 /// Parse an infix binary expression.
-fn binary_expression(i: TokenSlice) -> PResult<Node<BinaryExpression>> {
+fn binary_expression(i: &mut TokenSlice) -> PResult<Node<BinaryExpression>> {
     // Find the slice of tokens which makes up the binary expression
     let tokens = binary_expression_tokens.parse_next(i)?;
 
@@ -2038,10 +2036,9 @@ fn binary_expression(i: TokenSlice) -> PResult<Node<BinaryExpression>> {
     Ok(expr)
 }
 
-fn binary_expr_in_parens(i: TokenSlice) -> PResult<Node<BinaryExpression>> {
+fn binary_expr_in_parens(i: &mut TokenSlice) -> PResult<Node<BinaryExpression>> {
     let span_with_brackets = bracketed_section.take().parse_next(i)?;
-    let n = span_with_brackets.len();
-    let mut span_no_brackets = &span_with_brackets[1..n - 1];
+    let mut span_no_brackets = span_with_brackets.without_ends();
     let expr = binary_expression.parse_next(&mut span_no_brackets)?;
     Ok(expr)
 }
@@ -2049,7 +2046,7 @@ fn binary_expr_in_parens(i: TokenSlice) -> PResult<Node<BinaryExpression>> {
 /// Match a starting bracket, then match to the corresponding end bracket.
 /// Return the count of how many tokens are in that span
 /// (not including the bracket tokens).
-fn bracketed_section(i: TokenSlice) -> PResult<usize> {
+fn bracketed_section(i: &mut TokenSlice) -> PResult<usize> {
     // Find the start of this bracketed expression.
     let _ = open_paren.parse_next(i)?;
     let mut opened_braces = 1usize;
@@ -2069,7 +2066,7 @@ fn bracketed_section(i: TokenSlice) -> PResult<usize> {
 }
 
 /// Parse a KCL expression statement.
-fn expression_stmt(i: TokenSlice) -> PResult<Node<ExpressionStatement>> {
+fn expression_stmt(i: &mut TokenSlice) -> PResult<Node<ExpressionStatement>> {
     let val = expression
         .context(expected(
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
@@ -2087,20 +2084,20 @@ fn expression_stmt(i: TokenSlice) -> PResult<Node<ExpressionStatement>> {
 }
 
 /// Parse the given brace symbol.
-fn some_brace(symbol: &'static str, i: TokenSlice) -> PResult<Token> {
+fn some_brace(symbol: &'static str, i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Brace, symbol))
         .context(expected(symbol))
         .parse_next(i)
 }
 
 /// Parse a => operator.
-fn big_arrow(i: TokenSlice) -> PResult<Token> {
+fn big_arrow(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, "=>"))
         .context(expected("the => symbol, used for declaring functions"))
         .parse_next(i)
 }
 /// Parse a |> operator.
-fn pipe_operator(i: TokenSlice) -> PResult<Token> {
+fn pipe_operator(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, PIPE_OPERATOR))
         .context(expected(
             "the |> operator, used for 'piping' one function's output into another function's input",
@@ -2108,7 +2105,7 @@ fn pipe_operator(i: TokenSlice) -> PResult<Token> {
         .parse_next(i)
 }
 
-fn ws_with_newline(i: TokenSlice) -> PResult<Token> {
+fn ws_with_newline(i: &mut TokenSlice) -> PResult<Token> {
     one_of(TokenType::Whitespace)
         .verify(|token: &Token| token.value.contains('\n'))
         .context(expected("a newline, possibly with whitespace"))
@@ -2116,60 +2113,60 @@ fn ws_with_newline(i: TokenSlice) -> PResult<Token> {
 }
 
 /// (
-fn open_paren(i: TokenSlice) -> PResult<Token> {
+fn open_paren(i: &mut TokenSlice) -> PResult<Token> {
     some_brace("(", i)
 }
 
 /// )
-fn close_paren(i: TokenSlice) -> PResult<Token> {
+fn close_paren(i: &mut TokenSlice) -> PResult<Token> {
     some_brace(")", i)
 }
 
 /// [
-fn open_bracket(i: TokenSlice) -> PResult<Token> {
+fn open_bracket(i: &mut TokenSlice) -> PResult<Token> {
     some_brace("[", i)
 }
 
 /// ]
-fn close_bracket(i: TokenSlice) -> PResult<Token> {
+fn close_bracket(i: &mut TokenSlice) -> PResult<Token> {
     some_brace("]", i)
 }
 
 /// {
-fn open_brace(i: TokenSlice) -> PResult<Token> {
+fn open_brace(i: &mut TokenSlice) -> PResult<Token> {
     some_brace("{", i)
 }
 
 /// }
-fn close_brace(i: TokenSlice) -> PResult<Token> {
+fn close_brace(i: &mut TokenSlice) -> PResult<Token> {
     some_brace("}", i)
 }
 
-fn comma(i: TokenSlice) -> PResult<()> {
+fn comma(i: &mut TokenSlice) -> PResult<()> {
     TokenType::Comma.parse_from(i)?;
     Ok(())
 }
 
-fn hash(i: TokenSlice) -> PResult<()> {
+fn hash(i: &mut TokenSlice) -> PResult<()> {
     TokenType::Hash.parse_from(i)?;
     Ok(())
 }
 
-fn bang(i: TokenSlice) -> PResult<Token> {
+fn bang(i: &mut TokenSlice) -> PResult<Token> {
     TokenType::Bang.parse_from(i)
 }
 
-fn dollar(i: TokenSlice) -> PResult<()> {
+fn dollar(i: &mut TokenSlice) -> PResult<()> {
     TokenType::Dollar.parse_from(i)?;
     Ok(())
 }
 
-fn period(i: TokenSlice) -> PResult<()> {
+fn period(i: &mut TokenSlice) -> PResult<()> {
     TokenType::Period.parse_from(i)?;
     Ok(())
 }
 
-fn double_period(i: TokenSlice) -> PResult<Token> {
+fn double_period(i: &mut TokenSlice) -> PResult<Token> {
     any.try_map(|token: Token| {
         if matches!(token.token_type, TokenType::DoublePeriod) {
             Ok(token)
@@ -2188,27 +2185,27 @@ fn double_period(i: TokenSlice) -> PResult<Token> {
     .parse_next(i)
 }
 
-fn colon(i: TokenSlice) -> PResult<Token> {
+fn colon(i: &mut TokenSlice) -> PResult<Token> {
     TokenType::Colon.parse_from(i)
 }
 
-fn equals(i: TokenSlice) -> PResult<Token> {
+fn equals(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, "="))
         .context(expected("the equals operator, ="))
         .parse_next(i)
 }
 
-fn question_mark(i: TokenSlice) -> PResult<()> {
+fn question_mark(i: &mut TokenSlice) -> PResult<()> {
     TokenType::QuestionMark.parse_from(i)?;
     Ok(())
 }
 
-fn at_sign(i: TokenSlice) -> PResult<()> {
+fn at_sign(i: &mut TokenSlice) -> PResult<()> {
     TokenType::At.parse_from(i)?;
     Ok(())
 }
 
-fn fun(i: TokenSlice) -> PResult<Token> {
+fn fun(i: &mut TokenSlice) -> PResult<Token> {
     any.try_map(|token: Token| match token.token_type {
         TokenType::Keyword if token.value == "fn" => Ok(token),
         _ => Err(CompilationError::fatal(
@@ -2220,7 +2217,7 @@ fn fun(i: TokenSlice) -> PResult<Token> {
 }
 
 /// Parse a comma, optionally followed by some whitespace.
-fn comma_sep(i: TokenSlice) -> PResult<()> {
+fn comma_sep(i: &mut TokenSlice) -> PResult<()> {
     (opt(whitespace), comma, opt(whitespace))
         .context(expected("a comma, optionally followed by whitespace"))
         .parse_next(i)?;
@@ -2228,13 +2225,13 @@ fn comma_sep(i: TokenSlice) -> PResult<()> {
 }
 
 /// Arguments are passed into a function.
-fn arguments(i: TokenSlice) -> PResult<Vec<Expr>> {
+fn arguments(i: &mut TokenSlice) -> PResult<Vec<Expr>> {
     separated(0.., expression, comma_sep)
         .context(expected("function arguments"))
         .parse_next(i)
 }
 
-fn labeled_argument(i: TokenSlice) -> PResult<LabeledArg> {
+fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
     separated_pair(identifier, (one_of(TokenType::Colon), opt(whitespace)), expression)
         .map(|(label, arg)| LabeledArg {
             label: label.inner,
@@ -2245,7 +2242,7 @@ fn labeled_argument(i: TokenSlice) -> PResult<LabeledArg> {
 
 /// Arguments are passed into a function,
 /// preceded by the name of the parameter (the label).
-fn labeled_arguments(i: TokenSlice) -> PResult<Vec<LabeledArg>> {
+fn labeled_arguments(i: &mut TokenSlice) -> PResult<Vec<LabeledArg>> {
     separated(0.., labeled_argument, comma_sep)
         .context(expected("function arguments"))
         .parse_next(i)
@@ -2256,7 +2253,7 @@ fn labeled_arguments(i: TokenSlice) -> PResult<Vec<LabeledArg>> {
 /// - a primitive type, e.g. 'number' or 'string' or 'bool'
 /// - an array type, e.g. 'number[]' or 'string[]' or 'bool[]'
 /// - an object type, e.g. '{x: number, y: number}' or '{name: string, age: number}'
-fn argument_type(i: TokenSlice) -> PResult<FnArgType> {
+fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
     let type_ = alt((
         // Object types
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
@@ -2286,7 +2283,7 @@ struct ParamDescription {
     is_optional: bool,
 }
 
-fn parameter(i: TokenSlice) -> PResult<ParamDescription> {
+fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
     let (found_at_sign, arg_name, optional, _, type_) = (
         opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
@@ -2304,7 +2301,7 @@ fn parameter(i: TokenSlice) -> PResult<ParamDescription> {
 }
 
 /// Parameters are declared in a function signature, and used within a function.
-fn parameters(i: TokenSlice) -> PResult<Vec<Parameter>> {
+fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
     // Get all tokens until the next ), because that ends the parameter list.
     let candidates: Vec<_> = separated(0.., parameter, comma_sep)
         .context(expected("function parameters"))
@@ -2386,7 +2383,7 @@ impl Node<Identifier> {
 }
 
 /// Introduce a new name, which binds some value.
-fn binding_name(i: TokenSlice) -> PResult<Node<Identifier>> {
+fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     identifier
         .context(expected("an identifier, which will be the name of some value"))
         .try_map(Node::<Identifier>::into_valid_binding_name)
@@ -2446,7 +2443,7 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
     Ok(())
 }
 
-fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
+fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
     let fn_name = identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
@@ -2487,7 +2484,7 @@ fn fn_call(i: TokenSlice) -> PResult<Node<CallExpression>> {
     })
 }
 
-fn fn_call_kw(i: TokenSlice) -> PResult<Node<CallExpressionKw>> {
+fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     let fn_name = identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = open_paren.parse_next(i)?;
@@ -2553,8 +2550,8 @@ mod tests {
     #[test]
     fn parse_args() {
         for (i, (test, expected_len)) in [("someVar", 1), ("5, 3", 2), (r#""a""#, 1)].into_iter().enumerate() {
-            let tokens = crate::parsing::token::lexer(test, ModuleId::default()).unwrap();
-            let actual = match arguments.parse(&tokens) {
+            let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
+            let actual = match arguments.parse(tokens.as_slice()) {
                 Ok(x) => x,
                 Err(e) => panic!("Failed test {i}, could not parse function arguments from \"{test}\": {e:?}"),
             };
@@ -2564,10 +2561,11 @@ mod tests {
 
     #[test]
     fn weird_program_unclosed_paren() {
-        let tokens = crate::parsing::token::lexer("fn firstPrime(", ModuleId::default()).unwrap();
-        let last = tokens.last().unwrap();
-        let err: CompilationError = program.parse(&tokens).unwrap_err().into();
-        assert_eq!(vec![err.source_range], last.as_source_ranges());
+        let tokens = crate::parsing::token::lex("fn firstPrime(", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let last = tokens.last().unwrap().as_source_range();
+        let err: CompilationError = program.parse(tokens).unwrap_err().into();
+        assert_eq!(err.source_range, last);
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
         assert_eq!(err.message, "Unexpected end of file. The compiler expected )");
@@ -2575,8 +2573,8 @@ mod tests {
 
     #[test]
     fn weird_program_just_a_pipe() {
-        let tokens = crate::parsing::token::lexer("|", ModuleId::default()).unwrap();
-        let err: CompilationError = program.parse(&tokens).unwrap_err().into();
+        let tokens = crate::parsing::token::lex("|", ModuleId::default()).unwrap();
+        let err: CompilationError = program.parse(tokens.as_slice()).unwrap_err().into();
         assert_eq!(err.source_range, SourceRange::new(0, 1, ModuleId::default()));
         assert_eq!(err.message, "Unexpected token: |");
     }
@@ -2584,9 +2582,8 @@ mod tests {
     #[test]
     fn parse_binary_expressions() {
         for (i, test_program) in ["1 + 2 + 3"].into_iter().enumerate() {
-            let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-            let mut slice = tokens.as_slice();
-            let _actual = match binary_expression.parse_next(&mut slice) {
+            let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+            let _actual = match binary_expression.parse_next(&mut tokens.as_slice()) {
                 Ok(x) => x,
                 Err(e) => panic!("Failed test {i}, could not parse binary expressions from \"{test_program}\": {e:?}"),
             };
@@ -2595,7 +2592,7 @@ mod tests {
 
     #[test]
     fn test_vardec_no_keyword() {
-        let tokens = crate::parsing::token::lexer("x = 4", ModuleId::default()).unwrap();
+        let tokens = crate::parsing::token::lex("x = 4", ModuleId::default()).unwrap();
         let vardec = declaration(&mut tokens.as_slice()).unwrap();
         assert_eq!(vardec.inner.kind, VariableKind::Const);
         let vardec = &vardec.declaration;
@@ -2608,7 +2605,7 @@ mod tests {
 
     #[test]
     fn test_negative_operands() {
-        let tokens = crate::parsing::token::lexer("-leg2", ModuleId::default()).unwrap();
+        let tokens = crate::parsing::token::lex("-leg2", ModuleId::default()).unwrap();
         let _s = operand.parse_next(&mut tokens.as_slice()).unwrap();
     }
 
@@ -2622,9 +2619,8 @@ mod tests {
             // comment 2
             return 1
         }"#;
-        let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-        let mut slice = tokens.as_slice();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut slice).unwrap();
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(expr.params, vec![]);
         let comment_start = expr.body.non_code_meta.start_nodes.first().unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
@@ -2640,9 +2636,8 @@ mod tests {
   yo = { a = { b = { c = '123' } } } /* block
 comment */
 }"#;
-        let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-        let mut slice = tokens.as_slice();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut slice).unwrap();
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         assert_eq!(comment0.value(), "block\ncomment");
     }
@@ -2653,8 +2648,8 @@ comment */
 /* comment at start */
 
 mySk1 = startSketchAt([0, 0])"#;
-        let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-        let program = program.parse(&tokens).unwrap();
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        let program = program.parse(tokens.as_slice()).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;
         assert_eq!(starting_comments.len(), 2);
         let start0 = starting_comments.remove(0);
@@ -2671,8 +2666,8 @@ mySk1 = startSketchAt([0, 0])"#;
 
     #[test]
     fn test_comment_in_pipe() {
-        let tokens = crate::parsing::token::lexer(r#"x = y() |> /*hi*/ z(%)"#, ModuleId::default()).unwrap();
-        let mut body = program.parse(&tokens).unwrap().inner.body;
+        let tokens = crate::parsing::token::lex(r#"x = y() |> /*hi*/ z(%)"#, ModuleId::default()).unwrap();
+        let mut body = program.parse(tokens.as_slice()).unwrap().inner.body;
         let BodyItem::VariableDeclaration(item) = body.remove(0) else {
             panic!("expected vardec");
         };
@@ -2698,9 +2693,8 @@ mySk1 = startSketchAt([0, 0])"#;
             return sg
             return sg
           }"#;
-        let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-        let mut slice = tokens.as_slice();
-        let _expr = function_decl.parse_next(&mut slice).unwrap();
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        let _expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -2710,9 +2704,8 @@ mySk1 = startSketchAt([0, 0])"#;
                 return 2
             }";
         let module_id = ModuleId::from_usize(1);
-        let tokens = crate::parsing::token::lexer(test_program, module_id).unwrap();
-        let mut slice = tokens.as_slice();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut slice).unwrap();
+        let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
+        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(
             expr,
             Node::new(
@@ -2775,14 +2768,13 @@ mySk1 = startSketchAt([0, 0])"#;
         |> c(%) // inline-comment
         |> d(%)"#;
 
-        let tokens = crate::parsing::token::lexer(test_input, ModuleId::default()).unwrap();
-        let mut slice = tokens.as_slice();
+        let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
         let Node {
             inner: PipeExpression {
                 body, non_code_meta, ..
             },
             ..
-        } = pipe_expression.parse_next(&mut slice).unwrap();
+        } = pipe_expression.parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(non_code_meta.non_code_nodes.len(), 1);
         assert_eq!(
             non_code_meta.non_code_nodes.get(&2).unwrap()[0].value,
@@ -2806,8 +2798,8 @@ mySk1 = startSketchAt([0, 0])"#;
 "#;
 
         let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lexer(test_program, module_id).unwrap();
-        let Program { non_code_meta, .. } = function_body.parse(&tokens).unwrap().inner;
+        let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
+        let Program { non_code_meta, .. } = function_body.parse(tokens.as_slice()).unwrap().inner;
         assert_eq!(
             vec![Node::new(
                 NonCodeNode {
@@ -2874,8 +2866,8 @@ mySk1 = startSketchAt([0, 0])"#;
   comment */
   return 1"#;
 
-        let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-        let actual = program.parse(&tokens).unwrap();
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        let actual = program.parse(tokens.as_slice()).unwrap();
         assert_eq!(actual.non_code_meta.non_code_nodes.len(), 1);
         assert_eq!(
             actual.non_code_meta.non_code_nodes.get(&0).unwrap()[0].value,
@@ -2889,8 +2881,8 @@ mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_bracketed_binary_expression() {
         let input = "(2 - 3)";
-        let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-        let actual = match binary_expr_in_parens.parse(&tokens) {
+        let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+        let actual = match binary_expr_in_parens.parse(tokens.as_slice()) {
             Ok(x) => x,
             Err(e) => panic!("{e:?}"),
         };
@@ -2904,8 +2896,8 @@ mySk1 = startSketchAt([0, 0])"#;
             "6 / ( sigmaAllow * width )",
             "sqrt(distance * p * FOS * 6 / ( sigmaAllow * width ))",
         ] {
-            let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-            let _actual = match expression.parse(&tokens) {
+            let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+            let _actual = match expression.parse(tokens.as_slice()) {
                 Ok(x) => x,
                 Err(e) => panic!("{e:?}"),
             };
@@ -2915,9 +2907,9 @@ mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_arithmetic() {
         let input = "1 * (2 - 3)";
-        let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
+        let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
         // The RHS should be a binary expression.
-        let actual = binary_expression.parse(&tokens).unwrap();
+        let actual = binary_expression.parse(tokens.as_slice()).unwrap();
         assert_eq!(actual.operator, BinaryOperator::Mul);
         let BinaryPart::BinaryExpression(rhs) = actual.inner.right else {
             panic!("Expected RHS to be another binary expression");
@@ -2943,8 +2935,8 @@ mySk1 = startSketchAt([0, 0])"#;
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(test_input, ModuleId::default()).unwrap();
-            let actual = match declaration.parse(&tokens) {
+            let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
+            let actual = match declaration.parse(tokens.as_slice()) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
@@ -2961,8 +2953,8 @@ mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_function_call() {
         for (i, test_input) in ["x = f(1)", "x = f( 1 )"].into_iter().enumerate() {
-            let tokens = crate::parsing::token::lexer(test_input, ModuleId::default()).unwrap();
-            let _actual = match declaration.parse(&tokens) {
+            let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
+            let _actual = match declaration.parse(tokens.as_slice()) {
                 Err(e) => panic!("Could not parse test {i}: {e:#?}"),
                 Ok(a) => a,
             };
@@ -2972,9 +2964,9 @@ mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn test_nested_arithmetic() {
         let input = "1 * ((2 - 3) / 4)";
-        let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
+        let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
         // The RHS should be a binary expression.
-        let outer = binary_expression.parse(&tokens).unwrap();
+        let outer = binary_expression.parse(tokens.as_slice()).unwrap();
         assert_eq!(outer.operator, BinaryOperator::Mul);
         let BinaryPart::BinaryExpression(middle) = outer.inner.right else {
             panic!("Expected RHS to be another binary expression");
@@ -2991,8 +2983,8 @@ mySk1 = startSketchAt([0, 0])"#;
     fn binary_expression_ignores_whitespace() {
         let tests = ["1 - 2", "1- 2", "1 -2", "1-2"];
         for test in tests {
-            let tokens = crate::parsing::token::lexer(test, ModuleId::default()).unwrap();
-            let actual = binary_expression.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
+            let actual = binary_expression.parse(tokens.as_slice()).unwrap();
             assert_eq!(actual.operator, BinaryOperator::Sub);
             let BinaryPart::Literal(left) = actual.inner.left else {
                 panic!("should be expression");
@@ -3012,8 +3004,8 @@ mySk1 = startSketchAt([0, 0])"#;
         a comment
         spanning a few lines */
         |> z(%)"#;
-        let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-        let actual = pipe_expression.parse(&tokens).unwrap();
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        let actual = pipe_expression.parse(tokens.as_slice()).unwrap();
         let n = actual.non_code_meta.non_code_nodes.len();
         assert_eq!(n, 1, "expected one comment in pipe expression but found {n}");
         let nc = &actual.non_code_meta.non_code_nodes.get(&1).unwrap()[0];
@@ -3040,8 +3032,8 @@ mySk1 = startSketchAt([0, 0])"#;
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-            let actual = pipe_expression.parse(&tokens);
+            let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+            let actual = pipe_expression.parse(tokens.as_slice());
             assert!(actual.is_ok(), "could not parse test {i}, '{test_program}'");
             let actual = actual.unwrap();
             let n = actual.non_code_meta.non_code_nodes.len();
@@ -3185,8 +3177,8 @@ mySk1 = startSketchAt([0, 0])"#;
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(test_program, module_id).unwrap();
-            let actual = non_code_node.parse(&tokens);
+            let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
+            let actual = non_code_node.parse(tokens.as_slice());
             assert!(actual.is_ok(), "could not parse test {i}: {actual:#?}");
             let actual = actual.unwrap();
             assert_eq!(actual, expected, "failed test {i}");
@@ -3197,8 +3189,8 @@ mySk1 = startSketchAt([0, 0])"#;
     fn recognize_invalid_params() {
         let test_fn = "(let) => { return 1 }";
         let module_id = ModuleId::from_usize(2);
-        let tokens = crate::parsing::token::lexer(test_fn, module_id).unwrap();
-        let err = function_decl.parse(&tokens).unwrap_err().into_inner();
+        let tokens = crate::parsing::token::lex(test_fn, module_id).unwrap();
+        let err = function_decl.parse(tokens.as_slice()).unwrap_err().into_inner();
         let cause = err.cause.unwrap();
         // This is the token `let`
         assert_eq!(cause.source_range, SourceRange::new(1, 4, ModuleId::from_usize(2)));
@@ -3210,8 +3202,8 @@ mySk1 = startSketchAt([0, 0])"#;
         let string_literal = r#""
            // a comment
              ""#;
-        let tokens = crate::parsing::token::lexer(string_literal, ModuleId::default()).unwrap();
-        let parsed_literal = literal.parse(&tokens).unwrap();
+        let tokens = crate::parsing::token::lex(string_literal, ModuleId::default()).unwrap();
+        let parsed_literal = literal.parse(tokens.as_slice()).unwrap();
         assert_eq!(
             parsed_literal.value,
             "
@@ -3227,24 +3219,24 @@ mySk1 = startSketchAt([0, 0])"#;
         |> lineTo([0, -0], %) // MoveRelative
 
         "#;
-        let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-        let mut slice = &tokens[..];
-        let _actual = pipe_expression.parse_next(&mut slice).unwrap();
-        assert_eq!(slice[0].token_type, TokenType::Whitespace);
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        let tokens = &mut tokens.as_slice();
+        let _actual = pipe_expression.parse_next(tokens).unwrap();
+        assert_eq!(tokens.first().unwrap().token_type, TokenType::Whitespace);
     }
 
     #[test]
     fn test_pipes_on_pipes() {
         let test_program = include_str!("../../../tests/executor/inputs/pipes_on_pipes.kcl");
-        let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-        let _ = run_parser(&mut &*tokens).unwrap();
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        let _ = run_parser(tokens.as_slice()).unwrap();
     }
 
     #[test]
     fn test_cube() {
         let test_program = include_str!("../../../tests/executor/inputs/cube.kcl");
-        let tokens = crate::parsing::token::lexer(test_program, ModuleId::default()).unwrap();
-        match program.parse(&tokens) {
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        match program.parse(tokens.as_slice()) {
             Ok(_) => {}
             Err(e) => {
                 panic!("{e:#?}");
@@ -3261,8 +3253,8 @@ mySk1 = startSketchAt([0, 0])"#;
             ("a,b", vec!["a", "b"]),
         ];
         for (i, (input, expected)) in tests.into_iter().enumerate() {
-            let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-            let actual = parameters.parse(&tokens);
+            let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+            let actual = parameters.parse(tokens.as_slice());
             assert!(actual.is_ok(), "could not parse test {i}");
             let actual_ids: Vec<_> = actual.unwrap().into_iter().map(|p| p.identifier.inner.name).collect();
             assert_eq!(actual_ids, expected);
@@ -3275,8 +3267,8 @@ mySk1 = startSketchAt([0, 0])"#;
             return 2
         }";
 
-        let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-        let actual = function_decl.parse(&tokens);
+        let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+        let actual = function_decl.parse(tokens.as_slice());
         assert!(actual.is_ok(), "could not parse test function");
     }
 
@@ -3285,7 +3277,7 @@ mySk1 = startSketchAt([0, 0])"#;
         let tests = ["myVar = 5", "myVar=5", "myVar =5", "myVar= 5"];
         for test in tests {
             // Run the original parser
-            let tokens = crate::parsing::token::lexer(test, ModuleId::default()).unwrap();
+            let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
             let mut expected_body = crate::parsing::parse_tokens(tokens.clone()).unwrap().inner.body;
             assert_eq!(expected_body.len(), 1);
             let BodyItem::VariableDeclaration(expected) = expected_body.pop().unwrap() else {
@@ -3293,7 +3285,7 @@ mySk1 = startSketchAt([0, 0])"#;
             };
 
             // Run the second parser, check it matches the first parser.
-            let actual = declaration.parse(&tokens).unwrap();
+            let actual = declaration.parse(tokens.as_slice()).unwrap();
             assert_eq!(expected, actual);
 
             // Inspect its output in more detail.
@@ -3352,96 +3344,6 @@ mySk1 = startSketchAt([0, 0])"#;
             module_id,
         ))];
         assert_eq!(expected, actual);
-    }
-
-    #[test]
-    fn test_is_code_token() {
-        let module_id = ModuleId::default();
-        let tokens = [
-            Token {
-                token_type: TokenType::Word,
-                start: 0,
-                end: 3,
-                module_id,
-                value: "log".to_string(),
-            },
-            Token {
-                token_type: TokenType::Brace,
-                start: 3,
-                end: 4,
-                module_id,
-                value: "(".to_string(),
-            },
-            Token {
-                token_type: TokenType::Number,
-                start: 4,
-                end: 5,
-                module_id,
-                value: "5".to_string(),
-            },
-            Token {
-                token_type: TokenType::Comma,
-                start: 5,
-                end: 6,
-                module_id,
-                value: ",".to_string(),
-            },
-            Token {
-                token_type: TokenType::String,
-                start: 7,
-                end: 14,
-                module_id,
-                value: "\"hello\"".to_string(),
-            },
-            Token {
-                token_type: TokenType::Word,
-                start: 16,
-                end: 27,
-                module_id,
-                value: "aIdentifier".to_string(),
-            },
-            Token {
-                token_type: TokenType::Brace,
-                start: 27,
-                end: 28,
-                module_id,
-                value: ")".to_string(),
-            },
-        ];
-        for (i, token) in tokens.iter().enumerate() {
-            assert!(token.is_code_token(), "failed test {i}: {token:?}")
-        }
-    }
-
-    #[test]
-    fn test_is_not_code_token() {
-        let module_id = ModuleId::default();
-        let tokens = [
-            Token {
-                token_type: TokenType::Whitespace,
-                start: 6,
-                end: 7,
-                module_id,
-                value: " ".to_string(),
-            },
-            Token {
-                token_type: TokenType::BlockComment,
-                start: 28,
-                end: 30,
-                module_id,
-                value: "/* abte */".to_string(),
-            },
-            Token {
-                token_type: TokenType::LineComment,
-                start: 30,
-                end: 33,
-                module_id,
-                value: "// yoyo a line".to_string(),
-            },
-        ];
-        for (i, token) in tokens.iter().enumerate() {
-            assert!(!token.is_code_token(), "failed test {i}: {token:?}")
-        }
     }
 
     #[test]
@@ -3927,9 +3829,8 @@ e
     fn array() {
         let program = r#"[1, 2, 3]"#;
         let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lexer(program, module_id).unwrap();
-        let mut sl: &[Token] = &tokens;
-        let _arr = array_elem_by_elem(&mut sl).unwrap();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -3940,9 +3841,8 @@ e
             3,
         ]"#;
         let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lexer(program, module_id).unwrap();
-        let mut sl: &[Token] = &tokens;
-        let _arr = array_elem_by_elem(&mut sl).unwrap();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
     }
 
     #[allow(unused)]
@@ -3954,9 +3854,8 @@ e
             3
         ]"#;
         let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lexer(program, module_id).unwrap();
-        let mut sl: &[Token] = &tokens;
-        let _arr = array_elem_by_elem(&mut sl).unwrap();
+        let tokens = crate::parsing::token::lex(program, module_id).unwrap();
+        let _arr = array_elem_by_elem(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -3967,9 +3866,8 @@ e
             4
         }";
         let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lexer(some_program_string, module_id).unwrap();
-        let mut sl: &[Token] = &tokens;
-        let _res = if_expr(&mut sl).unwrap();
+        let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap();
+        let _res = if_expr(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -3978,9 +3876,8 @@ e
             4
         }";
         let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lexer(some_program_string, module_id).unwrap();
-        let mut sl: &[Token] = &tokens;
-        let _res = else_if(&mut sl).unwrap();
+        let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap();
+        let _res = else_if(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -3993,9 +3890,8 @@ e
             5
         }";
         let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lexer(some_program_string, module_id).unwrap();
-        let mut sl: &[Token] = &tokens;
-        let _res = if_expr(&mut sl).unwrap();
+        let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap();
+        let _res = if_expr(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
@@ -4113,18 +4009,16 @@ let myBox = box([0,0], -3, -16, -10)
     fn arg_labels() {
         let input = r#"length: 3"#;
         let module_id = ModuleId::default();
-        let tokens = crate::parsing::token::lexer(input, module_id).unwrap();
-        let mut sl: &[Token] = &tokens;
-        super::labeled_arguments(&mut sl).unwrap();
+        let tokens = crate::parsing::token::lex(input, module_id).unwrap();
+        super::labeled_arguments(&mut tokens.as_slice()).unwrap();
     }
 
     #[test]
     fn kw_fn() {
         for input in ["val = foo(x, y: z)", "val = foo(y: z)"] {
             let module_id = ModuleId::default();
-            let tokens = crate::parsing::token::lexer(input, module_id).unwrap();
-            let sl = &tokens;
-            super::program.parse(sl).unwrap();
+            let tokens = crate::parsing::token::lex(input, module_id).unwrap();
+            super::program.parse(tokens.as_slice()).unwrap();
         }
     }
 
@@ -4317,10 +4211,10 @@ mod snapshot_math_tests {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();
-                let tokens = crate::parsing::token::lexer($test_kcl_program, module_id).unwrap();
+                let tokens = crate::parsing::token::lex($test_kcl_program, module_id).unwrap();
                 ParseContext::init();
 
-                let actual = match binary_expression.parse(&tokens) {
+                let actual = match binary_expression.parse(tokens.as_slice()) {
                     Ok(x) => x,
                     Err(_e) => panic!("could not parse test"),
                 };
@@ -4355,10 +4249,10 @@ mod snapshot_tests {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();
-                let tokens = crate::parsing::token::lexer($test_kcl_program, module_id).unwrap();
-                print_tokens(&tokens);
+                let tokens = crate::parsing::token::lex($test_kcl_program, module_id).unwrap();
+                print_tokens(tokens.as_slice());
                 ParseContext::init();
-                let actual = match program.parse(&tokens) {
+                let actual = match program.parse(tokens.as_slice()) {
                     Ok(x) => x,
                     Err(e) => panic!("could not parse test: {e:?}"),
                 };
@@ -4569,7 +4463,7 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
 
 #[allow(unused)]
 #[cfg(test)]
-pub(crate) fn print_tokens(tokens: &[Token]) {
+pub(crate) fn print_tokens(tokens: TokenSlice) {
     for (i, tok) in tokens.iter().enumerate() {
         println!("{i:.2}: ({:?}):) '{}'", tok.token_type, tok.value.replace("\n", "\\n"));
     }
