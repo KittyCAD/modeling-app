@@ -1,4 +1,4 @@
-import { APP_VERSION, IS_NIGHTLY } from 'routes/Settings'
+import { APP_VERSION, RELEASE_URL } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { PATHS } from 'lib/paths'
@@ -66,18 +66,14 @@ export function LowerRightControls({
     }
   }
 
-  const releaseUrl = `https://github.com/KittyCAD/modeling-app/releases/tag/${
-    IS_NIGHTLY ? 'nightly-' : ''
-  }v${APP_VERSION}`
-
   return (
     <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
         <a
-          onClick={openExternalBrowserIfDesktop(releaseUrl)}
-          href={releaseUrl}
+          onClick={openExternalBrowserIfDesktop(RELEASE_URL)}
+          href={RELEASE_URL}
           target="_blank"
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
