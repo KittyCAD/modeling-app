@@ -2298,11 +2298,11 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
         labeled: found_at_sign.is_none(),
         arg_name,
         type_,
-        default_value: match (question_mark, default_literal) {
-            (Some(_), Some(lit)) => Some(DefaultParamVal::Literal(lit.inner)),
-            (Some(_), None) => Some(DefaultParamVal::none()),
-            (None, None) => None,
-            (None, Some(lit)) => {
+        default_value: match (question_mark.is_some(), default_literal) {
+            (true, Some(lit)) => Some(DefaultParamVal::Literal(lit.inner)),
+            (true, None) => Some(DefaultParamVal::none()),
+            (false, None) => None,
+            (false, Some(lit)) => {
                 let msg = "You're trying to set a default value for an argument, but only optional arguments can have default values, and this argument is mandatory. Try putting a ? after the argument name, to make the argument optional.";
                 let e = CompilationError::fatal((&lit).into(), msg);
                 return Err(ErrMode::Backtrack(ContextError::from(e)));
