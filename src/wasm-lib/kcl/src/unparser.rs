@@ -3,10 +3,10 @@ use std::fmt::Write;
 use crate::parsing::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportSelector,
-        ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
-        MemberObject, Node, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator,
-        UnaryExpression, VariableDeclaration, VariableKind,
+        CallExpressionKw, DefaultParamVal, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression,
+        ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue,
+        MemberExpression, MemberObject, Node, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program,
+        TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     PIPE_OPERATOR,
 };
@@ -662,15 +662,18 @@ impl FunctionExpression {
 
 impl Parameter {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let mut result = format!(
-            "{}{}",
-            if self.labeled { "" } else { "@" },
-            self.identifier.name.clone()
-        );
+        let at_sign = if self.labeled { "" } else { "@" };
+        let identifier = &self.identifier.name;
+        let question_mark = if self.default_value.is_some() { "?" } else { "" };
+        let mut result = format!("{at_sign}{identifier}{question_mark}");
         if let Some(ty) = &self.type_ {
             result += ": ";
             result += &ty.recast(options, indentation_level);
         }
+        if let Some(DefaultParamVal::Literal(ref literal)) = self.default_value {
+            let lit = literal.recast();
+            result.push_str(&format!(" = {lit}"));
+        };
 
         result
     }
