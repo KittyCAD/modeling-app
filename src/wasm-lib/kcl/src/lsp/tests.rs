@@ -1082,7 +1082,7 @@ fn myFn = (param1) => {
 
     // Get the token map.
     let token_map = server.token_map.get("file:///test.kcl").unwrap().clone();
-    assert!(token_map != vec![]);
+    assert!(!token_map.is_empty());
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2206,7 +2206,7 @@ part001 = cube([0,0], 20)
 
     // Get the tokens.
     let tokens = server.token_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(tokens.len(), 120);
+    assert_eq!(tokens.as_slice().len(), 120);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3379,11 +3379,11 @@ part001 = startSketchOn('XY')
 
     // Get the symbols map.
     let symbols_map = server.symbols_map.get("file:///test.kcl").unwrap().clone();
-    assert!(symbols_map != vec![]);
+    assert!(!symbols_map.is_empty());
 
     // Get the semantic tokens map.
     let semantic_tokens_map = server.semantic_tokens_map.get("file:///test.kcl").unwrap().clone();
-    assert!(semantic_tokens_map != vec![]);
+    assert!(!semantic_tokens_map.is_empty());
 
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
@@ -3422,7 +3422,7 @@ NEW_LINT = 1"#
 
     // Get the semantic tokens map.
     let semantic_tokens_map = server.semantic_tokens_map.get("file:///test.kcl").unwrap().clone();
-    assert!(semantic_tokens_map != vec![]);
+    assert!(!semantic_tokens_map.is_empty());
 
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl");
@@ -3466,7 +3466,7 @@ part001 = startSketchOn('XY')
 
     // Get the token map.
     let token_map = server.token_map.get("file:///test.kcl").unwrap().clone();
-    assert!(token_map != vec![]);
+    assert!(!token_map.is_empty());
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3474,11 +3474,11 @@ part001 = startSketchOn('XY')
 
     // Get the symbols map.
     let symbols_map = server.symbols_map.get("file:///test.kcl").unwrap().clone();
-    assert!(symbols_map != vec![]);
+    assert!(!symbols_map.is_empty());
 
     // Get the semantic tokens map.
     let semantic_tokens_map = server.semantic_tokens_map.get("file:///test.kcl").unwrap().clone();
-    assert!(semantic_tokens_map != vec![]);
+    assert!(!semantic_tokens_map.is_empty());
 
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
@@ -3509,7 +3509,7 @@ part001 = startSketchOn('XY')
 
     // Get the token map.
     let token_map = server.token_map.get("file:///test.kcl").unwrap().clone();
-    assert!(token_map != vec![]);
+    assert!(!token_map.is_empty());
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3517,11 +3517,11 @@ part001 = startSketchOn('XY')
 
     // Get the symbols map.
     let symbols_map = server.symbols_map.get("file:///test.kcl").unwrap().clone();
-    assert!(symbols_map != vec![]);
+    assert!(!symbols_map.is_empty());
 
     // Get the semantic tokens map.
     let semantic_tokens_map = server.semantic_tokens_map.get("file:///test.kcl").unwrap().clone();
-    assert!(semantic_tokens_map != vec![]);
+    assert!(!semantic_tokens_map.is_empty());
 
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl");

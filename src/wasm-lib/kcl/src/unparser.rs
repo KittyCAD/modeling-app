@@ -2137,8 +2137,10 @@ fn f() {
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(raw, ModuleId::default()).unwrap();
-            let literal = crate::parsing::parser::unsigned_number_literal.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(raw, ModuleId::default()).unwrap();
+            let literal = crate::parsing::parser::unsigned_number_literal
+                .parse(tokens.as_slice())
+                .unwrap();
             assert_eq!(
                 literal.recast(),
                 expected,
@@ -2216,9 +2218,9 @@ sketch002 = startSketchOn({
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-            crate::parsing::parser::print_tokens(&tokens);
-            let expr = crate::parsing::parser::object.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+            crate::parsing::parser::print_tokens(tokens.as_slice());
+            let expr = crate::parsing::parser::object.parse(tokens.as_slice()).unwrap();
             assert_eq!(
                 expr.recast(&FormatOptions::new(), 0, ExprContext::Other),
                 expected,
@@ -2314,8 +2316,10 @@ sketch002 = startSketchOn({
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-            let expr = crate::parsing::parser::array_elem_by_elem.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+            let expr = crate::parsing::parser::array_elem_by_elem
+                .parse(tokens.as_slice())
+                .unwrap();
             assert_eq!(
                 expr.recast(&FormatOptions::new(), 0, ExprContext::Other),
                 expected,
