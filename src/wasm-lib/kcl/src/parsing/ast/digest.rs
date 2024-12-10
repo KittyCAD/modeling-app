@@ -4,7 +4,7 @@ use super::types::{DefaultParamVal, ItemVisibility, VariableKind};
 use crate::parsing::ast::types::{
     ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
     CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression,
-    ImportItem, ImportSelector, ImportStatement, Literal, LiteralIdentifier, MemberExpression, MemberObject,
+    ImportItem, ImportSelector, ImportStatement, KclNone, Literal, LiteralIdentifier, MemberExpression, MemberObject,
     NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
     PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression, VariableDeclaration,
     VariableDeclarator,
@@ -199,6 +199,12 @@ impl Parameter {
             Some(DefaultParamVal::KclNone(ref _kcl_none)) => hasher.update(vec![1]),
             Some(DefaultParamVal::Literal(ref mut literal)) => hasher.update(literal.compute_digest()),
         }
+    });
+}
+
+impl KclNone {
+    compute_digest!(|slf, hasher| {
+        hasher.update(b"KclNone");
     });
 }
 

@@ -131,8 +131,6 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
             | Node::TagDeclarator(_)
             | Node::Identifier(_)
             | Node::ImportStatement(_)
-            | Node::MemberObject(_)
-            | Node::LiteralIdentifier(_)
             | Node::KclNone(_)
             | Node::Literal(_) => vec![],
         }

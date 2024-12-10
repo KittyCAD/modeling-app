@@ -37,10 +37,43 @@ pub enum Node<'a> {
 
     ObjectProperty(NodeRef<'a, types::ObjectProperty>),
 
-    MemberObject(&'a types::MemberObject),
-    LiteralIdentifier(&'a types::LiteralIdentifier),
-
     KclNone(&'a types::KclNone),
+}
+
+impl<'tree> Node<'tree> {
+    /// Return the digest of the [Node], pulling the underlying Digest from
+    /// the AST types.
+    ///
+    /// The Digest type may change over time.
+    pub fn digest(&self) -> Option<[u8; 32]> {
+        match self {
+            Node::Program(n) => n.digest,
+            Node::ImportStatement(n) => n.digest,
+            Node::ExpressionStatement(n) => n.digest,
+            Node::VariableDeclaration(n) => n.digest,
+            Node::ReturnStatement(n) => n.digest,
+            Node::VariableDeclarator(n) => n.digest,
+            Node::Literal(n) => n.digest,
+            Node::TagDeclarator(n) => n.digest,
+            Node::Identifier(n) => n.digest,
+            Node::BinaryExpression(n) => n.digest,
+            Node::FunctionExpression(n) => n.digest,
+            Node::CallExpression(n) => n.digest,
+            Node::CallExpressionKw(n) => n.digest,
+            Node::PipeExpression(n) => n.digest,
+            Node::PipeSubstitution(n) => n.digest,
+            Node::ArrayExpression(n) => n.digest,
+            Node::ArrayRangeExpression(n) => n.digest,
+            Node::ObjectExpression(n) => n.digest,
+            Node::MemberExpression(n) => n.digest,
+            Node::UnaryExpression(n) => n.digest,
+            Node::Parameter(p) => p.digest,
+            Node::ObjectProperty(n) => n.digest,
+            Node::IfExpression(n) => n.digest,
+            Node::ElseIf(n) => n.digest,
+            Node::KclNone(n) => n.digest,
+        }
+    }
 }
 
 /// Returned during source_range conversion.
@@ -77,9 +110,7 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::UnaryExpression(n) => SourceRange::from(*n),
             Node::Parameter(p) => SourceRange::from(&p.identifier),
             Node::ObjectProperty(n) => SourceRange::from(*n),
-            Node::MemberObject(m) => SourceRange::new(m.start(), m.end(), m.module_id()),
             Node::IfExpression(n) => SourceRange::from(*n),
-            Node::LiteralIdentifier(l) => SourceRange::new(l.start(), l.end(), l.module_id()),
 
             // This is broken too
             Node::ElseIf(n) => SourceRange::new(n.cond.start(), n.cond.end(), n.cond.module_id()),
@@ -140,6 +171,24 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
     }
 }
 
+impl<'tree> From<&'tree types::MemberObject> for Node<'tree> {
+    fn from(node: &'tree types::MemberObject) -> Self {
+        match node {
+            types::MemberObject::MemberExpression(me) => me.as_ref().into(),
+            types::MemberObject::Identifier(id) => id.as_ref().into(),
+        }
+    }
+}
+
+impl<'tree> From<&'tree types::LiteralIdentifier> for Node<'tree> {
+    fn from(node: &'tree types::LiteralIdentifier) -> Self {
+        match node {
+            types::LiteralIdentifier::Identifier(id) => id.as_ref().into(),
+            types::LiteralIdentifier::Literal(lit) => lit.as_ref().into(),
+        }
+    }
+}
+
 macro_rules! impl_from {
     ($node:ident, $t: ident) => {
         impl<'a> From<NodeRef<'a, types::$t>> for Node<'a> {
@@ -182,8 +231,6 @@ impl_from!(Node, MemberExpression);
 impl_from!(Node, UnaryExpression);
 impl_from!(Node, ObjectProperty);
 impl_from_ref!(Node, Parameter);
-impl_from_ref!(Node, MemberObject);
 impl_from!(Node, IfExpression);
 impl_from!(Node, ElseIf);
-impl_from_ref!(Node, LiteralIdentifier);
 impl_from!(Node, KclNone);
