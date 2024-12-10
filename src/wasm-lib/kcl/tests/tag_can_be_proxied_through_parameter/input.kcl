@@ -1,0 +1,16 @@
+// A function with a tag parameter.
+fn myCircle(sk, tag) {
+  return circle({ radius = 4, center = [0, 0] }, sk, tag)
+}
+
+c1 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> myCircle(%, $mine)
+// The tag can be used.
+ang1 = tangentToEnd(c1.tags.mine)
+
+// The same tag declarator can be used again.
+c2 = startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
+  |> myCircle(%, $mine)
+ang2 = tangentToEnd(c2.tags.mine)
