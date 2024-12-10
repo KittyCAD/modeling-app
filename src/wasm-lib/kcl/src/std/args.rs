@@ -1102,12 +1102,10 @@ impl<'a> FromKclValue<'a> for super::appearance::AppearanceData {
         let_field_of!(obj, color);
         let_field_of!(obj, metalness?);
         let_field_of!(obj, roughness?);
-        let_field_of!(obj, opacity?);
         Some(Self {
             color,
             metalness,
             roughness,
-            opacity,
         })
     }
 }

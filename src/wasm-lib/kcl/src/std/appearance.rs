@@ -30,9 +30,6 @@ pub struct AppearanceData {
     /// Roughness of the new material, a percentage like 95.7.
     #[validate(range(min = 0.0, max = 100.0))]
     pub roughness: Option<f64>,
-    /// Opacity of the new material, a percentage like 95.7.
-    #[validate(range(min = 0.0, max = 100.0))]
-    pub opacity: Option<f64>,
     // TODO(jess): we can also ambient occlusion here I just don't know what it is.
 }
 
@@ -72,7 +69,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> close(%)
 ///
 /// const example = extrude(5, exampleSketch)
-///  |> appearance({color: '#ff0000', metalness: 50, roughness: 50, opacity: 100}, %)
+///  |> appearance({color: '#ff0000', metalness: 50, roughness: 50}, %)
 /// ```
 #[stdlib {
     name = "appearance",
@@ -93,7 +90,7 @@ async fn inner_appearance(data: AppearanceData, solid_set: SolidSet, args: Args)
             r: rgb.red,
             g: rgb.green,
             b: rgb.blue,
-            a: data.opacity.unwrap_or(100.0) as f32 / 100.0,
+            a: 100.0,
         };
 
         args.batch_modeling_cmd(
@@ -107,17 +104,6 @@ async fn inner_appearance(data: AppearanceData, solid_set: SolidSet, args: Args)
             }),
         )
         .await?;
-
-        if let Some(opacity) = data.opacity {
-            args.batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                ModelingCmd::from(mcmd::EntitySetOpacity {
-                    entity_id: solid.id,
-                    opacity: opacity as f32 / 100.0,
-                }),
-            )
-            .await?;
-        }
 
         // Idk if we want to actually modify the memory for the colors, but I'm not right now since
         // I can't think of a use case for it.
