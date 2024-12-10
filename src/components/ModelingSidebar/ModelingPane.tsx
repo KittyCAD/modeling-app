@@ -76,7 +76,7 @@ export const ModelingPane = ({
   return (
     <section
       {...props}
-      title={title && typeof title === 'string' ? title : ''}
+      aria-label={title && typeof title === 'string' ? title : ''}
       data-testid={detailsTestId}
       id={id}
       className={
