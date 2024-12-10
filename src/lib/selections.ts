@@ -569,6 +569,17 @@ export function canSweepSelection(selection: Selections) {
   )
 }
 
+export function canRevolveSelection(selection: Selections) {
+  const commonNodes = selection.graphSelections.map((_, i) =>
+    buildCommonNodeFromSelection(selection, i)
+  )
+  return (
+    !!isSketchPipe(selection) &&
+    (commonNodes.every((n) => nodeHasClose(n)) ||
+      commonNodes.every((n) => nodeHasCircle(n)))
+  )
+}
+
 export function canLoftSelection(selection: Selections) {
   const commonNodes = selection.graphSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
