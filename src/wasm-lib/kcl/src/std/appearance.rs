@@ -147,6 +147,73 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///     thickness = 0.25,
 /// }, firstSketch)
 /// ```
+///
+/// ```no_run
+/// /// Color a 3D pattern, _before_ the pattern.
+/// const exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([0, 2], %)
+///   |> line([3, 1], %)
+///   |> line([0, -4], %)
+///   |> close(%)
+///
+/// const example = extrude(1, exampleSketch)
+///     |> appearance({
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     }, %)
+///   |> patternLinear3d({
+///       axis = [1, 0, 1],
+///       instances = 7,
+///       distance = 6
+///     }, %)
+/// ```
+///
+/// ```no_run
+/// /// Color a 3D pattern, _after_ the pattern.
+/// const exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> line([0, 2], %)
+///   |> line([3, 1], %)
+///   |> line([0, -4], %)
+///   |> close(%)
+///
+/// const example = extrude(1, exampleSketch)
+///   |> patternLinear3d({
+///       axis = [1, 0, 1],
+///       instances = 7,
+///       distance = 6
+///     }, %)
+///     |> appearance({
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     }, %)
+/// ```
+///
+/// ```no_run
+/// /// Color the result of a 2D pattern that was extruded.
+/// const exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([.5, 25], %)
+///   |> line([0, 5], %)
+///   |> line([-1, 0], %)
+///   |> line([0, -5], %)
+///   |> close(%)
+///   |> patternCircular2d({
+///        center = [0, 0],
+///        instances = 13,
+///        arcDegrees = 360,
+///        rotateDuplicates = true
+///      }, %)
+///
+/// const example = extrude(1, exampleSketch)
+///     |> appearance({
+///         color = '#ff0000',
+///         metalness = 90,
+///         roughness = 90
+///     }, %)
+/// ```
 #[stdlib {
     name = "appearance",
 }]
