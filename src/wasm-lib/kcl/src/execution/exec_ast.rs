@@ -19,6 +19,8 @@ use crate::{
     },
 };
 
+use super::cad_op::{OpArg, Operation};
+
 const FLOAT_TO_INT_MAX_DELTA: f64 = 0.01;
 
 impl BinaryPart {
@@ -390,6 +392,20 @@ impl Node<CallExpressionKw> {
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
+                // Track call operation.
+                let op_labeled_args = args
+                    .kw_args
+                    .labeled
+                    .iter()
+                    .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                    .collect();
+                exec_state.operations.push(Operation::StdLibCall {
+                    std_lib_fn: (&func).into(),
+                    unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                    labeled_args: op_labeled_args,
+                    source_range: callsite,
+                });
+
                 // Attempt to call the function.
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
                 update_memory_for_tags_of_geometry(&mut result, &tag_declarator_args, exec_state)?;
@@ -401,6 +417,21 @@ impl Node<CallExpressionKw> {
                 // exec_state.
                 let func = exec_state.memory.get(fn_name, source_range)?.clone();
                 let fn_dynamic_state = exec_state.dynamic_state.merge(&exec_state.memory);
+
+                // Track call operation.
+                let op_labeled_args = args
+                    .kw_args
+                    .labeled
+                    .iter()
+                    .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                    .collect();
+                exec_state.operations.push(Operation::UserDefinedFunctionCall {
+                    name: Some(fn_name.clone()),
+                    function_source_range: func.first_source_range().unwrap_or_default(),
+                    unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                    labeled_args: op_labeled_args,
+                    source_range: callsite,
+                });
 
                 let return_value = {
                     let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
@@ -427,6 +458,9 @@ impl Node<CallExpressionKw> {
                         source_ranges,
                     })
                 })?;
+
+                // Track return operation.
+                exec_state.operations.push(Operation::UserDefinedFunctionReturn);
 
                 Ok(result)
             }
