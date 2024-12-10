@@ -287,6 +287,9 @@ export function getAutoUpdater(): AppUpdater {
 
 app.on('ready', () => {
   const autoUpdater = getAutoUpdater()
+  // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
+  // so at the moment this isn't worth enabling
+  autoUpdater.disableDifferentialDownload = true
   setTimeout(() => {
     autoUpdater.checkForUpdates().catch(reportRejection)
   }, 1000)
