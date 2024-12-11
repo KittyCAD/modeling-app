@@ -43,9 +43,9 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// extrusion.
 ///
 /// ```no_run
-/// /// Create a pipe using a sweep.
+/// // Create a pipe using a sweep.
 ///
-/// /// Create a path for the sweep.
+/// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
 ///     |> startProfileAt([0.05, 0.05], %)
 ///     |> line([0, 7], %)
