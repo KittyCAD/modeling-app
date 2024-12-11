@@ -1,0 +1,59 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed basic_fillet_cube_previous_adjacent.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          190,
+          192,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          194,
+          195,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      182,
+      196,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          209,
+          284,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          286,
+          287,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      202,
+      288,
+      0
+    ],
+    "stdLibFn": "fillet",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

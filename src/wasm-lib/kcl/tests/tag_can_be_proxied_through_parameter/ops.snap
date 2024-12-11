@@ -1,0 +1,111 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed tag_can_be_proxied_through_parameter.kcl
+snapshot_kind: text
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "myCircle",
+    "functionSourceRange": [
+      47,
+      118,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      181,
+      199,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          75,
+          106,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          108,
+          110,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          112,
+          115,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      68,
+      116,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "myCircle",
+    "functionSourceRange": [
+      47,
+      118,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      366,
+      384,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          75,
+          106,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          108,
+          110,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          112,
+          115,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      68,
+      116,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]
