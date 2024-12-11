@@ -80,10 +80,13 @@ function discoverColorsInKCL(
 
           if (maybeWidgetOptions) {
             if (Array.isArray(maybeWidgetOptions)) {
-              throw new Error('Unexpected nested overlays')
-            }
+              console.error('Unexpected nested overlays')
+                ret.push(...maybeWidgetOptions)
+
+            } else {
 
             ret.push(maybeWidgetOptions)
+            }
           }
         },
       })
@@ -313,7 +316,7 @@ export const makeColorPicker = (options: IFactoryOptions) =>
 
           const data = pickerState.get(target)!
 
-          let converted = '"'+target.value + data.alpha+'"'
+          let converted = '"' + target.value + data.alpha + '"'
 
           view.dispatch({
             changes: {
