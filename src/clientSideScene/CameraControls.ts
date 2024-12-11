@@ -405,8 +405,7 @@ export class CameraControls {
         .sub(this.mouseDownPosition)
       this.mouseDownPosition.copy(this.mouseNewPosition)
 
-      let interaction =
-        this.getInteractionType(event)
+      let interaction = this.getInteractionType(event)
       if (interaction === 'none') return
 
       // If there's a valid interaction and the mouse is moving,
@@ -1189,8 +1188,8 @@ export class CameraControls {
     this.deferReactUpdate(this.reactCameraProperties)
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
-  getInteractionType = (event: MouseEvent) =>
-    {const initialInteractionType = _getInteractionType(
+  getInteractionType = (event: MouseEvent) => {
+    const initialInteractionType = _getInteractionType(
       this.interactionGuards,
       event,
       this.enablePan,
