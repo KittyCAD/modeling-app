@@ -10,7 +10,7 @@ const noModifiersPressed = (e: MouseEvent) =>
   !e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey
 
 export type CameraSystem =
-  | 'KittyCAD'
+  | 'Zoo'
   | 'OnShape'
   | 'Trackpad Friendly'
   | 'Solidworks'
@@ -19,7 +19,7 @@ export type CameraSystem =
   | 'AutoCAD'
 
 export const cameraSystems: CameraSystem[] = [
-  'KittyCAD',
+  'Zoo',
   'OnShape',
   'Trackpad Friendly',
   'Solidworks',
@@ -34,9 +34,8 @@ export function mouseControlsToCameraSystem(
   switch (mouseControl) {
     // TODO: understand why the values come back without underscores and fix the root cause
     // @ts-ignore: TS2678
-    case 'kittycad':
-    case 'kitty_cad':
-      return 'KittyCAD'
+    case 'zoo':
+      return 'Zoo'
     // TODO: understand why the values come back without underscores and fix the root cause
     // @ts-ignore: TS2678
     case 'onshape':
@@ -86,7 +85,7 @@ export const btnName = (e: MouseEvent) => ({
 })
 
 export const cameraMouseDragGuards: Record<CameraSystem, MouseGuard> = {
-  KittyCAD: {
+  Zoo: {
     pan: {
       description: 'Shift + Right click drag or middle click drag',
       callback: (e) =>
