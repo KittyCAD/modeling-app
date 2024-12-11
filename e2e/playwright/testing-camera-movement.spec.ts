@@ -479,4 +479,26 @@ test.describe('Testing Camera Movement', () => {
       })
     }
   })
+
+  test('Right-click opens context menu when not dragged', async ({ page }) => {
+    const u = await getUtils(page)
+    await u.waitForAuthSkipAppStart()
+
+    await test.step(`The menu should not show if we drag the mouse`, async () => {
+      await page.mouse.move(900, 200)
+      await page.mouse.down({ button: 'right' })
+      await page.mouse.move(900, 300)
+      await page.mouse.up({ button: 'right' })
+
+      await expect(page.getByTestId('view-controls-menu')).not.toBeVisible()
+    })
+
+    await test.step(`The menu should show if we don't drag the mouse`, async () => {
+      await page.mouse.move(900, 200)
+      await page.mouse.down({ button: 'right' })
+      await page.mouse.up({ button: 'right' })
+
+      await expect(page.getByTestId('view-controls-menu')).toBeVisible()
+    })
+  })
 })
