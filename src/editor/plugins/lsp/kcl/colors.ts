@@ -81,11 +81,9 @@ function discoverColorsInKCL(
           if (maybeWidgetOptions) {
             if (Array.isArray(maybeWidgetOptions)) {
               console.error('Unexpected nested overlays')
-                ret.push(...maybeWidgetOptions)
-
+              ret.push(...maybeWidgetOptions)
             } else {
-
-            ret.push(maybeWidgetOptions)
+              ret.push(maybeWidgetOptions)
             }
           }
         },
