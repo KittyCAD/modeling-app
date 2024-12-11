@@ -14,7 +14,7 @@ export const TEST_SETTINGS = {
   },
   modeling: {
     defaultUnit: 'in',
-    mouseControls: 'KittyCAD',
+    mouseControls: 'Zoo',
     cameraProjection: 'perspective',
     showDebugPanel: true,
   },

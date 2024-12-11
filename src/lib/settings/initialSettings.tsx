@@ -283,7 +283,7 @@ export function createSettings() {
        * The controls for how to navigate the 3D view
        */
       mouseControls: new Setting<CameraSystem>({
-        defaultValue: 'KittyCAD',
+        defaultValue: 'Zoo',
         description: 'The controls for how to navigate the 3D view',
         validate: (v) => cameraSystems.includes(v as CameraSystem),
         hideOnLevel: 'project',
