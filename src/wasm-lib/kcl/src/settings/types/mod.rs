@@ -554,7 +554,7 @@ enableSSAO = false
 [settings.modeling]
 defaultUnit = "in"
 cameraProjection = "orthographic"
-mouseControls = "KittyCAD"
+mouseControls = "Zoo"
 showDebugPanel = true
 
 [settings.projects]
