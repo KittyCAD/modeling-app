@@ -51,7 +51,8 @@ impl Default for LoftData {
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
 pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (sketches, data): (Vec<Sketch>, Option<LoftData>) = args.get_sketches_and_data()?;
+    let sketches = args.get_unlabeled_kw_arg("sketches")?;
+    let data: Option<LoftData> = args.get_kw_arg_opt("data");
 
     let solid = inner_loft(sketches, data, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
@@ -116,7 +117,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// circleSketch1 = startSketchOn(offsetPlane('XY', 150))
 ///     |> circle({ center = [0, 100], radius = 20 }, %)
 ///
-/// loft([squareSketch, circleSketch0, circleSketch1], {
+/// loft([squareSketch, circleSketch0, circleSketch1], data: {
 ///     // This can be set to override the automatically determined
 ///     // topological base curve, which is usually the first section encountered.
 ///     baseCurveIndex = 0,
@@ -134,6 +135,8 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```
 #[stdlib {
     name = "loft",
+    keywords = true,
+    unlabeled_first = true,
 }]
 async fn inner_loft(
     sketches: Vec<Sketch>,
