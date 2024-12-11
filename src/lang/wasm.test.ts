@@ -1,8 +1,12 @@
 import { err } from 'lib/trap'
-import { parse, ParseResult } from './wasm'
+import { initPromise, parse, ParseResult } from './wasm'
 import { enginelessExecutor } from 'lib/testHelpers'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { Program } from '../wasm-lib/kcl/bindings/Program'
+
+beforeEach(async () => {
+  await initPromise
+})
 
 it('can execute parsed AST', async () => {
   const code = `x = 1
