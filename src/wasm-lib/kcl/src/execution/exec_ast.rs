@@ -392,25 +392,36 @@ impl Node<CallExpressionKw> {
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
-                if func.feature_tree_operation() {
-                    // Track call operation.
+                let op = if func.feature_tree_operation() {
                     let op_labeled_args = args
                         .kw_args
                         .labeled
                         .iter()
                         .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
                         .collect();
-                    exec_state.operations.push(Operation::StdLibCall {
+                    Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
                         unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
-                    });
-                }
+                    })
+                } else {
+                    None
+                };
 
                 // Attempt to call the function.
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
                 update_memory_for_tags_of_geometry(&mut result, &tag_declarator_args, exec_state)?;
+
+                if let Some(op) = op {
+                    // Track call operation.  We do this after the call since
+                    // things like patternTransform may call user code before
+                    // running, and we will likely want to use the return value.
+                    // The call takes ownership of the args, so we need to build
+                    // the op before the call.
+                    exec_state.operations.push(op);
+                }
+
                 Ok(result)
             }
             FunctionKind::UserDefined => {
@@ -497,26 +508,37 @@ impl Node<CallExpression> {
 
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
-                if func.feature_tree_operation() {
-                    // Track call operation.
+                let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)
                         .iter()
                         .zip(&fn_args)
                         .map(|(k, v)| (k.name.clone(), OpArg::new(v.source_range)))
                         .collect();
-                    exec_state.operations.push(Operation::StdLibCall {
+                    Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
                         unlabeled_arg: None,
                         labeled_args: op_labeled_args,
                         source_range: callsite,
-                    });
-                }
+                    })
+                } else {
+                    None
+                };
 
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
                 update_memory_for_tags_of_geometry(&mut result, &tag_declarator_args, exec_state)?;
+
+                if let Some(op) = op {
+                    // Track call operation.  We do this after the call since
+                    // things like patternTransform may call user code before
+                    // running, and we will likely want to use the return value.
+                    // The call takes ownership of the args, so we need to build
+                    // the op before the call.
+                    exec_state.operations.push(op);
+                }
+
                 Ok(result)
             }
             FunctionKind::UserDefined => {
