@@ -381,8 +381,8 @@ impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
 pub enum MouseControlType {
     #[default]
     #[display("zoo")]
-    #[serde(rename = "zoo", alias = "Zoo")]
-    KittyCad,
+    #[serde(rename = "zoo", alias = "Zoo", alias = "KittyCAD")]
+    Zoo,
     #[display("onshape")]
     #[serde(rename = "onshape", alias = "OnShape")]
     OnShape,
@@ -554,7 +554,7 @@ enableSSAO = false
 [settings.modeling]
 defaultUnit = "in"
 cameraProjection = "orthographic"
-mouseControls = "Zoo"
+mouseControls = "KittyCAD"
 showDebugPanel = true
 
 [settings.projects]
