@@ -177,6 +177,7 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "import",
+    feature_tree_operation = true,
     tags = [],
 }]
 async fn inner_import(

@@ -134,6 +134,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```
 #[stdlib {
     name = "loft",
+    feature_tree_operation = true,
 }]
 async fn inner_loft(
     sketches: Vec<Sketch>,
