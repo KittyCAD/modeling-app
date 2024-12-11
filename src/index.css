@@ -325,3 +325,8 @@ code {
 #code-mirror-override .cm-editor {
   height: 100% !important;
 }
+
+/* Can't use #code-mirror-override here as we're outside of this div */
+.body-bg .cm-diagnosticAction {
+  @apply bg-primary;
+}

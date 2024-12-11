@@ -1,5 +1,5 @@
 import { trap } from 'lib/trap'
-import { useMachine } from '@xstate/react'
+import { useMachine, useSelector } from '@xstate/react'
 import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
 import { PATHS, BROWSER_PATH } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
@@ -23,7 +23,6 @@ import {
   engineCommandManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
 import {
@@ -55,11 +54,15 @@ type SettingsAuthContextType = {
   settings: MachineContext<typeof settingsMachine>
 }
 
-// a little hacky for sure, open to changing it
-// this implies that we should only even have one instance of this provider mounted at any one time
-// but I think that's a safe assumption
-let settingsStateRef: ContextFrom<typeof settingsMachine> | undefined
-export const getSettingsState = () => settingsStateRef
+/**
+ * This variable is used to store the last snapshot of the settings context
+ * for use outside of React, such as in `wasm.ts`. It is updated every time
+ * the settings machine changes with `useSelector`.
+ * TODO: when we decouple XState from React, we can just subscribe to the actor directly from `wasm.ts`
+ */
+export let lastSettingsContextSnapshot:
+  | ContextFrom<typeof settingsMachine>
+  | undefined
 
 export const SettingsAuthContext = createContext({} as SettingsAuthContextType)
 
@@ -129,26 +132,10 @@ export const SettingsAuthProviderBase = ({
             .setTheme(context.app.theme.current)
             .catch(reportRejection)
         },
-        setEngineScaleGridVisibility: ({ context }) => {
-          engineCommandManager.setScaleGridVisibility(
-            context.modeling.showScaleGrid.current
-          )
-        },
         setClientTheme: ({ context }) => {
           const opposingTheme = getOppositeTheme(context.app.theme.current)
           sceneInfra.theme = opposingTheme
           sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
-        },
-        setEngineEdges: ({ context }) => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          engineCommandManager.sendSceneCommand({
-            cmd_id: uuidv4(),
-            type: 'modeling_cmd_req',
-            cmd: {
-              type: 'edge_lines_visible' as any, // TODO update kittycad.ts to get this new command type
-              hidden: !context.modeling.highlightEdges.current,
-            },
-          })
         },
         toastSuccess: ({ event }) => {
           if (!('data' in event)) return
@@ -175,17 +162,27 @@ export const SettingsAuthProviderBase = ({
         },
         'Execute AST': ({ context, event }) => {
           try {
+            const relevantSetting = (s: typeof settings) => {
+              return (
+                s.modeling?.defaultUnit?.current !==
+                  context.modeling.defaultUnit.current ||
+                s.modeling.showScaleGrid.current !==
+                  context.modeling.showScaleGrid.current ||
+                s.modeling?.highlightEdges.current !==
+                  context.modeling.highlightEdges.current
+              )
+            }
+
             const allSettingsIncludesUnitChange =
               event.type === 'Set all settings' &&
-              event.settings?.modeling?.defaultUnit?.current !==
-                context.modeling.defaultUnit.current
+              relevantSetting(event.settings)
             const resetSettingsIncludesUnitChange =
-              event.type === 'Reset settings' &&
-              context.modeling.defaultUnit.current !==
-                settings?.modeling?.defaultUnit?.default
+              event.type === 'Reset settings' && relevantSetting(settings)
 
             if (
               event.type === 'set.modeling.defaultUnit' ||
+              event.type === 'set.modeling.showScaleGrid' ||
+              event.type === 'set.modeling.highlightEdges' ||
               allSettingsIncludesUnitChange ||
               resetSettingsIncludesUnitChange
             ) {
@@ -214,7 +211,10 @@ export const SettingsAuthProviderBase = ({
     }),
     { input: loadedSettings }
   )
-  settingsStateRef = settingsState.context
+  // Any time the actor changes, update the settings state for external use
+  useSelector(settingsActor, (s) => {
+    lastSettingsContextSnapshot = s.context
+  })
 
   useEffect(() => {
     if (!isDesktop()) return

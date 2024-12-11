@@ -159,7 +159,6 @@ beforeAll(async () => {
       makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
       setMediaStream: () => {},
       setIsStreamReady: () => {},
-      modifyGrid: async () => {},
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       callbackOnEngineLiteConnect: async () => {
         const cacheEntries = Object.entries(codeToWriteCacheFor) as [

@@ -9,9 +9,9 @@ fn cube(pos, scale) {
 }
 part001 = cube([0, 0], 20)
   |> close(%)
-  |> extrude(20, %)
+  |> extrude(20, %) as foo
 
-part002 = startSketchOn(part001, "start")
+part002 = startSketchOn(foo, "start")
   |> startProfileAt([0, 0], %)
   |> line([0, 10], %)
   |> line([10, 0], %)

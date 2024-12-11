@@ -1,4 +1,3 @@
-pub(crate) mod cache;
 pub(crate) mod digest;
 pub mod modify;
 pub mod types;
@@ -37,6 +36,7 @@ impl Expr {
             Expr::MemberExpression(member_expression) => member_expression.module_id,
             Expr::UnaryExpression(unary_expression) => unary_expression.module_id,
             Expr::IfExpression(expr) => expr.module_id,
+            Expr::LabelledExpression(expr) => expr.expr.module_id(),
             Expr::None(none) => none.module_id,
         }
     }
