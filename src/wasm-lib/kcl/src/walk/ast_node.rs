@@ -32,6 +32,7 @@ pub enum Node<'a> {
     UnaryExpression(NodeRef<'a, types::UnaryExpression>),
     IfExpression(NodeRef<'a, types::IfExpression>),
     ElseIf(&'a types::ElseIf),
+    LabelledExpression(NodeRef<'a, types::LabelledExpression>),
 
     Parameter(&'a types::Parameter),
 
@@ -72,6 +73,7 @@ impl<'tree> Node<'tree> {
             Node::IfExpression(n) => n.digest,
             Node::ElseIf(n) => n.digest,
             Node::KclNone(n) => n.digest,
+            Node::LabelledExpression(n) => n.digest,
         }
     }
 }
@@ -111,6 +113,7 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::Parameter(p) => SourceRange::from(&p.identifier),
             Node::ObjectProperty(n) => SourceRange::from(*n),
             Node::IfExpression(n) => SourceRange::from(*n),
+            Node::LabelledExpression(n) => SourceRange::from(*n),
 
             // This is broken too
             Node::ElseIf(n) => SourceRange::new(n.cond.start(), n.cond.end(), n.cond.module_id()),
@@ -151,6 +154,7 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
             types::Expr::MemberExpression(me) => me.as_ref().into(),
             types::Expr::UnaryExpression(ue) => ue.as_ref().into(),
             types::Expr::IfExpression(e) => e.as_ref().into(),
+            types::Expr::LabelledExpression(e) => e.as_ref().into(),
             types::Expr::None(n) => n.into(),
         }
     }
@@ -233,4 +237,5 @@ impl_from!(Node, ObjectProperty);
 impl_from_ref!(Node, Parameter);
 impl_from!(Node, IfExpression);
 impl_from!(Node, ElseIf);
+impl_from!(Node, LabelledExpression);
 impl_from!(Node, KclNone);

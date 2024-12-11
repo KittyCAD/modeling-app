@@ -1721,7 +1721,9 @@ dependencies = [
  "parse-display 0.9.1",
  "pretty_assertions",
  "pyo3",
+ "regex",
  "reqwest",
+ "rgba_simple",
  "ropey",
  "schemars",
  "serde",
@@ -2970,6 +2972,12 @@ checksum = "5875471e6cab2871bc150ecb8c727db5113c9338cc3354dc5ee3425b6aa40a1c"
 dependencies = [
  "rand 0.8.5",
 ]
+
+[[package]]
+name = "rgba_simple"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6cd655523701785087f69900df39892fb7b9b0721aa67682f571c38c32ac58a"
 
 [[package]]
 name = "ring"

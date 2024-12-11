@@ -1,5 +1,6 @@
 //! Functions implemented for language execution.
 
+pub mod appearance;
 pub mod args;
 pub mod array;
 pub mod assert;
@@ -50,6 +51,7 @@ lazy_static! {
         Box::new(LegLen),
         Box::new(LegAngX),
         Box::new(LegAngY),
+        Box::new(crate::std::appearance::Appearance),
         Box::new(crate::std::convert::Int),
         Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEnd),

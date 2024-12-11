@@ -598,6 +598,7 @@ pub enum Expr {
     MemberExpression(BoxNode<MemberExpression>),
     UnaryExpression(BoxNode<UnaryExpression>),
     IfExpression(BoxNode<IfExpression>),
+    LabelledExpression(BoxNode<LabelledExpression>),
     None(Node<KclNone>),
 }
 
@@ -640,6 +641,7 @@ impl Expr {
             Expr::UnaryExpression(_unary_exp) => None,
             Expr::PipeSubstitution(_pipe_substitution) => None,
             Expr::IfExpression(_) => None,
+            Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::None(_none) => None,
         }
     }
@@ -666,6 +668,7 @@ impl Expr {
             Expr::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
             Expr::IfExpression(_) => {}
             Expr::PipeSubstitution(_) => {}
+            Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::None(_) => {}
         }
     }
@@ -687,6 +690,7 @@ impl Expr {
             Expr::MemberExpression(member_expression) => member_expression.start,
             Expr::UnaryExpression(unary_expression) => unary_expression.start,
             Expr::IfExpression(expr) => expr.start,
+            Expr::LabelledExpression(expr) => expr.start,
             Expr::None(none) => none.start,
         }
     }
@@ -708,6 +712,7 @@ impl Expr {
             Expr::MemberExpression(member_expression) => member_expression.end,
             Expr::UnaryExpression(unary_expression) => unary_expression.end,
             Expr::IfExpression(expr) => expr.end,
+            Expr::LabelledExpression(expr) => expr.end,
             Expr::None(none) => none.end,
         }
     }
@@ -734,6 +739,8 @@ impl Expr {
             Expr::Literal(_) => None,
             Expr::Identifier(_) => None,
             Expr::TagDeclarator(_) => None,
+            // TODO LSP hover info for tag
+            Expr::LabelledExpression(expr) => expr.expr.get_hover_value_for_position(pos, code),
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Expr::PipeSubstitution(_) => None,
         }
@@ -763,6 +770,7 @@ impl Expr {
             }
             Expr::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
             Expr::IfExpression(ref mut expr) => expr.rename_identifiers(old_name, new_name),
+            Expr::LabelledExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::None(_) => {}
         }
     }
@@ -788,7 +796,17 @@ impl Expr {
             Expr::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             Expr::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             Expr::IfExpression(expr) => expr.get_constraint_level(),
+            Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
+        }
+    }
+
+    pub fn has_substitution_arg(&self) -> bool {
+        match self {
+            Expr::CallExpression(call_expression) => call_expression.has_substitution_arg(),
+            Expr::CallExpressionKw(call_expression) => call_expression.has_substitution_arg(),
+            Expr::LabelledExpression(expr) => expr.expr.has_substitution_arg(),
+            _ => false,
         }
     }
 }
@@ -802,6 +820,36 @@ impl From<Expr> for SourceRange {
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
         Self::new(value.start(), value.end(), value.module_id())
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct LabelledExpression {
+    pub expr: Expr,
+    pub label: Node<Identifier>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl LabelledExpression {
+    pub(crate) fn new(expr: Expr, label: Node<Identifier>) -> Node<LabelledExpression> {
+        let start = expr.start();
+        let end = label.end;
+        let module_id = expr.module_id();
+        Node::new(
+            LabelledExpression {
+                expr,
+                label,
+                digest: None,
+            },
+            start,
+            end,
+            module_id,
+        )
     }
 }
 
