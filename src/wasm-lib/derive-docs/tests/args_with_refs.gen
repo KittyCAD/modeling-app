@@ -116,6 +116,10 @@ impl crate::docs::StdLibFn for SomeFn {
         false
     }
 
+    fn feature_tree_operation(&self) -> bool {
+        false
+    }
+
     fn examples(&self) -> Vec<String> {
         let code_blocks = vec!["someFn()"];
         code_blocks
