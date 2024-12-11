@@ -62,13 +62,12 @@ impl OpArg {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct StdLibFnRef {
-    /// We serialize to its name.
-    #[serde(
-        serialize_with = "std_lib_fn_name",
-        deserialize_with = "std_lib_fn_from_name",
-        rename = "name"
-    )]
-    #[ts(type = "string")]
+    // The following doc comment gets inlined into Operation, overriding what's
+    // there, in the generated TS.
+    /// The standard library function being called.  We serialize to its name.
+    #[serde(serialize_with = "std_lib_fn_name", deserialize_with = "std_lib_fn_from_name")]
+    // Renaming to "name" allows it to match the other variant.
+    #[ts(type = "string", rename = "name")]
     pub std_lib_fn: Box<dyn StdLibFn>,
 }
 
