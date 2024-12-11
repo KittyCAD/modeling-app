@@ -474,6 +474,7 @@ impl Node<CallExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let fn_name = &self.callee.name;
+        let callsite = SourceRange::from(self);
 
         let mut fn_args: Vec<Arg> = Vec::with_capacity(self.arguments.len());
         let mut tag_declarator_args = Vec::new();
@@ -491,10 +492,27 @@ impl Node<CallExpression> {
             }
             fn_args.push(arg);
         }
+        let fn_args = fn_args; // remove mutability
         let tag_declarator_args = tag_declarator_args; // remove mutability
 
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
+                if func.feature_tree_operation() {
+                    // Track call operation.
+                    let op_labeled_args = func
+                        .args(false)
+                        .iter()
+                        .zip(&fn_args)
+                        .map(|(k, v)| (k.name.clone(), OpArg::new(v.source_range)))
+                        .collect();
+                    exec_state.operations.push(Operation::StdLibCall {
+                        std_lib_fn: (&func).into(),
+                        unlabeled_arg: None,
+                        labeled_args: op_labeled_args,
+                        source_range: callsite,
+                    });
+                }
+
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
@@ -507,6 +525,16 @@ impl Node<CallExpression> {
                 // exec_state.
                 let func = exec_state.memory.get(fn_name, source_range)?.clone();
                 let fn_dynamic_state = exec_state.dynamic_state.merge(&exec_state.memory);
+
+                // Track call operation.
+                exec_state.operations.push(Operation::UserDefinedFunctionCall {
+                    name: Some(fn_name.clone()),
+                    function_source_range: func.first_source_range().unwrap_or_default(),
+                    unlabeled_arg: None,
+                    // TODO: Add the arguments for legacy positional parameters.
+                    labeled_args: Default::default(),
+                    source_range: callsite,
+                });
 
                 let return_value = {
                     let previous_dynamic_state = std::mem::replace(&mut exec_state.dynamic_state, fn_dynamic_state);
@@ -530,6 +558,9 @@ impl Node<CallExpression> {
                         source_ranges,
                     })
                 })?;
+
+                // Track return operation.
+                exec_state.operations.push(Operation::UserDefinedFunctionReturn);
 
                 Ok(result)
             }
