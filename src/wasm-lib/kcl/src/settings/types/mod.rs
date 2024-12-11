@@ -380,8 +380,8 @@ impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
 #[display(style = "snake_case")]
 pub enum MouseControlType {
     #[default]
-    #[display("kittycad")]
-    #[serde(rename = "kittycad", alias = "KittyCAD")]
+    #[display("zoo")]
+    #[serde(rename = "zoo", alias = "Zoo")]
     KittyCad,
     #[display("onshape")]
     #[serde(rename = "onshape", alias = "OnShape")]
