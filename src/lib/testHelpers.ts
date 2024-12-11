@@ -112,9 +112,6 @@ export async function executor(
     makeDefaultPlanes: () => {
       return new Promise((resolve) => resolve(defaultPlanes))
     },
-    modifyGrid: (hidden: boolean) => {
-      return new Promise((resolve) => resolve())
-    },
   })
 
   return new Promise((resolve) => {
