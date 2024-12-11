@@ -2117,7 +2117,8 @@ impl ExecutorContext {
         Ok((module_memory, module_exports))
     }
 
-    pub async fn execute_expr<'a>(
+    #[async_recursion]
+    pub async fn execute_expr<'a: 'async_recursion>(
         &self,
         init: &Expr,
         exec_state: &mut ExecState,
@@ -2174,6 +2175,14 @@ impl ExecutorContext {
             Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
             Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
+            Expr::LabelledExpression(expr) => {
+                let result = self
+                    .execute_expr(&expr.expr, exec_state, metadata, statement_kind)
+                    .await?;
+                exec_state.memory.add(&expr.label.name, result.clone(), init.into())?;
+                // TODO this lets us use the label as a variable name, but not as a tag in most cases
+                result
+            }
         };
         Ok(item)
     }
