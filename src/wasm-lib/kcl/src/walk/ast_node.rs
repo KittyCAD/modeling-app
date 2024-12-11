@@ -73,6 +73,7 @@ impl Node<'_> {
             Node::IfExpression(n) => n.digest,
             Node::ElseIf(n) => n.digest,
             Node::KclNone(n) => n.digest,
+            Node::LabelledExpression(n) => n.digest,
         }
     }
 }
