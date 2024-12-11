@@ -458,7 +458,7 @@ fn get_autocomplete_snippet_from_schema(
         schemars::schema::Schema::Object(o) => {
             // Check if the schema is the same as a Sketch.
             let mut settings = schemars::gen::SchemaSettings::openapi3();
-            // We set this to false so we can recurse them later.
+            // We set this so we can recurse them later.
             settings.inline_subschemas = true;
             let mut generator = schemars::gen::SchemaGenerator::new(settings);
             let sketch_schema = generator.root_schema_for::<Sketch>().schema;
