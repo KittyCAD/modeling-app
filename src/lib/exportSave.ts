@@ -18,8 +18,9 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
 
       if (window.electron.process.env.IS_PLAYWRIGHT) {
         // Skip file picker, save to the test dir downloads directory
+        const testSettingsPath = await window.electron.getAppTestProperty('TEST_SETTINGS_FILE_KEY')
         const downloadDir = window.electron.join(
-          window.electron.process.env.TEST_SETTINGS_FILE_KEY,
+          testSettingsPath,
           'downloads-during-playwright'
         )
         await window.electron.mkdir(downloadDir, { recursive: true })
