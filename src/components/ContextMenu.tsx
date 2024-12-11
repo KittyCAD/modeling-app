@@ -109,7 +109,10 @@ export function ContextMenu({
     <Dialog open={open} onClose={() => setOpen(false)}>
       <div
         className="fixed inset-0 z-50 w-screen h-screen"
-        onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={(e) => {
+          e.preventDefault()
+          setPosition({ x: e.clientX, y: e.clientY })
+        }}
       >
         <Dialog.Backdrop className="fixed z-10 inset-0" />
         <Dialog.Panel
