@@ -29,7 +29,7 @@ export class EditorFixture {
   reConstruct = (page: Page) => {
     this.page = page
 
-    this.codeContent = page.locator('.cm-content')
+    this.codeContent = page.locator('.cm-content[data-language="kcl"]')
     this.diagnosticsTooltip = page.locator('.cm-tooltip-lint')
     this.diagnosticsGutterIcon = page.locator('.cm-lint-marker-error')
     this.activeLine = this.page.locator('.cm-activeLine')
@@ -54,13 +54,13 @@ export class EditorFixture {
         }
       }
       if (!shouldNormalise) {
-        const expectStart = expect(this.codeContent)
+        const expectStart = expect.poll(() => this.codeContent.textContent())
         if (not) {
-          const result = await expectStart.not.toContainText(code, { timeout })
+          const result = await expectStart.not.toContain(code)
           await resetPane()
           return result
         }
-        const result = await expectStart.toContainText(code, { timeout })
+        const result = await expectStart.toContain(code)
         await resetPane()
         return result
       }
@@ -146,5 +146,21 @@ export class EditorFixture {
   }
   openPane() {
     return openPane(this.page, this.paneButtonTestId)
+  }
+  scrollToText(text: string) {
+    return this.page.evaluate((scrollToText: string) => {
+      // editorManager is available on the window object.
+      // @ts-ignore
+      let index = editorManager._editorView.docView.view.state.doc
+        .toString()
+        .indexOf(scrollToText)
+      // @ts-ignore
+      editorManager._editorView.dispatch({
+        selection: {
+          anchor: index,
+        },
+        scrollIntoView: true,
+      })
+    }, text)
   }
 }

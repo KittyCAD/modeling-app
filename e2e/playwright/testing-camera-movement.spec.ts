@@ -1,23 +1,14 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
-import { getUtils, setup, tearDown } from './test-utils'
-
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
+import { getUtils } from './test-utils'
 
 test.describe('Testing Camera Movement', () => {
-  test('Can move camera reliably', async ({ page, context }) => {
-    test.skip(process.platform === 'darwin', 'Can move camera reliably')
+  test('Can move camera reliably', async ({ page, context, homePage }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
     await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
 
@@ -183,6 +174,7 @@ test.describe('Testing Camera Movement', () => {
 
   test('Zoom should be consistent when exiting or entering sketches', async ({
     page,
+    homePage,
   }) => {
     // start new sketch pan and zoom before exiting, when exiting the sketch should stay in the same place
     // than zoom and pan outside of sketch mode and enter again and it should not change from where it is
@@ -190,9 +182,9 @@ test.describe('Testing Camera Movement', () => {
 
     test.skip(process.platform !== 'darwin', 'Zoom should be consistent')
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
     await u.openDebugPanel()
 
     await expect(
@@ -344,7 +336,10 @@ test.describe('Testing Camera Movement', () => {
     })
   })
 
-  test(`Zoom by scroll should not fire while orbiting`, async ({ page }) => {
+  test(`Zoom by scroll should not fire while orbiting`, async ({
+    page,
+    homePage,
+  }) => {
     /**
      * Currently we only allow zooming by scroll when no other camera movement is happening,
      * set within cameraMouseDragGuards in cameraControls.ts,
@@ -383,7 +378,7 @@ test.describe('Testing Camera Movement', () => {
     const expectedOrbitCamZPosition = 64.0
 
     await test.step(`Test setup`, async () => {
-      await u.waitForAuthSkipAppStart()
+      await homePage.goToModelingScene()
       await u.closeKclCodePanel()
       // This test requires the mouse controls to be set to Solidworks
       await u.openDebugPanel()

@@ -16,6 +16,8 @@ use crate::{
     source_range::ModuleId,
 };
 
+use super::TokenStream;
+
 lazy_static! {
     pub(crate) static ref RESERVED_WORDS: FnvHashMap<&'static str, TokenType> = {
         let mut set = FnvHashMap::default();
@@ -363,6 +365,8 @@ fn keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
 #[cfg(test)]
 mod tests {
     use winnow::Located;
+
+    use crate::parsing::token::TokenSlice;
 
     use super::*;
     use crate::parsing::token::TokenSlice;

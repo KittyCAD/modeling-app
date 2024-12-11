@@ -18,6 +18,7 @@ use crate::{
     parsing::ast::types::{ItemVisibility, VariableKind},
     source_range::{ModuleId, SourceRange},
 };
+use tokeniser::Input;
 
 mod tokeniser;
 

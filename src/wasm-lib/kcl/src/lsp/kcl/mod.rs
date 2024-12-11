@@ -49,7 +49,7 @@ use crate::{
         token::TokenStream,
         PIPE_OPERATOR,
     },
-    CacheInformation, ModuleId, OldAstState, Program, SourceRange,
+    ModuleId, Program, SourceRange,
 };
 const SEMANTIC_TOKEN_TYPES: [SemanticTokenType; 10] = [
     SemanticTokenType::NUMBER,
