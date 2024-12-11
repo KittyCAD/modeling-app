@@ -126,6 +126,7 @@ export const ModelingMachineProvider = ({
           cameraProjection,
           highlightEdges,
           showScaleGrid,
+          cameraOrbit,
         },
       },
     },
@@ -1225,6 +1226,7 @@ export const ModelingMachineProvider = ({
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
       cameraProjection: cameraProjection.current,
+      cameraOrbit: cameraOrbit.current,
     },
     token
   )

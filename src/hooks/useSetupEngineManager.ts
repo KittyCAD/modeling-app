@@ -16,14 +16,15 @@ export function useSetupEngineManager(
   streamRef: React.RefObject<HTMLDivElement>,
   modelingSend: ReturnType<typeof useModelingContext>['send'],
   modelingContext: ReturnType<typeof useModelingContext>['context'],
-  settings = {
+  settings: SettingsViaQueryString = {
     pool: null,
     theme: Themes.System,
     highlightEdges: true,
     enableSSAO: true,
     showScaleGrid: false,
     cameraProjection: 'perspective',
-  } as SettingsViaQueryString,
+    cameraOrbit: 'spherical',
+  },
   token?: string
 ) {
   const networkContext = useNetworkContext()
