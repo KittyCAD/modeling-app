@@ -1,0 +1,111 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed sketch_on_face_circle_tagged.kcl
+snapshot_kind: text
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "cube",
+    "functionSourceRange": [
+      7,
+      175,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      186,
+      202,
+      0
+    ]
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          230,
+          232,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          234,
+          235,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      222,
+      236,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          290,
+          321,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          323,
+          324,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          326,
+          335,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      283,
+      336,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          350,
+          351,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          353,
+          354,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      342,
+      355,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

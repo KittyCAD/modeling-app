@@ -1,0 +1,59 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed basic_fillet_cube_end.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          172,
+          174,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          176,
+          177,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      164,
+      178,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          191,
+          264,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          266,
+          267,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      184,
+      268,
+      0
+    ],
+    "stdLibFn": "fillet",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

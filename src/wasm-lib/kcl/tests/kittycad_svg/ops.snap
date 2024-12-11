@@ -1,0 +1,33 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed kittycad_svg.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          15826,
+          15827,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          15829,
+          15830,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      15818,
+      15831,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

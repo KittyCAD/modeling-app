@@ -1,0 +1,59 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed i_shape.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "sourceRange": [
+          2348,
+          2353,
+          0
+        ]
+      },
+      "sketch": {
+        "sourceRange": [
+          2355,
+          2356,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      2343,
+      2357,
+      0
+    ],
+    "stdLibFn": "hole",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          2371,
+          2374,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          2376,
+          2377,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      2363,
+      2378,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

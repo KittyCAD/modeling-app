@@ -1,0 +1,577 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed fillet-and-shell.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          963,
+          973,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          975,
+          976,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      955,
+      977,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          990,
+          1189,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          1191,
+          1192,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      983,
+      1193,
+      0
+    ],
+    "stdLibFn": "fillet",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "m25Screw",
+    "functionSourceRange": [
+      1206,
+      1442,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      1444,
+      1573,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1300,
+          1333,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          1335,
+          1336,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1293,
+      1337,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1357,
+          1391,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          1393,
+          1394,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1350,
+      1395,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "sourceRange": [
+          1350,
+          1395,
+          0
+        ]
+      },
+      "sketch": {
+        "sourceRange": [
+          1397,
+          1398,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1345,
+      1399,
+      0
+    ],
+    "stdLibFn": "hole",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          1415,
+          1421,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          1423,
+          1424,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1407,
+      1425,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "m25Screw",
+    "functionSourceRange": [
+      1206,
+      1442,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      1575,
+      1702,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1300,
+          1333,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          1335,
+          1336,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1293,
+      1337,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1357,
+          1391,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          1393,
+          1394,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1350,
+      1395,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "sourceRange": [
+          1350,
+          1395,
+          0
+        ]
+      },
+      "sketch": {
+        "sourceRange": [
+          1397,
+          1398,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1345,
+      1399,
+      0
+    ],
+    "stdLibFn": "hole",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          1415,
+          1421,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          1423,
+          1424,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1407,
+      1425,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "m25Screw",
+    "functionSourceRange": [
+      1206,
+      1442,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      1704,
+      1829,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1300,
+          1333,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          1335,
+          1336,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1293,
+      1337,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1357,
+          1391,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          1393,
+          1394,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1350,
+      1395,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "sourceRange": [
+          1350,
+          1395,
+          0
+        ]
+      },
+      "sketch": {
+        "sourceRange": [
+          1397,
+          1398,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1345,
+      1399,
+      0
+    ],
+    "stdLibFn": "hole",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          1415,
+          1421,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          1423,
+          1424,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1407,
+      1425,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "m25Screw",
+    "functionSourceRange": [
+      1206,
+      1442,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      1831,
+      1958,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1300,
+          1333,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          1335,
+          1336,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1293,
+      1337,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1357,
+          1391,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          1393,
+          1394,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1350,
+      1395,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "hole_sketch": {
+        "sourceRange": [
+          1350,
+          1395,
+          0
+        ]
+      },
+      "sketch": {
+        "sourceRange": [
+          1397,
+          1398,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1345,
+      1399,
+      0
+    ],
+    "stdLibFn": "hole",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          1415,
+          1421,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          1423,
+          1424,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1407,
+      1425,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1966,
+          2016,
+          0
+        ]
+      },
+      "solid_set": {
+        "sourceRange": [
+          2018,
+          2022,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1960,
+      2023,
+      0
+    ],
+    "stdLibFn": "shell",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

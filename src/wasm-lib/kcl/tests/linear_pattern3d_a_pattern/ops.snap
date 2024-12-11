@@ -1,0 +1,33 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed linear_pattern3d_a_pattern.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          158,
+          159,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          161,
+          162,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      150,
+      163,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

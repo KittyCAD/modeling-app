@@ -1,0 +1,33 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed angled_line.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          260,
+          261,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          263,
+          264,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      252,
+      265,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

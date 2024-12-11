@@ -1,0 +1,85 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed helix_ccw.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          42,
+          74,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          76,
+          77,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      35,
+      78,
+      0
+    ],
+    "stdLibFn": "circle",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          92,
+          94,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          96,
+          97,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      84,
+      98,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          110,
+          184,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          186,
+          187,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      104,
+      188,
+      0
+    ],
+    "stdLibFn": "helix",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]
