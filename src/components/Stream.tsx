@@ -26,7 +26,6 @@ import { IndexLoaderData } from 'lib/types'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { err, reportRejection } from 'lib/trap'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { ContextMenu } from './ContextMenu'
 import { ViewControlContextMenu } from './ViewControlMenu'
 
 enum StreamState {

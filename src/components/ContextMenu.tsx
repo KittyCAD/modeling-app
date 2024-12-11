@@ -97,7 +97,6 @@ export function ContextMenu({
     }
   }, [])
 
-  type x = keyof HTMLElementEventMap
   // Add context menu listener to target once mounted
   useEffect(() => {
     menuTargetElement?.current?.addEventListener(event, handleContextMenu)
