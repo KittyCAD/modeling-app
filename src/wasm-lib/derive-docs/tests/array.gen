@@ -154,6 +154,10 @@ impl crate::docs::StdLibFn for Show {
         false
     }
 
+    fn feature_tree_operation(&self) -> bool {
+        false
+    }
+
     fn examples(&self) -> Vec<String> {
         let code_blocks = vec![
             "This is another code block.\nyes sirrr.\nshow",
