@@ -154,6 +154,9 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     /// If the function is deprecated.
     fn deprecated(&self) -> bool;
 
+    /// If the function should appear in the feature tree.
+    fn feature_tree_operation(&self) -> bool;
+
     /// Any example code blocks.
     fn examples(&self) -> Vec<String>;
 

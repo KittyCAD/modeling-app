@@ -53,6 +53,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 #[stdlib {
     name = "helix",
+    feature_tree_operation = true,
 }]
 async fn inner_helix(
     data: HelixData,

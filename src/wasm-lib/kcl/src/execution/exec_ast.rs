@@ -392,19 +392,21 @@ impl Node<CallExpressionKw> {
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
-                // Track call operation.
-                let op_labeled_args = args
-                    .kw_args
-                    .labeled
-                    .iter()
-                    .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
-                    .collect();
-                exec_state.operations.push(Operation::StdLibCall {
-                    std_lib_fn: (&func).into(),
-                    unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
-                    labeled_args: op_labeled_args,
-                    source_range: callsite,
-                });
+                if func.feature_tree_operation() {
+                    // Track call operation.
+                    let op_labeled_args = args
+                        .kw_args
+                        .labeled
+                        .iter()
+                        .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                        .collect();
+                    exec_state.operations.push(Operation::StdLibCall {
+                        std_lib_fn: (&func).into(),
+                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        labeled_args: op_labeled_args,
+                        source_range: callsite,
+                    });
+                }
 
                 // Attempt to call the function.
                 let mut result = func.std_lib_fn()(exec_state, args).await?;

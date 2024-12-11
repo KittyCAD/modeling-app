@@ -88,6 +88,7 @@ impl PartialEq for StdLibFnRef {
 
 impl Eq for StdLibFnRef {}
 
+#[expect(clippy::borrowed_box, reason = "Explicit Box is needed for serde")]
 fn std_lib_fn_name<S>(std_lib_fn: &Box<dyn StdLibFn>, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: serde::Serializer,

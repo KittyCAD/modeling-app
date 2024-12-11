@@ -2218,6 +2218,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```
 #[stdlib {
     name = "hole",
+    feature_tree_operation = true,
 }]
 async fn inner_hole(
     hole_sketch: SketchSet,
