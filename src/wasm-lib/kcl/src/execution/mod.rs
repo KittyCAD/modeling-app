@@ -4,7 +4,6 @@ use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
-use cad_op::Operation;
 use indexmap::IndexMap;
 use kcmc::{
     each_cmd as mcmd,
@@ -43,6 +42,9 @@ use crate::{
     std::{args::Arg, StdLib},
     ExecError, Program,
 };
+
+// Re-exports.
+pub use cad_op::Operation;
 
 /// State for executing a program.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

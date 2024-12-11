@@ -3,7 +3,7 @@
 use std::path::PathBuf;
 
 use crate::{
-    execution::{new_zoo_client, ExecutorContext, ExecutorSettings, ProgramMemory},
+    execution::{new_zoo_client, ExecutorContext, ExecutorSettings, Operation, ProgramMemory},
     settings::types::UnitLength,
     ConnectionError, ExecError, Program,
 };
@@ -33,11 +33,11 @@ pub async fn execute_and_snapshot_ast(
     ast: Program,
     units: UnitLength,
     project_directory: Option<PathBuf>,
-) -> Result<(ProgramMemory, image::DynamicImage), ExecError> {
+) -> Result<(ProgramMemory, Vec<Operation>, image::DynamicImage), ExecError> {
     let ctx = new_context(units, true, project_directory).await?;
     do_execute_and_snapshot(&ctx, ast)
         .await
-        .map(|(state, snap)| (state.memory, snap))
+        .map(|(state, snap)| (state.memory, state.operations, snap))
 }
 
 pub async fn execute_and_snapshot_no_auth(
