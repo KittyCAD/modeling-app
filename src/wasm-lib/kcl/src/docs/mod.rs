@@ -1007,11 +1007,7 @@ mod tests {
     fn get_autocomplete_snippet_hole() {
         let hole_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Hole);
         let snippet = hole_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"hole(${0:holeSketch},
-}, ${1:%})${}"#
-        );
+        assert_eq!(snippet, r#"hole(${0:holeSketch}, ${1:%})${}"#);
     }
 
     // We want to test the snippets we compile at lsp start.
