@@ -79,7 +79,7 @@ export class AuthenticatedTronApp {
       appSettings?: Partial<SaveSettingsPayload>
     } = { fixtures: {} }
   ) {
-    const { electronApp, page, context, dir } = await setupElectron({
+    const { electronApp, page, context, dir, options } = await setupElectron({
       testInfo: this.testInfo,
       folderSetupFn: arg.folderSetupFn,
       cleanProjectDir: arg.cleanProjectDir,
@@ -95,8 +95,6 @@ export class AuthenticatedTronApp {
 
     // Setup localStorage, addCookies, reload
     await setup(this.context, this.page, this.testInfo)
-
-    await page.setViewportSize(this.viewPortSize)
 
     for (const key of unsafeTypedKeys(arg.fixtures)) {
       const fixture = arg.fixtures[key]

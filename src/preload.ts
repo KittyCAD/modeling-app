@@ -31,6 +31,7 @@ const onUpdateDownloadStart = (
 const onUpdateError = (callback: (value: Error) => void) =>
   ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
+const getAppTestProperty = (propertyName: string) => ipcRenderer.invoke('app.testProperty', propertyName)
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -163,14 +164,15 @@ contextBridge.exposeInMainWorld('electron', {
     isWindows,
     isLinux,
   },
+  // Use this to access dynamic properties from the node side.
+  // INTENDED ONLY TO BE USED FOR TESTS.
+  getAppTestProperty,
   process: {
-    // Setter/getter has to be created because
-    // these are read-only over the boundary.
+    // These are read-only over the boundary.
     env: Object.assign(
       {},
       exposeProcessEnvs([
         'NODE_ENV',
-        'TEST_SETTINGS_FILE_KEY',
         'VITE_KC_API_WS_MODELING_URL',
         'VITE_KC_API_BASE_URL',
         'VITE_KC_SITE_BASE_URL',

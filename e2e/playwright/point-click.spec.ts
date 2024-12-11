@@ -861,7 +861,9 @@ const shellPointAndClickCapCases = [
 ]
 shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
   test(`Shell point-and-click cap (preselected sketches: ${shouldPreselect})`, async ({
-    app,
+    context,
+    page,
+    homePage,
     scene,
     editor,
     toolbar,
@@ -871,7 +873,11 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
     |> circle({ center = [0, 0], radius = 30 }, %)
     extrude001 = extrude(30, sketch001)
     `
-    await app.initialise(initialCode)
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 575, y: 200 }
@@ -898,7 +904,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
           commandName: 'Shell',
         })
         await clickOnCap()
-        await app.page.waitForTimeout(500)
+        await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
@@ -914,7 +920,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
     } else {
       await test.step(`Preselect the cap`, async () => {
         await clickOnCap()
-        await app.page.waitForTimeout(500)
+        await page.waitForTimeout(500)
       })
 
       await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
@@ -946,8 +952,9 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
 })
 
 test('Shell point-and-click wall', async ({
-  app,
+  context,
   page,
+  homePage,
   scene,
   editor,
   toolbar,
@@ -962,7 +969,11 @@ test('Shell point-and-click wall', async ({
   |> close(%)
 extrude001 = extrude(40, sketch001)
   `
-  await app.initialise(initialCode)
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
 
   // One dumb hardcoded screen pixel value
   const testPoint = { x: 580, y: 180 }
@@ -993,7 +1004,7 @@ extrude001 = extrude(40, sketch001)
     await clickOnCap()
     await page.keyboard.down('Shift')
     await clickOnWall()
-    await app.page.waitForTimeout(500)
+    await page.waitForTimeout(500)
     await page.keyboard.up('Shift')
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()

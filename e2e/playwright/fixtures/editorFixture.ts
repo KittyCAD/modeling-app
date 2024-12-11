@@ -29,7 +29,7 @@ export class EditorFixture {
   reConstruct = (page: Page) => {
     this.page = page
 
-    this.codeContent = page.locator('.cm-content')
+    this.codeContent = page.locator('.cm-content[data-language="kcl"]')
     this.diagnosticsTooltip = page.locator('.cm-tooltip-lint')
     this.diagnosticsGutterIcon = page.locator('.cm-lint-marker-error')
     this.activeLine = this.page.locator('.cm-activeLine')

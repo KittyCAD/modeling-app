@@ -66,6 +66,8 @@ type PWFunction = (
   testInfo: TestInfo
 ) => void | Promise<void>
 
+let firstUrl = ''
+
 // The below error is due to the extreme type spaghetti going on. playwright/
 // types/test.d.ts does not export 2 functions (below is one of them) but tsc
 // is trying to use a interface name it can't see.
@@ -213,16 +215,43 @@ export const test = (
         )
       }
 
+      await tronApp.page.setBodyDimensions(tronApp.viewPortSize)
+
       // We need to expose this in order for some tests that require folder
       // creation. Before they used to do this by their own electronSetup({...})
       // calls.
       if (tronApp instanceof AuthenticatedTronApp) {
-        tronApp.context.folderSetupFn = function (fn) {
-          return fn(tronApp.dir).then(() => ({
+        tronApp.context.folderSetupFn = async function (fn) {
+          return fn(tronApp.dir)
+          .then(() => tronApp.page.reload())
+          .then(() => ({
             dir: tronApp.dir,
           }))
         }
       }
+
+      if (!firstUrl) {
+        await tronApp.page.getByText('Your Projects').count();
+        firstUrl = tronApp.page.url()
+      }
+
+      // Due to the app controlling its own window context we need to inject new
+      // options and context here.
+      // NOTE TO LEE: Seems to destroy page context when calling an electron loadURL.
+      // await tronApp.electronApp.evaluate(({ app }) => {
+      //   return app.reuseWindowForTest();
+      // });
+
+      await tronApp.electronApp.evaluate(({ app }, projectDirName) => {
+        console.log("ABCDEFGHI", app.testProperty['TEST_SETTINGS_FILE_KEY'])
+        app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
+      }, tronApp.dir)
+
+      // Always start at the root view
+      await tronApp.page.goto(firstUrl)
+
+      // Force a hard reload, destroying the stream and other state
+      await tronApp.page.reload()
 
       // tsc aint smart enough to know this'll never be undefined
       // but I dont blame it, the logic to know is complex
