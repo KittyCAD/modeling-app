@@ -862,22 +862,6 @@ impl<'a> FromKclValue<'a> for crate::std::polar::PolarCoordsData {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::std::loft::LoftData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, v_degree?);
-        let_field_of!(obj, bez_approximate_rational?);
-        let_field_of!(obj, base_curve_index?);
-        let_field_of!(obj, tolerance?);
-        Some(Self {
-            v_degree,
-            bez_approximate_rational,
-            base_curve_index,
-            tolerance,
-        })
-    }
-}
-
 impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
