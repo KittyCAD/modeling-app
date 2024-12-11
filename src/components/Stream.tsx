@@ -1,10 +1,4 @@
-import {
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { MouseEventHandler, useEffect, useRef, useState } from 'react'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -46,16 +40,6 @@ export const Stream = () => {
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-
-  const contextMenuGuard = useCallback(
-    (e: globalThis.MouseEvent) => {
-      return (
-        sceneInfra.camControls.wasDragging === false &&
-        btnName(e).right === true
-      )
-    },
-    [sceneInfra.camControls.wasDragging]
-  )
 
   const IDLE = settings.context.app.streamIdleMode.current
 
@@ -405,7 +389,10 @@ export const Stream = () => {
       )}
       <ViewControlContextMenu
         event="mouseup"
-        guard={contextMenuGuard}
+        guard={(e) =>
+          sceneInfra.camControls.wasDragging === false &&
+          btnName(e).right === true
+        }
         menuTargetElement={videoWrapperRef}
       />
     </div>
