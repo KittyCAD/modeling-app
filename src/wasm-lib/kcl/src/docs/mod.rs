@@ -489,6 +489,12 @@ fn get_autocomplete_snippet_from_schema(
                         continue;
                     }
 
+                    if prop_name == "color" {
+                        fn_docs.push_str(&format!("\t{}: ${{{}:\"#ff0000\"}},\n", prop_name, i));
+                        i += 1;
+                        continue;
+                    }
+
                     if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(prop, i)? {
                         fn_docs.push_str(&format!("\t{}: {},\n", prop_name, snippet));
                         i = new_index + 1;
@@ -943,6 +949,21 @@ mod tests {
 	distance: ${1:3.14},
 	axis: [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_appearance() {
+        let appearance_fn: Box<dyn StdLibFn> = Box::new(crate::std::appearance::Appearance);
+        let snippet = appearance_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"appearance({
+	color: ${0:"#
+                .to_owned()
+                + "\"#"
+                + r#"ff0000"},
+}, ${1:%})${}"#
         );
     }
 

@@ -1,19 +1,8 @@
 import type { ForgeConfig } from '@electron-forge/shared-types'
-import { MakerSquirrel } from '@electron-forge/maker-squirrel'
-import { MakerZIP } from '@electron-forge/maker-zip'
-import { MakerDeb } from '@electron-forge/maker-deb'
-import { MakerRpm } from '@electron-forge/maker-rpm'
 import { VitePlugin } from '@electron-forge/plugin-vite'
-import { MakerWix, MakerWixConfig } from '@electron-forge/maker-wix'
 import { FusesPlugin } from '@electron-forge/plugin-fuses'
 import { FuseV1Options, FuseVersion } from '@electron/fuses'
 import path from 'path'
-
-interface ExtendedMakerWixConfig extends MakerWixConfig {
-  // see https://github.com/electron/forge/issues/3673
-  // this is an undocumented property of electron-wix-msi
-  associateExtensions?: string
-}
 
 const rootDir = process.cwd()
 
@@ -39,26 +28,7 @@ const config: ForgeConfig = {
     extendInfo: 'Info.plist', // Information for file associations.
   },
   rebuildConfig: {},
-  makers: [
-    new MakerSquirrel({
-      setupIcon: path.resolve(rootDir, 'assets', 'icon.ico'),
-    }),
-    new MakerWix({
-      icon: path.resolve(rootDir, 'assets', 'icon.ico'),
-      associateExtensions: 'kcl',
-    } as ExtendedMakerWixConfig),
-    new MakerZIP({}, ['darwin']),
-    new MakerRpm({
-      options: {
-        icon: path.resolve(rootDir, 'assets', 'icon.png'),
-      },
-    }),
-    new MakerDeb({
-      options: {
-        icon: path.resolve(rootDir, 'assets', 'icon.png'),
-      },
-    }),
-  ],
+  makers: [],
   plugins: [
     new VitePlugin({
       // `build` can specify multiple entry builds, which can be Main process, Preload scripts, Worker process, etc.

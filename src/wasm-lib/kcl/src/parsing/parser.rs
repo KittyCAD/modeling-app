@@ -33,6 +33,8 @@ use crate::{
     SourceRange,
 };
 
+use super::ast::types::LabelledExpression;
+
 thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
     static CTXT: RefCell<Option<ParseContext>> = const { RefCell::new(None) };
@@ -337,7 +339,7 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
     let mut values = vec![head];
     let value_surrounded_by_comments = (
         repeat(0.., preceded(opt(whitespace), non_code_node)), // Before the expression.
-        preceded(opt(whitespace), fn_call),                    // The expression.
+        preceded(opt(whitespace), labelled_fn_call),           // The expression.
         repeat(0.., noncode_just_after_code),                  // After the expression.
     );
     let tail: Vec<(Vec<_>, _, Vec<_>)> = repeat(
@@ -353,7 +355,7 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
     // First, ensure they all have a % in their args.
     let calls_without_substitution = tail.iter().find_map(|(_nc, call_expr, _nc2)| {
         if !call_expr.has_substitution_arg() {
-            Some(call_expr.as_source_range())
+            Some(call_expr.into())
         } else {
             None
         }
@@ -373,7 +375,7 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
             max_noncode_end = nc.end.max(max_noncode_end);
             non_code_meta.insert(code_count, nc);
         }
-        values.push(Expr::CallExpression(Box::new(code)));
+        values.push(code);
         code_count += 1;
         for nc in noncode_after {
             max_noncode_end = nc.end.max(max_noncode_end);
@@ -527,7 +529,8 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 | Expr::PipeSubstitution(_)
                 | Expr::ArrayExpression(_)
                 | Expr::ArrayRangeExpression(_)
-                | Expr::ObjectExpression(_) => return Err(CompilationError::fatal(source_range, TODO_783)),
+                | Expr::ObjectExpression(_)
+                | Expr::LabelledExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
                     return Err(CompilationError::fatal(
                         source_range,
@@ -1628,13 +1631,34 @@ fn expression(i: &mut TokenSlice) -> PResult<Expr> {
 }
 
 fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
-    alt((
+    let expr = alt((
         binary_expression.map(Box::new).map(Expr::BinaryExpression),
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         expr_allowed_in_pipe_expr,
     ))
     .context(expected("a KCL value"))
-    .parse_next(i)
+    .parse_next(i)?;
+
+    let label = opt(label).parse_next(i)?;
+    match label {
+        Some(label) => Ok(Expr::LabelledExpression(Box::new(LabelledExpression::new(expr, label)))),
+        None => Ok(expr),
+    }
+}
+
+fn label(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
+    let result = preceded(
+        (whitespace, import_as_keyword, whitespace),
+        identifier.context(expected("an identifier")),
+    )
+    .parse_next(i)?;
+
+    ParseContext::warn(CompilationError::err(
+        SourceRange::new(result.start, result.end, result.module_id),
+        "Using `as` for tagging expressions is experimental, likely to be buggy, and likely to change",
+    ));
+
+    Ok(result)
 }
 
 fn unnecessarily_bracketed(i: &mut TokenSlice) -> PResult<Expr> {
@@ -2448,6 +2472,17 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
         _ => {}
     }
     Ok(())
+}
+
+fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
+    let call = fn_call.parse_next(i)?;
+    let expr = Expr::CallExpression(Box::new(call));
+
+    let label = opt(label).parse_next(i)?;
+    match label {
+        Some(label) => Ok(Expr::LabelledExpression(Box::new(LabelledExpression::new(expr, label)))),
+        None => Ok(expr),
+    }
 }
 
 fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {

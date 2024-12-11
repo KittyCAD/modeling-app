@@ -127,6 +127,9 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
             Node::ElseIf(n) => {
                 vec![(&n.cond).into(), n.then_val.as_ref().into()]
             }
+            Node::LabelledExpression(e) => {
+                vec![(&e.expr).into(), (&e.label).into()]
+            }
             Node::PipeSubstitution(_)
             | Node::TagDeclarator(_)
             | Node::Identifier(_)
@@ -141,8 +144,9 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::sync::Mutex;
+
+    use super::*;
 
     macro_rules! kcl {
         ( $kcl:expr ) => {{

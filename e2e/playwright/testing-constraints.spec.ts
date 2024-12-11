@@ -73,6 +73,7 @@ test.describe('Testing constraints', () => {
 
     await page.waitForTimeout(2500) // wait for animation
 
+    // Exit sketch
     await page.keyboard.press('Escape')
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })

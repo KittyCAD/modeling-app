@@ -5,6 +5,7 @@ use std::{fmt, iter::Enumerate, num::NonZeroUsize};
 
 use anyhow::Result;
 use parse_display::Display;
+use tokeniser::Input;
 use tower_lsp::lsp_types::SemanticTokenType;
 use winnow::{
     self,

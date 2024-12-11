@@ -1096,6 +1096,20 @@ impl<'a> FromKclValue<'a> for super::fillet::FilletData {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::appearance::AppearanceData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, color);
+        let_field_of!(obj, metalness?);
+        let_field_of!(obj, roughness?);
+        Some(Self {
+            color,
+            metalness,
+            roughness,
+        })
+    }
+}
+
 impl<'a> FromKclValue<'a> for super::helix::HelixData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;

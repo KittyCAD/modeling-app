@@ -1,4 +1,4 @@
-import { APP_VERSION, RELEASE_URL } from 'routes/Settings'
+import { APP_VERSION, getReleaseUrl } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { PATHS } from 'lib/paths'
@@ -72,8 +72,8 @@ export function LowerRightControls({
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
         <a
-          onClick={openExternalBrowserIfDesktop(RELEASE_URL)}
-          href={RELEASE_URL}
+          onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
+          href={getReleaseUrl()}
           target="_blank"
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}

@@ -339,6 +339,209 @@ description: Program memory after executing sketch_on_face_start.kcl
             }
           ]
         },
+        "foo": {
+          "type": "Solid",
+          "type": "Solid",
+          "id": "[uuid]",
+          "value": [
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                86,
+                105,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                113,
+                132,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                140,
+                160,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                208,
+                216,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    86,
+                    105,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  20.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    113,
+                    132,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  20.0
+                ],
+                "tag": null,
+                "to": [
+                  20.0,
+                  20.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    140,
+                    160,
+                    0
+                  ]
+                },
+                "from": [
+                  20.0,
+                  20.0
+                ],
+                "tag": null,
+                "to": [
+                  20.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    208,
+                    216,
+                    0
+                  ]
+                },
+                "from": [
+                  20.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XY",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  56,
+                  78,
+                  0
+                ]
+              }
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  56,
+                  78,
+                  0
+                ]
+              }
+            ]
+          },
+          "height": 20.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "__meta": [
+            {
+              "sourceRange": [
+                56,
+                78,
+                0
+              ]
+            }
+          ]
+        },
         "part001": {
           "type": "Solid",
           "type": "Solid",
@@ -551,8 +754,8 @@ description: Program memory after executing sketch_on_face_start.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                316,
-                332,
+                319,
+                335,
                 0
               ],
               "tag": null,
@@ -562,8 +765,8 @@ description: Program memory after executing sketch_on_face_start.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                338,
-                354,
+                341,
+                357,
                 0
               ],
               "tag": null,
@@ -573,8 +776,8 @@ description: Program memory after executing sketch_on_face_start.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                360,
-                377,
+                363,
+                380,
                 0
               ],
               "tag": null,
@@ -584,8 +787,8 @@ description: Program memory after executing sketch_on_face_start.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                383,
-                391,
+                386,
+                394,
                 0
               ],
               "tag": null,
@@ -600,8 +803,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    316,
-                    332,
+                    319,
+                    335,
                     0
                   ]
                 },
@@ -620,8 +823,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    338,
-                    354,
+                    341,
+                    357,
                     0
                   ]
                 },
@@ -640,8 +843,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    360,
-                    377,
+                    363,
+                    380,
                     0
                   ]
                 },
@@ -660,8 +863,8 @@ description: Program memory after executing sketch_on_face_start.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    383,
-                    391,
+                    386,
+                    394,
                     0
                   ]
                 },
@@ -901,8 +1104,8 @@ description: Program memory after executing sketch_on_face_start.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    248,
-                    279,
+                    255,
+                    282,
                     0
                   ]
                 }
@@ -921,8 +1124,8 @@ description: Program memory after executing sketch_on_face_start.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  285,
-                  310,
+                  288,
+                  313,
                   0
                 ]
               }
@@ -930,8 +1133,8 @@ description: Program memory after executing sketch_on_face_start.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  285,
-                  310,
+                  288,
+                  313,
                   0
                 ]
               }
@@ -943,8 +1146,8 @@ description: Program memory after executing sketch_on_face_start.kcl
           "__meta": [
             {
               "sourceRange": [
-                285,
-                310,
+                288,
+                313,
                 0
               ]
             }

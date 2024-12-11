@@ -19,6 +19,7 @@ layout: manual
 * [`angledLineThatIntersects`](kcl/angledLineThatIntersects)
 * [`angledLineToX`](kcl/angledLineToX)
 * [`angledLineToY`](kcl/angledLineToY)
+* [`appearance`](kcl/appearance)
 * [`arc`](kcl/arc)
 * [`arcTo`](kcl/arcTo)
 * [`asin`](kcl/asin)

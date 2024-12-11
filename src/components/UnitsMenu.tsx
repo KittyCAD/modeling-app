@@ -41,7 +41,10 @@ export function UnitsMenu() {
                       close()
                     }}
                   >
-                    {baseUnitLabels[unit]}
+                    <span className="flex-1">{baseUnitLabels[unit]}</span>
+                    {unit === settings.context.modeling.defaultUnit.current && (
+                      <span className="text-chalkboard-60">current</span>
+                    )}
                   </button>
                 </li>
               ))}

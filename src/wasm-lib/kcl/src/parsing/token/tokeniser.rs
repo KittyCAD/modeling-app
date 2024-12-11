@@ -10,6 +10,7 @@ use winnow::{
     Located, Stateful,
 };
 
+use super::TokenStream;
 use crate::{
     parsing::token::{Token, TokenType},
     source_range::ModuleId,
@@ -368,6 +369,7 @@ mod tests {
     use crate::parsing::token::TokenSlice;
 
     use super::*;
+    use crate::parsing::token::TokenSlice;
     fn assert_parse_err<'i, P, O, E>(mut p: P, s: &'i str)
     where
         O: std::fmt::Debug,

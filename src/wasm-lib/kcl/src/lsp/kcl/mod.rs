@@ -45,10 +45,7 @@ use crate::{
     errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
-        ast::{
-            cache::{CacheInformation, OldAstState},
-            types::{Expr, Node, VariableKind},
-        },
+        ast::types::{Expr, Node, VariableKind},
         token::TokenStream,
         PIPE_OPERATOR,
     },

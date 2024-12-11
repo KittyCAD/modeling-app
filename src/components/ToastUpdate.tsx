@@ -2,6 +2,7 @@ import toast from 'react-hot-toast'
 import { ActionButton } from './ActionButton'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { Marked } from '@ts-stack/markdown'
+import { getReleaseUrl } from 'routes/Settings'
 
 export function ToastUpdate({
   version,
@@ -32,10 +33,8 @@ export function ToastUpdate({
             A new update has downloaded and will be available next time you
             start the app. You can view the release notes{' '}
             <a
-              onClick={openExternalBrowserIfDesktop(
-                `https://github.com/KittyCAD/modeling-app/releases/tag/v${version}`
-              )}
-              href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${version}`}
+              onClick={openExternalBrowserIfDesktop(getReleaseUrl(version))}
+              href={getReleaseUrl(version)}
               target="_blank"
               rel="noreferrer"
             >
