@@ -23,15 +23,6 @@ import argvFromYargs from './commandLineArgs'
 
 let mainWindow: BrowserWindow | null = null
 
-// Supporting multiple instances instead of multiple applications
-let cmdQPressed = false
-const instances: BrowserWindow[] = []
-const gotTheLock = app.requestSingleInstanceLock()
-if (!gotTheLock) {
-  app.quit()
-  process.exit(0)
-}
-
 // Check the command line arguments for a project path
 const args = parseCLIArgs()
 
@@ -121,33 +112,15 @@ const createWindow = (filePath?: string): BrowserWindow => {
 
   newWindow.show()
 
-  instances.push(newWindow)
   return newWindow
-}
-
-// before-quit with multiple instances
-if (process.platform === 'darwin') {
-  // Quit from the dock context menu should quit the application directly
-  app.on('before-quit', () => {
-    cmdQPressed = true
-  })
 }
 
 // Quit when all windows are closed, even on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q, but it is a really weird behavior with our app.
-// app.on('window-all-closed', () => {
-//   app.quit()
-// })
 app.on('window-all-closed', () => {
-  if (cmdQPressed || process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })
-
-// Various actions can trigger this event, such as launching the application for the first time,
-// attempting to re-launch the application when it's already running, or clicking on the application's dock or taskbar icon.
-app.on('activate', () => createWindow())
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -156,10 +129,6 @@ app.on('ready', (event, data) => {
   // Create the mainWindow
   mainWindow = createWindow()
 })
-
-// This event will be emitted inside the primary instance of your application when a second instance
-// has been executed and calls app.requestSingleInstanceLock().
-app.on('second-instance', (event, argv, workingDirectory) => createWindow())
 
 // For now there is no good reason to separate these out to another file(s)
 // There is just not enough code to warrant it and further abstracts everything
@@ -282,6 +251,9 @@ export function getAutoUpdater(): AppUpdater {
 
 app.on('ready', () => {
   const autoUpdater = getAutoUpdater()
+  // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
+  // so at the moment this isn't worth enabling
+  autoUpdater.disableDifferentialDownload = true
   setTimeout(() => {
     autoUpdater.checkForUpdates().catch(reportRejection)
   }, 1000)
