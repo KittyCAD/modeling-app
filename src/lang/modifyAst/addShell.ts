@@ -21,24 +21,18 @@ import {
 } from 'lang/modifyAst'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 
-export function addShell({
-  node,
-  selection,
-  artifactGraph,
-  thickness,
-}: {
-  node: Node<Program>
-  selection: Selections
-  artifactGraph: ArtifactGraph
-  thickness: Expr
-}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
-  const modifiedAst = structuredClone(node)
-
+export function getExtrudeNodeFromSelection(
+  modifiedAst: Node<Program>,
+  selection: Selections,
+  artifactGraph: ArtifactGraph,
+): Error | {
+  expressions: Expr[],
+  extrudeNode: VariableDeclarator,
+} {
   // Look up the corresponding extrude
   const clonedAstForGetExtrude = structuredClone(modifiedAst)
-
-  const expressions: Expr[] = []
   let pathToExtrudeNode: PathToNode | undefined = undefined
+  const expressions: Expr[] = []
   for (const graphSelection of selection.graphSelections) {
     const extrudeLookupResult = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
@@ -87,14 +81,34 @@ export function addShell({
 
   if (!pathToExtrudeNode) return new Error('No extrude found')
 
-  const extrudeNode = getNodeFromPath<VariableDeclarator>(
+  const extrudeNodeParent = getNodeFromPath<VariableDeclarator>(
     modifiedAst,
     pathToExtrudeNode,
     'VariableDeclarator'
   )
-  if (err(extrudeNode)) {
-    return extrudeNode
+  if (err(extrudeNodeParent)) {
+    return extrudeNodeParent
   }
+  return { extrudeNode: extrudeNodeParent.node, expressions }
+}
+
+export function addShell({
+  node,
+  selection,
+  artifactGraph,
+  thickness,
+}: {
+  node: Node<Program>
+  selection: Selections
+  artifactGraph: ArtifactGraph
+  thickness: Expr
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const result = getExtrudeNodeFromSelection(modifiedAst, selection, artifactGraph)
+  if (err(result)) {
+    return result
+  }
+  const { extrudeNode, expressions } = result
 
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
   const shell = createCallExpressionStdLib('shell', [
@@ -102,7 +116,7 @@ export function addShell({
       faces: createArrayExpression(expressions),
       thickness,
     }),
-    createIdentifier(extrudeNode.node.id.name),
+    createIdentifier(extrudeNode.id.name),
   ])
   const declaration = createVariableDeclaration(name, shell)
 

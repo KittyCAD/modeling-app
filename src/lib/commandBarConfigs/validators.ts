@@ -1,9 +1,10 @@
 import { Models } from '@kittycad/lib'
-import { engineCommandManager } from 'lib/singletons'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
 import { isSolid2D, isSegment, isSweep } from 'lang/std/artifactGraph'
+import { getExtrudeNodeFromSelection } from 'lang/modifyAst/addShell'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -103,5 +104,75 @@ export const revolveAxisValidator = async ({
   } else {
     // return error message for the toast
     return 'Unable to revolve with selected axis'
+  }
+}
+
+export const shellValidator = async ({
+  data,
+  context,
+}: {
+  data: any
+  context: CommandBarContext
+}): Promise<boolean | string> => {
+  console.log('in shellValidator', data, context)
+  // if (!isSelections(context.argumentsToSubmit.selection)) {
+  //   return 'Unable to shell, selections are missing'
+  // }
+  const modifiedAst = structuredClone(kclManager.ast)
+  const selection = data.selection as Selections
+  const { artifactGraph } = engineCommandManager
+  console.log('getExtrudeNodeFromSelection', modifiedAst)
+  console.log('getExtrudeNodeFromSelection', selection)
+  console.log('getExtrudeNodeFromSelection', artifactGraph)
+  const result = getExtrudeNodeFromSelection(modifiedAst, selection, artifactGraph)
+  console.log(result)
+  if (result instanceof Error) {
+    return false
+  }
+  const { extrudeNode, expressions } = result 
+  // const artifact =
+  //   context.argumentsToSubmit.selection.graphSelections[0].artifact
+
+  // if (!artifact) {
+  //   return 'Unable to shell, artifact not found'
+  // }
+
+
+  // if (!(isSolid2D(artifact) || isSegment(artifact) || isSweep(artifact))) {
+  //   return 'Unable to revolve, sketch has no path'
+  // }
+
+  // const sketchSelection = artifact.pathId
+  // let edgeSelection = data.axis.graphSelections[0].artifact?.id
+
+  // if (!sketchSelection) {
+  //   return 'Unable to revolve, sketch is missing'
+  // }
+
+  // if (!edgeSelection) {
+  //   return 'Unable to revolve, edge is missing'
+  // }
+
+  const thicknessInMm: Models['LengthUnit_type'] = 1
+
+  const shellCommand = async () => {
+    return await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'solid3d_shell_face',
+        face_ids: [],
+        object_id: '',
+        hollow: false,
+        shell_thickness: thicknessInMm,
+      },
+    })
+  }
+  const attemptRevolve = await dryRunWrapper(shellCommand)
+  if (attemptRevolve?.success) {
+    return true
+  } else {
+    // return error message for the toast
+    return 'Unable to shell with arguments'
   }
 }
