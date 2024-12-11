@@ -236,6 +236,8 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         if self.name() == "loft" {
             return Ok("loft([${0:sketch000}, ${1:sketch001}])${}".to_string());
+        } else if self.name() == "hole" {
+            return Ok("hole(${0:holeSketch}, ${1:%})${}".to_string());
         }
         let mut args = Vec::new();
         let mut index = 0;
@@ -997,6 +999,17 @@ mod tests {
             snippet,
             r#"sweep({
 	path: ${0:sketch000},
+}, ${1:%})${}"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_hole() {
+        let hole_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Hole);
+        let snippet = hole_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"hole(${0:holeSketch},
 }, ${1:%})${}"#
         );
     }
