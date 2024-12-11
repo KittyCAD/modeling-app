@@ -73,11 +73,20 @@ export type SidebarAction = {
 export const sidebarPanes: SidebarPane[] = [
   {
     id: 'feature-tree',
-    title: 'Feature Tree',
     icon: 'model',
-    Content: FeatureTreePane,
     keybinding: 'Shift + T',
     sidebarName: 'Feature Tree',
+    Content: (props) => (
+      <>
+        <ModelingPaneHeader
+          id={props.id}
+          icon="model"
+          title="Feature Tree"
+          onClose={props.onClose}
+        />
+        <FeatureTreePane />
+      </>
+    ),
   },
   {
     id: 'code',
