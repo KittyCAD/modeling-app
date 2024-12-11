@@ -4,6 +4,7 @@ import { AtLeast, PathValue, Paths } from 'lib/types'
 import { CommandArgumentConfig } from 'lib/commandTypes'
 import { Themes } from 'lib/theme'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
+import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
 
 export interface SettingsViaQueryString {
   pool: string | null
@@ -12,6 +13,7 @@ export interface SettingsViaQueryString {
   enableSSAO: boolean
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
+  cameraOrbit: CameraOrbitType
 }
 
 export enum UnitSystem {
