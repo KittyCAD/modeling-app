@@ -63,8 +63,8 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sweepSketch = startSketchOn('XY')
 ///     |> startProfileAt([2, 0], %)
 ///     |> arc({
-///         angle_end: 360,
-///         angle_start: 0,
+///         angleEnd: 360,
+///         angleStart: 0,
 ///         radius: 2
 ///     }, %)
 ///     |> sweep({
