@@ -68,7 +68,7 @@
     "yargs": "^17.7.2"
   },
   "scripts": {
-    "start": "vite",
+    "start": "vite --port=3000 --host=0.0.0.0",
     "start:prod": "vite preview --port=3000",
     "serve": "vite serve --port=3000",
     "build": "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && source \"$HOME/.cargo/env\" && curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y && yarn build:wasm && vite build",

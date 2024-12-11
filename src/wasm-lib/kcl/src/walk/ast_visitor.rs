@@ -141,8 +141,9 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::sync::Mutex;
+
+    use super::*;
 
     macro_rules! kcl {
         ( $kcl:expr ) => {{
