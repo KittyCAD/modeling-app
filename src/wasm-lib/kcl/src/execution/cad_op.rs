@@ -10,6 +10,7 @@ use crate::{docs::StdLibFn, std::get_stdlib_fn, SourceRange};
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Operation {
+    #[serde(rename_all = "camelCase")]
     StdLibCall {
         /// The standard library function being called.
         #[serde(flatten)]
@@ -21,6 +22,7 @@ pub enum Operation {
         /// The source range of the operation in the source code.
         source_range: SourceRange,
     },
+    #[serde(rename_all = "camelCase")]
     UserDefinedFunctionCall {
         /// The name of the user-defined function being called.  Anonymous
         /// functions have no name.
@@ -41,6 +43,7 @@ pub enum Operation {
 /// An argument to a CAD modeling operation.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
+#[serde(rename_all = "camelCase")]
 pub struct OpArg {
     /// The KCL code expression for the argument.  This is used in the UI so
     /// that the user can edit the expression.
@@ -57,6 +60,7 @@ impl OpArg {
 /// `PartialEq` and `Eq` for `Operation`.
 #[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
+#[serde(rename_all = "camelCase")]
 pub struct StdLibFnRef {
     /// We serialize to its name.
     #[serde(
