@@ -115,21 +115,21 @@ test(
 )
 
 test(
-  'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
+  'yyyyyyyyy open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
-   await context.folderSetupFn(async (dir) => {
-      const bracketDir = join(dir, 'bracket')
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
         executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-        join(bracketDir, 'main.kcl')
+        path.join(bracketDir, 'main.kcl')
       )
-      const errorDir = join(dir, 'broken-code')
+      const errorDir = path.join(dir, 'broken-code')
       await fsp.mkdir(errorDir, { recursive: true })
       await fsp.copyFile(
         executorInputPath('broken-code-test.kcl'),
-        join(errorDir, 'main.kcl')
+        path.join(errorDir, 'main.kcl')
       )
     })
 
@@ -199,19 +199,19 @@ test(
 )
 
 test(
-  'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
+  'aaayyyyyyyy open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
-      const bracketDir = join(dir, 'bracket')
+      const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
         executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-        join(bracketDir, 'main.kcl')
+        path.join(bracketDir, 'main.kcl')
       )
-      const emptyDir = join(dir, 'empty')
+      const emptyDir = path.join(dir, 'empty')
       await fsp.mkdir(emptyDir, { recursive: true })
-      await fsp.writeFile(join(emptyDir, 'main.kcl'), '')
+      await fsp.writeFile(path.join(emptyDir, 'main.kcl'), '')
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -276,18 +276,18 @@ test(
 )
 
 test(
-  'open a file in a project works and renders, open empty file, it should clear the scene',
+  'nooooooooooooo open a file in a project works and renders, open empty file, it should clear the scene',
   { tag: '@electron' },
-  async ({ browserName }, testInfo) => {
+  async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
-      const bracketDir = join(dir, 'bracket')
+      const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
         executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-        join(bracketDir, 'main.kcl')
+        path.join(bracketDir, 'main.kcl')
       )
 
-      await fsp.writeFile(join(bracketDir, 'empty.kcl'), '')
+      await fsp.writeFile(path.join(bracketDir, 'empty.kcl'), '')
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -297,17 +297,13 @@ test(
 
     const pointOnModel = { x: 630, y: 280 }
 
+
     await test.step('Opening the bracket project should load the stream', async () => {
       // expect to see the text bracket
       await expect(page.getByText('bracket')).toBeVisible()
 
       await page.getByText('bracket').click()
-
-      await expect(page.getByTestId('loading')).toBeAttached()
-      await expect(page.getByTestId('loading')).not.toBeAttached({
-        timeout: 20_000,
-      })
-
+  
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).toBeEnabled({
@@ -347,26 +343,24 @@ test(
 )
 
 test(
-  'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
+  'xxxxx open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
-  async ({ browserName }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
-      const bracketDir = join(dir, 'bracket')
+  async ({ context, page }, testInfo) => {
+    const { dir } = await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
         executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-        join(bracketDir, 'main.kcl')
+        path.join(bracketDir, 'main.kcl')
       )
       await fsp.copyFile(
         executorInputPath('broken-code-test.kcl'),
-        join(bracketDir, 'broken-code-test.kcl')
+        path.join(bracketDir, 'broken-code-test.kcl')
       )
     })
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
-
-    page.on('console', console.log)
 
     const pointOnModel = { x: 630, y: 280 }
 
@@ -399,7 +393,7 @@ test(
       // open the file pane.
       await page.getByTestId('files-pane-button').click()
 
-      // OPen the other file.
+      // Open the other file.
       const file = page.getByRole('button', { name: 'broken-code-test.kcl' })
       await expect(file).toBeVisible()
 
@@ -997,7 +991,7 @@ test.describe(`Project management commands`, () => {
 test(
   'File in the file pane should open with a single click',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, homePage, page }, testInfo) => {
     const projectName = 'router-template-slate'
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/${projectName}`, { recursive: true })
@@ -1010,16 +1004,14 @@ test(
         `${dir}/${projectName}/otherThingToClickOn.kcl`
       )
     })
+
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     page.on('console', console.log)
 
     await page.getByText(projectName).click()
-    await expect(page.getByTestId('loading')).toBeAttached()
-    await expect(page.getByTestId('loading')).not.toBeAttached({
-      timeout: 20_000,
-    })
+    await u.waitForPageLoad()
 
     await expect(u.codeLocator).toContainText('routerDiameter')
     await expect(u.codeLocator).toContainText('templateGap')
