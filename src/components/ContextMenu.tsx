@@ -1,13 +1,23 @@
 import toast from 'react-hot-toast'
 import { ActionIcon, ActionIconProps } from './ActionIcon'
-import { RefObject, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  MouseEvent,
+  RefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Dialog } from '@headlessui/react'
 
-interface ContextMenuProps
+export interface ContextMenuProps
   extends Omit<React.HTMLAttributes<HTMLUListElement>, 'children'> {
   items?: React.ReactElement[]
   menuTargetElement?: RefObject<HTMLElement>
+  guard?: (e: globalThis.MouseEvent) => boolean
+  event?: 'contextmenu' | 'mouseup'
 }
 
 const DefaultContextMenuItems = [
@@ -20,6 +30,8 @@ export function ContextMenu({
   items = DefaultContextMenuItems,
   menuTargetElement,
   className,
+  guard,
+  event = 'contextmenu',
   ...props
 }: ContextMenuProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
@@ -32,6 +44,15 @@ export function ContextMenu({
   useHotkeys('esc', () => setOpen(false), {
     enabled: open,
   })
+  const handleContextMenu = useCallback(
+    (e: globalThis.MouseEvent) => {
+      if (guard && !guard(e)) return
+      e.preventDefault()
+      setPosition({ x: e.clientX, y: e.clientY })
+      setOpen(true)
+    },
+    [guard, setPosition, setOpen]
+  )
 
   const dialogPositionStyle = useMemo(() => {
     if (!dialogRef.current)
@@ -78,21 +99,9 @@ export function ContextMenu({
 
   // Add context menu listener to target once mounted
   useEffect(() => {
-    const handleContextMenu = (e: MouseEvent) => {
-      console.log('context menu', e)
-      e.preventDefault()
-      setPosition({ x: e.x, y: e.y })
-      setOpen(true)
-    }
-    menuTargetElement?.current?.addEventListener(
-      'contextmenu',
-      handleContextMenu
-    )
+    menuTargetElement?.current?.addEventListener(event, handleContextMenu)
     return () => {
-      menuTargetElement?.current?.removeEventListener(
-        'contextmenu',
-        handleContextMenu
-      )
+      menuTargetElement?.current?.removeEventListener(event, handleContextMenu)
     }
   }, [menuTargetElement?.current])
 
@@ -100,7 +109,10 @@ export function ContextMenu({
     <Dialog open={open} onClose={() => setOpen(false)}>
       <div
         className="fixed inset-0 z-50 w-screen h-screen"
-        onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={(e) => {
+          e.preventDefault()
+          setPosition({ x: e.clientX, y: e.clientY })
+        }}
       >
         <Dialog.Backdrop className="fixed z-10 inset-0" />
         <Dialog.Panel

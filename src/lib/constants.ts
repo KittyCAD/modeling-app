@@ -118,3 +118,21 @@ export const KCL_AXIS_Y = 'Y'
 export const KCL_AXIS_NEG_X = '-X'
 export const KCL_AXIS_NEG_Y = '-Y'
 export const KCL_DEFAULT_AXIS = 'X'
+
+export enum AxisNames {
+  X = 'x',
+  Y = 'y',
+  Z = 'z',
+  NEG_X = '-x',
+  NEG_Y = '-y',
+  NEG_Z = '-z',
+}
+/** Semantic names of views from AxisNames */
+export const VIEW_NAMES_SEMANTIC = {
+  [AxisNames.X]: 'Right',
+  [AxisNames.Y]: 'Back',
+  [AxisNames.Z]: 'Top',
+  [AxisNames.NEG_X]: 'Left',
+  [AxisNames.NEG_Y]: 'Front',
+  [AxisNames.NEG_Z]: 'Bottom',
+} as const
