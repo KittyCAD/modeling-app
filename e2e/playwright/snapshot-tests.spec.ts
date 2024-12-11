@@ -1165,12 +1165,13 @@ test.fixme('theme persists', async ({ page, context }) => {
   })
 })
 
-test('code color goober', async ({ page, context }) => {
-  const u = await getUtils(page)
-  await context.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `// Create a pipe using a sweep.
+test.describe('code color goober', { tag: '@snapshot' }, () => {
+  test('code color goober', async ({ page, context }) => {
+    const u = await getUtils(page)
+    await context.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `// Create a pipe using a sweep.
 
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
@@ -1197,28 +1198,28 @@ sweepSketch = startSketchOn('XY')
        roughness = 90
      }, %)
 `
-    )
+      )
+    })
+
+    await page.setViewportSize({ width: 1200, height: 1000 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.clearAndCloseDebugPanel()
+
+    await expect(page, 'expect small color widget').toHaveScreenshot({
+      maxDiffPixels: 100,
+    })
   })
 
-  await page.setViewportSize({ width: 1200, height: 1000 })
-
-  await u.waitForAuthSkipAppStart()
-
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.clearAndCloseDebugPanel()
-
-  await expect(page, 'expect small color widget').toHaveScreenshot({
-    maxDiffPixels: 100,
-  })
-})
-
-test('code color goober opening window', async ({ page, context }) => {
-  const u = await getUtils(page)
-  await context.addInitScript(async () => {
-    localStorage.setItem(
-      'persistCode',
-      `// Create a pipe using a sweep.
+  test('code color goober opening window', async ({ page, context }) => {
+    const u = await getUtils(page)
+    await context.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `// Create a pipe using a sweep.
 
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
@@ -1245,26 +1246,27 @@ sweepSketch = startSketchOn('XY')
        roughness = 90
      }, %)
 `
-    )
-  })
+      )
+    })
 
-  await page.setViewportSize({ width: 1200, height: 1000 })
+    await page.setViewportSize({ width: 1200, height: 1000 })
 
-  await u.waitForAuthSkipAppStart()
+    await u.waitForAuthSkipAppStart()
 
-  await u.openDebugPanel()
-  await u.expectCmdLog('[data-message-type="execution-done"]')
-  await u.clearAndCloseDebugPanel()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.clearAndCloseDebugPanel()
 
-  await expect(page.locator('.cm-css-color-picker-wrapper')).toBeVisible()
+    await expect(page.locator('.cm-css-color-picker-wrapper')).toBeVisible()
 
-  // Click the color widget
-  await page.locator('.cm-css-color-picker-wrapper input').click()
+    // Click the color widget
+    await page.locator('.cm-css-color-picker-wrapper input').click()
 
-  await expect(
-    page,
-    'expect small color widget to have window open'
-  ).toHaveScreenshot({
-    maxDiffPixels: 100,
+    await expect(
+      page,
+      'expect small color widget to have window open'
+    ).toHaveScreenshot({
+      maxDiffPixels: 100,
+    })
   })
 })
