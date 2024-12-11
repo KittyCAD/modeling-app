@@ -28,6 +28,10 @@ sweep(data: SweepData, sketch: Sketch) -> Solid
 ### Examples
 
 ```js
+// / Create a pipe using a sweep.
+
+
+// / Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
   |> startProfileAt([0.05, 0.05], %)
   |> line([0, 7], %)
