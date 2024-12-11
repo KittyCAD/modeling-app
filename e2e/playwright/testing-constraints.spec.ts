@@ -62,7 +62,7 @@ test.describe('Testing constraints', () => {
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
 
-    await page.waitForTimeout(500) // wait for animation
+    await page.waitForTimeout(2500) // wait for animation
 
     // Exit sketch
     await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
@@ -668,7 +668,7 @@ test.describe('Testing constraints', () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${testName}`, async ({ page }) => {
+      test(`${testName}`, async ({ context, homePage, page }) => {
         // constants and locators
         const cmdBarKclInput = page
           .getByTestId('cmd-bar-arg-value')
@@ -698,9 +698,9 @@ part002 = startSketchOn('XZ')
           )
         })
         const u = await getUtils(page)
-        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.setBodyDimensions({ width: 1200, height: 500 })
 
-        await u.waitForAuthSkipAppStart()
+        await homePage.goToModelingScene()
 
         await page.getByText('line([74.36, 130.4], %)').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
