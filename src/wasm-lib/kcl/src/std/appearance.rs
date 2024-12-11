@@ -16,6 +16,10 @@ use crate::{
     std::Args,
 };
 
+lazy_static::lazy_static! {
+    static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
+}
+
 /// Data for appearance.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Validate)]
 #[ts(export)]
@@ -46,8 +50,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
     })?;
 
     // Make sure the color if set is valid.
-    let re = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
-    if !re.is_match(&data.color) {
+    if !HEX_REGEX.is_match(&data.color) {
         return Err(KclError::Semantic(KclErrorDetails {
             message: format!("Invalid hex color (`{}`), try something like `#fff000`", data.color),
             source_ranges: vec![args.source_range],
@@ -63,14 +66,14 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// This will work on any solid, including extruded solids, revolved solids, and shelled solids.
 /// ```no_run
 /// /// Add color to an extruded solid.
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([10, 0], %)
 ///   |> lineTo([0, 10], %)
 ///   |> lineTo([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 ///  |> appearance({color= '#ff0000', metalness= 50, roughness= 50}, %)
 /// ```
 ///
@@ -98,9 +101,9 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///    |> extrude(10, %)
 /// }
 ///
-/// const example0 = cube([0, 0])
-///  const example1 = cube([20, 0])
-///  const example2 = cube([40, 0])
+/// example0 = cube([0, 0])
+/// example1 = cube([20, 0])
+/// example2 = cube([40, 0])
 ///
 ///  appearance({color= '#ff0000', metalness= 50, roughness= 50}, [example0, example1])
 ///  appearance({color= '#00ff00', metalness= 50, roughness= 50}, example2)
@@ -109,7 +112,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// /// You can set the appearance before or after you shell it will yield the same result.
 /// /// This example shows setting the appearance _after_ the shell.
-/// const firstSketch = startSketchOn('XY')
+/// firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
 ///     |> line([0, -24], %)
@@ -131,7 +134,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// /// You can set the appearance before or after you shell it will yield the same result.
 /// /// This example shows setting the appearance _before_ the shell.
-/// const firstSketch = startSketchOn('XY')
+/// firstSketch = startSketchOn('XY')
 ///     |> startProfileAt([-12, 12], %)
 ///     |> line([24, 0], %)
 ///     |> line([0, -24], %)
@@ -153,14 +156,14 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// /// Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 /// /// This example shows _before_ the pattern.
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 2], %)
 ///   |> line([3, 1], %)
 ///   |> line([0, -4], %)
 ///   |> close(%)
 ///
-/// const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 ///     |> appearance({
 ///         color = '#ff0000',
 ///         metalness = 90,
@@ -176,14 +179,14 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// ```no_run
 /// /// Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 /// /// This example shows _after_ the pattern.
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 2], %)
 ///   |> line([3, 1], %)
 ///   |> line([0, -4], %)
 ///   |> close(%)
 ///
-/// const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 ///   |> patternLinear3d({
 ///       axis = [1, 0, 1],
 ///       instances = 7,
@@ -198,7 +201,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///
 /// ```no_run
 /// /// Color the result of a 2D pattern that was extruded.
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([.5, 25], %)
 ///   |> line([0, 5], %)
 ///   |> line([-1, 0], %)
@@ -211,7 +214,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///        rotateDuplicates = true
 ///      }, %)
 ///
-/// const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 ///     |> appearance({
 ///         color = '#ff0000',
 ///         metalness = 90,
