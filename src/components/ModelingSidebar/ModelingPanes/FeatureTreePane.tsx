@@ -3,10 +3,11 @@ import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { FrontPlane } from 'lang/KclSingleton'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
-import { Operation } from 'lib/fakeOperationTypes'
-import { kclManager } from 'lib/singletons'
+import { sourceRangeFromRust } from 'lang/wasm'
+import { editorManager, kclManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
 import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react'
+import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 const stdLibWhiteList = [
   'startSketchOn',
@@ -17,6 +18,7 @@ const stdLibWhiteList = [
   'offsetPlane',
   'shell',
   'loft',
+  'sweep',
 ] as const
 
 const stdLibIconMap: Record<(typeof stdLibWhiteList)[number], CustomIconName> =
@@ -29,6 +31,7 @@ const stdLibIconMap: Record<(typeof stdLibWhiteList)[number], CustomIconName> =
     offsetPlane: 'plane',
     shell: 'shell',
     loft: 'loft',
+    sweep: 'sweep',
   }
 
 function isWhiteListedStdLibCall(
@@ -40,72 +43,16 @@ function isWhiteListedStdLibCall(
 function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
-      return isWhiteListedStdLibCall(op.name)
-        ? stdLibIconMap[op.name]
+      return isWhiteListedStdLibCall(op.stdLibFn)
+        ? stdLibIconMap[op.stdLibFn]
         : 'questionMark'
     default:
       return 'make-variable'
   }
 }
 
-const FAKE_OPERATION_LIST: Operation[] = [
-  {
-    type: 'StdLibCall',
-    unlabeledArg: {
-      sourceRange: [0, 0, false],
-    },
-    labeledArgs: {},
-    sourceRange: [0, 0, false],
-    name: 'startSketchOn',
-  },
-  {
-    type: 'StdLibCall',
-    unlabeledArg: {
-      sourceRange: [0, 0, false],
-    },
-    labeledArgs: {},
-    sourceRange: [0, 0, false],
-    name: 'startProfileAt',
-  },
-  {
-    type: 'StdLibCall',
-    unlabeledArg: {
-      sourceRange: [0, 0, false],
-    },
-    labeledArgs: {},
-    sourceRange: [0, 0, false],
-    name: 'line',
-  },
-  {
-    type: 'StdLibCall',
-    unlabeledArg: {
-      sourceRange: [0, 0, false],
-    },
-    labeledArgs: {},
-    sourceRange: [0, 0, false],
-    name: 'line',
-  },
-  {
-    type: 'StdLibCall',
-    unlabeledArg: {
-      sourceRange: [0, 0, false],
-    },
-    labeledArgs: {},
-    sourceRange: [0, 0, false],
-    name: 'extrude',
-  },
-  {
-    type: 'UserDefinedFunctionCall',
-    name: 'myFunction',
-    functionSourceRange: [0, 0, false],
-    unlabeledArg: null,
-    labeledArgs: {},
-    sourceRange: [0, 0, false],
-  },
-]
-
 export const FeatureTreePane = () => {
-  const operationList = FAKE_OPERATION_LIST
+  const operationList = kclManager.execState.operations
   const defaultPlanes = useMemo(() => {
     return kclManager?.defaultPlanes
   }, [kclManager.defaultPlanes])
@@ -121,17 +68,23 @@ export const FeatureTreePane = () => {
             <FeatureTreeDefaultPlaneItem name="xy" title="Top plane" />
             <FeatureTreeDefaultPlaneItem name="xz" title="Front plane" />
             <FeatureTreeDefaultPlaneItem name="yz" title="Side plane" />
-            <hr className="my-0 py-0" />
+            <hr className="py-0 dark:border-chalkboard-70 my-2" />
             {operationList
               .filter(
                 (operation) =>
                   operation.type !== 'StdLibCall' ||
-                  stdLibWhiteList.some((fnName) => fnName === operation.name)
+                  stdLibWhiteList.some(
+                    (fnName) => fnName === operation.stdLibFn
+                  )
               )
               .map((operation) => (
                 <OperationListItem
                   key={`${operation.type}-${
-                    'name' in operation ? operation.name : 'anonymous'
+                    operation.type === 'StdLibCall'
+                      ? operation.stdLibFn
+                      : 'name' in operation
+                      ? operation.name
+                      : 'anonymous'
                   }-${
                     'sourceRange' in operation
                       ? operation.sourceRange[0]
@@ -197,7 +150,7 @@ const OperationPaneItem = (props: {
     >
       <button
         onClick={props.handleSelect}
-        className="reset flex-1 flex items-center gap-2 border-transparent text-left text-base"
+        className="reset flex-1 flex items-center gap-2 border-transparent dark:border-transparent text-left text-base"
       >
         <CustomIcon name={props.icon} className="w-5 h-5 block" />
         {props.name}
@@ -217,8 +170,7 @@ const FeatureTreeDefaultPlaneItem = (props: {
   title: string
 }) => {
   const plane = useMemo(() => {
-    console.log('getting plane', props.name)
-    console.log('defaultPlanes', kclManager?.defaultPlanes)
+    // console.log('defaultPlanes', kclManager?.defaultPlanes)
     return kclManager?.defaultPlanes?.[props.name]
   }, [kclManager.defaultPlanes?.[props.name]])
   const planeVisibility = useMemo(() => {
@@ -267,10 +219,10 @@ const OperationListItem = (props: { item: Operation }) => {
         selectionType: 'singleCodeCursor',
         selection: {
           codeRef: {
-            range: props.item.sourceRange,
+            range: sourceRangeFromRust(props.item.sourceRange),
             pathToNode: getNodePathFromSourceRange(
               kclManager.ast,
-              props.item.sourceRange
+              sourceRangeFromRust(props.item.sourceRange)
             ),
           },
         },
@@ -305,6 +257,7 @@ const OperationListItem = (props: { item: Operation }) => {
               openPanes: [...modelingState.context.store.openPanes, 'code'],
             },
           })
+          editorManager.scrollToSelection()
         }}
       >
         View KCL source code
@@ -325,7 +278,9 @@ const OperationListItem = (props: { item: Operation }) => {
     <OperationPaneItem
       icon={getOperationIcon(props.item)}
       name={
-        'name' in props.item && props.item.name !== null
+        'stdLibFn' in props.item && props.item.stdLibFn !== null
+          ? props.item.stdLibFn
+          : 'name' in props.item && props.item.name !== null
           ? props.item.name
           : 'anonymous'
       }
