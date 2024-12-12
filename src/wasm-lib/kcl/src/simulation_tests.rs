@@ -109,7 +109,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
             });
         }
         Err(e) => {
-            match e {
+            match e.error {
                 crate::errors::ExecError::Kcl(error) => {
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
@@ -124,6 +124,10 @@ async fn execute(test_name: &str, render_to_png: bool) {
 
                     assert_snapshot(test_name, "Error from executing", || {
                         insta::assert_snapshot!("execution_error", report);
+                    });
+
+                    assert_snapshot(test_name, "Operations executed", || {
+                        insta::assert_json_snapshot!("ops", e.exec_state.operations);
                     });
                 }
                 e => {

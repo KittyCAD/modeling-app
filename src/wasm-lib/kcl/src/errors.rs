@@ -18,6 +18,48 @@ pub enum ExecError {
     BadPng(String),
 }
 
+/// How did the KCL execution fail, with extra state.
+#[cfg_attr(target_arch = "wasm32", expect(dead_code))]
+#[derive(Debug)]
+pub struct ExecErrorWithState {
+    pub error: ExecError,
+    pub exec_state: crate::ExecState,
+}
+
+impl ExecErrorWithState {
+    #[cfg_attr(target_arch = "wasm32", expect(dead_code))]
+    pub fn new(error: ExecError, exec_state: crate::ExecState) -> Self {
+        Self { error, exec_state }
+    }
+}
+
+impl From<ExecError> for ExecErrorWithState {
+    fn from(error: ExecError) -> Self {
+        Self {
+            error,
+            exec_state: Default::default(),
+        }
+    }
+}
+
+impl From<KclError> for ExecErrorWithState {
+    fn from(error: KclError) -> Self {
+        Self {
+            error: error.into(),
+            exec_state: Default::default(),
+        }
+    }
+}
+
+impl From<ConnectionError> for ExecErrorWithState {
+    fn from(error: ConnectionError) -> Self {
+        Self {
+            error: error.into(),
+            exec_state: Default::default(),
+        }
+    }
+}
+
 /// How did KCL client fail to connect to the engine
 #[derive(thiserror::Error, Debug)]
 pub enum ConnectionError {
