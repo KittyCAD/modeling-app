@@ -514,7 +514,7 @@ fn inner_atan(num: f64) -> Result<f64, KclError> {
     Ok(num.atan())
 }
 
-/// Compute the arctan2gent of a number (in radians).
+/// Compute the four quadrant arctangent of Y and X (in radians).
 pub async fn atan2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (y, x) = FromArgs::from_args(&args, 0)?;
     let result = inner_atan2(y, x)?;
