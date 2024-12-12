@@ -85,7 +85,7 @@ snapshot_kind: text
       },
       {
         "declaration": {
-          "end": 50,
+          "end": 51,
           "id": {
             "end": 38,
             "name": "three",
@@ -101,9 +101,9 @@ snapshot_kind: text
                   "name": "x"
                 },
                 "arg": {
-                  "end": 49,
+                  "end": 50,
                   "raw": "1",
-                  "start": 48,
+                  "start": 49,
                   "type": "Literal",
                   "type": "Literal",
                   "value": 1.0
@@ -116,7 +116,7 @@ snapshot_kind: text
               "start": 41,
               "type": "Identifier"
             },
-            "end": 50,
+            "end": 51,
             "start": 41,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -125,14 +125,14 @@ snapshot_kind: text
           "start": 33,
           "type": "VariableDeclarator"
         },
-        "end": 50,
+        "end": 51,
         "kind": "const",
         "start": 33,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 51,
+    "end": 52,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
