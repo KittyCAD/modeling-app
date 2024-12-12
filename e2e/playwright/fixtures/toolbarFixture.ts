@@ -14,6 +14,7 @@ export class ToolbarFixture {
   tangentialArcBtn!: Locator
   circleBtn!: Locator
   rectangleBtn!: Locator
+  lengthConstraintBtn!: Locator
   exitSketchBtn!: Locator
   editSketchBtn!: Locator
   fileTreeBtn!: Locator
@@ -38,6 +39,7 @@ export class ToolbarFixture {
     this.tangentialArcBtn = page.getByTestId('tangential-arc')
     this.circleBtn = page.getByTestId('circle-center')
     this.rectangleBtn = page.getByTestId('corner-rectangle')
+    this.lengthConstraintBtn = page.getByTestId('constraint-length')
     this.exitSketchBtn = page.getByTestId('sketch-exit')
     this.editSketchBtn = page.getByText('Edit Sketch')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')

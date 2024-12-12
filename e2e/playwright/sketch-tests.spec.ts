@@ -1728,4 +1728,106 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       })
     }
   )
+  test2(
+    'Can delete a profile in the editor while is sketch mode, and sketch mode does not break, can ctrl+z to undo after constraint with variable was added',
+    async ({ app, scene, toolbar, editor, cmdBar }) => {
+      await app.initialise(`sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([6.24, 4.54], sketch001)
+  |> line([-0.41, 6.99], %)
+  |> line([8.61, 0.74], %)
+  |> line([10.99, -5.22], %)
+profile002 = startProfileAt([11.19, 5.02], sketch001)
+  |> angledLine([0, 10.78], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       4.14
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
+`)
+
+      const [pointOnSegment] = scene.makeMouseHelpers(590, 141)
+      const [segment1Click] = scene.makeMouseHelpers(616, 131)
+      const sketchIsDrawnProperly = async () => {
+        await test2.step(
+          'check the sketch is still drawn properly',
+          async () => {
+            await app.page.waitForTimeout(200)
+            await scene.expectPixelColor(
+              [255, 255, 255],
+              { x: 617, y: 163 },
+              15
+            )
+            await scene.expectPixelColor(
+              [255, 255, 255],
+              { x: 629, y: 331 },
+              15
+            )
+          }
+        )
+      }
+
+      await test2.step('enter sketch and setup', async () => {
+        await pointOnSegment({ shouldDbClick: true })
+        await app.page.waitForTimeout(600)
+
+        await toolbar.lineBtn.click()
+        await app.page.waitForTimeout(100)
+      })
+
+      await test2.step('select and delete code for a profile', async () => {})
+      await app.page.getByText('close(%)').click()
+      await app.page.keyboard.down('Shift')
+      for (let i = 0; i < 11; i++) {
+        await app.page.keyboard.press('ArrowUp')
+      }
+      await app.page.keyboard.press('Home')
+      await app.page.keyboard.up('Shift')
+      await app.page.keyboard.press('Backspace')
+
+      await sketchIsDrawnProperly()
+
+      await test2.step('add random new var between profiles', async () => {
+        await app.page.keyboard.type('myVar = 5')
+        await app.page.keyboard.press('Enter')
+        await app.page.waitForTimeout(600)
+      })
+
+      await sketchIsDrawnProperly()
+
+      await test2.step(
+        'Adding a constraint with a variable, and than ctrl-z-ing which will remove the variable again does not break sketch mode',
+        async () => {
+          await expect(async () => {
+            await segment1Click()
+            await editor.expectState({
+              diagnostics: [],
+              activeLines: ['|>line([-0.41,6.99],%)'],
+              highlightedCode: 'line([-0.41,6.99],%)',
+            })
+          }).toPass({ timeout: 5_000, intervals: [500] })
+
+          await toolbar.lengthConstraintBtn.click()
+          await cmdBar.progressCmdBar()
+          await editor.expectEditor.toContain('length001 = 7')
+
+          // wait for execute defer
+          await app.page.waitForTimeout(600)
+          await sketchIsDrawnProperly()
+
+          await app.page.keyboard.down('Meta')
+          await app.page.keyboard.press('KeyZ')
+          await app.page.keyboard.up('Meta')
+
+          await editor.expectEditor.not.toContain('length001 = 7')
+          await sketchIsDrawnProperly()
+        }
+      )
+    }
+  )
 })
