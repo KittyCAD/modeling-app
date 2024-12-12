@@ -23,7 +23,7 @@ for tag in $(echo $tags); do
     echo "## [$tag] - ${release_date:0:10}"
     echo
     ## Bring headers down two levels
-    body=$(echo "$release_body" | sed -e 's/# /### /')}
+    body=$(echo "$release_body" | sed -e 's/# /### /')
     echo "$body"
     echo
 done

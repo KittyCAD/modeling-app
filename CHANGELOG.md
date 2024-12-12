@@ -35,7 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Change diagnostic action button to primary color
 
 **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.29.0...v0.30.0
-}
 
 ## [v0.29.0] - 2024-12-03
 
@@ -48,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Fixed
 * Folder directory count on the projects page, thanks @TomPridham!
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.28.0...v0.29.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.28.0...v0.29.0
 
 ## [v0.28.0] - 2024-11-26
 
@@ -76,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Argument error to point to the arg at the call site
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.27.0...v0.28.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.27.0...v0.28.0
 
 ## [v0.27.0] - 2024-11-20
 
@@ -99,14 +98,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Description of angleToMatchLengthX fixed
 * KCL formatting of return values now indents properly
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.26.5...v0.27.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.26.5...v0.27.0
 
 ## [v0.26.5] - 2024-11-13
 
 #### Fixed
 * Fix bug where accepting an autocompletion would break the code editor (#4476)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.26.4...v0.26.5}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.26.4...v0.26.5
 
 ## [v0.26.4] - 2024-11-08
 
@@ -117,7 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Reverted issue that caused major slowdown while using app (#4450)
 * <kbd>Alt</kbd> / <kbd>Option</kbd> + drag on numbers in code editor is more precise (#3997)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.26.3...v0.26.4}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.26.3...v0.26.4
 
 ## [v0.26.3] - 2024-11-07
 
@@ -142,7 +141,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Fixed invalid blank screen when user starts modeling app from path that does not exist (Thanks @guptaarnav) (#4161)
 
 #### Contributors
-* Thanks again to @guptaarnav for more thoughtful contributions!}
+* Thanks again to @guptaarnav for more thoughtful contributions!
 
 ## [v0.26.2] - 2024-10-26
 
@@ -156,7 +155,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Tags should refer to full paths, not just base paths. (#4299)
 
 **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.26.1...v0.26.2
-}
 
 ## [v0.26.1] - 2024-10-24
 
@@ -176,7 +174,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Internal dev work
 * Rename Sketch.value to Sketch.paths (#4272)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.26.0...v0.26.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.26.0...v0.26.1
 
 ## [v0.26.0] - 2024-10-18
 
@@ -199,7 +197,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### New contributors:
 
-Thank you @guptaarnav for your [first PR](https://github.com/KittyCAD/modeling-app/pull/4171)!}
+Thank you @guptaarnav for your [first PR](https://github.com/KittyCAD/modeling-app/pull/4171)!
 
 ## [v0.25.6] - 2024-10-08
 
@@ -213,7 +211,6 @@ Thank you @guptaarnav for your [first PR](https://github.com/KittyCAD/modeling-a
   * and many more bug fixes and improvements
 
   **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.25.5...v0.25.6
-}
 
 ## [v0.25.5] - 2024-09-30
 
@@ -230,7 +227,6 @@ Thank you @guptaarnav for your [first PR](https://github.com/KittyCAD/modeling-a
 * and many other bug fixes and infrastructure improvements from the whole team
 
 **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.25.4...v0.25.5
-}
 
 ## [v0.25.4] - 2024-09-23
 
@@ -238,7 +234,7 @@ Thank you @guptaarnav for your [first PR](https://github.com/KittyCAD/modeling-a
 * KCL Breaking change: Circle function arguments have changed from`circle([yourCenterX, yourCenterY], yourRadius, sketch, tag?)` to `circle({ center: [yourCenterX, yourCenterY], radius: yourRadius }, sketch, tag?)`  (#3860)
 * Circle now has a point-and-click tool while sketching! (#3860)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.25.3...v0.25.4}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.25.3...v0.25.4
 
 ## [v0.25.3] - 2024-09-21
 
@@ -255,7 +251,7 @@ Thank you @guptaarnav for your [first PR](https://github.com/KittyCAD/modeling-a
 * Make light theme borders more contrasting, update sidebar icons (#3883)
 * Fix: Opposite adjacent edge selection (#3896)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.25.2...v0.25.3}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.25.2...v0.25.3
 
 ## [v0.25.2] - 2024-09-16
 
@@ -265,7 +261,7 @@ Thank you @guptaarnav for your [first PR](https://github.com/KittyCAD/modeling-a
 * Updates to the onboarding example project bracket (#3874)
 * So many bug fixes and architecture improvements from the whole team ❤️ 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.25.1...v0.25.2}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.25.1...v0.25.2
 
 ## [v0.25.1] - 2024-09-07
 
@@ -277,7 +273,7 @@ Thank you @guptaarnav for your [first PR](https://github.com/KittyCAD/modeling-a
 * Bug fix: app window is now draggable on sign-in page (#3795)
 * Bug fix: remove flash of white background in dark mode startup (#3794)
 * KCL: small refactors to Extrude (#3768)
-* A bunch of bug fixes and new tests}
+* A bunch of bug fixes and new tests
 
 ## [v0.25.0] - 2024-09-05
 
@@ -291,11 +287,11 @@ Thank you @guptaarnav for your [first PR](https://github.com/KittyCAD/modeling-a
 * Too many bug fixes, tests, and deep system improvements to count
 * And official welcome to the frontend team for Kevin, Lee, and Jon ❤️
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.12...v0.25.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.12...v0.25.0
 
 ## [v0.24.13] - 2024-08-20
 
-Fixes a CPU bug with text to cad}
+Fixes a CPU bug with text to cad
 
 ## [v0.24.12] - 2024-08-15
 
@@ -304,7 +300,7 @@ Fixes a CPU bug with text to cad}
 * Fix sketch groups and extrude groups when used inside objects (#3439)
 * Remove flakey has no pending logic, let users do whatever they want (#3457)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.11...v0.24.12}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.11...v0.24.12
 
 ## [v0.24.11] - 2024-08-14
 
@@ -317,7 +313,7 @@ Fixes a CPU bug with text to cad}
 * Fix files pane height issue (#3337)
 * The printer slicer expects mm (#3341)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.10...v0.24.11}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.10...v0.24.11
 
 ## [v0.24.10] - 2024-08-08
 
@@ -338,7 +334,7 @@ Fixes a CPU bug with text to cad}
 * Reset camera on empty scene (#3293)
 * Don't allow edit on sketches with no variable declaration (#3292)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.9...v0.24.10}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.9...v0.24.10
 
 ## [v0.24.9] - 2024-08-06
 
@@ -351,7 +347,7 @@ Fixes a CPU bug with text to cad}
 * Jump to error not lint (#3271)
 * Coplanar sketch should have diagnostic error. (#3269)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.8...v0.24.9}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.8...v0.24.9
 
 ## [v0.24.8] - 2024-08-05
 
@@ -364,7 +360,7 @@ Fixes a CPU bug with text to cad}
 * Test for default planes in empty scene (#3249)
 * Fix computed properties of KCL objects (#3246)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.7...v0.24.8}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.7...v0.24.8
 
 ## [v0.24.7] - 2024-08-02
 
@@ -378,7 +374,7 @@ Fixes a CPU bug with text to cad}
 * Open file with url encoded space (#3231)
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.6...v0.24.7}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.6...v0.24.7
 
 ## [v0.24.6] - 2024-08-01
 
@@ -386,7 +382,7 @@ Fixes a CPU bug with text to cad}
 * Bug fix: prevent phantom KCL errors on project switch by Kurt and Frank (#3205)
 * Badge appears on KCL Errors pane button when errors are present by Frank (#3208)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.5...v0.24.6}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.5...v0.24.6
 
 ## [v0.24.5] - 2024-07-30
 
@@ -397,7 +393,7 @@ Fixes a CPU bug with text to cad}
 * KCL: add [assert family of functions](https://zoo.dev/docs/kcl/assert) to standard library by Paul
 * Tag functions no longer need their sketch as an arg thanks to Jess (#3143)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.4...v0.24.5}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.4...v0.24.5
 
 ## [v0.24.4] - 2024-07-25
 
@@ -413,7 +409,6 @@ Fixes a CPU bug with text to cad}
 * Many other bug fixes and testing improvements by the team
 
 **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.3...v0.24.4
-}
 
 ## [v0.24.3] - 2024-07-18
 
@@ -422,7 +417,7 @@ Fixes a CPU bug with text to cad}
 * Show default planes bug (#3047)
 * Add a close button to sidebar panes (#3038)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.2...v0.24.3}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.2...v0.24.3
 
 ## [v0.24.2] - 2024-07-17
 
@@ -435,7 +430,7 @@ Fixes a CPU bug with text to cad}
 * Descriptions added to command bar by Frank (#3023)
 * Basic work-in-progress Fillet point-and-click by Max (local dev only for now!) (#2718)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.1...v0.24.2}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.1...v0.24.2
 
 ## [v0.24.1] - 2024-07-12
 
@@ -447,7 +442,7 @@ Fixes a CPU bug with text to cad}
 * Make deleting start of sketch not break line tool by Kurt (#2983)
 * Tons of other bugfixes by the whole team
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.0...v0.24.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.24.0...v0.24.1
 
 ## [v0.24.0] - 2024-07-09
 
@@ -463,7 +458,7 @@ Fixes a CPU bug with text to cad}
 * Sketch editing bug fix by Lee (#2960)
 * Bumped crates, updated docs by Jess & dependabot
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.23.1...v0.24.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.23.1...v0.24.0
 
 ## [v0.23.1] - 2024-07-05
 
@@ -480,7 +475,7 @@ Fixes a CPU bug with text to cad}
 * Update release docs (#2906)
 * Small codemirror changes (#2898)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.23.0...v0.23.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.23.0...v0.23.1
 
 ## [v0.23.0] - 2024-07-04
 
@@ -492,7 +487,7 @@ Fixes a CPU bug with text to cad}
 * Fix copilot regression (#2876)
 * Disable copilot in sketch mode (#2865)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.7...v0.23.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.7...v0.23.0
 
 ## [v0.22.7] - 2024-07-01
 
@@ -563,14 +558,14 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Add setting for grid visibility (https://github.com/KittyCAD/modeling-app/pull/2838)
 * Fallback colors for different browsers (https://github.com/KittyCAD/modeling-app/pull/2770)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.6...v0.22.7}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.6...v0.22.7
 
 ## [v0.22.6] - 2024-06-23
 
 #### What's Changed
 * Fix source range for last command when engine error (#2757)
 * Playwright test for hover lsp functions (#2756)
-* Save specific commands like fillet and chamfer for last (#2753)}
+* Save specific commands like fillet and chamfer for last (#2753)
 
 ## [v0.22.5] - 2024-06-22
 
@@ -578,7 +573,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Go back updater versions (#2746)
 * Fix point and click code pane closed from start (#2750)
 * Retain sketch selection segment color after adding a constraint to the segment (#2700)
-* Allow for editing a sketch where extrude or revolve is in the same pipe (#2749)}
+* Allow for editing a sketch where extrude or revolve is in the same pipe (#2749)
 
 ## [v0.22.4] - 2024-06-22
 
@@ -588,7 +583,6 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Fix one out of bounds error (#2740)
 * Disable extrude button if there is no extrudable geometry (#2730)
 * Fix sketch on face (#2745)
-}
 
 ## [v0.22.3] - 2024-06-21
 
@@ -608,7 +602,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Add a dismiss button to the command bar (#2647)
 * Fix zoom issues with sketch mode (#2664)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.2...v0.22.3}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.2...v0.22.3
 
 ## [v0.22.2] - 2024-06-17
 
@@ -620,7 +614,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Swap out icons for bug and refresh, tweak tooltip appearance (#2641)
 * Many developer experience improvments
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.1...v0.22.2}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.1...v0.22.2
 
 ## [v0.22.1] - 2024-06-07
 
@@ -637,7 +631,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Faster debug builds by Adam
 * Fix to Firefox paste behavior by Frank
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.0...v0.22.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.22.0...v0.22.1
 
 ## [v0.22.0] - 2024-06-04
 
@@ -652,7 +646,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Fix and simulate engine disconnect when in sketch mode by Jess
 * New engine connection logic and network status reporting by Lee
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.9...v0.22.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.9...v0.22.0
 
 ## [v0.21.9] - 2024-05-24
 
@@ -661,7 +655,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Fixes to file tree pane by Frank (#2525)
 * Other bug fixes, dependency updates, and test improvements (#2507)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.8...v0.21.9}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.8...v0.21.9
 
 ## [v0.21.8] - 2024-05-24
 
@@ -675,7 +669,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Bump kittycad library (#2481)
 * Zoom to fit on load (https://github.com/KittyCAD/modeling-app/pull/2201)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.7...v0.21.8}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.7...v0.21.8
 
 ## [v0.21.7] - 2024-05-22
 
@@ -685,7 +679,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Add more rust file tests (#2452)
 * Fix rename project directory (#2451)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.6...v0.21.7}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.6...v0.21.7
 
 ## [v0.21.6] - 2024-05-22
 
@@ -696,7 +690,6 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Throw error on both ranges (#2428)
 * Add stdlib functions for getting sketch profile start and its components (#2373)
 * Fix empty tag on sketch on face (#2424)
-}
 
 ## [v0.21.5] - 2024-05-21
 
@@ -711,7 +704,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Make import samples run (#2398)
 * Fix function variable panel issue (#2392)
 * Fix max std lib (#2391)
-* Add "copy to clipboard" button to Variables pane (#2388)}
+* Add "copy to clipboard" button to Variables pane (#2388)
 
 ## [v0.21.4] - 2024-05-17
 
@@ -719,7 +712,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Default extrusion length is now `5` (#2351)
 * UI bug fixes (#2372, #2375)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.3...v0.21.4}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.3...v0.21.4
 
 ## [v0.21.3] - 2024-05-16
 
@@ -727,7 +720,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Bug fixes for sketching when model contains fillets and patterns, with tests (#2359)
 * Filter hidden directories from home page (#2349)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.2...v0.21.3}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.2...v0.21.3
 
 ## [v0.21.2] - 2024-05-15
 
@@ -737,7 +730,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Fix settings overflow by setting grid-template-rows (#2348)
 * Ensure that onboarding buttons are visible, even on short viewports (#2324)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.1...v0.21.2}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.1...v0.21.2
 
 ## [v0.21.1] - 2024-05-13
 
@@ -745,7 +738,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Fix Format button by Jess
 * Other minor improvements by Jess and Frank
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.0...v0.21.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.21.0...v0.21.1
 
 ## [v0.21.0] - 2024-05-10
 
@@ -755,7 +748,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Remove backdrop highlight in onboarding by Frank
 * Move the command bar out to the right in the AppHeader by Frank
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.20.2...v0.21.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.20.2...v0.21.0
 
 ## [v0.20.2] - 2024-05-08
 
@@ -774,12 +767,12 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Cut release v0.20.2 by @jessfraz in https://github.com/KittyCAD/modeling-app/pull/2319
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.20.1...v0.20.2}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.20.1...v0.20.2
 
 ## [v0.20.1] - 2024-05-03
 
 - breaking engine api change
-- clicking kcl files from the finder on all os-es should open in the desktop apps}
+- clicking kcl files from the finder on all os-es should open in the desktop apps
 
 ## [v0.20.0] - 2024-05-03
 
@@ -789,7 +782,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Deep links and mac app store publishing by Jess
 * Improvements in automated testing by multiple people!
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.4...v0.20.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.4...v0.20.0
 
 ## [v0.19.14] - 2024-04-26
 
@@ -799,7 +792,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * fetch wasm bundle locally by @Irev-Dev
 * get rid of code pane shit by @jessfraz 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.3...v0.19.14}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.3...v0.19.14
 
 ## [v0.19.3] - 2024-04-25
 
@@ -810,7 +803,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Filter files and folders that start with a `.` (#2249)
 * Better rust parsing of route uris for files (#2248)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.2...v0.19.3}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.2...v0.19.3
 
 ## [v0.19.2] - 2024-04-25
 
@@ -818,14 +811,14 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Bugfix for settings file reading and migration by Jess
 * A few small dev experience upgrades 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.1...v0.19.2}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.1...v0.19.2
 
 ## [v0.19.1] - 2024-04-25
 
 #### What's Changed
 * Fix project directory through state improvements by Jess
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.0...v0.19.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.19.0...v0.19.1
 
 ## [v0.19.0] - 2024-04-25
 
@@ -841,7 +834,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 #### Known Issues
 * File Explorer shows directories as files (#2237)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.18.1...v0.19.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.18.1...v0.19.0
 
 ## [v0.18.1] - 2024-04-23
 
@@ -849,7 +842,6 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Project global origin for sketches and use engine animations (#2113)
 
 **Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.18.0...v0.18.1
-}
 
 ## [v0.18.0] - 2024-04-22
 
@@ -866,7 +858,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * New custom updater (what you're reading this in!) by Pierre
 * New app icon by Frank
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.17.3...v0.18.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.17.3...v0.18.0
 
 ## [v0.17.3] - 2024-04-05
 
@@ -878,7 +870,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Benchmark rust in CI with iai, not criterion (#1937)
 * Several other bug fixes, refactors, and maintenance items
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.17.2...v0.17.3}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.17.2...v0.17.3
 
 ## [v0.17.2] - 2024-04-04
 
@@ -896,7 +888,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Add plumbus test (#1975)
 * Onboarding updates (#1967)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.17.1...v0.17.2}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.17.1...v0.17.2
 
 ## [v0.17.1] - 2024-03-29
 
@@ -911,7 +903,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Many bumped software dependencies
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.17.0...v0.17.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.17.0...v0.17.1
 
 ## [v0.17.0] - 2024-03-25
 
@@ -937,7 +929,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Add onboarding check workflow (#1764)
 * Bump dependencies (multiple PRs)
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.16.0...v0.17.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.16.0...v0.17.0
 
 ## [v0.16.0] - 2024-03-20
 
@@ -977,11 +969,11 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Bump dependencies
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.6...v0.16.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.6...v0.16.0
 
 ## [v0.15.6] - 2024-03-07
 
-- Bump kittycad to 0.0.55}
+- Bump kittycad to 0.0.55
 
 ## [v0.15.5] - 2024-03-06
 
@@ -1032,7 +1024,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.4...v0.15.5}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.4...v0.15.5
 
 ## [v0.15.4] - 2024-02-29
 
@@ -1056,7 +1048,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.3...v0.15.4}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.3...v0.15.4
 
 ## [v0.15.3] - 2024-02-29
 
@@ -1084,7 +1076,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Update test artifacts for patterns with holes by @jessfraz in https://github.com/KittyCAD/modeling-app/pull/1566
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.2...v0.15.3}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.2...v0.15.3
 
 ## [v0.15.2] - 2024-02-21
 
@@ -1101,7 +1093,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.1...v0.15.2}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.1...v0.15.2
 
 ## [v0.15.1] - 2024-02-19
 
@@ -1116,7 +1108,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 * Code mirror plugin lsp interface by @jessfraz in https://github.com/KittyCAD/modeling-app/pull/1444
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.0...v0.15.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.15.0...v0.15.1
 
 ## [v0.15.0] - 2024-02-17
 
@@ -1138,7 +1130,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
   - Show app version in the settings
   - Link to kcl samples added to code menu
   - More robust testing so we can move faster
-  - Update most dependencies}
+  - Update most dependencies
 
 ## [v0.14.0] - 2023-12-20
 
@@ -1151,7 +1143,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 - Removed execution-plan crate (#1207)
 - Support for modeling commands in the Command Bar (#1204, #1196, #1184)
 - Tauri tests on dev when the CI's BUILD_RELEASE is false (#1183)
-- Execution plans should allow dynamic sized types (#1178)}
+- Execution plans should allow dynamic sized types (#1178)
 
 ## [v0.13.0] - 2023-12-05
 
@@ -1182,7 +1174,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 - Release KCL 0.1.36 (#1078)
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.12.0...v0.13.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.12.0...v0.13.0
 
 ## [v0.12.0] - 2023-11-14
 
@@ -1198,7 +1190,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 - Test with a circle function (#1030)
 - Refactor the call_fn fn to be more readable (#1028)
 - Fix auto-version in nightly builds (#1026)
-- Fix epsilon bug (#1025)}
+- Fix epsilon bug (#1025)
 
 ## [v0.11.3] - 2023-11-08
 
@@ -1208,7 +1200,7 @@ const sketch002 = startSketchOn(sketch001, myTag)
 
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.11.2...v0.11.3}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.11.2...v0.11.3
 
 ## [v0.11.2] - 2023-11-07
 
@@ -1232,14 +1224,14 @@ Various bug fixes and improvements:
 - New math parser (#956)
 - New benchmark for parsing binary expressions (#957)
 - Nitpick Winnow code (#946)
-- Fix typos and unnecessary import paths (#945)}
+- Fix typos and unnecessary import paths (#945)
 
 ## [v0.11.1] - 2023-10-26
 
 Minor improvements:
 - Move to kittycad::Angle
 - Rust improvements
-- Dependencies bumps}
+- Dependencies bumps
 
 ## [v0.11.0] - 2023-10-17
 
@@ -1256,27 +1248,27 @@ Minor improvements:
 - Features
   - ⦜ New sketch constraints
   - 🧀 Holes in sketches (kcl only, not point-and-click)
-  - 🗂️ Multi-file support (desktop only)}
+  - 🗂️ Multi-file support (desktop only)
 
 ## [v0.10.0] - 2023-10-06
 
-Features 🎉: sketch on any origin plane. Improvements 🛠️: more intuitive toolbar scroll thanks to @rametta (thanks for being our first contributor ❤️), bug fixes to Settings relative URLs, add "Replay Onboarding" to home settings page.}
+Features 🎉: sketch on any origin plane. Improvements 🛠️: more intuitive toolbar scroll thanks to @rametta (thanks for being our first contributor ❤️), bug fixes to Settings relative URLs, add "Replay Onboarding" to home settings page.
 
 ## [v0.9.5] - 2023-10-04
 
-Bug fixes (file export, re-execution, firefox PiP) and MIT license.}
+Bug fixes (file export, re-execution, firefox PiP) and MIT license.
 
 ## [v0.9.4] - 2023-10-03
 
-Bug fixes (more tests with tangentialArc) and improvements (button to request a feature).}
+Bug fixes (more tests with tangentialArc) and improvements (button to request a feature).
 
 ## [v0.9.3] - 2023-10-02
 
-Bug fixes (pipe expression start, user units) and improvements (tangentialArc/tangentialArcTo and 3-axis gizmo).}
+Bug fixes (pipe expression start, user units) and improvements (tangentialArc/tangentialArcTo and 3-axis gizmo).
 
 ## [v0.9.2] - 2023-09-27
 
-Bug fixes (window resize, negative args in function, closing arcs) and improvements (KCL tokenizer).}
+Bug fixes (window resize, negative args in function, closing arcs) and improvements (KCL tokenizer).
 
 ## [v0.9.1] - 2023-09-22
 
@@ -1302,7 +1294,7 @@ Bug fixes (window resize, negative args in function, closing arcs) and improveme
 * Cut release v0.9.1 by @Irev-Dev in https://github.com/KittyCAD/modeling-app/pull/693
 
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.9.0...v0.9.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.9.0...v0.9.1
 
 ## [v0.9.0] - 2023-09-21
 
@@ -1316,22 +1308,22 @@ Bug fixes (window resize, negative args in function, closing arcs) and improveme
 
 https://github.com/KittyCAD/modeling-app/pull/506 is the breaking change
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.8.2...v0.9.0}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.8.2...v0.9.0
 
 ## [v0.8.2] - 2023-09-20
 
-Fixes user-reported issues: ast, function inside show not executing, Win+K not triggering, dark mode dropdowns on Windows, oboarding component positioning, debug panel overflow.}
+Fixes user-reported issues: ast, function inside show not executing, Win+K not triggering, dark mode dropdowns on Windows, oboarding component positioning, debug panel overflow.
 
 ## [v0.8.1] - 2023-09-19
 
-Bug fix for LSP server restarting on navigation, Bug fix for auth in desktop dev, Bug fix for relative paths in onboarding, and other UX bug fixes}
+Bug fix for LSP server restarting on navigation, Bug fix for auth in desktop dev, Bug fix for relative paths in onboarding, and other UX bug fixes
 
 ## [v0.8.0] - 2023-09-19
 
 Bug fixes for WASM fetching and relative URLs on Windows
 Bug fix for link to docs in code menu
 Bug fixes for engine errors
-Other UX improvements and bug fixes}
+Other UX improvements and bug fixes
 
 ## [v0.7.1] - 2023-09-15
 
@@ -1340,15 +1332,15 @@ Other UX improvements and bug fixes}
 - Clean up geometry types
 - Other bug fixes and UI improvements
 
-**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.7.0...v0.7.1}
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.7.0...v0.7.1
 
 ## [v0.7.0] - 2023-09-14
 
-Changes Windows preferred bundle to .msi with EV Code Sign, updates dependencies, and fixes language and execution bugs.}
+Changes Windows preferred bundle to .msi with EV Code Sign, updates dependencies, and fixes language and execution bugs.
 
 ## [v0.6.1] - 2023-09-13
 
-Fixes camera controls key order, prepares for executor cache, and populates a JSON endpoint for the website.}
+Fixes camera controls key order, prepares for executor cache, and populates a JSON endpoint for the website.
 
 ## [v0.6.0] - 2023-09-13
 
@@ -1359,7 +1351,7 @@ Fixes camera controls key order, prepares for executor cache, and populates a JS
 - Add "Trackpad Friendly" camera control setting inspired by Blender
 - Add early sketch-on-plane feature
 - Add executor tests
-- Add online indicator}
+- Add online indicator
 
 ## [v0.5.0] - 2023-09-11
 
@@ -1370,7 +1362,7 @@ Fixes camera controls key order, prepares for executor cache, and populates a JS
 - Remove .vscode dir
 - Make camera mouse controls configurable
 - Add deferred execution when code editing
-- Make empty `defaultProjectName` value impossible}
+- Make empty `defaultProjectName` value impossible
 
 ## [v0.4.0] - 2023-09-08
 
@@ -1383,18 +1375,18 @@ Fixes camera controls key order, prepares for executor cache, and populates a JS
 - Tweak prettierignore
 - Break up ci
 - Bump kitty lib
-- Allow people to set format options}
+- Allow people to set format options
 
 ## [v0.3.2] - 2023-09-06
 
-Fix re-rendering issue}
+Fix re-rendering issue
 
 ## [v0.3.1] - 2023-09-05
 
 - Add kcl syntax highlighting and autocompletion
 - Change the app name to 'KittyCAD Modeling' on Windows and macOS
 - Remove unused var
-- Remove cmdId}
+- Remove cmdId
 
 ## [v0.3.0] - 2023-09-04
 
@@ -1416,7 +1408,7 @@ Fix re-rendering issue}
 - Refactor callbacks
 - Start to clean up Sentry now that the app is back up again.
 - Update production Sentry values
-- Add in Sentry, WebRTC Statistics}
+- Add in Sentry, WebRTC Statistics
 
 ## [v0.2.0] - 2023-08-30
 
@@ -1427,7 +1419,7 @@ Fix re-rendering issue}
 - Bugfix: don't show a toast when onboarding changes
 - Refactor to just CommandBar and GlobalState
 - Add Ctrl/Cmd+K bar
-- Fix export and prepare for cli lib}
+- Fix export and prepare for cli lib
 
 ## [v0.1.0] - 2023-08-28
 
@@ -1446,7 +1438,7 @@ Fix re-rendering issue}
 - Detect when a video stream fails from the server
 - Clean up after a closed EngineConnection
 - Test parse errors are thrown
-- Build out EngineConnection's retry and timeout logic}
+- Build out EngineConnection's retry and timeout logic
 
 ## [v0.0.4] - 2023-08-21
 
@@ -1464,7 +1456,7 @@ Fix re-rendering issue}
 - Update README
 - Add in a note about Third-Party cookies in Chrome 
 - Add 'Request a feature' links 
-- Home page in desktop, separate file support }
+- Home page in desktop, separate file support 
 
 ## [v0.0.3] - 2023-08-14
 
@@ -1479,4 +1471,4 @@ Changelog:
 - Add unit setting
 - Add onboarding
 - Update CI with formatter checks and working builds
-- Include various bug fixes & improvements}
+- Include various bug fixes & improvements
