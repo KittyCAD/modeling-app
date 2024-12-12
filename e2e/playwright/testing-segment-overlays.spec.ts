@@ -95,7 +95,9 @@ test.describe('Testing segment overlays', () => {
           })
           .click()
         await expect(page.locator('.cm-content')).toContainText(expectFinal)
-        await editor.expectEditor.toContain(expectFinal, { shouldNormalise: true })
+        await editor.expectEditor.toContain(expectFinal, {
+          shouldNormalise: true,
+        })
         await editor.expectEditor.toContain(expectFinal, {
           shouldNormalise: true,
         })

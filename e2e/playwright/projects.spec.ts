@@ -297,13 +297,12 @@ test(
 
     const pointOnModel = { x: 630, y: 280 }
 
-
     await test.step('Opening the bracket project should load the stream', async () => {
       // expect to see the text bracket
       await expect(page.getByText('bracket')).toBeVisible()
 
       await page.getByText('bracket').click()
-  
+
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).toBeEnabled({

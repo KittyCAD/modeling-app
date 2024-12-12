@@ -152,7 +152,7 @@
     "@iarna/toml": "^2.2.5",
     "@lezer/generator": "^1.7.1",
     "@nabla/vite-plugin-eslint": "^2.0.5",
-    "@playwright/test": "^1.46.1",
+    "@playwright/test": "^1.49.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^15.0.2",
     "@types/d3-force": "^3.0.10",
