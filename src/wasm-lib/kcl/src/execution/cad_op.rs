@@ -6,7 +6,7 @@ use crate::{docs::StdLibFn, std::get_stdlib_fn, SourceRange};
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Operation {
