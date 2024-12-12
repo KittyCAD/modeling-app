@@ -194,7 +194,7 @@ export async function getEventForSelectWithPoint({
   const foundDefaultPlane =
     engineCommandManager.defaultPlanes !== null &&
     Object.entries(engineCommandManager.defaultPlanes).find(
-      ([, plane]) => plane === data.entity_id
+      ([, plane]) => plane.id === data.entity_id
     )
   if (foundDefaultPlane) {
     return {
