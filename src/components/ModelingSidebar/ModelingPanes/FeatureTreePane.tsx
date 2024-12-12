@@ -54,8 +54,10 @@ function getOperationIcon(op: Operation): CustomIconName {
 }
 
 export const FeatureTreePane = () => {
-  const operationList = kclManager.execState.operations
   const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
+  const operationList = !parseErrors.length
+    ? kclManager.execState.operations
+    : kclManager.lastSuccessfulOperations
   const defaultPlanes = useMemo(() => {
     return kclManager?.defaultPlanes
   }, [kclManager.defaultPlanes])
@@ -66,15 +68,37 @@ export const FeatureTreePane = () => {
         data-testid="debug-panel"
         className="absolute inset-0 p-1 box-border overflow-auto"
       >
-        {defaultPlanes !== null &&
-          (parseErrors.length > 0 ? (
-            <>Parsing errors, please fix them before continuing.</>
-          ) : (
-            <>
-              <FeatureTreeDefaultPlaneItem name="xy" title="Top plane" />
-              <FeatureTreeDefaultPlaneItem name="xz" title="Front plane" />
-              <FeatureTreeDefaultPlaneItem name="yz" title="Side plane" />
-              <hr className="py-0 dark:border-chalkboard-70 my-2" />
+        {defaultPlanes !== null && (
+          <>
+            <FeatureTreeDefaultPlaneItem name="xy" title="Top plane" />
+            <FeatureTreeDefaultPlaneItem name="xz" title="Front plane" />
+            <FeatureTreeDefaultPlaneItem name="yz" title="Side plane" />
+            <hr className="py-0 dark:border-chalkboard-70 my-2" />
+            <div className="relative">
+              {parseErrors.length > 0 && (
+                <div
+                  className={`absolute inset-0 rounded-lg p-2 ${
+                    operationList.length &&
+                    `bg-destroy-10/40 dark:bg-destroy-80/40`
+                  }`}
+                >
+                  <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
+                    <p className="flex-1">
+                      Errors found in KCL code.
+                      <br />
+                      Please fix them before continuing.
+                    </p>
+                    <button
+                      onClick={() =>
+                        editorManager.scrollToFirstErrorDiagnosticIfExists()
+                      }
+                      className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
+                    >
+                      View error
+                    </button>
+                  </div>
+                </div>
+              )}
               {operationList
                 .filter(
                   (operation) =>
@@ -93,8 +117,9 @@ export const FeatureTreePane = () => {
                     item={operation}
                   />
                 ))}
-            </>
-          ))}
+            </div>
+          </>
+        )}
       </section>
     </div>
   )
@@ -157,17 +182,7 @@ const OperationPaneItem = (props: {
         {props.name}
       </button>
       {props.errors && props.errors.length > 0 && (
-        <p
-          className={
-            'm-0 p-0 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50'
-          }
-        >
-          <span className="sr-only">has&nbsp;</span>
-          <span>{props.errors.length}</span>
-          <span className="sr-only">
-            &nbsp;issue{Number(props.errors.length) > 1 ? 's' : ''}
-          </span>
-        </p>
+        <em className="text-destroy-80 text-xs">has error</em>
       )}
       {props.visibilityToggle && (
         <VisibilityToggle {...props.visibilityToggle} />
