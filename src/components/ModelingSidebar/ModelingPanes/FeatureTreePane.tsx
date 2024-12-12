@@ -1,12 +1,14 @@
+import { Diagnostic } from '@codemirror/lint'
 import { ContextMenu, ContextMenuItem } from 'components/ContextMenu'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { useModelingContext } from 'hooks/useModelingContext'
+import { useKclContext } from 'lang/KclProvider'
 import { FrontPlane } from 'lang/KclSingleton'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { sourceRangeFromRust } from 'lang/wasm'
 import { editorManager, kclManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
-import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react'
+import { ComponentProps, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 const stdLibWhiteList = [
@@ -140,6 +142,7 @@ const OperationPaneItem = (props: {
   handleSelect: () => void
   visibilityToggle?: VisibilityToggleProps
   menuItems?: ComponentProps<typeof ContextMenu>['items']
+  errors?: Diagnostic[]
 }) => {
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -155,6 +158,19 @@ const OperationPaneItem = (props: {
         <CustomIcon name={props.icon} className="w-5 h-5 block" />
         {props.name}
       </button>
+      {props.errors && props.errors.length > 0 && (
+        <p
+          className={
+            'm-0 p-0 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50'
+          }
+        >
+          <span className="sr-only">has&nbsp;</span>
+          <span>{props.errors.length}</span>
+          <span className="sr-only">
+            &nbsp;issue{Number(props.errors.length) > 1 ? 's' : ''}
+          </span>
+        </p>
+      )}
       {props.visibilityToggle && (
         <VisibilityToggle {...props.visibilityToggle} />
       )}
@@ -209,7 +225,16 @@ const FeatureTreeDefaultPlaneItem = (props: {
 
 const OperationListItem = (props: { item: Operation }) => {
   const { send: modelingSend, state: modelingState } = useModelingContext()
-  const selectOperation = useCallback(() => {
+  const kclContext = useKclContext()
+  const errors = useMemo(() => {
+    return kclContext.diagnostics.filter(
+      (diag) =>
+        'sourceRange' in props.item &&
+        diag.from >= props.item.sourceRange[0] &&
+        diag.to <= props.item.sourceRange[1]
+    )
+  }, [kclContext.diagnostics.length])
+  const selectOperation = () => {
     if (!('sourceRange' in props.item)) {
       return
     }
@@ -228,7 +253,7 @@ const OperationListItem = (props: { item: Operation }) => {
         },
       },
     })
-  }, [modelingSend, props.item])
+  }
   // const [visible, setVisible] = useState(true)
 
   // async function handleToggleVisible() {
@@ -286,6 +311,7 @@ const OperationListItem = (props: { item: Operation }) => {
       }
       menuItems={menuItems}
       handleSelect={selectOperation}
+      errors={errors}
     />
   )
 }
