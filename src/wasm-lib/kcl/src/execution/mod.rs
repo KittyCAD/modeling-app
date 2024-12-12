@@ -3497,12 +3497,7 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
             })
             .await;
 
-        assert!(result.is_some());
-
-        let result = result.unwrap();
-
-        assert_eq!(result.program, program_new.ast);
-        assert!(result.clear_scene);
+        assert!(result.is_none());
     }
 
     // Changing the units with the exact same file should bust the cache.
