@@ -60,13 +60,19 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     }, %)
 ///     |> line([0, 7], %)
 ///
-/// sweepSketch = startSketchOn('XY')
-///     |> startProfileAt([2, 0], %)
-///     |> arc({
-///         angleEnd: 360,
-///         angleStart: 0,
-///         radius: 2
+/// // Create a hole for the pipe.
+/// pipeHole = startSketchOn('XY')
+///     |> circle({
+///         center = [0, 0],
+///         radius = 1.5,
 ///     }, %)
+///
+/// sweepSketch = startSketchOn('XY')
+///     |> circle({
+///         center = [0, 0],
+///         radius = 2,
+///         }, %)              
+///     |> hole(pipeHole, %)
 ///     |> sweep({
 ///         path: sweepPath,
 ///     }, %)   
