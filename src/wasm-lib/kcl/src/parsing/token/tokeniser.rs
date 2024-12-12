@@ -69,11 +69,7 @@ pub(super) fn lex(i: &str, module_id: ModuleId) -> Result<TokenStream, ParseErro
         input: Located::new(i),
         state,
     };
-    Ok(TokenStream::new(
-        repeat(0.., token).parse(input)?,
-        i.to_owned(),
-        module_id,
-    ))
+    Ok(TokenStream::new(repeat(0.., token).parse(input)?))
 }
 
 pub(super) type Input<'a> = Stateful<Located<&'a str>, State>;
