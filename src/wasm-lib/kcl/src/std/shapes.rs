@@ -100,7 +100,7 @@ async fn inner_circle(
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -269,7 +269,7 @@ async fn inner_polygon(
     // Draw all the lines with unique IDs and modified tags
     for vertex in vertices.iter().skip(1) {
         let from = sketch.current_pen_position()?;
-        let id = exec_state.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
 
         args.batch_modeling_cmd(
             id,
@@ -304,7 +304,7 @@ async fn inner_polygon(
 
     // Close the polygon by connecting back to the first vertex with a new ID
     let from = sketch.current_pen_position()?;
-    let close_id = exec_state.id_generator.next_uuid();
+    let close_id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         close_id,
@@ -337,7 +337,7 @@ async fn inner_polygon(
     sketch.paths.push(current_path);
 
     args.batch_modeling_cmd(
-        exec_state.id_generator.next_uuid(),
+        exec_state.next_uuid(),
         ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
     )
     .await?;

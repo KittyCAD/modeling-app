@@ -333,6 +333,23 @@ Data for an imported geometry.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
+| `type` |enum: `Module`|  | No |
+| `value` |[`ModuleId`](/docs/kcl/types/ModuleId)| Any KCL value. | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
 | `type` |enum: [`KclNone`](/docs/kcl/types/KclNone)|  | No |
 | `value` |[`KclNone`](/docs/kcl/types/KclNone)| Any KCL value. | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
