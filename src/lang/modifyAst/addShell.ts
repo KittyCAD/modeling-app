@@ -24,11 +24,13 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 export function getExtrudeNodeFromSelection(
   modifiedAst: Node<Program>,
   selection: Selections,
-  artifactGraph: ArtifactGraph,
-): Error | {
-  expressions: Expr[],
-  extrudeNode: VariableDeclarator,
-} {
+  artifactGraph: ArtifactGraph
+):
+  | Error
+  | {
+      expressions: Expr[]
+      extrudeNode: VariableDeclarator
+    } {
   // Look up the corresponding extrude
   const clonedAstForGetExtrude = structuredClone(modifiedAst)
   let pathToExtrudeNode: PathToNode | undefined = undefined
@@ -104,7 +106,11 @@ export function addShell({
   thickness: Expr
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
-  const result = getExtrudeNodeFromSelection(modifiedAst, selection, artifactGraph)
+  const result = getExtrudeNodeFromSelection(
+    modifiedAst,
+    selection,
+    artifactGraph
+  )
   if (err(result)) {
     return result
   }
