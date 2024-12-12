@@ -5,6 +5,25 @@ snapshot_kind: text
 ---
 [
   {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          139,
+          143,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      125,
+      144,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
     "type": "UserDefinedFunctionCall",
     "name": "myCircle",
     "functionSourceRange": [
@@ -55,6 +74,25 @@ snapshot_kind: text
   },
   {
     "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          324,
+          328,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      310,
+      329,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "type": "UserDefinedFunctionCall",

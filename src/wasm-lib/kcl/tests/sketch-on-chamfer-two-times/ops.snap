@@ -6,6 +6,25 @@ snapshot_kind: text
 [
   {
     "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          26,
+          30,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      12,
+      31,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
       "length": {
         "sourceRange": [
           447,
@@ -119,6 +138,58 @@ snapshot_kind: text
       0
     ],
     "stdLibFn": "chamfer",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          688,
+          698,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          700,
+          705,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      674,
+      706,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1127,
+          1137,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          1139,
+          1144,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1113,
+      1145,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },

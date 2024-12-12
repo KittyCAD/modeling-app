@@ -8,6 +8,25 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
+          196,
+          201,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      182,
+      202,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
           822,
           940,
           0
@@ -27,6 +46,25 @@ snapshot_kind: text
       0
     ],
     "stdLibFn": "revolve",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          980,
+          985,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      966,
+      986,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },

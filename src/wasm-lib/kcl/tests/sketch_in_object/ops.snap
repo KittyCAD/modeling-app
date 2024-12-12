@@ -21,6 +21,25 @@ snapshot_kind: text
     ]
   },
   {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          35,
+          39,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      21,
+      40,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
     "type": "UserDefinedFunctionReturn"
   },
   {
@@ -64,6 +83,25 @@ snapshot_kind: text
       436,
       0
     ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          231,
+          235,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      217,
+      236,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "type": "UserDefinedFunctionReturn"
