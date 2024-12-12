@@ -118,7 +118,7 @@
     "test:playwright:electron:macos": "playwright test --config=playwright.electron.config.ts --grep-invert='@skipMacos|@snapshot'",
     "test:playwright:electron:ubuntu": "playwright test --config=playwright.electron.config.ts --grep-invert='@skipLinux|@snapshot'",
     "test:playwright:electron:local": "yarn tron:package && NODE_ENV=development playwright test --config=playwright.electron.config.ts --grep-invert='@snapshot'",
-    "test:playwright:electron:windows:local": "yarn tron:package && NODE_ENV=development playwright test --config=playwright.electron.config.ts --grep-invert='@skipWin|@snapshot'",
+    "test:playwright:electron:windows:local": "yarn tron:package && NODE_ENV=development playwright test --config=playwright.electron.config.ts --grep-invert=\"@skipWin|@snapshot\"",
     "test:playwright:electron:macos:local": "yarn tron:package && NODE_ENV=development playwright test --config=playwright.electron.config.ts --grep-invert='@skipMacos|@snapshot'",
     "test:playwright:electron:ubuntu:local": "yarn tron:package && NODE_ENV=development playwright test --config=playwright.electron.config.ts --grep-invert='@skipLinux|@snapshot'",
     "test:unit:local": "yarn simpleserver:bg && yarn test:unit; kill-port 3000",
