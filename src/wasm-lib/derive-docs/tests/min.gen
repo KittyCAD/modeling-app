@@ -129,6 +129,7 @@ impl crate::docs::StdLibFn for Min {
             schema: generator.root_schema_for::<Vec<f64>>(),
             required: true,
             label_required: true,
+            description: String::new(),
         }]
     }
 
@@ -143,6 +144,7 @@ impl crate::docs::StdLibFn for Min {
             schema,
             required: true,
             label_required: true,
+            description: String::new(),
         })
     }
 

@@ -6,6 +6,8 @@
 mod tests;
 mod unbox;
 
+use std::collections::HashMap;
+
 use convert_case::Casing;
 use inflector::Inflector;
 use once_cell::sync::Lazy;
@@ -47,6 +49,10 @@ struct StdlibMetadata {
     /// If false, all arguments require labels.
     #[serde(default)]
     unlabeled_first: bool,
+
+    /// Key = argument name, value = argument doc.
+    #[serde(default)]
+    arg_docs: HashMap<String, String>,
 }
 
 #[proc_macro_attribute]
@@ -282,6 +288,11 @@ fn do_stdlib_inner(
 
         let ty_string = rust_type_to_openapi_type(&ty_string);
         let required = !ty_ident.to_string().starts_with("Option <");
+        let description = if let Some(s) = metadata.arg_docs.get(&arg_name) {
+            quote! { #s }
+        } else {
+            quote! { String::new() }
+        };
         let label_required = !(i == 0 && metadata.unlabeled_first);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
@@ -294,6 +305,7 @@ fn do_stdlib_inner(
                     schema: #schema,
                     required: #required,
                     label_required: #label_required,
+                    description: #description.to_string(),
                 }
             });
         }
@@ -355,6 +367,7 @@ fn do_stdlib_inner(
                 schema,
                 required: true,
                 label_required: true,
+                description: String::new(),
             })
         }
     } else {
