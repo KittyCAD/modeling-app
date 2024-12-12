@@ -67,7 +67,7 @@ pub struct StdLibFnRef {
     /// The standard library function being called.  We serialize to its name.
     #[serde(serialize_with = "std_lib_fn_name", deserialize_with = "std_lib_fn_from_name")]
     // Renaming to "name" allows it to match the other variant.
-    #[ts(type = "string", rename = "name")]
+    #[ts(type = "string")]
     pub std_lib_fn: Box<dyn StdLibFn>,
 }
 
