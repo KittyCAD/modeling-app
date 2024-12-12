@@ -2,18 +2,13 @@ import {
   PathToNode,
   Program,
   SourceRange,
-  VariableDeclaration,
-  VariableDeclarator,
 } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import {
-  getNodeFromPath,
   getNodePathFromSourceRange,
-  isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { err } from 'lib/trap'
 import { GenericObj } from 'components/DebugDisplayObj'
-import { DefaultPlanesKclManager } from 'lang/KclSingleton'
 
 export type ArtifactId = string
 
