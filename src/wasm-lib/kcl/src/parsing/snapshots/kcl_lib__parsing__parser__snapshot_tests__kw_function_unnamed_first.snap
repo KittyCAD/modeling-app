@@ -1,12 +1,13 @@
 ---
 source: kcl/src/parsing/parser.rs
 expression: actual
+snapshot_kind: text
 ---
 {
   "body": [
     {
       "declaration": {
-        "end": 18,
+        "end": 19,
         "id": {
           "end": 3,
           "name": "val",
@@ -22,9 +23,9 @@ expression: actual
                 "name": "y"
               },
               "arg": {
-                "end": 17,
+                "end": 18,
                 "name": "z",
-                "start": 16,
+                "start": 17,
                 "type": "Identifier",
                 "type": "Identifier"
               }
@@ -36,7 +37,7 @@ expression: actual
             "start": 6,
             "type": "Identifier"
           },
-          "end": 18,
+          "end": 19,
           "start": 6,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
@@ -51,13 +52,13 @@ expression: actual
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 18,
+      "end": 19,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 18,
+  "end": 19,
   "start": 0
 }

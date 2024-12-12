@@ -2256,12 +2256,16 @@ fn arguments(i: &mut TokenSlice) -> PResult<Vec<Expr>> {
 }
 
 fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
-    separated_pair(identifier, (one_of(TokenType::Colon), opt(whitespace)), expression)
-        .map(|(label, arg)| LabeledArg {
-            label: label.inner,
-            arg,
-        })
-        .parse_next(i)
+    separated_pair(
+        terminated(identifier, opt(whitespace)),
+        terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+        expression,
+    )
+    .map(|(label, arg)| LabeledArg {
+        label: label.inner,
+        arg,
+    })
+    .parse_next(i)
 }
 
 /// Arguments are passed into a function,
@@ -4057,7 +4061,7 @@ let myBox = box([0,0], -3, -16, -10)
 
     #[test]
     fn kw_fn() {
-        for input in ["val = foo(x, y: z)", "val = foo(y: z)"] {
+        for input in ["val = foo(x, y = z)", "val = foo(y = z)"] {
             let module_id = ModuleId::default();
             let tokens = crate::parsing::token::lex(input, module_id).unwrap();
             super::program.parse(tokens.as_slice()).unwrap();
@@ -4497,8 +4501,8 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         r#"x = 3
         obj = { x, y: 4}"#
     );
-    snapshot_test!(kw_function_unnamed_first, r#"val = foo(x, y: z)"#);
-    snapshot_test!(kw_function_all_named, r#"val = foo(x: a, y: b)"#);
+    snapshot_test!(kw_function_unnamed_first, r#"val = foo(x, y = z)"#);
+    snapshot_test!(kw_function_all_named, r#"val = foo(x = a, y = b)"#);
     snapshot_test!(kw_function_decl_all_labeled, r#"fn foo(x, y) { return 1 }"#);
     snapshot_test!(kw_function_decl_first_unlabeled, r#"fn foo(@x, y) { return 1 }"#);
     snapshot_test!(kw_function_decl_with_default_no_type, r#"fn foo(x? = 2) { return 1 }"#);
