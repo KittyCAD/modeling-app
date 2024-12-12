@@ -130,6 +130,7 @@ impl crate::docs::StdLibFn for MyFunc {
             schema: generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
             required: false,
             label_required: true,
+            description: String::new(),
         }]
     }
 
@@ -144,6 +145,7 @@ impl crate::docs::StdLibFn for MyFunc {
             schema,
             required: true,
             label_required: true,
+            description: String::new(),
         })
     }
 
