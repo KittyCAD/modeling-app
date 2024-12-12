@@ -94,6 +94,51 @@ test.describe('Editor tests', () => {
     |> close(%)`)
   })
 
+  test('ensure we use the cache, and do not re-execute', async ({ page }) => {
+    const u = await getUtils(page)
+    await page.setViewportSize({ width: 1000, height: 500 })
+
+    await u.waitForAuthSkipAppStart()
+
+    await u.codeLocator.click()
+    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
+
+    // Ensure we execute the first time.
+    await u.openDebugPanel()
+    await expect(
+      page.locator('[data-receive-command-type="scene_clear_all"]')
+    ).toHaveCount(1)
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(1)
+
+    // Add whitespace to the end of the code.
+    await u.codeLocator.click()
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('ArrowUp')
+    await page.keyboard.press('Home')
+    await page.keyboard.type('    ')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type('    ')
+
+    // Ensure we don't execute the second time.
+    await u.openDebugPanel()
+    // Make sure we didn't clear the scene.
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(2)
+    await expect(
+      page.locator('[data-receive-command-type="scene_clear_all"]')
+    ).toHaveCount(1)
+  })
+
   test('if you click the format button it formats your code and executes so lints are still there', async ({
     page,
   }) => {
