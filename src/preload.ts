@@ -31,7 +31,8 @@ const onUpdateDownloadStart = (
 const onUpdateError = (callback: (value: Error) => void) =>
   ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
-const getAppTestProperty = (propertyName: string) => ipcRenderer.invoke('app.testProperty', propertyName)
+const getAppTestProperty = (propertyName: string) =>
+  ipcRenderer.invoke('app.testProperty', propertyName)
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'

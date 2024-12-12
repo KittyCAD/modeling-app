@@ -223,15 +223,15 @@ export const test = (
       if (tronApp instanceof AuthenticatedTronApp) {
         tronApp.context.folderSetupFn = async function (fn) {
           return fn(tronApp.dir)
-          .then(() => tronApp.page.reload())
-          .then(() => ({
-            dir: tronApp.dir,
-          }))
+            .then(() => tronApp.page.reload())
+            .then(() => ({
+              dir: tronApp.dir,
+            }))
         }
       }
 
       if (!firstUrl) {
-        await tronApp.page.getByText('Your Projects').count();
+        await tronApp.page.getByText('Your Projects').count()
         firstUrl = tronApp.page.url()
       }
 
@@ -243,7 +243,7 @@ export const test = (
       // });
 
       await tronApp.electronApp.evaluate(({ app }, projectDirName) => {
-        console.log("ABCDEFGHI", app.testProperty['TEST_SETTINGS_FILE_KEY'])
+        console.log('ABCDEFGHI', app.testProperty['TEST_SETTINGS_FILE_KEY'])
         app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
       }, tronApp.dir)
 
