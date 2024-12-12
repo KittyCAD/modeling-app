@@ -55,6 +55,7 @@ function getOperationIcon(op: Operation): CustomIconName {
 
 export const FeatureTreePane = () => {
   const operationList = kclManager.execState.operations
+  const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
   const defaultPlanes = useMemo(() => {
     return kclManager?.defaultPlanes
   }, [kclManager.defaultPlanes])
@@ -65,32 +66,35 @@ export const FeatureTreePane = () => {
         data-testid="debug-panel"
         className="absolute inset-0 p-1 box-border overflow-auto"
       >
-        {defaultPlanes !== null && (
-          <>
-            <FeatureTreeDefaultPlaneItem name="xy" title="Top plane" />
-            <FeatureTreeDefaultPlaneItem name="xz" title="Front plane" />
-            <FeatureTreeDefaultPlaneItem name="yz" title="Side plane" />
-            <hr className="py-0 dark:border-chalkboard-70 my-2" />
-            {operationList
-              .filter(
-                (operation) =>
-                  operation.type !== 'StdLibCall' ||
-                  stdLibWhiteList.some((fnName) => fnName === operation.name)
-              )
-              .map((operation) => (
-                <OperationListItem
-                  key={`${operation.type}-${
-                    'name' in operation ? operation.name : 'anonymous'
-                  }-${
-                    'sourceRange' in operation
-                      ? operation.sourceRange[0]
-                      : 'start'
-                  }`}
-                  item={operation}
-                />
-              ))}
-          </>
-        )}
+        {defaultPlanes !== null &&
+          (parseErrors.length > 0 ? (
+            <>Parsing errors, please fix them before continuing.</>
+          ) : (
+            <>
+              <FeatureTreeDefaultPlaneItem name="xy" title="Top plane" />
+              <FeatureTreeDefaultPlaneItem name="xz" title="Front plane" />
+              <FeatureTreeDefaultPlaneItem name="yz" title="Side plane" />
+              <hr className="py-0 dark:border-chalkboard-70 my-2" />
+              {operationList
+                .filter(
+                  (operation) =>
+                    operation.type !== 'StdLibCall' ||
+                    stdLibWhiteList.some((fnName) => fnName === operation.name)
+                )
+                .map((operation) => (
+                  <OperationListItem
+                    key={`${operation.type}-${
+                      'name' in operation ? operation.name : 'anonymous'
+                    }-${
+                      'sourceRange' in operation
+                        ? operation.sourceRange[0]
+                        : 'start'
+                    }`}
+                    item={operation}
+                  />
+                ))}
+            </>
+          ))}
       </section>
     </div>
   )
@@ -143,7 +147,7 @@ const OperationPaneItem = (props: {
   return (
     <div
       ref={menuRef}
-      className="flex select-none items-center group/item py-0.5 px-1 focus-within:bg-primary/10 hover:bg-primary/5"
+      className="flex select-none items-center group/item my-0 py-0.5 px-1 focus-within:bg-primary/10 hover:bg-primary/5"
     >
       <button
         onClick={props.handleSelect}
