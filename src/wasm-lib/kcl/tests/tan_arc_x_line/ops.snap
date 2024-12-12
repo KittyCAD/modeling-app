@@ -14,12 +14,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       64,
       83,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   }

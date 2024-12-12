@@ -14,12 +14,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       750,
       769,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -40,12 +40,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       955,
       977,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -66,12 +66,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "fillet",
     "sourceRange": [
       983,
       1193,
       0
     ],
-    "stdLibFn": "fillet",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -101,12 +101,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       1233,
       1252,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -127,12 +127,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       1293,
       1337,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -153,12 +153,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       1350,
       1395,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -179,12 +179,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "hole",
     "sourceRange": [
       1345,
       1399,
       0
     ],
-    "stdLibFn": "hole",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -205,12 +205,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       1407,
       1425,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -243,12 +243,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       1233,
       1252,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -269,12 +269,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       1293,
       1337,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -295,12 +295,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       1350,
       1395,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -321,12 +321,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "hole",
     "sourceRange": [
       1345,
       1399,
       0
     ],
-    "stdLibFn": "hole",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -347,12 +347,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       1407,
       1425,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -385,12 +385,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       1233,
       1252,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -411,12 +411,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       1293,
       1337,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -437,12 +437,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       1350,
       1395,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -463,12 +463,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "hole",
     "sourceRange": [
       1345,
       1399,
       0
     ],
-    "stdLibFn": "hole",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -489,12 +489,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       1407,
       1425,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -527,12 +527,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       1233,
       1252,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -553,12 +553,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       1293,
       1337,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -579,12 +579,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       1350,
       1395,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -605,12 +605,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "hole",
     "sourceRange": [
       1345,
       1399,
       0
     ],
-    "stdLibFn": "hole",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -631,12 +631,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       1407,
       1425,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -660,12 +660,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "shell",
     "sourceRange": [
       1960,
       2023,
       0
     ],
-    "stdLibFn": "shell",
     "type": "StdLibCall",
     "unlabeledArg": null
   }

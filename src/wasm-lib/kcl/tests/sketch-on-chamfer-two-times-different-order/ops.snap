@@ -14,12 +14,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       12,
       31,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -40,12 +40,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       439,
       462,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -66,12 +66,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "fillet",
     "sourceRange": [
       468,
       510,
       0
     ],
-    "stdLibFn": "fillet",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -99,12 +99,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "chamfer",
     "sourceRange": [
       516,
       603,
       0
     ],
-    "stdLibFn": "chamfer",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -132,12 +132,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "chamfer",
     "sourceRange": [
       609,
       660,
       0
     ],
-    "stdLibFn": "chamfer",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -158,12 +158,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       674,
       706,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -184,12 +184,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       1113,
       1145,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -210,12 +210,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       1555,
       1577,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   }
