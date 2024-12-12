@@ -21,7 +21,7 @@ pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// DEPRECATED use floor(), ceil(), or round().
 ///
 /// ```no_run
-/// let n = int(ceil(5/2))
+/// n = int(ceil(5/2))
 /// assertEqual(n, 3, 0.0001, "5/2 = 2.5, rounded up makes 3")
 /// // Draw n cylinders.
 /// startSketchOn('XZ')
