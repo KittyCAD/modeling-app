@@ -54,6 +54,7 @@ function getOperationIcon(op: Operation): CustomIconName {
 }
 
 export const FeatureTreePane = () => {
+  const { send: modelingSend, state: modelingState } = useModelingContext()
   const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
   const operationList = !parseErrors.length
     ? kclManager.execState.operations
@@ -89,9 +90,20 @@ export const FeatureTreePane = () => {
                       Please fix them before continuing.
                     </p>
                     <button
-                      onClick={() =>
+                      onClick={() => {
+                        modelingSend({
+                          type: 'Set context',
+                          data: {
+                            openPanes: [
+                              ...modelingState.context.store.openPanes,
+                              'code',
+                            ],
+                          },
+                        })
+                        // TODO: this doesn't properly await the set context
+                        // so scrolling doesn't work if the code pane isn't open
                         editorManager.scrollToFirstErrorDiagnosticIfExists()
-                      }
+                      }}
                       className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
                     >
                       View error
@@ -295,6 +307,8 @@ const OperationListItem = (props: { item: Operation }) => {
               openPanes: [...modelingState.context.store.openPanes, 'code'],
             },
           })
+          // TODO: this doesn't properly await the set context
+          // so scrolling doesn't work if the code pane isn't open
           editorManager.scrollToSelection()
         }}
       >
