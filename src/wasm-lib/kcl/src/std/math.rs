@@ -522,7 +522,7 @@ pub async fn atan2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     Ok(args.make_user_val_from_f64(result))
 }
 
-/// Compute the four quadrant arctangent of two numbers (in radians).
+/// Compute the four quadrant arctangent of Y and X (in radians).
 ///
 /// ```no_run
 /// sketch001 = startSketchOn('XZ')
