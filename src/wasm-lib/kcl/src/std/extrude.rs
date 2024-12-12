@@ -75,7 +75,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// const example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
-    name = "extrude"
+    name = "extrude",
+    feature_tree_operation = true,
 }]
 async fn inner_extrude(
     length: f64,

@@ -100,6 +100,7 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// ```
 #[stdlib {
     name = "mirror2d",
+    feature_tree_operation = true,
 }]
 async fn inner_mirror_2d(
     data: Mirror2dData,

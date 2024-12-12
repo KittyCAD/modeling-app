@@ -119,6 +119,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "fillet",
+    feature_tree_operation = true,
 }]
 async fn inner_fillet(
     data: FilletData,

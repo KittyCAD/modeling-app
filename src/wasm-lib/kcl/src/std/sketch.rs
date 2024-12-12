@@ -1061,6 +1061,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "startSketchOn",
+    feature_tree_operation = true,
 }]
 async fn inner_start_sketch_on(
     data: SketchData,
@@ -2218,6 +2219,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```
 #[stdlib {
     name = "hole",
+    feature_tree_operation = true,
 }]
 async fn inner_hole(
     hole_sketch: SketchSet,

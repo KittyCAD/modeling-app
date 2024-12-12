@@ -142,6 +142,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 
 #[stdlib {
     name = "offsetPlane",
+    feature_tree_operation = true,
 }]
 async fn inner_offset_plane(
     std_plane: StandardPlane,

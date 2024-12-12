@@ -176,6 +176,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 #[stdlib {
     name = "shell",
+    feature_tree_operation = true,
 }]
 async fn inner_shell(
     data: ShellData,
@@ -302,6 +303,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "hollow",
+    feature_tree_operation = true,
 }]
 async fn inner_hollow(
     thickness: f64,

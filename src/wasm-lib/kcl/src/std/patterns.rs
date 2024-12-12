@@ -285,8 +285,9 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   |> patternTransform(3, transform, %)
 /// ```
 #[stdlib {
-     name = "patternTransform",
- }]
+    name = "patternTransform",
+    feature_tree_operation = true,
+}]
 async fn inner_pattern_transform<'a>(
     total_instances: u32,
     transform_function: FunctionParam<'a>,
@@ -322,8 +323,8 @@ async fn inner_pattern_transform<'a>(
 ///   |> patternTransform2d(4, transform, %)
 /// ```
 #[stdlib {
-     name = "patternTransform2d",
- }]
+    name = "patternTransform2d",
+}]
 async fn inner_pattern_transform_2d<'a>(
     total_instances: u32,
     transform_function: FunctionParam<'a>,

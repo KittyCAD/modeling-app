@@ -91,7 +91,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
     )
     .await;
     match exec_res {
-        Ok((program_memory, png)) => {
+        Ok((program_memory, ops, png)) => {
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
@@ -103,6 +103,9 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     ".environments[].**[].y[]" => rounded_redaction(4),
                     ".environments[].**[].z[]" => rounded_redaction(4),
                 });
+            });
+            assert_snapshot(test_name, "Operations executed", || {
+                insta::assert_json_snapshot!("ops", ops);
             });
         }
         Err(e) => {

@@ -98,6 +98,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 #[stdlib {
     name = "chamfer",
+    feature_tree_operation = true,
 }]
 async fn inner_chamfer(
     data: ChamferData,

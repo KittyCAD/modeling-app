@@ -242,6 +242,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 #[stdlib {
     name = "revolve",
+    feature_tree_operation = true,
 }]
 async fn inner_revolve(
     data: RevolveData,
