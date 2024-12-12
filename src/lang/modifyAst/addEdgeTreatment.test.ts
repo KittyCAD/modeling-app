@@ -477,7 +477,7 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> chamfer({ length: 5, tags: [seg01] }, %)`
+  |> chamfer({ length = 5, tags = [seg01] }, %)`
         const segmentSnippets = ['line([-20, 0], %)']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
@@ -487,8 +487,8 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> chamfer({ length: 5, tags: [seg01] }, %)
-  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg02] }, %)`
+  |> chamfer({ length = 5, tags = [seg01] }, %)
+  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg02] }, %)`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,
