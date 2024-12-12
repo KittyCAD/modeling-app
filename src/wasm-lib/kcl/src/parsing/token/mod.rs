@@ -17,6 +17,7 @@ use crate::{
     errors::KclError,
     parsing::ast::types::{ItemVisibility, VariableKind},
     source_range::{ModuleId, SourceRange},
+    CompilationError,
 };
 
 mod tokeniser;
@@ -25,7 +26,7 @@ mod tokeniser;
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
-pub const NUM_SUFFIXES: [&str; 6] = ["mm", "cm", "m", "inch", "ft", "yd"];
+pub const NUM_SUFFIXES: [&str; 8] = ["mm", "cm", "m", "inch", "ft", "yd", "deg", "rad"];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NumericSuffix {
@@ -37,6 +38,8 @@ pub enum NumericSuffix {
     Inch,
     Ft,
     Yd,
+    Deg,
+    Rad,
 }
 
 impl NumericSuffix {
@@ -51,17 +54,20 @@ impl NumericSuffix {
 }
 
 impl FromStr for NumericSuffix {
-    type Err = ();
+    type Err = CompilationError;
 
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         match s {
+            "_" => Ok(NumericSuffix::Count),
             "mm" => Ok(NumericSuffix::Mm),
             "cm" => Ok(NumericSuffix::Cm),
             "m" => Ok(NumericSuffix::M),
             "inch" => Ok(NumericSuffix::Inch),
             "ft" => Ok(NumericSuffix::Ft),
             "yd" => Ok(NumericSuffix::Yd),
-            _ => Err(()),
+            "deg" => Ok(NumericSuffix::Deg),
+            "rad" => Ok(NumericSuffix::Rad),
+            _ => Err(CompilationError::err(SourceRange::default(), "invalid unit of measure")),
         }
     }
 }

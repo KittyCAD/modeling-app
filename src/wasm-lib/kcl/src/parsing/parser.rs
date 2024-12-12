@@ -33,7 +33,7 @@ use crate::{
     SourceRange,
 };
 
-use super::ast::types::LabelledExpression;
+use super::{ast::types::LabelledExpression, token::NumericSuffix};
 
 thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
@@ -2316,15 +2316,29 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
                 .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
         }),
         // Primitive types
-        one_of(TokenType::Type).map(|token: Token| {
-            FnArgPrimitive::from_str(&token.value)
-                .map(FnArgType::Primitive)
-                .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
-        }),
+        (
+            one_of(TokenType::Type),
+            opt(delimited(open_paren, uom_for_type, close_paren)),
+        )
+            .map(|(token, suffix)| {
+                if suffix.is_some() {
+                    ParseContext::warn(CompilationError::err(
+                        (&token).into(),
+                        "Unit of Measure types are experimental and currently do nothing.",
+                    ));
+                }
+                FnArgPrimitive::from_str(&token.value)
+                    .map(FnArgType::Primitive)
+                    .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
+            }),
     ))
     .parse_next(i)?
     .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
     Ok(type_)
+}
+
+fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
+    any.try_map(|t: Token| t.value.parse()).parse_next(i)
 }
 
 struct ParamDescription {
@@ -3882,6 +3896,13 @@ e
         let some_program_string = r#"import "foo.kcl""#;
         let (_, errs) = assert_no_err(some_program_string);
         assert_eq!(errs.len(), 1);
+    }
+
+    #[test]
+    fn fn_decl_uom_ty() {
+        let some_program_string = r#"fn foo(x: number(mm)): number(_) { return 1 }"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2);
     }
 
     #[test]
