@@ -212,7 +212,7 @@ export default class EditorManager {
         EditorView.scrollIntoView(
           EditorSelection.range(
             firstSelection.codeRef.range[0],
-            firstSelection.codeRef.range[1],
+            firstSelection.codeRef.range[1]
           )
         ),
       ],

@@ -45,8 +45,8 @@ function isWhiteListedStdLibCall(
 function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
-      return isWhiteListedStdLibCall(op.stdLibFn)
-        ? stdLibIconMap[op.stdLibFn]
+      return isWhiteListedStdLibCall(op.name)
+        ? stdLibIconMap[op.name]
         : 'questionMark'
     default:
       return 'make-variable'
@@ -75,18 +75,12 @@ export const FeatureTreePane = () => {
               .filter(
                 (operation) =>
                   operation.type !== 'StdLibCall' ||
-                  stdLibWhiteList.some(
-                    (fnName) => fnName === operation.stdLibFn
-                  )
+                  stdLibWhiteList.some((fnName) => fnName === operation.name)
               )
               .map((operation) => (
                 <OperationListItem
                   key={`${operation.type}-${
-                    operation.type === 'StdLibCall'
-                      ? operation.stdLibFn
-                      : 'name' in operation
-                      ? operation.name
-                      : 'anonymous'
+                    'name' in operation ? operation.name : 'anonymous'
                   }-${
                     'sourceRange' in operation
                       ? operation.sourceRange[0]
@@ -303,9 +297,7 @@ const OperationListItem = (props: { item: Operation }) => {
     <OperationPaneItem
       icon={getOperationIcon(props.item)}
       name={
-        'stdLibFn' in props.item && props.item.stdLibFn !== null
-          ? props.item.stdLibFn
-          : 'name' in props.item && props.item.name !== null
+        'name' in props.item && props.item.name !== null
           ? props.item.name
           : 'anonymous'
       }
