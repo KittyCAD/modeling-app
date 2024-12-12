@@ -109,15 +109,6 @@ function discoverColorsInKCL(
   }
 }
 
-export function parseCallExpression(callExp: string): ColorData | null {
-  const fn = callExp.slice(0, 3)
-
-  switch (fn) {
-    default:
-      return null
-  }
-}
-
 export function parseColorLiteral(colorLiteral: string): ColorData | null {
   const literal = colorLiteral.replace(/"/g, '')
   const match = hexRegex.exec(literal)
