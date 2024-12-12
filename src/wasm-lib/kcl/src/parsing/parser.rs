@@ -453,9 +453,16 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                let x: f64 = token.value.parse().map_err(|_| {
+                let x: f64 = token.numeric_value().ok_or_else(|| {
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
+
+                if token.numeric_suffix().is_some() {
+                    ParseContext::warn(CompilationError::err(
+                        (&token).into(),
+                        "Unit of Measure suffixes are experimental and currently do nothing.",
+                    ));
+                }
 
                 Ok((LiteralValue::Number(x), token))
             }

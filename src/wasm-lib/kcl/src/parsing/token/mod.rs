@@ -1,7 +1,7 @@
 // Clippy does not agree with rustc here for some reason.
 #![allow(clippy::needless_lifetimes)]
 
-use std::{fmt, iter::Enumerate, num::NonZeroUsize};
+use std::{fmt, iter::Enumerate, num::NonZeroUsize, str::FromStr};
 
 use anyhow::Result;
 use parse_display::Display;
@@ -23,6 +23,48 @@ mod tokeniser;
 
 #[cfg(test)]
 pub(crate) use tokeniser::RESERVED_WORDS;
+
+// Note the ordering, it's important that `m` comes after `mm` and `cm`.
+pub const NUM_SUFFIXES: [&str; 6] = ["mm", "cm", "m", "inch", "ft", "yd"];
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum NumericSuffix {
+    None,
+    Count,
+    Mm,
+    Cm,
+    M,
+    Inch,
+    Ft,
+    Yd,
+}
+
+impl NumericSuffix {
+    #[allow(dead_code)]
+    pub fn is_none(self) -> bool {
+        self == Self::None
+    }
+
+    pub fn is_some(self) -> bool {
+        self != Self::None
+    }
+}
+
+impl FromStr for NumericSuffix {
+    type Err = ();
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+        match s {
+            "mm" => Ok(NumericSuffix::Mm),
+            "cm" => Ok(NumericSuffix::Cm),
+            "m" => Ok(NumericSuffix::M),
+            "inch" => Ok(NumericSuffix::Inch),
+            "ft" => Ok(NumericSuffix::Ft),
+            "yd" => Ok(NumericSuffix::Yd),
+            _ => Err(()),
+        }
+    }
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) struct TokenStream {
@@ -367,6 +409,36 @@ impl Token {
             "export" => Some(ItemVisibility::Export),
             _ => None,
         }
+    }
+
+    pub fn numeric_value(&self) -> Option<f64> {
+        if self.token_type != TokenType::Number {
+            return None;
+        }
+        let value = &self.value;
+        let value = value
+            .split_once(|c: char| c == '_' || c.is_ascii_alphabetic())
+            .map(|(s, _)| s)
+            .unwrap_or(value);
+        value.parse().ok()
+    }
+
+    pub fn numeric_suffix(&self) -> NumericSuffix {
+        if self.token_type != TokenType::Number {
+            return NumericSuffix::None;
+        }
+
+        if self.value.ends_with('_') {
+            return NumericSuffix::Count;
+        }
+
+        for suffix in NUM_SUFFIXES {
+            if self.value.ends_with(suffix) {
+                return suffix.parse().unwrap();
+            }
+        }
+
+        NumericSuffix::None
     }
 
     /// Is this token the beginning of a variable/function declaration?
