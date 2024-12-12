@@ -9,7 +9,11 @@ import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
-import { revolveAxisValidator, shellValidator } from './validators'
+import {
+  loftValidator,
+  revolveAxisValidator,
+  shellValidator,
+} from './validators'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -297,6 +301,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
+        validation: loftValidator,
       },
     },
   },

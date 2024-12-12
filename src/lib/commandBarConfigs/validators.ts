@@ -106,6 +106,51 @@ export const revolveAxisValidator = async ({
   }
 }
 
+export const loftValidator = async ({
+  data,
+}: {
+  data: { [key: string]: Selections }
+  context: CommandBarContext
+}): Promise<boolean | string> => {
+  if (!isSelections(data.selection)) {
+    return 'Unable to revolve, selections are missing'
+  }
+
+  // TODO: should this be part of canLoftSelection? And should we use that here?
+  const sectionIds = data.selection.graphSelections.flatMap((s) =>
+    s.artifact?.type === 'solid2D' ? s.artifact.pathId : []
+  )
+
+  if (sectionIds.length < 2) {
+    return 'Unable to loft, selection contains less than two sections'
+  }
+
+  const loftCommand = async () => {
+    // TODO: check what to do with these
+    const DEFAULT_V_DEGREE = 2
+    const DEFAULT_TOLERANCE = 2
+    const DEFAULT_BEZ_APPROXIMATE_RATIONAL = false
+    return await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        section_ids: sectionIds,
+        type: 'loft',
+        bez_approximate_rational: DEFAULT_BEZ_APPROXIMATE_RATIONAL,
+        tolerance: DEFAULT_TOLERANCE,
+        v_degree: DEFAULT_V_DEGREE,
+      },
+    })
+  }
+  const attempt = await dryRunWrapper(loftCommand)
+  if (attempt?.success) {
+    return true
+  } else {
+    // return error message for the toast
+    return 'Unable to loft with selected sketches'
+  }
+}
+
 export const shellValidator = async ({
   data,
   context,
