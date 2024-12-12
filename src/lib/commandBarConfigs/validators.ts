@@ -3,7 +3,6 @@ import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
-import { isSolid2D, isSegment, isSweep } from 'lang/std/artifactGraph'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -64,7 +63,7 @@ export const revolveAxisValidator = async ({
     return 'Unable to revolve, sketch not found'
   }
 
-  if (!(isSolid2D(artifact) || isSegment(artifact) || isSweep(artifact))) {
+  if (!('pathId' in artifact)) {
     return 'Unable to revolve, sketch has no path'
   }
 
