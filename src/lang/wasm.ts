@@ -44,6 +44,7 @@ import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
 
 export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
@@ -213,7 +214,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0])
+      sourceRangeFromRust(parsed.sourceRanges[0]),
+      []
     )
   }
 }
@@ -535,11 +537,12 @@ export const _executor = async (
     return execStateFromRaw(execState)
   } catch (e: any) {
     console.log(e)
-    const parsed: RustKclError = JSON.parse(e.toString())
+    const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
     const kclError = new KCLError(
-      parsed.kind,
-      parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0])
+      parsed.error.kind,
+      parsed.error.msg,
+      sourceRangeFromRust(parsed.error.sourceRanges[0]),
+      parsed.operations
     )
 
     return Promise.reject(kclError)
@@ -598,7 +601,8 @@ export const modifyAstForSketch = async (
     const kclError = new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0])
+      sourceRangeFromRust(parsed.sourceRanges[0]),
+      []
     )
 
     console.log(kclError)
@@ -666,7 +670,8 @@ export function programMemoryInit(): ProgramMemory | Error {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0])
+      sourceRangeFromRust(parsed.sourceRanges[0]),
+      []
     )
   }
 }

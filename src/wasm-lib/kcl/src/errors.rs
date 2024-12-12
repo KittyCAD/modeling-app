@@ -3,6 +3,7 @@ use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
+    execution::Operation,
     lsp::IntoDiagnostic,
     source_range::{ModuleId, SourceRange},
 };
@@ -97,6 +98,21 @@ pub enum KclError {
     Engine(KclErrorDetails),
     #[error("internal error, please report to KittyCAD team: {0:?}")]
     Internal(KclErrorDetails),
+}
+
+#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
+#[error("{error}")]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct KclErrorWithOutputs {
+    pub error: KclError,
+    pub operations: Vec<Operation>,
+}
+
+impl KclErrorWithOutputs {
+    pub fn new(error: KclError, operations: Vec<Operation>) -> Self {
+        Self { error, operations }
+    }
 }
 
 #[derive(thiserror::Error, Debug)]
