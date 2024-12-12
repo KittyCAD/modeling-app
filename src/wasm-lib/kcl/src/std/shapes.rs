@@ -56,14 +56,14 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// the provided (x, y) origin point.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("-XZ")
+/// exampleSketch = startSketchOn("-XZ")
 ///   |> circle({ center = [0, 0], radius = 10 }, %)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([-15, 0], %)
 ///   |> line([30, 0], %)
 ///   |> line([0, 30], %)
@@ -71,7 +71,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> close(%)
 ///   |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "circle",

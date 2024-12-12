@@ -7,4 +7,4 @@ fn add(@x, delta) {
 }
 
 two = increment(1)
-three = add(1, delta: 2)
+three = add(1, delta = 2)

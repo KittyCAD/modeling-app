@@ -13,6 +13,8 @@ use tower_lsp::lsp_types::{
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
 
+use crate::execution::Sketch;
+
 use crate::std::Primitive;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
@@ -232,6 +234,11 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     }
 
     fn to_autocomplete_snippet(&self) -> Result<String> {
+        if self.name() == "loft" {
+            return Ok("loft([${0:sketch000}, ${1:sketch001}])${}".to_string());
+        } else if self.name() == "hole" {
+            return Ok("hole(${0:holeSketch}, ${1:%})${}".to_string());
+        }
         let mut args = Vec::new();
         let mut index = 0;
         for arg in self.args(true).iter() {
@@ -451,6 +458,16 @@ fn get_autocomplete_snippet_from_schema(
 ) -> Result<Option<(usize, String)>> {
     match schema {
         schemars::schema::Schema::Object(o) => {
+            // Check if the schema is the same as a Sketch.
+            let mut settings = schemars::gen::SchemaSettings::openapi3();
+            // We set this so we can recurse them later.
+            settings.inline_subschemas = true;
+            let mut generator = schemars::gen::SchemaGenerator::new(settings);
+            let sketch_schema = generator.root_schema_for::<Sketch>().schema;
+            if sketch_schema.object == o.object {
+                return Ok(Some((index, format!("${{{}:sketch{}}}", index, "000"))));
+            }
+
             if let Some(serde_json::Value::Bool(nullable)) = o.extensions.get("nullable") {
                 if *nullable {
                     return Ok(None);
@@ -486,6 +503,12 @@ fn get_autocomplete_snippet_from_schema(
                     // Tolerance is a an optional property that we don't want to show in the
                     // autocomplete, since it is mostly for advanced users.
                     if prop_name == "tolerance" {
+                        continue;
+                    }
+
+                    if prop_name == "color" {
+                        fn_docs.push_str(&format!("\t{}: ${{{}:\"#ff0000\"}},\n", prop_name, i));
+                        i += 1;
                         continue;
                     }
 
@@ -944,6 +967,47 @@ mod tests {
 	axis: [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#
         );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_appearance() {
+        let appearance_fn: Box<dyn StdLibFn> = Box::new(crate::std::appearance::Appearance);
+        let snippet = appearance_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"appearance({
+	color: ${0:"#
+                .to_owned()
+                + "\"#"
+                + r#"ff0000"},
+}, ${1:%})${}"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_loft() {
+        let loft_fn: Box<dyn StdLibFn> = Box::new(crate::std::loft::Loft);
+        let snippet = loft_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"loft([${0:sketch000}, ${1:sketch001}])${}"#);
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_sweep() {
+        let sweep_fn: Box<dyn StdLibFn> = Box::new(crate::std::sweep::Sweep);
+        let snippet = sweep_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"sweep({
+	path: ${0:sketch000},
+}, ${1:%})${}"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_hole() {
+        let hole_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Hole);
+        let snippet = hole_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"hole(${0:holeSketch}, ${1:%})${}"#);
     }
 
     // We want to test the snippets we compile at lsp start.

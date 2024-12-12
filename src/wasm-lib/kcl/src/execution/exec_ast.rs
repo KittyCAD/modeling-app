@@ -326,29 +326,12 @@ async fn inner_execute_pipe_body(
     ctx: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
     for expression in body {
-        match expression {
-            Expr::TagDeclarator(_) => {
-                return Err(KclError::Semantic(KclErrorDetails {
-                    message: format!("This cannot be in a PipeExpression: {:?}", expression),
-                    source_ranges: vec![expression.into()],
-                }));
-            }
-            Expr::Literal(_)
-            | Expr::Identifier(_)
-            | Expr::BinaryExpression(_)
-            | Expr::FunctionExpression(_)
-            | Expr::CallExpression(_)
-            | Expr::CallExpressionKw(_)
-            | Expr::PipeExpression(_)
-            | Expr::PipeSubstitution(_)
-            | Expr::ArrayExpression(_)
-            | Expr::ArrayRangeExpression(_)
-            | Expr::ObjectExpression(_)
-            | Expr::MemberExpression(_)
-            | Expr::UnaryExpression(_)
-            | Expr::IfExpression(_)
-            | Expr::None(_) => {}
-        };
+        if let Expr::TagDeclarator(_) = expression {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: format!("This cannot be in a PipeExpression: {:?}", expression),
+                source_ranges: vec![expression.into()],
+            }));
+        }
         let metadata = Metadata {
             source_range: SourceRange::from(expression),
         };

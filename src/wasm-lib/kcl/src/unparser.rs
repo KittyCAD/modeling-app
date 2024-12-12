@@ -194,6 +194,12 @@ impl Expr {
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Expr::IfExpression(e) => e.recast(options, indentation_level, ctxt),
             Expr::PipeSubstitution(_) => crate::parsing::PIPE_SUBSTITUTION_OPERATOR.to_string(),
+            Expr::LabelledExpression(e) => {
+                let mut result = e.expr.recast(options, indentation_level, ctxt);
+                result += " as ";
+                result += &e.label.name;
+                result
+            }
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
@@ -266,7 +272,7 @@ impl LabeledArg {
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         let label = &self.label.name;
         let arg = self.arg.recast(options, indentation_level, ctxt);
-        format!("{label}: {arg}")
+        format!("{label} = {arg}")
     }
 }
 
@@ -407,7 +413,8 @@ fn expr_is_trivial(expr: &Expr) -> bool {
         | Expr::ObjectExpression(_)
         | Expr::MemberExpression(_)
         | Expr::UnaryExpression(_)
-        | Expr::IfExpression(_) => false,
+        | Expr::IfExpression(_)
+        | Expr::LabelledExpression(_) => false,
     }
 }
 
@@ -1517,6 +1524,28 @@ tabs_l = startSketchOn({
 }
 "#
         );
+    }
+
+    #[test]
+    fn test_as() {
+        let some_program_string = r#"fn cube(pos, scale) {
+  x = dfsfs + dfsfsd as y
+
+  sg = startSketchOn('XY')
+    |> startProfileAt(pos, %) as foo
+    |> line([0, scale], %)
+    |> line([scale, 0], %) as bar
+    |> line([0 as baz, -scale] as qux, %)
+    |> close(%)
+    |> extrude(scale, %)
+}
+
+cube(0, 0) as cub
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string,);
     }
 
     #[test]

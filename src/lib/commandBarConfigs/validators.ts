@@ -65,7 +65,7 @@ export const revolveAxisValidator = async ({
     return 'Unable to revolve, sketch not found'
   }
 
-  if (!(isSolid2D(artifact) || isSegment(artifact) || isSweep(artifact))) {
+  if (!('pathId' in artifact)) {
     return 'Unable to revolve, sketch has no path'
   }
 

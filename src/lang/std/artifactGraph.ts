@@ -871,15 +871,3 @@ export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
     pathToNode: getNodePathFromSourceRange(ast, range),
   }
 }
-
-export function isSolid2D(artifact: Artifact): artifact is solid2D {
-  return (artifact as solid2D).pathId !== undefined
-}
-
-export function isSegment(artifact: Artifact): artifact is SegmentArtifact {
-  return (artifact as SegmentArtifact).pathId !== undefined
-}
-
-export function isSweep(artifact: Artifact): artifact is SweepArtifact {
-  return (artifact as SweepArtifact).pathId !== undefined
-}

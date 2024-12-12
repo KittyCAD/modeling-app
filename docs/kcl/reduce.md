@@ -43,7 +43,7 @@ fn sum(arr) {
 
 /* The above is basically like this pseudo-code:
 fn sum(arr):
-    let sumSoFar = 0
+    sumSoFar = 0
     for i in arr:
         sumSoFar = add(sumSoFar, i)
     return sumSoFar */
@@ -96,14 +96,14 @@ fn decagon(radius) {
 
 /* The `decagon` above is basically like this pseudo-code:
 fn decagon(radius):
-    let stepAngle = (1/10) * tau()
-    let startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+    stepAngle = (1/10) * tau()
+    startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
 
     // Here's the reduce part.
-    let partialDecagon = startOfDecagonSketch
+    partialDecagon = startOfDecagonSketch
     for i in [1..10]:
-        let x = cos(stepAngle * i) * radius
-        let y = sin(stepAngle * i) * radius
+        x = cos(stepAngle * i) * radius
+        y = sin(stepAngle * i) * radius
         partialDecagon = lineTo([x, y], partialDecagon)
     fullDecagon = partialDecagon // it's now full
     return fullDecagon */

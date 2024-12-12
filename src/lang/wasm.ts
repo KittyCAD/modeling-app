@@ -1,14 +1,13 @@
 import init, {
   parse_wasm,
   recast_wasm,
-  execute_wasm,
+  execute,
   kcl_lint,
   modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
   program_memory_init,
   make_default_planes,
-  modify_grid,
   coredump,
   toml_stringify,
   default_app_settings,
@@ -43,7 +42,9 @@ import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 
+export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
 export type { ObjectExpression } from '../wasm-lib/kcl/bindings/ObjectExpression'
@@ -92,12 +93,26 @@ export type { Solid } from '../wasm-lib/kcl/bindings/Solid'
 export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
+/**
+ * The first two items are the start and end points (byte offsets from the start of the file).
+ * The third item is whether the source range belongs to the 'main' file, i.e., the file currently
+ * being rendered/displayed in the editor (TODO we need to handle modules better in the frontend).
+ */
 export type SourceRange = [number, number, boolean]
 
+/**
+ * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
+ * frontend (essentially we're eagerly checking whether the frontend should care about the SourceRange
+ * so as not to expose details of the interpreter's current representation of module ids throughout
+ * the frontend).
+ */
 export function sourceRangeFromRust(s: RustSourceRange): SourceRange {
   return [s[0], s[1], s[2] === 0]
 }
 
+/**
+ * Create a default SourceRange for testing or as a placeholder.
+ */
 export function defaultSourceRange(): SourceRange {
   return [0, 0, true]
 }
@@ -122,7 +137,7 @@ const initialise = async () => {
     const fullUrl = wasmUrl()
     const input = await fetch(fullUrl)
     const buffer = await input.arrayBuffer()
-    return await init(buffer)
+    return await init({ module_or_path: buffer })
   } catch (e) {
     console.log('Error initialising WASM', e)
     return Promise.reject(e)
@@ -163,6 +178,10 @@ export class ParseResult {
   }
 }
 
+/**
+ * Parsing was successful. There is guaranteed to be an AST and no fatal errors. There may or may
+ * not be warnings or non-fatal errors.
+ */
 class SuccessParseResult extends ParseResult {
   program: Node<Program>
 
@@ -493,18 +512,19 @@ export const _executor = async (
     return Promise.reject(programMemoryOverride)
 
   try {
-    let baseUnit = 'mm'
+    let jsAppSettings = default_app_settings()
     if (!TEST) {
-      const getSettingsState = import('components/SettingsAuthProvider').then(
-        (module) => module.getSettingsState
-      )
-      baseUnit =
-        (await getSettingsState)()?.modeling.defaultUnit.current || 'mm'
+      const lastSettingsSnapshot = await import(
+        'components/SettingsAuthProvider'
+      ).then((module) => module.lastSettingsContextSnapshot)
+      if (lastSettingsSnapshot) {
+        jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
+      }
     }
-    const execState: RawExecState = await execute_wasm(
+    const execState: RawExecState = await execute(
       JSON.stringify(node),
       JSON.stringify(programMemoryOverride?.toRaw() || null),
-      baseUnit,
+      JSON.stringify({ settings: jsAppSettings }),
       engineCommandManager,
       fileSystemManager
     )
@@ -548,20 +568,6 @@ export const makeDefaultPlanes = async (
   } catch (e) {
     // TODO: do something real with the error.
     console.log('make default planes error', e)
-    return Promise.reject(e)
-  }
-}
-
-export const modifyGrid = async (
-  engineCommandManager: EngineCommandManager,
-  hidden: boolean
-): Promise<void> => {
-  try {
-    await modify_grid(engineCommandManager, hidden)
-    return
-  } catch (e) {
-    // TODO: do something real with the error.
-    console.log('modify grid error', e)
     return Promise.reject(e)
   }
 }

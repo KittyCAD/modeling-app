@@ -40,10 +40,12 @@ miette = "7.2.0"
 mime_guess = "2.0.5"
 parse-display = "0.9.1"
 pyo3 = { version = "0.22.6", optional = true }
+regex = "1.11.1"
 reqwest = { version = "0.12", default-features = false, features = [
     "stream",
     "rustls-tls",
 ] }
+rgba_simple = "0.10.0"
 ropey = "1.6.1"
 schemars = { version = "0.8.17", features = [
     "impl_json_schema",

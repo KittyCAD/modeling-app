@@ -1,10 +1,10 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
-use super::types::{DefaultParamVal, ItemVisibility, VariableKind};
+use super::types::{DefaultParamVal, ItemVisibility, LabelledExpression, VariableKind};
 use crate::parsing::ast::types::{
     ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
     CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression,
-    ImportItem, ImportSelector, ImportStatement, Literal, LiteralIdentifier, MemberExpression, MemberObject,
+    ImportItem, ImportSelector, ImportStatement, KclNone, Literal, LiteralIdentifier, MemberExpression, MemberObject,
     NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
     PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression, VariableDeclaration,
     VariableDeclarator,
@@ -115,6 +115,7 @@ impl Expr {
             Expr::MemberExpression(me) => me.compute_digest(),
             Expr::UnaryExpression(ue) => ue.compute_digest(),
             Expr::IfExpression(e) => e.compute_digest(),
+            Expr::LabelledExpression(e) => e.compute_digest(),
             Expr::None(_) => {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
@@ -199,6 +200,12 @@ impl Parameter {
             Some(DefaultParamVal::KclNone(ref _kcl_none)) => hasher.update(vec![1]),
             Some(DefaultParamVal::Literal(ref mut literal)) => hasher.update(literal.compute_digest()),
         }
+    });
+}
+
+impl KclNone {
+    compute_digest!(|slf, hasher| {
+        hasher.update(b"KclNone");
     });
 }
 
@@ -393,6 +400,13 @@ impl UnaryExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.operator.digestable_id());
         hasher.update(slf.argument.compute_digest());
+    });
+}
+
+impl LabelledExpression {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.expr.compute_digest());
+        hasher.update(slf.label.compute_digest());
     });
 }
 
