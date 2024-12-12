@@ -1283,22 +1283,6 @@ test.describe('Testing segment overlays', () => {
         after: `line([0, -10], %, $seg01)`,
       },
       {
-        before: `angledLineOfXLength([3 + 0, 30 + 0], %, $seg01)`,
-        after: `line([30, 1.57], %, $seg01)`,
-      },
-      {
-        before: `angledLineOfYLength([3 + 0, 1.5 + 0], %, $seg01)`,
-        after: `line([28.62, 1.5], %, $seg01)`,
-      },
-      {
-        before: `angledLineToX([3 + 0, 30 + 0], %, $seg01)`,
-        after: `line([25, 1.31], %, $seg01)`,
-      },
-      {
-        before: `angledLineToY([3 + 0, 7 + 0], %, $seg01)`,
-        after: `line([19.08, 1], %, $seg01)`,
-      },
-      {
         before: `angledLineOfXLength({ angle = 3 + 0, length = 30 + 0 }, %, $seg01)`,
         after: `line([30, 1.57], %, $seg01)`,
       },
