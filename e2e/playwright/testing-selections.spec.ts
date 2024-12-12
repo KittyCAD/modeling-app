@@ -455,7 +455,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(`sketch005 = startSketchOn({`)
 
-    // Delet just a profile
+    // Delete a single profile
     await page.mouse.click(individualProfile.x, individualProfile.y)
     await page.waitForTimeout(100)
     const codeToBeDeletedSnippet =
