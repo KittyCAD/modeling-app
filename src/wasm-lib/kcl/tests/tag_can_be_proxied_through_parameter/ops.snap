@@ -14,12 +14,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       125,
       144,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -63,12 +63,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       68,
       116,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -85,12 +85,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       310,
       329,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -134,12 +134,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       68,
       116,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
