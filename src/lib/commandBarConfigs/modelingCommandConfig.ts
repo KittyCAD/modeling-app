@@ -313,10 +313,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
-        // multiple: true,
-        multiple: false,
+        multiple: true,
         required: true,
-        // skip: false,
+        skip: false,
         validation: shellValidator,
       },
       thickness: {

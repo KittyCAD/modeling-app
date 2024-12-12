@@ -158,22 +158,36 @@ export const shellValidator = async ({
   data: any
   context: CommandBarContext
 }): Promise<boolean | string> => {
+  if (!isSelections(data.selection)) {
+    return 'Unable to revolve, selections are missing'
+  }
   const selection = data.selection as Selections
-  console.log('shellValidator sel', selection)
-  const firstArtifact = data.selection.graphSelections[0].artifact
+  const firstArtifact = selection.graphSelections[0].artifact
 
   if (!firstArtifact) {
     return 'Unable to shell, no artifact found'
   }
 
-  if (!('sweepId' in firstArtifact && 'id' in firstArtifact)) {
-    return 'Unable to shell, first artifact has no sweepId or no id'
+  if (!(firstArtifact.type === 'cap' || firstArtifact.type === 'wall')) {
+    return 'Unable to shell, first artifact is not a cap or a wall'
   }
 
+  // TODO: NOT WORKING YET. I BELIEVE SWEEP_ID IS THE WRONG THING TO PROVIDE TO ENGINE HERE
   const objectId = firstArtifact.sweepId
   const faceId = firstArtifact.id
-  const thicknessInMm: Models['LengthUnit_type'] = 0.1
+
+  const hasOtherObjectIds = selection.graphSelections.some(
+    (s) =>
+      (s.artifact?.type == 'cap' || s.artifact?.type == 'wall') &&
+      s.artifact.sweepId != objectId
+  )
+  if (hasOtherObjectIds) {
+    return 'Unable to shell, selection is across solids'
+  }
+
   const shellCommand = async () => {
+    const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 0.1
+    const DEFAULT_HOLLOW = false
     return await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -181,8 +195,8 @@ export const shellValidator = async ({
         type: 'solid3d_shell_face',
         face_ids: [faceId],
         object_id: objectId,
-        hollow: false,
-        shell_thickness: thicknessInMm,
+        hollow: DEFAULT_HOLLOW,
+        shell_thickness: DEFAULT_THICKNESS,
       },
     })
   }
