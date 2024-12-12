@@ -17,6 +17,7 @@ import { kclPlugin } from '.'
 import type * as LSP from 'vscode-languageserver-protocol'
 // @ts-ignore: No types available
 import { parser } from './kcl.grammar'
+import { colorPicker } from './colors'
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]
@@ -54,14 +55,14 @@ export const KclLanguage = LRLanguage.define({
 })
 
 export function kcl(options: LanguageOptions) {
-  return new LanguageSupport(
-    KclLanguage,
+  return new LanguageSupport(KclLanguage, [
+    colorPicker,
     kclPlugin({
       documentUri: options.documentUri,
       workspaceFolders: options.workspaceFolders,
       allowHTMLContent: true,
       client: options.client,
       processLspNotification: options.processLspNotification,
-    })
-  )
+    }),
+  ])
 }
