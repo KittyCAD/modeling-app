@@ -91,7 +91,7 @@ impl crate::docs::StdLibFn for SomeFn {
             schema: generator.root_schema_for::<str>(),
             required: true,
             label_required: true,
-            description: String::new(),
+            description: String::new().to_string(),
         }]
     }
 

@@ -92,7 +92,7 @@ impl crate::docs::StdLibFn for Show {
             schema: generator.root_schema_for::<Option<f64>>(),
             required: false,
             label_required: true,
-            description: String::new(),
+            description: String::new().to_string(),
         }]
     }
 
