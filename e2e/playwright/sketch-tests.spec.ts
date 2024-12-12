@@ -1963,7 +1963,7 @@ extrude001 = extrude(75, thePart)
       })
 
       await test2.step(
-        'expect code to match inital conditions still',
+        'expect code to match initial conditions still',
         async () => {
           await editor.expectEditor.toContain(`thePart = startSketchOn('XZ')
     |> startProfileAt([7.53, 10.51], %)`)
