@@ -6,6 +6,25 @@ snapshot_kind: text
 [
   {
     "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          764,
+          768,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      750,
+      769,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
       "length": {
         "sourceRange": [
           963,
@@ -71,6 +90,25 @@ snapshot_kind: text
       1573,
       0
     ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1247,
+          1251,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1233,
+      1252,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -199,6 +237,25 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
+          1247,
+          1251,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1233,
+      1252,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
           1300,
           1333,
           0
@@ -322,6 +379,25 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
+          1247,
+          1251,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1233,
+      1252,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
           1300,
           1333,
           0
@@ -440,6 +516,25 @@ snapshot_kind: text
       1958,
       0
     ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1247,
+          1251,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1233,
+      1252,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {

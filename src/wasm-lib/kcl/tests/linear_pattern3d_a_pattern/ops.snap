@@ -6,6 +6,25 @@ snapshot_kind: text
 [
   {
     "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          30,
+          34,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      16,
+      35,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
       "length": {
         "sourceRange": [
           158,

@@ -6,6 +6,25 @@ snapshot_kind: text
 [
   {
     "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          24,
+          28,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      10,
+      29,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
       "length": {
         "sourceRange": [
           193,
@@ -27,6 +46,32 @@ snapshot_kind: text
       0
     ],
     "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          224,
+          231,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          233,
+          237,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      210,
+      238,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },

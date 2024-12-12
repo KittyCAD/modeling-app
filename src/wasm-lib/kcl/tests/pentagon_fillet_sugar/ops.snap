@@ -6,6 +6,25 @@ snapshot_kind: text
 [
   {
     "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          154,
+          158,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      140,
+      159,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
       "length": {
         "sourceRange": [
           389,
@@ -45,6 +64,32 @@ snapshot_kind: text
       588,
       0
     ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          452,
+          453,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          455,
+          459,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      438,
+      460,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -116,6 +161,32 @@ snapshot_kind: text
       786,
       0
     ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          452,
+          453,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          455,
+          459,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      438,
+      460,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "type": "UserDefinedFunctionReturn"
