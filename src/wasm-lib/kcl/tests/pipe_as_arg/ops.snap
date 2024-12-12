@@ -56,12 +56,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       302,
       320,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   },

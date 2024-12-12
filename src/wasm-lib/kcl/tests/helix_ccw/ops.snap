@@ -14,12 +14,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       10,
       29,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -40,12 +40,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "circle",
     "sourceRange": [
       35,
       78,
       0
     ],
-    "stdLibFn": "circle",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -66,12 +66,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       84,
       98,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -92,12 +92,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "helix",
     "sourceRange": [
       104,
       188,
       0
     ],
-    "stdLibFn": "helix",
     "type": "StdLibCall",
     "unlabeledArg": null
   }

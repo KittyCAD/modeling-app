@@ -21,12 +21,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "hole",
     "sourceRange": [
       2343,
       2357,
       0
     ],
-    "stdLibFn": "hole",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -47,12 +47,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       2363,
       2378,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   }

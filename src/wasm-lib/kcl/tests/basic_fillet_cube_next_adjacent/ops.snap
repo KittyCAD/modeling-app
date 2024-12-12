@@ -14,12 +14,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "startSketchOn",
     "sourceRange": [
       10,
       29,
       0
     ],
-    "stdLibFn": "startSketchOn",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -40,12 +40,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "extrude",
     "sourceRange": [
       182,
       196,
       0
     ],
-    "stdLibFn": "extrude",
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -66,12 +66,12 @@ snapshot_kind: text
         ]
       }
     },
+    "name": "fillet",
     "sourceRange": [
       202,
       284,
       0
     ],
-    "stdLibFn": "fillet",
     "type": "StdLibCall",
     "unlabeledArg": null
   }
