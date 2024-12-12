@@ -4061,7 +4061,7 @@ let myBox = box([0,0], -3, -16, -10)
 
     #[test]
     fn kw_fn() {
-        for input in ["val = foo(x, y: z)", "val = foo(y: z)"] {
+        for input in ["val = foo(x, y = z)", "val = foo(y = z)"] {
             let module_id = ModuleId::default();
             let tokens = crate::parsing::token::lex(input, module_id).unwrap();
             super::program.parse(tokens.as_slice()).unwrap();
