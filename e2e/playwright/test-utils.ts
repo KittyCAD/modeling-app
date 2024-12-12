@@ -30,103 +30,126 @@ import { reportRejection } from 'lib/trap'
 
 // The below is copied from playwright-core because it exports none of them :(
 import { Env, BrowserContextOptions } from 'playwright-core'
-import type * as channels from '@protocol/channels';
+import type * as channels from '@protocol/channels'
 
 // Copied from playwright-core
-function envObjectToArray(env: Env): { name: string, value: string }[] {
-  const result: { name: string, value: string }[] = [];
+function envObjectToArray(env: Env): { name: string; value: string }[] {
+  const result: { name: string; value: string }[] = []
   for (const name in env) {
     if (!Object.is(env[name], undefined))
-      result.push({ name, value: String(env[name]) });
+      result.push({ name, value: String(env[name]) })
   }
-  return result;
+  return result
 }
 
 // Copied from playwright-core
-export async function toClientCertificatesProtocol(certs?: BrowserContextOptions['clientCertificates']): Promise<channels.PlaywrightNewRequestParams['clientCertificates']> {
-  if (!certs)
-    return undefined;
+export async function toClientCertificatesProtocol(
+  certs?: BrowserContextOptions['clientCertificates']
+): Promise<channels.PlaywrightNewRequestParams['clientCertificates']> {
+  if (!certs) return undefined
 
-  const bufferizeContent = async (value?: Buffer, path?: string): Promise<Buffer | undefined> => {
-    if (value)
-      return value;
-    if (path)
-      return await fs.promises.readFile(path);
-  };
+  const bufferizeContent = async (
+    value?: Buffer,
+    path?: string
+  ): Promise<Buffer | undefined> => {
+    if (value) return value
+    if (path) return await fs.promises.readFile(path)
+  }
 
-  return await Promise.all(certs.map(async cert => ({
-    origin: cert.origin,
-    cert: await bufferizeContent(cert.cert, cert.certPath),
-    key: await bufferizeContent(cert.key, cert.keyPath),
-    pfx: await bufferizeContent(cert.pfx, cert.pfxPath),
-    passphrase: cert.passphrase,
-  })));
+  return await Promise.all(
+    certs.map(async (cert) => ({
+      origin: cert.origin,
+      cert: await bufferizeContent(cert.cert, cert.certPath),
+      key: await bufferizeContent(cert.key, cert.keyPath),
+      pfx: await bufferizeContent(cert.pfx, cert.pfxPath),
+      passphrase: cert.passphrase,
+    }))
+  )
 }
 
 // Copied from playwright-core
 function toAcceptDownloadsProtocol(acceptDownloads?: boolean) {
-  if (acceptDownloads === undefined)
-    return undefined;
-  if (acceptDownloads)
-    return 'accept';
-  return 'deny';
+  if (acceptDownloads === undefined) return undefined
+  if (acceptDownloads) return 'accept'
+  return 'deny'
 }
 
 // Copied from playwright-core
-function prepareRecordHarOptions(options: BrowserContextOptions['recordHar']): channels.RecordHarOptions | undefined {
-  if (!options)
-    return;
+function prepareRecordHarOptions(
+  options: BrowserContextOptions['recordHar']
+): channels.RecordHarOptions | undefined {
+  if (!options) return
   return {
     path: options.path,
     content: options.content || (options.omitContent ? 'omit' : undefined),
     urlGlob: isString(options.urlFilter) ? options.urlFilter : undefined,
-    urlRegexSource: isRegExp(options.urlFilter) ? options.urlFilter.source : undefined,
-    urlRegexFlags: isRegExp(options.urlFilter) ? options.urlFilter.flags : undefined,
-    mode: options.mode
-  };
-}
-
-// Copied from playwright-core
-async function prepareStorageState(options: BrowserContextOptions): Promise<channels.BrowserNewContextParams['storageState']> {
-  if (typeof options.storageState !== 'string')
-    return options.storageState;
-  try {
-    return JSON.parse(await fs.promises.readFile(options.storageState, 'utf8'));
-  } catch (e) {
-    rewriteErrorMessage(e, `Error reading storage state from ${options.storageState}:\n` + e.message);
-    throw e;
+    urlRegexSource: isRegExp(options.urlFilter)
+      ? options.urlFilter.source
+      : undefined,
+    urlRegexFlags: isRegExp(options.urlFilter)
+      ? options.urlFilter.flags
+      : undefined,
+    mode: options.mode,
   }
 }
 
 // Copied from playwright-core
-async function prepareBrowserContextParams(options: BrowserContextOptions): Promise<channels.BrowserNewContextParams> {
+async function prepareStorageState(
+  options: BrowserContextOptions
+): Promise<channels.BrowserNewContextParams['storageState']> {
+  if (typeof options.storageState !== 'string') return options.storageState
+  try {
+    return JSON.parse(await fs.promises.readFile(options.storageState, 'utf8'))
+  } catch (e) {
+    rewriteErrorMessage(
+      e,
+      `Error reading storage state from ${options.storageState}:\n` + e.message
+    )
+    throw e
+  }
+}
+
+// Copied from playwright-core
+async function prepareBrowserContextParams(
+  options: BrowserContextOptions
+): Promise<channels.BrowserNewContextParams> {
   if (options.videoSize && !options.videosPath)
-    throw new Error(`"videoSize" option requires "videosPath" to be specified`);
+    throw new Error(`"videoSize" option requires "videosPath" to be specified`)
   if (options.extraHTTPHeaders)
-    network.validateHeaders(options.extraHTTPHeaders);
+    network.validateHeaders(options.extraHTTPHeaders)
   const contextParams: channels.BrowserNewContextParams = {
     ...options,
     viewport: options.viewport === null ? undefined : options.viewport,
     noDefaultViewport: options.viewport === null,
-    extraHTTPHeaders: options.extraHTTPHeaders ? headersObjectToArray(options.extraHTTPHeaders) : undefined,
+    extraHTTPHeaders: options.extraHTTPHeaders
+      ? headersObjectToArray(options.extraHTTPHeaders)
+      : undefined,
     storageState: await prepareStorageState(options),
     serviceWorkers: options.serviceWorkers,
     recordHar: prepareRecordHarOptions(options.recordHar),
-    colorScheme: options.colorScheme === null ? 'no-override' : options.colorScheme,
-    reducedMotion: options.reducedMotion === null ? 'no-override' : options.reducedMotion,
-    forcedColors: options.forcedColors === null ? 'no-override' : options.forcedColors,
+    colorScheme:
+      options.colorScheme === null ? 'no-override' : options.colorScheme,
+    reducedMotion:
+      options.reducedMotion === null ? 'no-override' : options.reducedMotion,
+    forcedColors:
+      options.forcedColors === null ? 'no-override' : options.forcedColors,
     acceptDownloads: toAcceptDownloadsProtocol(options.acceptDownloads),
-    clientCertificates: await toClientCertificatesProtocol(options.clientCertificates),
-  };
+    clientCertificates: await toClientCertificatesProtocol(
+      options.clientCertificates
+    ),
+  }
   if (!contextParams.recordVideo && options.videosPath) {
     contextParams.recordVideo = {
       dir: options.videosPath,
-      size: options.videoSize
-    };
+      size: options.videoSize,
+    }
   }
   if (contextParams.recordVideo && contextParams.recordVideo.dir)
-    contextParams.recordVideo.dir = path.resolve(process.cwd(), contextParams.recordVideo.dir);
-  return contextParams;
+    contextParams.recordVideo.dir = path.resolve(
+      process.cwd(),
+      contextParams.recordVideo.dir
+    )
+  return contextParams
 }
 
 const toNormalizedCode = (text: string) => {
@@ -973,7 +996,10 @@ export async function setup(
       localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
-      localStorage.setItem(PERSIST_MODELING_CONTEXT, JSON.stringify({openPanes: ['code']}))
+      localStorage.setItem(
+        PERSIST_MODELING_CONTEXT,
+        JSON.stringify({ openPanes: ['code'] })
+      )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
