@@ -2031,7 +2031,7 @@ async fn kcl_test_ids_stable_between_executions() {
     // Get the id_generator from the first execution.
     let id_generator = exec_state.id_generator.clone();
 
-    let code = r#"const sketch001 = startSketchOn('XZ')
+    let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([62.74, 206.13], %)
   |> xLine(305.11, %, $seg01)
   |> yLine(-291.85, %)
