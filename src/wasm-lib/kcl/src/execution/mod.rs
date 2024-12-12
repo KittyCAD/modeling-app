@@ -1899,7 +1899,12 @@ impl ExecutorContext {
             // anyways and from the TS side we override memory and don't want to clear it.
             self.reset_scene(exec_state, Default::default()).await?;
             // Pop the execution state, since we are starting fresh.
-            *exec_state = Default::default();
+            *exec_state = ExecState {
+                // We do not pop the ids, since we want to keep the same id generator.
+                // This is for the front end to keep track of the ids.
+                id_generator: exec_state.id_generator.clone(),
+                ..Default::default()
+            };
         }
 
         // TODO: Use the top-level file's path.
