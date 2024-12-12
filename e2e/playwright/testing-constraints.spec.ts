@@ -17,11 +17,11 @@ test.describe('Testing constraints', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XY')
-    |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> xLine(-20, %)
-  `
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> xLine(-20, %)
+`
       )
     })
 

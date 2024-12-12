@@ -29,7 +29,7 @@ import {
  */
 export const getRectangleCallExpressions = (
   rectangleOrigin: [number, number],
-  tags: [string, string, string]
+  tag: string
 ) => [
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
@@ -37,30 +37,28 @@ export const getRectangleCallExpressions = (
       createLiteral(0), // This will be the width of the rectangle
     ]),
     createPipeSubstitution(),
-    createTagDeclarator(tags[0]),
+    createTagDeclarator(tag),
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
       createBinaryExpression([
-        createCallExpressionStdLib('segAng', [createIdentifier(tags[0])]),
+        createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
         '+',
         createLiteral(90),
       ]), // 90 offset from the previous line
       createLiteral(0), // This will be the height of the rectangle
     ]),
     createPipeSubstitution(),
-    createTagDeclarator(tags[1]),
   ]),
   createCallExpressionStdLib('angledLine', [
     createArrayExpression([
-      createCallExpressionStdLib('segAng', [createIdentifier(tags[0])]), // same angle as the first line
+      createCallExpressionStdLib('segAng', [createIdentifier(tag)]), // same angle as the first line
       createUnaryExpression(
-        createCallExpressionStdLib('segLen', [createIdentifier(tags[0])]),
+        createCallExpressionStdLib('segLen', [createIdentifier(tag)]),
         '-'
       ), // negative height
     ]),
     createPipeSubstitution(),
-    createTagDeclarator(tags[2]),
   ]),
   createCallExpressionStdLib('lineTo', [
     createArrayExpression([
@@ -85,12 +83,12 @@ export function updateRectangleSketch(
   y: number,
   tag: string
 ) {
-  ;((pipeExpression.body[2] as CallExpression)
+  ;((pipeExpression.body[1] as CallExpression)
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createLiteral(x >= 0 ? 0 : 180),
     createLiteral(Math.abs(x)),
   ])
-  ;((pipeExpression.body[3] as CallExpression)
+  ;((pipeExpression.body[2] as CallExpression)
     .arguments[0] as ArrayExpression) = createArrayExpression([
     createBinaryExpression([
       createCallExpressionStdLib('segAng', [createIdentifier(tag)]),
@@ -120,7 +118,7 @@ export function updateCenterRectangleSketch(
   let startY = originY - Math.abs(deltaY)
 
   // pipeExpression.body[1] is startProfileAt
-  let callExpression = pipeExpression.body[1]
+  let callExpression = pipeExpression.body[0]
   if (isCallExpression(callExpression)) {
     const arrayExpression = callExpression.arguments[0]
     if (isArrayExpression(arrayExpression)) {
@@ -134,7 +132,7 @@ export function updateCenterRectangleSketch(
   const twoX = deltaX * 2
   const twoY = deltaY * 2
 
-  callExpression = pipeExpression.body[2]
+  callExpression = pipeExpression.body[1]
   if (isCallExpression(callExpression)) {
     const arrayExpression = callExpression.arguments[0]
     if (isArrayExpression(arrayExpression)) {
@@ -148,7 +146,7 @@ export function updateCenterRectangleSketch(
     }
   }
 
-  callExpression = pipeExpression.body[3]
+  callExpression = pipeExpression.body[2]
   if (isCallExpression(callExpression)) {
     const arrayExpression = callExpression.arguments[0]
     if (isArrayExpression(arrayExpression)) {
