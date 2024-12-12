@@ -1829,4 +1829,168 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       )
     }
   )
+
+  test2(
+    'can enter sketch when there is an extrude',
+    async ({ app, scene, toolbar }) => {
+      await app.initialise(`sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([-63.43, 193.08], sketch001)
+  |> line([168.52, 149.87], %)
+  |> line([190.29, -39.18], %)
+  |> tangentialArcTo([319.63, 129.65], %)
+  |> line([-217.65, -21.76], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile003 = startProfileAt([16.79, 38.24], sketch001)
+  |> angledLine([0, 182.82], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       105.71
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile004 = circle({
+  center = [280.45, 47.57],
+  radius = 55.26
+}, sketch001)
+extrude002 = extrude(50, profile001)
+extrude001 = extrude(5, profile003)
+`)
+      const [pointOnSegment] = scene.makeMouseHelpers(574, 207)
+
+      await pointOnSegment()
+      await toolbar.editSketch()
+      // wait for engine animation
+      await app.page.waitForTimeout(600)
+
+      await test2.step('check the sketch is still drawn properly', async () => {
+        await scene.expectPixelColor([255, 255, 255], { x: 591, y: 167 }, 15)
+        await scene.expectPixelColor([255, 255, 255], { x: 638, y: 222 }, 15)
+        await scene.expectPixelColor([255, 255, 255], { x: 756, y: 214 }, 15)
+      })
+    }
+  )
+  test2(
+    'exit new sketch without drawing anything should not be a problem',
+    async ({ app, scene, toolbar, editor, cmdBar }) => {
+      await app.initialise(`myVar = 5`)
+      const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+
+      await toolbar.startSketchPlaneSelection()
+      await selectXZPlane()
+      // timeout wait for engine animation is unavoidable
+      await app.page.waitForTimeout(600)
+
+      await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')`)
+      await toolbar.exitSketchBtn.click()
+
+      await editor.expectEditor.not.toContain(`sketch001 = startSketchOn('XZ')`)
+
+      await test2.step(
+        "still renders code, hasn't got into a weird state",
+        async () => {
+          await editor.replaceCode(
+            'myVar = 5',
+            `myVar = 5
+  sketch001 = startSketchOn('XZ')
+  profile001 = circle({
+    center = [12.41, 3.87],
+    radius = myVar
+  }, sketch001)`
+          )
+
+          await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
+        }
+      )
+    }
+  )
+  test2(
+    'A sketch with only "startProfileAt" and no segments should still be able to be continued ',
+    async ({ app, scene, toolbar, editor }) => {
+      await app.initialise(`sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([85.19, 338.59], sketch001)
+  |> line([213.3, -94.52], %)
+  |> line([-230.09, -55.34], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+sketch002 = startSketchOn('XY')
+profile002 = startProfileAt([85.81, 52.55], sketch002)
+
+`)
+      const [startProfileAt] = scene.makeMouseHelpers(606, 184)
+      const [nextPoint] = scene.makeMouseHelpers(763, 130)
+      await app.page
+        .getByText('startProfileAt([85.81, 52.55], sketch002)')
+        .click()
+      await toolbar.editSketch()
+      // timeout wait for engine animation is unavoidable
+      await app.page.waitForTimeout(600)
+
+      // equip line tool
+      await toolbar.lineBtn.click()
+      await app.page.waitForTimeout(100)
+      await startProfileAt()
+      await app.page.waitForTimeout(100)
+      await nextPoint()
+      await editor.expectEditor.toContain(`|> line([126.05, 44.12], %)`)
+    }
+  )
+  test2(
+    'old style sketch all in one pipe (with extrude) will break up to allow users to add a new profile to the same sketch',
+    async ({ app, scene, toolbar, editor }) => {
+      await app.initialise(`thePart = startSketchOn('XZ')
+  |> startProfileAt([7.53, 10.51], %)
+  |> line([12.54, 1.83], %)
+  |> line([6.65, -6.91], %)
+  |> line([-6.31, -8.69], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(75, thePart)
+`)
+      const [objClick] = scene.makeMouseHelpers(565, 343)
+      const [profilePoint1] = scene.makeMouseHelpers(609, 289)
+      const [profilePoint2] = scene.makeMouseHelpers(714, 389)
+
+      await test2.step('enter sketch and setup', async () => {
+        await objClick()
+        await toolbar.editSketch()
+        // timeout wait for engine animation is unavoidable
+        await app.page.waitForTimeout(600)
+      })
+
+      await test2.step(
+        'expect code to match inital conditions still',
+        async () => {
+          await editor.expectEditor.toContain(`thePart = startSketchOn('XZ')
+    |> startProfileAt([7.53, 10.51], %)`)
+        }
+      )
+
+      await test2.step(
+        'equiping the line tool should break up the pipe expression',
+        async () => {
+          await toolbar.lineBtn.click()
+          await editor.expectEditor.toContain(
+            `sketch001 = startSketchOn('XZ')thePart = startProfileAt([7.53, 10.51], sketch001)`
+          )
+        }
+      )
+
+      await test2.step(
+        'can continue on to add a new profile to this sketch',
+        async () => {
+          await profilePoint1()
+          await editor.expectEditor.toContain(
+            `profile001 = startProfileAt([19.77, -7.08], sketch001)`
+          )
+          await profilePoint2()
+          await editor.expectEditor.toContain(`|> line([19.05, -18.14], %)`)
+        }
+      )
+    }
+  )
 })

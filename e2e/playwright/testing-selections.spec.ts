@@ -458,7 +458,8 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     // Delet just a profile
     await page.mouse.click(individualProfile.x, individualProfile.y)
     await page.waitForTimeout(100)
-    const codeToBeDeletedSnippet = 'profile003 = startProfileAt([40.16, -120.48], sketch006)'
+    const codeToBeDeletedSnippet =
+      'profile003 = startProfileAt([40.16, -120.48], sketch006)'
     await expect(page.locator('.cm-activeLine')).toHaveText(
       '  |> line([20.91, -28.61], %)'
     )
@@ -467,7 +468,6 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(codeToBeDeletedSnippet)
-
   })
   test("Deleting solid that the AST mod can't handle results in a toast message", async ({
     page,
