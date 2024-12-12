@@ -9,6 +9,8 @@ use crate::{
     std::Args,
 };
 
+use super::args::FromArgs;
+
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
 pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -510,6 +512,36 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 }]
 fn inner_atan(num: f64) -> Result<f64, KclError> {
     Ok(num.atan())
+}
+
+/// Compute the four quadrant arctangent of Y and X (in radians).
+pub async fn atan2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (y, x) = FromArgs::from_args(&args, 0)?;
+    let result = inner_atan2(y, x)?;
+
+    Ok(args.make_user_val_from_f64(result))
+}
+
+/// Compute the four quadrant arctangent of Y and X (in radians).
+///
+/// ```no_run
+/// sketch001 = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle = toDegrees(atan2(1.25, 2)),
+///     length = 20,
+///   }, %)
+///   |> yLineTo(0, %)
+///   |> close(%)
+///
+/// extrude001 = extrude(5, sketch001)
+/// ```
+#[stdlib {
+    name = "atan2",
+    tags = ["math"],
+}]
+fn inner_atan2(y: f64, x: f64) -> Result<f64, KclError> {
+    Ok(y.atan2(x))
 }
 
 /// Compute the logarithm of the number with respect to an arbitrary base.
