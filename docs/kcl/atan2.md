@@ -1,10 +1,10 @@
 ---
 title: "atan2"
-excerpt: "Compute the four quadrant arctangent of two numbers (in radians)."
+excerpt: "Compute the four quadrant arctangent of Y and X (in radians)."
 layout: manual
 ---
 
-Compute the four quadrant arctangent of two numbers (in radians).
+Compute the four quadrant arctangent of Y and X (in radians).
 
 
 
