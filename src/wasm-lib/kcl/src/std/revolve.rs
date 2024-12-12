@@ -113,7 +113,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// Revolve occurs around a local sketch axis rather than a global axis.
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
+/// part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, -6], %)
@@ -128,7 +128,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// ```no_run
 /// // A donut shape.
-/// const sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn('XY')
 ///     |> circle({ center = [15, 0], radius = 5 }, %)
 ///     |> revolve({
 ///         angle = 360,
@@ -137,7 +137,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
+/// part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, -6], %)
@@ -151,7 +151,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
+/// part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, -6], %)
@@ -162,7 +162,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> line([-2, 0], %)
 ///     |> close(%)
 ///     |> revolve({axis = 'y', angle = 180}, %)
-/// const part002 = startSketchOn(part001, 'end')
+/// part002 = startSketchOn(part001, 'end')
 ///     |> startProfileAt([4.5, -5], %)
 ///     |> line([0, 5], %)
 ///     |> line([5, 0], %)
@@ -172,7 +172,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// const box = startSketchOn('XY')
+/// box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 20], %)
 ///     |> line([20, 0], %)
@@ -180,7 +180,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> close(%)
 ///     |> extrude(20, %)
 ///
-/// const sketch001 = startSketchOn(box, "END")
+/// sketch001 = startSketchOn(box, "END")
 ///     |> circle({ center = [10,10], radius = 4 }, %)
 ///     |> revolve({
 ///         angle = -90,
@@ -189,7 +189,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// const box = startSketchOn('XY')
+/// box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 20], %)
 ///     |> line([20, 0], %)
@@ -197,7 +197,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> close(%)
 ///     |> extrude(20, %)
 ///
-/// const sketch001 = startSketchOn(box, "END")
+/// sketch001 = startSketchOn(box, "END")
 ///     |> circle({ center = [10,10], radius = 4 }, %)
 ///     |> revolve({
 ///         angle = 90,
@@ -206,7 +206,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// const box = startSketchOn('XY')
+/// box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 20], %)
 ///     |> line([20, 0], %)
@@ -214,7 +214,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> close(%)
 ///     |> extrude(20, %)
 ///
-/// const sketch001 = startSketchOn(box, "END")
+/// sketch001 = startSketchOn(box, "END")
 ///     |> circle({ center = [10,10], radius = 4 }, %)
 ///     |> revolve({
 ///         angle = 90,
@@ -224,14 +224,14 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn('XY')
 ///   |> startProfileAt([10, 0], %)
 ///   |> line([5, -5], %)
 ///   |> line([5, 5], %)
 ///   |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///   |> close(%)
 ///
-/// const part001 = revolve({
+/// part001 = revolve({
 ///   axis = {
 ///     custom: {
 ///       axis = [0.0, 1.0],

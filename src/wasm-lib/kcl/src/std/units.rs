@@ -34,7 +34,7 @@ pub async fn mm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `10 * (1/25.4)`, if the project settings are in inches.
 ///
 /// ```no_run
-/// const totalWidth = 10 * mm()
+/// totalWidth = 10 * mm()
 /// ```
 #[stdlib {
     name = "mm",
@@ -75,7 +75,7 @@ pub async fn inch(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// `10 * 25.4`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * inch()
+/// totalWidth = 10 * inch()
 /// ```
 #[stdlib {
     name = "inch",
@@ -117,7 +117,7 @@ pub async fn ft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `10 * 304.8`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * ft()
+/// totalWidth = 10 * ft()
 /// ```
 #[stdlib {
     name = "ft",
@@ -159,7 +159,7 @@ pub async fn m(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 /// `10 * 1000`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * m()
+/// totalWidth = 10 * m()
 /// ```
 #[stdlib {
     name = "m",
@@ -201,7 +201,7 @@ pub async fn cm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `10 * 10`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * cm()
+/// totalWidth = 10 * cm()
 /// ```
 #[stdlib {
     name = "cm",
@@ -243,7 +243,7 @@ pub async fn yd(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `10 * 914.4`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * yd()
+/// totalWidth = 10 * yd()
 /// ```
 #[stdlib {
     name = "yd",

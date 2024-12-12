@@ -31,7 +31,7 @@ pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// is false.
 ///
 /// ```no_run
-/// const myVar = true
+/// myVar = true
 /// assert(myVar, "should always be true")
 /// ```
 #[stdlib {
@@ -70,8 +70,8 @@ pub async fn assert_gt(_exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// otherwise raise an error.
 ///
 /// ```no_run
-/// let n = 1.0285
-/// let o = 1.0286
+/// n = 1.0285
+/// o = 1.0286
 /// assertEqual(n, o, 0.01, "n is within the given tolerance for o")
 /// ```
 #[stdlib {

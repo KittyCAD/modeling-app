@@ -148,23 +148,23 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// [KCL modules](/docs/kcl/modules).
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.obj")
+/// model = import("tests/inputs/cube.obj")
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.obj", {format: "obj", units: "m"})
+/// model = import("tests/inputs/cube.obj", {format: "obj", units: "m"})
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.gltf")
+/// model = import("tests/inputs/cube.gltf")
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.sldprt")
+/// model = import("tests/inputs/cube.sldprt")
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.step")
+/// model = import("tests/inputs/cube.step")
 /// ```
 ///
 /// ```no_run

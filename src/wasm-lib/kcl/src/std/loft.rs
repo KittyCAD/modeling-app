@@ -63,7 +63,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///
 /// ```no_run
 /// // Loft a square and a triangle.
-/// const squareSketch = startSketchOn('XY')
+/// squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
 ///     |> line([0, -200], %)
@@ -71,7 +71,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const triangleSketch = startSketchOn(offsetPlane('XY', 75))
+/// triangleSketch = startSketchOn(offsetPlane('XY', 75))
 ///     |> startProfileAt([0, 125], %)
 ///     |> line([-15, -30], %)
 ///     |> line([30, 0], %)
@@ -83,7 +83,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///
 /// ```no_run
 /// // Loft a square, a circle, and another circle.
-/// const squareSketch = startSketchOn('XY')
+/// squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
 ///     |> line([0, -200], %)
@@ -91,10 +91,10 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
+/// circleSketch0 = startSketchOn(offsetPlane('XY', 75))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
-/// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
+/// circleSketch1 = startSketchOn(offsetPlane('XY', 150))
 ///     |> circle({ center = [0, 100], radius = 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1])
@@ -102,7 +102,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///
 /// ```no_run
 /// // Loft a square, a circle, and another circle with options.
-/// const squareSketch = startSketchOn('XY')
+/// squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
 ///     |> line([0, -200], %)
@@ -110,10 +110,10 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const circleSketch0 = startSketchOn(offsetPlane('XY', 75))
+/// circleSketch0 = startSketchOn(offsetPlane('XY', 75))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
-/// const circleSketch1 = startSketchOn(offsetPlane('XY', 150))
+/// circleSketch1 = startSketchOn(offsetPlane('XY', 150))
 ///     |> circle({ center = [0, 100], radius = 20 }, %)
 ///
 /// loft([squareSketch, circleSketch0, circleSketch1], {
