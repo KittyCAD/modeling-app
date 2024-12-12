@@ -21,6 +21,7 @@ pub mod segment;
 pub mod shapes;
 pub mod shell;
 pub mod sketch;
+pub mod sweep;
 pub mod types;
 pub mod units;
 pub mod utils;
@@ -114,6 +115,7 @@ lazy_static! {
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),
+        Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::import::Import),

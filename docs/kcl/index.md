@@ -102,6 +102,7 @@ layout: manual
 * [`startProfileAt`](kcl/startProfileAt)
 * [`startSketchAt`](kcl/startSketchAt)
 * [`startSketchOn`](kcl/startSketchOn)
+* [`sweep`](kcl/sweep)
 * [`tan`](kcl/tan)
 * [`tangentToEnd`](kcl/tangentToEnd)
 * [`tangentialArc`](kcl/tangentialArc)
