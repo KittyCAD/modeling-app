@@ -30,6 +30,7 @@ import { markOnce } from 'lib/performance'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
+import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -67,6 +68,7 @@ export class KclManager {
   private _execState: ExecState = emptyExecState()
   private _programMemory: ProgramMemory = ProgramMemory.empty()
   lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
+  lastSuccessfulOperations: Operation[] = []
   private _logs: string[] = []
   private _errors: KCLError[] = []
   private _diagnostics: Diagnostic[] = []
@@ -386,6 +388,7 @@ export class KclManager {
     this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulOperations = execState.operations
     }
     this.ast = { ...ast }
     this._executeCallback()
@@ -434,6 +437,7 @@ export class KclManager {
     this._programMemory = execState.memory
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulOperations = execState.operations
     }
     if (updates !== 'artifactRanges') return
 
