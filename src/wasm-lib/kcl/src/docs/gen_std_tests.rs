@@ -597,6 +597,8 @@ fn clean_function_name(name: &str) -> String {
         fn_name = fn_name.replace("seg_", "segment_");
     } else if fn_name.starts_with("log_") {
         fn_name = fn_name.replace("log_", "log");
+    } else if fn_name.ends_with("tan_2") {
+        fn_name = fn_name.replace("tan_2", "tan2");
     }
 
     fn_name
