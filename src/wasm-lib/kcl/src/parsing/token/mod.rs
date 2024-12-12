@@ -62,6 +62,7 @@ impl TokenStream {
         TokenSlice::from(self)
     }
 
+    #[allow(dead_code)]
     pub fn text(&self, range: SourceRange) -> &str {
         debug_assert_eq!(range.module_id(), self.module_id);
         &self.source[range.start()..range.end()]
@@ -108,6 +109,7 @@ impl<'a> TokenSlice<'a> {
         &self.stream.tokens[i + self.start]
     }
 
+    #[allow(dead_code)]
     pub fn text(&self, range: SourceRange) -> &str {
         self.stream.text(range)
     }
