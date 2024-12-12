@@ -50,7 +50,6 @@ lazy_static! {
         set.insert("record", TokenType::Keyword);
         set.insert("struct", TokenType::Keyword);
         set.insert("object", TokenType::Keyword);
-        set.insert("_", TokenType::Keyword);
 
         set.insert("string", TokenType::Type);
         set.insert("number", TokenType::Type);

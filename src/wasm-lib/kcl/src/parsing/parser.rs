@@ -96,10 +96,6 @@ impl ParseContext {
                     *e = err;
                     return;
                 }
-
-                if e.source_range.start() > err.source_range.end() {
-                    break;
-                }
             }
             errors.push(err);
         });
@@ -754,7 +750,7 @@ fn array_end_start(i: &mut TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
 }
 
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     Ok(Node {
         start: key.start,
@@ -1086,7 +1082,7 @@ fn member_expression_dot(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usiz
     period.parse_next(i)?;
     let property = alt((
         sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
-        identifier.map(Box::new).map(LiteralIdentifier::Identifier),
+        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
     ))
     .parse_next(i)?;
     let end = property.end();
@@ -1099,7 +1095,7 @@ fn member_expression_subscript(i: &mut TokenSlice) -> PResult<(LiteralIdentifier
     let property = alt((
         sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
         literal.map(LiteralIdentifier::Literal),
-        identifier.map(Box::new).map(LiteralIdentifier::Identifier),
+        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
     ))
     .parse_next(i)?;
 
@@ -1113,7 +1109,7 @@ fn member_expression_subscript(i: &mut TokenSlice) -> PResult<(LiteralIdentifier
 fn member_expression(i: &mut TokenSlice) -> PResult<Node<MemberExpression>> {
     // This is an identifier, followed by a sequence of members (aka properties)
     // First, the identifier.
-    let id = identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
+    let id = nameable_identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
     // Now a sequence of members.
     let member = alt((member_expression_dot, member_expression_subscript)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
     let mut members: Vec<_> = repeat(1.., member)
@@ -1553,7 +1549,9 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
 }
 
 fn import_item(i: &mut TokenSlice) -> PResult<Node<ImportItem>> {
-    let name = identifier.context(expected("an identifier to import")).parse_next(i)?;
+    let name = nameable_identifier
+        .context(expected("an identifier to import"))
+        .parse_next(i)?;
     let start = name.start;
     let module_id = name.module_id;
     let alias = opt(preceded(
@@ -1678,7 +1676,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
         literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
-        identifier.map(Box::new).map(Expr::Identifier),
+        nameable_identifier.map(Box::new).map(Expr::Identifier),
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
@@ -1697,7 +1695,7 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
         member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
-        identifier.map(Box::new).map(Expr::Identifier),
+        nameable_identifier.map(Box::new).map(Expr::Identifier),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
     ))
@@ -1871,6 +1869,24 @@ fn identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     any.try_map(Node::<Identifier>::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
         .parse_next(i)
+}
+
+fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
+    let result = identifier.parse_next(i)?;
+
+    if !result.is_nameable() {
+        let desc = if result.name == "_" {
+            "Underscores"
+        } else {
+            "Names with a leading underscore"
+        };
+        ParseContext::err(CompilationError::err(
+            SourceRange::new(result.start, result.end, result.module_id),
+            format!("{desc} cannot be referred to, only declared."),
+        ));
+    }
+
+    Ok(result)
 }
 
 fn sketch_keyword(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
@@ -2257,7 +2273,7 @@ fn arguments(i: &mut TokenSlice) -> PResult<Vec<Expr>> {
 
 fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
     separated_pair(
-        terminated(identifier, opt(whitespace)),
+        terminated(nameable_identifier, opt(whitespace)),
         terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
         expression,
     )
@@ -2490,7 +2506,7 @@ fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
 }
 
 fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
-    let fn_name = identifier(i)?;
+    let fn_name = nameable_identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
@@ -2531,7 +2547,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
-    let fn_name = identifier(i)?;
+    let fn_name = nameable_identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = open_paren.parse_next(i)?;
     ignore_whitespace(i);
@@ -3859,6 +3875,20 @@ e
         let some_program_string = r#"import "foo.kcl""#;
         let (_, errs) = assert_no_err(some_program_string);
         assert_eq!(errs.len(), 1);
+    }
+
+    #[test]
+    fn error_underscore() {
+        let result = crate::parsing::top_level_parse("_foo(_blah, _)");
+        let result = result.0.unwrap();
+        result.0.unwrap();
+        // Errors are not fatal
+        assert!(
+            result.1.iter().all(|e| e.severity == Severity::Error),
+            "found: {:#?}",
+            result.1
+        );
+        assert_eq!(result.1.len(), 3, "found: {:#?}", result.1);
     }
 
     #[test]
