@@ -27,11 +27,18 @@ pub(crate) use tokeniser::RESERVED_WORDS;
 #[derive(Clone, Debug, PartialEq)]
 pub(crate) struct TokenStream {
     tokens: Vec<Token>,
+    // TODO this could easily be borrowed except that the LSP caches token streams
+    source: String,
+    module_id: ModuleId,
 }
 
 impl TokenStream {
-    fn new(tokens: Vec<Token>) -> Self {
-        Self { tokens }
+    fn new(tokens: Vec<Token>, source: String, module_id: ModuleId) -> Self {
+        Self {
+            tokens,
+            source,
+            module_id,
+        }
     }
 
     pub(super) fn remove_unknown(&mut self) -> Vec<Token> {
@@ -53,6 +60,11 @@ impl TokenStream {
 
     pub fn as_slice(&self) -> TokenSlice {
         TokenSlice::from(self)
+    }
+
+    pub fn text(&self, range: SourceRange) -> &str {
+        debug_assert_eq!(range.module_id(), self.module_id);
+        &self.source[range.start()..range.end()]
     }
 }
 
@@ -94,6 +106,10 @@ impl<'a> std::ops::Deref for TokenSlice<'a> {
 impl<'a> TokenSlice<'a> {
     pub fn token(&self, i: usize) -> &Token {
         &self.stream.tokens[i + self.start]
+    }
+
+    pub fn text(&self, range: SourceRange) -> &str {
+        self.stream.text(range)
     }
 
     pub fn iter(&self) -> impl Iterator<Item = &Token> {

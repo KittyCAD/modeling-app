@@ -4,7 +4,7 @@
 use std::{cell::RefCell, collections::HashMap, str::FromStr};
 
 use winnow::{
-    combinator::{alt, delimited, opt, peek, preceded, repeat, separated, separated_pair, terminated},
+    combinator::{alt, opt, peek, preceded, repeat, separated, separated_pair, terminated},
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
@@ -1662,12 +1662,24 @@ fn label(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
 }
 
 fn unnecessarily_bracketed(i: &mut TokenSlice) -> PResult<Expr> {
-    delimited(
+    let (bra, result, ket) = (
         terminated(open_paren, opt(whitespace)),
         expression,
         preceded(opt(whitespace), close_paren),
     )
-    .parse_next(i)
+        .parse_next(i)?;
+
+    let expr_range: SourceRange = (&result).into();
+
+    ParseContext::warn(CompilationError::with_suggestion(
+        SourceRange::new(bra.start, ket.end, result.module_id()),
+        None,
+        "Unnecessary parentheses around sub-expression",
+        Some(("Remove parentheses", i.text(expr_range))),
+        Tag::Unnecessary,
+    ));
+
+    Ok(result)
 }
 
 fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
@@ -4238,6 +4250,15 @@ var baz = 2
  baz = 2
 "#
         );
+    }
+
+    #[test]
+    fn warn_unneccessary_parens() {
+        let some_program_string = r#"foo((a + b))"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1);
+        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
+        assert_eq!(replaced, r#"foo(a + b)"#);
     }
 }
 
