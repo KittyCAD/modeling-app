@@ -30,6 +30,7 @@ layout: manual
 * [`assertLessThan`](kcl/assertLessThan)
 * [`assertLessThanOrEq`](kcl/assertLessThanOrEq)
 * [`atan`](kcl/atan)
+* [`atan2`](kcl/atan2)
 * [`bezierCurve`](kcl/bezierCurve)
 * [`ceil`](kcl/ceil)
 * [`chamfer`](kcl/chamfer)
