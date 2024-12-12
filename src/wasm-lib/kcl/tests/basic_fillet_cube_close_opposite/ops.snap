@@ -1,0 +1,78 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed basic_fillet_cube_close_opposite.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          24,
+          28,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      10,
+      29,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          181,
+          183,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          185,
+          186,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      173,
+      187,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          200,
+          275,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          277,
+          278,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      193,
+      279,
+      0
+    ],
+    "stdLibFn": "fillet",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

@@ -105,7 +105,7 @@ export class CameraControls {
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
   pendingPan: Vector2 | null = null
-  interactionGuards: MouseGuard = cameraMouseDragGuards.KittyCAD
+  interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
   get isPerspective() {

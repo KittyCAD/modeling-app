@@ -1,0 +1,97 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed poop_chute.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          196,
+          201,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      182,
+      202,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          822,
+          940,
+          0
+        ]
+      },
+      "sketch": {
+        "sourceRange": [
+          942,
+          951,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      814,
+      952,
+      0
+    ],
+    "stdLibFn": "revolve",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          980,
+          985,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      966,
+      986,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          1601,
+          1621,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          1623,
+          1624,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1593,
+      1625,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

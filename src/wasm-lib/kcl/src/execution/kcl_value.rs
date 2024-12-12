@@ -202,6 +202,39 @@ impl KclValue {
         }
     }
 
+    pub(crate) fn first_source_range(&self) -> Option<SourceRange> {
+        match self {
+            KclValue::Uuid { value: _, meta } => meta.first().map(|m| m.source_range),
+            KclValue::Bool { value: _, meta } => meta.first().map(|m| m.source_range),
+            KclValue::Number { value: _, meta } => meta.first().map(|m| m.source_range),
+            KclValue::Int { value: _, meta } => meta.first().map(|m| m.source_range),
+            KclValue::String { value: _, meta } => meta.first().map(|m| m.source_range),
+            KclValue::Array { value: _, meta } => meta.first().map(|m| m.source_range),
+            KclValue::Object { value: _, meta } => meta.first().map(|m| m.source_range),
+            KclValue::TagIdentifier(x) => x.meta.first().map(|m| m.source_range),
+            KclValue::TagDeclarator(x) => Some(x.metadata().source_range),
+            KclValue::Plane(x) => x.meta.first().map(|m| m.source_range),
+            KclValue::Face(x) => x.meta.first().map(|m| m.source_range),
+            KclValue::Sketch { value } => value.meta.first().map(|m| m.source_range),
+            KclValue::Sketches { value } => value
+                .iter()
+                .filter_map(|sketch| sketch.meta.first().map(|m| m.source_range))
+                .collect::<Vec<_>>()
+                .first()
+                .copied(),
+            KclValue::Solid(x) => x.meta.first().map(|m| m.source_range),
+            KclValue::Solids { value } => value
+                .iter()
+                .filter_map(|sketch| sketch.meta.first().map(|m| m.source_range))
+                .collect::<Vec<_>>()
+                .first()
+                .copied(),
+            KclValue::ImportedGeometry(x) => x.meta.first().map(|m| m.source_range),
+            KclValue::Function { meta, .. } => meta.first().map(|m| m.source_range),
+            KclValue::KclNone { meta, .. } => meta.first().map(|m| m.source_range),
+        }
+    }
+
     pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
             KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),

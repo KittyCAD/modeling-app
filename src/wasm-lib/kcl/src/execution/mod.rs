@@ -24,6 +24,7 @@ pub use function_param::FunctionParam;
 pub use kcl_value::{KclObjectFields, KclValue};
 
 pub(crate) mod cache;
+mod cad_op;
 mod exec_ast;
 mod function_param;
 mod kcl_value;
@@ -41,6 +42,9 @@ use crate::{
     std::{args::Arg, StdLib},
     ExecError, Program,
 };
+
+// Re-exports.
+pub use cad_op::Operation;
 
 /// State for executing a program.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -65,6 +69,9 @@ pub struct ExecState {
     pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
 }
 
 impl ExecState {

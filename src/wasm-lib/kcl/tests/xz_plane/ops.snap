@@ -1,0 +1,52 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed xz_plane.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          24,
+          28,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      10,
+      29,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          140,
+          145,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          147,
+          148,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      132,
+      149,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

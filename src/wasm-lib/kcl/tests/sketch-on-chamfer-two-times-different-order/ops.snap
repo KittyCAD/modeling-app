@@ -1,0 +1,222 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          26,
+          30,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      12,
+      31,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          447,
+          450,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          452,
+          461,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      439,
+      462,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          475,
+          506,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          508,
+          509,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      468,
+      510,
+      0
+    ],
+    "stdLibFn": "fillet",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          524,
+          591,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          593,
+          594,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          596,
+          602,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      516,
+      603,
+      0
+    ],
+    "stdLibFn": "chamfer",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          617,
+          648,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          650,
+          651,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          653,
+          659,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      609,
+      660,
+      0
+    ],
+    "stdLibFn": "chamfer",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          688,
+          698,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          700,
+          705,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      674,
+      706,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          1127,
+          1137,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          1139,
+          1144,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1113,
+      1145,
+      0
+    ],
+    "stdLibFn": "startSketchOn",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          1563,
+          1565,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          1567,
+          1576,
+          0
+        ]
+      }
+    },
+    "sourceRange": [
+      1555,
+      1577,
+      0
+    ],
+    "stdLibFn": "extrude",
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]
