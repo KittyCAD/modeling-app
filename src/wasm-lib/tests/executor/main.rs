@@ -2004,7 +2004,7 @@ async fn kcl_test_error_no_auth_websocket() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_ids_stable_between_executions() {
-    let code = r#"const sketch001 = startSketchOn('XZ')
+    let code = r#"sketch001 = startSketchOn('XZ')
   |> startProfileAt([61.74, 206.13], %)
   |> xLine(305.11, %, $seg01)
   |> yLine(-291.85, %)
