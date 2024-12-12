@@ -113,6 +113,7 @@ async fn inner_extrude(
             ModelingCmd::from(mcmd::Extrude {
                 target: sketch.id.into(),
                 distance: LengthUnit(length),
+                faces: Default::default(),
             }),
         )
         .await?;
