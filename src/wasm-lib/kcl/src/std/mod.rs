@@ -125,6 +125,7 @@ lazy_static! {
         Box::new(crate::std::math::Acos),
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),
+        Box::new(crate::std::math::Atan2),
         Box::new(crate::std::math::Pi),
         Box::new(crate::std::math::E),
         Box::new(crate::std::math::Tau),

@@ -21,6 +21,9 @@ pub enum Operation {
         labeled_args: IndexMap<String, OpArg>,
         /// The source range of the operation in the source code.
         source_range: SourceRange,
+        /// True if the operation resulted in an error.
+        #[serde(default, skip_serializing_if = "is_false")]
+        is_error: bool,
     },
     #[serde(rename_all = "camelCase")]
     UserDefinedFunctionCall {
@@ -38,6 +41,16 @@ pub enum Operation {
         source_range: SourceRange,
     },
     UserDefinedFunctionReturn,
+}
+
+impl Operation {
+    /// If the variant is `StdLibCall`, set the `is_error` field.
+    pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {
+        match self {
+            Self::StdLibCall { ref mut is_error, .. } => *is_error = is_err,
+            Self::UserDefinedFunctionCall { .. } | Self::UserDefinedFunctionReturn => {}
+        }
+    }
 }
 
 /// An argument to a CAD modeling operation.
@@ -114,4 +127,8 @@ where
     } else {
         Err(serde::de::Error::custom(format!("not a KCL stdlib function: {}", s)))
     }
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }

@@ -1,0 +1,75 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Operations executed tag_proxied_through_function_does_not_define_var.kcl
+snapshot_kind: text
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          214,
+          218,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      200,
+      219,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "myCircle",
+    "functionSourceRange": [
+      47,
+      193,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      256,
+      274,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          72,
+          103,
+          0
+        ]
+      },
+      "sketch_surface_or_group": {
+        "sourceRange": [
+          105,
+          107,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          109,
+          112,
+          0
+        ]
+      }
+    },
+    "name": "circle",
+    "sourceRange": [
+      65,
+      113,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

@@ -404,25 +404,33 @@ impl Node<CallExpressionKw> {
                         unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
+                        is_error: false,
                     })
                 } else {
                     None
                 };
 
                 // Attempt to call the function.
-                let mut result = func.std_lib_fn()(exec_state, args).await?;
-                update_memory_for_tags_of_geometry(&mut result, &tag_declarator_args, exec_state)?;
+                let result = {
+                    // Don't early-return in this block.
+                    let result = func.std_lib_fn()(exec_state, args).await;
 
-                if let Some(op) = op {
-                    // Track call operation.  We do this after the call since
-                    // things like patternTransform may call user code before
-                    // running, and we will likely want to use the return value.
-                    // The call takes ownership of the args, so we need to build
-                    // the op before the call.
-                    exec_state.operations.push(op);
-                }
+                    if let Some(mut op) = op {
+                        op.set_std_lib_call_is_error(result.is_err());
+                        // Track call operation.  We do this after the call
+                        // since things like patternTransform may call user code
+                        // before running, and we will likely want to use the
+                        // return value. The call takes ownership of the args,
+                        // so we need to build the op before the call.
+                        exec_state.operations.push(op);
+                    }
+                    result
+                };
 
-                Ok(result)
+                let mut return_value = result?;
+                update_memory_for_tags_of_geometry(&mut return_value, &tag_declarator_args, exec_state)?;
+
+                Ok(return_value)
             }
             FunctionKind::UserDefined => {
                 let source_range = SourceRange::from(self);
@@ -520,6 +528,7 @@ impl Node<CallExpression> {
                         unlabeled_arg: None,
                         labeled_args: op_labeled_args,
                         source_range: callsite,
+                        is_error: false,
                     })
                 } else {
                     None
@@ -527,19 +536,26 @@ impl Node<CallExpression> {
 
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
-                let mut result = func.std_lib_fn()(exec_state, args).await?;
-                update_memory_for_tags_of_geometry(&mut result, &tag_declarator_args, exec_state)?;
+                let result = {
+                    // Don't early-return in this block.
+                    let result = func.std_lib_fn()(exec_state, args).await;
 
-                if let Some(op) = op {
-                    // Track call operation.  We do this after the call since
-                    // things like patternTransform may call user code before
-                    // running, and we will likely want to use the return value.
-                    // The call takes ownership of the args, so we need to build
-                    // the op before the call.
-                    exec_state.operations.push(op);
-                }
+                    if let Some(mut op) = op {
+                        op.set_std_lib_call_is_error(result.is_err());
+                        // Track call operation.  We do this after the call
+                        // since things like patternTransform may call user code
+                        // before running, and we will likely want to use the
+                        // return value. The call takes ownership of the args,
+                        // so we need to build the op before the call.
+                        exec_state.operations.push(op);
+                    }
+                    result
+                };
 
-                Ok(result)
+                let mut return_value = result?;
+                update_memory_for_tags_of_geometry(&mut return_value, &tag_declarator_args, exec_state)?;
+
+                Ok(return_value)
             }
             FunctionKind::UserDefined => {
                 let source_range = SourceRange::from(self);
