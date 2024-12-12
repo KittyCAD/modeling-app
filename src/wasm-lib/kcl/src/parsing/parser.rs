@@ -458,7 +458,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                 })?;
 
                 if token.numeric_suffix().is_some() {
-                    ParseContext::warn(CompilationError::err(
+                    ParseContext::err(CompilationError::err(
                         (&token).into(),
                         "Unit of Measure suffixes are experimental and currently do nothing.",
                     ));
@@ -2322,7 +2322,7 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
         )
             .map(|(token, suffix)| {
                 if suffix.is_some() {
-                    ParseContext::warn(CompilationError::err(
+                    ParseContext::err(CompilationError::err(
                         (&token).into(),
                         "Unit of Measure types are experimental and currently do nothing.",
                     ));
@@ -3502,6 +3502,18 @@ mySk1 = startSketchAt([0, 0])"#;
     }
 
     #[track_caller]
+    fn assert_no_fatal(p: &str) -> (Node<Program>, Vec<CompilationError>) {
+        let result = crate::parsing::top_level_parse(p);
+        let result = result.0.unwrap();
+        assert!(
+            result.1.iter().all(|e| e.severity != Severity::Fatal),
+            "found: {:#?}",
+            result.1
+        );
+        (result.0.unwrap(), result.1)
+    }
+
+    #[track_caller]
     fn assert_err(p: &str, msg: &str, src_expected: [usize; 2]) {
         let result = crate::parsing::top_level_parse(p);
         let err = result.unwrap_errs().next().unwrap();
@@ -3901,22 +3913,14 @@ e
     #[test]
     fn fn_decl_uom_ty() {
         let some_program_string = r#"fn foo(x: number(mm)): number(_) { return 1 }"#;
-        let (_, errs) = assert_no_err(some_program_string);
+        let (_, errs) = assert_no_fatal(some_program_string);
         assert_eq!(errs.len(), 2);
     }
 
     #[test]
     fn error_underscore() {
-        let result = crate::parsing::top_level_parse("_foo(_blah, _)");
-        let result = result.0.unwrap();
-        result.0.unwrap();
-        // Errors are not fatal
-        assert!(
-            result.1.iter().all(|e| e.severity == Severity::Error),
-            "found: {:#?}",
-            result.1
-        );
-        assert_eq!(result.1.len(), 3, "found: {:#?}", result.1);
+        let (_, errs) = assert_no_fatal("_foo(_blah, _)");
+        assert_eq!(errs.len(), 3, "found: {:#?}", errs);
     }
 
     #[test]
