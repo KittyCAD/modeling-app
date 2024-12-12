@@ -73,6 +73,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 #[stdlib {
     name = "sweep",
+    feature_tree_operation = true,
 }]
 async fn inner_sweep(
     data: SweepData,
