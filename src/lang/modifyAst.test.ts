@@ -920,7 +920,7 @@ sketch002 = startSketchOn({
   )
 })
 
-describe.only('Testing splitPipedProfile', () => {
+describe('Testing splitPipedProfile', () => {
   it('should split the pipe expression correctly', () => {
     const codeBefore = `part001 = startSketchOn('XZ')
   |> startProfileAt([1, 2], %)

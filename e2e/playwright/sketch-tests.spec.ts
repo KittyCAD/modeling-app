@@ -9,7 +9,6 @@ import {
   tearDown,
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
-import { a } from 'vitest/dist/suite-IbNSsUWN'
 
 test.beforeEach(async ({ context, page }, testInfo) => {
   await setup(context, page, testInfo)
