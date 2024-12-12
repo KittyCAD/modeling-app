@@ -551,10 +551,18 @@ function nodeHasClose(node: CommonASTNode) {
   })
 }
 function nodeHasCircle(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'circle',
-    ...node,
-  })
+  return (
+    doesPipeHaveCallExp({
+      calleeName: 'circle',
+      ...node,
+    }) ||
+    node.ast.body.some(
+      (expression) =>
+        expression.type === 'VariableDeclaration' &&
+        expression.declaration.init.type === 'CallExpression' &&
+        expression.declaration.init.callee.name === 'circle'
+    )
+  )
 }
 
 export function canSweepSelection(selection: Selections) {
@@ -562,8 +570,6 @@ export function canSweepSelection(selection: Selections) {
     buildCommonNodeFromSelection(selection, i)
   )
   return (
-    !!isSketchPipe(selection) &&
-    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
     (commonNodes.every((n) => nodeHasClose(n)) ||
       commonNodes.every((n) => nodeHasCircle(n))) &&
     commonNodes.every((n) => !nodeHasExtrude(n))

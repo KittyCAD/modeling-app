@@ -592,7 +592,6 @@ export const ModelingMachineProvider = ({
             // BUT only if there's extrudable geometry
             return doesSceneHaveSweepableSketch(kclManager.ast)
           }
-          if (!isSketchPipe(selectionRanges)) return false
 
           const canSweep = canSweepSelection(selectionRanges)
           if (err(canSweep)) return false

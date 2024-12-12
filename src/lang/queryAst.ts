@@ -1058,13 +1058,15 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
             hasCircle = true
           }
         }
-        if (
-          (hasStartProfileAt || hasCircle) &&
-          hasStartSketchOn &&
-          (hasClose || hasCircle)
-        ) {
+        if ((hasStartProfileAt && hasClose) || hasCircle) {
           theMap[node.id.name] = true
         }
+      } else if (
+        node.type === 'VariableDeclaration' &&
+        node.declaration.init.type === 'CallExpression' &&
+        node.declaration.init.callee.name === 'circle'
+      ) {
+        theMap[node.declaration.id.name] = true
       } else if (
         node.type === 'CallExpression' &&
         (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&

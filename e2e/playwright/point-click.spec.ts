@@ -668,10 +668,10 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
     cmdBar,
   }) => {
     const initialCode = `sketch001 = startSketchOn('XZ')
-    |> circle({ center = [0, 0], radius = 30 }, %)
-    plane001 = offsetPlane('XZ', 50)
-    sketch002 = startSketchOn(plane001)
-    |> circle({ center = [0, 0], radius = 20 }, %)
+profile001 = circle({ center = [0, 0], radius = 30 }, sketch001)
+plane001 = offsetPlane('XZ', 50)
+sketch002 = startSketchOn(plane001)
+profile002 = circle({ center = [0, 0], radius = 20 }, sketch002)
 `
     await app.initialise(initialCode)
 
@@ -682,7 +682,7 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
       testPoint.x,
       testPoint.y + 80
     )
-    const loftDeclaration = 'loft001 = loft([sketch001, sketch002])'
+    const loftDeclaration = 'loft001 = loft([profile001, profile002])'
 
     await test.step(`Look for the white of the sketch001 shape`, async () => {
       await scene.expectPixelColor([254, 254, 254], testPoint, 15)
