@@ -331,6 +331,28 @@ part009 = startSketchOn('XY')
   |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
   |> close(%)
 rev = revolve({ axis = 'y' }, part009)
+sketch006 = startSketchOn('XY')
+profile001 = circle({
+  center = [42.91, -70.42],
+  radius = 17.96
+}, sketch006)
+profile002 = startProfileAt([86.92, -63.81], sketch006)
+  |> angledLine([0, 63.81], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       17.05
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile003 = startProfileAt([40.16, -120.48], sketch006)
+  |> line([26.95, 24.21], %)
+  |> line([20.91, -28.61], %)
+  |> line([32.46, 18.71], %)
+
 `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -363,9 +385,10 @@ rev = revolve({ axis = 'y' }, part009)
     })
     await page.waitForTimeout(100)
 
-    const revolve = { x: 646, y: 248 }
+    const revolve = { x: 635, y: 253 }
     const parentExtrude = { x: 915, y: 133 }
     const solid2d = { x: 770, y: 167 }
+    const individualProfile = { x: 694, y: 432 }
 
     // DELETE REVOLVE
     await page.mouse.click(revolve.x, revolve.y)
@@ -431,6 +454,20 @@ rev = revolve({ axis = 'y' }, part009)
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(`sketch005 = startSketchOn({`)
+
+    // Delet just a profile
+    await page.mouse.click(individualProfile.x, individualProfile.y)
+    await page.waitForTimeout(100)
+    const codeToBeDeletedSnippet = 'profile003 = startProfileAt([40.16, -120.48], sketch006)'
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '  |> line([20.91, -28.61], %)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(200)
+    await expect(u.codeLocator).not.toContainText(codeToBeDeletedSnippet)
+
   })
   test("Deleting solid that the AST mod can't handle results in a toast message", async ({
     page,
