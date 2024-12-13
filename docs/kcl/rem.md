@@ -21,8 +21,8 @@ rem(num: i64, divisor: i64) -> i64
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `i64` |  | Yes |
-| `divisor` | `i64` |  | Yes |
+| `num` | `i64` | The number which will be divided by `divisor`. | Yes |
+| `divisor` | `i64` | The number which will divide `num`. | Yes |
 
 ### Returns
 

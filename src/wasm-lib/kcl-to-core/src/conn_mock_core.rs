@@ -189,7 +189,11 @@ impl EngineConnection {
                     uuid_to_cpp(path_id)
                 )
             }
-            kcmc::ModelingCmd::Extrude(kcmc::Extrude { distance, target }) => {
+            kcmc::ModelingCmd::Extrude(kcmc::Extrude {
+                distance,
+                target,
+                faces: _, // Engine team: start using this once the frontend and engine both use it.
+            }) => {
                 format!(
                     r#"
                     scene->getSceneObject(Utils::UUID("{target}"))->extrudeToSolid3D({} * scaleFactor, true);
