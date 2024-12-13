@@ -75,7 +75,6 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "circle",
-    feature_tree_operation = true,
 }]
 async fn inner_circle(
     data: CircleData,
