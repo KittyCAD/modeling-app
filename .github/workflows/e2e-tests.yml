@@ -99,22 +99,22 @@ jobs:
       run: |
         brew install gnu-sed
         echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
-    - name: Install vector
-      shell: bash
-      if:  ${{ !startsWith(matrix.os, 'windows') }}
-      run: |
-        curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
-        chmod +x /tmp/vector.sh
-        /tmp/vector.sh -y -no-modify-path
-        mkdir -p /tmp/vector
-        cp .github/workflows/vector.toml /tmp/vector.toml
-        sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
-        sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
-        sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
-        sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
-        sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
-        cat /tmp/vector.toml
-        ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
+#    - name: Install vector
+#      shell: bash
+#      if:  ${{ !startsWith(matrix.os, 'windows') }}
+#      run: |
+#        curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
+#        chmod +x /tmp/vector.sh
+#        /tmp/vector.sh -y -no-modify-path
+#        mkdir -p /tmp/vector
+#        cp .github/workflows/vector.toml /tmp/vector.toml
+#        sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
+#        sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
+#        sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
+#        sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
+#        sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
+#        cat /tmp/vector.toml
+#        ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
     - name: Build Wasm (because rust diff)
       if: needs.check-rust-changes.outputs.rust-changed == 'true'
       shell: bash
