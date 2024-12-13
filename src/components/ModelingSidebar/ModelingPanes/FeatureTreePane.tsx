@@ -4,11 +4,17 @@ import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclProvider'
 import { FrontPlane } from 'lang/KclSingleton'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
 import { sourceRangeFromRust } from 'lang/wasm'
-import { editorManager, kclManager } from 'lib/singletons'
+import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
-import { ComponentProps, useMemo, useRef, useState } from 'react'
+import {
+  ComponentProps,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 const stdLibIconMap: Record<string, CustomIconName> = {
@@ -32,11 +38,72 @@ function getOperationIcon(op: Operation): CustomIconName {
   }
 }
 
+/**
+ * Exclude StdLibCall operations that occur
+ * between a UserDefinedFunctionCall and the next UserDefinedFunctionReturn
+ */
+function isNotStdLibInUserFunction(
+  operation: Operation,
+  index: number,
+  allOperations: Operation[]
+) {
+  if (operation.type === 'StdLibCall') {
+    const lastUserDefinedFunctionCallIndex = allOperations
+      .slice(0, index)
+      .findLastIndex((op) => op.type === 'UserDefinedFunctionCall')
+    const lastUserDefinedFunctionReturnIndex = allOperations
+      .slice(0, index)
+      .findLastIndex((op) => op.type === 'UserDefinedFunctionReturn')
+
+    console.log(`checking ${operation.type} at index ${index}`, {
+      lastUserDefinedFunctionCallIndex,
+      lastUserDefinedFunctionReturnIndex,
+    })
+    return (
+      lastUserDefinedFunctionCallIndex < lastUserDefinedFunctionReturnIndex ||
+      lastUserDefinedFunctionReturnIndex === -1
+    )
+  }
+  return true
+}
+
+/**
+ * A second filter to exclude UserDefinedFunctionCall operations
+ * that don't have any operations inside them
+ */
+function isNotUserFunctionWithNoOperations(
+  operation: Operation,
+  index: number,
+  allOperations: Operation[]
+) {
+  if (operation.type === 'UserDefinedFunctionCall') {
+    return (
+      index <= allOperations.length &&
+      allOperations[index + 1].type !== 'UserDefinedFunctionReturn'
+    )
+  }
+  return true
+}
+
+/**
+ * A third filter to exclude UserDefinedFunctionReturn operations
+ */
+function isNotUserFunctionReturn(operation: Operation) {
+  return operation.type !== 'UserDefinedFunctionReturn'
+}
+
 export const FeatureTreePane = () => {
   const { send: modelingSend, state: modelingState } = useModelingContext()
-  const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
+  const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine' && e)
+  const longestErrorOperationList = kclManager.errors.reduce((acc, error) => {
+    return error.operations && error.operations.length > acc.length
+      ? error.operations
+      : acc
+  }, [] as Operation[])
   const operationList = !parseErrors.length
-    ? kclManager.execState.operations
+    ? !kclManager.errors.length
+      ? kclManager.execState.operations
+      : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
   const defaultPlanes = useMemo(() => {
     return kclManager?.defaultPlanes
@@ -91,11 +158,9 @@ export const FeatureTreePane = () => {
                 </div>
               )}
               {operationList
-                .filter(
-                  (operation) =>
-                    operation.type !== 'StdLibCall' ||
-                    stdLibWhiteList.some((fnName) => fnName === operation.name)
-                )
+                .filter(isNotUserFunctionWithNoOperations)
+                .filter(isNotStdLibInUserFunction)
+                .filter(isNotUserFunctionReturn)
                 .map((operation) => (
                   <OperationListItem
                     key={`${operation.type}-${
@@ -230,50 +295,71 @@ const FeatureTreeDefaultPlaneItem = (props: {
 const OperationListItem = (props: { item: Operation }) => {
   const { send: modelingSend, state: modelingState } = useModelingContext()
   const kclContext = useKclContext()
+  const jsSourceRange =
+    'sourceRange' in props.item
+      ? sourceRangeFromRust(props.item.sourceRange)
+      : null
   const errors = useMemo(() => {
     return kclContext.diagnostics.filter(
       (diag) =>
+        diag.severity === 'error' &&
         'sourceRange' in props.item &&
         diag.from >= props.item.sourceRange[0] &&
         diag.to <= props.item.sourceRange[1]
     )
   }, [kclContext.diagnostics.length])
-  const selectOperation = () => {
-    if (!('sourceRange' in props.item)) {
+  const artifact = jsSourceRange
+    ? getArtifactFromRange(jsSourceRange, engineCommandManager.artifactGraph)
+    : null
+  const selectOperation = useCallback(() => {
+    if (!jsSourceRange) {
       return
     }
+    if (!artifact || !('codeRef' in artifact)) {
+      modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            codeRef: codeRefFromRange(jsSourceRange, kclManager.ast),
+          },
+        },
+      })
+    } else {
+      modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {
+            artifact: artifact,
+            codeRef: codeRefFromRange(jsSourceRange, kclManager.ast),
+          },
+        },
+      })
+    }
+  }, [
+    artifact,
+    jsSourceRange,
+    modelingSend,
+    props.item,
+    engineCommandManager.artifactGraph,
+  ])
+
+  function openToFunctionDefinition() {
+    if (props.item.type !== 'UserDefinedFunctionCall') return
     modelingSend({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
         selection: {
-          codeRef: {
-            range: sourceRangeFromRust(props.item.sourceRange),
-            pathToNode: getNodePathFromSourceRange(
-              kclManager.ast,
-              sourceRangeFromRust(props.item.sourceRange)
-            ),
-          },
+          codeRef: codeRefFromRange(
+            sourceRangeFromRust(props.item.functionSourceRange),
+            kclManager.ast
+          ),
         },
       },
     })
   }
-  // const [visible, setVisible] = useState(true)
-
-  // async function handleToggleVisible() {
-  //   if (props.item.id instanceof Array) {
-  //     await Promise.all([
-  //       engineCommandManager.setObjectVisibility(props.item.id[0], !visible),
-  //       await engineCommandManager.setObjectVisibility(
-  //         props.item.id[1],
-  //         !visible
-  //       ),
-  //     ])
-  //   } else {
-  //     await engineCommandManager.setObjectVisibility(props.item.id, !visible)
-  //   }
-  //   setVisible(!visible)
-  // }
 
   const menuItems = useMemo(
     () => [
@@ -293,6 +379,13 @@ const OperationListItem = (props: { item: Operation }) => {
       >
         View KCL source code
       </ContextMenuItem>,
+      ...(props.item.type === 'UserDefinedFunctionCall'
+        ? [
+            <ContextMenuItem onClick={openToFunctionDefinition}>
+              View function definition
+            </ContextMenuItem>,
+          ]
+        : []),
       <ContextMenuItem
         onClick={() => {
           selectOperation()

@@ -2,13 +2,13 @@ import {
   PathToNode,
   Program,
   SourceRange,
+  sourceRangeFromRust,
 } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
-import {
-  getNodePathFromSourceRange,
-} from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
 import { GenericObj } from 'components/DebugDisplayObj'
+import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type ArtifactId = string
 
@@ -212,7 +212,7 @@ function mergeArtifacts(
   // merging artifacts of different types should never happen, but if it does, just return the new artifact
   if (oldArtifact.type !== newArtifact.type) return newArtifact
   const _oldArtifact = oldArtifact as any as GenericArtifact
-  const mergedArtifact = { ...oldArtifact, ...newArtifact } as GenericArtifact
+  let mergedArtifact = { ...oldArtifact, ...newArtifact } as GenericArtifact
   Object.entries(newArtifact as any as GenericArtifact).forEach(
     ([propName, value]) => {
       const otherValue = _oldArtifact[propName]
@@ -221,7 +221,17 @@ function mergeArtifacts(
       }
     }
   )
-  return mergedArtifact as any as Artifact
+  // TODO: Remove this any cast
+  let typeCastArtifact = mergedArtifact as any as Artifact
+
+  if ('codeRef' in typeCastArtifact) {
+    // In the creation of this artifact above this subtle
+    // type shifting got lost due to the type casting
+    typeCastArtifact.codeRef.range = sourceRangeFromRust(
+      typeCastArtifact.codeRef.range as unknown as RustSourceRange
+    )
+  }
+  return typeCastArtifact
 }
 
 /**
@@ -907,4 +917,22 @@ export function computeFeatureTree(artifactGraph: ArtifactGraph): GenericObj[] {
   items = items.concat(extraRichPlanes)
 
   return items
+}
+
+/**
+ * Get an artifact from a code source range
+ */
+export function getArtifactFromRange(
+  range: SourceRange,
+  artifactGraph: ArtifactGraph
+): Artifact | null {
+  for (const artifact of artifactGraph.values()) {
+    if ('codeRef' in artifact) {
+      const match =
+        artifact.codeRef.range[0] === range[0] &&
+        artifact.codeRef.range[1] === range[1]
+      if (match) return artifact
+    }
+  }
+  return null
 }
