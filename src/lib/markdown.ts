@@ -15,6 +15,7 @@ export class SafeRenderer extends Renderer {
     }
   }
 
+  // Extended from https://github.com/ts-stack/markdown/blob/c5c1925c1153ca2fe9051c356ef0ddc60b3e1d6a/packages/markdown/src/renderer.ts#L116
   link(href: string, title: string, text: string): string {
     if (this.options.sanitize) {
       let prot: string
