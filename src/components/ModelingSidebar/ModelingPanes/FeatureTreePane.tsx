@@ -11,43 +11,22 @@ import { reportRejection } from 'lib/trap'
 import { ComponentProps, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
-const stdLibWhiteList = [
-  'startSketchOn',
-  'extrude',
-  'revolve',
-  'fillet',
-  'chamfer',
-  'offsetPlane',
-  'shell',
-  'loft',
-  'sweep',
-] as const
-
-const stdLibIconMap: Record<(typeof stdLibWhiteList)[number], CustomIconName> =
-  {
-    startSketchOn: 'sketch',
-    extrude: 'extrude',
-    revolve: 'revolve',
-    fillet: 'fillet3d',
-    chamfer: 'chamfer3d',
-    offsetPlane: 'plane',
-    shell: 'shell',
-    loft: 'loft',
-    sweep: 'sweep',
-  }
-
-function isWhiteListedStdLibCall(
-  name: string
-): name is (typeof stdLibWhiteList)[number] {
-  return stdLibWhiteList.includes(name as any)
+const stdLibIconMap: Record<string, CustomIconName> = {
+  startSketchOn: 'sketch',
+  extrude: 'extrude',
+  revolve: 'revolve',
+  fillet: 'fillet3d',
+  chamfer: 'chamfer3d',
+  offsetPlane: 'plane',
+  shell: 'shell',
+  loft: 'loft',
+  sweep: 'sweep',
 }
 
 function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
-      return isWhiteListedStdLibCall(op.name)
-        ? stdLibIconMap[op.name]
-        : 'questionMark'
+      return stdLibIconMap[op.name] ?? 'questionMark'
     default:
       return 'make-variable'
   }
