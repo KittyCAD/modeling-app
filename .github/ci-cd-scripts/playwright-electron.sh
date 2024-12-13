@@ -8,7 +8,7 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
     echo "run playwright normally"
         if [[ "$3" == ubuntu-latest* ]]; then
             xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --shard=$1/$2 || true
-        elif [[ "$3" == windows-latest* ]]; then
+        elif [[ "$3" == windows* ]]; then
             yarn test:playwright:electron:windows -- --shard=$1/$2 || true
         elif [[ "$3" == macos-14* ]]; then
             yarn test:playwright:electron:macos  -- --shard=$1/$2 || true
