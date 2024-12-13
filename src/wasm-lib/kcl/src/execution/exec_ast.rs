@@ -448,7 +448,7 @@ impl Node<CallExpressionKw> {
                     .collect();
                 exec_state.operations.push(Operation::UserDefinedFunctionCall {
                     name: Some(fn_name.clone()),
-                    function_source_range: func.first_source_range().unwrap_or_default(),
+                    function_source_range: func.function_def_source_range().unwrap_or_default(),
                     unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
                     labeled_args: op_labeled_args,
                     source_range: callsite,
@@ -567,7 +567,7 @@ impl Node<CallExpression> {
                 // Track call operation.
                 exec_state.operations.push(Operation::UserDefinedFunctionCall {
                     name: Some(fn_name.clone()),
-                    function_source_range: func.first_source_range().unwrap_or_default(),
+                    function_source_range: func.function_def_source_range().unwrap_or_default(),
                     unlabeled_arg: None,
                     // TODO: Add the arguments for legacy positional parameters.
                     labeled_args: Default::default(),
