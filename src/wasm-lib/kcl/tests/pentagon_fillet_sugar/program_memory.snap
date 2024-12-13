@@ -87,6 +87,72 @@ snapshot_kind: text
             }
           ]
         },
+        "arc_tag": {
+          "type": "TagIdentifier",
+          "type": "TagIdentifier",
+          "value": "arc_tag",
+          "info": {
+            "type": "TagEngineInfo",
+            "id": "[uuid]",
+            "sketch": "[uuid]",
+            "path": {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  527,
+                  549,
+                  0
+                ]
+              },
+              "ccw": true,
+              "center": [
+                200.0,
+                100.0
+              ],
+              "from": [
+                280.0,
+                100.0
+              ],
+              "radius": 80.0,
+              "tag": {
+                "end": 548,
+                "start": 540,
+                "type": "TagDeclarator",
+                "value": "arc_tag"
+              },
+              "to": [
+                280.0,
+                99.99999999999999
+              ],
+              "type": "Arc"
+            },
+            "surface": {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                527,
+                549,
+                0
+              ],
+              "tag": {
+                "end": 548,
+                "start": 540,
+                "type": "TagDeclarator",
+                "value": "arc_tag"
+              },
+              "type": "extrudeArc"
+            }
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                540,
+                548,
+                0
+              ]
+            }
+          ]
+        },
         "b": {
           "type": "TagIdentifier",
           "type": "TagIdentifier",
