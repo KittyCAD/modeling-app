@@ -593,24 +593,14 @@ export class SceneEntities {
       )
 
       if (err(_node1)) return
-
-      // The CallExpression type is actually wrong
-      // __geometadata(?) while sketching
-      // artifact graph while outside sketch mode
-      const startRange = _node1.node.start
-      const endRange = _node1.node.end
-
-      const _sourceRange: SourceRange = [startRange, endRange, true]
-      const artifactGraph = engineCommandManager.artifactGraph
-      const _result = getArtifactFromRange(_sourceRange, artifactGraph)
       const callExpName = _node1.node?.callee?.name
 
       const initSegment =
         segment.type === 'TangentialArcTo'
           ? segmentUtils.tangentialArcTo.init
           : segment.type === 'Circle'
-          ? segmentUtils.circle.init
-          : segmentUtils.straight.init
+            ? segmentUtils.circle.init
+            : segmentUtils.straight.init
       const input: SegmentInputs =
         segment.type === 'Circle'
           ? {
@@ -625,28 +615,14 @@ export class SceneEntities {
               to: segment.to,
             }
 
-      const range: SourceRange = [startRange, endRange, true]
-      // const selection = {
-      //   graphSelections: [
-      //     {
-      //       codeRef: codeRefFromRange(range, maybeModdedAst),
-      //     },
-      //   ],
-      //   otherSelections: [],
-      // }
-      const artifact = getArtifactFromRange(range, artifactGraph)
+      const startRange = _node1.node.start
+      const endRange = _node1.node.end
+      const sourceRange: SourceRange = [startRange, endRange, true]
+      const selection: Selections = computeSelectionFromSourceRangeAndAST(
+        sourceRange,
+        maybeModdedAst
+      )
 
-      const selection = {
-        graphSelections: [
-          {
-            artifact,
-            codeRef: codeRefFromRange(range, maybeModdedAst),
-          },
-        ],
-        otherSelections: [],
-      }
-
-      console.log('SOURCE RANGE', range)
       const result = initSegment({
         prevSegment: sketch.paths[index - 1],
         callExpName,
@@ -659,9 +635,7 @@ export class SceneEntities {
         theme: sceneInfra._theme,
         isSelected,
         sceneInfra,
-        range,
         selection,
-        artifact,
       })
       if (err(result)) return
       const { group: _group, updateOverlaysCallback } = result
@@ -2389,4 +2363,28 @@ export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
 
 function massageFormats(a: Vec3Array | Point3d): Vector3 {
   return isArray(a) ? new Vector3(a[0], a[1], a[2]) : new Vector3(a.x, a.y, a.z)
+}
+
+/**
+ * Given a SourceRange [x,y,boolean] create a Selections object which contains
+ * graphSelections with the artifact and codeRef.
+ * This can be passed to 'Set selection' to internally set the selection of the
+ * modelingMachine from code.
+ */
+function computeSelectionFromSourceRangeAndAST(
+  sourceRange: SourceRange,
+  ast: Node<Program>
+): Selections {
+  const artifactGraph = engineCommandManager.artifactGraph
+  const artifact = getArtifactFromRange(sourceRange, artifactGraph) || undefined
+  const selection: Selections = {
+    graphSelections: [
+      {
+        artifact,
+        codeRef: codeRefFromRange(sourceRange, ast),
+      },
+    ],
+    otherSelections: [],
+  }
+  return selection
 }
