@@ -173,22 +173,13 @@ export const shellValidator = async ({
   }
 
   console.log('selection artifact', firstArtifact)
+  console.log('artifactGraph', engineCommandManager.artifactGraph)
   const sweep = engineCommandManager.artifactGraph.get(firstArtifact.sweepId)
   if (!sweep || sweep?.type !== 'sweep') {
     return 'Unable to shell, couldnt find pathId'
   }
 
-  const face = engineCommandManager.artifactGraph
-    .values()
-    .find(
-      (v) =>
-        (v.type === 'cap' || v.type === 'wall') &&
-        v.sweepId === firstArtifact.sweepId
-    )
-  if (!face) {
-    return 'Unable to shell, couldnt find faceId'
-  }
-
+  const faceId = firstArtifact.id
   const hasOtherObjectIds = selection.graphSelections.some(
     (s) =>
       (s.artifact?.type === 'cap' || s.artifact?.type === 'wall') &&
@@ -200,20 +191,22 @@ export const shellValidator = async ({
 
   // TODO: NOT WORKING YET
   const shellCommand = async () => {
-    const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 0.1
+    const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 1
     const DEFAULT_HOLLOW = false
-    const cmd = {
-      type: 'solid3d_shell_face',
-      face_ids: [face.id],
+    const cmdArgs = {
+      face_ids: [faceId],
       object_id: sweep.pathId,
       hollow: DEFAULT_HOLLOW,
       shell_thickness: DEFAULT_THICKNESS,
     }
-    console.log('cmd', cmd)
+    console.log('cmd', cmdArgs)
     return await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
-      cmd,
+      cmd: {
+        type: 'solid3d_shell_face',
+        ...cmdArgs,
+      }
     })
   }
   const attemptRevolve = await dryRunWrapper(shellCommand)
