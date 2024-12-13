@@ -34,12 +34,12 @@ jobs:
               - 'src/wasm-lib/**'
 
   electron:
-    timeout-minutes: ${{ matrix.os == 'macos-14' && 60 || 50 }}
+    timeout-minutes: 120
     name: playwright:electron:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest-8-cores, windows-latest-8-cores, macos-14-large]
+        os: [ubuntu-latest-8-cores, windows-16-cores, macos-14-large]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     runs-on: ${{ matrix.os }}
