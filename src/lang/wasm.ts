@@ -66,6 +66,7 @@ export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
 export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
+export type { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type SyntaxType =
   | 'Program'
@@ -116,6 +117,13 @@ export function sourceRangeFromRust(s: RustSourceRange): SourceRange {
  */
 export function defaultSourceRange(): SourceRange {
   return [0, 0, true]
+}
+
+/**
+ * Create a default RustSourceRange for testing or as a placeholder.
+ */
+export function defaultRustSourceRange(): RustSourceRange {
+  return [0, 0, 0]
 }
 
 export const wasmUrl = () => {

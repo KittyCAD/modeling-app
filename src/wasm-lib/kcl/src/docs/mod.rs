@@ -59,6 +59,12 @@ pub struct StdLibFnArg {
     pub schema: schemars::schema::RootSchema,
     /// If the argument is required.
     pub required: bool,
+    /// Additional information that could be used instead of the type's description.
+    /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
+    /// how this argument is meant to be used.
+    /// Empty string means this has no docs.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub description: String,
     /// Even in functions that use keyword arguments, not every parameter requires a label (most do though).
     /// Some functions allow one unlabeled parameter, which has to be first in the
     /// argument list.
@@ -106,6 +112,11 @@ impl StdLibFnArg {
     }
 
     pub fn description(&self) -> Option<String> {
+        // Check if we explicitly gave this stdlib arg a description.
+        if !self.description.is_empty() {
+            return Some(self.description.clone());
+        }
+        // If not, then try to get something meaningful from the schema.
         get_description_string_from_schema(&self.schema.clone())
     }
 }
