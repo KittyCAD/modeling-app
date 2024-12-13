@@ -54,7 +54,10 @@ test.describe('Editor tests', () => {
   |> close(%)`)
   })
 
-  test('ensure we use the cache, and do not re-execute', async ({ homePage, page }) => {
+  test('ensure we use the cache, and do not re-execute', async ({
+    homePage,
+    page,
+  }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 

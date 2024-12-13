@@ -408,9 +408,56 @@ test.describe('Testing Camera Movement', () => {
         await u.waitForCmdReceive('default_camera_get_settings')
       })
 
+      await expect.poll(getCameraZValue, {
+        message: 'Camera should be at expected position after zooming',
+      })
+      await callback()
+      await page.mouse.move(orbitMouseEnd.x, orbitMouseEnd.y, {
+        steps: 3,
+      })
+    })
+
+    await test.step(`Verify orbit`, async () => {
       await expect
         .poll(getCameraZValue, {
-          message: 'Camera should be at expected position after zooming',
+          message: 'Camera should be at expected position after orbiting',
+        })
+        .toEqual(expectedOrbitCamZPosition)
+      await page.mouse.up({ button: 'middle' })
+    })
+
+    // Helper functions
+    async function resetCamera() {
+      await test.step(`Reset camera`, async () => {
+        await u.openDebugPanel()
+        await u.clearCommandLogs()
+        await u.doAndWaitForCmd(async () => {
+          await gizmo.click({ button: 'right' })
+          await resetCameraButton.click()
+        }, 'zoom_to_fit')
+        await expect
+          .poll(getCameraZValue, {
+            message: 'Camera Z should be at expected position after reset',
+          })
+          .toEqual(expectedStartCamZPosition)
+      })
+    }
+
+    async function getCameraZValue() {
+      return page
+        .getByTestId('cam-z-position')
+        .inputValue()
+        .then((value) => parseFloat(value))
+    }
+
+    async function doOrbitWith(callback = async () => {}) {
+      await resetCamera()
+
+      await test.step(`Perform orbit`, async () => {
+        await page.mouse.move(orbitMouseStart.x, orbitMouseStart.y)
+        await page.mouse.down({ button: 'middle' })
+        await page.mouse.move(orbitMouseStepOne.x, orbitMouseStepOne.y, {
+          steps: 3,
         })
         await callback()
         await page.mouse.move(orbitMouseEnd.x, orbitMouseEnd.y, {
@@ -427,9 +474,13 @@ test.describe('Testing Camera Movement', () => {
         await page.mouse.up({ button: 'middle' })
       })
     }
+
   })
 
-  test('Right-click opens context menu when not dragged', async ({ homePage, page }) => {
+  test('Right-click opens context menu when not dragged', async ({
+    homePage,
+    page,
+  }) => {
     const u = await getUtils(page)
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
