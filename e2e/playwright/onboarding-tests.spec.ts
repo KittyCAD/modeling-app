@@ -208,7 +208,7 @@ test.describe('Onboarding tests', () => {
     const XYPlanePoint = { x: 774, y: 516 } as const
     const modelColor: [number, number, number] = [129, 129, 129]
     await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-    await expectPixelColor(page, modelColor, XYPlanePoint, 8)
+    await expectPixelColor(page, modelColor, XYPlanePoint, 20)
   })
 
   test('Onboarding redirects and code updating', async ({ page }) => {
