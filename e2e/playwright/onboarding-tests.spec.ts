@@ -78,7 +78,7 @@ test.describe('Onboarding tests', () => {
 
       const u = await getUtils(page)
 
-      const viewportSize = { width: 1200, height: 500 }
+      const viewportSize = { width: 1200, height: 1000 }
       await page.setViewportSize(viewportSize)
 
       await test.step(`Create a project and open to the onboarding`, async () => {
@@ -100,8 +100,9 @@ test.describe('Onboarding tests', () => {
         )
 
         // Make sure the model loaded
-        const XYPlanePoint = { x: 774, y: 116 } as const
-        const modelColor: [number, number, number] = [47, 47, 93]
+        const XYPlanePoint = { x: 988, y: 523 } as const
+        const modelColor: [number, number, number] = [24, 24, 24]
+        await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
         expect(
           await u.getGreatestPixDiff(XYPlanePoint, modelColor)
         ).toBeLessThan(8)
