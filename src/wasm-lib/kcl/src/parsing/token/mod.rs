@@ -26,7 +26,7 @@ mod tokeniser;
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
-pub const NUM_SUFFIXES: [&str; 8] = ["mm", "cm", "m", "inch", "ft", "yd", "deg", "rad"];
+pub const NUM_SUFFIXES: [&str; 9] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad"];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NumericSuffix {
@@ -63,6 +63,7 @@ impl FromStr for NumericSuffix {
             "cm" => Ok(NumericSuffix::Cm),
             "m" => Ok(NumericSuffix::M),
             "inch" => Ok(NumericSuffix::Inch),
+            "in" => Ok(NumericSuffix::Inch),
             "ft" => Ok(NumericSuffix::Ft),
             "yd" => Ok(NumericSuffix::Yd),
             "deg" => Ok(NumericSuffix::Deg),

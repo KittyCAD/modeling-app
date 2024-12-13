@@ -781,7 +781,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
-    let expr = expression
+    let expr = expression_but_not_ascription
         .context(expected(
             "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
         ))
@@ -1627,6 +1627,24 @@ fn return_stmt(i: &mut TokenSlice) -> PResult<Node<ReturnStatement>> {
 
 /// Parse a KCL expression.
 fn expression(i: &mut TokenSlice) -> PResult<Expr> {
+    let expr = expression_but_not_ascription.parse_next(i)?;
+    let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
+
+    // TODO this is probably not giving ascription the right precedence, but I have no idea how Winnow is handling that.
+    // Since we're not creating AST nodes for ascription, I don't think it matters right now.
+    if let Some((colon, _, _)) = ty {
+        ParseContext::err(CompilationError::err(
+            // Sadly there is no SourceRange for the type itself
+            colon.into(),
+            "Type ascription is experimental and currently does nothing.",
+        ));
+    }
+
+    Ok(expr)
+}
+
+// TODO once we remove the old record instantiation syntax, we can accept types ascription anywhere.
+fn expression_but_not_ascription(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         pipe_expression.map(Box::new).map(Expr::PipeExpression),
         expression_but_not_pipe,
@@ -3921,6 +3939,12 @@ e
     fn error_underscore() {
         let (_, errs) = assert_no_fatal("_foo(_blah, _)");
         assert_eq!(errs.len(), 3, "found: {:#?}", errs);
+    }
+
+    #[test]
+    fn error_type_ascription() {
+        let (_, errs) = assert_no_fatal("a + b: number");
+        assert_eq!(errs.len(), 1, "found: {:#?}", errs);
     }
 
     #[test]
