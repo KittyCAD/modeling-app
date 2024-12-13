@@ -283,38 +283,87 @@ fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     alt((non_code_node_leading_whitespace, non_code_node_no_leading_whitespace)).parse_next(i)
 }
 
+fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
+    let at = at_sign.parse_next(i)?;
+    let name = binding_name.parse_next(i)?;
+    let mut end = name.end;
+
+    let properties = if peek(open_paren).parse_next(i).is_ok() {
+        open_paren(i)?;
+        ignore_whitespace(i);
+        let properties: Vec<_> = separated(
+            0..,
+            separated_pair(
+                terminated(identifier, opt(whitespace)),
+                terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+                expression,
+            )
+            .map(|(key, value)| Node {
+                start: key.start,
+                end: value.end(),
+                module_id: key.module_id,
+                inner: ObjectProperty {
+                    key,
+                    value,
+                    digest: None,
+                },
+            }),
+            comma_sep,
+        )
+        .parse_next(i)?;
+        ignore_trailing_comma(i);
+        ignore_whitespace(i);
+        end = close_paren(i)?.end;
+        Some(properties)
+    } else {
+        None
+    };
+
+    let value = NonCodeValue::Annotation { name, properties };
+    eprintln!("found {value:?}");
+    Ok(Node::new(
+        NonCodeNode { value, digest: None },
+        at.start,
+        end,
+        at.module_id,
+    ))
+}
+
 // Matches remaining three cases of NonCodeValue
 fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
-    any.verify_map(|token: Token| {
-        if token.is_code_token() {
-            None
-        } else {
-            let value = match token.token_type {
-                TokenType::Whitespace if token.value.contains("\n\n") => NonCodeValue::NewLine,
-                TokenType::LineComment => NonCodeValue::BlockComment {
-                    value: token.value.trim_start_matches("//").trim().to_owned(),
-                    style: CommentStyle::Line,
-                },
-                TokenType::BlockComment => NonCodeValue::BlockComment {
-                    style: CommentStyle::Block,
-                    value: token
-                        .value
-                        .trim_start_matches("/*")
-                        .trim_end_matches("*/")
-                        .trim()
-                        .to_owned(),
-                },
-                _ => return None,
-            };
-            Some(Node::new(
-                NonCodeNode { value, digest: None },
-                token.start,
-                token.end,
-                token.module_id,
-            ))
-        }
-    })
-    .context(expected("Non-code token (comments or whitespace)"))
+    alt((
+        annotation,
+        any.verify_map(|token: Token| {
+            if token.is_code_token() {
+                None
+            } else {
+                let value = match token.token_type {
+                    TokenType::Whitespace if token.value.contains("\n\n") => NonCodeValue::NewLine,
+                    TokenType::LineComment => NonCodeValue::BlockComment {
+                        value: token.value.trim_start_matches("//").trim().to_owned(),
+                        style: CommentStyle::Line,
+                    },
+                    TokenType::BlockComment => NonCodeValue::BlockComment {
+                        style: CommentStyle::Block,
+                        value: token
+                            .value
+                            .trim_start_matches("/*")
+                            .trim_end_matches("*/")
+                            .trim()
+                            .to_owned(),
+                    },
+                    _ => return None,
+                };
+                Some(Node::new(
+                    NonCodeNode { value, digest: None },
+                    token.start,
+                    token.end,
+                    token.module_id,
+                ))
+            }
+        })
+        .context(expected("Non-code token (comments or whitespace)")),
+    ))
     .parse_next(i)
 }
 
@@ -1189,6 +1238,7 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
                     x @ NonCodeValue::InlineComment { .. } => x,
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
+                    x @ NonCodeValue::Annotation { .. } => x,
                 };
                 Node::new(
                     NonCodeNode { value, ..nc.inner },
@@ -1209,6 +1259,7 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
                     x @ NonCodeValue::InlineComment { .. } => x,
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
+                    x @ NonCodeValue::Annotation { .. } => x,
                 };
                 Node::new(NonCodeNode { value, ..nc.inner }, nc.start, nc.end, nc.module_id)
             }
@@ -1248,7 +1299,7 @@ fn body_items_within_function(i: &mut TokenSlice) -> PResult<WithinFunction> {
             (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         Token { ref value, .. } if value == "return" =>
             (return_stmt.map(BodyItem::ReturnStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
-        token if !token.is_code_token() => {
+        token if !token.is_code_token() || token.token_type == TokenType::At => {
             non_code_node.map(WithinFunction::NonCode)
         },
         _ =>
@@ -2265,9 +2316,8 @@ fn question_mark(i: &mut TokenSlice) -> PResult<()> {
     Ok(())
 }
 
-fn at_sign(i: &mut TokenSlice) -> PResult<()> {
-    TokenType::At.parse_from(i)?;
-    Ok(())
+fn at_sign(i: &mut TokenSlice) -> PResult<Token> {
+    TokenType::At.parse_from(i)
 }
 
 fn fun(i: &mut TokenSlice) -> PResult<Token> {
@@ -3622,6 +3672,22 @@ height = [obj["a"] -1, 0]"#;
     #[test]
     fn test_anon_fn() {
         crate::parsing::top_level_parse("foo(42, fn(x) { return x + 1 })").unwrap();
+    }
+
+    #[test]
+    fn test_annotation_fn() {
+        crate::parsing::top_level_parse(
+            r#"fn foo() {
+  @annotated
+  return 1
+}"#,
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn test_annotation_settings() {
+        crate::parsing::top_level_parse("@settings(units = mm)").unwrap();
     }
 
     #[test]

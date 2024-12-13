@@ -995,52 +995,15 @@ pub struct NonCodeNode {
     pub digest: Option<Digest>,
 }
 
-impl Node<NonCodeNode> {
-    pub fn format(&self, indentation: &str) -> String {
-        match &self.value {
-            NonCodeValue::InlineComment {
-                value,
-                style: CommentStyle::Line,
-            } => format!(" // {}\n", value),
-            NonCodeValue::InlineComment {
-                value,
-                style: CommentStyle::Block,
-            } => format!(" /* {} */", value),
-            NonCodeValue::BlockComment { value, style } => match style {
-                CommentStyle::Block => format!("{}/* {} */", indentation, value),
-                CommentStyle::Line => {
-                    if value.trim().is_empty() {
-                        format!("{}//\n", indentation)
-                    } else {
-                        format!("{}// {}\n", indentation, value.trim())
-                    }
-                }
-            },
-            NonCodeValue::NewLineBlockComment { value, style } => {
-                let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
-                match style {
-                    CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
-                    CommentStyle::Line => {
-                        if value.trim().is_empty() {
-                            format!("{}{}//\n", add_start_new_line, indentation)
-                        } else {
-                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
-                        }
-                    }
-                }
-            }
-            NonCodeValue::NewLine => "\n\n".to_string(),
-        }
-    }
-}
-
 impl NonCodeNode {
+    #[cfg(test)]
     pub fn value(&self) -> String {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
+            NonCodeValue::Annotation { name, .. } => name.name.clone(),
         }
     }
 }
@@ -1058,6 +1021,7 @@ pub enum CommentStyle {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::large_enum_variant)]
 pub enum NonCodeValue {
     /// An inline comment.
     /// Here are examples:
@@ -1090,6 +1054,10 @@ pub enum NonCodeValue {
     // A new line like `\n\n` NOT a new line like `\n`.
     // This is also not a comment.
     NewLine,
+    Annotation {
+        name: Node<Identifier>,
+        properties: Option<Vec<Node<ObjectProperty>>>,
+    },
 }
 
 #[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
