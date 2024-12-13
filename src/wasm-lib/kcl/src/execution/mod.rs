@@ -2809,6 +2809,28 @@ const answer = returnX()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_cannot_shebang_in_fn() {
+        let ast = r#"
+fn foo () {
+  #!hello
+  return true
+}
+
+foo
+"#;
+
+        let result = parse_execute(ast).await;
+        let err = result.unwrap_err().downcast::<KclError>().unwrap();
+        assert_eq!(
+            err,
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token: #".to_owned(),
+                source_ranges: vec![SourceRange::new(15, 16, ModuleId::default())],
+            }),
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_pattern_transform_function_cannot_access_future_definitions() {
         let ast = r#"
 fn transform = (replicaId) => {
