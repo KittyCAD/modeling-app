@@ -171,6 +171,8 @@ export const shellValidator = async ({
     return 'Unable to shell, first artifact is not a cap or a wall'
   }
 
+  console.log('selection artifact', firstArtifact)
+
   // TODO: NOT WORKING YET. I BELIEVE SWEEP_ID IS THE WRONG THING TO PROVIDE TO ENGINE HERE
   const objectId = firstArtifact.sweepId
   const faceId = firstArtifact.id
@@ -187,16 +189,18 @@ export const shellValidator = async ({
   const shellCommand = async () => {
     const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 0.1
     const DEFAULT_HOLLOW = false
+    const cmd = {
+      type: 'solid3d_shell_face',
+      face_ids: [faceId],
+      object_id: objectId,
+      hollow: DEFAULT_HOLLOW,
+      shell_thickness: DEFAULT_THICKNESS,
+    }
+    console.log('cmd', cmd)
     return await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
-      cmd: {
-        type: 'solid3d_shell_face',
-        face_ids: [faceId],
-        object_id: objectId,
-        hollow: DEFAULT_HOLLOW,
-        shell_thickness: DEFAULT_THICKNESS,
-      },
+      cmd,
     })
   }
   const attemptRevolve = await dryRunWrapper(shellCommand)
