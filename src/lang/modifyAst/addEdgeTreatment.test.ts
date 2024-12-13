@@ -247,7 +247,7 @@ extrude003 = extrude(-15, sketch003)`
       selectedSegmentSnippet,
       expectedExtrudeSnippet
     )
-  })
+  }, 5_000)
 })
 
 const runModifyAstCloneWithEdgeTreatmentAndTag = async (

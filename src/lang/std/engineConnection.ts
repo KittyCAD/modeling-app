@@ -1,4 +1,4 @@
-import { defaultSourceRange, SourceRange } from 'lang/wasm'
+import { defaultSourceRange, Program, SourceRange } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -2099,30 +2099,23 @@ export class EngineCommandManager extends EventTarget {
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
    */
-  async waitForAllCommands(useFakeExecutor = false) {
-    await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
-    setTimeout(() => {
-      // the ast is wrong without this one tick timeout.
-      // an example is `Solids should be select and deletable` e2e test will fail
-      // because the out of date ast messes with selections
-      // TODO: race condition
-      if (!this?.kclManager) return
-      this.artifactGraph = createArtifactGraph({
-        orderedCommands: this.orderedCommands,
-        responseMap: this.responseMap,
-        ast: this.kclManager.ast,
-      })
-      if (useFakeExecutor) {
-        // mock executions don't produce an artifactGraph, so this will always be empty
-        // skipping the below logic to wait for the next real execution
-        return
-      }
-      if (this.artifactGraph.size) {
-        this.deferredArtifactEmptied(null)
-      } else {
-        this.deferredArtifactPopulated(null)
-      }
+  waitForAllCommands() {
+    return Promise.all(
+      Object.values(this.pendingCommands).map((a) => a.promise)
+    )
+  }
+  updateArtifactGraph(ast: Program) {
+    this.artifactGraph = createArtifactGraph({
+      orderedCommands: this.orderedCommands,
+      responseMap: this.responseMap,
+      ast,
     })
+    // TODO check if these still need to be deferred once e2e tests are working again.
+    if (this.artifactGraph.size) {
+      this.deferredArtifactEmptied(null)
+    } else {
+      this.deferredArtifactPopulated(null)
+    }
   }
 
   /**
