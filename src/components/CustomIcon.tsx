@@ -583,6 +583,22 @@ const CustomIconMap = {
       />
     </svg>
   ),
+  import: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M9.64645 12.3535L10 12.7071L10.3536 12.3535L13.8536 8.85352L13.1464 8.14642L10.5 10.7929L10.5 3H9.5L9.5 10.7929L6.85355 8.14642L6.14645 8.85352L9.64645 12.3535ZM15 5H12.4999V4H15H16V5V15V16H15H5H4V15V5V4H5H7.49988V5H5V15H15V5Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   'intersection-offset': (
     <svg
       viewBox="0 0 20 20"

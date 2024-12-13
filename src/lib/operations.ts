@@ -2,14 +2,15 @@ import { CustomIconName } from 'components/CustomIcon'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 const stdLibIconMap: Record<string, CustomIconName> = {
-  startSketchOn: 'sketch',
-  extrude: 'extrude',
-  revolve: 'revolve',
-  fillet: 'fillet3d',
   chamfer: 'chamfer3d',
-  offsetPlane: 'plane',
-  shell: 'shell',
+  extrude: 'extrude',
+  fillet: 'fillet3d',
+  import: 'import',
   loft: 'loft',
+  offsetPlane: 'plane',
+  revolve: 'revolve',
+  shell: 'shell',
+  startSketchOn: 'sketch',
   sweep: 'sweep',
 }
 
