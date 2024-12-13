@@ -3,11 +3,9 @@ import { ContextMenu, ContextMenuItem } from 'components/ContextMenu'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclProvider'
-import { FrontPlane } from 'lang/KclSingleton'
 import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
 import { sourceRangeFromRust } from 'lang/wasm'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
 import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
@@ -110,65 +108,59 @@ export const FeatureTreePane = () => {
         className="absolute inset-0 p-1 box-border overflow-auto"
       >
         {defaultPlanes !== null && (
-          <>
-            <FeatureTreeDefaultPlaneItem name="xy" title="Top plane" />
-            <FeatureTreeDefaultPlaneItem name="xz" title="Front plane" />
-            <FeatureTreeDefaultPlaneItem name="yz" title="Side plane" />
-            <hr className="py-0 dark:border-chalkboard-70 my-2" />
-            <div className="relative">
-              {parseErrors.length > 0 && (
-                <div
-                  className={`absolute inset-0 rounded-lg p-2 ${
-                    operationList.length &&
-                    `bg-destroy-10/40 dark:bg-destroy-80/40`
-                  }`}
-                >
-                  <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
-                    <p className="flex-1">
-                      Errors found in KCL code.
-                      <br />
-                      Please fix them before continuing.
-                    </p>
-                    <button
-                      onClick={() => {
-                        modelingSend({
-                          type: 'Set context',
-                          data: {
-                            openPanes: [
-                              ...modelingState.context.store.openPanes,
-                              'code',
-                            ],
-                          },
-                        })
-                        // TODO: this doesn't properly await the set context
-                        // so scrolling doesn't work if the code pane isn't open
-                        editorManager.scrollToFirstErrorDiagnosticIfExists()
-                      }}
-                      className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
-                    >
-                      View error
-                    </button>
-                  </div>
+          <div className="relative">
+            {parseErrors.length > 0 && (
+              <div
+                className={`absolute inset-0 rounded-lg p-2 ${
+                  operationList.length &&
+                  `bg-destroy-10/40 dark:bg-destroy-80/40`
+                }`}
+              >
+                <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
+                  <p className="flex-1">
+                    Errors found in KCL code.
+                    <br />
+                    Please fix them before continuing.
+                  </p>
+                  <button
+                    onClick={() => {
+                      modelingSend({
+                        type: 'Set context',
+                        data: {
+                          openPanes: [
+                            ...modelingState.context.store.openPanes,
+                            'code',
+                          ],
+                        },
+                      })
+                      // TODO: this doesn't properly await the set context
+                      // so scrolling doesn't work if the code pane isn't open
+                      editorManager.scrollToFirstErrorDiagnosticIfExists()
+                    }}
+                    className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
+                  >
+                    View error
+                  </button>
                 </div>
-              )}
-              {operationList
-                .filter(isNotUserFunctionWithNoOperations)
-                .filter(isNotStdLibInUserFunction)
-                .filter(isNotUserFunctionReturn)
-                .map((operation) => (
-                  <OperationListItem
-                    key={`${operation.type}-${
-                      'name' in operation ? operation.name : 'anonymous'
-                    }-${
-                      'sourceRange' in operation
-                        ? operation.sourceRange[0]
-                        : 'start'
-                    }`}
-                    item={operation}
-                  />
-                ))}
-            </div>
-          </>
+              </div>
+            )}
+            {operationList
+              .filter(isNotUserFunctionWithNoOperations)
+              .filter(isNotStdLibInUserFunction)
+              .filter(isNotUserFunctionReturn)
+              .map((operation) => (
+                <OperationListItem
+                  key={`${operation.type}-${
+                    'name' in operation ? operation.name : 'anonymous'
+                  }-${
+                    'sourceRange' in operation
+                      ? operation.sourceRange[0]
+                      : 'start'
+                  }`}
+                  item={operation}
+                />
+              ))}
+          </div>
         )}
       </section>
     </div>
@@ -209,6 +201,11 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
   )
 }
 
+/**
+ * More generic version of OperationListItem,
+ * to be used for default planes after we fix them and
+ * add them to the artifact graph / feature tree
+ */
 const OperationPaneItem = (props: {
   icon: CustomIconName
   name: string
@@ -241,48 +238,6 @@ const OperationPaneItem = (props: {
         <ContextMenu menuTargetElement={menuRef} items={props.menuItems} />
       )}
     </div>
-  )
-}
-
-const FeatureTreeDefaultPlaneItem = (props: {
-  name: FrontPlane
-  title: string
-}) => {
-  const plane = useMemo(() => {
-    // console.log('defaultPlanes', kclManager?.defaultPlanes)
-    return kclManager?.defaultPlanes?.[props.name]
-  }, [kclManager.defaultPlanes?.[props.name]])
-  const planeVisibility = useMemo(() => {
-    return kclManager.defaultPlanesVisibility[props.name]
-  }, [kclManager.defaultPlanesVisibility[props.name]])
-
-  function handleToggleHidden() {
-    if (!plane) {
-      return
-    }
-
-    kclManager
-      .setPlaneVisibility(props.name, !planeVisibility)
-      .catch(reportRejection)
-  }
-
-  function handleSelectPlane() {
-    // I don't think we can select default planes at the moment
-  }
-
-  return (
-    plane && (
-      <OperationPaneItem
-        icon="plane"
-        name={props.title}
-        handleSelect={handleSelectPlane}
-        visibilityToggle={{
-          entityId: props.name,
-          initialVisibility: planeVisibility,
-          onVisibilityChange: handleToggleHidden,
-        }}
-      />
-    )
   )
 }
 

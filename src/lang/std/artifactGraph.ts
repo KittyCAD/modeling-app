@@ -7,7 +7,6 @@ import {
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
-import { GenericObj } from 'components/DebugDisplayObj'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type ArtifactId = string
@@ -391,7 +390,6 @@ export function getArtifactsToUpdate({
     return returnArr
   } else if (cmd.type === 'extrude' || cmd.type === 'revolve') {
     const subType = cmd.type === 'extrude' ? 'extrusion' : cmd.type
-    console.log('subType', subType)
     returnArr.push({
       id,
       artifact: {
@@ -888,35 +886,6 @@ export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
     range,
     pathToNode: getNodePathFromSourceRange(ast, range),
   }
-}
-
-export function isSolid2D(artifact: Artifact): artifact is solid2D {
-  return (artifact as solid2D).pathId !== undefined
-}
-
-export function isSegment(artifact: Artifact): artifact is SegmentArtifact {
-  return (artifact as SegmentArtifact).pathId !== undefined
-}
-
-export function isSweep(artifact: Artifact): artifact is SweepArtifact {
-  return (artifact as SweepArtifact).pathId !== undefined
-}
-
-export function computeFeatureTree(artifactGraph: ArtifactGraph): GenericObj[] {
-  let items: GenericObj[] = []
-
-  const planes: PlaneArtifactRich[] = []
-  for (const artifact of artifactGraph.values()) {
-    if (artifact.type === 'plane') {
-      planes.push(expandPlane(artifact, artifactGraph))
-    }
-  }
-  const extraRichPlanes: GenericObj[] = planes.map((plane) => {
-    return plane as any as GenericObj
-  })
-  items = items.concat(extraRichPlanes)
-
-  return items
 }
 
 /**

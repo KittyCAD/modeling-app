@@ -1,11 +1,15 @@
 import { useMemo } from 'react'
 import { engineCommandManager } from 'lib/singletons'
-import { DebugDisplayArray } from './DebugDisplayObj'
-import { computeFeatureTree } from 'lang/std/artifactGraph'
+import {
+  ArtifactGraph,
+  expandPlane,
+  PlaneArtifactRich,
+} from 'lang/std/artifactGraph'
+import { DebugDisplayArray, GenericObj } from './DebugDisplayObj'
 
 export function DebugFeatureTree() {
   const featureTree = useMemo(() => {
-    return computeFeatureTree(engineCommandManager.artifactGraph)
+    return computeTree(engineCommandManager.artifactGraph)
   }, [engineCommandManager.artifactGraph])
 
   const filterKeys: string[] = ['__meta', 'codeRef', 'pathToNode']
@@ -21,4 +25,21 @@ export function DebugFeatureTree() {
       )}
     </details>
   )
+}
+
+function computeTree(artifactGraph: ArtifactGraph): GenericObj[] {
+  let items: GenericObj[] = []
+
+  const planes: PlaneArtifactRich[] = []
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type === 'plane') {
+      planes.push(expandPlane(artifact, artifactGraph))
+    }
+  }
+  const extraRichPlanes: GenericObj[] = planes.map((plane) => {
+    return plane as any as GenericObj
+  })
+  items = items.concat(extraRichPlanes)
+
+  return items
 }

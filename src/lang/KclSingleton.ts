@@ -28,7 +28,6 @@ import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
@@ -41,17 +40,6 @@ interface ExecuteArgs {
     type: string
   }
 }
-
-export type FrontPlane = 'xy' | 'yz' | 'xz'
-export type BackPlane = `neg${Capitalize<FrontPlane>}`
-export type DefaultPlanesKclManager = Record<
-  Exclude<keyof DefaultPlanes, `neg${string}`>,
-  {
-    frontId: string
-    backId: string
-    visible: boolean
-  }
->
 
 export class KclManager {
   private _ast: Node<Program> = {
@@ -578,109 +566,59 @@ export class KclManager {
     return { selections: returnVal, newAst: astWithUpdatedSource }
   }
 
-  get defaultPlanesVisibility() {
-    return this._defaultPlanesVisibility
+  get defaultPlanes() {
+    return this?.engineCommandManager?.defaultPlanes
   }
 
-  get defaultPlanes(): DefaultPlanesKclManager | null {
-    if (this.engineCommandManager.defaultPlaneIdMap === null) return null
-    const newPlanes = ['xy', 'yz', 'xz'].reduce((acc, plane) => {
-      const frontPlaneName = plane as FrontPlane
-      const backPlaneName = `neg${
-        plane.charAt(0).toUpperCase() + plane.slice(1)
-      }` as BackPlane
-      const frontId =
-        this.engineCommandManager.defaultPlaneIdMap![frontPlaneName] || ''
-      const backId =
-        this.engineCommandManager.defaultPlaneIdMap![backPlaneName] || ''
-      const newPlane = {
-        ...acc,
-        [plane]: {
-          frontId,
-          backId,
-          visible: this._defaultPlanesVisibility?.[frontPlaneName],
-        },
-      }
-      return newPlane
-    }, {}) as DefaultPlanesKclManager
-    return newPlanes
-  }
-
-  showPlanes() {
-    if (!this.defaultPlanes) {
-      this._defaultPlanesVisibility = {
-        xy: true,
-        yz: true,
-        xz: true,
-      }
-      return Promise.all([])
-    }
+  showPlanes(all = false) {
+    if (!this.defaultPlanes) return Promise.all([])
     const thePromises = [
-      this.setPlaneVisibility('xy', true),
-      this.setPlaneVisibility('yz', true),
-      this.setPlaneVisibility('xz', true),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, false),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, false),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, false),
     ]
-    return Promise.all(thePromises)
-  }
-
-  hidePlanes() {
-    console.log('hiding planes')
-    if (!this.defaultPlanes) {
-      this._defaultPlanesVisibility = {
-        xy: false,
-        yz: false,
-        xz: false,
-      }
-      return Promise.all([])
-    }
-    const thePromises = [
-      this.setPlaneVisibility('xy', false),
-      this.setPlaneVisibility('yz', false),
-      this.setPlaneVisibility('xz', false),
-    ]
-    return Promise.all(thePromises)
-  }
-  async setPlaneVisibility(
-    plane: keyof DefaultPlanesKclManager,
-    visible: boolean
-  ) {
-    console.log('setting plane visibility initial check', {
-      plane,
-      visible,
-      defaultPlanes: this.defaultPlanes,
-    })
-    if (!this.defaultPlanes) return Promise.resolve(false)
-    const basePlane = plane.toLowerCase().replace('neg', '') as FrontPlane
-
-    console.log('setting plane visibility', { basePlane, visible })
-    if (
-      !(
-        this.defaultPlanes[basePlane].frontId &&
-        this.defaultPlanes[basePlane].backId
+    if (all) {
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(
+          this.defaultPlanes.negXy,
+          false
+        )
       )
-    )
-      return Promise.resolve(false)
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(
+          this.defaultPlanes.negYz,
+          false
+        )
+      )
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(
+          this.defaultPlanes.negXz,
+          false
+        )
+      )
+    }
+    return Promise.all(thePromises)
+  }
 
-    return Promise.all([
-      this.engineCommandManager.setObjectVisibility(
-        this.defaultPlanes![basePlane].frontId,
-        !visible
-      ),
-      // this.engineCommandManager.setPlaneHidden(
-      //   this.defaultPlanes![basePlane].backId,
-      //   !visible
-      // ),
-    ]).then((result) => {
-      console.log('finished setting plane visibility', {
-        basePlane,
-        visible,
-        result,
-      })
-      if (result && result !== null && this.defaultPlanes !== null) {
-        this._defaultPlanesVisibility[basePlane] = visible
-      }
-      return result
-    })
+  hidePlanes(all = false) {
+    if (!this.defaultPlanes) return Promise.all([])
+    const thePromises = [
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xy, true),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.yz, true),
+      this.engineCommandManager.setPlaneHidden(this.defaultPlanes.xz, true),
+    ]
+    if (all) {
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXy, true)
+      )
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negYz, true)
+      )
+      thePromises.push(
+        this.engineCommandManager.setPlaneHidden(this.defaultPlanes.negXz, true)
+      )
+    }
+    return Promise.all(thePromises)
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   defaultSelectionFilter() {
