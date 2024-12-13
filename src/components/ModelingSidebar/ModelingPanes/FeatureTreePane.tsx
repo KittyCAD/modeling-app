@@ -12,6 +12,8 @@ import {
   isNotUserFunctionWithNoOperations,
 } from 'lib/operations'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { reportRejection } from 'lib/trap'
+import { toSync } from 'lib/utils'
 import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
@@ -133,6 +135,28 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 }
 
 /**
+ * Wait until a predicate is true or a timeout is reached
+ * TODO: this is a temporary solution until we have a better way to
+ * wait for things like selections to be set. It's whack get rid of it if you're reading this.
+ */
+function pollUntil(timeout: number, predicate: () => boolean, interval = 20) {
+  return new Promise<void>((resolve) => {
+    const t = setTimeout(() => {
+      const i = setInterval(() => {
+        if (predicate()) {
+          clearTimeout(t)
+          clearInterval(i)
+          resolve()
+        }
+      }, interval)
+
+      clearInterval(i)
+      resolve()
+    }, timeout)
+  })
+}
+
+/**
  * More generic version of OperationListItem,
  * to be used for default planes after we fix them and
  * add them to the artifact graph / feature tree
@@ -204,11 +228,12 @@ const OperationItem = (props: { item: Operation }) => {
   const artifact = jsSourceRange
     ? getArtifactFromRange(jsSourceRange, engineCommandManager.artifactGraph)
     : null
-  const selectOperation = useCallback(() => {
+
+  const selectOperation = useCallback(async () => {
     if (!jsSourceRange) {
       return
     }
-    console.log('selectOperation', props.item, artifact)
+    const selectionSnapshot = modelingState.context.selectionRanges
     if (!artifact || !('codeRef' in artifact)) {
       modelingSend({
         type: 'Set selection',
@@ -231,6 +256,16 @@ const OperationItem = (props: { item: Operation }) => {
         },
       })
     }
+
+    // Now wait for a timeout and poll for the selection to be set
+    // so we know we can advance
+    await pollUntil(
+      100,
+      () =>
+        modelingState.context.selectionRanges.graphSelections?.[0].codeRef
+          .range[0] !== selectionSnapshot.graphSelections[0].codeRef.range[0],
+      20
+    )
   }, [
     artifact,
     jsSourceRange,
@@ -239,21 +274,40 @@ const OperationItem = (props: { item: Operation }) => {
     engineCommandManager.artifactGraph,
   ])
 
+  async function openCodePane() {
+    modelingSend({
+      type: 'Set context',
+      data: {
+        openPanes: [...modelingState.context.store.openPanes, 'code'],
+      },
+    })
+
+    // Now wait for a timeout and poll for the pane to be open
+    // so we know we can advance
+    await pollUntil(
+      100,
+      () => modelingState.context.store.openPanes.includes('code'),
+      20
+    )
+  }
+
   /**
    * For now we can only enter the "edit" flow for the startSketchOn operation.
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
-  function enterEditFlow() {
+  async function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' &&
       props.item.name === 'startSketchOn'
     ) {
+      await selectOperation()
       modelingSend({ type: 'Enter sketch' })
     }
   }
 
-  function openToFunctionDefinition() {
+  async function selectFunctionDefinition() {
     if (props.item.type !== 'UserDefinedFunctionCall') return
+    const selectionSnapshot = modelingState.context.selectionRanges
     modelingSend({
       type: 'Set selection',
       data: {
@@ -266,29 +320,41 @@ const OperationItem = (props: { item: Operation }) => {
         },
       },
     })
+
+    // Now wait for a timeout and poll for the selection to be set
+    // so we know we can advance
+    await pollUntil(
+      100,
+      () =>
+        modelingState.context.selectionRanges.graphSelections?.[0].codeRef
+          .range[0] !== selectionSnapshot.graphSelections[0].codeRef.range[0],
+      20
+    )
+  }
+
+  async function openToFunctionDefinition() {
+    if (props.item.type !== 'UserDefinedFunctionCall') return
+    await openCodePane()
+    await selectFunctionDefinition()
+    editorManager.scrollToSelection()
+  }
+
+  async function openToDefinition() {
+    await openCodePane()
+    await selectOperation()
+    editorManager.scrollToSelection()
   }
 
   const menuItems = useMemo(
     () => [
-      <ContextMenuItem
-        onClick={() => {
-          selectOperation()
-          modelingSend({
-            type: 'Set context',
-            data: {
-              openPanes: [...modelingState.context.store.openPanes, 'code'],
-            },
-          })
-          // TODO: this doesn't properly await the set context
-          // so scrolling doesn't work if the code pane isn't open
-          editorManager.scrollToSelection()
-        }}
-      >
+      <ContextMenuItem onClick={toSync(openToDefinition, reportRejection)}>
         View KCL source code
       </ContextMenuItem>,
       ...(props.item.type === 'UserDefinedFunctionCall'
         ? [
-            <ContextMenuItem onClick={openToFunctionDefinition}>
+            <ContextMenuItem
+              onClick={toSync(openToFunctionDefinition, reportRejection)}
+            >
               View function definition
             </ContextMenuItem>,
           ]
@@ -302,8 +368,8 @@ const OperationItem = (props: { item: Operation }) => {
       icon={getOperationIcon(props.item)}
       name={name}
       menuItems={menuItems}
-      onClick={selectOperation}
-      onDoubleClick={enterEditFlow}
+      onClick={toSync(selectOperation, reportRejection)}
+      onDoubleClick={() => toSync(enterEditFlow, reportRejection)()}
       errors={errors}
     />
   )

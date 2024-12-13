@@ -198,10 +198,6 @@ export default class EditorManager {
    * Scroll to the first selection in the editor.
    */
   scrollToSelection() {
-    console.log('scrollToSelection', {
-      editorView: this._editorView,
-      selectionRanges: this._selectionRanges,
-    })
     if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
 
     const firstSelection = this._selectionRanges.graphSelections[0]
@@ -213,7 +209,8 @@ export default class EditorManager {
           EditorSelection.range(
             firstSelection.codeRef.range[0],
             firstSelection.codeRef.range[1]
-          )
+          ),
+          { y: 'center' }
         ),
       ],
       annotations: [
