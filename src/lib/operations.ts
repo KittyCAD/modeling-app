@@ -1,23 +1,75 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
-const stdLibIconMap: Record<string, CustomIconName> = {
-  chamfer: 'chamfer3d',
-  extrude: 'extrude',
-  fillet: 'fillet3d',
-  import: 'import',
-  loft: 'loft',
-  offsetPlane: 'plane',
-  revolve: 'revolve',
-  shell: 'shell',
-  startSketchOn: 'sketch',
-  sweep: 'sweep',
+interface StdLibCallInfo {
+  label: string
+  icon: CustomIconName
 }
 
+const stdLibMap: Record<string, StdLibCallInfo> = {
+  chamfer: {
+    label: 'Chamfer',
+    icon: 'chamfer3d',
+  },
+  extrude: {
+    label: 'Extrude',
+    icon: 'extrude',
+  },
+  fillet: {
+    label: 'Fillet',
+    icon: 'fillet3d',
+  },
+  import: {
+    label: 'Import',
+    icon: 'import',
+  },
+  loft: {
+    label: 'Loft',
+    icon: 'loft',
+  },
+  offsetPlane: {
+    label: 'Offset Plane',
+    icon: 'plane',
+  },
+  revolve: {
+    label: 'Revolve',
+    icon: 'revolve',
+  },
+  shell: {
+    label: 'Shell',
+    icon: 'shell',
+  },
+  startSketchOn: {
+    label: 'Sketch',
+    icon: 'sketch',
+  },
+  sweep: {
+    label: 'Sweep',
+    icon: 'sweep',
+  },
+}
+
+/**
+ * Returns the label of the operation
+ */
+export function getOperationLabel(op: Operation): string {
+  switch (op.type) {
+    case 'StdLibCall':
+      return stdLibMap[op.name]?.label ?? op.name
+    case 'UserDefinedFunctionCall':
+      return op.name ?? 'Anonymous custom function'
+    case 'UserDefinedFunctionReturn':
+      return 'User function return'
+  }
+}
+
+/**
+ * Returns the icon of the operation
+ */
 export function getOperationIcon(op: Operation): CustomIconName {
   switch (op.type) {
     case 'StdLibCall':
-      return stdLibIconMap[op.name] ?? 'questionMark'
+      return stdLibMap[op.name]?.icon ?? 'questionMark'
     default:
       return 'make-variable'
   }
