@@ -259,11 +259,13 @@ describe('testing createArtifactGraph', () => {
         if (err(extrusion)) throw extrusion
         expect(extrusion.type).toBe('sweep')
         const firstExtrusionIsACubeIE6Sides = 6
-        const secondExtrusionIsATriangularPrismIE5Sides = 5
+        // Each face of the triangular prism (5), but without the bottom cap.
+        // The engine doesn't generate that.
+        const secondExtrusionIsATriangularPrism = 4
         expect(extrusion.surfaces.length).toBe(
           !index
             ? firstExtrusionIsACubeIE6Sides
-            : secondExtrusionIsATriangularPrismIE5Sides
+            : secondExtrusionIsATriangularPrism
         )
       })
     })
