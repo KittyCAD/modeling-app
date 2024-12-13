@@ -265,6 +265,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             })
             .collect();
 
+        dbg!(&requests);
         let batched_requests = WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
             requests,
             batch_id: uuid::Uuid::new_v4().into(),

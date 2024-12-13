@@ -8,7 +8,10 @@ use kcmc::{
     each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, output::ExtrusionFaceInfo,
     shared::ExtrusionFaceCapType, websocket::OkWebSocketResponseData, ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{
+    self as kcmc,
+    shared::{ExtrudedFaceInfo, SideFace},
+};
 use uuid::Uuid;
 
 use crate::{
@@ -108,12 +111,27 @@ async fn inner_extrude(
         )
         .await?;
 
+        // Choose IDs for the new faces that will be created when extruding.
+        let _sketch_is_on_face = matches!(sketch.on, SketchSurface::Face(_));
+        let new_faces = ExtrudedFaceInfo {
+            bottom: Some(exec_state.id_generator.next_uuid()),
+            top: exec_state.id_generator.next_uuid(),
+            sides: sketch
+                .paths
+                .iter()
+                .map(|path| SideFace {
+                    path_id: path.get_id(),
+                    face_id: exec_state.id_generator.next_uuid(),
+                })
+                .collect(),
+        };
+
         args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Extrude {
                 target: sketch.id.into(),
                 distance: LengthUnit(length),
-                faces: Default::default(),
+                faces: Some(new_faces.clone()),
             }),
         )
         .await?;
@@ -124,7 +142,7 @@ async fn inner_extrude(
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
         )
         .await?;
-        solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
+        solids.push(do_post_extrude(sketch.clone(), length, Some(new_faces), exec_state, args.clone()).await?);
     }
 
     Ok(solids.into())
@@ -133,6 +151,7 @@ async fn inner_extrude(
 pub(crate) async fn do_post_extrude(
     sketch: Sketch,
     length: f64,
+    new_faces: Option<ExtrudedFaceInfo>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -160,60 +179,65 @@ pub(crate) async fn do_post_extrude(
         sketch.id = face.solid.sketch.id;
     }
 
-    let solid3d_info = args
-        .send_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
-            ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
-                edge_id: any_edge_id,
-                object_id: sketch.id,
-            }),
-        )
-        .await?;
+    let face_infos = match new_faces {
+        Some(new_faces) => new_faces.list_faces(),
+        None => {
+            let solid3d_info = args
+                .send_modeling_cmd(
+                    exec_state.id_generator.next_uuid(),
+                    ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
+                        edge_id: any_edge_id,
+                        object_id: sketch.id,
+                    }),
+                )
+                .await?;
 
-    let face_infos = if let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
-    } = solid3d_info
-    {
-        data.faces
-    } else {
-        vec![]
-    };
-
-    for (curve_id, face_id) in face_infos
-        .iter()
-        .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
-        .filter_map(|face_info| {
-            if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
-                Some((curve_id, face_id))
+            let face_infos: Vec<ExtrusionFaceInfo> = if let OkWebSocketResponseData::Modeling {
+                modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
+            } = solid3d_info
+            {
+                data.faces
             } else {
-                None
-            }
-        })
-    {
-        // Batch these commands, because the Rust code doesn't actually care about the outcome.
-        // So, there's no need to await them.
-        // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
-        // uses this to build the artifact graph, which the UI needs.
-        args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
-            ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
-                edge_id: curve_id,
-                object_id: sketch.id,
-                face_id,
-            }),
-        )
-        .await?;
+                vec![]
+            };
+            for (curve_id, face_id) in face_infos
+                .iter()
+                .filter(|face_info| face_info.cap == ExtrusionFaceCapType::None)
+                .filter_map(|face_info| {
+                    if let (Some(curve_id), Some(face_id)) = (face_info.curve_id, face_info.face_id) {
+                        Some((curve_id, face_id))
+                    } else {
+                        None
+                    }
+                })
+            {
+                // Batch these commands, because the Rust code doesn't actually care about the outcome.
+                // So, there's no need to await them.
+                // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
+                // uses this to build the artifact graph, which the UI needs.
+                args.batch_modeling_cmd(
+                    exec_state.id_generator.next_uuid(),
+                    ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
+                        edge_id: curve_id,
+                        object_id: sketch.id,
+                        face_id,
+                    }),
+                )
+                .await?;
 
-        args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
-            ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
-                edge_id: curve_id,
-                object_id: sketch.id,
-                face_id,
-            }),
-        )
-        .await?;
-    }
+                args.batch_modeling_cmd(
+                    exec_state.id_generator.next_uuid(),
+                    ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
+                        edge_id: curve_id,
+                        object_id: sketch.id,
+                        face_id,
+                    }),
+                )
+                .await?;
+            }
+            face_infos
+        }
+    };
 
     let Faces {
         sides: face_id_map,

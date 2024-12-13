@@ -63,6 +63,16 @@ async fn kcl_test_execute_i_shape() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_execute_slow_lego() {
+    // This is some code from lee that starts a pipe expression with a variable.
+    let code = include_str!("inputs/slow_lego.kcl.tmpl");
+    let code = code.replace("{{N}}", "1");
+
+    let result = execute_and_snapshot(&code, UnitLength::Mm, None).await.unwrap();
+    assert_out("i_shape", &result);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 #[ignore] // No longer a stack overflow problem, instead it causes an engine internal error.
 async fn kcl_test_execute_pipes_on_pipes() {
     let code = kcl_input!("pipes_on_pipes");

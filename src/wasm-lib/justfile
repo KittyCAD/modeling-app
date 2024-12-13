@@ -31,3 +31,5 @@ new-sim-test test_name render_to_png="true":
     {{cita}} -p kcl-lib -- simulation_tests::{{test_name}}::unparse
     TWENTY_TWENTY=overwrite {{cita}} -p kcl-lib -- tests::{{test_name}}::kcl_test_execute
 
+bench-lego:
+    cargo criterion -p kcl-lib --bench executor_benchmark_criterion -- lego
