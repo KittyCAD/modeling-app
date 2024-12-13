@@ -493,7 +493,7 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')
 
-    await expect(page.getByText('Unable to delete part')).toBeVisible()
+    await expect(page.getByText('Unable to delete selection')).toBeVisible()
   })
   test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({
     page,
