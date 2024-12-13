@@ -74,7 +74,7 @@ export const AllSettingsFields = forwardRef(
     useEffect(() => {
       async function navigateToOnboardingStart() {
         if (
-          state.context.app.onboardingStatus.user === onboardingPaths.INDEX &&
+          state.context.app.onboardingStatus.user === 'unset' &&
           state.matches('idle')
         ) {
           if (isFileSettings) {

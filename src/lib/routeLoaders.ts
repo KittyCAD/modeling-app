@@ -56,7 +56,7 @@ export const telemetryLoader: LoaderFunction = async ({
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
   const { settings } = await loadAndValidateSettings()
   const onboardingStatus: OnboardingStatus =
-    settings.app.onboardingStatus.current || onboardingPaths.INDEX
+    settings.app.onboardingStatus.current || 'unset'
   const notEnRouteToOnboarding = !args.request.url.includes(
     PATHS.ONBOARDING.INDEX
   )
