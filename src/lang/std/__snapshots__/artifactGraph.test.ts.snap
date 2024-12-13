@@ -13,7 +13,7 @@ Map {
       "range": [
         12,
         31,
-        0,
+        true,
       ],
     },
     "id": "UUID",
@@ -33,7 +33,7 @@ Map {
       "range": [
         37,
         64,
-        0,
+        true,
       ],
     },
     "id": "UUID",
@@ -60,7 +60,7 @@ Map {
       "range": [
         70,
         86,
-        0,
+        true,
       ],
     },
     "edgeIds": [
@@ -83,7 +83,7 @@ Map {
       "range": [
         92,
         119,
-        0,
+        true,
       ],
     },
     "edgeCutId": "UUID",
@@ -107,7 +107,7 @@ Map {
       "range": [
         125,
         150,
-        0,
+        true,
       ],
     },
     "edgeIds": [
@@ -130,7 +130,7 @@ Map {
       "range": [
         156,
         203,
-        0,
+        true,
       ],
     },
     "edgeIds": [
@@ -153,7 +153,7 @@ Map {
       "range": [
         209,
         217,
-        0,
+        true,
       ],
     },
     "edgeIds": [],
@@ -177,7 +177,7 @@ Map {
       "range": [
         231,
         254,
-        0,
+        true,
       ],
     },
     "edgeIds": [
@@ -333,7 +333,7 @@ Map {
       "range": [
         260,
         299,
-        0,
+        true,
       ],
     },
     "consumedEdgeId": "UUID",
@@ -353,7 +353,7 @@ Map {
       "range": [
         350,
         377,
-        0,
+        true,
       ],
     },
     "id": "UUID",
@@ -379,7 +379,7 @@ Map {
       "range": [
         383,
         398,
-        0,
+        true,
       ],
     },
     "edgeIds": [
@@ -402,7 +402,7 @@ Map {
       "range": [
         404,
         420,
-        0,
+        true,
       ],
     },
     "edgeIds": [
@@ -425,7 +425,7 @@ Map {
       "range": [
         426,
         473,
-        0,
+        true,
       ],
     },
     "edgeIds": [
@@ -448,7 +448,7 @@ Map {
       "range": [
         479,
         487,
-        0,
+        true,
       ],
     },
     "edgeIds": [],
@@ -472,7 +472,7 @@ Map {
       "range": [
         501,
         522,
-        0,
+        true,
       ],
     },
     "edgeIds": [
@@ -487,7 +487,6 @@ Map {
     "pathId": "UUID",
     "subType": "extrusion",
     "surfaceIds": [
-      "UUID",
       "UUID",
       "UUID",
       "UUID",
@@ -523,54 +522,46 @@ Map {
     "edgeCutEdgeIds": [],
     "id": "UUID",
     "pathIds": [],
-    "subType": "start",
-    "sweepId": "UUID",
-    "type": "cap",
-  },
-  "UUID-35" => {
-    "edgeCutEdgeIds": [],
-    "id": "UUID",
-    "pathIds": [],
     "subType": "end",
     "sweepId": "UUID",
     "type": "cap",
   },
-  "UUID-36" => {
+  "UUID-35" => {
     "id": "UUID",
     "segId": "UUID",
     "subType": "opposite",
+    "sweepId": "UUID",
+    "type": "sweepEdge",
+  },
+  "UUID-36" => {
+    "id": "UUID",
+    "segId": "UUID",
+    "subType": "adjacent",
     "sweepId": "UUID",
     "type": "sweepEdge",
   },
   "UUID-37" => {
     "id": "UUID",
     "segId": "UUID",
-    "subType": "adjacent",
+    "subType": "opposite",
     "sweepId": "UUID",
     "type": "sweepEdge",
   },
   "UUID-38" => {
     "id": "UUID",
     "segId": "UUID",
-    "subType": "opposite",
+    "subType": "adjacent",
     "sweepId": "UUID",
     "type": "sweepEdge",
   },
   "UUID-39" => {
     "id": "UUID",
     "segId": "UUID",
-    "subType": "adjacent",
-    "sweepId": "UUID",
-    "type": "sweepEdge",
-  },
-  "UUID-40" => {
-    "id": "UUID",
-    "segId": "UUID",
     "subType": "opposite",
     "sweepId": "UUID",
     "type": "sweepEdge",
   },
-  "UUID-41" => {
+  "UUID-40" => {
     "id": "UUID",
     "segId": "UUID",
     "subType": "adjacent",
