@@ -45,7 +45,7 @@ test.describe('Onboarding tests', () => {
       { settingsKey: TEST_SETTINGS_KEY }
     )
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setViewportSize({ width: 1200, height: 1000 })
 
     await u.waitForAuthSkipAppStart()
 
@@ -54,6 +54,12 @@ test.describe('Onboarding tests', () => {
 
     // *and* that the code is shown in the editor
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+
+    // Make sure the model loaded
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const modelColor: [number, number, number] = [45, 45, 45]
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
   })
 
   test(
@@ -92,6 +98,13 @@ test.describe('Onboarding tests', () => {
         await expect(page.locator('.cm-content')).toContainText(
           '// Shelf Bracket'
         )
+
+        // Make sure the model loaded
+        const XYPlanePoint = { x: 774, y: 116 } as const
+        const modelColor: [number, number, number] = [47, 47, 93]
+        expect(
+          await u.getGreatestPixDiff(XYPlanePoint, modelColor)
+        ).toBeLessThan(8)
       })
 
       await electronApp.close()
@@ -108,7 +121,7 @@ test.describe('Onboarding tests', () => {
     }, initialCode)
 
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setViewportSize({ width: 1200, height: 1000 })
     await u.waitForAuthSkipAppStart()
 
     // Replay the onboarding
@@ -140,6 +153,12 @@ test.describe('Onboarding tests', () => {
         return localStorage.getItem('persistCode')
       })
     ).toContain('// Shelf Bracket')
+
+    // Make sure the model loaded
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const modelColor: [number, number, number] = [47, 47, 93]
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
   })
 
   test('Click through each onboarding step', async ({ page }) => {
@@ -179,6 +198,12 @@ test.describe('Onboarding tests', () => {
     // Test that the onboarding pane is gone
     await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
     await expect(page.url()).not.toContain('onboarding')
+
+    // Make sure the model loaded
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const modelColor: [number, number, number] = [45, 45, 45]
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
   })
 
   test('Onboarding redirects and code updating', async ({ page }) => {
@@ -462,7 +487,17 @@ test(
     await test.step('Confirm that the onboarding has restarted', async () => {
       await expect(tutorialProjectIndicator).toBeVisible()
       await expect(tutorialModalText).toBeVisible()
+      // Make sure the model loaded
+      const XYPlanePoint = { x: 774, y: 116 } as const
+      const modelColor: [number, number, number] = [47, 47, 93]
+      expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(
+        8
+      )
       await tutorialDismissButton.click()
+      // Make sure model still there.
+      expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(
+        8
+      )
     })
 
     await test.step('Clear code and restart onboarding from settings', async () => {

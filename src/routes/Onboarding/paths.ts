@@ -1,4 +1,6 @@
-export const onboardingPaths = {
+import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+
+export const onboardingPaths: Record<string, OnboardingStatus> = {
   INDEX: '/',
   CAMERA: '/camera',
   STREAMING: '/streaming',

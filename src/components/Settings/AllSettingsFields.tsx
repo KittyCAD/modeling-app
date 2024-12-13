@@ -25,6 +25,7 @@ import { useLspContext } from 'components/LspProvider'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -73,7 +74,7 @@ export const AllSettingsFields = forwardRef(
     useEffect(() => {
       async function navigateToOnboardingStart() {
         if (
-          state.context.app.onboardingStatus.user === '' &&
+          state.context.app.onboardingStatus.user === onboardingPaths.INDEX &&
           state.matches('idle')
         ) {
           if (isFileSettings) {

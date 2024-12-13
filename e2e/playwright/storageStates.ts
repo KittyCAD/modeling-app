@@ -46,7 +46,7 @@ export const TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING = {
 
 export const TEST_SETTINGS_ONBOARDING_START = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboardingStatus: '' },
+  app: { ...TEST_SETTINGS.app, onboardingStatus: onboardingPaths.INDEX },
 } satisfies Partial<SaveSettingsPayload>
 
 export const TEST_SETTINGS_DEFAULT_THEME = {
