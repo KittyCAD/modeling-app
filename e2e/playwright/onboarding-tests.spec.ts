@@ -200,11 +200,15 @@ test.describe('Onboarding tests', () => {
     await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
     await expect(page.url()).not.toContain('onboarding')
 
+    await u.openAndClearDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
     // Make sure the model loaded
-    const XYPlanePoint = { x: 774, y: 116 } as const
-    const modelColor: [number, number, number] = [45, 45, 45]
+    const XYPlanePoint = { x: 774, y: 516 } as const
+    const modelColor: [number, number, number] = [129, 129, 129]
     await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-    expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
+    await expectPixelColor(page, modelColor, XYPlanePoint, 8)
   })
 
   test('Onboarding redirects and code updating', async ({ page }) => {
