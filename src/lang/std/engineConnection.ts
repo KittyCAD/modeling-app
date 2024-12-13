@@ -71,8 +71,8 @@ interface WebRTCClientMetrics extends ClientMetrics {
 type Value<T, U> = U extends undefined
   ? { type: T; value: U }
   : U extends void
-  ? { type: T }
-  : { type: T; value: U }
+    ? { type: T }
+    : { type: T; value: U }
 
 type State<T, U> = Value<T, U>
 
@@ -316,8 +316,10 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: Date; pong?: Date }
-  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(() => {},
-  60_000)
+  private pingIntervalId: ReturnType<typeof setInterval> = setInterval(
+    () => {},
+    60_000
+  )
   isUsingConnectionLite: boolean = false
 
   constructor({
@@ -2112,6 +2114,7 @@ export class EngineCommandManager extends EventTarget {
         responseMap: this.responseMap,
         ast: this.kclManager.ast,
       })
+      // console.log(this.artifactGraph)
       if (useFakeExecutor) {
         // mock executions don't produce an artifactGraph, so this will always be empty
         // skipping the below logic to wait for the next real execution

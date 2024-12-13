@@ -51,6 +51,7 @@ import {
   defaultSourceRange,
   sourceRangeFromRust,
   resultIsOk,
+  SourceRange,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -102,6 +103,7 @@ import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { radToDeg } from 'three/src/math/MathUtils'
+import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -589,15 +591,26 @@ export class SceneEntities {
         segPathToNode,
         'CallExpression'
       )
+
       if (err(_node1)) return
+
+      // The CallExpression type is actually wrong
+      // __geometadata(?) while sketching
+      // artifact graph while outside sketch mode
+      const startRange = _node1.node.start
+      const endRange = _node1.node.end
+
+      const _sourceRange: SourceRange = [startRange, endRange, true]
+      const artifactGraph = engineCommandManager.artifactGraph
+      const _result = getArtifactFromRange(_sourceRange, artifactGraph)
       const callExpName = _node1.node?.callee?.name
 
       const initSegment =
         segment.type === 'TangentialArcTo'
           ? segmentUtils.tangentialArcTo.init
           : segment.type === 'Circle'
-          ? segmentUtils.circle.init
-          : segmentUtils.straight.init
+            ? segmentUtils.circle.init
+            : segmentUtils.straight.init
       const input: SegmentInputs =
         segment.type === 'Circle'
           ? {
@@ -611,6 +624,29 @@ export class SceneEntities {
               from: segment.from,
               to: segment.to,
             }
+
+      const range: SourceRange = [startRange, endRange, true]
+      // const selection = {
+      //   graphSelections: [
+      //     {
+      //       codeRef: codeRefFromRange(range, maybeModdedAst),
+      //     },
+      //   ],
+      //   otherSelections: [],
+      // }
+      const artifact = getArtifactFromRange(range, artifactGraph)
+
+      const selection = {
+        graphSelections: [
+          {
+            artifact,
+            codeRef: codeRefFromRange(range, maybeModdedAst),
+          },
+        ],
+        otherSelections: [],
+      }
+
+      console.log('SOURCE RANGE', range)
       const result = initSegment({
         prevSegment: sketch.paths[index - 1],
         callExpName,
@@ -623,6 +659,9 @@ export class SceneEntities {
         theme: sceneInfra._theme,
         isSelected,
         sceneInfra,
+        range,
+        selection,
+        artifact,
       })
       if (err(result)) return
       const { group: _group, updateOverlaysCallback } = result

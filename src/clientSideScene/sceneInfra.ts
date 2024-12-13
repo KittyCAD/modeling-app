@@ -418,6 +418,7 @@ export class SceneInfra {
     }
   }
   onMouseMove = async (mouseEvent: MouseEvent) => {
+    // console.log('OKAY! ONMOUSEMOVE')
     this.currentMouseVector.x = (mouseEvent.clientX / window.innerWidth) * 2 - 1
     this.currentMouseVector.y =
       -(mouseEvent.clientY / window.innerHeight) * 2 + 1

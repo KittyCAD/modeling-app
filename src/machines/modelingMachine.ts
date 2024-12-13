@@ -473,7 +473,8 @@ export const modelingMachine = setup({
       if (trap(angleLength)) return false
       return angleBetween.enabled || angleLength.enabled
     },
-    'Can constrain length': ({ context: { selectionRanges } }) => {
+    'Can constrain length': ({ context: { selectionRanges }, event }) => {
+      console.log(event, ' can constraint length ')
       const angleLength = angleLengthInfo({
         selectionRanges,
       })
@@ -1972,6 +1973,10 @@ export const modelingMachine = setup({
             input: ({ context: { selectionRanges, sketchDetails }, event }) => {
               const data =
                 event.type === 'Constrain length' ? event.data : undefined
+              console.log('event', event)
+              console.log('eventgotem - selectionRanges', selectionRanges)
+              console.log('eventgotem - sketchDetails', sketchDetails)
+              console.log('eventgotem - lengthValue', data?.length)
               return {
                 selectionRanges,
                 sketchDetails,

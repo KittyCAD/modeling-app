@@ -109,6 +109,7 @@ function DisplayObj({
       setHasCursor(false)
     }
   }, [node.start, node.end, node.type])
+
   return (
     <pre
       ref={ref}
@@ -121,7 +122,6 @@ function DisplayObj({
       }}
       onMouseMove={(e) => {
         e.stopPropagation()
-        editorManager.setHighlightRange([[obj?.start || 0, obj.end, true]])
       }}
       onClick={(e) => {
         const range: [number, number, boolean] = [
