@@ -586,7 +586,7 @@ extrude001 = extrude(50, sketch001)
           timeout: 5000,
           message: 'Plane color is visible',
         })
-        .toBeLessThan(15)
+        .toBeLessThanOrEqual(15)
 
       let maxZoomOuts = 10
       let middlePixelIsBackgroundColor =

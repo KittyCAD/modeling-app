@@ -21,6 +21,8 @@ export class AuthenticatedApp {
   public readonly context: BrowserContext
   public readonly testInfo: TestInfo
   public readonly viewPortSize = { width: 1200, height: 500 }
+  public electronApp: undefined | ElectronApplication
+  public dir: string = ''
 
   constructor(context: BrowserContext, page: Page, testInfo: TestInfo) {
     this.context = context
@@ -61,7 +63,7 @@ export class AuthenticatedTronApp {
   public page: Page
   public context: BrowserContext
   public readonly testInfo: TestInfo
-  public electronApp?: ElectronApplication
+  public electronApp: ElectronApplication | undefined
   public readonly viewPortSize = { width: 1200, height: 500 }
   public dir: string = ''
 
@@ -79,7 +81,7 @@ export class AuthenticatedTronApp {
       appSettings?: Partial<SaveSettingsPayload>
     } = { fixtures: {} }
   ) {
-    const { electronApp, page, context, dir, options } = await setupElectron({
+    const { electronApp, page, context, dir } = await setupElectron({
       testInfo: this.testInfo,
       folderSetupFn: arg.folderSetupFn,
       cleanProjectDir: arg.cleanProjectDir,

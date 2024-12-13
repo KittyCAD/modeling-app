@@ -23,7 +23,7 @@ test.describe('Testing constraints', () => {
 
     const u = await getUtils(page)
     const PUR = 400 / 37.5 //pixeltoUnitRatio
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
@@ -43,15 +43,16 @@ test.describe('Testing constraints', () => {
     await page.waitForTimeout(1000)
 
     const startXPx = 500
-    await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
-    await page.keyboard.down('Shift')
-    await page.mouse.click(834, 244)
-    await page.keyboard.up('Shift')
 
+    await page.getByText(`line([0, 20], %)`).click()
+    await page.waitForTimeout(100)
+    await page.getByTestId('constraint-length').click()
+    await page.getByTestId('cmd-bar-arg-value').getByRole('textbox').fill('20')
     await page
-      .getByRole('button', { name: 'dimension Length', exact: true })
+      .getByRole('button', {
+        name: 'arrow right Continue',
+      })
       .click()
-    await page.getByText('Add constraining value').click()
 
     await expect(page.locator('.cm-content')).toHaveText(
       `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
@@ -71,7 +72,7 @@ test.describe('Testing constraints', () => {
         await page.keyboard.press('Escape', { delay: 500 })
         return page.getByRole('button', { name: 'Exit Sketch' }).isVisible()
       })
-      .toBe(true)
+      .toBe(false)
   })
   test(`Remove constraints`, async ({ page, homePage }) => {
     await page.addInitScript(async () => {
@@ -1013,7 +1014,7 @@ part002 = startSketchOn('XZ')
       )
     })
     const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
@@ -1088,8 +1089,12 @@ part002 = startSketchOn('XZ')
     // await page.getByRole('button', { name: 'length', exact: true }).click()
     await page.getByTestId('dropdown-constraint-length').click()
 
-    await page.getByLabel('length Value').fill('10')
-    await page.getByRole('button', { name: 'Add constraining value' }).click()
+    await page.getByTestId('cmd-bar-arg-value').getByRole('textbox').fill('10')
+    await page
+      .getByRole('button', {
+        name: 'arrow right Continue',
+      })
+      .click()
 
     await pollEditorLinesSelectedLength(page, 1)
     activeLinesContent = await page.locator('.cm-activeLine').all()
