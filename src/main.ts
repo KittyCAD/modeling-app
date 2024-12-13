@@ -118,7 +118,7 @@ const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
   // mainWindow.webContents.openDevTools()
 
   if (!reuse) {
-    newWindow.show()
+    if (!process.env.HEADLESS) newWindow.show()
   }
 
   return newWindow

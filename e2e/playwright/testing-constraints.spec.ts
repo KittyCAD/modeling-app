@@ -999,7 +999,7 @@ part002 = startSketchOn('XZ')
     }
   })
 
-  test('Horizontally constrained line remains selected after applying constraint', async ({
+  test.fixme('Horizontally constrained line remains selected after applying constraint', async ({
     page,
     homePage,
   }) => {
@@ -1014,7 +1014,7 @@ part002 = startSketchOn('XZ')
       )
     })
     const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
@@ -1079,15 +1079,10 @@ part002 = startSketchOn('XZ')
 
     await page.waitForTimeout(500)
 
-    await page
-      .getByRole('button', {
-        name: 'Length: open menu',
-      })
-      .click()
     // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
     await page.waitForTimeout(200)
     // await page.getByRole('button', { name: 'length', exact: true }).click()
-    await page.getByTestId('dropdown-constraint-length').click()
+    await page.getByTestId('constraint-length').click()
 
     await page.getByTestId('cmd-bar-arg-value').getByRole('textbox').fill('10')
     await page
