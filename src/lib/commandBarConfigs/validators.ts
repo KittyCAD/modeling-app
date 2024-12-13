@@ -206,7 +206,7 @@ export const shellValidator = async ({
       cmd: {
         type: 'solid3d_shell_face',
         ...cmdArgs,
-      }
+      },
     })
   }
   const attemptRevolve = await dryRunWrapper(shellCommand)
