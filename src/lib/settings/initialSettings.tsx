@@ -191,7 +191,7 @@ export function createSettings() {
         },
       }),
       onboardingStatus: new Setting<OnboardingStatus>({
-        defaultValue: 'unset',
+        defaultValue: '',
         // TODO: this could be better but we don't have a TS side real enum
         // for this yet
         validate: (v) => typeof v === 'string',

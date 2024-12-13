@@ -16,7 +16,6 @@ import { getProjectInfo } from './desktop'
 import { createSettings } from './settings/initialSettings'
 import { normalizeLineEndings } from 'lib/codeEditor'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
-import { onboardingPaths } from 'routes/Onboarding/paths'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -56,7 +55,7 @@ export const telemetryLoader: LoaderFunction = async ({
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
   const { settings } = await loadAndValidateSettings()
   const onboardingStatus: OnboardingStatus =
-    settings.app.onboardingStatus.current || 'unset'
+    settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(
     PATHS.ONBOARDING.INDEX
   )

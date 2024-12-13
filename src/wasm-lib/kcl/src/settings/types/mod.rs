@@ -478,6 +478,8 @@ pub struct CommandBarSettings {
 #[display(style = "snake_case")]
 pub enum OnboardingStatus {
     /// The unset state.
+    #[serde(rename = "")]
+    #[display("")]
     Unset,
     /// The user has completed onboarding.
     Completed,
