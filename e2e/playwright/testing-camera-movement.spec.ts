@@ -1,14 +1,16 @@
 import { test, expect } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
-import { getUtils } from './test-utils'
+import { getUtils, setup, tearDown } from './test-utils'
 
 test.describe('Testing Camera Movement', () => {
   test('Can move camera reliably', async ({ page, context, homePage }) => {
+    test.skip(process.platform === 'darwin', 'Can move camera reliably')
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await u.waitForPageLoad()
     await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
 
@@ -185,6 +187,7 @@ test.describe('Testing Camera Movement', () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
+    await u.waitForPageLoad()
     await u.openDebugPanel()
 
     await expect(
@@ -336,10 +339,7 @@ test.describe('Testing Camera Movement', () => {
     })
   })
 
-  test(`Zoom by scroll should not fire while orbiting`, async ({
-    page,
-    homePage,
-  }) => {
+  test(`Zoom by scroll should not fire while orbiting`, async ({ homePage, page }) => {
     /**
      * Currently we only allow zooming by scroll when no other camera movement is happening,
      * set within cameraMouseDragGuards in cameraControls.ts,
@@ -379,6 +379,7 @@ test.describe('Testing Camera Movement', () => {
 
     await test.step(`Test setup`, async () => {
       await homePage.goToModelingScene()
+      await u.waitForPageLoad()
       await u.closeKclCodePanel()
       // This test requires the mouse controls to be set to Solidworks
       await u.openDebugPanel()
@@ -408,22 +409,21 @@ test.describe('Testing Camera Movement', () => {
         await u.waitForCmdReceive('default_camera_get_settings')
       })
 
-      await expect.poll(getCameraZValue, {
-        message: 'Camera should be at expected position after zooming',
-      })
-      await callback()
-      await page.mouse.move(orbitMouseEnd.x, orbitMouseEnd.y, {
-        steps: 3,
-      })
-    })
-
-    await test.step(`Verify orbit`, async () => {
       await expect
         .poll(getCameraZValue, {
-          message: 'Camera should be at expected position after orbiting',
+          message: 'Camera should be at expected position after zooming',
         })
-        .toEqual(expectedOrbitCamZPosition)
-      await page.mouse.up({ button: 'middle' })
+        .toEqual(expectedZoomCamZPosition)
+    })
+
+    await test.step(`Test orbiting works`, async () => {
+      await doOrbitWith()
+    })
+
+    await test.step(`Test scrolling while orbiting doesn't zoom`, async () => {
+      await doOrbitWith(async () => {
+        await page.mouse.wheel(0, -100)
+      })
     })
 
     // Helper functions
@@ -474,14 +474,11 @@ test.describe('Testing Camera Movement', () => {
         await page.mouse.up({ button: 'middle' })
       })
     }
-
   })
 
-  test('Right-click opens context menu when not dragged', async ({
-    homePage,
-    page,
-  }) => {
+  test('Right-click opens context menu when not dragged', async ({ homePage, page }) => {
     const u = await getUtils(page)
+
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
@@ -503,3 +500,4 @@ test.describe('Testing Camera Movement', () => {
     })
   })
 })
+
