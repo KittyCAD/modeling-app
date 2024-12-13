@@ -112,10 +112,10 @@ test.describe('Editor tests', () => {
     await u.openDebugPanel()
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
 
     // Add whitespace to the end of the code.
     await u.codeLocator.click()
@@ -133,10 +133,10 @@ test.describe('Editor tests', () => {
     // Make sure we didn't clear the scene.
     await expect(
       page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
+    ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(1)
+    ).toHaveCount(2)
   })
 
   test('if you click the format button it formats your code and executes so lints are still there', async ({
