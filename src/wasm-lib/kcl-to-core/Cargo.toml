@@ -19,7 +19,7 @@ indexmap = "2.7.0"
 kcl-lib = { path = "../kcl" }
 kittycad = { workspace = true, features = ["clap"] }
 kittycad-modeling-cmds = { workspace = true }
-tokio = { version = "1.41", features = ["full", "time", "rt", "tracing"] }
+tokio = { version = "1.42", features = ["full", "time", "rt", "tracing"] }
 uuid = { version = "1.11.0", features = ["v4", "js", "serde"] }
 
 [lints]
