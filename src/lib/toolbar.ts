@@ -62,18 +62,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     items: [
       {
         id: 'sketch',
-        onClick: ({ modelingSend, sketchPathId }) =>
-          !sketchPathId
-            ? modelingSend({
-                type: 'Enter sketch',
-                data: { forceNewSketch: true },
-              })
-            : modelingSend({ type: 'Enter sketch' }),
+        onClick: ({ modelingSend }) =>
+          modelingSend({
+            type: 'Enter sketch',
+            data: { forceNewSketch: true },
+          }),
         icon: 'sketch',
         status: 'available',
         disabled: (state) => !state.matches('idle'),
-        title: ({ sketchPathId }) =>
-          `${sketchPathId ? 'Edit' : 'Start'} Sketch`,
+        title: `Sketch`,
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
