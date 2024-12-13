@@ -120,7 +120,6 @@ class StraightSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
-    range,
     selection,
   }) => {
     if (input.type !== 'straight-segment')
@@ -150,9 +149,6 @@ class StraightSegment implements SegmentUtils {
     mesh.userData.type = meshType
     mesh.name = meshType
     segmentGroup.name = STRAIGHT_SEGMENT
-    // TODO: Kevin
-    console.log('userData', id)
-    console.log('userDataRange', range)
     segmentGroup.userData = {
       type: STRAIGHT_SEGMENT,
       draft: isDraftSegment,
@@ -163,7 +159,6 @@ class StraightSegment implements SegmentUtils {
       isSelected,
       callExpName,
       baseColor,
-      range,
       selection,
     }
 
@@ -834,13 +829,7 @@ function createLengthIndicator({
 
   // Double click workflow
   lengthIndicatorWrapper.ondblclick = () => {
-    console.log('cb', lengthIndicatorGroup)
-    const range = lengthIndicatorGroup.parent.userData.range
     const selection = lengthIndicatorGroup.parent.userData.selection
-
-    console.log('MY SELECTION', selection)
-    console.log('cb', range)
-
     sceneInfra.modelingSend({
       type: 'Set selection',
       data: {
@@ -849,9 +838,6 @@ function createLengthIndicator({
       },
     })
 
-    // I need the command bar selections though..
-    // Code
-    // editorManager.setHighlightRange([range])
     // Command Bar
     editorManager.commandBarSend({
       type: 'Find and select command',

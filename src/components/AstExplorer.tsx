@@ -122,6 +122,7 @@ function DisplayObj({
       }}
       onMouseMove={(e) => {
         e.stopPropagation()
+        editorManager.setHighlightRange([[obj?.start || 0, obj.end, true]])
       }}
       onClick={(e) => {
         const range: [number, number, boolean] = [
