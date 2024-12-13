@@ -101,7 +101,7 @@ test.describe('Onboarding tests', () => {
 
         // Make sure the model loaded
         const XYPlanePoint = { x: 988, y: 523 } as const
-        const modelColor: [number, number, number] = [24, 24, 24]
+        const modelColor: [number, number, number] = [76, 76, 76]
         await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
         expect(
           await u.getGreatestPixDiff(XYPlanePoint, modelColor)
@@ -156,8 +156,8 @@ test.describe('Onboarding tests', () => {
     ).toContain('// Shelf Bracket')
 
     // Make sure the model loaded
-    const XYPlanePoint = { x: 774, y: 116 } as const
-    const modelColor: [number, number, number] = [47, 47, 93]
+    const XYPlanePoint = { x: 992, y: 523 } as const
+    const modelColor: [number, number, number] = [76, 76, 76]
     await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
     expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
   })
@@ -465,7 +465,7 @@ test(
     })
 
     await test.step('Navigate into project', async () => {
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setViewportSize({ width: 1200, height: 1000 })
 
       page.on('console', console.log)
 
@@ -489,8 +489,10 @@ test(
       await expect(tutorialProjectIndicator).toBeVisible()
       await expect(tutorialModalText).toBeVisible()
       // Make sure the model loaded
-      const XYPlanePoint = { x: 774, y: 116 } as const
-      const modelColor: [number, number, number] = [47, 47, 93]
+      const XYPlanePoint = { x: 988, y: 523 } as const
+      const modelColor: [number, number, number] = [76, 76, 76]
+
+      await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
       expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(
         8
       )
