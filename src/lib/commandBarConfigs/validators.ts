@@ -97,7 +97,6 @@ export const revolveAxisValidator = async ({
     })
   }
   const attemptRevolve = await dryRunWrapper(revolveAboutEdgeCommand)
-  console.log(attemptRevolve)
   if (attemptRevolve?.success) {
     return true
   } else {
@@ -178,8 +177,8 @@ export const shellValidator = async ({
 
   const hasOtherObjectIds = selection.graphSelections.some(
     (s) =>
-      (s.artifact?.type == 'cap' || s.artifact?.type == 'wall') &&
-      s.artifact.sweepId != objectId
+      (s.artifact?.type === 'cap' || s.artifact?.type === 'wall') &&
+      s.artifact.sweepId !== objectId
   )
   if (hasOtherObjectIds) {
     return 'Unable to shell, selection is across solids'
@@ -201,7 +200,6 @@ export const shellValidator = async ({
     })
   }
   const attemptRevolve = await dryRunWrapper(shellCommand)
-  console.log('attemptRevolve', attemptRevolve)
   if (attemptRevolve?.success) {
     return true
   } else {
