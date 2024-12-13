@@ -33,6 +33,7 @@ import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
+import { FunctionExpression } from 'wasm-lib/kcl/bindings/FunctionExpression'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -596,7 +597,13 @@ export function findAllPreviousVariables(
 type ReplacerFn = (
   _ast: Node<Program>,
   varName: string
-) => { modifiedAst: Node<Program>; pathToReplaced: PathToNode } | Error
+) =>
+  | {
+      modifiedAst: Node<Program>
+      pathToReplaced: PathToNode
+      exprInsertIndex: number
+    }
+  | Error
 
 export function isNodeSafeToReplacePath(
   ast: Program,
@@ -648,7 +655,7 @@ export function isNodeSafeToReplacePath(
     if (err(_nodeToReplace)) return _nodeToReplace
     const nodeToReplace = _nodeToReplace.node as any
     nodeToReplace[last[0]] = identifier
-    return { modifiedAst: _ast, pathToReplaced }
+    return { modifiedAst: _ast, pathToReplaced, exprInsertIndex: index }
   }
 
   const hasPipeSub = isTypeInValue(finVal as Expr, 'PipeSubstitution')
@@ -767,8 +774,15 @@ export function isLinesParallelAndConstrained(
     if (err(_primarySegment)) return _primarySegment
     const primarySegment = _primarySegment.segment
 
+    const _varDec2 = getNodeFromPath(ast, secondaryPath, 'VariableDeclaration')
+    if (err(_varDec2)) return _varDec2
+    const varDec2 = _varDec2.node
+    const varName2 = (varDec2 as VariableDeclaration)?.declaration.id?.name
+    const sg2 = sketchFromKclValue(programMemory?.get(varName2), varName2)
+    if (err(sg2)) return sg2
+
     const _segment = getSketchSegmentFromSourceRange(
-      sg,
+      sg2,
       secondaryLine?.codeRef?.range
     )
     if (err(_segment)) return _segment
@@ -1108,4 +1122,58 @@ export function getObjExprProperty(
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }
+}
+
+export function isCursorInFunctionDefinition(
+  ast: Node<Program>,
+  selectionRanges: Selection
+): boolean {
+  if (!selectionRanges?.codeRef?.pathToNode) return false
+  const node = getNodeFromPath<FunctionExpression>(
+    ast,
+    selectionRanges.codeRef.pathToNode,
+    'FunctionExpression'
+  )
+  if (err(node)) return false
+  if (node.node.type === 'FunctionExpression') return true
+  return false
+}
+
+export function getBodyIndex(pathToNode: PathToNode): number | Error {
+  const index = Number(pathToNode[1][0])
+  if (Number.isInteger(index)) return index
+  return new Error('Expected number index')
+}
+
+export function isCallExprWithName(
+  expr: Expr | CallExpression,
+  name: string
+): expr is CallExpression {
+  if (expr.type === 'CallExpression' && expr.callee.type === 'Identifier') {
+    return expr.callee.name === name
+  }
+  return false
+}
+
+export function doesSketchPipeNeedSplitting(
+  ast: Node<Program>,
+  pathToPipe: PathToNode
+): boolean | Error {
+  const varDec = getNodeFromPath<VariableDeclarator>(
+    ast,
+    pathToPipe,
+    'VariableDeclarator'
+  )
+  if (err(varDec)) return varDec
+  if (varDec.node.type !== 'VariableDeclarator') return new Error('Not a var')
+  const pipeExpression = varDec.node.init
+  if (pipeExpression.type !== 'PipeExpression') return false
+  const [firstPipe, secondPipe] = pipeExpression.body
+  if (!firstPipe || !secondPipe) return false
+  if (
+    isCallExprWithName(firstPipe, 'startSketchOn') &&
+    isCallExprWithName(secondPipe, 'startProfileAt')
+  )
+    return true
+  return false
 }

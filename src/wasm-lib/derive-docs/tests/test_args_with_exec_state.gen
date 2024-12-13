@@ -99,6 +99,7 @@ impl crate::docs::StdLibFn for SomeFunction {
             schema,
             required: true,
             label_required: true,
+            description: String::new(),
         })
     }
 

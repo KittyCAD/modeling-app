@@ -133,12 +133,16 @@ impl Args {
     where
         T: FromKclValue<'a>,
     {
-        let Some(ref arg) = self.kw_args.unlabeled else {
-            return Err(KclError::Semantic(KclErrorDetails {
+        let arg = self
+            .kw_args
+            .unlabeled
+            .as_ref()
+            .or(self.args.first())
+            .ok_or(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![self.source_range],
                 message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
-            }));
-        };
+            }))?;
+
         T::from_kcl_val(&arg.value).ok_or_else(|| {
             KclError::Semantic(KclErrorDetails {
                 source_ranges: arg.source_ranges(),
@@ -408,13 +412,6 @@ impl Args {
     }
 
     pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagNode>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_sketches_and_data<'a, T>(&'a self) -> Result<(Vec<Sketch>, Option<T>), KclError>
-    where
-        T: FromArgs<'a> + serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
         FromArgs::from_args(self, 0)
     }
 
@@ -862,22 +859,6 @@ impl<'a> FromKclValue<'a> for crate::std::polar::PolarCoordsData {
         let_field_of!(obj, angle);
         let_field_of!(obj, length);
         Some(Self { angle, length })
-    }
-}
-
-impl<'a> FromKclValue<'a> for crate::std::loft::LoftData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, v_degree?);
-        let_field_of!(obj, bez_approximate_rational?);
-        let_field_of!(obj, base_curve_index?);
-        let_field_of!(obj, tolerance?);
-        Some(Self {
-            v_degree,
-            bez_approximate_rational,
-            base_curve_index,
-            tolerance,
-        })
     }
 }
 

@@ -40,39 +40,6 @@ snapshot_kind: text
     ]
   },
   {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          75,
-          106,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          108,
-          110,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          112,
-          115,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      68,
-      116,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
     "type": "UserDefinedFunctionReturn"
   },
   {
@@ -109,39 +76,6 @@ snapshot_kind: text
       384,
       0
     ]
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          75,
-          106,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          108,
-          110,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          112,
-          115,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      68,
-      116,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
   },
   {
     "type": "UserDefinedFunctionReturn"

@@ -96,39 +96,6 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          290,
-          321,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          323,
-          324,
-          0
-        ]
-      },
-      "tag": {
-        "sourceRange": [
-          326,
-          335,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      283,
-      336,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
       "length": {
         "sourceRange": [
           350,

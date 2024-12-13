@@ -112,58 +112,6 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1300,
-          1333,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          1335,
-          1336,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      1293,
-      1337,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1357,
-          1391,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          1393,
-          1394,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      1350,
-      1395,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
       "hole_sketch": {
         "sourceRange": [
           1350,
@@ -247,58 +195,6 @@ snapshot_kind: text
     "sourceRange": [
       1233,
       1252,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1300,
-          1333,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          1335,
-          1336,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      1293,
-      1337,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1357,
-          1391,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          1393,
-          1394,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      1350,
-      1395,
       0
     ],
     "type": "StdLibCall",
@@ -396,58 +292,6 @@ snapshot_kind: text
   },
   {
     "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1300,
-          1333,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          1335,
-          1336,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      1293,
-      1337,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1357,
-          1391,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          1393,
-          1394,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      1350,
-      1395,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
       "hole_sketch": {
         "sourceRange": [
           1350,
@@ -531,58 +375,6 @@ snapshot_kind: text
     "sourceRange": [
       1233,
       1252,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1300,
-          1333,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          1335,
-          1336,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      1293,
-      1337,
-      0
-    ],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "data": {
-        "sourceRange": [
-          1357,
-          1391,
-          0
-        ]
-      },
-      "sketch_surface_or_group": {
-        "sourceRange": [
-          1393,
-          1394,
-          0
-        ]
-      }
-    },
-    "name": "circle",
-    "sourceRange": [
-      1350,
-      1395,
       0
     ],
     "type": "StdLibCall",

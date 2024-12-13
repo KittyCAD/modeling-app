@@ -217,7 +217,6 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 #[stdlib {
     name = "polygon",
-    feature_tree_operation = true,
 }]
 async fn inner_polygon(
     data: PolygonData,

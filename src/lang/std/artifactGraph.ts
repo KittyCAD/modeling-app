@@ -1,4 +1,5 @@
 import {
+  Expr,
   PathToNode,
   Program,
   SourceRange,
@@ -7,6 +8,7 @@ import {
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
+import { engineCommandManager, kclManager } from 'lib/singletons'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type ArtifactId = string
@@ -40,7 +42,7 @@ export interface PathArtifact extends BaseArtifact {
   codeRef: CodeRef
 }
 
-interface solid2D extends BaseArtifact {
+interface Solid2DArtifact extends BaseArtifact {
   type: 'solid2D'
   pathId: ArtifactId
 }
@@ -67,7 +69,7 @@ interface SegmentArtifactRich extends BaseArtifact {
   type: 'segment'
   path: PathArtifact
   surf: WallArtifact
-  edges: Array<SweepEdge>
+  edges: Array<SweepEdgeArtifact>
   edgeCut?: EdgeCut
   codeRef: CodeRef
 }
@@ -86,7 +88,7 @@ interface SweepArtifactRich extends BaseArtifact {
   subType: 'extrusion' | 'revolve'
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
-  edges: Array<SweepEdge>
+  edges: Array<SweepEdgeArtifact>
   codeRef: CodeRef
 }
 
@@ -96,6 +98,9 @@ interface WallArtifact extends BaseArtifact {
   edgeCutEdgeIds: Array<ArtifactId>
   sweepId: ArtifactId
   pathIds: Array<ArtifactId>
+  // codeRef is for the sketchOnFace plane, not for the wall itself
+  // traverse to the extrude and or segment to get the wall's codeRef
+  codeRef?: CodeRef
 }
 interface CapArtifact extends BaseArtifact {
   type: 'cap'
@@ -105,7 +110,7 @@ interface CapArtifact extends BaseArtifact {
   pathIds: Array<ArtifactId>
 }
 
-interface SweepEdge extends BaseArtifact {
+interface SweepEdgeArtifact extends BaseArtifact {
   type: 'sweepEdge'
   segId: ArtifactId
   sweepId: ArtifactId
@@ -135,10 +140,10 @@ export type Artifact =
   | SweepArtifact
   | WallArtifact
   | CapArtifact
-  | SweepEdge
+  | SweepEdgeArtifact
   | EdgeCut
   | EdgeCutEdge
-  | solid2D
+  | Solid2DArtifact
 
 export type ArtifactGraph = Map<ArtifactId, Artifact>
 
@@ -223,7 +228,7 @@ function mergeArtifacts(
   // TODO: Remove this any cast
   let typeCastArtifact = mergedArtifact as any as Artifact
 
-  if ('codeRef' in typeCastArtifact) {
+  if ('codeRef' in typeCastArtifact && typeCastArtifact.codeRef) {
     // In the creation of this artifact above this subtle
     // type shifting got lost due to the type casting
     typeCastArtifact.codeRef.range = sourceRangeFromRust(
@@ -300,6 +305,7 @@ export function getArtifactsToUpdate({
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             sweepId: existingPlane.sweepId,
             pathIds: existingPlane.pathIds,
+            codeRef,
           },
         },
       ]
@@ -749,7 +755,7 @@ export function getCapCodeRef(
 }
 
 export function getSolid2dCodeRef(
-  solid2D: solid2D,
+  solid2D: Solid2DArtifact,
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
   const path = getArtifactOfTypes(
@@ -773,7 +779,7 @@ export function getWallCodeRef(
 }
 
 export function getSweepEdgeCodeRef(
-  edge: SweepEdge,
+  edge: SweepEdgeArtifact,
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
   const seg = getArtifactOfTypes(
@@ -898,10 +904,209 @@ export function getArtifactFromRange(
   for (const artifact of artifactGraph.values()) {
     if ('codeRef' in artifact) {
       const match =
-        artifact.codeRef.range[0] === range[0] &&
+        artifact.codeRef?.range[0] === range[0] &&
         artifact.codeRef.range[1] === range[1]
       if (match) return artifact
     }
   }
   return null
+}
+
+function getPlaneFromPath(
+  path: PathArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | Error {
+  const plane = getArtifactOfTypes(
+    { key: path.planeId, types: ['plane', 'wall'] },
+    graph
+  )
+  if (err(plane)) return plane
+  return plane
+}
+
+function getPlaneFromSegment(
+  segment: SegmentArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | Error {
+  const path = getArtifactOfTypes(
+    { key: segment.pathId, types: ['path'] },
+    graph
+  )
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromSolid2D(
+  solid2D: Solid2DArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | Error {
+  const path = getArtifactOfTypes(
+    { key: solid2D.pathId, types: ['path'] },
+    graph
+  )
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromCap(
+  cap: CapArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | Error {
+  const sweep = getArtifactOfTypes(
+    { key: cap.sweepId, types: ['sweep'] },
+    graph
+  )
+  if (err(sweep)) return sweep
+  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromWall(
+  wall: WallArtifact,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | Error {
+  const sweep = getArtifactOfTypes(
+    { key: wall.sweepId, types: ['sweep'] },
+    graph
+  )
+  if (err(sweep)) return sweep
+  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+function getPlaneFromSweepEdge(edge: SweepEdgeArtifact, graph: ArtifactGraph) {
+  const sweep = getArtifactOfTypes(
+    { key: edge.sweepId, types: ['sweep'] },
+    graph
+  )
+  if (err(sweep)) return sweep
+  const path = getArtifactOfTypes({ key: sweep.pathId, types: ['path'] }, graph)
+  if (err(path)) return path
+  return getPlaneFromPath(path, graph)
+}
+
+export function getPlaneFromArtifact(
+  artifact: Artifact | undefined,
+  graph: ArtifactGraph
+): PlaneArtifact | WallArtifact | Error {
+  if (!artifact) return new Error(`Artifact is undefined`)
+  if (artifact.type === 'plane') return artifact
+  if (artifact.type === 'path') return getPlaneFromPath(artifact, graph)
+  if (artifact.type === 'segment') return getPlaneFromSegment(artifact, graph)
+  if (artifact.type === 'solid2D') return getPlaneFromSolid2D(artifact, graph)
+  if (artifact.type === 'cap') return getPlaneFromCap(artifact, graph)
+  if (artifact.type === 'wall') return getPlaneFromWall(artifact, graph)
+  if (artifact.type === 'sweepEdge')
+    return getPlaneFromSweepEdge(artifact, graph)
+  return new Error(`Artifact type ${artifact.type} does not have a plane`)
+}
+
+const isExprSafe = (index: number): boolean => {
+  const expr = kclManager.ast.body?.[index]
+  if (!expr) {
+    return false
+  }
+  if (expr.type === 'ImportStatement' || expr.type === 'ReturnStatement') {
+    return false
+  }
+  if (expr.type === 'VariableDeclaration') {
+    const init = expr.declaration?.init
+    if (!init) return false
+    if (init.type === 'CallExpression') {
+      return false
+    }
+    if (init.type === 'BinaryExpression' && isNodeSafe(init)) {
+      return true
+    }
+    if (init.type === 'Literal' || init.type === 'MemberExpression') {
+      return true
+    }
+  }
+  return false
+}
+
+const onlyConsecutivePaths = (
+  orderedNodePaths: PathToNode[],
+  originalPath: PathToNode
+): PathToNode[] => {
+  const originalIndex = Number(
+    orderedNodePaths.find(
+      (path) => path[1][0] === originalPath[1][0]
+    )?.[1]?.[0] || 0
+  )
+
+  const minIndex = Number(orderedNodePaths[0][1][0])
+  const maxIndex = Number(orderedNodePaths[orderedNodePaths.length - 1][1][0])
+  const pathIndexMap: any = {}
+  orderedNodePaths.forEach((path) => {
+    const bodyIndex = Number(path[1][0])
+    pathIndexMap[bodyIndex] = path
+  })
+  const safePaths: PathToNode[] = []
+
+  // traverse expressions in either direction from the profile selected
+  // when the user entered sketch mode
+  for (let i = originalIndex; i <= maxIndex; i++) {
+    if (pathIndexMap[i]) {
+      safePaths.push(pathIndexMap[i])
+    } else if (!isExprSafe(i)) {
+      break
+    }
+  }
+  for (let i = originalIndex - 1; i >= minIndex; i--) {
+    if (pathIndexMap[i]) {
+      safePaths.unshift(pathIndexMap[i])
+    } else if (!isExprSafe(i)) {
+      break
+    }
+  }
+  return safePaths
+}
+
+export function getPathsFromPlaneArtifact(planeArtifact: PlaneArtifact) {
+  const nodePaths: PathToNode[] = []
+  for (const pathId of planeArtifact.pathIds) {
+    const path = engineCommandManager.artifactGraph.get(pathId)
+    if (!path) continue
+    if ('codeRef' in path && path.codeRef) {
+      // TODO should figure out why upstream the path is bad
+      const isNodePathBad = path.codeRef.pathToNode.length < 2
+      nodePaths.push(
+        isNodePathBad
+          ? getNodePathFromSourceRange(kclManager.ast, path.codeRef.range)
+          : path.codeRef.pathToNode
+      )
+    }
+  }
+  return onlyConsecutivePaths(nodePaths, nodePaths[0])
+}
+
+export function getPathsFromArtifact({
+  sketchPathToNode,
+  artifact,
+}: {
+  sketchPathToNode: PathToNode
+  artifact?: Artifact
+}): PathToNode[] | Error {
+  const plane = getPlaneFromArtifact(
+    artifact,
+    engineCommandManager.artifactGraph
+  )
+  if (err(plane)) return plane
+  const paths = getArtifactsOfTypes(
+    { keys: plane.pathIds, types: ['path'] },
+    engineCommandManager.artifactGraph
+  )
+  let nodePaths = [...paths.values()]
+    .map((path) => path.codeRef.pathToNode)
+    .sort((a, b) => Number(a[1][0]) - Number(b[1][0]))
+  return onlyConsecutivePaths(nodePaths, sketchPathToNode)
+}
+
+function isNodeSafe(node: Expr): boolean {
+  if (node.type === 'Literal' || node.type === 'MemberExpression') {
+    return true
+  }
+  if (node.type === 'BinaryExpression') {
+    return isNodeSafe(node.left) && isNodeSafe(node.right)
+  }
+  return false
 }

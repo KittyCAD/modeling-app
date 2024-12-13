@@ -763,6 +763,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// ```
 #[stdlib {
     name = "patternLinear3d",
+    feature_tree_operation = true,
 }]
 async fn inner_pattern_linear_3d(
     data: LinearPattern3dData,
@@ -982,6 +983,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 /// ```
 #[stdlib {
     name = "patternCircular3d",
+    feature_tree_operation = true,
 }]
 async fn inner_pattern_circular_3d(
     data: CircularPattern3dData,

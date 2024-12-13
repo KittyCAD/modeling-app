@@ -11,6 +11,7 @@ import {
 
 type mouseParams = {
   pixelDiff?: number
+  shouldDbClick?: boolean
 }
 type mouseDragToParams = mouseParams & {
   fromPoint: { x: number; y: number }
@@ -75,11 +76,16 @@ export class SceneFixture {
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
-            () => this.page.mouse.click(x, y),
+            () =>
+              clickParams?.shouldDbClick
+                ? this.page.mouse.dblclick(x, y)
+                : this.page.mouse.click(x, y),
             clickParams.pixelDiff
           )
         }
-        return this.page.mouse.click(x, y)
+        return clickParams?.shouldDbClick
+          ? this.page.mouse.dblclick(x, y)
+          : this.page.mouse.click(x, y)
       },
       (moveParams?: mouseParams) => {
         if (moveParams?.pixelDiff) {

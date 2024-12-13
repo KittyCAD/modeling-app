@@ -92,6 +92,7 @@ impl crate::docs::StdLibFn for Show {
             schema: generator.root_schema_for::<f64>(),
             required: true,
             label_required: true,
+            description: String::new().to_string(),
         }]
     }
 
@@ -106,6 +107,7 @@ impl crate::docs::StdLibFn for Show {
             schema,
             required: true,
             label_required: true,
+            description: String::new(),
         })
     }
 
