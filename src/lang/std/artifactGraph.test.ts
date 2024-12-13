@@ -661,7 +661,7 @@ describe('testing getArtifactsToUpdate', () => {
         sweepId: '',
         codeRef: {
           pathToNode: [['body', '']],
-          range: [37, 64, 0],
+          range: [37, 64, true],
         },
       },
     ])
@@ -674,7 +674,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: [],
         edgeIds: [],
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -685,7 +685,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [37, 64, 0],
+          range: [37, 64, true],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -699,7 +699,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: '',
         edgeIds: [],
         codeRef: {
-          range: [70, 86, 0],
+          range: [70, 86, true],
           pathToNode: [['body', '']],
         },
       },
@@ -710,7 +710,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [37, 64, 0],
+          range: [37, 64, true],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -725,7 +725,7 @@ describe('testing getArtifactsToUpdate', () => {
         edgeIds: [],
         surfaceId: '',
         codeRef: {
-          range: [260, 299, 0],
+          range: [260, 299, true],
           pathToNode: [['body', '']],
         },
       },
@@ -736,7 +736,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [92, 119, 0],
+          range: [92, 119, true],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -758,7 +758,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [156, 203, 0],
+          range: [156, 203, true],
           pathToNode: [['body', '']],
         },
       },
@@ -770,7 +770,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -789,7 +789,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [125, 150, 0],
+          range: [125, 150, true],
           pathToNode: [['body', '']],
         },
       },
@@ -801,7 +801,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -820,7 +820,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [92, 119, 0],
+          range: [92, 119, true],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -833,7 +833,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -852,7 +852,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [70, 86, 0],
+          range: [70, 86, true],
           pathToNode: [['body', '']],
         },
       },
@@ -864,7 +864,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -884,7 +884,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -904,7 +904,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
