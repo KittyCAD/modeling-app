@@ -342,10 +342,10 @@ test(
 )
 
 test(
-  'xxxxx open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
+  'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
-    const { dir } = await context.folderSetupFn(async (dir) => {
+    await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(

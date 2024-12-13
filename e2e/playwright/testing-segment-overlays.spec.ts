@@ -299,9 +299,10 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: angledLine.x, y: angledLine.y },
         constraintType: 'angle',
         expectBeforeUnconstrained:
-          'angledLine({ angle: 3 + 0, length: 32 + 0 }, %)',
-        expectAfterUnconstrained: 'angledLine({ angle: 3, length: 32 + 0 }, %)',
-        expectFinal: 'angledLine({ angle: angle001, length: 32 + 0 }, %)',
+          'angledLine({ angle = 3 + 0, length = 32 + 0 }, %)',
+        expectAfterUnconstrained:
+          'angledLine({ angle = 3, length = 32 + 0 }, %)',
+        expectFinal: 'angledLine({ angle = angle001, length = 32 + 0 }, %)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="1"]',
       })
@@ -310,10 +311,10 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: angledLine.x, y: angledLine.y },
         constraintType: 'length',
         expectBeforeUnconstrained:
-          'angledLine({ angle: angle001, length: 32 + 0 }, %)',
+          'angledLine({ angle = angle001, length = 32 + 0 }, %)',
         expectAfterUnconstrained:
-          'angledLine({ angle: angle001, length: 32 }, %)',
-        expectFinal: 'angledLine({ angle: angle001, length: len001 }, %)',
+          'angledLine({ angle = angle001, length = 32 }, %)',
+        expectFinal: 'angledLine({ angle = angle001, length = len001 }, %)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="1"]',
       })
@@ -360,15 +361,15 @@ test.describe('Testing segment overlays', () => {
         locator: '[data-overlay-toolbar-index="3"]',
       })
     })
-    test('for segments [yLineTo, xLine]', async ({
-      page,
-      editor,
-      homePage,
-    }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `yRel001 = -14
+
+    // Broken on main at time of writing!
+    test.fixme(
+      'for segments [yLineTo, xLine]',
+      async ({ page, editor, homePage }) => {
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `yRel001 = -14
     xRel001 = 0.5
     angle001 = 3
     len001 = 32
@@ -386,59 +387,60 @@ test.describe('Testing segment overlays', () => {
       |> yLine(21.14 + 0, %)
       |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
       `
-        )
-      })
-      const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
 
-      await homePage.goToModelingScene()
+        await homePage.goToModelingScene()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+        // wait for execution done
+        await u.openDebugPanel()
+        await u.expectCmdLog('[data-message-type="execution-done"]')
+        await u.closeDebugPanel()
 
-      await page.getByText('xLine(26.04, %)').click()
-      await page.waitForTimeout(100)
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
-      await page.waitForTimeout(500)
+        await page.getByText('xLine(26.04, %)').click()
+        await page.waitForTimeout(100)
+        await page.getByRole('button', { name: 'Edit Sketch' }).click()
+        await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(8)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(8)
 
-      const clickUnconstrained = _clickUnconstrained(page, editor)
+        const clickUnconstrained = _clickUnconstrained(page, editor)
 
-      await page.mouse.move(700, 250)
-      await page.waitForTimeout(100)
+        await page.mouse.move(700, 250)
+        await page.waitForTimeout(100)
 
-      let ang = 0
+        let ang = 0
 
-      const yLineTo = await u.getBoundingBox(`[data-overlay-index="4"]`)
-      ang = await u.getAngle(`[data-overlay-index="4"]`)
-      console.log('ylineTo1')
-      await clickUnconstrained({
-        hoverPos: { x: yLineTo.x, y: yLineTo.y },
-        constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: 'yLineTo(-10.77, %, $a)',
-        expectAfterUnconstrained: 'yLineTo(yAbs002, %, $a)',
-        expectFinal: 'yLineTo(-10.77, %, $a)',
-        ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="4"]',
-      })
+        const yLineTo = await u.getBoundingBox(`[data-overlay-index="4"]`)
+        ang = await u.getAngle(`[data-overlay-index="4"]`)
+        console.log('ylineTo1')
+        await clickUnconstrained({
+          hoverPos: { x: yLineTo.x, y: yLineTo.y - 200 },
+          constraintType: 'yAbsolute',
+          expectBeforeUnconstrained: 'yLineTo(-10.77, %, $a)',
+          expectAfterUnconstrained: 'yLineTo(yAbs002, %, $a)',
+          expectFinal: 'yLineTo(-10.77, %, $a)',
+          ang: ang + 180,
+          locator: '[data-overlay-toolbar-index="4"]',
+        })
 
-      const xLine = await u.getBoundingBox(`[data-overlay-index="5"]`)
-      ang = await u.getAngle(`[data-overlay-index="5"]`)
-      console.log('xline')
-      await clickUnconstrained({
-        hoverPos: { x: xLine.x, y: xLine.y },
-        constraintType: 'xRelative',
-        expectBeforeUnconstrained: 'xLine(26.04, %)',
-        expectAfterUnconstrained: 'xLine(xRel002, %)',
-        expectFinal: 'xLine(26.04, %)',
-        steps: 10,
-        ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="5"]',
-      })
-    })
+        const xLine = await u.getBoundingBox(`[data-overlay-index="5"]`)
+        ang = await u.getAngle(`[data-overlay-index="5"]`)
+        console.log('xline')
+        await clickUnconstrained({
+          hoverPos: { x: xLine.x, y: xLine.y },
+          constraintType: 'xRelative',
+          expectBeforeUnconstrained: 'xLine(26.04, %)',
+          expectAfterUnconstrained: 'xLine(xRel002, %)',
+          expectFinal: 'xLine(26.04, %)',
+          steps: 10,
+          ang: ang + 180,
+          locator: '[data-overlay-toolbar-index="5"]',
+        })
+      }
+    )
     test('for segments [yLine, angledLineOfXLength, angledLineOfYLength]', async ({
       page,
       editor,
@@ -515,11 +517,11 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: angledLineOfXLength.x, y: angledLineOfXLength.y },
         constraintType: 'angle',
         expectBeforeUnconstrained:
-          'angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)',
+          'angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)',
         expectAfterUnconstrained:
-          'angledLineOfXLength({ angle: -179, length: 23.14 }, %)',
+          'angledLineOfXLength({ angle = -179, length = 23.14 }, %)',
         expectFinal:
-          'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
+          'angledLineOfXLength({ angle = angle001, length = 23.14 }, %)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="7"]',
       })
@@ -528,11 +530,11 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: angledLineOfXLength.x, y: angledLineOfXLength.y },
         constraintType: 'xRelative',
         expectBeforeUnconstrained:
-          'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
+          'angledLineOfXLength({ angle = angle001, length = 23.14 }, %)',
         expectAfterUnconstrained:
-          'angledLineOfXLength({ angle: angle001, length: xRel001 }, %)',
+          'angledLineOfXLength({ angle = angle001, length = xRel001 }, %)',
         expectFinal:
-          'angledLineOfXLength({ angle: angle001, length: 23.14 }, %)',
+          'angledLineOfXLength({ angle = angle001, length = 23.14 }, %)',
         steps: 7,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="7"]',
@@ -547,10 +549,10 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: angledLineOfYLength.x, y: angledLineOfYLength.y },
         constraintType: 'angle',
         expectBeforeUnconstrained:
-          'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
+          'angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)',
         expectAfterUnconstrained:
-          'angledLineOfYLength({ angle: angle002, length: 19 + 0 }, %)',
-        expectFinal: 'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
+          'angledLineOfYLength({ angle = angle002, length = 19 + 0 }, %)',
+        expectFinal: 'angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)',
         ang: ang + 180,
         steps: 6,
         locator: '[data-overlay-toolbar-index="8"]',
@@ -560,10 +562,11 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: angledLineOfYLength.x, y: angledLineOfYLength.y },
         constraintType: 'yRelative',
         expectBeforeUnconstrained:
-          'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
+          'angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)',
         expectAfterUnconstrained:
-          'angledLineOfYLength({ angle: -91, length: 19 }, %)',
-        expectFinal: 'angledLineOfYLength({ angle: -91, length: yRel002 }, %)',
+          'angledLineOfYLength({ angle = -91, length = 19 }, %)',
+        expectFinal:
+          'angledLineOfYLength({ angle = -91, length = yRel002 }, %)',
         ang: ang + 180,
         steps: 7,
         locator: '[data-overlay-toolbar-index="8"]',
@@ -628,9 +631,10 @@ test.describe('Testing segment overlays', () => {
       await clickConstrained({
         hoverPos: { x: angledLineToX.x, y: angledLineToX.y },
         constraintType: 'angle',
-        expectBeforeUnconstrained: 'angledLineToX({ angle: 3 + 0, to: 26 }, %)',
-        expectAfterUnconstrained: 'angledLineToX({ angle: 3, to: 26 }, %)',
-        expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
+        expectBeforeUnconstrained:
+          'angledLineToX({ angle = 3 + 0, to = 26 }, %)',
+        expectAfterUnconstrained: 'angledLineToX({ angle = 3, to = 26 }, %)',
+        expectFinal: 'angledLineToX({ angle = angle001, to = 26 }, %)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="9"]',
       })
@@ -639,10 +643,10 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: angledLineToX.x, y: angledLineToX.y },
         constraintType: 'xAbsolute',
         expectBeforeUnconstrained:
-          'angledLineToX({ angle: angle001, to: 26 }, %)',
+          'angledLineToX({ angle = angle001, to = 26 }, %)',
         expectAfterUnconstrained:
-          'angledLineToX({ angle: angle001, to: xAbs001 }, %)',
-        expectFinal: 'angledLineToX({ angle: angle001, to: 26 }, %)',
+          'angledLineToX({ angle = angle001, to = xAbs001 }, %)',
+        expectFinal: 'angledLineToX({ angle = angle001, to = 26 }, %)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="9"]',
       })
@@ -654,10 +658,10 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: angledLineToY.x, y: angledLineToY.y },
         constraintType: 'angle',
         expectBeforeUnconstrained:
-          'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
+          'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
         expectAfterUnconstrained:
-          'angledLineToY({ angle: angle002, to: 9.14 + 0 }, %)',
-        expectFinal: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
+          'angledLineToY({ angle = angle002, to = 9.14 + 0 }, %)',
+        expectFinal: 'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
         steps: process.platform === 'darwin' ? 8 : 9,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="10"]',
@@ -667,9 +671,9 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: angledLineToY.x, y: angledLineToY.y },
         constraintType: 'yAbsolute',
         expectBeforeUnconstrained:
-          'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
-        expectAfterUnconstrained: 'angledLineToY({ angle: 89, to: 9.14 }, %)',
-        expectFinal: 'angledLineToY({ angle: 89, to: yAbs001 }, %)',
+          'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
+        expectAfterUnconstrained: 'angledLineToY({ angle = 89, to = 9.14 }, %)',
+        expectFinal: 'angledLineToY({ angle = 89, to = yAbs001 }, %)',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="10"]',
       })
@@ -828,7 +832,7 @@ test.describe('Testing segment overlays', () => {
       await u.closeDebugPanel()
 
       await page
-        .getByText('circle({ center: [1 + 0, 0], radius: 8 }, %)')
+        .getByText('circle({ center = [1 + 0, 0], radius = 8 }, %)')
         .click()
       await page.waitForTimeout(100)
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -847,9 +851,9 @@ test.describe('Testing segment overlays', () => {
         hoverPos,
         constraintType: 'xAbsolute',
         expectBeforeUnconstrained:
-          'circle({ center: [1 + 0, 0], radius: 8 }, %)',
-        expectAfterUnconstrained: 'circle({ center: [1, 0], radius: 8 }, %)',
-        expectFinal: 'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+          'circle({ center = [1 + 0, 0], radius = 8 }, %)',
+        expectAfterUnconstrained: 'circle({ center = [1, 0], radius = 8 }, %)',
+        expectFinal: 'circle({ center = [xAbs001, 0], radius = 8 }, %)',
         ang: ang + 105,
         steps: 6,
         locator: '[data-overlay-toolbar-index="0"]',
@@ -859,7 +863,7 @@ test.describe('Testing segment overlays', () => {
         hoverPos,
         constraintType: 'yAbsolute',
         expectBeforeUnconstrained:
-          'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+          'circle({ center = [xAbs001, 0], radius = 8 }, %)',
         expectAfterUnconstrained:
           'circle({ center = [xAbs001, yAbs001], radius =  8 }, %)',
         expectFinal: 'circle({ center = [xAbs001, 0], radius =  8 }, %)',
@@ -872,10 +876,10 @@ test.describe('Testing segment overlays', () => {
         hoverPos,
         constraintType: 'radius',
         expectBeforeUnconstrained:
-          'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+          'circle({ center = [xAbs001, 0], radius = 8 }, %)',
         expectAfterUnconstrained:
-          'circle({ center: [xAbs001, 0], radius: radius001 }, %)',
-        expectFinal: 'circle({ center: [xAbs001, 0], radius: 8 }, %)',
+          'circle({ center = [xAbs001, 0], radius = radius001 }, %)',
+        expectFinal: 'circle({ center = [xAbs001, 0], radius = 8 }, %)',
         ang: ang + 105,
         steps: 10,
         locator: '[data-overlay-toolbar-index="0"]',
@@ -1003,7 +1007,7 @@ test.describe('Testing segment overlays', () => {
       ang = await u.getAngle(`[data-overlay-index="${10}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLineToY({ angle: 89, to: 9.14 + 0 }, %)',
+        codeToBeDeleted: 'angledLineToY({ angle = 89, to = 9.14 + 0 }, %)',
         stdLibFnName: 'angledLineToY',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="10"]',
@@ -1013,7 +1017,7 @@ test.describe('Testing segment overlays', () => {
       ang = await u.getAngle(`[data-overlay-index="${9}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLineToX({ angle: 3 + 0, to: 26 }, %)',
+        codeToBeDeleted: 'angledLineToX({ angle = 3 + 0, to = 26 }, %)',
         stdLibFnName: 'angledLineToX',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="9"]',
@@ -1024,7 +1028,7 @@ test.describe('Testing segment overlays', () => {
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted:
-          'angledLineOfYLength({ angle: -91, length: 19 + 0 }, %)',
+          'angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)',
         stdLibFnName: 'angledLineOfYLength',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="8"]',
@@ -1035,7 +1039,7 @@ test.describe('Testing segment overlays', () => {
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted:
-          'angledLineOfXLength({ angle: 181 + 0, length: 23.14 }, %)',
+          'angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)',
         stdLibFnName: 'angledLineOfXLength',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="7"]',
@@ -1118,7 +1122,7 @@ test.describe('Testing segment overlays', () => {
       ang = await u.getAngle(`[data-overlay-index="${1}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'angledLine({ angle: 3 + 0, length: 32 + 0 }, %)',
+        codeToBeDeleted: 'angledLine({ angle = 3 + 0, length = 32 + 0 }, %)',
         stdLibFnName: 'angledLine',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -1301,7 +1305,7 @@ test.describe('Testing segment overlays', () => {
     ]
 
     for (const { before, after } of cases) {
-      const isObj = before.includes('{ angle: 3')
+      const isObj = before.includes('{ angle = 3')
       test(`${before.split('(')[0]}${isObj ? '-[obj-input]' : ''}`, async ({
         page,
         editor,

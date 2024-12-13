@@ -453,20 +453,22 @@ test.describe('Editor tests', () => {
     homePage,
   }) => {
     const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
 
     // check no error to begin with
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    /* add the following code to the editor ($ error is not a valid line)
-    $ error
+    /* add the following code to the editor (~ error is not a valid line)
+      * the old check here used $ but this is for tags so it changed meaning.
+      * hopefully ~ doesnt change meaning
+    ~ error
     const topAng = 30
     const bottomAng = 25
    */
     await u.codeLocator.click()
-    await page.keyboard.type('$ error')
+    await page.keyboard.type('~ error')
 
     // press arrows to clear autocomplete
     await page.keyboard.press('ArrowLeft')
@@ -483,10 +485,12 @@ test.describe('Editor tests', () => {
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    await expect(page.getByText('Unexpected token: $').first()).toBeVisible()
+    await expect(
+      page.getByText("found unknown token '~'").first()
+    ).toBeVisible()
 
     // select the line that's causing the error and delete it
-    await page.getByText('$ error').click()
+    await page.getByText('~ error').click()
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('Home')

@@ -644,7 +644,7 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'flatExtrusionFace',
       flatExtrusionFace,
-      `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)extrude(5+7,%)`,
+      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)extrude(5+7,%)`,
       '}, %)'
     )
 
@@ -701,19 +701,19 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'straightSegmentEdge',
       straightSegmentEdge,
-      `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+      `angledLineToY({angle=30,to=11.14},%)`,
+      'angledLineToY({ angle = 30, to = 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentOppositeEdge',
       straightSegmentOppositeEdge,
-      `angledLineToY({angle:30,to:11.14},%)`,
-      'angledLineToY({ angle: 30, to: 11.14 }, %)'
+      `angledLineToY({angle=30,to=11.14},%)`,
+      'angledLineToY({ angle = 30, to = 11.14 }, %)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentAdjacentEdge',
       straightSegmentAdjacentEdge,
-      `angledLineThatIntersects({angle:3.14,intersectTag:a,offset:0},%)`,
+      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)`,
       '}, %)'
     )
 
@@ -780,14 +780,14 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'oppositeChamfer',
       oppositeChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'baseChamfer',
       baseChamfer,
-      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001)-90,217.26],%,$seg01)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
@@ -818,14 +818,14 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'adjacentChamfer1',
       adjacentChamfer1,
-      `lineTo([profileStartX(%),profileStartY(%)],%,$seg02)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `lineTo([profileStartX(%),profileStartY(%)],%,$seg02)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'adjacentChamfer2',
       adjacentChamfer2,
-      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer({length:30,tags:[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `angledLine([segAng(rectangleSegmentA001),-segLen(rectangleSegmentA001)],%,$yo)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
   })

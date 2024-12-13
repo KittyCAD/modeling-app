@@ -20,7 +20,7 @@ async function doBasicSketch(
 
   await homePage.goToModelingScene()
   await u.waitForPageLoad()
-  await page.waitForTimeout()
+  await page.waitForTimeout(1000)
   await u.openDebugPanel()
 
   // If we have the code pane open, we should see the code.
