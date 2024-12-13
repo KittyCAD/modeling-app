@@ -77,30 +77,31 @@ test.describe('Testing selections', () => {
       const startXPx = 600
       await u.closeDebugPanel()
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)`)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      )
 
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
+        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
     |> xLine(${commonPoints.num1}, %)`)
 
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
+        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
+        commonPoints.startAt
+      }, sketch001)
     |> xLine(${commonPoints.num1}, %)
     |> yLine(${commonPoints.num1 + 0.01}, %)`)
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
+        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
+        commonPoints.startAt
+      }, sketch001)
     |> xLine(${commonPoints.num1}, %)
     |> yLine(${commonPoints.num1 + 0.01}, %)
     |> xLine(${commonPoints.num2 * -1}, %)`)
@@ -330,6 +331,28 @@ part009 = startSketchOn('XY')
   |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
   |> close(%)
 rev = revolve({ axis = 'y' }, part009)
+sketch006 = startSketchOn('XY')
+profile001 = circle({
+  center = [42.91, -70.42],
+  radius = 17.96
+}, sketch006)
+profile002 = startProfileAt([86.92, -63.81], sketch006)
+  |> angledLine([0, 63.81], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       17.05
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile003 = startProfileAt([40.16, -120.48], sketch006)
+  |> line([26.95, 24.21], %)
+  |> line([20.91, -28.61], %)
+  |> line([32.46, 18.71], %)
+
 `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -362,9 +385,10 @@ rev = revolve({ axis = 'y' }, part009)
     })
     await page.waitForTimeout(100)
 
-    const revolve = { x: 646, y: 248 }
+    const revolve = { x: 635, y: 253 }
     const parentExtrude = { x: 915, y: 133 }
     const solid2d = { x: 770, y: 167 }
+    const individualProfile = { x: 694, y: 432 }
 
     // DELETE REVOLVE
     await page.mouse.click(revolve.x, revolve.y)
@@ -430,6 +454,20 @@ rev = revolve({ axis = 'y' }, part009)
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(`sketch005 = startSketchOn({`)
+
+    // Delete a single profile
+    await page.mouse.click(individualProfile.x, individualProfile.y)
+    await page.waitForTimeout(100)
+    const codeToBeDeletedSnippet =
+      'profile003 = startProfileAt([40.16, -120.48], sketch006)'
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '  |> line([20.91, -28.61], %)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(200)
+    await expect(u.codeLocator).not.toContainText(codeToBeDeletedSnippet)
   })
   test("Deleting solid that the AST mod can't handle results in a toast message", async ({
     page,
@@ -1258,12 +1296,15 @@ extrude001 = extrude(50, sketch001)
 
     await page.waitForTimeout(600)
 
+    const firstClickCoords = { x: 650, y: 200 } as const
     // Place a point because the line tool will exit if no points are pressed
-    await page.mouse.click(650, 200)
+    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
     await page.waitForTimeout(600)
 
     // Code before exiting the tool
-    let previousCodeContent = await page.locator('.cm-content').innerText()
+    let previousCodeContent = (
+      await page.locator('.cm-content').innerText()
+    ).replace(/\s+/g, '')
 
     // deselect the line tool by clicking it
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -1275,13 +1316,22 @@ extrude001 = extrude(50, sketch001)
     await page.mouse.click(750, 200)
     await page.waitForTimeout(100)
 
-    // expect no change
-    await expect(page.locator('.cm-content')).toHaveText(previousCodeContent)
+    await expect
+      .poll(async () => {
+        let str = await page.locator('.cm-content').innerText()
+        str = str.replace(/\s+/g, '')
+        return str
+      })
+      .toBe(previousCodeContent)
 
     // select line tool again
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
     await u.closeDebugPanel()
+
+    // Click to continue profile
+    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
+    await page.waitForTimeout(100)
 
     // line tool should work as expected again
     await page.mouse.click(700, 200)
