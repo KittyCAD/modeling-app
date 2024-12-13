@@ -124,16 +124,10 @@ impl ProgramMemory {
         Ok(())
     }
 
-    pub fn add_tag(&mut self, tag: &str, value: TagIdentifier, source_range: SourceRange) -> Result<(), KclError> {
-        self.add(tag, KclValue::TagIdentifier(Box::new(value)), source_range)
-    }
-
-    pub fn update_tag_if_defined(&mut self, tag: &str, value: TagIdentifier) {
-        if !self.environments[self.current_env.index()].contains_key(tag) {
-            // Do nothing if the tag isn't defined.
-            return;
-        }
+    pub fn update_tag(&mut self, tag: &str, value: TagIdentifier) -> Result<(), KclError> {
         self.environments[self.current_env.index()].insert(tag.to_string(), KclValue::TagIdentifier(Box::new(value)));
+
+        Ok(())
     }
 
     /// Get a value from the program memory.
@@ -850,7 +844,7 @@ impl GetTangentialInfoFromPathsResult {
 
 impl Sketch {
     pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path) {
-        let mut tag_identifier = TagIdentifier::from(tag);
+        let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
         tag_identifier.info = Some(TagEngineInfo {
             id: base.geo_meta.id,
@@ -2136,7 +2130,7 @@ impl ExecutorContext {
         let item = match init {
             Expr::None(none) => KclValue::from(none),
             Expr::Literal(literal) => KclValue::from(literal),
-            Expr::TagDeclarator(tag) => KclValue::from(tag),
+            Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Identifier(identifier) => {
                 let value = exec_state.memory.get(&identifier.name, identifier.into())?;
                 value.clone()
@@ -3054,10 +3048,8 @@ let notTagDeclarator = !myTagDeclarator";
         );
 
         let code9 = "
-sk = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
-  |> line([5, 0], %, $myTag)
-notTagIdentifier = !myTag";
+let myTagDeclarator = $myTag
+let notTagIdentifier = !myTag";
         let tag_identifier_err = parse_execute(code9).await.unwrap_err().downcast::<KclError>().unwrap();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
