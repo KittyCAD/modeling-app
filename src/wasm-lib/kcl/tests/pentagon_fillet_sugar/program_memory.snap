@@ -3260,7 +3260,7 @@ snapshot_kind: text
             ]
           },
           "height": 100.0,
-          "startCapId": "[uuid]",
+          "startCapId": null,
           "endCapId": "[uuid]",
           "edgeCuts": [
             {
@@ -3872,7 +3872,7 @@ snapshot_kind: text
             ]
           },
           "height": 100.0,
-          "startCapId": "[uuid]",
+          "startCapId": null,
           "endCapId": "[uuid]",
           "edgeCuts": [
             {
