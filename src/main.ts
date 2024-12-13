@@ -62,26 +62,29 @@ if (process.defaultApp) {
 registerStartupListeners()
 
 const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
-  const newWindow = reuse
-    ? mainWindow
-    : new BrowserWindow({
-        autoHideMenuBar: true,
-        show: false,
-        width: 1800,
-        height: 1200,
-        webPreferences: {
-          nodeIntegration: false, // do not give the application implicit system access
-          contextIsolation: true, // expose system functions in preload
-          sandbox: false, // expose nodejs in preload
-          preload: path.join(__dirname, './preload.js'),
-        },
-        icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
-        frame: os.platform() !== 'darwin',
-        titleBarStyle: 'hiddenInset',
-        backgroundColor: nativeTheme.shouldUseDarkColors
-          ? '#1C1C1C'
-          : '#FCFCFC',
-      })
+  let newWindow
+
+  if (reuse) {
+    newWindow = mainWindow
+  }
+  if (!newWindow) {
+    newWindow = new BrowserWindow({
+      autoHideMenuBar: true,
+      show: false,
+      width: 1800,
+      height: 1200,
+      webPreferences: {
+        nodeIntegration: false, // do not give the application implicit system access
+        contextIsolation: true, // expose system functions in preload
+        sandbox: false, // expose nodejs in preload
+        preload: path.join(__dirname, './preload.js'),
+      },
+      icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
+      frame: os.platform() !== 'darwin',
+      titleBarStyle: 'hiddenInset',
+      backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
+    })
+  }
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
@@ -147,9 +150,11 @@ app.resizeWindow = async (width: number, height: number) => {
   return mainWindow?.setSize(width, height)
 }
 
+// @ts-ignore can't declaration merge with App
 app.testProperty = {}
 
 ipcMain.handle('app.testProperty', (event, propertyName) => {
+  // @ts-ignore can't declaration merge with App
   return app.testProperty[propertyName]
 })
 

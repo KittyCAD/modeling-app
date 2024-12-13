@@ -242,8 +242,8 @@ export const test = (
       //   return app.reuseWindowForTest();
       // });
 
-      await tronApp.electronApp.evaluate(({ app }, projectDirName) => {
-        console.log('ABCDEFGHI', app.testProperty['TEST_SETTINGS_FILE_KEY'])
+      await tronApp.electronApp?.evaluate(({ app }, projectDirName) => {
+        // @ts-ignore can't declaration merge see main.ts
         app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
       }, tronApp.dir)
 

@@ -80,6 +80,7 @@ export interface IElectronAPI {
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
   getArgvParsed: () => any
+  getAppTestProperty: (propertyName: string) => any
 }
 
 declare global {
