@@ -291,13 +291,6 @@ const OperationItem = (props: { item: Operation }) => {
             </ContextMenuItem>,
           ]
         : []),
-      <ContextMenuItem
-        onClick={() => {
-          modelingSend({ type: 'Delete selection' })
-        }}
-      >
-        Delete
-      </ContextMenuItem>,
     ],
     [modelingSend, props.item]
   )
