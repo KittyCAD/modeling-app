@@ -360,10 +360,9 @@ export class KclManager {
     await this.engineCommandManager.updateArtifactGraph(this.ast)
     this._executeCallback()
     if (!isInterrupted) {
-      this.addDiagnostics(await lintAst({ ast: ast }))
+      sceneInfra.modelingSend({ type: 'code edit during sketch' })
     }
 
-      sceneInfra.modelingSend({ type: 'code edit during sketch' })
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
