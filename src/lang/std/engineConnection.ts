@@ -2013,6 +2013,7 @@ export class EngineCommandManager extends EventTarget {
     commandStr: string,
     idToRangeStr: string
   ): Promise<string | void> {
+    console.log('id, rangeStr, commandStr', id, rangeStr, commandStr)
     if (this.engineConnection === undefined) return Promise.resolve()
     if (
       !this.engineConnection?.isReady() &&

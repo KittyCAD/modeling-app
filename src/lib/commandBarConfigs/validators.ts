@@ -161,6 +161,7 @@ export const shellValidator = async ({
     return 'Unable to revolve, selections are missing'
   }
   const selection = data.selection as Selections
+  console.log('selection', selection)
   const firstArtifact = selection.graphSelections[0].artifact
 
   if (!firstArtifact) {
@@ -172,27 +173,39 @@ export const shellValidator = async ({
   }
 
   console.log('selection artifact', firstArtifact)
+  const sweep = engineCommandManager.artifactGraph.get(firstArtifact.sweepId)
+  if (!sweep || sweep?.type !== 'sweep') {
+    return 'Unable to shell, couldnt find pathId'
+  }
 
-  // TODO: NOT WORKING YET. I BELIEVE SWEEP_ID IS THE WRONG THING TO PROVIDE TO ENGINE HERE
-  const objectId = firstArtifact.sweepId
-  const faceId = firstArtifact.id
+  const face = engineCommandManager.artifactGraph
+    .values()
+    .find(
+      (v) =>
+        (v.type === 'cap' || v.type === 'wall') &&
+        v.sweepId === firstArtifact.sweepId
+    )
+  if (!face) {
+    return 'Unable to shell, couldnt find faceId'
+  }
 
   const hasOtherObjectIds = selection.graphSelections.some(
     (s) =>
       (s.artifact?.type === 'cap' || s.artifact?.type === 'wall') &&
-      s.artifact.sweepId !== objectId
+      s.artifact.sweepId !== firstArtifact.sweepId
   )
   if (hasOtherObjectIds) {
     return 'Unable to shell, selection is across solids'
   }
 
+  // TODO: NOT WORKING YET
   const shellCommand = async () => {
     const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 0.1
     const DEFAULT_HOLLOW = false
     const cmd = {
       type: 'solid3d_shell_face',
-      face_ids: [faceId],
-      object_id: objectId,
+      face_ids: [face.id],
+      object_id: sweep.pathId,
       hollow: DEFAULT_HOLLOW,
       shell_thickness: DEFAULT_THICKNESS,
     }
@@ -208,6 +221,6 @@ export const shellValidator = async ({
     return true
   } else {
     // return error message for the toast
-    return 'Unable to shell with arguments'
+    return 'Unable to shell with the provided selection'
   }
 }
