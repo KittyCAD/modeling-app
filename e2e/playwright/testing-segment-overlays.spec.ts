@@ -226,7 +226,7 @@ test.describe('Testing segment overlays', () => {
         )
       })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
 
@@ -390,7 +390,7 @@ test.describe('Testing segment overlays', () => {
           )
         })
         const u = await getUtils(page)
-        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
 
@@ -473,7 +473,7 @@ test.describe('Testing segment overlays', () => {
         localStorage.setItem('disableAxis', 'true')
       })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
 
@@ -604,7 +604,7 @@ test.describe('Testing segment overlays', () => {
         localStorage.setItem('disableAxis', 'true')
       })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
 
@@ -765,7 +765,7 @@ test.describe('Testing segment overlays', () => {
         localStorage.setItem('disableAxis', 'true')
       })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
 
@@ -822,7 +822,7 @@ test.describe('Testing segment overlays', () => {
         localStorage.setItem('disableAxis', 'true')
       })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
 
@@ -955,7 +955,7 @@ test.describe('Testing segment overlays', () => {
         localStorage.setItem('disableAxis', 'true')
       })
       const u = await getUtils(page)
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
       await u.waitForPageLoad()
@@ -1181,15 +1181,25 @@ test.describe('Testing segment overlays', () => {
             }
           )
           const u = await getUtils(page)
-          await page.setViewportSize({ width: 1200, height: 500 })
+          await page.setBodyDimensions({ width: 1200, height: 500 })
 
           await homePage.goToModelingScene()
-          await page.waitForTimeout(300)
+          await u.waitForPageLoad()
+          await page.waitForTimeout(1000)
 
-          await page.getByText(lineOfInterest).click()
-          await page.waitForTimeout(100)
+          await expect.poll(async () => {
+            await editor.scrollToText(lineOfInterest)
+            await page.waitForTimeout(1000)
+            await page.keyboard.press('ArrowRight')
+            await page.waitForTimeout(500)
+            await page.keyboard.press('ArrowLeft')
+            await page.waitForTimeout(500)
+            try {
+              await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
+              return true
+            } catch(_) { return false }
+          }).toBe(true)
           await page.getByRole('button', { name: 'Edit Sketch' }).click()
-          await page.waitForTimeout(500)
 
           await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
           const segmentToDelete = await u.getBoundingBox(
@@ -1327,7 +1337,7 @@ test.describe('Testing segment overlays', () => {
           }
         )
         const u = await getUtils(page)
-        await page.setViewportSize({ width: 1200, height: 500 })
+        await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
         await u.waitForPageLoad()

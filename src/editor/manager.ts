@@ -15,6 +15,11 @@ import {
 import { StateFrom } from 'xstate'
 import { markOnce } from 'lib/performance'
 
+// We need to be able to create these during tests dynamically (via
+// page.evaluate) So that's why this exists.
+window.EditorSelection = EditorSelection
+window.EditorView = EditorView
+
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
 
