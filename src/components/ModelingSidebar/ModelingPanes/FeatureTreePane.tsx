@@ -54,39 +54,41 @@ export const FeatureTreePane = () => {
   }
 
   return (
-    <section
-      data-testid="debug-panel"
-      className="absolute inset-0 p-1 box-border overflow-auto"
-    >
-      {parseErrors.length > 0 && (
-        <div
-          className={`absolute inset-0 rounded-lg p-2 ${
-            operationList.length && `bg-destroy-10/40 dark:bg-destroy-80/40`
-          }`}
-        >
-          <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
-            <p className="flex-1">
-              Errors found in KCL code.
-              <br />
-              Please fix them before continuing.
-            </p>
-            <button
-              onClick={goToError}
-              className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
-            >
-              View error
-            </button>
+    <div className="relative">
+      <section
+        data-testid="debug-panel"
+        className="absolute inset-0 p-1 box-border overflow-auto"
+      >
+        {parseErrors.length > 0 && (
+          <div
+            className={`absolute inset-0 rounded-lg p-2 ${
+              operationList.length && `bg-destroy-10/40 dark:bg-destroy-80/40`
+            }`}
+          >
+            <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
+              <p className="flex-1">
+                Errors found in KCL code.
+                <br />
+                Please fix them before continuing.
+              </p>
+              <button
+                onClick={goToError}
+                className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
+              >
+                View error
+              </button>
+            </div>
           </div>
-        </div>
-      )}
-      {operationList.map((operation) => {
-        const key = `${operation.type}-${
-          'name' in operation ? operation.name : 'anonymous'
-        }-${'sourceRange' in operation ? operation.sourceRange[0] : 'start'}`
+        )}
+        {operationList.map((operation) => {
+          const key = `${operation.type}-${
+            'name' in operation ? operation.name : 'anonymous'
+          }-${'sourceRange' in operation ? operation.sourceRange[0] : 'start'}`
 
-        return <OperationItem key={key} item={operation} />
-      })}
-    </section>
+          return <OperationItem key={key} item={operation} />
+        })}
+      </section>
+    </div>
   )
 }
 
