@@ -8,13 +8,7 @@ import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
 import { sourceRangeFromRust } from 'lang/wasm'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
-import {
-  ComponentProps,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 const stdLibIconMap: Record<string, CustomIconName> = {

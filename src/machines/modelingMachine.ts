@@ -731,7 +731,8 @@ export const modelingMachine = setup({
     },
     'AST delete selection': ({ context: { selectionRanges } }) => {
       ;(async () => {
-        const errorMessage = 'Unable to delete selection. Please edit manually in code pane.'
+        const errorMessage =
+          'Unable to delete selection. Please edit manually in code pane.'
         let ast = kclManager.ast
 
         const modifiedAst = await deleteFromSelection(
