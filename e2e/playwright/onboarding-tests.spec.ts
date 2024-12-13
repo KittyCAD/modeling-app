@@ -19,6 +19,7 @@ import {
   TEST_SETTINGS_ONBOARDING_USER_MENU,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
+import { expectPixelColor } from './fixtures/sceneFixture'
 
 test.beforeEach(async ({ context, page }, testInfo) => {
   if (testInfo.tags.includes('@electron')) {
@@ -100,12 +101,11 @@ test.describe('Onboarding tests', () => {
         )
 
         // Make sure the model loaded
-        const XYPlanePoint = { x: 988, y: 523 } as const
+        const XYPlanePoint = { x: 986, y: 522 } as const
         const modelColor: [number, number, number] = [76, 76, 76]
         await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-        expect(
-          await u.getGreatestPixDiff(XYPlanePoint, modelColor)
-        ).toBeLessThan(8)
+
+        await expectPixelColor(page, modelColor, XYPlanePoint, 8)
       })
 
       await electronApp.close()
@@ -159,7 +159,7 @@ test.describe('Onboarding tests', () => {
     const XYPlanePoint = { x: 992, y: 523 } as const
     const modelColor: [number, number, number] = [76, 76, 76]
     await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-    expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
+    await expectPixelColor(page, modelColor, XYPlanePoint, 8)
   })
 
   test('Click through each onboarding step', async ({ page }) => {
@@ -493,14 +493,10 @@ test(
       const modelColor: [number, number, number] = [76, 76, 76]
 
       await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-      expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(
-        8
-      )
+      await expectPixelColor(page, modelColor, XYPlanePoint, 8)
       await tutorialDismissButton.click()
       // Make sure model still there.
-      expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(
-        8
-      )
+      await expectPixelColor(page, modelColor, XYPlanePoint, 8)
     })
 
     await test.step('Clear code and restart onboarding from settings', async () => {
