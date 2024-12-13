@@ -5,170 +5,88 @@ import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclProvider'
 import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
 import { sourceRangeFromRust } from 'lang/wasm'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { modelingMachine } from 'machines/modelingMachine'
 import {
-  ComponentProps,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+  getOperationIcon,
+  isNotStdLibInUserFunction,
+  isNotUserFunctionReturn,
+  isNotUserFunctionWithNoOperations,
+} from 'lib/operations'
+import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
-import { StateFrom } from 'xstate'
-
-const stdLibIconMap: Record<string, CustomIconName> = {
-  startSketchOn: 'sketch',
-  extrude: 'extrude',
-  revolve: 'revolve',
-  fillet: 'fillet3d',
-  chamfer: 'chamfer3d',
-  offsetPlane: 'plane',
-  shell: 'shell',
-  loft: 'loft',
-  sweep: 'sweep',
-}
-
-function getOperationIcon(op: Operation): CustomIconName {
-  switch (op.type) {
-    case 'StdLibCall':
-      return stdLibIconMap[op.name] ?? 'questionMark'
-    default:
-      return 'make-variable'
-  }
-}
-
-/**
- * Exclude StdLibCall operations that occur
- * between a UserDefinedFunctionCall and the next UserDefinedFunctionReturn
- */
-function isNotStdLibInUserFunction(
-  operation: Operation,
-  index: number,
-  allOperations: Operation[]
-) {
-  if (operation.type === 'StdLibCall') {
-    const lastUserDefinedFunctionCallIndex = allOperations
-      .slice(0, index)
-      .findLastIndex((op) => op.type === 'UserDefinedFunctionCall')
-    const lastUserDefinedFunctionReturnIndex = allOperations
-      .slice(0, index)
-      .findLastIndex((op) => op.type === 'UserDefinedFunctionReturn')
-
-    return (
-      lastUserDefinedFunctionCallIndex < lastUserDefinedFunctionReturnIndex ||
-      lastUserDefinedFunctionReturnIndex === -1
-    )
-  }
-  return true
-}
-
-/**
- * A second filter to exclude UserDefinedFunctionCall operations
- * that don't have any operations inside them
- */
-function isNotUserFunctionWithNoOperations(
-  operation: Operation,
-  index: number,
-  allOperations: Operation[]
-) {
-  if (operation.type === 'UserDefinedFunctionCall') {
-    return (
-      index <= allOperations.length &&
-      allOperations[index + 1].type !== 'UserDefinedFunctionReturn'
-    )
-  }
-  return true
-}
-
-/**
- * A third filter to exclude UserDefinedFunctionReturn operations
- */
-function isNotUserFunctionReturn(operation: Operation) {
-  return operation.type !== 'UserDefinedFunctionReturn'
-}
 
 export const FeatureTreePane = () => {
   const { send: modelingSend, state: modelingState } = useModelingContext()
-  const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine' && e)
+  // If there are parse errors we show the last successful operations
+  // and overlay a message on top of the pane
+  const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
+
+  // If there are engine errors we show the successful operations
+  // Errors return an operation list, so use the longest one if there are multiple
   const longestErrorOperationList = kclManager.errors.reduce((acc, error) => {
     return error.operations && error.operations.length > acc.length
       ? error.operations
       : acc
   }, [] as Operation[])
-  const operationList = !parseErrors.length
+
+  const unfilteredOperationList = !parseErrors.length
     ? !kclManager.errors.length
       ? kclManager.execState.operations
       : longestErrorOperationList
     : kclManager.lastSuccessfulOperations
-  const defaultPlanes = useMemo(() => {
-    return kclManager?.defaultPlanes
-  }, [kclManager.defaultPlanes])
+
+  // We filter out operations that are not useful to show in the feature tree
+  const operationList = unfilteredOperationList
+    .filter(isNotUserFunctionWithNoOperations)
+    .filter(isNotStdLibInUserFunction)
+    .filter(isNotUserFunctionReturn)
+
+  function goToError() {
+    modelingSend({
+      type: 'Set context',
+      data: {
+        openPanes: [...modelingState.context.store.openPanes, 'code'],
+      },
+    })
+    // TODO: this doesn't properly await the set context
+    // so scrolling doesn't work if the code pane isn't open
+    editorManager.scrollToFirstErrorDiagnosticIfExists()
+  }
 
   return (
-    <div className="relative">
-      <section
-        data-testid="debug-panel"
-        className="absolute inset-0 p-1 box-border overflow-auto"
-      >
-        {defaultPlanes !== null && (
-          <div className="relative">
-            {parseErrors.length > 0 && (
-              <div
-                className={`absolute inset-0 rounded-lg p-2 ${
-                  operationList.length &&
-                  `bg-destroy-10/40 dark:bg-destroy-80/40`
-                }`}
-              >
-                <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
-                  <p className="flex-1">
-                    Errors found in KCL code.
-                    <br />
-                    Please fix them before continuing.
-                  </p>
-                  <button
-                    onClick={() => {
-                      modelingSend({
-                        type: 'Set context',
-                        data: {
-                          openPanes: [
-                            ...modelingState.context.store.openPanes,
-                            'code',
-                          ],
-                        },
-                      })
-                      // TODO: this doesn't properly await the set context
-                      // so scrolling doesn't work if the code pane isn't open
-                      editorManager.scrollToFirstErrorDiagnosticIfExists()
-                    }}
-                    className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
-                  >
-                    View error
-                  </button>
-                </div>
-              </div>
-            )}
-            {operationList
-              .filter(isNotUserFunctionWithNoOperations)
-              .filter(isNotStdLibInUserFunction)
-              .filter(isNotUserFunctionReturn)
-              .map((operation) => (
-                <OperationListItem
-                  key={`${operation.type}-${
-                    'name' in operation ? operation.name : 'anonymous'
-                  }-${
-                    'sourceRange' in operation
-                      ? operation.sourceRange[0]
-                      : 'start'
-                  }`}
-                  item={operation}
-                />
-              ))}
+    <section
+      data-testid="debug-panel"
+      className="absolute inset-0 p-1 box-border overflow-auto"
+    >
+      {parseErrors.length > 0 && (
+        <div
+          className={`absolute inset-0 rounded-lg p-2 ${
+            operationList.length && `bg-destroy-10/40 dark:bg-destroy-80/40`
+          }`}
+        >
+          <div className="text-sm bg-destroy-80 text-chalkboard-10 py-1 px-2 rounded flex gap-2 items-center">
+            <p className="flex-1">
+              Errors found in KCL code.
+              <br />
+              Please fix them before continuing.
+            </p>
+            <button
+              onClick={goToError}
+              className="bg-chalkboard-10 text-destroy-80 p-1 rounded-sm flex-none hover:bg-chalkboard-10 hover:border-destroy-70 hover:text-destroy-80 border-transparent"
+            >
+              View error
+            </button>
           </div>
-        )}
-      </section>
-    </div>
+        </div>
+      )}
+      {operationList.map((operation) => {
+        const key = `${operation.type}-${
+          'name' in operation ? operation.name : 'anonymous'
+        }-${'sourceRange' in operation ? operation.sourceRange[0] : 'start'}`
+
+        return <OperationItem key={key} item={operation} />
+      })}
+    </section>
   )
 }
 
@@ -180,6 +98,12 @@ interface VisibilityToggleProps {
   onVisibilityChange?: () => void
 }
 
+/**
+ * A button that toggles the visibility of an entity
+ * tied to an artifact in the feature tree.
+ * TODO: this is unimplemented and will be used for
+ * default planes after we fix them and add them to the artifact graph / feature tree
+ */
 const VisibilityToggle = (props: VisibilityToggleProps) => {
   const [visible, setVisible] = useState(props.initialVisibility)
 
@@ -211,10 +135,9 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
  * to be used for default planes after we fix them and
  * add them to the artifact graph / feature tree
  */
-const OperationPaneItem = ({
+const OperationItemWrapper = ({
   icon,
   name,
-  handleSelect,
   visibilityToggle,
   menuItems,
   errors,
@@ -223,7 +146,6 @@ const OperationPaneItem = ({
 }: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
   name: string
-  handleSelect: () => void
   visibilityToggle?: VisibilityToggleProps
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
@@ -236,7 +158,6 @@ const OperationPaneItem = ({
       className="flex select-none items-center group/item my-0 py-0.5 px-1 focus-within:bg-primary/10 hover:bg-primary/5"
     >
       <button
-        onMouseDown={handleSelect}
         {...props}
         className={`reset flex-1 flex items-center gap-2 border-transparent dark:border-transparent text-left text-base ${className}`}
       >
@@ -254,9 +175,17 @@ const OperationPaneItem = ({
   )
 }
 
-const OperationListItem = (props: { item: Operation }) => {
+/**
+ * A button with an icon, name, and context menu
+ * for an operation in the feature tree.
+ */
+const OperationItem = (props: { item: Operation }) => {
   const { send: modelingSend, state: modelingState } = useModelingContext()
   const kclContext = useKclContext()
+  const name =
+    'name' in props.item && props.item.name !== null
+      ? props.item.name
+      : 'anonymous'
   const jsSourceRange =
     'sourceRange' in props.item
       ? sourceRangeFromRust(props.item.sourceRange)
@@ -374,15 +303,11 @@ const OperationListItem = (props: { item: Operation }) => {
   )
 
   return (
-    <OperationPaneItem
+    <OperationItemWrapper
       icon={getOperationIcon(props.item)}
-      name={
-        'name' in props.item && props.item.name !== null
-          ? props.item.name
-          : 'anonymous'
-      }
+      name={name}
       menuItems={menuItems}
-      handleSelect={selectOperation}
+      onClick={selectOperation}
       onDoubleClick={enterEditFlow}
       errors={errors}
     />
