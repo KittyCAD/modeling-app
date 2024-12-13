@@ -1,6 +1,6 @@
 //! Functions related to extruding.
 
-use std::collections::HashMap;
+use std::collections::{ HashMap, HashSet };
 
 use anyhow::Result;
 use derive_docs::stdlib;
@@ -87,43 +87,102 @@ async fn inner_extrude(
 
     // Extrude the element(s).
     let sketches: Vec<Sketch> = sketch_set.into();
+    let sketch_on_ids: HashSet<_> = sketches.iter().map(|sketch| sketch.on.id()).collect();
+    let consistent_sketch_base = sketch_on_ids.len() == 1;
+
     let mut solids = Vec::new();
-    for sketch in &sketches {
-        // Before we extrude, we need to enable the sketch mode.
-        // We do this here in case extrude is called out of order.
+
+    if !consistent_sketch_base || sketches.len() == 1 { 
+        for sketch in &sketches {
+            // Before we extrude, we need to enable the sketch mode.
+            // We do this here in case extrude is called out of order.
+            args.batch_modeling_cmd(
+                exec_state.id_generator.next_uuid(),
+                ModelingCmd::from(mcmd::EnableSketchMode {
+                    animated: false,
+                    ortho: false,
+                    entity_id: sketch.on.id(),
+                    adjust_camera: false,
+                    planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
+                        // We pass in the normal for the plane here.
+                        Some(plane.z_axis.into())
+                    } else {
+                        None
+                    },
+                }),
+            )
+            .await?;
+
+            args.batch_modeling_cmd(
+                id,
+                ModelingCmd::from(mcmd::Extrude {
+                    target: sketch.id.into(),
+                    distance: LengthUnit(length),
+                    faces: None,
+                }),
+            )
+            .await?;
+
+            // Disable the sketch mode.
+            args.batch_modeling_cmd(
+                exec_state.id_generator.next_uuid(),
+                ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+            )
+            .await?;
+
+            //everything inside this call is EXTREMELY inefficient - mike
+            //we should be doing this on demand as we need it, not upfront
+            solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
+        }
+    } else {
         args.batch_modeling_cmd(
             exec_state.id_generator.next_uuid(),
             ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: false,
-                entity_id: sketch.on.id(),
+                entity_id: *sketch_on_ids.iter().next().unwrap(), //someone else can make this better
                 adjust_camera: false,
-                planar_normal: if let SketchSurface::Plane(plane) = &sketch.on {
-                    // We pass in the normal for the plane here.
-                    Some(plane.z_axis.into())
-                } else {
-                    None
-                },
+                planar_normal: None, //TODO - handle this too
             }),
         )
         .await?;
+
+        let sketch_ids: Vec<_> = sketches.iter().map(|sketch| sketch.id).collect();
 
         args.batch_modeling_cmd(
             id,
-            ModelingCmd::from(mcmd::Extrude {
-                target: sketch.id.into(),
+            ModelingCmd::from(mcmd::MultiExtrude {
+                target_ids: sketch_ids,
                 distance: LengthUnit(length),
             }),
         )
-        .await?;
+        .await?;    
 
-        // Disable the sketch mode.
         args.batch_modeling_cmd(
             exec_state.id_generator.next_uuid(),
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
         )
         .await?;
-        solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
+
+        //HACK - not doing this for patterns.  see above - mike
+        //for sketch in &sketches {
+        //solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
+        //}
+
+        /*let solid = Box::new(Solid {
+            // Ok so you would think that the id would be the id of the solid,
+            // that we passed in to the function, but it's actually the id of the
+            // sketch.
+            id: sketch.id,
+            value: new_value,
+            meta: sketch.meta.clone(),
+            sketch,
+            height: length,
+            start_cap_id,
+            end_cap_id,
+            edge_cuts: vec![],
+        });
+        solids.push(solid);*/
     }
 
     Ok(solids.into())
