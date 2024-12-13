@@ -78,7 +78,7 @@ async fn do_execute_and_snapshot(
     Ok((exec_state, img))
 }
 
-async fn new_context(
+pub async fn new_context(
     units: UnitLength,
     with_auth: bool,
     project_directory: Option<PathBuf>,

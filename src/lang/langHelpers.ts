@@ -66,9 +66,7 @@ export async function executeAst({
       ? enginelessExecutor(ast, programMemoryOverride)
       : _executor(ast, engineCommandManager))
 
-    await engineCommandManager.waitForAllCommands(
-      programMemoryOverride !== undefined
-    )
+    await engineCommandManager.waitForAllCommands()
 
     return {
       logs: [],

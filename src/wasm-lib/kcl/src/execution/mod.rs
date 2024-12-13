@@ -1902,11 +1902,19 @@ impl ExecutorContext {
         };
 
         if cache_result.clear_scene && !self.is_mock() {
+            // Pop the execution state, since we are starting fresh.
+            let mut id_generator = exec_state.id_generator.clone();
+            // We do not pop the ids, since we want to keep the same id generator.
+            // This is for the front end to keep track of the ids.
+            id_generator.next_id = 0;
+            *exec_state = ExecState {
+                id_generator,
+                ..Default::default()
+            };
+
             // We don't do this in mock mode since there is no engine connection
             // anyways and from the TS side we override memory and don't want to clear it.
             self.reset_scene(exec_state, Default::default()).await?;
-            // Pop the execution state, since we are starting fresh.
-            *exec_state = Default::default();
         }
 
         // TODO: Use the top-level file's path.
