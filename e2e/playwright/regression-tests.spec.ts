@@ -604,7 +604,7 @@ extrude001 = extrude(50, sketch001)
       }
 
       expect(middlePixelIsBackgroundColor, {
-        message: 'We no longer the default planes',
+        message: 'We should not see the default planes',
       }).toBeTruthy()
     })
 
