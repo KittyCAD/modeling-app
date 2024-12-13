@@ -75,6 +75,7 @@ import {
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
+  artifactIsPlaneWithPaths,
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
@@ -648,6 +649,10 @@ export const ModelingMachineProvider = ({
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
+          console.log('selectionRanges', selectionRanges)
+          if (artifactIsPlaneWithPaths(selectionRanges)) {
+            return true
+          }
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(

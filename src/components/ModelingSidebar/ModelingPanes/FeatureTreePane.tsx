@@ -6,8 +6,17 @@ import { useKclContext } from 'lang/KclProvider'
 import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
 import { sourceRangeFromRust } from 'lang/wasm'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react'
+import { modelingMachine } from 'machines/modelingMachine'
+import {
+  ComponentProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { StateFrom } from 'xstate'
 
 const stdLibIconMap: Record<string, CustomIconName> = {
   startSketchOn: 'sketch',
@@ -47,10 +56,6 @@ function isNotStdLibInUserFunction(
       .slice(0, index)
       .findLastIndex((op) => op.type === 'UserDefinedFunctionReturn')
 
-    console.log(`checking ${operation.type} at index ${index}`, {
-      lastUserDefinedFunctionCallIndex,
-      lastUserDefinedFunctionReturnIndex,
-    })
     return (
       lastUserDefinedFunctionCallIndex < lastUserDefinedFunctionReturnIndex ||
       lastUserDefinedFunctionReturnIndex === -1
@@ -206,7 +211,16 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
  * to be used for default planes after we fix them and
  * add them to the artifact graph / feature tree
  */
-const OperationPaneItem = (props: {
+const OperationPaneItem = ({
+  icon,
+  name,
+  handleSelect,
+  visibilityToggle,
+  menuItems,
+  errors,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLButtonElement> & {
   icon: CustomIconName
   name: string
   handleSelect: () => void
@@ -222,20 +236,19 @@ const OperationPaneItem = (props: {
       className="flex select-none items-center group/item my-0 py-0.5 px-1 focus-within:bg-primary/10 hover:bg-primary/5"
     >
       <button
-        onClick={props.handleSelect}
-        className="reset flex-1 flex items-center gap-2 border-transparent dark:border-transparent text-left text-base"
+        onMouseDown={handleSelect}
+        {...props}
+        className={`reset flex-1 flex items-center gap-2 border-transparent dark:border-transparent text-left text-base ${className}`}
       >
-        <CustomIcon name={props.icon} className="w-5 h-5 block" />
-        {props.name}
+        <CustomIcon name={icon} className="w-5 h-5 block" />
+        {name}
       </button>
-      {props.errors && props.errors.length > 0 && (
+      {errors && errors.length > 0 && (
         <em className="text-destroy-80 text-xs">has error</em>
       )}
-      {props.visibilityToggle && (
-        <VisibilityToggle {...props.visibilityToggle} />
-      )}
-      {props.menuItems && (
-        <ContextMenu menuTargetElement={menuRef} items={props.menuItems} />
+      {visibilityToggle && <VisibilityToggle {...visibilityToggle} />}
+      {menuItems && (
+        <ContextMenu menuTargetElement={menuRef} items={menuItems} />
       )}
     </div>
   )
@@ -264,6 +277,7 @@ const OperationListItem = (props: { item: Operation }) => {
     if (!jsSourceRange) {
       return
     }
+    console.log('selectOperation', props.item, artifact)
     if (!artifact || !('codeRef' in artifact)) {
       modelingSend({
         type: 'Set selection',
@@ -293,6 +307,19 @@ const OperationListItem = (props: { item: Operation }) => {
     props.item,
     engineCommandManager.artifactGraph,
   ])
+
+  /**
+   * For now we can only enter the "edit" flow for the startSketchOn operation.
+   * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
+   */
+  function enterEditFlow() {
+    if (
+      props.item.type === 'StdLibCall' &&
+      props.item.name === 'startSketchOn'
+    ) {
+      modelingSend({ type: 'Enter sketch' })
+    }
+  }
 
   function openToFunctionDefinition() {
     if (props.item.type !== 'UserDefinedFunctionCall') return
@@ -337,7 +364,6 @@ const OperationListItem = (props: { item: Operation }) => {
         : []),
       <ContextMenuItem
         onClick={() => {
-          selectOperation()
           modelingSend({ type: 'Delete selection' })
         }}
       >
@@ -357,6 +383,7 @@ const OperationListItem = (props: { item: Operation }) => {
       }
       menuItems={menuItems}
       handleSelect={selectOperation}
+      onDoubleClick={enterEditFlow}
       errors={errors}
     />
   )
