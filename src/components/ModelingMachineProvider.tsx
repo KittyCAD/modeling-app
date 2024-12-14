@@ -74,7 +74,14 @@ import {
   splitPipedProfile,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import { PathToNode, Program, VariableDeclaration, parse, recast, resultIsOk } from 'lang/wasm'
+import {
+  PathToNode,
+  Program,
+  VariableDeclaration,
+  parse,
+  recast,
+  resultIsOk,
+} from 'lang/wasm'
 import {
   artifactIsPlaneWithPaths,
   doesSceneHaveExtrudedSketch,
@@ -1426,7 +1433,7 @@ export const ModelingMachineProvider = ({
             if (!sketchDetails) return
             if (!sketchDetails.sketchEntryNodePath.length) return
             if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
-              sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+              await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             }
             sceneInfra.resetMouseListeners()
             await sceneEntitiesManager.setupSketch({

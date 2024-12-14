@@ -19,6 +19,14 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Fillet',
     icon: 'fillet3d',
   },
+  hole: {
+    label: 'Hole',
+    icon: 'hole',
+  },
+  hollow: {
+    label: 'Hollow',
+    icon: 'hollow',
+  },
   import: {
     label: 'Import',
     icon: 'import',
@@ -30,6 +38,22 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
   offsetPlane: {
     label: 'Offset Plane',
     icon: 'plane',
+  },
+  patternCircular2d: {
+    label: 'Circular Pattern',
+    icon: 'patternCircular2d',
+  },
+  patternCircular3d: {
+    label: 'Circular Pattern',
+    icon: 'patternCircular3d',
+  },
+  patternLinear2d: {
+    label: 'Linear Pattern',
+    icon: 'patternLinear2d',
+  },
+  patternLinear3d: {
+    label: 'Linear Pattern',
+    icon: 'patternLinear3d',
   },
   revolve: {
     label: 'Revolve',
