@@ -2682,7 +2682,7 @@ mod tests {
     #[test]
     fn test_comments_in_function2() {
         let test_program = r#"() {
-  yo = { a = { b = { c = '123' } } } } /* block
+  yo = { a = { b = { c = '123' } } } /* block
 comment */
 }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
@@ -4295,7 +4295,7 @@ mod snapshot_math_tests {
     snapshot_test!(f, "1 * ( 2 + 3 ) / 4");
     snapshot_test!(g, "1 + ( 2 + 3 ) / 4");
     snapshot_test!(h, "1 * (( 2 + 3 ) / 4 + 5 )");
-    snapshot_test!(i, "1 * (((( 2 + 3 ))))");
+    snapshot_test!(i, "1 * ((( 2 + 3 )))");
     snapshot_test!(j, "distance * p * FOS * 6 / (sigmaAllow * width)");
     snapshot_test!(k, "2 + (((3)))");
 }
