@@ -501,6 +501,8 @@ fn binary_operator(i: &mut TokenSlice) -> PResult<BinaryOperator> {
             ">=" => BinaryOperator::Gte,
             "<" => BinaryOperator::Lt,
             "<=" => BinaryOperator::Lte,
+            "|" => BinaryOperator::Or,
+            "&" => BinaryOperator::And,
             _ => {
                 return Err(CompilationError::fatal(
                     token.as_source_range(),
@@ -2680,7 +2682,7 @@ mod tests {
     #[test]
     fn test_comments_in_function2() {
         let test_program = r#"() {
-  yo = { a = { b = { c = '123' } } } /* block
+  yo = { a = { b = { c = '123' } } } } /* block
 comment */
 }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
@@ -4244,6 +4246,20 @@ var baz = 2
 "#
         );
     }
+
+    #[test]
+    fn test_unary_not_on_keyword_bool() {
+        let some_program_string = r#"!true"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap(); // Updated import path
+        let actual = match unary_expression.parse(tokens.as_slice()) {
+            // Use tokens.as_slice() for parsing
+            Ok(x) => x,
+            Err(e) => panic!("{e:?}"),
+        };
+        assert_eq!(actual.operator, UnaryOperator::Not);
+        crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
+    }
 }
 
 #[cfg(test)]
@@ -4279,7 +4295,7 @@ mod snapshot_math_tests {
     snapshot_test!(f, "1 * ( 2 + 3 ) / 4");
     snapshot_test!(g, "1 + ( 2 + 3 ) / 4");
     snapshot_test!(h, "1 * (( 2 + 3 ) / 4 + 5 )");
-    snapshot_test!(i, "1 * ((( 2 + 3 )))");
+    snapshot_test!(i, "1 * (((( 2 + 3 ))))");
     snapshot_test!(j, "distance * p * FOS * 6 / (sigmaAllow * width)");
     snapshot_test!(k, "2 + (((3)))");
 }
@@ -4502,6 +4518,11 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         r#"x = 3
         obj = { x, y: 4}"#
     );
+    snapshot_test!(bj, "true");
+    snapshot_test!(bk, "truee");
+    snapshot_test!(bl, "x = !true");
+    snapshot_test!(bm, "x = true & false");
+    snapshot_test!(bn, "x = true | false");
     snapshot_test!(kw_function_unnamed_first, r#"val = foo(x, y = z)"#);
     snapshot_test!(kw_function_all_named, r#"val = foo(x = a, y = b)"#);
     snapshot_test!(kw_function_decl_all_labeled, r#"fn foo(x, y) { return 1 }"#);
