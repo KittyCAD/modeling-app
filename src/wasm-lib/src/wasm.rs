@@ -316,6 +316,7 @@ pub async fn kcl_lsp_run(
             {
                 true
             } else {
+                web_sys::console::warn_1(&format!("Failed to get privacy settings: {err:?}").into());
                 false
             }
         }
