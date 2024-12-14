@@ -19,6 +19,7 @@ import {
   TEST_SETTINGS_ONBOARDING_USER_MENU,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
+import { expectPixelColor } from './fixtures/sceneFixture'
 
 test.beforeEach(async ({ context, page }, testInfo) => {
   if (testInfo.tags.includes('@electron')) {
@@ -45,7 +46,7 @@ test.describe('Onboarding tests', () => {
       { settingsKey: TEST_SETTINGS_KEY }
     )
 
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setViewportSize({ width: 1200, height: 1000 })
 
     await u.waitForAuthSkipAppStart()
 
@@ -54,6 +55,12 @@ test.describe('Onboarding tests', () => {
 
     // *and* that the code is shown in the editor
     await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+
+    // Make sure the model loaded
+    const XYPlanePoint = { x: 774, y: 116 } as const
+    const modelColor: [number, number, number] = [45, 45, 45]
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
   })
 
   test(
@@ -72,7 +79,7 @@ test.describe('Onboarding tests', () => {
 
       const u = await getUtils(page)
 
-      const viewportSize = { width: 1200, height: 500 }
+      const viewportSize = { width: 1200, height: 1000 }
       await page.setViewportSize(viewportSize)
 
       await test.step(`Create a project and open to the onboarding`, async () => {
@@ -92,6 +99,14 @@ test.describe('Onboarding tests', () => {
         await expect(page.locator('.cm-content')).toContainText(
           '// Shelf Bracket'
         )
+
+        // TODO: jess make less shit
+        // Make sure the model loaded
+        //const XYPlanePoint = { x: 986, y: 522 } as const
+        //const modelColor: [number, number, number] = [76, 76, 76]
+        //await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+
+        //await expectPixelColor(page, modelColor, XYPlanePoint, 8)
       })
 
       await electronApp.close()
@@ -108,7 +123,7 @@ test.describe('Onboarding tests', () => {
     }, initialCode)
 
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setViewportSize({ width: 1200, height: 1000 })
     await u.waitForAuthSkipAppStart()
 
     // Replay the onboarding
@@ -140,6 +155,12 @@ test.describe('Onboarding tests', () => {
         return localStorage.getItem('persistCode')
       })
     ).toContain('// Shelf Bracket')
+
+    // Make sure the model loaded
+    const XYPlanePoint = { x: 986, y: 522 } as const
+    const modelColor: [number, number, number] = [76, 76, 76]
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await expectPixelColor(page, modelColor, XYPlanePoint, 8)
   })
 
   test('Click through each onboarding step', async ({ page }) => {
@@ -179,6 +200,17 @@ test.describe('Onboarding tests', () => {
     // Test that the onboarding pane is gone
     await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
     await expect(page.url()).not.toContain('onboarding')
+
+    await u.openAndClearDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
+
+    // TODO: jess to fix
+    // Make sure the model loaded
+    //const XYPlanePoint = { x: 774, y: 516 } as const
+    // const modelColor: [number, number, number] = [129, 129, 129]
+    // await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    // await expectPixelColor(page, modelColor, XYPlanePoint, 20)
   })
 
   test('Onboarding redirects and code updating', async ({ page }) => {
@@ -439,7 +471,7 @@ test(
     })
 
     await test.step('Navigate into project', async () => {
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setViewportSize({ width: 1200, height: 1000 })
 
       page.on('console', console.log)
 
@@ -462,7 +494,15 @@ test(
     await test.step('Confirm that the onboarding has restarted', async () => {
       await expect(tutorialProjectIndicator).toBeVisible()
       await expect(tutorialModalText).toBeVisible()
+      // Make sure the model loaded
+      const XYPlanePoint = { x: 988, y: 523 } as const
+      const modelColor: [number, number, number] = [76, 76, 76]
+
+      await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+      await expectPixelColor(page, modelColor, XYPlanePoint, 8)
       await tutorialDismissButton.click()
+      // Make sure model still there.
+      await expectPixelColor(page, modelColor, XYPlanePoint, 8)
     })
 
     await test.step('Clear code and restart onboarding from settings', async () => {
