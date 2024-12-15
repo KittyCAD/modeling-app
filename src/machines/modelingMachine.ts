@@ -765,30 +765,6 @@ export const modelingMachine = setup({
         await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       })().catch(reportRejection)
     },
-    'AST fillet': ({ event }) => {
-      if (event.type !== 'Fillet') return
-      if (!event.data) return
-
-      // Extract inputs
-      const ast = kclManager.ast
-      const { selection, radius } = event.data
-      const parameters: FilletParameters = {
-        type: EdgeTreatmentType.Fillet,
-        radius,
-      }
-
-      // Apply fillet to selection
-      const applyEdgeTreatmentToSelectionResult = applyEdgeTreatmentToSelection(
-        ast,
-        selection,
-        parameters
-      )
-      if (err(applyEdgeTreatmentToSelectionResult))
-        return applyEdgeTreatmentToSelectionResult
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-    },
     'set selection filter to curves only': () => {
       ;(async () => {
         await engineCommandManager.sendSceneCommand({
@@ -1713,6 +1689,33 @@ export const modelingMachine = setup({
         }
       }
     ),
+    filletAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Fillet'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection, radius } = input
+        const parameters: FilletParameters = {
+          type: EdgeTreatmentType.Fillet,
+          radius,
+        }
+
+        // Apply fillet to selection
+        const filletResult = await applyEdgeTreatmentToSelection(
+          ast,
+          selection,
+          parameters
+        )
+        if (err(filletResult)) return filletResult
+      }
+    ),
     'set-up-draft-circle': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'sketchDetails'> & {
@@ -1801,9 +1804,8 @@ export const modelingMachine = setup({
         },
 
         Fillet: {
-          target: 'idle',
+          target: 'Applying fillet',
           guard: 'has valid edge treatment selection',
-          actions: ['AST fillet'],
           reenter: false,
         },
 
@@ -2725,6 +2727,19 @@ export const modelingMachine = setup({
         id: 'shellAstMod',
         input: ({ event }) => {
           if (event.type !== 'Shell') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying fillet': {
+      invoke: {
+        src: 'filletAstMod',
+        id: 'filletAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Fillet') return undefined
           return event.data
         },
         onDone: ['idle'],
