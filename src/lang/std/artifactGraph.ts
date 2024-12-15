@@ -1171,7 +1171,7 @@ function getWallOrCapPlaneCodeRef(
   if (varName === '') return new Error('Could not find variable name')
 
   let currentVariableName = ''
-  const pathsDependingOnExtrude: Array<{
+  const planeCodeRef: Array<{
     path: PathToNode
     sketchName: string
     range: SourceRange
@@ -1193,7 +1193,7 @@ function getWallOrCapPlaneCodeRef(
         node.arguments[0].type === 'Identifier' &&
         currentVariableName === varName
       ) {
-        pathsDependingOnExtrude.push({
+        planeCodeRef.push({
           path,
           sketchName: currentVariableName,
           range: [node.start, node.end, true],
@@ -1201,11 +1201,11 @@ function getWallOrCapPlaneCodeRef(
       }
     },
   })
-  if (!pathsDependingOnExtrude.length)
+  if (!planeCodeRef.length)
     return new Error('No paths found depending on extrude')
 
   return {
-    pathToNode: pathsDependingOnExtrude[0].path,
-    range: pathsDependingOnExtrude[0].range,
+    pathToNode: planeCodeRef[0].path,
+    range: planeCodeRef[0].range,
   }
 }
