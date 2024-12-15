@@ -1,8 +1,19 @@
-import { Expr, PathToNode, Program, SourceRange } from 'lang/wasm'
+import {
+  Expr,
+  PathToNode,
+  Program,
+  SourceRange,
+  VariableDeclaration,
+} from 'lang/wasm'
 import { Models } from '@kittycad/lib'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import {
+  getNodeFromPath,
+  getNodePathFromSourceRange,
+  traverse,
+} from 'lang/queryAst'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type ArtifactId = string
 
@@ -166,7 +177,7 @@ export function createArtifactGraph({
 }: {
   orderedCommands: Array<OrderedCommand>
   responseMap: ResponseMap
-  ast: Program
+  ast: Node<Program>
 }) {
   const myMap = new Map<ArtifactId, Artifact>()
 
@@ -245,7 +256,7 @@ export function getArtifactsToUpdate({
   /** Passing in a getter because we don't wan this function to update the map directly */
   getArtifact: (id: ArtifactId) => Artifact | undefined
   currentPlaneId: ArtifactId
-  ast: Program
+  ast: Node<Program>
 }): Array<{
   id: ArtifactId
   artifact: Artifact
@@ -281,6 +292,13 @@ export function getArtifactsToUpdate({
       plane?.type === 'plane' ? plane?.codeRef : { range, pathToNode }
     const existingPlane = getArtifact(currentPlaneId)
     if (existingPlane?.type === 'wall') {
+      let existingPlaneCodeRef = existingPlane.codeRef
+      if (!existingPlaneCodeRef) {
+        const astWalkCodeRef = getWallOrCapPlaneCodeRef(ast, codeRef.pathToNode)
+        if (!err(astWalkCodeRef)) {
+          existingPlaneCodeRef = astWalkCodeRef
+        }
+      }
       return [
         {
           id: currentPlaneId,
@@ -291,11 +309,18 @@ export function getArtifactsToUpdate({
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             sweepId: existingPlane.sweepId,
             pathIds: existingPlane.pathIds,
-            codeRef,
+            codeRef: existingPlaneCodeRef,
           },
         },
       ]
     } else if (existingPlane?.type === 'cap') {
+      let existingPlaneCodeRef = existingPlane.codeRef
+      if (!existingPlaneCodeRef) {
+        const astWalkCodeRef = getWallOrCapPlaneCodeRef(ast, codeRef.pathToNode)
+        if (!err(astWalkCodeRef)) {
+          existingPlaneCodeRef = astWalkCodeRef
+        }
+      }
       return [
         {
           id: currentPlaneId,
@@ -306,7 +331,7 @@ export function getArtifactsToUpdate({
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             sweepId: existingPlane.sweepId,
             pathIds: existingPlane.pathIds,
-            codeRef,
+            codeRef: existingPlaneCodeRef,
           },
         },
       ]
@@ -1104,4 +1129,83 @@ function isNodeSafe(node: Expr): boolean {
     return isNodeSafe(node.left) && isNodeSafe(node.right)
   }
   return false
+}
+
+/** {@deprecated} this information should come from the ArtifactGraph not digging around in the AST */
+function getWallOrCapPlaneCodeRef(
+  ast: Node<Program>,
+  pathToNode: PathToNode
+): CodeRef | Error {
+  const varDec = getNodeFromPath<VariableDeclaration>(
+    ast,
+    pathToNode,
+    'VariableDeclaration'
+  )
+  if (err(varDec)) return varDec
+  if (varDec.node.type !== 'VariableDeclaration')
+    return new Error('Expected VariableDeclaration')
+  const init = varDec.node.declaration.init
+  let varName = ''
+  if (
+    init.type === 'CallExpression' &&
+    init.callee.type === 'Identifier' &&
+    (init.callee.name === 'circle' || init.callee.name === 'startProfileAt')
+  ) {
+    const secondArg = init.arguments[1]
+    if (secondArg.type === 'Identifier') {
+      varName = secondArg.name
+    }
+  } else if (init.type === 'PipeExpression') {
+    const firstExpr = init.body[0]
+    if (
+      firstExpr.type === 'CallExpression' &&
+      firstExpr.callee.type === 'Identifier' &&
+      firstExpr.callee.name === 'startProfileAt'
+    ) {
+      const secondArg = firstExpr.arguments[1]
+      if (secondArg.type === 'Identifier') {
+        varName = secondArg.name
+      }
+    }
+  }
+  if (varName === '') return new Error('Could not find variable name')
+
+  let currentVariableName = ''
+  const pathsDependingOnExtrude: Array<{
+    path: PathToNode
+    sketchName: string
+    range: SourceRange
+  }> = []
+  traverse(ast, {
+    leave: (node) => {
+      if (node.type === 'VariableDeclaration') {
+        currentVariableName = ''
+      }
+    },
+    enter: (node, path) => {
+      if (node.type === 'VariableDeclaration') {
+        currentVariableName = node.declaration.id.name
+      }
+      if (
+        // match `${varName} = startSketchOn(...)`
+        node.type === 'CallExpression' &&
+        node.callee.name === 'startSketchOn' &&
+        node.arguments[0].type === 'Identifier' &&
+        currentVariableName === varName
+      ) {
+        pathsDependingOnExtrude.push({
+          path,
+          sketchName: currentVariableName,
+          range: [node.start, node.end, true],
+        })
+      }
+    },
+  })
+  if (!pathsDependingOnExtrude.length)
+    return new Error('No paths found depending on extrude')
+
+  return {
+    pathToNode: pathsDependingOnExtrude[0].path,
+    range: pathsDependingOnExtrude[0].range,
+  }
 }
