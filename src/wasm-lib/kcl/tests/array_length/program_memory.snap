@@ -1,0 +1,127 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Program memory after executing array_length.kcl
+---
+{
+  "environments": [
+    {
+      "bindings": {
+        "HALF_TURN": {
+          "type": "Number",
+          "value": 180.0,
+          "__meta": []
+        },
+        "QUARTER_TURN": {
+          "type": "Number",
+          "value": 90.0,
+          "__meta": []
+        },
+        "THREE_QUARTER_TURN": {
+          "type": "Number",
+          "value": 270.0,
+          "__meta": []
+        },
+        "ZERO": {
+          "type": "Number",
+          "value": 0.0,
+          "__meta": []
+        },
+        "arr": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 1.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    7,
+                    8,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 2.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    10,
+                    11,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 3.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    13,
+                    14,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                6,
+                15,
+                0
+              ]
+            }
+          ]
+        },
+        "arr_empty": {
+          "type": "Array",
+          "value": [],
+          "__meta": [
+            {
+              "sourceRange": [
+                113,
+                115,
+                0
+              ]
+            }
+          ]
+        },
+        "arr_len": {
+          "type": "Number",
+          "value": 3.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                26,
+                34,
+                0
+              ]
+            }
+          ]
+        },
+        "len_empty": {
+          "type": "Number",
+          "value": 0.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                128,
+                142,
+                0
+              ]
+            }
+          ]
+        }
+      },
+      "parent": null
+    }
+  ],
+  "currentEnv": 0,
+  "return": null
+}

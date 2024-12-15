@@ -1,0 +1,7 @@
+arr = [1, 2, 3]
+arr_len = len(arr)
+assertEqual(arr_len, 3, 0.00001, "The length of the array is 3")
+
+arr_empty = []
+len_empty = len(arr_empty)
+assertEqual(len_empty, 0, 0.00001, "The length of the array is 0")
