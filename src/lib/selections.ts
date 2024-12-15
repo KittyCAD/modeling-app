@@ -491,6 +491,11 @@ function resetAndSetEngineEntitySelectionCmds(
   ]
 }
 
+/**
+ * @deprecated was made for guards on modeling machine.
+ * Now the selection command bar argument input handles this.
+ * Leaving until we're sure it's not needed elsewhere.
+ */
 export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
@@ -499,6 +504,11 @@ export function isSketchPipe(selectionRanges: Selections) {
   )
 }
 
+/**
+ * @deprecated was made for shell guard on modeling machine.
+ * Now the selection command bar argument input handles this.
+ * Leaving until we're sure it's not needed elsewhere.
+ */
 export function isSelectionLastLine(
   selectionRanges: Selections,
   code: string,
@@ -507,6 +517,11 @@ export function isSelectionLastLine(
   return selectionRanges.graphSelections[i]?.codeRef?.range[1] === code.length
 }
 
+/**
+ * @deprecated was made for guards on modeling machine.
+ * Now the selection command bar argument input handles this.
+ * Leaving until we're sure it's not needed elsewhere.
+ */
 export function isRangeBetweenCharacters(selectionRanges: Selections) {
   return (
     selectionRanges.graphSelections.length === 1 &&
@@ -557,6 +572,11 @@ function nodeHasCircle(node: CommonASTNode) {
   })
 }
 
+/**
+ * @deprecated was made for sweeps guard on modeling machine.
+ * Now the selection command bar argument input handles this.
+ * Leaving until we're sure it's not needed elsewhere.
+ */
 export function canSweepSelection(selection: Selections) {
   const commonNodes = selection.graphSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
@@ -570,6 +590,11 @@ export function canSweepSelection(selection: Selections) {
   )
 }
 
+/**
+ * @deprecated was made for revolve guard on modeling machine.
+ * Now the selection command bar argument input handles this.
+ * Leaving until we're sure it's not needed elsewhere.
+ */
 export function canRevolveSelection(selection: Selections) {
   const commonNodes = selection.graphSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
@@ -581,6 +606,11 @@ export function canRevolveSelection(selection: Selections) {
   )
 }
 
+/**
+ * @deprecated was made for loft guard on modeling machine.
+ * Now the selection command bar argument input handles this.
+ * Leaving until we're sure it's not needed elsewhere.
+ */
 export function canLoftSelection(selection: Selections) {
   const commonNodes = selection.graphSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)
@@ -597,6 +627,11 @@ export function canLoftSelection(selection: Selections) {
   )
 }
 
+/**
+ * @deprecated was made for shell guard on modeling machine.
+ * Now the selection command bar argument input handles this.
+ * Leaving until we're sure it's not needed elsewhere.
+ */
 export function canShellSelection(selection: Selections) {
   const commonNodes = selection.graphSelections.map((_, i) =>
     buildCommonNodeFromSelection(selection, i)

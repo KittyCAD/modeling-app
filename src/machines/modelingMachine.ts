@@ -420,11 +420,6 @@ export const modelingMachine = setup({
   },
   guards: {
     'Selection is on face': () => false,
-    'has valid sweep selection': () => false,
-    'has valid revolve selection': () => false,
-    'has valid loft selection': () => false,
-    'has valid shell selection': () => false,
-    'has valid edge treatment selection': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
@@ -1776,33 +1771,28 @@ export const modelingMachine = setup({
 
         Extrude: {
           target: 'idle',
-          guard: 'has valid sweep selection',
           actions: ['AST extrude'],
           reenter: false,
         },
 
         Revolve: {
           target: 'idle',
-          guard: 'has valid revolve selection',
           actions: ['AST revolve'],
           reenter: false,
         },
 
         Loft: {
           target: 'Applying loft',
-          guard: 'has valid loft selection',
           reenter: true,
         },
 
         Shell: {
           target: 'Applying shell',
-          guard: 'has valid shell selection',
           reenter: true,
         },
 
         Fillet: {
           target: 'idle',
-          guard: 'has valid edge treatment selection',
           actions: ['AST fillet'],
           reenter: false,
         },
