@@ -80,6 +80,7 @@ layout: manual
 * [`pi`](kcl/pi)
 * [`polar`](kcl/polar)
 * [`polygon`](kcl/polygon)
+* [`pop`](kcl/pop)
 * [`pow`](kcl/pow)
 * [`profileStart`](kcl/profileStart)
 * [`profileStartX`](kcl/profileStartX)

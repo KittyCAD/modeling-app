@@ -1,0 +1,2 @@
+arr = []
+fail = pop(arr)
