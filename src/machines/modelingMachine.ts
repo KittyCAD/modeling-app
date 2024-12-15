@@ -2789,7 +2789,8 @@ export function isEditingExistingSketch({
   const maybePipeExpression = variableDeclaration.node.init
   if (
     maybePipeExpression.type === 'CallExpression' &&
-    maybePipeExpression.callee.name === 'startProfileAt'
+    (maybePipeExpression.callee.name === 'startProfileAt' ||
+      maybePipeExpression.callee.name === 'circle')
   )
     return true
   if (maybePipeExpression.type !== 'PipeExpression') return false
