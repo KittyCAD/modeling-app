@@ -40,6 +40,12 @@ struct StdlibMetadata {
     #[serde(default)]
     deprecated: bool,
 
+    /// Whether the function is displayed in the feature tree.
+    /// If true, calls to the function will be available for display.
+    /// If false, calls to the function will never be displayed.
+    #[serde(default)]
+    feature_tree_operation: bool,
+
     /// If true, expects keyword arguments.
     /// If false, expects positional arguments.
     #[serde(default)]
@@ -239,6 +245,12 @@ fn do_stdlib_inner(
     };
 
     let unpublished = if metadata.unpublished {
+        quote! { true }
+    } else {
+        quote! { false }
+    };
+
+    let feature_tree_operation = if metadata.feature_tree_operation {
         quote! { true }
     } else {
         quote! { false }
@@ -468,6 +480,10 @@ fn do_stdlib_inner(
 
             fn deprecated(&self) -> bool {
                 #deprecated
+            }
+
+            fn feature_tree_operation(&self) -> bool {
+                #feature_tree_operation
             }
 
             fn examples(&self) -> Vec<String> {
