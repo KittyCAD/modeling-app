@@ -2281,7 +2281,9 @@ loft([profile001, profile002])
 
       // exit sketch
       await toolbar.exitSketchBtn.click()
-      await scene.clickNoWhere()
+      await expect(app.page.getByTestId('spinner')).toBeVisible()
+      await expect(app.page.getByTestId('spinner')).not.toBeVisible()
+      // wait for execution to be done and the offset plane to pop in and out
       await app.page.waitForTimeout(1000)
 
       await expect(async () => {
