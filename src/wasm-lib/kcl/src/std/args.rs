@@ -8,7 +8,7 @@ use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExecutorContext, ExtrudeSurface, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
+        ExecState, ExecutorContext, ExtrudeSurface, KclObjectFields, KclValue, Metadata, Point3d, Sketch, SketchSet,
         SketchSurface, Solid, SolidSet, TagIdentifier,
     },
     parsing::ast::types::TagNode,
@@ -1253,7 +1253,16 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
                 _ => None,
             };
         }
-        // Case 2: custom plane
+        // Case 2: face
+        if let KclValue::Face(f) = arg {
+            return Some(Self::Plane {
+                origin: Box::new(Point3d::ZERO),
+                x_axis: Box::new(f.x_axis),
+                y_axis: Box::new(f.y_axis),
+                z_axis: Box::new(f.z_axis),
+            });
+        }
+        // Case 3: custom plane
         let obj = arg.as_object()?;
         let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
