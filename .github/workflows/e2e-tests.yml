@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [namespace-profile-macos-8-cores]
+        os: [namespace-profile-8-cores, namespace-profile-macos-8-cores, windows-8-cores]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
     runs-on: ${{ matrix.os }}
