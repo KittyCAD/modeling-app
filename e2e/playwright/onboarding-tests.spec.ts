@@ -28,6 +28,7 @@ test.describe('Onboarding tests', () => {
       cleanProjectDir: true,
     },
     async ({ context, page, homePage }) => {
+      const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
 

@@ -6,7 +6,7 @@ set -euo pipefail
 if [[ ! -f "test-results/.last-run.json" ]]; then
     # if no last run artifact, than run plawright normally
     echo "run playwright normally"
-        if [[ "$3" == ubuntu-latest* ]]; then
+        if [[ "$3" == namespace-profile* ]]; then
             xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --shard=$1/$2 || true
         elif [[ "$3" == windows* ]]; then
             yarn test:playwright:electron:windows -- --shard=$1/$2 || true
@@ -30,7 +30,7 @@ while [[ $retry -le $max_retrys ]]; do
         if [[ $failed_tests -gt 0 ]]; then
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
-            if [[ "$3" == ubuntu-latest* ]]; then
+            if [[ "$3" == namespace-profile* ]]; then
                 xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --last-failed || true
             elif [[ "$3" == windows* ]]; then
                 yarn test:playwright:electron:windows -- --last-failed || true
