@@ -156,6 +156,10 @@ impl crate::docs::StdLibFn for Min {
         false
     }
 
+    fn feature_tree_operation(&self) -> bool {
+        false
+    }
+
     fn examples(&self) -> Vec<String> {
         let code_blocks = vec![
             "This is another code block.\nyes sirrr.\nmin",
