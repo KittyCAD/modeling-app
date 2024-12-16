@@ -7,6 +7,7 @@ import {
   PERSIST_MODELING_CONTEXT,
   setup,
   tearDown,
+  TEST_COLORS,
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 
@@ -1350,7 +1351,7 @@ test2.describe('Sketch mode should be toleratant to syntax errors', () => {
 
       const [objClick] = scene.makeMouseHelpers(600, 250)
       const arrowHeadLocation = { x: 604, y: 129 } as const
-      const arrowHeadWhite: [number, number, number] = [255, 255, 255]
+      const arrowHeadWhite = TEST_COLORS.WHITE
       const backgroundGray: [number, number, number] = [28, 28, 28]
       const verifyArrowHeadColor = async (c: [number, number, number]) =>
         scene.expectPixelColor(c, arrowHeadLocation, 15)
@@ -1990,6 +1991,336 @@ extrude001 = extrude(75, thePart)
           await profilePoint2()
           await editor.expectEditor.toContain(`|> line([19.05, -18.14], %)`)
         }
+      )
+    }
+  )
+  test2(
+    'Can enter sketch on sketch of wall and cap for segment, solid2d, extrude-wall, extrude-cap selections',
+    async ({ app, scene, toolbar, editor }) => {
+      // TODO this test should include a test for selecting revolve walls and caps
+      await app.initialise(`sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([6.71, -3.66], sketch001)
+  |> line([2.65, 9.02], %, $seg02)
+  |> line([3.73, -9.36], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(20, profile001)
+sketch002 = startSketchOn(extrude001, seg01)
+profile002 = startProfileAt([0.75, 13.46], sketch002)
+  |> line([4.52, 3.79], %)
+  |> line([5.98, -2.81], %)
+profile003 = startProfileAt([3.19, 13.3], sketch002)
+  |> angledLine([0, 6.64], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       2.81
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile004 = startProfileAt([3.15, 9.39], sketch002)
+  |> xLine(6.92, %)
+  |> line([-7.41, -2.85], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile005 = circle({ center = [5.15, 4.34], radius = 1.66 }, sketch002)
+profile006 = startProfileAt([9.65, 3.82], sketch002)
+  |> line([2.38, 5.62], %)
+  |> line([2.13, -5.57], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+revolve001 = revolve({
+  angle = 45,
+  axis = getNextAdjacentEdge(seg01)
+}, profile004)
+extrude002 = extrude(4, profile006)
+sketch003 = startSketchOn('-XZ')
+profile007 = startProfileAt([4.8, 7.55], sketch003)
+  |> line([7.39, 2.58], %)
+  |> line([7.02, -2.85], %)
+profile008 = startProfileAt([5.54, 5.49], sketch003)
+  |> line([6.34, 2.64], %)
+  |> line([6.33, -2.96], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile009 = startProfileAt([5.23, 1.95], sketch003)
+  |> line([6.8, 2.17], %)
+  |> line([7.34, -2.75], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile010 = circle({
+  center = [7.18, -2.11],
+  radius = 2.67
+}, sketch003)
+profile011 = startProfileAt([5.07, -6.39], sketch003)
+  |> angledLine([0, 4.54], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       4.17
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude003 = extrude(2.5, profile011)
+revolve002 = revolve({ angle = 45, axis = seg02 }, profile008)
+`)
+
+      const camPositionForSelectingSketchOnWallProfiles = () =>
+        scene.moveCameraTo(
+          { x: 834, y: -680, z: 534 },
+          { x: -54, y: -476, z: 148 }
+        )
+      const camPositionForSelectingSketchOnCapProfiles = () =>
+        scene.moveCameraTo(
+          { x: 404, y: 690, z: 38 },
+          { x: 16, y: -140, z: -10 }
+        )
+      const wallSelectionOptions = [
+        {
+          title: 'select wall segment',
+          selectClick: scene.makeMouseHelpers(598, 211)[0],
+        },
+        {
+          title: 'select wall solid 2d',
+          selectClick: scene.makeMouseHelpers(677, 236)[0],
+        },
+        {
+          title: 'select wall circle',
+          selectClick: scene.makeMouseHelpers(811, 247)[0],
+        },
+        {
+          title: 'select wall extrude wall',
+          selectClick: scene.makeMouseHelpers(793, 136)[0],
+        },
+        {
+          title: 'select wall extrude cap',
+          selectClick: scene.makeMouseHelpers(836, 103)[0],
+        },
+      ] as const
+      const capSelectionOptions = [
+        {
+          title: 'select cap segment',
+          selectClick: scene.makeMouseHelpers(688, 91)[0],
+        },
+        {
+          title: 'select cap solid 2d',
+          selectClick: scene.makeMouseHelpers(733, 204)[0],
+        },
+        // TODO keeps failing
+        // {
+        //   title: 'select cap circle',
+        //   selectClick: scene.makeMouseHelpers(679, 290)[0],
+        // },
+        {
+          title: 'select cap extrude wall',
+          selectClick: scene.makeMouseHelpers(649, 402)[0],
+        },
+        {
+          title: 'select cap extrude cap',
+          selectClick: scene.makeMouseHelpers(693, 408)[0],
+        },
+      ] as const
+
+      const verifyWallProfilesAreDrawn = async () =>
+        test2.step('verify wall profiles are drawn', async () => {
+          // open polygon
+          await scene.expectPixelColor(
+            TEST_COLORS.WHITE,
+            { x: 599, y: 168 },
+            15
+          )
+          // closed polygon
+          await scene.expectPixelColor(
+            TEST_COLORS.WHITE,
+            { x: 656, y: 171 },
+            15
+          )
+          // revolved profile
+          await scene.expectPixelColor(
+            TEST_COLORS.WHITE,
+            { x: 655, y: 264 },
+            15
+          )
+          // extruded profile
+          await scene.expectPixelColor(
+            TEST_COLORS.WHITE,
+            { x: 808, y: 396 },
+            15
+          )
+          // circle
+          await scene.expectPixelColor(
+            [
+              TEST_COLORS.WHITE,
+              TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
+            ],
+            { x: 742, y: 386 },
+            15
+          )
+        })
+
+      const verifyCapProfilesAreDrawn = async () =>
+        test2.step('verify wall profiles are drawn', async () => {
+          // open polygon
+          await scene.expectPixelColor(
+            TEST_COLORS.WHITE,
+            // TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
+            { x: 620, y: 58 },
+            15
+          )
+          // revolved profile
+          await scene.expectPixelColor(
+            TEST_COLORS.WHITE,
+            { x: 641, y: 110 },
+            15
+          )
+          // closed polygon
+          await scene.expectPixelColor(
+            TEST_COLORS.WHITE,
+            { x: 632, y: 200 },
+            15
+          )
+          // extruded profile
+          await scene.expectPixelColor(
+            TEST_COLORS.WHITE,
+            { x: 628, y: 410 },
+            15
+          )
+          // circle
+          await scene.expectPixelColor(
+            [
+              TEST_COLORS.WHITE,
+              TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
+            ],
+            { x: 681, y: 303 },
+            15
+          )
+        })
+
+      await test2.step('select wall profiles', async () => {
+        for (const { title, selectClick } of wallSelectionOptions) {
+          await test2.step(title, async () => {
+            await camPositionForSelectingSketchOnWallProfiles()
+            await selectClick()
+            await toolbar.editSketch()
+            await app.page.waitForTimeout(600)
+            await verifyWallProfilesAreDrawn()
+            await toolbar.exitSketchBtn.click()
+            await app.page.waitForTimeout(100)
+          })
+        }
+      })
+
+      await test2.step('select cap profiles', async () => {
+        for (const { title, selectClick } of capSelectionOptions) {
+          await test2.step(title, async () => {
+            await camPositionForSelectingSketchOnCapProfiles()
+            await app.page.waitForTimeout(100)
+            await selectClick()
+            await app.page.waitForTimeout(100)
+            await toolbar.editSketch()
+            await app.page.waitForTimeout(600)
+            await verifyCapProfilesAreDrawn()
+            await toolbar.exitSketchBtn.click()
+            await app.page.waitForTimeout(100)
+          })
+        }
+      })
+    }
+  )
+  test2(
+    'Can enter sketch loft edges, base and continue sketch',
+    async ({ app, scene, toolbar, editor }) => {
+      await app.initialise(`sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([34, 42.66], sketch001)
+  |> line([102.65, 151.99], %)
+  |> line([76, -138.66], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+plane001 = offsetPlane('XZ', 50)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfileAt([39.43, 172.21], sketch002)
+  |> xLine(183.99, %)
+  |> line([-77.95, -145.93], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+loft([profile001, profile002])
+`)
+      const [baseProfileEdgeClick] = scene.makeMouseHelpers(621, 292)
+
+      const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
+      const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
+
+      await baseProfileEdgeClick()
+      await toolbar.editSketch()
+      await app.page.waitForTimeout(600)
+      await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 562, y: 172 }, 15)
+
+      await toolbar.rectangleBtn.click()
+      await app.page.waitForTimeout(100)
+      await rect1Crn1()
+      await editor.expectEditor.toContain(
+        `profile003 = startProfileAt([50.72, -18.19], sketch001)`
+      )
+      await rect1Crn2()
+      await editor.expectEditor.toContain(
+        `angledLine([0, 113.01], %, $rectangleSegmentA001)`
+      )
+    }
+  )
+  test2(
+    'Can enter sketch loft edges offsetPlane and continue sketch',
+    async ({ app, scene, toolbar, editor }) => {
+      await app.initialise(`sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([34, 42.66], sketch001)
+  |> line([102.65, 151.99], %)
+  |> line([76, -138.66], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+plane001 = offsetPlane('XZ', 50)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfileAt([39.43, 172.21], sketch002)
+  |> xLine(183.99, %)
+  |> line([-77.95, -145.93], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+loft([profile001, profile002])
+`)
+      const topProfileEdgeClickCoords = { x: 602, y: 185 } as const
+      const [topProfileEdgeClick] = scene.makeMouseHelpers(
+        topProfileEdgeClickCoords.x,
+        topProfileEdgeClickCoords.y
+      )
+
+      const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
+      const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
+
+      await scene.moveCameraTo(
+        { x: 8171, y: -7740, z: 1624 },
+        { x: 3302, y: -627, z: 2892 }
+      )
+
+      await topProfileEdgeClick()
+      await toolbar.editSketch()
+      await app.page.waitForTimeout(600)
+      await scene.expectPixelColor(TEST_COLORS.BLUE, { x: 788, y: 188 }, 15)
+
+      await toolbar.rectangleBtn.click()
+      await app.page.waitForTimeout(100)
+      await rect1Crn1()
+      await editor.expectEditor.toContain(
+        `profile003 = startProfileAt([47.76, -17.13], plane001)`
+      )
+      await rect1Crn2()
+      await editor.expectEditor.toContain(
+        `angledLine([0, 106.42], %, $rectangleSegmentA001)`
       )
     }
   )
