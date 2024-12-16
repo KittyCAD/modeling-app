@@ -586,7 +586,7 @@ export class SceneEntities {
       )
 
       let seg: Group
-      const _node1 = getNodeFromPath<CallExpression>(
+      const _node1 = getNodeFromPath<Node<CallExpression>>(
         maybeModdedAst,
         segPathToNode,
         'CallExpression'

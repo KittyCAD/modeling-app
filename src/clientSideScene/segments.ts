@@ -57,6 +57,7 @@ import { SegmentOverlayPayload } from 'machines/modelingMachine'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
 import { editorManager, sceneInfra } from 'lib/singletons'
+import { Selections } from 'lib/selections'
 
 interface CreateSegmentArgs {
   input: SegmentInputs
@@ -70,6 +71,7 @@ interface CreateSegmentArgs {
   theme: Themes
   isSelected?: boolean
   sceneInfra: SceneInfra
+  selection?: Selections
 }
 
 interface UpdateSegmentArgs {
@@ -828,7 +830,11 @@ function createLengthIndicator({
 
   // Double click workflow
   lengthIndicatorWrapper.ondblclick = () => {
-    const selection = lengthIndicatorGroup.parent.userData.selection
+    const selection = lengthIndicatorGroup.parent?.userData.selection
+    if (!selection) {
+      console.error('Unable to dimension segment when clicking the label.')
+      return
+    }
     sceneInfra.modelingSend({
       type: 'Set selection',
       data: {
