@@ -1447,7 +1447,7 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     require_whitespace(i)?;
 
     let (mut selector, path) = alt((
-        string_literal.map(|s| (ImportSelector::None(None), Some(s))),
+        string_literal.map(|s| (ImportSelector::None { alias: None }, Some(s))),
         glob.map(|t| {
             let s = t.as_source_range();
             (
@@ -1510,7 +1510,7 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         ));
     }
 
-    if let ImportSelector::None(ref mut a) = selector {
+    if let ImportSelector::None { alias: ref mut a } = selector {
         if let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
             identifier.context(expected("an identifier to alias the import")),

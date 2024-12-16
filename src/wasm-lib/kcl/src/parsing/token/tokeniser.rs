@@ -365,6 +365,7 @@ mod tests {
 
     use super::*;
     use crate::parsing::token::TokenSlice;
+
     fn assert_parse_err<'i, P, O, E>(mut p: P, s: &'i str)
     where
         O: std::fmt::Debug,

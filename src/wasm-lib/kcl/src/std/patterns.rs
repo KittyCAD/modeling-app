@@ -379,7 +379,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     let resp = args
         .send_modeling_cmd(
@@ -1032,7 +1032,7 @@ async fn pattern_circular(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Geometries, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let num_repetitions = match data.repetitions() {
         RepetitionsNeeded::More(n) => n,
         RepetitionsNeeded::None => {

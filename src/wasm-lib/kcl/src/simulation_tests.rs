@@ -127,7 +127,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     });
 
                     assert_snapshot(test_name, "Operations executed", || {
-                        insta::assert_json_snapshot!("ops", e.exec_state.operations);
+                        insta::assert_json_snapshot!("ops", e.exec_state.mod_local.operations);
                     });
                 }
                 e => {
@@ -692,6 +692,27 @@ mod import_export {
 }
 mod import_glob {
     const TEST_NAME: &str = "import_glob";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_whole {
+    const TEST_NAME: &str = "import_whole";
 
     /// Test parsing KCL.
     #[test]
