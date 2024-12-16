@@ -10,7 +10,7 @@ use crate::{
     execution::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
     parsing::ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
     std::{args::Arg, FnAsArg},
-    ExecState, ExecutorContext, KclError, SourceRange,
+    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -84,6 +84,11 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+    Module {
+        value: ModuleId,
+        #[serde(rename = "__meta")]
+        meta: Vec<Metadata>,
+    },
     KclNone {
         value: KclNone,
         #[serde(rename = "__meta")]
@@ -143,6 +148,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::String { meta, .. } => to_vec_sr(&meta),
             KclValue::Array { meta, .. } => to_vec_sr(&meta),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
+            KclValue::Module { meta, .. } => to_vec_sr(&meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
         }
@@ -173,6 +179,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Array { meta, .. } => to_vec_sr(meta),
             KclValue::Object { meta, .. } => to_vec_sr(meta),
+            KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
         }
     }
@@ -198,6 +205,7 @@ impl KclValue {
             KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
+            KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
         }
     }
@@ -263,6 +271,7 @@ impl KclValue {
             KclValue::String { .. } => "string (text)",
             KclValue::Array { .. } => "array (list)",
             KclValue::Object { .. } => "object",
+            KclValue::Module { .. } => "module",
             KclValue::KclNone { .. } => "None",
         }
     }

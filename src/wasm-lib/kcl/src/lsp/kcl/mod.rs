@@ -726,11 +726,11 @@ impl Backend {
         drop(last_successful_ast_state);
 
         self.memory_map
-            .insert(params.uri.to_string(), exec_state.memory.clone());
+            .insert(params.uri.to_string(), exec_state.memory().clone());
 
         // Send the notification to the client that the memory was updated.
         self.client
-            .send_notification::<custom_notifications::MemoryUpdated>(exec_state.memory)
+            .send_notification::<custom_notifications::MemoryUpdated>(exec_state.mod_local.memory)
             .await;
 
         Ok(())
