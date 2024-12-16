@@ -83,7 +83,6 @@ export function revolveSketch(
 
   if (!axisSelection) return new Error('Axis selection is missing.')
 
-  // here
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
