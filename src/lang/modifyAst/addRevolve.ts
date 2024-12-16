@@ -5,6 +5,7 @@ import {
   PathToNode,
   Expr,
   CallExpression,
+  PipeExpression,
   VariableDeclarator,
 } from 'lang/wasm'
 import { Selections } from 'lib/selections'
@@ -14,6 +15,7 @@ import {
   createCallExpressionStdLib,
   createObjectExpression,
   createIdentifier,
+  createPipeExpression,
   findUniqueName,
   createVariableDeclaration,
 } from 'lang/modifyAst'
@@ -22,13 +24,12 @@ import {
   mutateAstWithTagForSketchSegment,
   getEdgeTagCall,
 } from 'lang/modifyAst/addEdgeTreatment'
-import { Artifact, getPathsFromArtifact } from 'lang/std/artifactGraph'
 export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,
+  shouldPipe = false,
   angle: Expr = createLiteral(4),
-  axis: Selections,
-  artifact?: Artifact
+  axis: Selections
 ):
   | {
       modifiedAst: Node<Program>
@@ -36,11 +37,6 @@ export function revolveSketch(
       pathToRevolveArg: PathToNode
     }
   | Error {
-  const orderedSketchNodePaths = getPathsFromArtifact({
-    artifact: artifact,
-    sketchPathToNode: pathToSketchNode,
-  })
-  if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
   const clonedAst = structuredClone(ast)
   const sketchNode = getNodeFromPath(clonedAst, pathToSketchNode)
   if (err(sketchNode)) return sketchNode
@@ -71,13 +67,29 @@ export function revolveSketch(
   if (err(tagResult)) return tagResult
   const { tag } = tagResult
 
+  /* Original Code */
+  const { node: sketchExpression } = sketchNode
+
+  // determine if sketchExpression is in a pipeExpression or not
+  const sketchPipeExpressionNode = getNodeFromPath<PipeExpression>(
+    clonedAst,
+    pathToSketchNode,
+    'PipeExpression'
+  )
+  if (err(sketchPipeExpressionNode)) return sketchPipeExpressionNode
+  const { node: sketchPipeExpression } = sketchPipeExpressionNode
+  const isInPipeExpression = sketchPipeExpression.type === 'PipeExpression'
+
   const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
     clonedAst,
     pathToSketchNode,
     'VariableDeclarator'
   )
   if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
-  const { node: sketchVariableDeclarator } = sketchVariableDeclaratorNode
+  const {
+    node: sketchVariableDeclarator,
+    shallowPath: sketchPathToDecleration,
+  } = sketchVariableDeclaratorNode
 
   const axisSelection = axis?.graphSelections[0]?.artifact
 
@@ -91,13 +103,37 @@ export function revolveSketch(
     createIdentifier(sketchVariableDeclarator.id.name),
   ])
 
+  if (shouldPipe) {
+    const pipeChain = createPipeExpression(
+      isInPipeExpression
+        ? [...sketchPipeExpression.body, revolveCall]
+        : [sketchExpression as any, revolveCall]
+    )
+
+    sketchVariableDeclarator.init = pipeChain
+    const pathToRevolveArg: PathToNode = [
+      ...sketchPathToDecleration,
+      ['init', 'VariableDeclarator'],
+      ['body', ''],
+      [pipeChain.body.length - 1, 'index'],
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+    ]
+
+    return {
+      modifiedAst: clonedAst,
+      pathToSketchNode,
+      pathToRevolveArg,
+    }
+  }
+
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
   const name = findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
   const VariableDeclaration = createVariableDeclaration(name, revolveCall)
-  const lastSketchNodePath =
-    orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
-  const sketchIndexInBody = Number(lastSketchNodePath[1][0])
+  const sketchIndexInPathToNode =
+    sketchPathToDecleration.findIndex((a) => a[0] === 'body') + 1
+  const sketchIndexInBody = sketchPathToDecleration[sketchIndexInPathToNode][0]
   if (typeof sketchIndexInBody !== 'number')
     return new Error('expected sketchIndexInBody to be a number')
   clonedAst.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)

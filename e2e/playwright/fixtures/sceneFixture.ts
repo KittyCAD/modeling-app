@@ -11,7 +11,6 @@ import {
 
 type mouseParams = {
   pixelDiff?: number
-  shouldDbClick?: boolean
 }
 type mouseDragToParams = mouseParams & {
   fromPoint: { x: number; y: number }
@@ -76,16 +75,11 @@ export class SceneFixture {
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
-            () =>
-              clickParams?.shouldDbClick
-                ? this.page.mouse.dblclick(x, y)
-                : this.page.mouse.click(x, y),
+            () => this.page.mouse.click(x, y),
             clickParams.pixelDiff
           )
         }
-        return clickParams?.shouldDbClick
-          ? this.page.mouse.dblclick(x, y)
-          : this.page.mouse.click(x, y)
+        return this.page.mouse.click(x, y)
       },
       (moveParams?: mouseParams) => {
         if (moveParams?.pixelDiff) {
@@ -216,7 +210,7 @@ export class SceneFixture {
   }
 
   expectPixelColor = async (
-    colour: [number, number, number] | [number, number, number][],
+    colour: [number, number, number],
     coords: { x: number; y: number },
     diff: number
   ) => {
@@ -237,36 +231,22 @@ export class SceneFixture {
   }
 }
 
-function isColourArray(
-  colour: [number, number, number] | [number, number, number][]
-): colour is [number, number, number][] {
-  return Array.isArray(colour[0])
-}
-
 export async function expectPixelColor(
   page: Page,
-  colour: [number, number, number] | [number, number, number][],
+  colour: [number, number, number],
   coords: { x: number; y: number },
   diff: number
 ) {
   let finalValue = colour
   await expect
-    .poll(
-      async () => {
-        const pixel = (await getPixelRGBs(page)(coords, 1))[0]
-        if (!pixel) return null
-        finalValue = pixel
-        if (!isColourArray(colour)) {
-          return pixel.every(
-            (channel, index) => Math.abs(channel - colour[index]) < diff
-          )
-        }
-        return colour.some((c) =>
-          c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
-        )
-      },
-      { timeout: 10_000 }
-    )
+    .poll(async () => {
+      const pixel = (await getPixelRGBs(page)(coords, 1))[0]
+      if (!pixel) return null
+      finalValue = pixel
+      return pixel.every(
+        (channel, index) => Math.abs(channel - colour[index]) < diff
+      )
+    })
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(

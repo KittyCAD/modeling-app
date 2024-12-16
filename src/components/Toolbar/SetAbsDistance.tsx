@@ -93,7 +93,6 @@ export async function applyConstraintAbsDistance({
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
-  exprInsertIndex: number
 }> {
   const info = absDistanceInfo({
     selectionRanges,
@@ -133,7 +132,6 @@ export async function applyConstraintAbsDistance({
   if (err(transform2)) return Promise.reject(transform2)
   const { modifiedAst: _modifiedAst, pathToNodeMap } = transform2
 
-  let exprInsertIndex = -1
   if (variableName) {
     const newBody = [..._modifiedAst.body]
     newBody.splice(
@@ -146,9 +144,8 @@ export async function applyConstraintAbsDistance({
       const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
       pathToNode[index][0] = Number(pathToNode[index][0]) + 1
     })
-    exprInsertIndex = newVariableInsertIndex
   }
-  return { modifiedAst: _modifiedAst, pathToNodeMap, exprInsertIndex }
+  return { modifiedAst: _modifiedAst, pathToNodeMap }
 }
 
 export function applyConstraintAxisAlign({
