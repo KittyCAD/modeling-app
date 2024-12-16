@@ -202,6 +202,15 @@ impl KclValue {
         }
     }
 
+    pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
+        let KclValue::Function { expression, .. } = self else {
+            return None;
+        };
+        // TODO: It would be nice if we could extract the source range starting
+        // at the fn, but that's the variable declaration.
+        Some(expression.as_source_range())
+    }
+
     pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
             KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),

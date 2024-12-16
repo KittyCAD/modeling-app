@@ -81,7 +81,7 @@ mod wasm;
 
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
-pub use errors::{CompilationError, ConnectionError, ExecError, KclError};
+pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
 pub use execution::{
     cache::{CacheInformation, OldAstState},
     ExecState, ExecutorContext, ExecutorSettings,
