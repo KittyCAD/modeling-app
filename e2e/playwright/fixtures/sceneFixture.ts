@@ -251,19 +251,22 @@ export async function expectPixelColor(
 ) {
   let finalValue = colour
   await expect
-    .poll(async () => {
-      const pixel = (await getPixelRGBs(page)(coords, 1))[0]
-      if (!pixel) return null
-      finalValue = pixel
-      if (!isColourArray(colour)) {
-        return pixel.every(
-          (channel, index) => Math.abs(channel - colour[index]) < diff
+    .poll(
+      async () => {
+        const pixel = (await getPixelRGBs(page)(coords, 1))[0]
+        if (!pixel) return null
+        finalValue = pixel
+        if (!isColourArray(colour)) {
+          return pixel.every(
+            (channel, index) => Math.abs(channel - colour[index]) < diff
+          )
+        }
+        return colour.some((c) =>
+          c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
         )
-      }
-      return colour.some((c) =>
-        c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
-      )
-    }, {timeout: 10_000})
+      },
+      { timeout: 10_000 }
+    )
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(
