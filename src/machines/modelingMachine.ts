@@ -235,6 +235,7 @@ export type ModelingMachineEvent =
     }
   | {
       type: 'Delete selection'
+      data?: ModelingCommandSchema['Delete selection']
     }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
@@ -727,33 +728,6 @@ export const modelingMachine = setup({
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
-      })().catch(reportRejection)
-    },
-    'AST delete selection': ({ context: { selectionRanges } }) => {
-      ;(async () => {
-        let ast = kclManager.ast
-
-        const modifiedAst = await deleteFromSelection(
-          ast,
-          selectionRanges.graphSelections[0],
-          kclManager.programMemory,
-          getFaceDetails
-        )
-        if (err(modifiedAst)) return
-
-        const testExecute = await executeAst({
-          ast: modifiedAst,
-          engineCommandManager,
-          // We make sure to send an empty program memory to denote we mean mock mode.
-          programMemoryOverride: ProgramMemory.empty(),
-        })
-        if (testExecute.errors.length) {
-          toast.error('Unable to delete part')
-          return
-        }
-
-        await kclManager.updateAst(modifiedAst, true)
-        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       })().catch(reportRejection)
     },
     'AST fillet': ({ event }) => {
@@ -1663,6 +1637,46 @@ export const modelingMachine = setup({
         }
       }
     ),
+    deleteSelectionAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Delete selection'] | undefined
+      }) => {
+        console.log('input', input)
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection } = input
+
+        const modifiedAst = await deleteFromSelection(
+          ast,
+          selection.graphSelections[0],
+          kclManager.programMemory,
+          getFaceDetails
+        )
+        if (err(modifiedAst)) {
+          return
+        }
+
+        const testExecute = await executeAst({
+          ast: modifiedAst,
+          engineCommandManager,
+          // We make sure to send an empty program memory to denote we mean mock mode.
+          programMemoryOverride: ProgramMemory.empty(),
+        })
+        if (testExecute.errors.length) {
+          toast.error('Unable to delete part')
+          return
+        }
+
+        await kclManager.updateAst(modifiedAst, true)
+        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
+      }
+    ),
   },
   // end services
 }).createMachine({
@@ -1733,10 +1747,9 @@ export const modelingMachine = setup({
         },
 
         'Delete selection': {
-          target: 'idle',
+          target: 'Applying selection delete',
           guard: 'has valid selection for deletion',
-          actions: ['AST delete selection'],
-          reenter: false,
+          reenter: true,
         },
 
         'Text-to-CAD': {
@@ -2485,6 +2498,22 @@ export const modelingMachine = setup({
         input: ({ event }) => {
           if (event.type !== 'Shell') return undefined
           return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying selection delete': {
+      invoke: {
+        src: 'deleteSelectionAstMod',
+        id: 'deleteSelectionAstMod',
+        input: ({ event, context }) => {
+          console.log('event', event)
+          if (event.type !== 'Delete selection') return undefined
+          // TODO: doing this seems wrong
+          if (!context.selectionRanges) return undefined
+          return { selection: context.selectionRanges }
         },
         onDone: ['idle'],
         onError: ['idle'],
