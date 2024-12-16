@@ -1216,7 +1216,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         }
 
-        // Get the completion items forem the ast.
+        // Get the completion items for the ast.
         let Ok(variables) = ast.completion_items() else {
             return Ok(Some(CompletionResponse::Array(completions)));
         };
