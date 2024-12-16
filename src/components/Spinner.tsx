@@ -2,7 +2,12 @@ import { SVGProps } from 'react'
 
 export const Spinner = (props: SVGProps<SVGSVGElement>) => {
   return (
-    <svg viewBox="0 0 10 10" className={'w-8 h-8'} {...props}>
+    <svg
+      data-testid="spinner"
+      viewBox="0 0 10 10"
+      className={'w-8 h-8'}
+      {...props}
+    >
       <circle
         cx="5"
         cy="5"
