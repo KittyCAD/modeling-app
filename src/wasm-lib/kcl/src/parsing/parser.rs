@@ -4485,6 +4485,7 @@ mod snapshot_tests {
             #[test]
             fn $func_name() {
                 let module_id = crate::ModuleId::default();
+                println!("{}", $test_kcl_program);
                 let tokens = crate::parsing::token::lex($test_kcl_program, module_id).unwrap();
                 print_tokens(tokens.as_slice());
                 ParseContext::init();

@@ -31,11 +31,11 @@ shell(data: ShellData, solid_set: SolidSet) -> SolidSet
 // Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)
@@ -47,11 +47,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)
 // Remove the start face for the extrusion.
 firstSketch = startSketchOn('-XZ')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the start face for the extrusion.
 shell({ faces = ['start'], thickness = 0.25 }, firstSketch)
@@ -63,11 +63,11 @@ shell({ faces = ['start'], thickness = 0.25 }, firstSketch)
 // Remove a tagged face and the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %, $myTag)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0], tag = $myTag)
+  |> close()
+  |> extrude(length = 6)
 
 // Remove a tagged face for the extrusion.
 shell({ faces = [myTag], thickness = 0.25 }, firstSketch)
@@ -79,11 +79,11 @@ shell({ faces = [myTag], thickness = 0.25 }, firstSketch)
 // Remove multiple faces at once.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %, $myTag)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0], tag = $myTag)
+  |> close()
+  |> extrude(length = 6)
 
 // Remove a tagged face and the end face for the extrusion.
 shell({
@@ -99,25 +99,25 @@ shell({
 size = 100
 case = startSketchOn('-XZ')
   |> startProfileAt([-size, -size], %)
-  |> line([2 * size, 0], %)
-  |> line([0, 2 * size], %)
+  |> line(end = [2 * size, 0])
+  |> line(end = [0, 2 * size])
   |> tangentialArcTo([-size, size], %)
-  |> close(%)
-  |> extrude(65, %)
+  |> close()
+  |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
   |> circle({
        center = [-size / 2, -size / 2],
        radius = 25
      }, %)
-  |> extrude(50, %)
+  |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
   |> circle({
        center = [size / 2, -size / 2],
        radius = 25
      }, %)
-  |> extrude(50, %)
+  |> extrude(length = 50)
 
 // We put "case" in the shell function to shell the entire object.
 shell({ faces = ['start'], thickness = 5 }, case)
@@ -130,25 +130,25 @@ shell({ faces = ['start'], thickness = 5 }, case)
 size = 100
 case = startSketchOn('XY')
   |> startProfileAt([-size, -size], %)
-  |> line([2 * size, 0], %)
-  |> line([0, 2 * size], %)
+  |> line(end = [2 * size, 0])
+  |> line(end = [0, 2 * size])
   |> tangentialArcTo([-size, size], %)
-  |> close(%)
-  |> extrude(65, %)
+  |> close()
+  |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
   |> circle({
        center = [-size / 2, -size / 2],
        radius = 25
      }, %)
-  |> extrude(50, %)
+  |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
   |> circle({
        center = [size / 2, -size / 2],
        radius = 25
      }, %)
-  |> extrude(50, %)
+  |> extrude(length = 50)
 
 // We put "thing1" in the shell function to shell the end face of the object.
 shell({ faces = ['end'], thickness = 5 }, thing1)
@@ -164,25 +164,25 @@ shell({ faces = ['end'], thickness = 5 }, thing1)
 size = 100
 case = startSketchOn('XY')
   |> startProfileAt([-size, -size], %)
-  |> line([2 * size, 0], %)
-  |> line([0, 2 * size], %)
+  |> line(end = [2 * size, 0])
+  |> line(end = [0, 2 * size])
   |> tangentialArcTo([-size, size], %)
-  |> close(%)
-  |> extrude(65, %)
+  |> close()
+  |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
   |> circle({
        center = [-size / 2, -size / 2],
        radius = 25
      }, %)
-  |> extrude(50, %)
+  |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
   |> circle({
        center = [size / 2, -size / 2],
        radius = 25
      }, %)
-  |> extrude(50, %)
+  |> extrude(length = 50)
 
 // We put "thing1" and "thing2" in the shell function to shell the end face of the object.
 shell({ faces = ['end'], thickness = 5 }, [thing1, thing2])

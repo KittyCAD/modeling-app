@@ -62,19 +62,19 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// exampleSketch = startSketchOn("-XZ")
 ///   |> circle({ center = [0, 0], radius = 10 }, %)
 ///
-/// example = extrude(5, exampleSketch)
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([-15, 0], %)
-///   |> line([30, 0], %)
-///   |> line([0, 30], %)
-///   |> line([-30, 0], %)
-///   |> close(%)
+///   |> line(end = [30, 0])
+///   |> line(end = [0, 30])
+///   |> line(end = [-30, 0])
+///   |> close()
 ///   |> hole(circle({ center = [0, 15], radius = 5 }, %), %)
 ///
-/// example = extrude(5, exampleSketch)
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 #[stdlib {
     name = "circle",
@@ -167,8 +167,7 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 /// ```no_run
 /// exampleSketch = startSketchOn("XY")
 ///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
-///
-/// example = extrude(5, exampleSketch)
+///   |> extrude(length = 5)
 /// ```
 #[stdlib {
     name = "circleThreePoint",
@@ -262,7 +261,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     inscribed = true,
 ///   }, %)
 ///
-/// example = extrude(5, hex)
+/// example = extrude(hex, length = 5)
 /// ```
 ///
 /// ```no_run
@@ -274,7 +273,7 @@ pub async fn polygon(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     center = [10, 10],
 ///     inscribed = false,
 ///   }, %)
-/// example = extrude(5, square)
+/// example = extrude(square, length = 5)
 /// ```
 #[stdlib {
     name = "polygon",

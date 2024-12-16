@@ -203,7 +203,7 @@ pub async fn helix_revolutions(exec_state: &mut ExecState, args: Args) -> Result
 /// ```no_run
 /// part001 = startSketchOn('XY')
 ///   |> circle({ center: [5, 5], radius: 10 }, %)
-///   |> extrude(10, %)
+///   |> extrude(length = 10)
 ///   |> helixRevolutions({
 ///     angleStart = 0,
 ///     ccw = true,

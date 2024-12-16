@@ -8,23 +8,23 @@ snapshot_kind: text
     "labeledArgs": {
       "hole_sketch": {
         "sourceRange": [
-          2348,
-          2353,
+          2351,
+          2356,
           0
         ]
       },
       "sketch": {
         "sourceRange": [
-          2355,
-          2356,
+          2358,
+          2359,
           0
         ]
       }
     },
     "name": "hole",
     "sourceRange": [
-      2343,
-      2357,
+      2346,
+      2360,
       0
     ],
     "type": "StdLibCall",
@@ -34,23 +34,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          2371,
-          2374,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          2376,
-          2377,
+          2383,
+          2386,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2363,
-      2378,
+      2366,
+      2387,
       0
     ],
     "type": "StdLibCall",

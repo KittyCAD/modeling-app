@@ -154,7 +154,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///       // Draw one edge of the decagon.
 ///       x = cos(stepAngle * i) * radius
 ///       y = sin(stepAngle * i) * radius
-///       return lineTo([x, y], partialDecagon)
+///       return line(partialDecagon, end = [x, y])
 ///   })
 ///
 ///   return fullDecagon
@@ -173,13 +173,13 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     for i in [1..10]:
 ///         x = cos(stepAngle * i) * radius
 ///         y = sin(stepAngle * i) * radius
-///         partialDecagon = lineTo([x, y], partialDecagon)
+///         partialDecagon = line(partialDecagon, end = [x, y])
 ///     fullDecagon = partialDecagon // it's now full
 ///     return fullDecagon
 /// */
 ///
 /// // Use the `decagon` function declared above, to sketch a decagon with radius 5.
-/// decagon(5.0) |> close(%)
+/// decagon(5.0) |> close()
 /// ```
 #[stdlib {
     name = "reduce",
