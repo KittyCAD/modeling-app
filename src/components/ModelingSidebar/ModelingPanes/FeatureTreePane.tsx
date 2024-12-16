@@ -7,9 +7,9 @@ import { useKclContext } from 'lang/KclProvider'
 import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
 import { sourceRangeFromRust } from 'lang/wasm'
 import {
+  filterOperations,
   getOperationIcon,
   getOperationLabel,
-  operationFilters,
 } from 'lib/operations'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
@@ -38,10 +38,7 @@ export const FeatureTreePane = () => {
     : kclManager.lastSuccessfulOperations
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList = operationFilters.reduce(
-    (acc, filter) => acc.filter(filter),
-    unfilteredOperationList
-  )
+  const operationList = filterOperations(unfilteredOperationList)
 
   function goToError() {
     modelingSend({

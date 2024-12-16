@@ -100,10 +100,20 @@ export function getOperationIcon(op: Operation): CustomIconName {
 }
 
 /**
+ * Apply all filters to a list of operations.
+ */
+export function filterOperations(operations: Operation[]): Operation[] {
+  return operationFilters.reduce(
+    (acc, filter) => acc.filter(filter),
+    operations
+  )
+}
+
+/**
  * The filters to apply to a list of operations
  * for use in the feature tree UI
  */
-export const operationFilters = [
+const operationFilters = [
   isNotUserFunctionWithNoOperations,
   isNotStdLibInUserFunction,
   isNotUserFunctionReturn,
@@ -114,7 +124,7 @@ export const operationFilters = [
  * between a UserDefinedFunctionCall and the next UserDefinedFunctionReturn
  * from a list of operations
  */
-export function isNotStdLibInUserFunction(
+function isNotStdLibInUserFunction(
   operation: Operation,
   index: number,
   allOperations: Operation[]
@@ -140,7 +150,7 @@ export function isNotStdLibInUserFunction(
  * that don't have any operations inside them
  * from a list of operations
  */
-export function isNotUserFunctionWithNoOperations(
+function isNotUserFunctionWithNoOperations(
   operation: Operation,
   index: number,
   allOperations: Operation[]
@@ -158,6 +168,6 @@ export function isNotUserFunctionWithNoOperations(
  * A third filter to exclude UserDefinedFunctionReturn operations
  * from a list of operations
  */
-export function isNotUserFunctionReturn(operation: Operation) {
+function isNotUserFunctionReturn(operation: Operation) {
   return operation.type !== 'UserDefinedFunctionReturn'
 }
