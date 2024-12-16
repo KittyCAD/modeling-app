@@ -1,7 +1,9 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+      - pierremtb/backup-cut-release-v0.32.0
   pull_request:
     branches: [ main ]
 

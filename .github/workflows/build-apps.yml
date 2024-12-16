@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - pierremtb/backup-cut-release-v0.32.0
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
   schedule:
