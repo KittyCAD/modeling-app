@@ -1,9 +1,11 @@
 //! Data types for the AST.
 
 use std::{
+    cell::RefCell,
     collections::HashMap,
     fmt,
     ops::{Deref, DerefMut, RangeInclusive},
+    rc::Rc,
     sync::{Arc, Mutex},
 };
 
@@ -183,21 +185,24 @@ pub struct Program {
 impl Node<Program> {
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
-        let completions = Arc::new(Mutex::new(vec![]));
+        let completions = Rc::new(RefCell::new(vec![]));
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
-            let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+            let mut findings = completions.borrow_mut();
             match node {
                 crate::walk::Node::TagDeclarator(tag) => {
                     findings.push(tag.into());
                 }
                 crate::walk::Node::VariableDeclaration(variable) => {
-                    findings.extend::<Vec<CompletionItem>>(variable.into());
+                    findings.extend::<Vec<CompletionItem>>((&variable.inner).into());
+                }
+                crate::walk::Node::ImportStatement(i) => {
+                    findings.extend::<Vec<CompletionItem>>((&i.inner).into());
                 }
                 _ => {}
             }
             Ok::<bool, anyhow::Error>(true)
         })?;
-        let x = completions.lock().unwrap();
+        let x = completions.take();
         Ok(x.clone())
     }
 
@@ -1300,6 +1305,22 @@ impl Node<ImportStatement> {
         }
     }
 
+    pub fn get_constraint_level(&self) -> ConstraintLevel {
+        ConstraintLevel::Full {
+            source_ranges: vec![self.into()],
+        }
+    }
+
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
+        self.selector.rename_symbol(new_name, pos)
+    }
+}
+
+impl ImportStatement {
+    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
+        self.selector.rename_identifiers(old_name, new_name);
+    }
+
     /// Get the name of the module object for this import.
     /// Validated during parsing and guaranteed to return `Some` if the statement imports
     /// the module itself (i.e., self.selector is ImportSelector::None).
@@ -1319,21 +1340,38 @@ impl Node<ImportStatement> {
 
         Some(name.to_owned())
     }
-
-    pub fn get_constraint_level(&self) -> ConstraintLevel {
-        ConstraintLevel::Full {
-            source_ranges: vec![self.into()],
-        }
-    }
-
-    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
-        self.selector.rename_symbol(new_name, pos)
-    }
 }
 
-impl ImportStatement {
-    pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.selector.rename_identifiers(old_name, new_name);
+impl From<&ImportStatement> for Vec<CompletionItem> {
+    fn from(import: &ImportStatement) -> Self {
+        match &import.selector {
+            ImportSelector::List { items } => {
+                items
+                    .iter()
+                    .map(|i| {
+                        let as_str = match &i.alias {
+                            Some(s) => format!(" as {}", s.name),
+                            None => String::new(),
+                        };
+                        CompletionItem {
+                            label: i.identifier().to_owned(),
+                            // TODO we can only find this after opening the module
+                            kind: None,
+                            detail: Some(format!("{}{as_str} from '{}'", i.name.name, import.path)),
+                            ..CompletionItem::default()
+                        }
+                    })
+                    .collect()
+            }
+            // TODO can't do completion for glob imports without static name resolution
+            ImportSelector::Glob(_) => vec![],
+            ImportSelector::None { .. } => vec![CompletionItem {
+                label: import.module_name().unwrap(),
+                kind: Some(CompletionItemKind::MODULE),
+                detail: Some(format!("from '{}'", import.path)),
+                ..CompletionItem::default()
+            }],
+        }
     }
 }
 
@@ -1605,30 +1643,16 @@ pub struct VariableDeclaration {
     pub digest: Option<Digest>,
 }
 
-impl From<&Node<VariableDeclaration>> for Vec<CompletionItem> {
-    fn from(declaration: &Node<VariableDeclaration>) -> Self {
+impl From<&VariableDeclaration> for Vec<CompletionItem> {
+    fn from(declaration: &VariableDeclaration) -> Self {
         vec![CompletionItem {
             label: declaration.declaration.id.name.to_string(),
-            label_details: None,
-            kind: Some(match declaration.inner.kind {
+            kind: Some(match declaration.kind {
                 VariableKind::Const => CompletionItemKind::CONSTANT,
                 VariableKind::Fn => CompletionItemKind::FUNCTION,
             }),
-            detail: Some(declaration.inner.kind.to_string()),
-            documentation: None,
-            deprecated: None,
-            preselect: None,
-            sort_text: None,
-            filter_text: None,
-            insert_text: None,
-            insert_text_format: None,
-            insert_text_mode: None,
-            text_edit: None,
-            additional_text_edits: None,
-            command: None,
-            commit_characters: None,
-            data: None,
-            tags: None,
+            detail: Some(declaration.kind.to_string()),
+            ..CompletionItem::default()
         }]
     }
 }
