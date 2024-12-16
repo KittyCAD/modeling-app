@@ -353,7 +353,6 @@ impl Node<CallExpressionKw> {
 
         // Build a hashmap from argument labels to the final evaluated values.
         let mut fn_args = HashMap::with_capacity(self.arguments.len());
-        let mut tag_declarator_args = Vec::new();
         for arg_expr in &self.arguments {
             let source_range = SourceRange::from(arg_expr.arg.clone());
             let metadata = Metadata { source_range };
@@ -361,12 +360,8 @@ impl Node<CallExpressionKw> {
                 .execute_expr(&arg_expr.arg, exec_state, &metadata, StatementKind::Expression)
                 .await?;
             fn_args.insert(arg_expr.label.name.clone(), Arg::new(value, source_range));
-            if let Expr::TagDeclarator(td) = &arg_expr.arg {
-                tag_declarator_args.push((td.inner.clone(), source_range));
-            }
         }
         let fn_args = fn_args; // remove mutability
-        let tag_declarator_args = tag_declarator_args; // remove mutability
 
         // Evaluate the unlabeled first param, if any exists.
         let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
@@ -392,7 +387,7 @@ impl Node<CallExpressionKw> {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
-                update_memory_for_tags_of_geometry(&mut result, &tag_declarator_args, exec_state)?;
+                update_memory_for_tags_of_geometry(&mut result, exec_state)?;
                 Ok(result)
             }
             FunctionKind::UserDefined => {
@@ -440,7 +435,6 @@ impl Node<CallExpression> {
         let fn_name = &self.callee.name;
 
         let mut fn_args: Vec<Arg> = Vec::with_capacity(self.arguments.len());
-        let mut tag_declarator_args = Vec::new();
 
         for arg_expr in &self.arguments {
             let metadata = Metadata {
@@ -450,19 +444,15 @@ impl Node<CallExpression> {
                 .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
                 .await?;
             let arg = Arg::new(value, SourceRange::from(arg_expr));
-            if let Expr::TagDeclarator(td) = arg_expr {
-                tag_declarator_args.push((td.inner.clone(), arg.source_range));
-            }
             fn_args.push(arg);
         }
-        let tag_declarator_args = tag_declarator_args; // remove mutability
 
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
                 // Attempt to call the function.
                 let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
                 let mut result = func.std_lib_fn()(exec_state, args).await?;
-                update_memory_for_tags_of_geometry(&mut result, &tag_declarator_args, exec_state)?;
+                update_memory_for_tags_of_geometry(&mut result, exec_state)?;
                 Ok(result)
             }
             FunctionKind::UserDefined => {
@@ -501,24 +491,7 @@ impl Node<CallExpression> {
     }
 }
 
-/// `tag_declarator_args` should only contain tag declarator literals, which
-/// will be defined as local variables.  Non-literals that evaluate to tag
-/// declarators should not be defined.
-fn update_memory_for_tags_of_geometry(
-    result: &mut KclValue,
-    tag_declarator_args: &[(TagDeclarator, SourceRange)],
-    exec_state: &mut ExecState,
-) -> Result<(), KclError> {
-    // Define all the tags in the memory.
-    for (tag_declarator, arg_sr) in tag_declarator_args {
-        let tag = TagIdentifier {
-            value: tag_declarator.name.clone(),
-            info: None,
-            meta: vec![Metadata { source_range: *arg_sr }],
-        };
-
-        exec_state.memory.add_tag(&tag.value, tag.clone(), *arg_sr)?;
-    }
+fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
     // If the return result is a sketch or solid, we want to update the
     // memory for the tags of the group.
     // TODO: This could probably be done in a better way, but as of now this was my only idea
@@ -526,7 +499,7 @@ fn update_memory_for_tags_of_geometry(
     match result {
         KclValue::Sketch { value: ref mut sketch } => {
             for (_, tag) in sketch.tags.iter() {
-                exec_state.memory.update_tag_if_defined(&tag.value, tag.clone());
+                exec_state.memory.update_tag(&tag.value, tag.clone())?;
             }
         }
         KclValue::Solid(ref mut solid) => {
@@ -564,7 +537,7 @@ fn update_memory_for_tags_of_geometry(
                     info.sketch = solid.id;
                     t.info = Some(info);
 
-                    exec_state.memory.update_tag_if_defined(&tag.name, t.clone());
+                    exec_state.memory.update_tag(&tag.name, t.clone())?;
 
                     // update the sketch tags.
                     solid.sketch.tags.insert(tag.name.clone(), t);
@@ -583,6 +556,22 @@ fn update_memory_for_tags_of_geometry(
         _ => {}
     }
     Ok(())
+}
+
+impl Node<TagDeclarator> {
+    pub async fn execute(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
+        let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
+            value: self.name.clone(),
+            info: None,
+            meta: vec![Metadata {
+                source_range: self.into(),
+            }],
+        }));
+
+        exec_state.memory.add(&self.name, memory_item.clone(), self.into())?;
+
+        Ok(self.into())
+    }
 }
 
 impl Node<ArrayExpression> {

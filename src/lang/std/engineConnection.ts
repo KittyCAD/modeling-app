@@ -1,4 +1,11 @@
-import { defaultSourceRange, SourceRange } from 'lang/wasm'
+import {
+  defaultRustSourceRange,
+  defaultSourceRange,
+  Program,
+  RustSourceRange,
+  SourceRange,
+  sourceRangeFromRust,
+} from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -1304,8 +1311,8 @@ export enum EngineCommandManagerEvents {
 
 interface PendingMessage {
   command: EngineCommand
-  range: SourceRange
-  idToRangeMap: { [key: string]: SourceRange }
+  range: RustSourceRange
+  idToRangeMap: { [key: string]: RustSourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
@@ -1995,7 +2002,7 @@ export class EngineCommandManager extends EventTarget {
       {
         command,
         idToRangeMap: {},
-        range: defaultSourceRange(),
+        range: defaultRustSourceRange(),
       },
       true // isSceneCommand
     )
@@ -2026,9 +2033,9 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(new Error('rangeStr is undefined'))
     if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    const range: SourceRange = JSON.parse(rangeStr)
+    const range: RustSourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
-    const idToRangeMap: { [key: string]: SourceRange } =
+    const idToRangeMap: { [key: string]: RustSourceRange } =
       JSON.parse(idToRangeStr)
 
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger
@@ -2071,10 +2078,14 @@ export class EngineCommandManager extends EventTarget {
     if (message.command.type === 'modeling_cmd_req') {
       this.orderedCommands.push({
         command: message.command,
-        range: message.range,
+        range: sourceRangeFromRust(message.range),
       })
     } else if (message.command.type === 'modeling_cmd_batch_req') {
       message.command.requests.forEach((req) => {
+        const cmdId = req.cmd_id || ''
+        const range = cmdId
+          ? sourceRangeFromRust(message.idToRangeMap[cmdId])
+          : defaultSourceRange()
         const cmd: EngineCommand = {
           type: 'modeling_cmd_req',
           cmd_id: req.cmd_id,
@@ -2082,7 +2093,7 @@ export class EngineCommandManager extends EventTarget {
         }
         this.orderedCommands.push({
           command: cmd,
-          range: message.idToRangeMap[req.cmd_id || ''],
+          range,
         })
       })
     }
@@ -2101,30 +2112,23 @@ export class EngineCommandManager extends EventTarget {
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
    */
-  async waitForAllCommands(useFakeExecutor = false) {
-    await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
-    setTimeout(() => {
-      // the ast is wrong without this one tick timeout.
-      // an example is `Solids should be select and deletable` e2e test will fail
-      // because the out of date ast messes with selections
-      // TODO: race condition
-      if (!this?.kclManager) return
-      this.artifactGraph = createArtifactGraph({
-        orderedCommands: this.orderedCommands,
-        responseMap: this.responseMap,
-        ast: this.kclManager.ast,
-      })
-      if (useFakeExecutor) {
-        // mock executions don't produce an artifactGraph, so this will always be empty
-        // skipping the below logic to wait for the next real execution
-        return
-      }
-      if (this.artifactGraph.size) {
-        this.deferredArtifactEmptied(null)
-      } else {
-        this.deferredArtifactPopulated(null)
-      }
+  waitForAllCommands() {
+    return Promise.all(
+      Object.values(this.pendingCommands).map((a) => a.promise)
+    )
+  }
+  updateArtifactGraph(ast: Program) {
+    this.artifactGraph = createArtifactGraph({
+      orderedCommands: this.orderedCommands,
+      responseMap: this.responseMap,
+      ast,
     })
+    // TODO check if these still need to be deferred once e2e tests are working again.
+    if (this.artifactGraph.size) {
+      this.deferredArtifactEmptied(null)
+    } else {
+      this.deferredArtifactPopulated(null)
+    }
   }
 
   /**

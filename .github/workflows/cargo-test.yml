@@ -2,28 +2,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'src/wasm-lib/**.rs'
-      - 'src/wasm-lib/**.hbs'
-      - 'src/wasm-lib/**.gen'
-      - 'src/wasm-lib/**.snap'
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
-      - '**/rust-toolchain.toml'
-      - 'src/wasm-lib/**.kcl'
-      - .github/workflows/cargo-test.yml
 
   pull_request:
-    paths:
-      - 'src/wasm-lib/**.rs'
-      - 'src/wasm-lib/**.hbs'
-      - 'src/wasm-lib/**.gen'
-      - 'src/wasm-lib/**.snap'
-      - '**/Cargo.toml'
-      - '**/Cargo.lock'
-      - '**/rust-toolchain.toml'
-      - 'src/wasm-lib/**.kcl'
-      - .github/workflows/cargo-test.yml
   workflow_dispatch:
 permissions: read-all
 concurrency:
