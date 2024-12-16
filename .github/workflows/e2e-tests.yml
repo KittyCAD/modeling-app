@@ -45,8 +45,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: check-rust-changes
     steps:
-    - name: Tune GitHub-hosted runner network
-      uses: smorimoto/tune-github-hosted-runner-network@v1
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
