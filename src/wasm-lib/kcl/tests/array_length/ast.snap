@@ -1,0 +1,282 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing array_length.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 15,
+          "id": {
+            "end": 3,
+            "name": "arr",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "elements": [
+              {
+                "end": 8,
+                "raw": "1",
+                "start": 7,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 1.0
+              },
+              {
+                "end": 11,
+                "raw": "2",
+                "start": 10,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 2.0
+              },
+              {
+                "end": 14,
+                "raw": "3",
+                "start": 13,
+                "type": "Literal",
+                "type": "Literal",
+                "value": 3.0
+              }
+            ],
+            "end": 15,
+            "start": 6,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 15,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 34,
+          "id": {
+            "end": 23,
+            "name": "arr_len",
+            "start": 16,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 33,
+                "name": "arr",
+                "start": 30,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 29,
+              "name": "len",
+              "start": 26,
+              "type": "Identifier"
+            },
+            "end": 34,
+            "start": 26,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 16,
+          "type": "VariableDeclarator"
+        },
+        "end": 34,
+        "kind": "const",
+        "start": 16,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 99,
+        "expression": {
+          "arguments": [
+            {
+              "end": 54,
+              "name": "arr_len",
+              "start": 47,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 57,
+              "raw": "3",
+              "start": 56,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 3.0
+            },
+            {
+              "end": 66,
+              "raw": "0.00001",
+              "start": 59,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 0.00001
+            },
+            {
+              "end": 98,
+              "raw": "\"The length of the array is 3\"",
+              "start": 68,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "The length of the array is 3"
+            }
+          ],
+          "callee": {
+            "end": 46,
+            "name": "assertEqual",
+            "start": 35,
+            "type": "Identifier"
+          },
+          "end": 99,
+          "start": 35,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 35,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "declaration": {
+          "end": 115,
+          "id": {
+            "end": 110,
+            "name": "arr_empty",
+            "start": 101,
+            "type": "Identifier"
+          },
+          "init": {
+            "elements": [],
+            "end": 115,
+            "start": 113,
+            "type": "ArrayExpression",
+            "type": "ArrayExpression"
+          },
+          "start": 101,
+          "type": "VariableDeclarator"
+        },
+        "end": 115,
+        "kind": "const",
+        "start": 101,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 142,
+          "id": {
+            "end": 125,
+            "name": "len_empty",
+            "start": 116,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 141,
+                "name": "arr_empty",
+                "start": 132,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 131,
+              "name": "len",
+              "start": 128,
+              "type": "Identifier"
+            },
+            "end": 142,
+            "start": 128,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 116,
+          "type": "VariableDeclarator"
+        },
+        "end": 142,
+        "kind": "const",
+        "start": 116,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 209,
+        "expression": {
+          "arguments": [
+            {
+              "end": 164,
+              "name": "len_empty",
+              "start": 155,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 167,
+              "raw": "0",
+              "start": 166,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 0.0
+            },
+            {
+              "end": 176,
+              "raw": "0.00001",
+              "start": 169,
+              "type": "Literal",
+              "type": "Literal",
+              "value": 0.00001
+            },
+            {
+              "end": 208,
+              "raw": "\"The length of the array is 0\"",
+              "start": 178,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "The length of the array is 0"
+            }
+          ],
+          "callee": {
+            "end": 154,
+            "name": "assertEqual",
+            "start": 143,
+            "type": "Identifier"
+          },
+          "end": 209,
+          "start": 143,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 143,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 210,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "2": [
+          {
+            "end": 101,
+            "start": 99,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

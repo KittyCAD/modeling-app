@@ -254,3 +254,35 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     };
     inner_push(array, elem, &args).await
 }
+
+/// Get the length of an array.
+///
+/// Returns the number of elements in an array.
+///
+/// ```no_run
+/// arr = [1, 2, 3]
+/// length = len(arr)
+/// assertEqual(length, 3, 0.00001, "The length of the array is 3")
+/// ```
+#[stdlib {
+    name = "len",
+}]
+async fn inner_len(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {
+    Ok(KclValue::Number {
+        value: array.len() as f64,
+        meta: vec![args.source_range.into()],
+    })
+}
+
+pub async fn len(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let val: KclValue = FromArgs::from_args(&args, 0)?;
+    let meta = vec![args.source_range];
+    let KclValue::Array { value: array, meta: _ } = val else {
+        let actual_type = val.human_friendly_type();
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: meta,
+            message: format!("You can't get the length of a value of type {actual_type}, only an array"),
+        }));
+    };
+    inner_len(array, &args).await
+}

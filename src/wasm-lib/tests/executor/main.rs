@@ -1169,25 +1169,25 @@ async fn kcl_test_plumbus_fillets() {
   return sg
 }
 
-fn pentagon = (len) => {
+fn pentagon = (sideLen) => {
   sg = startSketchOn('XY')
-  |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, $a)
+  |> startProfileAt([-sideLen / 2, -sideLen / 2], %)
+  |> angledLine({ angle: 0, length: sideLen }, %, $a)
   |> angledLine({
        angle: segAng(a) + 180 - 108,
-       length: len
+       length: sideLen
      }, %, $b)
   |> angledLine({
        angle: segAng(b) + 180 - 108,
-       length: len
+       length: sideLen
      }, %, $c)
   |> angledLine({
        angle: segAng(c) + 180 - 108,
-       length: len
+       length: sideLen
      }, %, $d)
   |> angledLine({
        angle: segAng(d) + 180 - 108,
-       length: len
+       length: sideLen
      }, %)
 
   return sg
@@ -1653,17 +1653,17 @@ part001 = cube([0,0], 20)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_duplicate_tags_should_error() {
-    let code = r#"fn triangle = (len) => {
+    let code = r#"fn triangle = (sideLen) => {
   return startSketchOn('XY')
-  |> startProfileAt([-len / 2, -len / 2], %)
-  |> angledLine({ angle: 0, length: len }, %, $a)
+  |> startProfileAt([-sideLen / 2, -sideLen / 2], %)
+  |> angledLine({ angle: 0, length: sideLen }, %, $a)
   |> angledLine({
        angle: segAng(a) + 120,
-       length: len
+       length: sideLen
      }, %, $b)
   |> angledLine({
        angle: segAng(b) + 120,
-       length: len
+       length: sideLen
      }, %, $a)
 }
 
@@ -1674,7 +1674,7 @@ let p = triangle(200)
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([311, 313, 0]), SourceRange([326, 339, 0])], message: "Cannot redefine `a`" }"#
+        r#"value already defined: KclErrorDetails { source_ranges: [SourceRange([335, 337, 0]), SourceRange([350, 363, 0])], message: "Cannot redefine `a`" }"#
     );
 }
 
