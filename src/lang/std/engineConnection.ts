@@ -37,7 +37,6 @@ import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -2116,7 +2115,7 @@ export class EngineCommandManager extends EventTarget {
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
   }
-  updateArtifactGraph(ast: Node<Program>) {
+  updateArtifactGraph(ast: Program) {
     this.artifactGraph = createArtifactGraph({
       orderedCommands: this.orderedCommands,
       responseMap: this.responseMap,
@@ -2214,11 +2213,7 @@ export class EngineCommandManager extends EventTarget {
     commandTypeToTarget: string
   ): string | undefined {
     for (const [artifactId, artifact] of this.artifactGraph) {
-      if (
-        'codeRef' in artifact &&
-        artifact.codeRef &&
-        isOverlap(range, artifact.codeRef.range)
-      ) {
+      if ('codeRef' in artifact && isOverlap(range, artifact.codeRef.range)) {
         if (commandTypeToTarget === artifact.type) return artifactId
       }
     }

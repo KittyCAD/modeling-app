@@ -22,7 +22,6 @@ import * as d3 from 'd3-force'
 import path from 'path'
 import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 /*
 Note this is an integration test, these tests connect to our real dev server and make websocket commands.
@@ -172,7 +171,7 @@ afterAll(() => {
 
 describe('testing createArtifactGraph', () => {
   describe('code with offset planes and a sketch:', () => {
-    let ast: Node<Program>
+    let ast: Program
     let theMap: ReturnType<typeof createArtifactGraph>
 
     it('setup', () => {
@@ -218,7 +217,7 @@ describe('testing createArtifactGraph', () => {
     })
   })
   describe('code with an extrusion, fillet and sketch of face:', () => {
-    let ast: Node<Program>
+    let ast: Program
     let theMap: ReturnType<typeof createArtifactGraph>
     it('setup', () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
@@ -313,7 +312,7 @@ describe('testing createArtifactGraph', () => {
   })
 
   describe(`code with sketches but no extrusions or other 3D elements`, () => {
-    let ast: Node<Program>
+    let ast: Program
     let theMap: ReturnType<typeof createArtifactGraph>
     it(`setup`, () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
@@ -378,7 +377,7 @@ describe('testing createArtifactGraph', () => {
 
 describe('capture graph of sketchOnFaceOnFace...', () => {
   describe('code with an extrusion, fillet and sketch of face:', () => {
-    let ast: Node<Program>
+    let ast: Program
     let theMap: ReturnType<typeof createArtifactGraph>
     it('setup', async () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
@@ -400,9 +399,7 @@ describe('capture graph of sketchOnFaceOnFace...', () => {
   })
 })
 
-function getCommands(
-  codeKey: CodeKey
-): CacheShape[CodeKey] & { ast: Node<Program> } {
+function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
   const ast = assertParse(codeKey)
   const file = fs.readFileSync(fullPath, 'utf-8')
   const parsed: CacheShape = JSON.parse(file)

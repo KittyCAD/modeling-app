@@ -691,21 +691,19 @@ export function createProfileStartHandle({
   scale = 1,
   theme,
   isSelected,
-  size = 12,
   ...rest
 }: {
   from: Coords2d
   scale?: number
   theme: Themes
   isSelected?: boolean
-  size?: number
 } & (
   | { isDraft: true }
   | { isDraft: false; id: string; pathToNode: PathToNode }
 )) {
   const group = new Group()
 
-  const geometry = new BoxGeometry(size, size, size) // in pixels scaled later
+  const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
   const baseColor = getThemeColorForThreeJs(theme)
   const color = isSelected ? 0x0000ff : baseColor
   const body = new MeshBasicMaterial({ color })
