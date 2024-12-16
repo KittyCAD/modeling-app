@@ -56,7 +56,6 @@ import { normaliseAngle, roundOff } from 'lib/utils'
 import { SegmentOverlayPayload } from 'machines/modelingMachine'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
-import { getArtifactFromRange } from 'lang/std/artifactGraph'
 import { editorManager, sceneInfra } from 'lib/singletons'
 
 interface CreateSegmentArgs {
