@@ -2213,11 +2213,7 @@ export class EngineCommandManager extends EventTarget {
     commandTypeToTarget: string
   ): string | undefined {
     for (const [artifactId, artifact] of this.artifactGraph) {
-      if (
-        'codeRef' in artifact &&
-        artifact.codeRef &&
-        isOverlap(range, artifact.codeRef.range)
-      ) {
+      if ('codeRef' in artifact && isOverlap(range, artifact.codeRef.range)) {
         if (commandTypeToTarget === artifact.type) return artifactId
       }
     }

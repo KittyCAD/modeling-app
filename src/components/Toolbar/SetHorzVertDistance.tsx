@@ -87,13 +87,15 @@ export function horzVertDistanceInfo({
 export async function applyConstraintHorzVertDistance({
   selectionRanges,
   constraint,
+  // TODO align will always be false (covered by synconous applyConstraintHorzVertAlign), remove it
+  isAlign = false,
 }: {
   selectionRanges: Selections
   constraint: 'setHorzDistance' | 'setVertDistance'
+  isAlign?: false
 }): Promise<{
   modifiedAst: Program
   pathToNodeMap: PathToNodeMap
-  exprInsertIndex: number
 }> {
   const info = horzVertDistanceInfo({
     selectionRanges: selectionRanges,
@@ -131,12 +133,13 @@ export async function applyConstraintHorzVertDistance({
     return {
       modifiedAst,
       pathToNodeMap,
-      exprInsertIndex: -1,
     }
   } else {
     if (!isExprBinaryPart(valueNode))
       return Promise.reject('Invalid valueNode, is not a BinaryPart')
-    let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
+    let finalValue = isAlign
+      ? createLiteral(0)
+      : removeDoubleNegatives(valueNode, sign, variableName)
     // transform again but forcing certain values
     const transformed = transformSecondarySketchLinesTagFirst({
       ast: kclManager.ast,
@@ -149,7 +152,6 @@ export async function applyConstraintHorzVertDistance({
 
     if (err(transformed)) return Promise.reject(transformed)
     const { modifiedAst: _modifiedAst, pathToNodeMap } = transformed
-    let exprInsertIndex = -1
     if (variableName) {
       const newBody = [..._modifiedAst.body]
       newBody.splice(
@@ -162,12 +164,10 @@ export async function applyConstraintHorzVertDistance({
         const index = pathToNode.findIndex((a) => a[0] === 'body') + 1
         pathToNode[index][0] = Number(pathToNode[index][0]) + 1
       })
-      exprInsertIndex = newVariableInsertIndex
     }
     return {
       modifiedAst: _modifiedAst,
       pathToNodeMap,
-      exprInsertIndex,
     }
   }
 }

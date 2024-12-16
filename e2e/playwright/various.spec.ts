@@ -224,13 +224,8 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   // Draw a line
   await page.mouse.move(700, 200, { steps: 5 })
   await page.mouse.click(700, 200)
-
-  const secondMousePosition = { x: 800, y: 250 }
-
-  await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
-    steps: 5,
-  })
-  await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
+  await page.mouse.move(800, 250, { steps: 5 })
+  await page.mouse.click(800, 250)
   // Unequip line tool
   await page.keyboard.press('Escape')
   // Make sure we didn't pop out of sketch mode.
@@ -239,17 +234,9 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   // Equip arc tool
   await page.keyboard.press('a')
   await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
-
-  // click in the same position again to continue the profile
-  await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
-    steps: 5,
-  })
-  await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
-
   await page.mouse.move(1000, 100, { steps: 5 })
   await page.mouse.click(1000, 100)
   await page.keyboard.press('Escape')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
   await page.keyboard.press('l')
   await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
 
@@ -550,9 +537,9 @@ test('Sketch on face', async ({ page }) => {
 
   await expect.poll(u.normalisedEditorCode).toContain(
     u.normalisedCode(`sketch002 = startSketchOn(extrude001, seg01)
-profile001 = startProfileAt([-12.88, 6.66], sketch002)
-  |> line([2.71, -0.22], %)
-  |> line([-2.87, -1.38], %)
+  |> startProfileAt([-12.94, 6.6], %)
+  |> line([2.45, -0.2], %)
+  |> line([-2.6, -1.25], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)`)
   )
@@ -567,7 +554,8 @@ profile001 = startProfileAt([-12.88, 6.66], sketch002)
   await page.getByText('startProfileAt([-12').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(500)
+  await page.waitForTimeout(400)
+  await page.waitForTimeout(150)
   await page.setViewportSize({ width: 1200, height: 1200 })
   await u.openAndClearDebugPanel()
   await u.updateCamPosition([452, -152, 1166])

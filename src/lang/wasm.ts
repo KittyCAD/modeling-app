@@ -499,6 +499,26 @@ export const executor = async (
   if (programMemoryOverride !== null && err(programMemoryOverride))
     return Promise.reject(programMemoryOverride)
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
+  engineCommandManager.startNewSession()
+  const _programMemory = await _executor(
+    node,
+    engineCommandManager,
+    programMemoryOverride
+  )
+  await engineCommandManager.waitForAllCommands()
+
+  return _programMemory
+}
+
+export const _executor = async (
+  node: Node<Program>,
+  engineCommandManager: EngineCommandManager,
+  programMemoryOverride: ProgramMemory | Error | null = null
+): Promise<ExecState> => {
+  if (programMemoryOverride !== null && err(programMemoryOverride))
+    return Promise.reject(programMemoryOverride)
+
   try {
     let jsAppSettings = default_app_settings()
     if (!TEST) {
