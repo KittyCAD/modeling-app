@@ -29,8 +29,6 @@ import {
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
   traverse,
-  getBodyIndex,
-  isCallExprWithName,
 } from './queryAst'
 import { addTagForSketchOnFace, getConstraintInfo } from './std/sketch'
 import {
@@ -48,7 +46,6 @@ import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { KclExpressionWithVariable } from 'lib/commandTypes'
-import { Artifact, getPathsFromArtifact } from './std/artifactGraph'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -81,54 +78,41 @@ export function startSketchOnDefault(
   }
 }
 
-export function insertNewStartProfileAt(
+export function addStartProfileAt(
   node: Node<Program>,
-  sketchEntryNodePath: PathToNode,
-  sketchNodePaths: PathToNode[],
-  planeNodePath: PathToNode,
-  at: [number, number],
-  insertType: 'start' | 'end' = 'end'
-):
-  | {
-      modifiedAst: Node<Program>
-      updatedSketchNodePaths: PathToNode[]
-      updatedEntryNodePath: PathToNode
-    }
-  | Error {
-  const varDec = getNodeFromPath<VariableDeclarator>(
+  pathToNode: PathToNode,
+  at: [number, number]
+): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
+  const _node1 = getNodeFromPath<VariableDeclaration>(
     node,
-    planeNodePath,
-    'VariableDeclarator'
+    pathToNode,
+    'VariableDeclaration'
   )
-  if (err(varDec)) return varDec
-  if (varDec.node.type !== 'VariableDeclarator') return new Error('not a var')
-
-  const newExpression = createVariableDeclaration(
-    findUniqueName(node, 'profile'),
-    createCallExpressionStdLib('startProfileAt', [
-      createArrayExpression([
-        createLiteral(roundOff(at[0])),
-        createLiteral(roundOff(at[1])),
-      ]),
-      createIdentifier(varDec.node.id.name),
+  if (err(_node1)) return _node1
+  const variableDeclaration = _node1.node
+  if (variableDeclaration.type !== 'VariableDeclaration') {
+    return new Error('variableDeclaration.init.type !== PipeExpression')
+  }
+  const _node = { ...node }
+  const init = variableDeclaration.declaration.init
+  const startProfileAt = createCallExpressionStdLib('startProfileAt', [
+    createArrayExpression([
+      createLiteral(roundOff(at[0])),
+      createLiteral(roundOff(at[1])),
+    ]),
+    createPipeSubstitution(),
+  ])
+  if (init.type === 'PipeExpression') {
+    init.body.splice(1, 0, startProfileAt)
+  } else {
+    variableDeclaration.declaration.init = createPipeExpression([
+      init,
+      startProfileAt,
     ])
-  )
-  const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, insertType)
-
-  const _node = structuredClone(node)
-  // TODO the rest of this function will not be robust to work for sketches defined within a function declaration
-  _node.body.splice(insertIndex, 0, newExpression)
-
-  const { updatedEntryNodePath, updatedSketchNodePaths } =
-    updateSketchNodePathsWithInsertIndex({
-      insertIndex,
-      insertType,
-      sketchNodePaths,
-    })
+  }
   return {
     modifiedAst: _node,
-    updatedSketchNodePaths,
-    updatedEntryNodePath,
+    pathToNode,
   }
 }
 
@@ -269,7 +253,7 @@ export function mutateObjExpProp(
 export function extrudeSketch(
   node: Node<Program>,
   pathToNode: PathToNode,
-  artifact?: Artifact,
+  shouldPipe = false,
   distance: Expr = createLiteral(4)
 ):
   | {
@@ -278,14 +262,10 @@ export function extrudeSketch(
       pathToExtrudeArg: PathToNode
     }
   | Error {
-  const orderedSketchNodePaths = getPathsFromArtifact({
-    artifact: artifact,
-    sketchPathToNode: pathToNode,
-  })
-  if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
   const _node = structuredClone(node)
   const _node1 = getNodeFromPath(_node, pathToNode)
   if (err(_node1)) return _node1
+  const { node: sketchExpression } = _node1
 
   // determine if sketchExpression is in a pipeExpression or not
   const _node2 = getNodeFromPath<PipeExpression>(
@@ -294,6 +274,9 @@ export function extrudeSketch(
     'PipeExpression'
   )
   if (err(_node2)) return _node2
+  const { node: pipeExpression } = _node2
+
+  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
 
   const _node3 = getNodeFromPath<VariableDeclarator>(
     _node,
@@ -301,23 +284,49 @@ export function extrudeSketch(
     'VariableDeclarator'
   )
   if (err(_node3)) return _node3
-  const { node: variableDeclarator } = _node3
+  const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
 
   const extrudeCall = createCallExpressionStdLib('extrude', [
     distance,
-    createIdentifier(variableDeclarator.id.name),
+    shouldPipe
+      ? createPipeSubstitution()
+      : createIdentifier(variableDeclarator.id.name),
   ])
+
+  if (shouldPipe) {
+    const pipeChain = createPipeExpression(
+      isInPipeExpression
+        ? [...pipeExpression.body, extrudeCall]
+        : [sketchExpression as any, extrudeCall]
+    )
+
+    variableDeclarator.init = pipeChain
+    const pathToExtrudeArg: PathToNode = [
+      ...pathToDecleration,
+      ['init', 'VariableDeclarator'],
+      ['body', ''],
+      [pipeChain.body.length - 1, 'index'],
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+    ]
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+      pathToExtrudeArg,
+    }
+  }
 
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
 
-  const lastSketchNodePath =
-    orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
-
-  console.log('lastSketchNodePath', lastSketchNodePath, orderedSketchNodePaths)
-  const sketchIndexInBody = Number(lastSketchNodePath[1][0])
+  const sketchIndexInPathToNode =
+    pathToDecleration.findIndex((a) => a[0] === 'body') + 1
+  const sketchIndexInBody = pathToDecleration[
+    sketchIndexInPathToNode
+  ][0] as number
   _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
 
   const pathToExtrudeArg: PathToNode = [
@@ -1298,8 +1307,7 @@ export async function deleteFromSelection(
     const pipeBody = varDec.node.init.body
     if (
       pipeBody[0].type === 'CallExpression' &&
-      (pipeBody[0].callee.name === 'startSketchOn' ||
-        pipeBody[0].callee.name === 'startProfileAt')
+      pipeBody[0].callee.name === 'startSketchOn'
     ) {
       // remove varDec
       const varDecIndex = varDec.shallowPath[1][0] as number
@@ -1313,150 +1321,4 @@ export async function deleteFromSelection(
 
 const nonCodeMetaEmpty = () => {
   return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
-}
-
-export function getInsertIndex(
-  sketchNodePaths: PathToNode[],
-  planeNodePath: PathToNode,
-  insertType: 'start' | 'end'
-) {
-  let minIndex = 0
-  let maxIndex = 0
-  for (const path of sketchNodePaths) {
-    const index = Number(path[1][0])
-    if (index < minIndex) minIndex = index
-    if (index > maxIndex) maxIndex = index
-  }
-
-  const insertIndex = !sketchNodePaths.length
-    ? Number(planeNodePath[1][0]) + 1
-    : insertType === 'start'
-    ? minIndex
-    : maxIndex + 1
-  return insertIndex
-}
-
-export function updateSketchNodePathsWithInsertIndex({
-  insertIndex,
-  insertType,
-  sketchNodePaths,
-}: {
-  insertIndex: number
-  insertType: 'start' | 'end'
-  sketchNodePaths: PathToNode[]
-}): {
-  updatedEntryNodePath: PathToNode
-  updatedSketchNodePaths: PathToNode[]
-} {
-  // TODO the rest of this function will not be robust to work for sketches defined within a function declaration
-  const newExpressionPathToNode: PathToNode = [
-    ['body', ''],
-    [insertIndex, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-  ]
-  let updatedSketchNodePaths = structuredClone(sketchNodePaths)
-  if (insertType === 'start') {
-    updatedSketchNodePaths = updatedSketchNodePaths.map((path) => {
-      path[1][0] = Number(path[1][0]) + 1
-      return path
-    })
-    updatedSketchNodePaths.unshift(newExpressionPathToNode)
-  } else {
-    updatedSketchNodePaths.push(newExpressionPathToNode)
-  }
-  return {
-    updatedSketchNodePaths,
-    updatedEntryNodePath: newExpressionPathToNode,
-  }
-}
-
-/**
- * 
- * Split the following pipe expression into 
- * ```ts
- * part001 = startSketchOn('XZ')
-  |> startProfileAt([1, 2], %)
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
-```
-into
-```ts
-sketch001 = startSketchOn('XZ')
-part001 = startProfileAt([1, 2], sketch001)
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
-```
-Notice that the `startSketchOn` is what gets the new variable name, this is so part001 still has the same data as before
-making it safe for later code that uses part001 (the extrude in this example)
- * 
- */
-export function splitPipedProfile(
-  ast: Program,
-  pathToPipe: PathToNode
-):
-  | {
-      modifiedAst: Program
-      pathToProfile: PathToNode
-      pathToPlane: PathToNode
-    }
-  | Error {
-  const _ast = structuredClone(ast)
-  const varDec = getNodeFromPath<VariableDeclaration>(
-    _ast,
-    pathToPipe,
-    'VariableDeclaration'
-  )
-  if (err(varDec)) return varDec
-  if (
-    varDec.node.type !== 'VariableDeclaration' ||
-    varDec.node.declaration.init.type !== 'PipeExpression'
-  ) {
-    return new Error('pathToNode does not point to pipe')
-  }
-  const init = varDec.node.declaration.init
-  const firstCall = init.body[0]
-  if (!isCallExprWithName(firstCall, 'startSketchOn'))
-    return new Error('First call is not startSketchOn')
-  const secondCall = init.body[1]
-  if (!isCallExprWithName(secondCall, 'startProfileAt'))
-    return new Error('Second call is not startProfileAt')
-
-  const varName = varDec.node.declaration.id.name
-  const newVarName = findUniqueName(_ast, 'sketch')
-  const secondCallArgs = structuredClone(secondCall.arguments)
-  secondCallArgs[1] = createIdentifier(newVarName)
-  const firstCallOfNewPipe = createCallExpression(
-    'startProfileAt',
-    secondCallArgs
-  )
-  const newSketch = createVariableDeclaration(
-    newVarName,
-    varDec.node.declaration.init.body[0]
-  )
-  const newProfile = createVariableDeclaration(
-    varName,
-    varDec.node.declaration.init.body.length <= 2
-      ? firstCallOfNewPipe
-      : createPipeExpression([
-          firstCallOfNewPipe,
-          ...varDec.node.declaration.init.body.slice(2),
-        ])
-  )
-  const index = getBodyIndex(pathToPipe)
-  if (err(index)) return index
-  _ast.body.splice(index, 1, newSketch, newProfile)
-  const pathToPlane = structuredClone(pathToPipe)
-  const pathToProfile = structuredClone(pathToPipe)
-  pathToProfile[1][0] = index + 1
-
-  return {
-    modifiedAst: _ast,
-    pathToProfile,
-    pathToPlane,
-  }
 }

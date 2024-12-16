@@ -6,6 +6,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ActionButton } from 'components/ActionButton'
+import { isSingleCursorInPipe } from 'lang/queryAst'
 import { useKclContext } from 'lang/KclProvider'
 import { ActionButtonDropdown } from 'components/ActionButtonDropdown'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -21,7 +22,6 @@ import {
 } from 'lib/toolbar'
 import { isDesktop } from 'lib/isDesktop'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { isCursorInFunctionDefinition } from 'lang/queryAst'
 
 export function Toolbar({
   className = '',
@@ -38,12 +38,7 @@ export function Toolbar({
     '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
 
   const sketchPathId = useMemo(() => {
-    if (
-      isCursorInFunctionDefinition(
-        kclManager.ast,
-        context.selectionRanges.graphSelections[0]
-      )
-    )
+    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast))
       return false
     return isCursorInSketchCommandRange(
       engineCommandManager.artifactGraph,

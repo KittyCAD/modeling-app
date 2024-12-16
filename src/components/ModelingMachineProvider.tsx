@@ -24,7 +24,7 @@ import { useSetupEngineManager } from 'hooks/useSetupEngineManager'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
+  updatePathToNodeFromMap,
 } from 'lang/util'
 import {
   kclManager,
@@ -71,25 +71,15 @@ import {
   replaceValueAtNodePath,
   sketchOnExtrudedFace,
   sketchOnOffsetPlane,
-  splitPipedProfile,
   startSketchOnDefault,
 } from 'lang/modifyAst'
-import {
-  PathToNode,
-  Program,
-  VariableDeclaration,
-  parse,
-  recast,
-  resultIsOk,
-} from 'lang/wasm'
+import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
   artifactIsPlaneWithPaths,
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
-  doesSketchPipeNeedSplitting,
-  getNodeFromPath,
-  isCursorInFunctionDefinition,
-  traverse,
+  getNodePathFromSourceRange,
+  isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
@@ -97,7 +87,7 @@ import toast from 'react-hot-toast'
 import { EditorSelection, Transaction } from '@codemirror/state'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
-import { err, reportRejection, trap, reject } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
 import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addEdgeTreatment'
@@ -111,10 +101,6 @@ import { useFileContext } from 'hooks/useFileContext'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import {
-  getPathsFromArtifact,
-  getPlaneFromArtifact,
-} from 'lang/std/artifactGraph'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -305,7 +291,7 @@ export const ModelingMachineProvider = ({
           return {
             sketchDetails: {
               ...sketchDetails,
-              sketchEntryNodePath: event.data,
+              sketchPathToNode: event.data,
             },
           }
         }),
@@ -428,17 +414,9 @@ export const ModelingMachineProvider = ({
                 selectionRanges: setSelections.selection,
                 sketchDetails: {
                   ...sketchDetails,
-                  sketchEntryNodePath:
-                    setSelections.updatedSketchEntryNodePath ||
-                    sketchDetails?.sketchEntryNodePath ||
-                    [],
-                  sketchNodePaths:
-                    setSelections.updatedSketchNodePaths ||
-                    sketchDetails?.sketchNodePaths ||
-                    [],
-                  planeNodePath:
-                    setSelections.updatedPlaneNodePath ||
-                    sketchDetails?.planeNodePath ||
+                  sketchPathToNode:
+                    setSelections.updatedPathToNode ||
+                    sketchDetails?.sketchPathToNode ||
                     [],
                 },
               }
@@ -648,6 +626,7 @@ export const ModelingMachineProvider = ({
           }
 
           const canShell = canShellSelection(selectionRanges)
+          console.log('canShellSelection', canShellSelection(selectionRanges))
           if (err(canShell)) return false
           return canShell
         },
@@ -670,16 +649,10 @@ export const ModelingMachineProvider = ({
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
-          console.log('selectionRanges', selectionRanges)
           if (artifactIsPlaneWithPaths(selectionRanges)) {
             return true
           }
-          if (
-            isCursorInFunctionDefinition(
-              kclManager.ast,
-              selectionRanges.graphSelections[0]
-            )
-          )
+          if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactGraph,
@@ -710,32 +683,10 @@ export const ModelingMachineProvider = ({
               // this assumes no changes have been made to the sketch besides what we did when entering the sketch
               // i.e. doesn't account for user's adding code themselves, maybe we need store a flag userEditedSinceSketchMode?
               const newAst = structuredClone(kclManager.ast)
-              const varDecIndex = sketchDetails.planeNodePath[1][0]
-
-              const varDec = getNodeFromPath<VariableDeclaration>(
-                newAst,
-                sketchDetails.planeNodePath,
-                'VariableDeclaration'
-              )
-              if (err(varDec)) return reject(new Error('No varDec'))
-              const variableName = varDec.node.declaration.id.name
-              let isIdentifierUsed = false
-              traverse(newAst, {
-                enter: (node) => {
-                  if (
-                    node.type === 'Identifier' &&
-                    node.name === variableName
-                  ) {
-                    isIdentifierUsed = true
-                  }
-                },
-              })
-              if (isIdentifierUsed) return
-
+              const varDecIndex = sketchDetails.sketchPathToNode[1][0]
               // remove body item at varDecIndex
               newAst.body = newAst.body.filter((_, i) => i !== varDecIndex)
               await kclManager.executeAstMock(newAst)
-              await codeManager.updateEditorWithAstAndWriteToFile(newAst)
             }
             sceneInfra.setCallbacks({
               onClick: () => {},
@@ -745,7 +696,7 @@ export const ModelingMachineProvider = ({
           }
         ),
         'animate-to-face': fromPromise(async ({ input }) => {
-          if (!input) return null
+          if (!input) return undefined
           if (input.type === 'extrudeFace' || input.type === 'offsetPlane') {
             const sketched =
               input.type === 'extrudeFace'
@@ -772,9 +723,7 @@ export const ModelingMachineProvider = ({
             await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
             sceneInfra.camControls.syncDirection = 'clientToEngine'
             return {
-              sketchEntryNodePath: [],
-              planeNodePath: pathToNewSketchNode,
-              sketchNodePaths: [],
+              sketchPathToNode: pathToNewSketchNode,
               zAxis: input.zAxis,
               yAxis: input.yAxis,
               origin: input.position,
@@ -794,9 +743,7 @@ export const ModelingMachineProvider = ({
           )
 
           return {
-            sketchEntryNodePath: [],
-            planeNodePath: pathToNode,
-            sketchNodePaths: [],
+            sketchPathToNode: pathToNode,
             zAxis: input.zAxis,
             yAxis: input.yAxis,
             origin: [0, 0, 0],
@@ -804,14 +751,12 @@ export const ModelingMachineProvider = ({
         }),
         'animate-to-sketch': fromPromise(
           async ({ input: { selectionRanges } }) => {
-            const sketchPathToNode =
-              selectionRanges.graphSelections[0]?.codeRef?.pathToNode
-            const plane = getPlaneFromArtifact(
-              selectionRanges.graphSelections[0].artifact,
-              engineCommandManager.artifactGraph
+            const sourceRange =
+              selectionRanges.graphSelections[0]?.codeRef?.range
+            const sketchPathToNode = getNodePathFromSourceRange(
+              kclManager.ast,
+              sourceRange
             )
-            if (err(plane)) return Promise.reject(plane)
-
             const info = await getSketchOrientationDetails(
               sketchPathToNode || []
             )
@@ -819,17 +764,8 @@ export const ModelingMachineProvider = ({
               engineCommandManager,
               info?.sketchDetails?.faceId || ''
             )
-            const sketchPaths = getPathsFromArtifact({
-              artifact: selectionRanges.graphSelections[0].artifact,
-              sketchPathToNode: sketchPathToNode || [],
-            })
-            if (err(sketchPaths)) return Promise.reject(sketchPaths)
-            if (!plane.codeRef)
-              return Promise.reject(new Error('No plane codeRef'))
             return {
-              sketchEntryNodePath: sketchPathToNode || [],
-              sketchNodePaths: sketchPaths,
-              planeNodePath: plane.codeRef.pathToNode,
+              sketchPathToNode: sketchPathToNode || [],
               zAxis: info.sketchDetails.zAxis || null,
               yAxis: info.sketchDetails.yAxis || null,
               origin: info.sketchDetails.origin.map(
@@ -841,7 +777,7 @@ export const ModelingMachineProvider = ({
 
         'Get horizontal info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
-            const { modifiedAst, pathToNodeMap, exprInsertIndex } =
+            const { modifiedAst, pathToNodeMap } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setHorzDistance',
                 selectionRanges,
@@ -853,23 +789,13 @@ export const ModelingMachineProvider = ({
 
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
-
-            const {
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            } = updateSketchDetailsNodePaths({
-              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              exprInsertIndex,
-            })
-
+            const updatedPathToNode = updatePathToNodeFromMap(
+              sketchDetails.sketchPathToNode,
+              pathToNodeMap
+            )
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                updatedSketchEntryNodePath,
-                updatedSketchNodePaths,
-                updatedPlaneNodePath,
+                updatedPathToNode,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -890,15 +816,13 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
+              updatedPathToNode,
             }
           }
         ),
         'Get vertical info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
-            const { modifiedAst, pathToNodeMap, exprInsertIndex } =
+            const { modifiedAst, pathToNodeMap } =
               await applyConstraintHorzVertDistance({
                 constraint: 'setVertDistance',
                 selectionRanges,
@@ -909,23 +833,13 @@ export const ModelingMachineProvider = ({
             const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
-
-            const {
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            } = updateSketchDetailsNodePaths({
-              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              exprInsertIndex,
-            })
-
+            const updatedPathToNode = updatePathToNodeFromMap(
+              sketchDetails.sketchPathToNode,
+              pathToNodeMap
+            )
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                updatedSketchEntryNodePath,
-                updatedSketchNodePaths,
-                updatedPlaneNodePath,
+                updatedPathToNode,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -946,9 +860,7 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
+              updatedPathToNode,
             }
           }
         ),
@@ -958,15 +870,14 @@ export const ModelingMachineProvider = ({
               selectionRanges,
             })
             if (err(info)) return Promise.reject(info)
-            const { modifiedAst, pathToNodeMap, exprInsertIndex } =
-              await (info.enabled
-                ? applyConstraintAngleBetween({
-                    selectionRanges,
-                  })
-                : applyConstraintAngleLength({
-                    selectionRanges,
-                    angleOrLength: 'setAngle',
-                  }))
+            const { modifiedAst, pathToNodeMap } = await (info.enabled
+              ? applyConstraintAngleBetween({
+                  selectionRanges,
+                })
+              : applyConstraintAngleLength({
+                  selectionRanges,
+                  angleOrLength: 'setAngle',
+                }))
             const pResult = parse(recast(modifiedAst))
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
@@ -975,23 +886,13 @@ export const ModelingMachineProvider = ({
 
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
-
-            const {
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            } = updateSketchDetailsNodePaths({
-              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              exprInsertIndex,
-            })
-
+            const updatedPathToNode = updatePathToNodeFromMap(
+              sketchDetails.sketchPathToNode,
+              pathToNodeMap
+            )
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                updatedSketchEntryNodePath,
-                updatedSketchNodePaths,
-                updatedPlaneNodePath,
+                updatedPathToNode,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1012,9 +913,7 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
+              updatedPathToNode,
             }
           }
         ),
@@ -1029,30 +928,20 @@ export const ModelingMachineProvider = ({
               length: lengthValue,
             })
             if (err(constraintResult)) return Promise.reject(constraintResult)
-            const { modifiedAst, pathToNodeMap, exprInsertIndex } =
-              constraintResult
+            const { modifiedAst, pathToNodeMap } = constraintResult
             const pResult = parse(recast(modifiedAst))
             if (trap(pResult) || !resultIsOk(pResult))
               return Promise.reject(new Error('Unexpected compilation error'))
             const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
-
-            const {
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            } = updateSketchDetailsNodePaths({
-              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              exprInsertIndex,
-            })
+            const updatedPathToNode = updatePathToNodeFromMap(
+              sketchDetails.sketchPathToNode,
+              pathToNodeMap
+            )
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                updatedSketchEntryNodePath,
-                updatedSketchNodePaths,
-                updatedPlaneNodePath,
+                updatedPathToNode,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1073,15 +962,13 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
+              updatedPathToNode,
             }
           }
         ),
         'Get perpendicular distance info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
-            const { modifiedAst, pathToNodeMap, exprInsertIndex } =
+            const { modifiedAst, pathToNodeMap } =
               await applyConstraintIntersect({
                 selectionRanges,
               })
@@ -1091,22 +978,13 @@ export const ModelingMachineProvider = ({
             const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
-
-            const {
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            } = updateSketchDetailsNodePaths({
-              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              exprInsertIndex,
-            })
+            const updatedPathToNode = updatePathToNodeFromMap(
+              sketchDetails.sketchPathToNode,
+              pathToNodeMap
+            )
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                updatedSketchEntryNodePath,
-                updatedSketchNodePaths,
-                updatedPlaneNodePath,
+                updatedPathToNode,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1127,15 +1005,13 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
+              updatedPathToNode,
             }
           }
         ),
         'Get ABS X info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
-            const { modifiedAst, pathToNodeMap, exprInsertIndex } =
+            const { modifiedAst, pathToNodeMap } =
               await applyConstraintAbsDistance({
                 constraint: 'xAbs',
                 selectionRanges,
@@ -1146,22 +1022,13 @@ export const ModelingMachineProvider = ({
             const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
-
-            const {
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            } = updateSketchDetailsNodePaths({
-              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              exprInsertIndex,
-            })
+            const updatedPathToNode = updatePathToNodeFromMap(
+              sketchDetails.sketchPathToNode,
+              pathToNodeMap
+            )
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                updatedSketchEntryNodePath,
-                updatedSketchNodePaths,
-                updatedPlaneNodePath,
+                updatedPathToNode,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1182,15 +1049,13 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
+              updatedPathToNode,
             }
           }
         ),
         'Get ABS Y info': fromPromise(
           async ({ input: { selectionRanges, sketchDetails } }) => {
-            const { modifiedAst, pathToNodeMap, exprInsertIndex } =
+            const { modifiedAst, pathToNodeMap } =
               await applyConstraintAbsDistance({
                 constraint: 'yAbs',
                 selectionRanges,
@@ -1201,22 +1066,13 @@ export const ModelingMachineProvider = ({
             const _modifiedAst = pResult.program
             if (!sketchDetails)
               return Promise.reject(new Error('No sketch details'))
-
-            const {
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            } = updateSketchDetailsNodePaths({
-              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              exprInsertIndex,
-            })
+            const updatedPathToNode = updatePathToNodeFromMap(
+              sketchDetails.sketchPathToNode,
+              pathToNodeMap
+            )
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                updatedSketchEntryNodePath,
-                updatedSketchNodePaths,
-                updatedPlaneNodePath,
+                updatedPathToNode,
                 _modifiedAst,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1237,9 +1093,7 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
+              updatedPathToNode,
             }
           }
         ),
@@ -1259,11 +1113,9 @@ export const ModelingMachineProvider = ({
             let result: {
               modifiedAst: Node<Program>
               pathToReplaced: PathToNode | null
-              exprInsertIndex: number
             } = {
               modifiedAst: parsed,
               pathToReplaced: null,
-              exprInsertIndex: -1,
             }
             // If the user provided a constant name,
             // we need to insert the named constant
@@ -1293,7 +1145,6 @@ export const ModelingMachineProvider = ({
               result = {
                 modifiedAst: parseResultAfterInsertion.program,
                 pathToReplaced: astAfterReplacement.pathToReplaced,
-                exprInsertIndex: astAfterReplacement.exprInsertIndex,
               }
             } else if ('valueText' in data.namedValue) {
               // If they didn't provide a constant name,
@@ -1324,22 +1175,10 @@ export const ModelingMachineProvider = ({
             parsed = parsed as Node<Program>
             if (!result.pathToReplaced)
               return Promise.reject(new Error('No path to replaced node'))
-            const {
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            } = updateSketchDetailsNodePaths({
-              sketchEntryNodePath: sketchDetails.sketchEntryNodePath,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-              exprInsertIndex: result.exprInsertIndex,
-            })
 
             const updatedAst =
               await sceneEntitiesManager.updateAstAndRejigSketch(
-                updatedSketchEntryNodePath,
-                updatedSketchNodePaths,
-                updatedPlaneNodePath,
+                result.pathToReplaced || [],
                 parsed,
                 sketchDetails.zAxis,
                 sketchDetails.yAxis,
@@ -1360,140 +1199,7 @@ export const ModelingMachineProvider = ({
             return {
               selectionType: 'completeSelection',
               selection,
-              updatedSketchEntryNodePath,
-              updatedSketchNodePaths,
-              updatedPlaneNodePath,
-            }
-          }
-        ),
-        'set-up-draft-circle': fromPromise(
-          async ({ input: { sketchDetails, data } }) => {
-            if (!sketchDetails || !data)
-              return reject('No sketch details or data')
-            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-
-            const result = await sceneEntitiesManager.setupDraftCircle(
-              sketchDetails.sketchEntryNodePath,
-              sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
-              sketchDetails.zAxis,
-              sketchDetails.yAxis,
-              sketchDetails.origin,
-              data
-            )
-            if (err(result)) return reject(result)
-            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-
-            return result
-          }
-        ),
-        'set-up-draft-rectangle': fromPromise(
-          async ({ input: { sketchDetails, data } }) => {
-            if (!sketchDetails || !data)
-              return reject('No sketch details or data')
-            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-
-            const result = await sceneEntitiesManager.setupDraftRectangle(
-              sketchDetails.sketchEntryNodePath,
-              sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
-              sketchDetails.zAxis,
-              sketchDetails.yAxis,
-              sketchDetails.origin,
-              data
-            )
-            if (err(result)) return reject(result)
-            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-
-            return result
-          }
-        ),
-        'set-up-draft-center-rectangle': fromPromise(
-          async ({ input: { sketchDetails, data } }) => {
-            if (!sketchDetails || !data)
-              return reject('No sketch details or data')
-            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-            const result = await sceneEntitiesManager.setupDraftCenterRectangle(
-              sketchDetails.sketchEntryNodePath,
-              sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
-              sketchDetails.zAxis,
-              sketchDetails.yAxis,
-              sketchDetails.origin,
-              data
-            )
-            if (err(result)) return reject(result)
-            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-
-            return result
-          }
-        ),
-        'setup-client-side-sketch-segments': fromPromise(
-          async ({ input: { sketchDetails, selectionRanges } }) => {
-            if (!sketchDetails) return
-            if (!sketchDetails.sketchEntryNodePath.length) return
-            if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
-              await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-            }
-            sceneInfra.resetMouseListeners()
-            await sceneEntitiesManager.setupSketch({
-              sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              forward: sketchDetails.zAxis,
-              up: sketchDetails.yAxis,
-              position: sketchDetails.origin,
-              maybeModdedAst: kclManager.ast,
-              selectionRanges,
-            })
-            sceneInfra.resetMouseListeners()
-
-            sceneEntitiesManager.setupSketchIdleCallbacks({
-              sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
-              forward: sketchDetails.zAxis,
-              up: sketchDetails.yAxis,
-              position: sketchDetails.origin,
-              sketchNodePaths: sketchDetails.sketchNodePaths,
-              planeNodePath: sketchDetails.planeNodePath,
-            })
-            return undefined
-          }
-        ),
-        'split-sketch-pipe-if-needed': fromPromise(
-          async ({ input: { sketchDetails } }) => {
-            if (!sketchDetails) return reject('No sketch details')
-            const existingSketchInfoNoOp = {
-              updatedEntryNodePath: sketchDetails.sketchEntryNodePath,
-              updatedSketchNodePaths: sketchDetails.sketchNodePaths,
-              updatedPlaneNodePath: sketchDetails.planeNodePath,
-            } as const
-            if (
-              !sketchDetails.sketchNodePaths.length &&
-              sketchDetails.planeNodePath.length
-            ) {
-              // new sketch, no profiles yet
-              return existingSketchInfoNoOp
-            }
-            const doesNeedSplitting = doesSketchPipeNeedSplitting(
-              kclManager.ast,
-              sketchDetails.sketchEntryNodePath
-            )
-            if (err(doesNeedSplitting)) return reject(doesNeedSplitting)
-            if (!doesNeedSplitting) return existingSketchInfoNoOp
-
-            const splitResult = splitPipedProfile(
-              kclManager.ast,
-              sketchDetails.sketchEntryNodePath
-            )
-            if (err(splitResult)) return reject(splitResult)
-
-            await kclManager.executeAstMock(splitResult.modifiedAst)
-            await codeManager.updateEditorWithAstAndWriteToFile(
-              splitResult.modifiedAst
-            )
-            return {
-              updatedEntryNodePath: splitResult.pathToProfile,
-              updatedSketchNodePaths: [splitResult.pathToProfile],
-              updatedPlaneNodePath: sketchDetails.planeNodePath,
+              updatedPathToNode: result.pathToReplaced,
             }
           }
         ),
