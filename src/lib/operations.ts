@@ -100,6 +100,16 @@ export function getOperationIcon(op: Operation): CustomIconName {
 }
 
 /**
+ * The filters to apply to a list of operations
+ * for use in the feature tree UI
+ */
+export const operationFilters = [
+  isNotStdLibInUserFunction,
+  isNotUserFunctionWithNoOperations,
+  isNotUserFunctionReturn,
+]
+
+/**
  * A filter to exclude StdLibCall operations that occur
  * between a UserDefinedFunctionCall and the next UserDefinedFunctionReturn
  * from a list of operations
