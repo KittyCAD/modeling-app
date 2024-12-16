@@ -22,6 +22,7 @@ const mySketch001 = startSketchOn('XY')
       value: {
         type: 'Sketch',
         on: expect.any(Object),
+        originalId: expect.any(String),
         start: {
           to: [0, 0],
           from: [0, 0],
@@ -91,6 +92,7 @@ const mySketch001 = startSketchOn('XY')
       ],
       sketch: {
         id: expect.any(String),
+        originalId: expect.any(String),
         __meta: expect.any(Array),
         on: expect.any(Object),
         start: expect.any(Object),
@@ -185,6 +187,7 @@ const sk2 = startSketchOn('XY')
         ],
         sketch: {
           id: expect.any(String),
+          originalId: expect.any(String),
           __meta: expect.any(Array),
           on: expect.any(Object),
           start: expect.any(Object),
@@ -277,6 +280,7 @@ const sk2 = startSketchOn('XY')
         ],
         sketch: {
           id: expect.any(String),
+          originalId: expect.any(String),
           __meta: expect.any(Array),
           on: expect.any(Object),
           start: expect.any(Object),
