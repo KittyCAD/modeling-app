@@ -9,47 +9,20 @@ import {
 import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
 
-/**
- * Updates pathToNode body indices to account for the insertion of an expression
- * PathToNode expression is after the insertion index, that the body index is incremented
- * Negative insertion index means no insertion
- */
-export function updatePathToNodePostExprInjection(
-  pathToNode: PathToNode,
-  exprInsertIndex: number
+export function updatePathToNodeFromMap(
+  oldPath: PathToNode,
+  pathToNodeMap: { [key: number]: PathToNode }
 ): PathToNode {
-  if (exprInsertIndex < 0) return pathToNode
-  const bodyIndex = Number(pathToNode[1][0])
-  if (bodyIndex < exprInsertIndex) return pathToNode
-  const clone = structuredClone(pathToNode)
-  clone[1][0] = bodyIndex + 1
-  return clone
-}
-
-export function updateSketchDetailsNodePaths({
-  sketchEntryNodePath,
-  sketchNodePaths,
-  planeNodePath,
-  exprInsertIndex,
-}: {
-  sketchEntryNodePath: PathToNode
-  sketchNodePaths: Array<PathToNode>
-  planeNodePath: PathToNode
-  exprInsertIndex: number
-}) {
-  return {
-    updatedSketchEntryNodePath: updatePathToNodePostExprInjection(
-      sketchEntryNodePath,
-      exprInsertIndex
-    ),
-    updatedSketchNodePaths: sketchNodePaths.map((path) =>
-      updatePathToNodePostExprInjection(path, exprInsertIndex)
-    ),
-    updatedPlaneNodePath: updatePathToNodePostExprInjection(
-      planeNodePath,
-      exprInsertIndex
-    ),
-  }
+  const updatedPathToNode = structuredClone(oldPath)
+  let max = 0
+  Object.values(pathToNodeMap).forEach((path) => {
+    const index = Number(path[1][0])
+    if (index > max) {
+      max = index
+    }
+  })
+  updatedPathToNode[1][0] = max
+  return updatedPathToNode
 }
 
 export function isCursorInSketchCommandRange(
@@ -58,7 +31,7 @@ export function isCursorInSketchCommandRange(
 ): string | false {
   const overlappingEntries = filterArtifacts(
     {
-      types: ['segment', 'path', 'plane'],
+      types: ['segment', 'path'],
       predicate: (artifact) => {
         return selectionRanges.graphSelections.some(
           (selection) =>

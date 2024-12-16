@@ -6,6 +6,7 @@ import Tooltip from 'components/Tooltip'
 import { CustomIconName } from 'components/CustomIcon'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from 'components/ActionIcon'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 
 export interface ModelingPaneProps {
   id: string
@@ -70,7 +71,7 @@ export const ModelingPane = ({
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
   const pointerEventsCssClass =
-    onboardingStatus.current === 'camera'
+    onboardingStatus.current === onboardingPaths.CAMERA
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   return (
