@@ -2,6 +2,8 @@ import { CustomIconName } from 'components/CustomIcon'
 import { DEV } from 'env'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import {
+  canRectangleOrCircleTool,
+  isClosedSketch,
   isEditingExistingSketch,
   modelingMachine,
   pipeHasCircle,
@@ -71,7 +73,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         status: 'available',
         disabled: (state) => !state.matches('idle'),
         title: ({ sketchPathId }) =>
-          sketchPathId ? 'Edit Sketch' : 'Start Sketch',
+          `${sketchPathId ? 'Edit' : 'Start'} Sketch`,
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
@@ -313,14 +315,22 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       {
         id: 'line',
         onClick: ({ modelingState, modelingSend }) => {
-          modelingSend({
-            type: 'change tool',
-            data: {
-              tool: !modelingState.matches({ Sketch: 'Line tool' })
-                ? 'line'
-                : 'none',
-            },
-          })
+          if (modelingState.matches({ Sketch: { 'Line tool': 'No Points' } })) {
+            // Exit the sketch state if there are no points and they press ESC
+            modelingSend({
+              type: 'Cancel',
+            })
+          } else {
+            // Exit the tool if there are points and they press ESC
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Line tool' })
+                  ? 'line'
+                  : 'none',
+              },
+            })
+          }
         },
         icon: 'line',
         status: 'available',
@@ -331,7 +341,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }) ||
           state.matches({
             Sketch: { 'Circle tool': 'Awaiting Radius' },
-          }),
+          }) ||
+          isClosedSketch(state.context),
         title: 'Line',
         hotkey: (state) =>
           state.matches({ Sketch: 'Line tool' }) ? ['Esc', 'L'] : 'L',
@@ -411,7 +422,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'circle',
           status: 'available',
           title: 'Center circle',
-          disabled: (state) => state.matches('Sketch no face'),
+          disabled: (state) =>
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'Circle tool' })),
           isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
@@ -450,7 +464,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'rectangle',
           status: 'available',
-          disabled: (state) => state.matches('Sketch no face'),
+          disabled: (state) =>
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'Rectangle tool' })),
           title: 'Corner rectangle',
           hotkey: (state) =>
             state.matches({ Sketch: 'Rectangle tool' }) ? ['Esc', 'R'] : 'R',
@@ -473,7 +490,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'arc',
           status: 'available',
-          disabled: (state) => state.matches('Sketch no face'),
+          disabled: (state) =>
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'Center Rectangle tool' })),
           title: 'Center rectangle',
           hotkey: (state) =>
             state.matches({ Sketch: 'Center Rectangle tool' })
