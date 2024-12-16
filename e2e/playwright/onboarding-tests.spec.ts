@@ -495,7 +495,7 @@ test(
       await expect(tutorialProjectIndicator).toBeVisible()
       await expect(tutorialModalText).toBeVisible()
       // Make sure the model loaded
-      const XYPlanePoint = { x: 989, y: 518 } as const
+      const XYPlanePoint = { x: 988, y: 523 } as const
       const modelColorWithOverlay: [number, number, number] = [76, 76, 76]
       const modelColor: [number, number, number] = [135, 135, 135]
 
