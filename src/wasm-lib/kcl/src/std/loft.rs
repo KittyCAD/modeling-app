@@ -142,7 +142,7 @@ async fn inner_loft(
         }));
     }
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::Loft {

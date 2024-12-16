@@ -146,11 +146,11 @@ impl ImportStatement {
                 string.push_str(" from ");
             }
             ImportSelector::Glob(_) => string.push_str("* from "),
-            ImportSelector::None(_) => {}
+            ImportSelector::None { .. } => {}
         }
         string.push_str(&format!("\"{}\"", self.path));
 
-        if let ImportSelector::None(Some(alias)) = &self.selector {
+        if let ImportSelector::None { alias: Some(alias) } = &self.selector {
             string.push_str(" as ");
             string.push_str(&alias.name);
         }

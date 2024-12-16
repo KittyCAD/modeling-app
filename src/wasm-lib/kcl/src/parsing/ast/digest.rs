@@ -59,8 +59,8 @@ impl ImportStatement {
                 }
             }
             ImportSelector::Glob(_) => hasher.update(b"ImportSelector::Glob"),
-            ImportSelector::None(None) => hasher.update(b"ImportSelector::None"),
-            ImportSelector::None(Some(alias)) => {
+            ImportSelector::None { alias: None } => hasher.update(b"ImportSelector::None"),
+            ImportSelector::None { alias: Some(alias) } => {
                 hasher.update(b"ImportSelector::None");
                 hasher.update(alias.compute_digest());
             }

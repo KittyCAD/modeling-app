@@ -2344,6 +2344,7 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
         .await;
 
     // Get the diagnostics.
+    // TODO warnings being stomped by execution errors?
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
 
     // Update the text.
