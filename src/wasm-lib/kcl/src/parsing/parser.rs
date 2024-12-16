@@ -2539,6 +2539,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
     let args = labeled_arguments(i)?;
     ignore_whitespace(i);
+    opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
 
     Ok(Node {

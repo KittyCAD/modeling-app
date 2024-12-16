@@ -92,6 +92,7 @@ impl crate::docs::StdLibFn for Import {
             schema: generator.root_schema_for::<Option<kittycad::types::InputFormat>>(),
             required: false,
             label_required: true,
+            description: String::new().to_string(),
         }]
     }
 
@@ -106,6 +107,7 @@ impl crate::docs::StdLibFn for Import {
             schema,
             required: true,
             label_required: true,
+            description: String::new(),
         })
     }
 

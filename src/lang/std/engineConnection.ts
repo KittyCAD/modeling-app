@@ -1,4 +1,11 @@
-import { defaultSourceRange, Program, SourceRange } from 'lang/wasm'
+import {
+  defaultRustSourceRange,
+  defaultSourceRange,
+  Program,
+  RustSourceRange,
+  SourceRange,
+  sourceRangeFromRust,
+} from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -1302,8 +1309,8 @@ export enum EngineCommandManagerEvents {
 
 interface PendingMessage {
   command: EngineCommand
-  range: SourceRange
-  idToRangeMap: { [key: string]: SourceRange }
+  range: RustSourceRange
+  idToRangeMap: { [key: string]: RustSourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
@@ -1993,7 +2000,7 @@ export class EngineCommandManager extends EventTarget {
       {
         command,
         idToRangeMap: {},
-        range: defaultSourceRange(),
+        range: defaultRustSourceRange(),
       },
       true // isSceneCommand
     )
@@ -2025,9 +2032,9 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(new Error('rangeStr is undefined'))
     if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    const range: SourceRange = JSON.parse(rangeStr)
+    const range: RustSourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
-    const idToRangeMap: { [key: string]: SourceRange } =
+    const idToRangeMap: { [key: string]: RustSourceRange } =
       JSON.parse(idToRangeStr)
 
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger
@@ -2070,10 +2077,14 @@ export class EngineCommandManager extends EventTarget {
     if (message.command.type === 'modeling_cmd_req') {
       this.orderedCommands.push({
         command: message.command,
-        range: message.range,
+        range: sourceRangeFromRust(message.range),
       })
     } else if (message.command.type === 'modeling_cmd_batch_req') {
       message.command.requests.forEach((req) => {
+        const cmdId = req.cmd_id || ''
+        const range = cmdId
+          ? sourceRangeFromRust(message.idToRangeMap[cmdId])
+          : defaultSourceRange()
         const cmd: EngineCommand = {
           type: 'modeling_cmd_req',
           cmd_id: req.cmd_id,
@@ -2081,7 +2092,7 @@ export class EngineCommandManager extends EventTarget {
         }
         this.orderedCommands.push({
           command: cmd,
-          range: message.idToRangeMap[req.cmd_id || ''],
+          range,
         })
       })
     }

@@ -15,6 +15,7 @@ import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
 import { createSettings } from './settings/initialSettings'
 import { normalizeLineEndings } from 'lib/codeEditor'
+import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -53,14 +54,15 @@ export const telemetryLoader: LoaderFunction = async ({
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
   const { settings } = await loadAndValidateSettings()
-  const onboardingStatus = settings.app.onboardingStatus.current || ''
+  const onboardingStatus: OnboardingStatus =
+    settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(
     PATHS.ONBOARDING.INDEX
   )
-  // '' is the initial state, 'done' and 'dismissed' are the final states
+  // '' is the initial state, 'completed' and 'dismissed' are the final states
   const hasValidOnboardingStatus =
     onboardingStatus.length === 0 ||
-    !(onboardingStatus === 'done' || onboardingStatus === 'dismissed')
+    !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed')
   const shouldRedirectToOnboarding =
     notEnRouteToOnboarding && hasValidOnboardingStatus
 
