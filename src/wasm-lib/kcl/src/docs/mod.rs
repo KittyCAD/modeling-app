@@ -518,13 +518,13 @@ fn get_autocomplete_snippet_from_schema(
                     }
 
                     if prop_name == "color" {
-                        fn_docs.push_str(&format!("\t{}: ${{{}:\"#ff0000\"}},\n", prop_name, i));
+                        fn_docs.push_str(&format!("\t{} = ${{{}:\"#ff0000\"}},\n", prop_name, i));
                         i += 1;
                         continue;
                     }
 
                     if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(prop, i)? {
-                        fn_docs.push_str(&format!("\t{}: {},\n", prop_name, snippet));
+                        fn_docs.push_str(&format!("\t{} = {},\n", prop_name, snippet));
                         i = new_index + 1;
                     }
                 }
@@ -890,8 +890,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"fillet({
-	radius: ${0:3.14},
-	tags: [${1:"tag_or_edge_fn"}],
+	radius = ${0:3.14},
+	tags = [${1:"tag_or_edge_fn"}],
 }, ${2:%})${}"#
         );
     }
@@ -911,11 +911,11 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternCircular3d({
-	instances: ${0:10},
-	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
-	center: [${4:3.14}, ${5:3.14}, ${6:3.14}],
-	arcDegrees: ${7:3.14},
-	rotateDuplicates: ${8:false},
+	instances = ${0:10},
+	axis = [${1:3.14}, ${2:3.14}, ${3:3.14}],
+	center = [${4:3.14}, ${5:3.14}, ${6:3.14}],
+	arcDegrees = ${7:3.14},
+	rotateDuplicates = ${8:false},
 }, ${9:%})${}"#
         );
     }
@@ -927,7 +927,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"revolve({
-	axis: ${0:"X"},
+	axis = ${0:"X"},
 }, ${1:%})${}"#
         );
     }
@@ -939,8 +939,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"circle({
-	center: [${0:3.14}, ${1:3.14}],
-	radius: ${2:3.14},
+	center = [${0:3.14}, ${1:3.14}],
+	radius = ${2:3.14},
 }, ${3:%})${}"#
         );
     }
@@ -952,9 +952,9 @@ mod tests {
         assert_eq!(
             snippet,
             r#"arc({
-	angleStart: ${0:3.14},
-	angleEnd: ${1:3.14},
-	radius: ${2:3.14},
+	angleStart = ${0:3.14},
+	angleEnd = ${1:3.14},
+	radius = ${2:3.14},
 }, ${3:%})${}"#
         );
     }
@@ -973,9 +973,9 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternLinear2d({
-	instances: ${0:10},
-	distance: ${1:3.14},
-	axis: [${2:3.14}, ${3:3.14}],
+	instances = ${0:10},
+	distance = ${1:3.14},
+	axis = [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#
         );
     }
@@ -987,7 +987,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"appearance({
-	color: ${0:"#
+	color = ${0:"#
                 .to_owned()
                 + "\"#"
                 + r#"ff0000"},
@@ -1009,7 +1009,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"sweep({
-	path: ${0:sketch000},
+	path = ${0:sketch000},
 }, ${1:%})${}"#
         );
     }
