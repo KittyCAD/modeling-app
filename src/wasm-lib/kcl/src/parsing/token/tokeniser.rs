@@ -50,7 +50,6 @@ lazy_static! {
         set.insert("record", TokenType::Keyword);
         set.insert("struct", TokenType::Keyword);
         set.insert("object", TokenType::Keyword);
-        set.insert("_", TokenType::Keyword);
 
         set.insert("string", TokenType::Type);
         set.insert("number", TokenType::Type);
@@ -147,9 +146,9 @@ fn line_comment(i: &mut Input<'_>) -> PResult<Token> {
 fn number(i: &mut Input<'_>) -> PResult<Token> {
     let number_parser = alt((
         // Digits before the decimal point.
-        (digit1, opt(('.', digit1))).map(|_| ()),
+        (digit1, opt(('.', digit1)), opt('_'), opt(alt(super::NUM_SUFFIXES))).map(|_| ()),
         // No digits before the decimal point.
-        ('.', digit1).map(|_| ()),
+        ('.', digit1, opt('_'), opt(alt(super::NUM_SUFFIXES))).map(|_| ()),
     ));
     let (value, range) = number_parser.take().with_span().parse_next(i)?;
     Ok(Token::from_range(
@@ -379,7 +378,8 @@ mod tests {
         assert!(p.parse_next(&mut input).is_err(), "parsed {s} but should have failed");
     }
 
-    fn assert_parse_ok<'i, P, O, E>(mut p: P, s: &'i str)
+    // Returns the token and whether any more input is remaining to tokenize.
+    fn assert_parse_ok<'i, P, O, E>(mut p: P, s: &'i str) -> (O, bool)
     where
         E: std::fmt::Debug,
         O: std::fmt::Debug,
@@ -392,14 +392,27 @@ mod tests {
         };
         let res = p.parse_next(&mut input);
         assert!(res.is_ok(), "failed to parse {s}, got {}", res.unwrap_err());
+        (res.unwrap(), !input.is_empty())
     }
 
     #[test]
     fn test_number() {
-        for valid in [
-            "1", "1 abc", "1.1", "1.1 abv", "1.1 abv", "1", ".1", "5?", "5 + 6", "5 + a", "5.5", "1abc",
+        for (valid, expected) in [
+            ("1", false),
+            ("1 abc", true),
+            ("1.1", false),
+            ("1.1 abv", true),
+            ("1.1 abv", true),
+            ("1", false),
+            (".1", false),
+            ("5?", true),
+            ("5 + 6", true),
+            ("5 + a", true),
+            ("5.5", false),
+            ("1abc", true),
         ] {
-            assert_parse_ok(number, valid);
+            let (_, remaining) = assert_parse_ok(number, valid);
+            assert_eq!(expected, remaining, "`{valid}` expected another token to be {expected}");
         }
 
         for invalid in ["a", "?", "?5"] {
@@ -413,6 +426,27 @@ mod tests {
         };
 
         assert_eq!(number.parse(input).unwrap().value, "0.0000000000");
+    }
+
+    #[test]
+    fn test_number_suffix() {
+        for (valid, expected_val, expected_next) in [
+            ("1_", 1.0, false),
+            ("1_mm", 1.0, false),
+            ("1_yd", 1.0, false),
+            ("1m", 1.0, false),
+            ("1inch", 1.0, false),
+            ("1toot", 1.0, true),
+            ("1.4inch t", 1.4, true),
+        ] {
+            let (t, remaining) = assert_parse_ok(number, valid);
+            assert_eq!(expected_next, remaining);
+            assert_eq!(
+                Some(expected_val),
+                t.numeric_value(),
+                "{valid} has incorrect numeric value, expected {expected_val} {t:?}"
+            );
+        }
     }
 
     #[test]

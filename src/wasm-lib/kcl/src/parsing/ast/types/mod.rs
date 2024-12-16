@@ -1928,6 +1928,10 @@ impl Identifier {
         })
     }
 
+    pub fn is_nameable(&self) -> bool {
+        !self.name.starts_with('_')
+    }
+
     /// Rename all identifiers that have the old name to the new given name.
     fn rename(&mut self, old_name: &str, new_name: &str) {
         if self.name == old_name {
