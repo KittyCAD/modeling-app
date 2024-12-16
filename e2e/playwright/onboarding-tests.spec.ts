@@ -495,11 +495,12 @@ test(
       await expect(tutorialProjectIndicator).toBeVisible()
       await expect(tutorialModalText).toBeVisible()
       // Make sure the model loaded
-      const XYPlanePoint = { x: 988, y: 523 } as const
-      const modelColor: [number, number, number] = [76, 76, 76]
+      const XYPlanePoint = { x: 989, y: 518 } as const
+      const modelColorWithOverlay: [number, number, number] = [76, 76, 76]
+      const modelColor: [number, number, number] = [135, 135, 135]
 
       await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-      await expectPixelColor(page, modelColor, XYPlanePoint, 8)
+      await expectPixelColor(page, modelColorWithOverlay, XYPlanePoint, 8)
       await tutorialDismissButton.click()
       // Make sure model still there.
       await expectPixelColor(page, modelColor, XYPlanePoint, 8)
