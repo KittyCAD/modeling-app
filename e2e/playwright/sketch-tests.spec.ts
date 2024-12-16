@@ -2234,7 +2234,7 @@ revolve002 = revolve({ angle = 45, axis = seg02 }, profile008)
     }
   )
   test2(
-    'Can enter sketch loft edges, base and offsetPlane',
+    'Can enter sketch loft edges, base and continue sketch',
     async ({ app, scene, toolbar, editor }) => {
       await app.initialise(`sketch001 = startSketchOn('XZ')
 profile001 = startProfileAt([34, 42.66], sketch001)
@@ -2252,13 +2252,7 @@ profile002 = startProfileAt([39.43, 172.21], sketch002)
 
 loft([profile001, profile002])
 `)
-      await app.page.waitForTimeout(600)
       const [baseProfileEdgeClick] = scene.makeMouseHelpers(621, 292)
-      const topProfileEdgeClickCoords = { x: 789, y: 89 } as const
-      const [topProfileEdgeClick] = scene.makeMouseHelpers(
-        topProfileEdgeClickCoords.x,
-        topProfileEdgeClickCoords.y
-      )
 
       const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
       const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
@@ -2278,35 +2272,55 @@ loft([profile001, profile002])
       await editor.expectEditor.toContain(
         `angledLine([0, 113.01], %, $rectangleSegmentA001)`
       )
+    }
+  )
+  test2(
+    'Can enter sketch loft edges offsetPlane and continue sketch',
+    async ({ app, scene, toolbar, editor }) => {
+      await app.initialise(`sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([34, 42.66], sketch001)
+  |> line([102.65, 151.99], %)
+  |> line([76, -138.66], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+plane001 = offsetPlane('XZ', 50)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfileAt([39.43, 172.21], sketch002)
+  |> xLine(183.99, %)
+  |> line([-77.95, -145.93], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
 
-      // exit sketch
-      await toolbar.exitSketchBtn.click()
-      await expect(app.page.getByTestId('spinner')).toBeVisible()
-      await expect(app.page.getByTestId('spinner')).not.toBeVisible()
-      // wait for execution to be done and the offset plane to pop in and out
-      await app.page.waitForTimeout(1000)
+loft([profile001, profile002])
+`)
+      const topProfileEdgeClickCoords = { x: 602, y: 185 } as const
+      const [topProfileEdgeClick] = scene.makeMouseHelpers(
+        topProfileEdgeClickCoords.x,
+        topProfileEdgeClickCoords.y
+      )
 
-      await expect(async () => {
-        await scene.clickNoWhere()
-        await app.page.waitForTimeout(100)
-        await topProfileEdgeClick()
-        const yellow: [number, number, number] = [250, 251, 72]
-        await scene.expectPixelColor(yellow, topProfileEdgeClickCoords, 15)
-      }).toPass({ timeout: 5_000, intervals: [500] })
-      await app.page.waitForTimeout(100)
+      const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
+      const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
+
+      await scene.moveCameraTo(
+        { x: 8171, y: -7740, z: 1624 },
+        { x: 3302, y: -627, z: 2892 }
+      )
+
+      await topProfileEdgeClick()
       await toolbar.editSketch()
       await app.page.waitForTimeout(600)
-      await scene.expectPixelColor(TEST_COLORS.BLUE, { x: 804, y: 182 }, 15)
+      await scene.expectPixelColor(TEST_COLORS.BLUE, { x: 788, y: 188 }, 15)
 
       await toolbar.rectangleBtn.click()
       await app.page.waitForTimeout(100)
       await rect1Crn1()
       await editor.expectEditor.toContain(
-        `profile004 = startProfileAt([44.97, -16.13], plane001)`
+        `profile003 = startProfileAt([47.76, -17.13], plane001)`
       )
       await rect1Crn2()
       await editor.expectEditor.toContain(
-        `angledLine([0, 100.2], %, $rectangleSegmentA002)`
+        `angledLine([0, 106.42], %, $rectangleSegmentA001)`
       )
     }
   )
