@@ -1006,6 +1006,13 @@ impl NonCodeNode {
             NonCodeValue::Annotation { name, .. } => name.name.clone(),
         }
     }
+
+    pub fn annotation(&self, expected_name: &str) -> Option<&NonCodeValue> {
+        match &self.value {
+            a @ NonCodeValue::Annotation { name, .. } if name.name == expected_name => Some(a),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

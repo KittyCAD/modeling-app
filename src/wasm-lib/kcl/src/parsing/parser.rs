@@ -320,7 +320,6 @@ fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     };
 
     let value = NonCodeValue::Annotation { name, properties };
-    eprintln!("found {value:?}");
     Ok(Node::new(
         NonCodeNode { value, digest: None },
         at.start,
