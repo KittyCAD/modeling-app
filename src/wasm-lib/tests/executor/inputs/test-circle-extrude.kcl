@@ -1,6 +1,6 @@
 const sketch002 = startSketchOn('XZ')
   |> startProfileAt([-108.83, -57.48], %)
-  |> angledLine([0, 105.13], %, $rectangleSegmentA001)
+  |> angledline(end = [0, 105.13], tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        77.9
@@ -9,7 +9,7 @@ const sketch002 = startSketchOn('XZ')
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %)
-  |> close(%)
+  |> close()
 const sketch001 = startSketchOn('XZ')
   |> circle({
        center = [318.33, 168.1],

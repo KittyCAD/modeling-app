@@ -1,10 +1,10 @@
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([0, 2], %)
-  |> line([3, 1], %)
-  |> line([0, -4], %)
+  |> line(end = [0, 2])
+  |> line(end = [3, 1])
+  |> line(end = [0, -4])
   |> close(%)
-  |> extrude(1, %)
+  |> extrude(length = 1)
 
 pattn1 = patternLinear3d({
   axis = [1, 0, 0],

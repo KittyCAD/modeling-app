@@ -10,8 +10,8 @@ fn rect = (origin) => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 }
 
 rect([0, 0])

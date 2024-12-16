@@ -59,12 +59,12 @@ async fn cache_test(test_name: &str, variations: Vec<Variation<'_>>) -> Result<V
 async fn kcl_test_cache_change_units_changes_output() {
     let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
-  |> line([10.50433, -1.19122], %)
-  |> line([8.01362, -5.48731], %)
-  |> line([-1.02877, -6.76825], %)
-  |> line([-11.53311, 2.81559], %)
-  |> close(%)
-  |> extrude(4, %)
+  |> line(end = [10.50433, -1.19122])
+  |> line(end = [8.01362, -5.48731])
+  |> line(end = [-1.02877, -6.76825])
+  |> line(end = [-11.53311, 2.81559])
+  |> close()
+  |> extrude(length = 4)
 "#;
 
     let result = cache_test(
@@ -99,12 +99,12 @@ async fn kcl_test_cache_change_units_changes_output() {
 async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
     let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
-  |> line([10.50433, -1.19122], %)
-  |> line([8.01362, -5.48731], %)
-  |> line([-1.02877, -6.76825], %)
-  |> line([-11.53311, 2.81559], %)
-  |> close(%)
-  |> extrude(4, %)
+  |> line(end = [10.50433, -1.19122])
+  |> line(end = [8.01362, -5.48731])
+  |> line(end = [-1.02877, -6.76825])
+  |> line(end = [-11.53311, 2.81559])
+  |> close()
+  |> extrude(length = 4)
 "#;
 
     let result = cache_test(
@@ -139,12 +139,12 @@ async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
 async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
     let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
-  |> line([10.50433, -1.19122], %)
-  |> line([8.01362, -5.48731], %)
-  |> line([-1.02877, -6.76825], %)
-  |> line([-11.53311, 2.81559], %)
-  |> close(%)
-  |> extrude(4, %)
+  |> line(end = [10.50433, -1.19122])
+  |> line(end = [8.01362, -5.48731])
+  |> line(end = [-1.02877, -6.76825])
+  |> line(end = [-11.53311, 2.81559])
+  |> close()
+  |> extrude(length = 4)
 "#;
 
     let result = cache_test(
@@ -179,12 +179,12 @@ async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
 async fn kcl_test_cache_change_highlight_edges_changes_visual() {
     let code = r#"part001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
-  |> line([10.50433, -1.19122], %)
-  |> line([8.01362, -5.48731], %)
-  |> line([-1.02877, -6.76825], %)
-  |> line([-11.53311, 2.81559], %)
-  |> close(%)
-  |> extrude(4, %)
+  |> line(end = [10.50433, -1.19122])
+  |> line(end = [8.01362, -5.48731])
+  |> line(end = [-1.02877, -6.76825])
+  |> line(end = [-11.53311, 2.81559])
+  |> close()
+  |> extrude(length = 4)
 "#;
 
     let result = cache_test(

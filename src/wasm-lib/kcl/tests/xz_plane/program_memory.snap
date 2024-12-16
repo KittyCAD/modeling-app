@@ -37,7 +37,7 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 66,
-                87,
+                96,
                 0
               ],
               "tag": null,
@@ -47,8 +47,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                93,
-                112,
+                102,
+                130,
                 0
               ],
               "tag": null,
@@ -58,8 +58,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                118,
-                126,
+                136,
+                144,
                 0
               ],
               "tag": null,
@@ -75,7 +75,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     66,
-                    87,
+                    96,
                     0
                   ]
                 },
@@ -94,8 +94,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    93,
-                    112,
+                    102,
+                    130,
                     0
                   ]
                 },
@@ -114,8 +114,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    118,
-                    126,
+                    136,
+                    144,
                     0
                   ]
                 },

@@ -31,11 +31,11 @@ hollow(thickness: number, solid: Solid) -> Solid
 // Hollow a basic sketch.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
   |> hollow(0.25, %)
 ```
 
@@ -45,11 +45,11 @@ firstSketch = startSketchOn('XY')
 // Hollow a basic sketch.
 firstSketch = startSketchOn('-XZ')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
   |> hollow(0.5, %)
 ```
 
@@ -60,25 +60,25 @@ firstSketch = startSketchOn('-XZ')
 size = 100
 case = startSketchOn('-XZ')
   |> startProfileAt([-size, -size], %)
-  |> line([2 * size, 0], %)
-  |> line([0, 2 * size], %)
+  |> line(end = [2 * size, 0])
+  |> line(end = [0, 2 * size])
   |> tangentialArcTo([-size, size], %)
-  |> close(%)
-  |> extrude(65, %)
+  |> close()
+  |> extrude(length = 65)
 
 thing1 = startSketchOn(case, 'end')
   |> circle({
        center = [-size / 2, -size / 2],
        radius = 25
      }, %)
-  |> extrude(50, %)
+  |> extrude(length = 50)
 
 thing2 = startSketchOn(case, 'end')
   |> circle({
        center = [size / 2, -size / 2],
        radius = 25
      }, %)
-  |> extrude(50, %)
+  |> extrude(length = 50)
 
 hollow(0.5, case)
 ```

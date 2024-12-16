@@ -419,10 +419,6 @@ impl Args {
         FromArgs::from_args(self, 0)
     }
 
-    pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagNode>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) fn get_data_and_optional_tag<'a, T>(&'a self) -> Result<(T, Option<FaceTag>), KclError>
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
@@ -487,10 +483,6 @@ impl Args {
     where
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_number_sketch_set(&self) -> Result<(f64, SketchSet), KclError> {
         FromArgs::from_args(self, 0)
     }
 

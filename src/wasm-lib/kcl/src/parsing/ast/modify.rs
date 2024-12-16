@@ -18,6 +18,8 @@ use crate::{
     Program,
 };
 
+use super::types::{CallExpressionKw, Identifier, LabeledArg};
+
 type Point3d = kcmc::shared::Point3d<f64>;
 
 #[derive(Debug)]
@@ -220,16 +222,21 @@ fn create_start_sketch_on(
     current_position.x += end[0];
     current_position.y += end[1];
 
-    let initial_line = CallExpression::new(
+    let expr = ArrayExpression::new(vec![
+        Literal::new(round_before_recast(end[0]).into()).into(),
+        Literal::new(round_before_recast(end[1]).into()).into(),
+    ])
+    .into();
+    let initial_line = CallExpressionKw::new(
         "line",
-        vec![
-            ArrayExpression::new(vec![
-                Literal::new(round_before_recast(end[0]).into()).into(),
-                Literal::new(round_before_recast(end[1]).into()).into(),
-            ])
-            .into(),
-            PipeSubstitution::new().into(),
-        ],
+        None,
+        vec![LabeledArg {
+            label: super::types::Identifier {
+                name: "end".to_owned(),
+                digest: None,
+            },
+            arg: expr,
+        }],
     )?;
 
     let mut pipe_body = vec![start_sketch_on.into(), start_profile_at.into(), initial_line.into()];
@@ -246,23 +253,28 @@ fn create_start_sketch_on(
             // This is a bit more lenient if you look at the value of epsilon.
             if diff_x <= EPSILON && diff_y <= EPSILON {
                 // We have to close the sketch.
-                let close = CallExpression::new("close", vec![PipeSubstitution::new().into()])?;
+                let close = CallExpressionKw::new("close", None, vec![])?;
                 pipe_body.push(close.into());
                 break;
             }
         }
 
         // TODO: we should check if we should close the sketch.
-        let line = CallExpression::new(
+        let expr = ArrayExpression::new(vec![
+            Literal::new(round_before_recast(line[0]).into()).into(),
+            Literal::new(round_before_recast(line[1]).into()).into(),
+        ])
+        .into();
+        let line = CallExpressionKw::new(
             "line",
-            vec![
-                ArrayExpression::new(vec![
-                    Literal::new(round_before_recast(line[0]).into()).into(),
-                    Literal::new(round_before_recast(line[1]).into()).into(),
-                ])
-                .into(),
-                PipeSubstitution::new().into(),
-            ],
+            None,
+            vec![LabeledArg {
+                arg: expr,
+                label: Identifier {
+                    name: "end".to_owned(),
+                    digest: None,
+                },
+            }],
         )?;
         pipe_body.push(line.into());
     }

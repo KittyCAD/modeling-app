@@ -31,7 +31,7 @@ patternCircular3d(data: CircularPattern3dData, solid_set: SolidSet) -> [Solid]
 exampleSketch = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 1 }, %)
 
-example = extrude(-5, exampleSketch)
+example = extrude(exampleSketch, length = -5)
   |> patternCircular3d({
        axis = [1, -1, 0],
        center = [10, -20, 0],

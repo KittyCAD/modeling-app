@@ -99,8 +99,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  527,
-                  549,
+                  533,
+                  555,
                   0
                 ]
               },
@@ -115,8 +115,8 @@ snapshot_kind: text
               ],
               "radius": 80.0,
               "tag": {
-                "end": 548,
-                "start": 540,
+                "end": 554,
+                "start": 546,
                 "type": "TagDeclarator",
                 "value": "arc_tag"
               },
@@ -130,13 +130,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                527,
-                549,
+                533,
+                555,
                 0
               ],
               "tag": {
-                "end": 548,
-                "start": 540,
+                "end": 554,
+                "start": 546,
                 "type": "TagDeclarator",
                 "value": "arc_tag"
               },
@@ -146,8 +146,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                540,
-                548,
+                546,
+                554,
                 0
               ]
             }
@@ -283,8 +283,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    527,
-                    549,
+                    533,
+                    555,
                     0
                   ]
                 },
@@ -299,8 +299,8 @@ snapshot_kind: text
                 ],
                 "radius": 80.0,
                 "tag": {
-                  "end": 548,
-                  "start": 540,
+                  "end": 554,
+                  "start": 546,
                   "type": "TagDeclarator",
                   "value": "arc_tag"
                 },
@@ -314,8 +314,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    557,
-                    565,
+                    563,
+                    571,
                     0
                   ]
                 },
@@ -733,8 +733,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    438,
-                    460,
+                    444,
+                    466,
                     0
                   ]
                 }
@@ -753,8 +753,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  468,
-                  519,
+                  474,
+                  525,
                   0
                 ]
               }
@@ -771,8 +771,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        527,
-                        549,
+                        533,
+                        555,
                         0
                       ]
                     },
@@ -787,8 +787,8 @@ snapshot_kind: text
                     ],
                     "radius": 80.0,
                     "tag": {
-                      "end": 548,
-                      "start": 540,
+                      "end": 554,
+                      "start": 546,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -802,13 +802,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      527,
-                      549,
+                      533,
+                      555,
                       0
                     ],
                     "tag": {
-                      "end": 548,
-                      "start": 540,
+                      "end": 554,
+                      "start": 546,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -818,8 +818,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      540,
-                      548,
+                      546,
+                      554,
                       0
                     ]
                   }
@@ -829,8 +829,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  468,
-                  519,
+                  474,
+                  525,
                   0
                 ]
               }
@@ -847,8 +847,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    527,
-                    549,
+                    533,
+                    555,
                     0
                   ]
                 },
@@ -863,8 +863,8 @@ snapshot_kind: text
                 ],
                 "radius": 80.0,
                 "tag": {
-                  "end": 548,
-                  "start": 540,
+                  "end": 554,
+                  "start": 546,
                   "type": "TagDeclarator",
                   "value": "arc_tag"
                 },
@@ -878,8 +878,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    557,
-                    565,
+                    563,
+                    571,
                     0
                   ]
                 },
@@ -1297,8 +1297,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    438,
-                    460,
+                    444,
+                    466,
                     0
                   ]
                 }
@@ -1317,8 +1317,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  468,
-                  519,
+                  474,
+                  525,
                   0
                 ]
               }
@@ -1335,8 +1335,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        527,
-                        549,
+                        533,
+                        555,
                         0
                       ]
                     },
@@ -1351,8 +1351,8 @@ snapshot_kind: text
                     ],
                     "radius": 80.0,
                     "tag": {
-                      "end": 548,
-                      "start": 540,
+                      "end": 554,
+                      "start": 546,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -1366,13 +1366,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      527,
-                      549,
+                      533,
+                      555,
                       0
                     ],
                     "tag": {
-                      "end": 548,
-                      "start": 540,
+                      "end": 554,
+                      "start": 546,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -1382,8 +1382,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      540,
-                      548,
+                      546,
+                      554,
                       0
                     ]
                   }
@@ -1393,8 +1393,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  468,
-                  519,
+                  474,
+                  525,
                   0
                 ]
               }
@@ -1465,28 +1465,28 @@ snapshot_kind: text
                       {
                         "arguments": [
                           {
-                            "end": 453,
+                            "end": 459,
                             "name": "p",
-                            "start": 452,
+                            "start": 458,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 459,
+                            "end": 465,
                             "name": "face",
-                            "start": 455,
+                            "start": 461,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 451,
+                          "end": 457,
                           "name": "startSketchOn",
-                          "start": 438,
+                          "start": 444,
                           "type": "Identifier"
                         },
-                        "end": 460,
-                        "start": 438,
+                        "end": 466,
+                        "start": 444,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -1495,163 +1495,163 @@ snapshot_kind: text
                           {
                             "elements": [
                               {
-                                "end": 494,
+                                "end": 500,
                                 "left": {
-                                  "end": 485,
+                                  "end": 491,
                                   "name": "x",
-                                  "start": 484,
+                                  "start": 490,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "+",
                                 "right": {
-                                  "end": 494,
+                                  "end": 500,
                                   "name": "radius",
-                                  "start": 488,
+                                  "start": 494,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 484,
+                                "start": 490,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               {
-                                "end": 514,
+                                "end": 520,
                                 "left": {
-                                  "end": 510,
+                                  "end": 516,
                                   "name": "triangleHeight",
-                                  "start": 496,
+                                  "start": 502,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 514,
+                                  "end": 520,
                                   "raw": "2",
-                                  "start": 513,
+                                  "start": 519,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": 2.0
                                 },
-                                "start": 496,
+                                "start": 502,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             ],
-                            "end": 515,
-                            "start": 483,
+                            "end": 521,
+                            "start": 489,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           },
                           {
-                            "end": 518,
-                            "start": 517,
+                            "end": 524,
+                            "start": 523,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 482,
+                          "end": 488,
                           "name": "startProfileAt",
-                          "start": 468,
+                          "start": 474,
                           "type": "Identifier"
                         },
-                        "end": 519,
-                        "start": 468,
+                        "end": 525,
+                        "start": 474,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 535,
+                            "end": 541,
                             "name": "circ",
-                            "start": 531,
+                            "start": 537,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 538,
-                            "start": 537,
+                            "end": 544,
+                            "start": 543,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           },
                           {
-                            "end": 548,
-                            "start": 540,
+                            "end": 554,
+                            "start": 546,
                             "type": "TagDeclarator",
                             "type": "TagDeclarator",
                             "value": "arc_tag"
                           }
                         ],
                         "callee": {
-                          "end": 530,
+                          "end": 536,
                           "name": "arc",
-                          "start": 527,
+                          "start": 533,
                           "type": "Identifier"
                         },
-                        "end": 549,
-                        "start": 527,
+                        "end": 555,
+                        "start": 533,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 564,
-                            "start": 563,
+                            "end": 570,
+                            "start": 569,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 562,
+                          "end": 568,
                           "name": "close",
-                          "start": 557,
+                          "start": 563,
                           "type": "Identifier"
                         },
-                        "end": 565,
-                        "start": 557,
+                        "end": 571,
+                        "start": 563,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "end": 565,
-                    "start": 438,
+                    "end": 571,
+                    "start": 444,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 565,
-                  "start": 431,
+                  "end": 571,
+                  "start": 437,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 567,
-              "start": 427
+              "end": 573,
+              "start": 433
             },
-            "end": 567,
+            "end": 573,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 419,
+                  "end": 425,
                   "name": "x",
-                  "start": 418,
+                  "start": 424,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 425,
+                  "end": 431,
                   "name": "face",
-                  "start": 421,
+                  "start": 427,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 417,
+            "start": 423,
             "type": "FunctionExpression"
           },
           "memory": {
@@ -2354,8 +2354,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                417,
-                567,
+                423,
+                573,
                 0
               ]
             }
@@ -2751,13 +2751,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                527,
-                549,
+                533,
+                555,
                 0
               ],
               "tag": {
-                "end": 548,
-                "start": 540,
+                "end": 554,
+                "start": 546,
                 "type": "TagDeclarator",
                 "value": "arc_tag"
               },
@@ -2772,8 +2772,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    527,
-                    549,
+                    533,
+                    555,
                     0
                   ]
                 },
@@ -2788,8 +2788,8 @@ snapshot_kind: text
                 ],
                 "radius": 80.0,
                 "tag": {
-                  "end": 548,
-                  "start": 540,
+                  "end": 554,
+                  "start": 546,
                   "type": "TagDeclarator",
                   "value": "arc_tag"
                 },
@@ -2803,8 +2803,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    557,
-                    565,
+                    563,
+                    571,
                     0
                   ]
                 },
@@ -3222,8 +3222,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    438,
-                    460,
+                    444,
+                    466,
                     0
                   ]
                 }
@@ -3242,8 +3242,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  468,
-                  519,
+                  474,
+                  525,
                   0
                 ]
               }
@@ -3260,8 +3260,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        527,
-                        549,
+                        533,
+                        555,
                         0
                       ]
                     },
@@ -3276,8 +3276,8 @@ snapshot_kind: text
                     ],
                     "radius": 80.0,
                     "tag": {
-                      "end": 548,
-                      "start": 540,
+                      "end": 554,
+                      "start": 546,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -3291,13 +3291,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      527,
-                      549,
+                      533,
+                      555,
                       0
                     ],
                     "tag": {
-                      "end": 548,
-                      "start": 540,
+                      "end": 554,
+                      "start": 546,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -3307,8 +3307,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      540,
-                      548,
+                      546,
+                      554,
                       0
                     ]
                   }
@@ -3318,8 +3318,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  468,
-                  519,
+                  474,
+                  525,
                   0
                 ]
               }
@@ -3347,8 +3347,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                468,
-                519,
+                474,
+                525,
                 0
               ]
             }
@@ -3363,13 +3363,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                527,
-                549,
+                533,
+                555,
                 0
               ],
               "tag": {
-                "end": 548,
-                "start": 540,
+                "end": 554,
+                "start": 546,
                 "type": "TagDeclarator",
                 "value": "arc_tag"
               },
@@ -3384,8 +3384,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    527,
-                    549,
+                    533,
+                    555,
                     0
                   ]
                 },
@@ -3400,8 +3400,8 @@ snapshot_kind: text
                 ],
                 "radius": 80.0,
                 "tag": {
-                  "end": 548,
-                  "start": 540,
+                  "end": 554,
+                  "start": 546,
                   "type": "TagDeclarator",
                   "value": "arc_tag"
                 },
@@ -3415,8 +3415,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    557,
-                    565,
+                    563,
+                    571,
                     0
                   ]
                 },
@@ -3834,8 +3834,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    438,
-                    460,
+                    444,
+                    466,
                     0
                   ]
                 }
@@ -3854,8 +3854,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  468,
-                  519,
+                  474,
+                  525,
                   0
                 ]
               }
@@ -3872,8 +3872,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        527,
-                        549,
+                        533,
+                        555,
                         0
                       ]
                     },
@@ -3888,8 +3888,8 @@ snapshot_kind: text
                     ],
                     "radius": 80.0,
                     "tag": {
-                      "end": 548,
-                      "start": 540,
+                      "end": 554,
+                      "start": 546,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -3903,13 +3903,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      527,
-                      549,
+                      533,
+                      555,
                       0
                     ],
                     "tag": {
-                      "end": 548,
-                      "start": 540,
+                      "end": 554,
+                      "start": 546,
                       "type": "TagDeclarator",
                       "value": "arc_tag"
                     },
@@ -3919,8 +3919,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      540,
-                      548,
+                      546,
+                      554,
                       0
                     ]
                   }
@@ -3930,8 +3930,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  468,
-                  519,
+                  474,
+                  525,
                   0
                 ]
               }
@@ -3959,8 +3959,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                468,
-                519,
+                474,
+                525,
                 0
               ]
             }

@@ -38,13 +38,13 @@ const filletR = 0.25
 // Sketch the bracket and extrude with fillets
 const bracket = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, 'outerEdge')
-  |> line([-shelfMountL, 0], %)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, 'innerEdge')
-  |> line([0, -wallMountL + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
+  |> line(end = [0, wallMountL], tag = 'outerEdge')
+  |> line(end = [-shelfMountL, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [shelfMountL - thickness, 0], tag = 'innerEdge')
+  |> line(end = [0, -wallMountL + thickness])
+  |> close()
+  |> extrude(length = width)
   |> fillet({
        radius: filletR,
        tags: [

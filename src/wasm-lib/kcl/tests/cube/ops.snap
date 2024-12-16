@@ -9,14 +9,29 @@ snapshot_kind: text
     "name": "cube",
     "functionSourceRange": [
       7,
-      322,
+      375,
       0
     ],
     "unlabeledArg": null,
-    "labeledArgs": {},
+    "labeledArgs": {
+      "center": {
+        "sourceRange": [
+          417,
+          423,
+          0
+        ]
+      },
+      "sideLength": {
+        "sourceRange": [
+          404,
+          406,
+          0
+        ]
+      }
+    },
     "sourceRange": [
-      333,
-      349,
+      386,
+      424,
       0
     ]
   },
@@ -24,23 +39,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          310,
-          316,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          318,
-          319,
+          362,
+          372,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      302,
-      320,
+      345,
+      373,
       0
     ],
     "type": "StdLibCall",
