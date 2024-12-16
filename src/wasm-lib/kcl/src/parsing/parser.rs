@@ -504,6 +504,8 @@ fn binary_operator(i: &mut TokenSlice) -> PResult<BinaryOperator> {
             ">=" => BinaryOperator::Gte,
             "<" => BinaryOperator::Lt,
             "<=" => BinaryOperator::Lte,
+            "|" => BinaryOperator::Or,
+            "&" => BinaryOperator::And,
             _ => {
                 return Err(CompilationError::fatal(
                     token.as_source_range(),
@@ -4330,6 +4332,20 @@ var baz = 2
 "#
         );
     }
+
+    #[test]
+    fn test_unary_not_on_keyword_bool() {
+        let some_program_string = r#"!true"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap(); // Updated import path
+        let actual = match unary_expression.parse(tokens.as_slice()) {
+            // Use tokens.as_slice() for parsing
+            Ok(x) => x,
+            Err(e) => panic!("{e:?}"),
+        };
+        assert_eq!(actual.operator, UnaryOperator::Not);
+        crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
+    }
 }
 
 #[cfg(test)]
@@ -4588,6 +4604,11 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         r#"x = 3
         obj = { x, y: 4}"#
     );
+    snapshot_test!(bj, "true");
+    snapshot_test!(bk, "truee");
+    snapshot_test!(bl, "x = !true");
+    snapshot_test!(bm, "x = true & false");
+    snapshot_test!(bn, "x = true | false");
     snapshot_test!(kw_function_unnamed_first, r#"val = foo(x, y = z)"#);
     snapshot_test!(kw_function_all_named, r#"val = foo(x = a, y = b)"#);
     snapshot_test!(kw_function_decl_all_labeled, r#"fn foo(x, y) { return 1 }"#);
