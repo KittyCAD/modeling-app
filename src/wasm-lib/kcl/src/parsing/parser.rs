@@ -347,22 +347,6 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
     ))
     .parse_next(i)?;
 
-    // All child parsers have been run.
-    // First, ensure they all have a % in their args.
-    let calls_without_substitution = tail.iter().find_map(|(_nc, call_expr, _nc2)| {
-        if !call_expr.has_substitution_arg() {
-            Some(call_expr.into())
-        } else {
-            None
-        }
-    });
-    if let Some(source_range) = calls_without_substitution {
-        let err = CompilationError::fatal(
-            source_range,
-            "All expressions in a pipeline must use the % (substitution operator)",
-        );
-        return Err(ErrMode::Cut(err.into()));
-    }
     // Time to structure the return value.
     let mut code_count = 0;
     let mut max_noncode_end = 0;
@@ -4123,19 +4107,6 @@ let other_thing = 2 * cos(3)"#;
 let myBox = box([0,0], -3, -16, -10)
 "#;
         crate::parsing::top_level_parse(some_program_string).unwrap();
-    }
-
-    #[test]
-    fn must_use_percent_in_pipeline_fn() {
-        let some_program_string = r#"
-        foo()
-            |> bar(2)
-        "#;
-        assert_err(
-            some_program_string,
-            "All expressions in a pipeline must use the % (substitution operator)",
-            [30, 36],
-        );
     }
 
     #[test]
