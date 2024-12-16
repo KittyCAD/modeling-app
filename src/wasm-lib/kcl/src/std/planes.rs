@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    execution::{ExecState, KclValue, Plane, PlaneType},
+    execution::{ExecState, KclValue, Plane, PlaneType, Point3d},
     std::{sketch::PlaneData, Args},
 };
 
@@ -52,8 +52,8 @@ impl From<StandardPlane> for PlaneData {
 
 /// Offset a plane by a distance along its normal.
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (std_plane, offset): (StandardPlane, f64) = args.get_data_and_float()?;
-    let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
+    let (plane_data, offset): (PlaneData, f64) = args.get_data_and_float()?;
+    let plane = inner_offset_plane(plane_data, offset, exec_state).await?;
     make_offset_plane_in_engine(&plane, exec_state, &args).await?;
     Ok(KclValue::Plane(Box::new(plane)))
 }
@@ -139,41 +139,61 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///   |> line([0, 10], %)
 ///   |> close(%)
 /// ```
-
+///
+/// ```no_run
+/// sketch001 = startSketchOn('XZ')
+/// profile001 = startProfileAt([65.89, 24.98], sketch001)
+///   |> xLine(286.79, %)
+///   |> line([-165.36, 254.07], %, $seg01)
+///   |> lineTo([profileStartX(%), profileStartY(%)], %)
+///   |> close(%)
+/// extrude001 = extrude(200, profile001)
+/// sketch002 = startSketchOn(extrude001, seg01)
+/// profile002 = startProfileAt([-83.92, 60.12], sketch002)
+///   |> line([62.9, 113.51], %)
+///   |> line([69.02, -119.65], %)
+///   |> lineTo([profileStartX(%), profileStartY(%)], %)
+///   |> close(%)
+///  plane001 = offsetPlane(sketch002, 150)
+///  sketch003 = startSketchOn(plane001)
+///  profile003 = startProfileAt([-83.92, 60.12], sketch002)
+///    |> line([62.9, 113.51], %)
+///    |> line([69.02, -119.65], %)
+///    |> lineTo([profileStartX(%), profileStartY(%)], %)
+///    |> close(%)
+/// ```
 #[stdlib {
     name = "offsetPlane",
 }]
-async fn inner_offset_plane(
-    std_plane: StandardPlane,
-    offset: f64,
-    exec_state: &mut ExecState,
-) -> Result<Plane, KclError> {
-    // Convert to the plane type.
-    let plane_data: PlaneData = std_plane.into();
+async fn inner_offset_plane(plane_data: PlaneData, offset: f64, exec_state: &mut ExecState) -> Result<Plane, KclError> {
     // Convert to a plane.
-    let mut plane = Plane::from_plane_data(plane_data, exec_state);
+    let mut plane = Plane::from_plane_data(&plane_data, exec_state);
     // Though offset planes are derived from standard planes, they are not
     // standard planes themselves.
     plane.value = PlaneType::Custom;
 
-    match std_plane {
-        StandardPlane::XY => {
+    match plane_data {
+        PlaneData::XY => {
             plane.origin.z += offset;
         }
-        StandardPlane::XZ => {
-            plane.origin.y -= offset;
-        }
-        StandardPlane::YZ => {
-            plane.origin.x += offset;
-        }
-        StandardPlane::NegXY => {
+        PlaneData::NegXY => {
             plane.origin.z -= offset;
         }
-        StandardPlane::NegXZ => {
+        PlaneData::XZ => {
+            plane.origin.y -= offset;
+        }
+        PlaneData::NegXZ => {
             plane.origin.y += offset;
         }
-        StandardPlane::NegYZ => {
+        PlaneData::YZ => {
+            plane.origin.x += offset;
+        }
+        PlaneData::NegYZ => {
             plane.origin.x -= offset;
+        }
+        PlaneData::Plane { z_axis, .. } => {
+            let offset_vector = Point3d::new(z_axis.x * offset, z_axis.y * offset, z_axis.z * offset);
+            plane.origin += &offset_vector;
         }
     }
 

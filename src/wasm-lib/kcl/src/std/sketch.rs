@@ -1112,7 +1112,7 @@ async fn make_sketch_plane_from_orientation(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Plane>, KclError> {
-    let plane = Plane::from_plane_data(data.clone(), exec_state);
+    let plane = Plane::from_plane_data(&data, exec_state);
 
     // Create the plane on the fly.
     let clobber = false;

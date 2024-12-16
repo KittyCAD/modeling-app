@@ -545,7 +545,7 @@ pub struct Plane {
 }
 
 impl Plane {
-    pub(crate) fn from_plane_data(value: crate::std::sketch::PlaneData, exec_state: &mut ExecState) -> Self {
+    pub(crate) fn from_plane_data(value: &crate::std::sketch::PlaneData, exec_state: &mut ExecState) -> Self {
         let id = exec_state.id_generator.next_uuid();
         match value {
             crate::std::sketch::PlaneData::XY => Plane {
@@ -609,10 +609,10 @@ impl Plane {
                 z_axis,
             } => Plane {
                 id,
-                origin: *origin,
-                x_axis: *x_axis,
-                y_axis: *y_axis,
-                z_axis: *z_axis,
+                origin: **origin,
+                x_axis: **x_axis,
+                y_axis: **y_axis,
+                z_axis: **z_axis,
                 value: PlaneType::Custom,
                 meta: vec![],
             },
@@ -1071,6 +1071,26 @@ impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
             y: LengthUnit(p.y),
             z: LengthUnit(p.z),
         }
+    }
+}
+
+impl std::ops::Add<&Point3d> for Point3d {
+    type Output = Self;
+
+    fn add(self, other: &Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
+    }
+}
+
+impl std::ops::AddAssign<&Point3d> for Point3d {
+    fn add_assign(&mut self, other: &Self) {
+        self.x += other.x;
+        self.y += other.y;
+        self.z += other.z;
     }
 }
 
