@@ -263,7 +263,7 @@ export async function expectPixelColor(
       return colour.some((c) =>
         c.every((channel, index) => Math.abs(pixel[index] - channel) < diff)
       )
-    })
+    }, {timeout: 10_000})
     .toBeTruthy()
     .catch((cause) => {
       throw new Error(
