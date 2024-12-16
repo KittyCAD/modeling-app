@@ -1776,7 +1776,8 @@ export class SceneEntities {
       structuredClone(pathToNode)
     nodePathWithCorrectedIndexForTruncatedAst[1][0] =
       Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-      Number(sketchNodePaths[0][1][0])
+      Number(planeNodePath[1][0]) -
+      1
 
     const _node = getNodeFromPath<Node<CallExpression>>(
       modifiedAst,
