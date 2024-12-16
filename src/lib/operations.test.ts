@@ -71,6 +71,11 @@ describe('operations filtering', () => {
       userReturn(),
       stdlib('std3'),
       stdlib('std4'),
+      userCall('foo2'),
+      stdlib('std5'),
+      stdlib('std6'),
+      userReturn(),
+      stdlib('std7'),
     ]
     const actual = filterOperations(operations)
     expect(actual).toEqual([
@@ -79,6 +84,38 @@ describe('operations filtering', () => {
       stdlib('std2'),
       stdlib('std3'),
       stdlib('std4'),
+      userCall('foo2'),
+      stdlib('std7'),
+    ])
+  })
+  it('correctly filters with nested function calls', async () => {
+    const operations = [
+      stdlib('std1'),
+      userCall('foo'),
+      stdlib('std2'),
+      userReturn(),
+      stdlib('std3'),
+      stdlib('std4'),
+      userCall('foo2'),
+      stdlib('std5'),
+      userCall('foo3-nested'),
+      stdlib('std6'),
+      userReturn(),
+      stdlib('std7'),
+      userReturn(),
+      stdlib('std8'),
+    ]
+    const actual = filterOperations(operations)
+    expect(actual).toEqual([
+      stdlib('std1'),
+      userCall('foo'),
+      stdlib('std2'),
+      stdlib('std3'),
+      stdlib('std4'),
+      userCall('foo2'),
+      userCall('foo3-nested'),
+      stdlib('std7'),
+      stdlib('std8'),
     ])
   })
 })
