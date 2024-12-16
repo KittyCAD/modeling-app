@@ -2596,6 +2596,14 @@ pub enum BinaryOperator {
     #[serde(rename = "<=")]
     #[display("<=")]
     Lte,
+    /// Are both left and right true?
+    #[serde(rename = "&")]
+    #[display("&")]
+    And,
+    /// Is either left or right true?
+    #[serde(rename = "|")]
+    #[display("|")]
+    Or,
 }
 
 /// Mathematical associativity.
@@ -2630,6 +2638,8 @@ impl BinaryOperator {
             BinaryOperator::Gte => *b"gte",
             BinaryOperator::Lt => *b"ltr",
             BinaryOperator::Lte => *b"lte",
+            BinaryOperator::And => *b"and",
+            BinaryOperator::Or => *b"lor",
         }
     }
 
@@ -2642,6 +2652,8 @@ impl BinaryOperator {
             BinaryOperator::Pow => 13,
             Self::Gt | Self::Gte | Self::Lt | Self::Lte => 9,
             Self::Eq | Self::Neq => 8,
+            Self::And => 7,
+            Self::Or => 6,
         }
     }
 
@@ -2652,6 +2664,7 @@ impl BinaryOperator {
             Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod => Associativity::Left,
             Self::Pow => Associativity::Right,
             Self::Gt | Self::Gte | Self::Lt | Self::Lte | Self::Eq | Self::Neq => Associativity::Left, // I don't know if this is correct
+            Self::And | Self::Or => Associativity::Left,
         }
     }
 }
