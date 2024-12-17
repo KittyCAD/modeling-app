@@ -84,5 +84,6 @@ export interface IElectronAPI {
 declare global {
   interface Window {
     electron: IElectronAPI
+    openExternalLink: (e: React.MouseEvent<HTMLAnchorElement>) => void
   }
 }
