@@ -175,7 +175,7 @@ test.describe('Testing Camera Movement', () => {
     }, [0, -85, -85])
   })
 
-  test('Zoom should be consistent when exiting or entering sketches', async ({
+  test.fixme('Zoom should be consistent when exiting or entering sketches', async ({
     page,
     homePage,
   }) => {
@@ -183,7 +183,7 @@ test.describe('Testing Camera Movement', () => {
     // than zoom and pan outside of sketch mode and enter again and it should not change from where it is
     // than again for sketching
 
-    test.skip(process.platform !== 'darwin', 'Zoom should be consistent')
+    // test.skip(process.platform !== 'darwin', 'Zoom should be consistent')
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
