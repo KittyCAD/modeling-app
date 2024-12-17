@@ -100,64 +100,81 @@ export function getOperationIcon(op: Operation): CustomIconName {
 }
 
 /**
+ * Apply all filters to a list of operations.
+ */
+export function filterOperations(operations: Operation[]): Operation[] {
+  return operationFilters.reduce((ops, filterFn) => filterFn(ops), operations)
+}
+
+/**
  * The filters to apply to a list of operations
  * for use in the feature tree UI
  */
-export const operationFilters = [
+const operationFilters = [
   isNotUserFunctionWithNoOperations,
-  isNotStdLibInUserFunction,
+  isNotInsideUserFunction,
   isNotUserFunctionReturn,
 ]
 
 /**
- * A filter to exclude StdLibCall operations that occur
- * between a UserDefinedFunctionCall and the next UserDefinedFunctionReturn
- * from a list of operations
+ * A filter to exclude everything that occurs inside a UserDefinedFunctionCall
+ * and its corresponding UserDefinedFunctionReturn from a list of operations.
+ * This works even when there are nested function calls.
  */
-export function isNotStdLibInUserFunction(
-  operation: Operation,
-  index: number,
-  allOperations: Operation[]
-) {
-  if (operation.type === 'StdLibCall') {
-    const lastUserDefinedFunctionCallIndex = allOperations
-      .slice(0, index)
-      .findLastIndex((op) => op.type === 'UserDefinedFunctionCall')
-    const lastUserDefinedFunctionReturnIndex = allOperations
-      .slice(0, index)
-      .findLastIndex((op) => op.type === 'UserDefinedFunctionReturn')
-
-    return (
-      lastUserDefinedFunctionCallIndex < lastUserDefinedFunctionReturnIndex ||
-      lastUserDefinedFunctionReturnIndex === -1
-    )
+function isNotInsideUserFunction(operations: Operation[]): Operation[] {
+  const ops: Operation[] = []
+  let depth = 0
+  for (const op of operations) {
+    if (depth === 0) {
+      ops.push(op)
+    }
+    if (op.type === 'UserDefinedFunctionCall') {
+      depth++
+    }
+    if (op.type === 'UserDefinedFunctionReturn') {
+      depth--
+      console.assert(
+        depth >= 0,
+        'Unbalanced UserDefinedFunctionCall and UserDefinedFunctionReturn; too many returns'
+      )
+    }
   }
-  return true
+  // Depth could be non-zero here if there was an error in execution.
+  return ops
 }
 
 /**
- * A filter to exclude UserDefinedFunctionCall operations
- * that don't have any operations inside them
- * from a list of operations
+ * A filter to exclude UserDefinedFunctionCall operations and their
+ * corresponding UserDefinedFunctionReturn that don't have any operations inside
+ * them from a list of operations.
  */
-export function isNotUserFunctionWithNoOperations(
-  operation: Operation,
-  index: number,
-  allOperations: Operation[]
-) {
-  if (operation.type === 'UserDefinedFunctionCall') {
-    return (
-      index <= allOperations.length &&
-      allOperations[index + 1].type !== 'UserDefinedFunctionReturn'
+function isNotUserFunctionWithNoOperations(
+  operations: Operation[]
+): Operation[] {
+  return operations.filter((op, index) => {
+    if (
+      op.type === 'UserDefinedFunctionCall' &&
+      // If this is a call at the end of the array, it's preserved.
+      index < operations.length - 1 &&
+      operations[index + 1].type === 'UserDefinedFunctionReturn'
     )
-  }
-  return true
+      return false
+    if (
+      op.type === 'UserDefinedFunctionReturn' &&
+      // If this return is at the beginning of the array, it's preserved.
+      index > 0 &&
+      operations[index - 1].type === 'UserDefinedFunctionCall'
+    )
+      return false
+
+    return true
+  })
 }
 
 /**
- * A third filter to exclude UserDefinedFunctionReturn operations
- * from a list of operations
+ * A filter to exclude UserDefinedFunctionReturn operations from a list of
+ * operations.
  */
-export function isNotUserFunctionReturn(operation: Operation) {
-  return operation.type !== 'UserDefinedFunctionReturn'
+function isNotUserFunctionReturn(ops: Operation[]): Operation[] {
+  return ops.filter((op) => op.type !== 'UserDefinedFunctionReturn')
 }
