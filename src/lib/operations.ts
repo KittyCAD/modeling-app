@@ -103,10 +103,7 @@ export function getOperationIcon(op: Operation): CustomIconName {
  * Apply all filters to a list of operations.
  */
 export function filterOperations(operations: Operation[]): Operation[] {
-  return operationFilters.reduce(
-    (acc, filter) => acc.filter(filter),
-    operations
-  )
+  return operationFilters.reduce((ops, filterFn) => filterFn(ops), operations)
 }
 
 /**
@@ -124,25 +121,23 @@ const operationFilters = [
  * between a UserDefinedFunctionCall and the next UserDefinedFunctionReturn
  * from a list of operations
  */
-function isNotStdLibInUserFunction(
-  operation: Operation,
-  index: number,
-  allOperations: Operation[]
-) {
-  if (operation.type === 'StdLibCall') {
-    const lastUserDefinedFunctionCallIndex = allOperations
-      .slice(0, index)
-      .findLastIndex((op) => op.type === 'UserDefinedFunctionCall')
-    const lastUserDefinedFunctionReturnIndex = allOperations
-      .slice(0, index)
-      .findLastIndex((op) => op.type === 'UserDefinedFunctionReturn')
-
-    return (
-      lastUserDefinedFunctionCallIndex < lastUserDefinedFunctionReturnIndex ||
-      lastUserDefinedFunctionReturnIndex === -1
-    )
+function isNotStdLibInUserFunction(operations: Operation[]): Operation[] {
+  const ops: Operation[] = []
+  let depth = 0
+  for (const op of operations) {
+    if (depth > 0 && op.type === 'StdLibCall') {
+      // Skip stdlib calls inside user-defined functions.
+      continue
+    }
+    if (op.type === 'UserDefinedFunctionCall') {
+      depth++
+    }
+    if (op.type === 'UserDefinedFunctionReturn') {
+      depth--
+    }
+    ops.push(op)
   }
-  return true
+  return ops
 }
 
 /**
@@ -151,23 +146,36 @@ function isNotStdLibInUserFunction(
  * from a list of operations
  */
 function isNotUserFunctionWithNoOperations(
-  operation: Operation,
-  index: number,
-  allOperations: Operation[]
-) {
-  if (operation.type === 'UserDefinedFunctionCall') {
-    return (
-      index <= allOperations.length &&
-      allOperations[index + 1].type !== 'UserDefinedFunctionReturn'
-    )
+  operations: Operation[]
+): Operation[] {
+  const ops: Operation[] = []
+  for (let i = 0; i < operations.length; i++) {
+    const op = operations[i]
+    if (op.type !== 'UserDefinedFunctionCall') {
+      // Not a call.  Preserve it.
+      ops.push(op)
+      continue
+    }
+    // If this is a call at the end of the array, skip it.
+    const nextIndex = i + 1
+    if (nextIndex >= operations.length) continue
+
+    const nextOp = operations[nextIndex]
+    if (nextOp.type === 'UserDefinedFunctionReturn') {
+      // Next op is a return.  Skip the call and the return.
+      i++
+      continue
+    }
+    // Preserve the call.
+    ops.push(op)
   }
-  return true
+  return ops
 }
 
 /**
  * A third filter to exclude UserDefinedFunctionReturn operations
  * from a list of operations
  */
-function isNotUserFunctionReturn(operation: Operation) {
-  return operation.type !== 'UserDefinedFunctionReturn'
+function isNotUserFunctionReturn(ops: Operation[]): Operation[] {
+  return ops.filter((op) => op.type !== 'UserDefinedFunctionReturn')
 }

@@ -44,8 +44,6 @@ describe('operations filtering', () => {
     expect(actual).toEqual([
       stdlib('std1'),
       userCall('foo'),
-      stdlib('std2'),
-      stdlib('std3'),
       stdlib('std4'),
       stdlib('std5'),
     ])
@@ -81,7 +79,6 @@ describe('operations filtering', () => {
     expect(actual).toEqual([
       stdlib('std1'),
       userCall('foo'),
-      stdlib('std2'),
       stdlib('std3'),
       stdlib('std4'),
       userCall('foo2'),
@@ -109,12 +106,10 @@ describe('operations filtering', () => {
     expect(actual).toEqual([
       stdlib('std1'),
       userCall('foo'),
-      stdlib('std2'),
       stdlib('std3'),
       stdlib('std4'),
       userCall('foo2'),
       userCall('foo3-nested'),
-      stdlib('std7'),
       stdlib('std8'),
     ])
   })
