@@ -421,6 +421,7 @@ impl Node<CallExpressionKw> {
             },
             self.into(),
             ctx.clone(),
+            exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
@@ -569,7 +570,12 @@ impl Node<CallExpression> {
                 };
 
                 // Attempt to call the function.
-                let args = crate::std::Args::new(fn_args, self.into(), ctx.clone());
+                let args = crate::std::Args::new(
+                    fn_args,
+                    self.into(),
+                    ctx.clone(),
+                    exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+                );
                 let result = {
                     // Don't early-return in this block.
                     let result = func.std_lib_fn()(exec_state, args).await;
