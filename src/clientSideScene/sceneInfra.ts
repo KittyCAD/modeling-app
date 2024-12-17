@@ -229,7 +229,6 @@ export class SceneInfra {
       const vector = new Vector3(0, 0, 0)
 
       // Get the position of the object3D in world space
-      // console.log('arrowGroup', arrowGroup)
       arrowGroup.getWorldPosition(vector)
 
       // Project that position to screen space
@@ -347,7 +346,6 @@ export class SceneInfra {
     requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
-      // console.log('animation frame', this.cameraControls.camera)
       this.camControls.update()
       this.renderer.render(this.scene, this.camControls.camera)
       this.labelRenderer.render(this.scene, this.camControls.camera)
@@ -434,7 +432,6 @@ export class SceneInfra {
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
         // this is where we could fire a onDragStart event
-        // console.log('onDragStart', this.selected)
       }
       if (
         hasBeenDragged &&

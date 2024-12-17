@@ -1209,3 +1209,20 @@ function getWallOrCapPlaneCodeRef(
     range: planeCodeRef[0].range,
   }
 }
+/**
+ * Get an artifact from a code source range
+ */
+export function getArtifactFromRange(
+  range: SourceRange,
+  artifactGraph: ArtifactGraph
+): Artifact | null {
+  for (const artifact of artifactGraph.values()) {
+    if ('codeRef' in artifact && artifact.codeRef) {
+      const match =
+        artifact?.codeRef.range[0] === range[0] &&
+        artifact?.codeRef.range[1] === range[1]
+      if (match) return artifact
+    }
+  }
+  return null
+}

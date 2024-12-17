@@ -56,6 +56,8 @@ import { normaliseAngle, roundOff } from 'lib/utils'
 import { SegmentOverlayPayload } from 'machines/modelingMachine'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
+import { editorManager, sceneInfra } from 'lib/singletons'
+import { Selections } from 'lib/selections'
 
 interface CreateSegmentArgs {
   input: SegmentInputs
@@ -69,6 +71,7 @@ interface CreateSegmentArgs {
   theme: Themes
   isSelected?: boolean
   sceneInfra: SceneInfra
+  selection?: Selections
 }
 
 interface UpdateSegmentArgs {
@@ -118,6 +121,7 @@ class StraightSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
+    selection,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -156,6 +160,7 @@ class StraightSegment implements SegmentUtils {
       isSelected,
       callExpName,
       baseColor,
+      selection,
     }
 
     // All segment types get an extra segment handle,
@@ -825,8 +830,37 @@ function createLengthIndicator({
   lengthIndicatorText.innerText = roundOff(length).toString()
   const lengthIndicatorWrapper = document.createElement('div')
 
+  // Double click workflow
+  lengthIndicatorWrapper.ondblclick = () => {
+    const selection = lengthIndicatorGroup.parent?.userData.selection
+    if (!selection) {
+      console.error('Unable to dimension segment when clicking the label.')
+      return
+    }
+    sceneInfra.modelingSend({
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: selection.graphSelections[0],
+      },
+    })
+
+    // Command Bar
+    editorManager.commandBarSend({
+      type: 'Find and select command',
+      data: {
+        name: 'Constrain length',
+        groupId: 'modeling',
+        argDefaultValues: {
+          selection,
+        },
+      },
+    })
+  }
+
   // Style the elements
   lengthIndicatorWrapper.style.position = 'absolute'
+  lengthIndicatorWrapper.style.pointerEvents = 'auto'
   lengthIndicatorWrapper.appendChild(lengthIndicatorText)
   const cssObject = new CSS2DObject(lengthIndicatorWrapper)
   cssObject.name = SEGMENT_LENGTH_LABEL_TEXT
