@@ -617,16 +617,6 @@ impl Node<CallExpression> {
                         source_range: callsite,
                     });
 
-                // Track call operation.
-                exec_state.mod_local.operations.push(Operation::UserDefinedFunctionCall {
-                    name: Some(fn_name.clone()),
-                    function_source_range: func.function_def_source_range().unwrap_or_default(),
-                    unlabeled_arg: None,
-                    // TODO: Add the arguments for legacy positional parameters.
-                    labeled_args: Default::default(),
-                    source_range: callsite,
-                });
-
                 let return_value = {
                     let previous_dynamic_state =
                         std::mem::replace(&mut exec_state.mod_local.dynamic_state, fn_dynamic_state);
