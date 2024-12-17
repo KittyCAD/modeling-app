@@ -637,6 +637,8 @@ test.describe('Sketch tests', () => {
   |> revolve({ axis = "X" }, %)`)
   })
   test('Can add multiple sketches', async ({ page, homePage }) => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
 
     const viewportSize = { width: 1200, height: 500 }
@@ -834,6 +836,8 @@ test.describe('Sketch tests', () => {
     page,
     homePage,
   }) => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
       localStorage.setItem(

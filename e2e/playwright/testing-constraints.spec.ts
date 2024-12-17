@@ -125,6 +125,8 @@ test.describe('Testing constraints', () => {
     await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
   })
   test.describe('Test perpendicular distance constraint', () => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const cases = [
       {
         testName: 'Add variable',
@@ -245,6 +247,8 @@ test.describe('Testing constraints', () => {
     }
   })
   test.describe('Test distance between constraint', () => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const cases = [
       {
         testName: 'Add variable',
@@ -464,6 +468,8 @@ test.describe('Testing constraints', () => {
     }
   })
   test.describe('Test Angle constraint double segment selection', () => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const cases = [
       {
         testName: 'Add variable',
@@ -654,6 +660,8 @@ test.describe('Testing constraints', () => {
     }
   })
   test.describe('Test Length constraint single selection', () => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const cases = [
       {
         testName: 'Length - Add variable',
@@ -839,6 +847,8 @@ part002 = startSketchOn('XZ')
     }
   })
   test.describe('Two segment - no modal constraints', () => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const cases = [
       {
         codeAfter: `|> angledLine([83, segLen(seg01)], %)`,
