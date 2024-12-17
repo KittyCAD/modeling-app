@@ -146,12 +146,12 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///
 /// ```no_run
 /// // Each instance will be shifted along the X axis.
-/// fn transform = (id) => {
+/// fn transform(id) {
 ///   return { translate = [4 * id, 0, 0] }
 /// }
 ///
 /// // Sketch 4 cylinders.
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(5, %)
 ///   |> patternTransform(4, transform, %)
@@ -160,26 +160,27 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// // Each instance will be shifted along the X axis,
 /// // with a gap between the original (at x = 0) and the first replica
 /// // (at x = 8). This is because `id` starts at 1.
-/// fn transform = (id) => {
+/// fn transform(id) {
 ///   return { translate: [4 * (1+id), 0, 0] }
 /// }
 ///
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 2 }, %)
 ///   |> extrude(5, %)
 ///   |> patternTransform(4, transform, %)
 /// ```
 /// ```no_run
-/// fn cube = (length, center) => {
-///   let l = length/2
-///   let x = center[0]
-///   let y = center[1]
-///   let p0 = [-l + x, -l + y]
-///   let p1 = [-l + x,  l + y]
-///   let p2 = [ l + x,  l + y]
-///   let p3 = [ l + x, -l + y]
+/// fn cube(length, center) {
+///   l = length/2
+///   x = center[0]
+///   y = center[1]
+///   p0 = [-l + x, -l + y]
+///   p1 = [-l + x,  l + y]
+///   p2 = [ l + x,  l + y]
+///   p3 = [ l + x, -l + y]
 ///
-///   return startSketchAt(p0)
+///   return startSketchOn('XY')
+///   |> startProfileAt(p0, %)
 ///   |> lineTo(p1, %)
 ///   |> lineTo(p2, %)
 ///   |> lineTo(p3, %)
@@ -188,8 +189,8 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   |> extrude(length, %)
 /// }
 ///
-/// let width = 20
-/// fn transform = (i) => {
+/// width = 20
+/// fn transform(i) {
 ///   return {
 ///     // Move down each time.
 ///     translate = [0, 0, -i * width],
@@ -203,22 +204,23 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   }
 /// }
 ///
-/// let myCubes =
+/// myCubes =
 ///   cube(width, [100,0])
 ///   |> patternTransform(25, transform, %)
 /// ```
 ///
 /// ```no_run
-/// fn cube = (length, center) => {
-///   let l = length/2
-///   let x = center[0]
-///   let y = center[1]
-///   let p0 = [-l + x, -l + y]
-///   let p1 = [-l + x,  l + y]
-///   let p2 = [ l + x,  l + y]
-///   let p3 = [ l + x, -l + y]
+/// fn cube(length, center) {
+///   l = length/2
+///   x = center[0]
+///   y = center[1]
+///   p0 = [-l + x, -l + y]
+///   p1 = [-l + x,  l + y]
+///   p2 = [ l + x,  l + y]
+///   p3 = [ l + x, -l + y]
 ///   
-///   return startSketchAt(p0)
+///   return startSketchOn('XY')
+///   |> startProfileAt(p0, %)
 ///   |> lineTo(p1, %)
 ///   |> lineTo(p2, %)
 ///   |> lineTo(p3, %)
@@ -227,8 +229,8 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   |> extrude(length, %)
 /// }
 ///
-/// let width = 20
-/// fn transform = (i) => {
+/// width = 20
+/// fn transform(i) {
 ///   return {
 ///     translate = [0, 0, -i * width],
 ///     rotation = {
@@ -238,43 +240,44 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///     }
 ///   }
 /// }
-/// let myCubes =
+/// myCubes =
 ///   cube(width, [100,100])
 ///   |> patternTransform(4, transform, %)
 /// ```
 /// ```no_run
 /// // Parameters
-/// const r = 50    // base radius
-/// const h = 10    // layer height
-/// const t = 0.005 // taper factor [0-1)
+/// r = 50    // base radius
+/// h = 10    // layer height
+/// t = 0.005 // taper factor [0-1)
 /// // Defines how to modify each layer of the vase.
 /// // Each replica is shifted up the Z axis, and has a smoothly-varying radius
-/// fn transform = (replicaId) => {
-///   let scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
+/// fn transform(replicaId) {
+///   scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
 ///   return {
 ///     translate = [0, 0, replicaId * 10],
 ///     scale = [scale, scale, 0],
 ///   }
 /// }
 /// // Each layer is just a pretty thin cylinder.
-/// fn layer = () => {
+/// fn layer() {
 ///   return startSketchOn("XY") // or some other plane idk
 ///     |> circle({ center = [0, 0], radius = 1 }, %, $tag1)
 ///     |> extrude(h, %)
 /// }
 /// // The vase is 100 layers tall.
 /// // The 100 layers are replica of each other, with a slight transformation applied to each.
-/// let vase = layer() |> patternTransform(100, transform, %)
+/// vase = layer() |> patternTransform(100, transform, %)
 /// ```
 /// ```
-/// fn transform = (i) => {
+/// fn transform(i) {
 ///   // Transform functions can return multiple transforms. They'll be applied in order.
 ///   return [
 ///     { translate: [30 * i, 0, 0] },
 ///     { rotation: { angle: 45 * i } },
 ///   ]
 /// }
-/// startSketchAt([0, 0])
+/// startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> polygon({
 ///        radius: 10,
 ///        numSides: 4,
@@ -285,8 +288,9 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   |> patternTransform(3, transform, %)
 /// ```
 #[stdlib {
-     name = "patternTransform",
- }]
+    name = "patternTransform",
+    feature_tree_operation = true,
+}]
 async fn inner_pattern_transform<'a>(
     total_instances: u32,
     transform_function: FunctionParam<'a>,
@@ -312,7 +316,7 @@ async fn inner_pattern_transform<'a>(
 /// Just like patternTransform, but works on 2D sketches not 3D solids.
 /// ```no_run
 /// // Each instance will be shifted along the X axis.
-/// fn transform = (id) => {
+/// fn transform(id) {
 ///   return { translate: [4 * id, 0] }
 /// }
 ///
@@ -322,8 +326,8 @@ async fn inner_pattern_transform<'a>(
 ///   |> patternTransform2d(4, transform, %)
 /// ```
 #[stdlib {
-     name = "patternTransform2d",
- }]
+    name = "patternTransform2d",
+}]
 async fn inner_pattern_transform_2d<'a>(
     total_instances: u32,
     transform_function: FunctionParam<'a>,
@@ -378,7 +382,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     let resp = args
         .send_modeling_cmd(
@@ -689,7 +693,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 /// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 1 }, %)
 ///   |> patternLinear2d({
 ///        axis = [1, 0],
@@ -697,7 +701,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 ///        distance = 4
 ///      }, %)
 ///
-/// const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 /// ```
 #[stdlib {
     name = "patternLinear2d",
@@ -746,14 +750,14 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 2], %)
 ///   |> line([3, 1], %)
 ///   |> line([0, -4], %)
 ///   |> close(%)
 ///
-/// const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 ///   |> patternLinear3d({
 ///       axis = [1, 0, 1],
 ///       instances = 7,
@@ -762,6 +766,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// ```
 #[stdlib {
     name = "patternLinear3d",
+    feature_tree_operation = true,
 }]
 async fn inner_pattern_linear_3d(
     data: LinearPattern3dData,
@@ -900,7 +905,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([.5, 25], %)
 ///   |> line([0, 5], %)
 ///   |> line([-1, 0], %)
@@ -913,7 +918,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 ///        rotateDuplicates = true
 ///      }, %)
 ///
-/// const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 /// ```
 #[stdlib {
     name = "patternCircular2d",
@@ -967,10 +972,10 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> circle({ center = [0, 0], radius = 1 }, %)
 ///
-/// const example = extrude(-5, exampleSketch)
+/// example = extrude(-5, exampleSketch)
 ///   |> patternCircular3d({
 ///        axis = [1, -1, 0],
 ///        center = [10, -20, 0],
@@ -981,6 +986,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 /// ```
 #[stdlib {
     name = "patternCircular3d",
+    feature_tree_operation = true,
 }]
 async fn inner_pattern_circular_3d(
     data: CircularPattern3dData,
@@ -1029,7 +1035,7 @@ async fn pattern_circular(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Geometries, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let num_repetitions = match data.repetitions() {
         RepetitionsNeeded::More(n) => n,
         RepetitionsNeeded::None => {

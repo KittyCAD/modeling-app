@@ -383,9 +383,9 @@ impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
 #[display(style = "snake_case")]
 pub enum MouseControlType {
     #[default]
-    #[display("kittycad")]
-    #[serde(rename = "kittycad", alias = "KittyCAD")]
-    KittyCad,
+    #[display("zoo")]
+    #[serde(rename = "zoo", alias = "Zoo", alias = "KittyCAD")]
+    Zoo,
     #[display("onshape")]
     #[serde(rename = "onshape", alias = "OnShape")]
     OnShape,
@@ -493,6 +493,10 @@ pub struct CommandBarSettings {
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
 pub enum OnboardingStatus {
+    /// The unset state.
+    #[serde(rename = "")]
+    #[display("")]
+    Unset,
     /// The user has completed onboarding.
     Completed,
     /// The user has not completed onboarding.

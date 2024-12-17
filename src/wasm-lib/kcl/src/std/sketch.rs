@@ -104,14 +104,14 @@ pub async fn line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// Draw a line from the current origin to some absolute (x, y) point.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([10, 0], %)
 ///   |> lineTo([0, 10], %)
 ///   |> lineTo([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "lineTo",
@@ -124,7 +124,7 @@ async fn inner_line_to(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -175,7 +175,7 @@ pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// then xLineTo(4) draws a line from (1, 1) to (4, 1)
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLineTo(15, %)
 ///   |> angledLine({
@@ -191,7 +191,7 @@ pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///   |> xLineTo(10, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "xLineTo",
@@ -225,7 +225,7 @@ pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// then yLineTo(4) draws a line from (1, 1) to (1, 4)
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -234,7 +234,7 @@ pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "yLineTo",
@@ -266,25 +266,25 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// from the current position.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([25, 15], %)
 ///   |> line([5, -6], %)
 ///   |> line([-10, -10], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "line",
@@ -299,7 +299,7 @@ async fn inner_line(
     let from = sketch.current_pen_position()?;
     let to = [from.x + delta[0], from.y + delta[1]];
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -349,7 +349,7 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// from the current position along the 'x' axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLine(15, %)
 ///   |> angledLine({
@@ -365,7 +365,7 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> xLine(-15, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "xLine",
@@ -394,7 +394,7 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// from the current position along the 'y' axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLine(15, %)
 ///   |> angledLine({
@@ -405,7 +405,7 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> yLine(-5, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "yLine",
@@ -450,7 +450,7 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// measure of some angle and distance.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLineTo(15, %)
 ///   |> angledLine({
@@ -461,7 +461,7 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLine",
@@ -488,7 +488,7 @@ async fn inner_angled_line(
 
     let to: [f64; 2] = [from.x + delta[0], from.y + delta[1]];
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -537,14 +537,14 @@ pub async fn angled_line_of_x_length(exec_state: &mut ExecState, args: Args) -> 
 /// along some angle (in degrees) for some relative length in the 'x' dimension.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineOfXLength({ angle = 45, length = 10 }, %, $edge1)
 ///   |> angledLineOfXLength({ angle = -15, length = 20 }, %, $edge2)
 ///   |> line([0, -5], %)
 ///   |> close(%, $edge3)
 ///
-/// const extrusion = extrude(10, sketch001)
+/// extrusion = extrude(10, sketch001)
 /// ```
 #[stdlib {
     name = "angledLineOfXLength",
@@ -608,14 +608,14 @@ pub async fn angled_line_to_x(exec_state: &mut ExecState, args: Args) -> Result<
 /// in the 'x' dimension.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineToX({ angle = 30, to = 10 }, %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///  
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLineToX",
@@ -667,7 +667,7 @@ pub async fn angled_line_of_y_length(exec_state: &mut ExecState, args: Args) -> 
 /// along some angle (in degrees) for some relative length in the 'y' dimension.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLineOfYLength({ angle = 45, length = 10 }, %)
@@ -676,7 +676,7 @@ pub async fn angled_line_of_y_length(exec_state: &mut ExecState, args: Args) -> 
 ///   |> line([-10, 0], %)
 ///   |> line([0, -30], %)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLineOfYLength",
@@ -729,14 +729,14 @@ pub async fn angled_line_to_y(exec_state: &mut ExecState, args: Args) -> Result<
 /// in the 'y' dimension.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLineToY({ angle = 60, to = 20 }, %)
 ///   |> line([-20, 0], %)
 ///   |> angledLineToY({ angle = 70, to = 10 }, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLineToY",
@@ -802,7 +802,7 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 /// segment.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([5, 10], %)
 ///   |> lineTo([-10, 10], %, $lineToIntersect)
@@ -814,7 +814,7 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 ///      }, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLineThatIntersects",
@@ -859,36 +859,37 @@ pub async fn start_sketch_at(exec_state: &mut ExecState, args: Args) -> Result<K
 /// Start a new 2-dimensional sketch at a given point on the 'XY' plane.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchAt([0, 0])
+/// exampleSketch = startSketchAt([0, 0])
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchAt([10, 10])
+/// exampleSketch = startSketchAt([10, 10])
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchAt([-10, 23])
+/// exampleSketch = startSketchAt([-10, 23])
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "startSketchAt",
+    deprecated = true,
 }]
 async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args: Args) -> Result<Sketch, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
@@ -961,65 +962,65 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XY")
+/// exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 ///
-/// const exampleSketch002 = startSketchOn(example, 'end')
+/// exampleSketch002 = startSketchOn(example, 'end')
 ///   |> startProfileAt([1, 1], %)
 ///   |> line([8, 0], %)
 ///   |> line([0, 8], %)
 ///   |> line([-8, 0], %)
 ///   |> close(%)
 ///
-/// const example002 = extrude(5, exampleSketch002)
+/// example002 = extrude(5, exampleSketch002)
 ///
-/// const exampleSketch003 = startSketchOn(example002, 'end')
+/// exampleSketch003 = startSketchOn(example002, 'end')
 ///   |> startProfileAt([2, 2], %)
 ///   |> line([6, 0], %)
 ///   |> line([0, 6], %)
 ///   |> line([-6, 0], %)
 ///   |> close(%)
 ///
-/// const example003 = extrude(5, exampleSketch003)
+/// example003 = extrude(5, exampleSketch003)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XY")
+/// exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %, $sketchingFace)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 ///
-/// const exampleSketch002 = startSketchOn(example, sketchingFace)
+/// exampleSketch002 = startSketchOn(example, sketchingFace)
 ///   |> startProfileAt([1, 1], %)
 ///   |> line([8, 0], %)
 ///   |> line([0, 8], %)
 ///   |> line([-8, 0], %)
 ///   |> close(%, $sketchingFace002)
 ///
-/// const example002 = extrude(10, exampleSketch002)
+/// example002 = extrude(10, exampleSketch002)
 ///
-/// const exampleSketch003 = startSketchOn(example002, sketchingFace002)
+/// exampleSketch003 = startSketchOn(example002, sketchingFace002)
 ///   |> startProfileAt([-8, 12], %)
 ///   |> line([0, 6], %)
 ///   |> line([6, 0], %)
 ///   |> line([0, -6], %)
 ///   |> close(%)
 ///
-/// const example003 = extrude(5, exampleSketch003)
+/// example003 = extrude(5, exampleSketch003)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XY')
+/// exampleSketch = startSketchOn('XY')
 ///   |> startProfileAt([4, 12], %)
 ///   |> line([2, 0], %)
 ///   |> line([0, -6], %)
@@ -1030,20 +1031,20 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line([-2, 0], %)
 ///   |> close(%)
 ///
-/// const example = revolve({ axis: 'y', angle: 180 }, exampleSketch)
+/// example = revolve({ axis: 'y', angle: 180 }, exampleSketch)
 ///  
-/// const exampleSketch002 = startSketchOn(example, 'end')
+/// exampleSketch002 = startSketchOn(example, 'end')
 ///   |> startProfileAt([4.5, -5], %)
 ///   |> line([0, 5], %)
 ///   |> line([5, 0], %)
 ///   |> line([0, -5], %)
 ///   |> close(%)
 ///
-/// const example002 = extrude(5, exampleSketch002)
+/// example002 = extrude(5, exampleSketch002)
 /// ```
 ///
 /// ```no_run
-/// const a1 = startSketchOn({
+/// a1 = startSketchOn({
 ///       plane: {
 ///         origin = { x = 0, y = 0, z = 0 },
 ///         xAxis = { x = 1, y = 0, z = 0 },
@@ -1061,6 +1062,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "startSketchOn",
+    feature_tree_operation = true,
 }]
 async fn inner_start_sketch_on(
     data: SketchData,
@@ -1177,36 +1179,36 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 /// Start a new profile at a given point.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn('-XZ')
 ///   |> startProfileAt([10, 10], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn('-XZ')
 ///   |> startProfileAt([-10, 23], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "startProfileAt",
@@ -1229,7 +1231,7 @@ pub(crate) async fn inner_start_profile_at(
             // Hide whatever plane we are sketching on.
             // This is especially helpful for offset planes, which would be visible otherwise.
             args.batch_end_cmd(
-                exec_state.id_generator.next_uuid(),
+                exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::ObjectVisible {
                     object_id: plane.id,
                     hidden: true,
@@ -1242,7 +1244,7 @@ pub(crate) async fn inner_start_profile_at(
 
     // Enter sketch mode on the surface.
     // We call this here so you can reuse the sketch surface for multiple sketches.
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::EnableSketchMode {
@@ -1260,8 +1262,8 @@ pub(crate) async fn inner_start_profile_at(
     )
     .await?;
 
-    let id = exec_state.id_generator.next_uuid();
-    let path_id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
+    let path_id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath {}))
         .await?;
@@ -1320,7 +1322,7 @@ pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<
 /// value.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine([-26.6, 50], %)
 ///  |> angledLine([90, 50], %)
@@ -1344,7 +1346,7 @@ pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<
 /// value.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine({ angle = -60, length = 14 }, %)
 ///  |> angledLineToY({ angle = 30, to = profileStartY(%) }, %)
@@ -1367,7 +1369,7 @@ pub async fn profile_start(_exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// value.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine({ angle = 120, length = 50 }, %, $seg01)
 ///  |> angledLine({ angle = segAng(seg01) + 120, length = 50 }, %)
@@ -1406,13 +1408,13 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn('-XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "close",
@@ -1426,7 +1428,7 @@ pub(crate) async fn inner_close(
     let from = sketch.current_pen_position()?;
     let to: Point2d = sketch.start.from.into();
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }))
         .await?;
@@ -1435,7 +1437,7 @@ pub(crate) async fn inner_close(
     if let SketchSurface::Plane(_) = sketch.on {
         // We were on a plane, disable the sketch mode.
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
         )
         .await?;
@@ -1524,7 +1526,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// for to construct your shape, you're likely looking for tangentialArc.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
@@ -1533,7 +1535,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 ///        radius = 16
 ///      }, %)
 ///   |> close(%)
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "arc",
@@ -1572,7 +1574,7 @@ pub(crate) async fn inner_arc(
     }
     let ccw = angle_start < angle_end;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -1631,14 +1633,14 @@ pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// the start and end.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> arcTo({
 ///         end = [10,0],
 ///         interior = [5,5]
 ///      }, %)
 ///   |> close(%)
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "arcTo",
@@ -1651,7 +1653,7 @@ pub(crate) async fn inner_arc_to(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     // The start point is taken from the path you are extending.
     args.batch_modeling_cmd(
@@ -1767,7 +1769,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// degrees along the imaginary circle.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 60,
@@ -1780,7 +1782,7 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///   }, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "tangentialArc",
@@ -1797,7 +1799,7 @@ async fn inner_tangential_arc(
     let tangent_info = sketch.get_tangential_info_from_paths(); //this function desperately needs some documentation
     let tan_previous_point = tangent_info.tan_previous_point(from.into());
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
@@ -1900,7 +1902,7 @@ pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) 
 /// coordinates.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 60,
@@ -1910,7 +1912,7 @@ pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) 
 ///   |> line([10, -15], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "tangentialArcTo",
@@ -1934,7 +1936,7 @@ async fn inner_tangential_arc_to(
     });
 
     let delta = [to_x - from.x, to_y - from.y];
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
@@ -1966,7 +1968,7 @@ async fn inner_tangential_arc_to(
 /// distance away.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 45,
@@ -1976,7 +1978,7 @@ async fn inner_tangential_arc_to(
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "tangentialArcToRelative",
@@ -2017,7 +2019,7 @@ async fn inner_tangential_arc_to_relative(
         }));
     }
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
@@ -2108,7 +2110,7 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// shape.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 10], %)
 ///   |> bezierCurve({
@@ -2119,7 +2121,7 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///   |> lineTo([10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "bezierCurve",
@@ -2137,7 +2139,7 @@ async fn inner_bezier_curve(
     let delta = data.to;
     let to = [from.x + data.to[0], from.y + data.to[1]];
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -2188,7 +2190,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XY')
+/// exampleSketch = startSketchOn('XY')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 5], %)
 ///   |> line([5, 0], %)
@@ -2197,27 +2199,28 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> hole(circle({ center = [1, 1], radius = .25 }, %), %)
 ///   |> hole(circle({ center = [1, 4], radius = .25 }, %), %)
 ///
-/// const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// fn squareHoleSketch = () => {
-///     const squareSketch = startSketchOn('-XZ')
-///       |> startProfileAt([-1, -1], %)
-///       |> line([2, 0], %)
-///       |> line([0, 2], %)
-///       |> line([-2, 0], %)
-///       |> close(%)
-///     return squareSketch
-///   }
+/// fn squareHoleSketch() {
+///   squareSketch = startSketchOn('-XZ')
+///     |> startProfileAt([-1, -1], %)
+///     |> line([2, 0], %)
+///     |> line([0, 2], %)
+///     |> line([-2, 0], %)
+///     |> close(%)
+///   return squareSketch
+/// }
 ///
-///  const exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn('-XZ')
 ///     |> circle({ center = [0, 0], radius = 3 }, %)
 ///     |> hole(squareHoleSketch(), %)
-///  const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 /// ```
 #[stdlib {
     name = "hole",
+    feature_tree_operation = true,
 }]
 async fn inner_hole(
     hole_sketch: SketchSet,
@@ -2228,7 +2231,7 @@ async fn inner_hole(
     let hole_sketches: Vec<Sketch> = hole_sketch.into();
     for hole_sketch in hole_sketches {
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid2dAddHole {
                 object_id: sketch.id,
                 hole_id: hole_sketch.id,
@@ -2239,7 +2242,7 @@ async fn inner_hole(
         // suggestion (mike)
         // we also hide the source hole since its essentially "consumed" by this operation
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: hole_sketch.id,
                 hidden: true,

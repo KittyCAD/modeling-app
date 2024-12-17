@@ -3,7 +3,6 @@ import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
-import { isSolid2D, isSegment, isSweep } from 'lang/std/artifactGraph'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -64,7 +63,7 @@ export const revolveAxisValidator = async ({
     return 'Unable to revolve, sketch not found'
   }
 
-  if (!(isSolid2D(artifact) || isSegment(artifact) || isSweep(artifact))) {
+  if (!('pathId' in artifact)) {
     return 'Unable to revolve, sketch has no path'
   }
 
@@ -103,5 +102,54 @@ export const revolveAxisValidator = async ({
   } else {
     // return error message for the toast
     return 'Unable to revolve with selected axis'
+  }
+}
+
+export const loftValidator = async ({
+  data,
+}: {
+  data: { [key: string]: Selections }
+  context: CommandBarContext
+}): Promise<boolean | string> => {
+  if (!isSelections(data.selection)) {
+    return 'Unable to loft, selections are missing'
+  }
+  const { selection } = data
+
+  if (selection.graphSelections.some((s) => s.artifact?.type !== 'solid2D')) {
+    return 'Unable to loft, some selection are not solid2Ds'
+  }
+
+  const sectionIds = data.selection.graphSelections.flatMap((s) =>
+    s.artifact?.type === 'solid2D' ? s.artifact.pathId : []
+  )
+
+  if (sectionIds.length < 2) {
+    return 'Unable to loft, selection contains less than two solid2Ds'
+  }
+
+  const loftCommand = async () => {
+    // TODO: check what to do with these
+    const DEFAULT_V_DEGREE = 2
+    const DEFAULT_TOLERANCE = 2
+    const DEFAULT_BEZ_APPROXIMATE_RATIONAL = false
+    return await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        section_ids: sectionIds,
+        type: 'loft',
+        bez_approximate_rational: DEFAULT_BEZ_APPROXIMATE_RATIONAL,
+        tolerance: DEFAULT_TOLERANCE,
+        v_degree: DEFAULT_V_DEGREE,
+      },
+    })
+  }
+  const attempt = await dryRunWrapper(loftCommand)
+  if (attempt?.success) {
+    return true
+  } else {
+    // return error message for the toast
+    return 'Unable to loft with selected sketches'
   }
 }

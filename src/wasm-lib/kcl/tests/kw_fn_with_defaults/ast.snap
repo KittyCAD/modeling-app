@@ -132,7 +132,7 @@ snapshot_kind: text
       },
       {
         "declaration": {
-          "end": 98,
+          "end": 99,
           "id": {
             "end": 75,
             "name": "twentyOne",
@@ -148,9 +148,9 @@ snapshot_kind: text
                   "name": "by"
                 },
                 "arg": {
-                  "end": 97,
+                  "end": 98,
                   "raw": "20",
-                  "start": 95,
+                  "start": 96,
                   "type": "Literal",
                   "type": "Literal",
                   "value": 20.0
@@ -163,7 +163,7 @@ snapshot_kind: text
               "start": 78,
               "type": "Identifier"
             },
-            "end": 98,
+            "end": 99,
             "start": 78,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -179,14 +179,14 @@ snapshot_kind: text
           "start": 66,
           "type": "VariableDeclarator"
         },
-        "end": 98,
+        "end": 99,
         "kind": "const",
         "start": 66,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 99,
+    "end": 100,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [

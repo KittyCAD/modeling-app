@@ -120,6 +120,11 @@
     "description": "A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint."
   },
   {
+    "file": "pipe-with-bend.kcl",
+    "title": "Pipe with bend",
+    "description": "A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow."
+  },
+  {
     "file": "poopy-shoe.kcl",
     "title": "Poopy Shoe",
     "description": "poop shute for bambu labs printer - optimized for printing."

@@ -20,6 +20,7 @@ import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
+import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
 
 /**
  * A setting that can be set at the user or project level
@@ -190,8 +191,10 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
-      onboardingStatus: new Setting<string>({
+      onboardingStatus: new Setting<OnboardingStatus>({
         defaultValue: '',
+        // TODO: this could be better but we don't have a TS side real enum
+        // for this yet
         validate: (v) => typeof v === 'string',
         hideOnPlatform: 'both',
       }),
@@ -284,7 +287,7 @@ export function createSettings() {
        * The controls for how to navigate the 3D view
        */
       mouseControls: new Setting<CameraSystem>({
-        defaultValue: 'KittyCAD',
+        defaultValue: 'Zoo',
         description: 'The controls for how to navigate the 3D view',
         validate: (v) => cameraSystems.includes(v as CameraSystem),
         hideOnLevel: 'project',

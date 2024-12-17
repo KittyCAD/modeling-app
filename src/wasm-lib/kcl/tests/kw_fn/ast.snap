@@ -196,7 +196,7 @@ snapshot_kind: text
       },
       {
         "declaration": {
-          "end": 122,
+          "end": 123,
           "id": {
             "end": 103,
             "name": "three",
@@ -212,9 +212,9 @@ snapshot_kind: text
                   "name": "delta"
                 },
                 "arg": {
-                  "end": 121,
+                  "end": 122,
                   "raw": "2",
-                  "start": 120,
+                  "start": 121,
                   "type": "Literal",
                   "type": "Literal",
                   "value": 2.0
@@ -227,7 +227,7 @@ snapshot_kind: text
               "start": 106,
               "type": "Identifier"
             },
-            "end": 122,
+            "end": 123,
             "start": 106,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
@@ -243,14 +243,14 @@ snapshot_kind: text
           "start": 98,
           "type": "VariableDeclarator"
         },
-        "end": 122,
+        "end": 123,
         "kind": "const",
         "start": 98,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 123,
+    "end": 124,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [

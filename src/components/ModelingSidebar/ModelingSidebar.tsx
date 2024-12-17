@@ -19,6 +19,7 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -41,7 +42,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const onboardingStatus = settings.context.app.onboardingStatus
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
-    onboardingStatus.current === 'camera' ||
+    onboardingStatus.current === onboardingPaths.CAMERA ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '

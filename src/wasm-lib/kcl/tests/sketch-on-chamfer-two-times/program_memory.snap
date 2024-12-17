@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 105
 description: Program memory after executing sketch-on-chamfer-two-times.kcl
 snapshot_kind: text
 ---
@@ -1584,7 +1583,7 @@ snapshot_kind: text
             ]
           },
           "height": 50.0,
-          "startCapId": "[uuid]",
+          "startCapId": null,
           "endCapId": "[uuid]",
           "__meta": [
             {

@@ -2,4 +2,4 @@ fn add(@x) {
   return x + 1
 }
 
-two = add(x: 1)
+two = add(x = 1)

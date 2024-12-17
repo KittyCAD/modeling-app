@@ -3,10 +3,10 @@ use std::fmt::Write;
 use crate::parsing::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, DefaultParamVal, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression,
-        ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue,
-        MemberExpression, MemberObject, Node, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program,
-        TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
+        CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FnArgType, FormatOptions, FunctionExpression,
+        IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
+        LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
+        PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     PIPE_OPERATOR,
 };
@@ -55,7 +55,7 @@ impl Program {
                         self.non_code_meta
                             .start_nodes
                             .iter()
-                            .map(|start| start.format(&indentation))
+                            .map(|start| start.recast(options, indentation_level))
                             .collect()
                     }
                 } else {
@@ -76,7 +76,7 @@ impl Program {
                         .iter()
                         .enumerate()
                         .map(|(i, custom_white_space_or_comment)| {
-                            let formatted = custom_white_space_or_comment.format(&indentation);
+                            let formatted = custom_white_space_or_comment.recast(options, indentation_level);
                             if i == 0 && !formatted.trim().is_empty() {
                                 if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
                                     format!("\n{}", formatted)
@@ -115,7 +115,75 @@ impl NonCodeValue {
     fn should_cause_array_newline(&self) -> bool {
         match self {
             Self::InlineComment { .. } => false,
-            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
+            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine | Self::Annotation { .. } => {
+                true
+            }
+        }
+    }
+}
+
+impl Node<NonCodeNode> {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let indentation = options.get_indentation(indentation_level);
+        match &self.value {
+            NonCodeValue::InlineComment {
+                value,
+                style: CommentStyle::Line,
+            } => format!(" // {}\n", value),
+            NonCodeValue::InlineComment {
+                value,
+                style: CommentStyle::Block,
+            } => format!(" /* {} */", value),
+            NonCodeValue::BlockComment { value, style } => match style {
+                CommentStyle::Block => format!("{}/* {} */", indentation, value),
+                CommentStyle::Line => {
+                    if value.trim().is_empty() {
+                        format!("{}//\n", indentation)
+                    } else {
+                        format!("{}// {}\n", indentation, value.trim())
+                    }
+                }
+            },
+            NonCodeValue::NewLineBlockComment { value, style } => {
+                let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
+                match style {
+                    CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
+                    CommentStyle::Line => {
+                        if value.trim().is_empty() {
+                            format!("{}{}//\n", add_start_new_line, indentation)
+                        } else {
+                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
+                        }
+                    }
+                }
+            }
+            NonCodeValue::NewLine => "\n\n".to_string(),
+            NonCodeValue::Annotation { name, properties } => {
+                let mut result = "@".to_owned();
+                result.push_str(&name.name);
+                if let Some(properties) = properties {
+                    result.push('(');
+                    result.push_str(
+                        &properties
+                            .iter()
+                            .map(|prop| {
+                                format!(
+                                    "{} = {}",
+                                    prop.key.name,
+                                    prop.value
+                                        .recast(options, indentation_level + 1, ExprContext::Other)
+                                        .trim()
+                                )
+                            })
+                            .collect::<Vec<String>>()
+                            .join(", "),
+                    );
+                    result.push(')');
+                    result.push('\n');
+                }
+
+                result
+            }
         }
     }
 }
@@ -146,11 +214,11 @@ impl ImportStatement {
                 string.push_str(" from ");
             }
             ImportSelector::Glob(_) => string.push_str("* from "),
-            ImportSelector::None(_) => {}
+            ImportSelector::None { .. } => {}
         }
         string.push_str(&format!("\"{}\"", self.path));
 
-        if let ImportSelector::None(Some(alias)) = &self.selector {
+        if let ImportSelector::None { alias: Some(alias) } = &self.selector {
             string.push_str(" as ");
             string.push_str(&alias.name);
         }
@@ -272,7 +340,7 @@ impl LabeledArg {
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         let label = &self.label.name;
         let arg = self.arg.recast(options, indentation_level, ctxt);
-        format!("{label}: {arg}")
+        format!("{label} = {arg}")
     }
 }
 
@@ -343,7 +411,7 @@ impl ArrayExpression {
                         .iter()
                         .map(|nc| {
                             found_line_comment |= nc.value.should_cause_array_newline();
-                            nc.format("")
+                            nc.recast(options, 0)
                         })
                         .collect::<Vec<_>>()
                 } else {
@@ -481,7 +549,7 @@ impl ObjectExpression {
         let format_items: Vec<_> = (0..num_items)
             .flat_map(|i| {
                 if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
-                    noncode.iter().map(|nc| nc.format("")).collect::<Vec<_>>()
+                    noncode.iter().map(|nc| nc.recast(options, 0)).collect::<Vec<_>>()
                 } else {
                     let prop = props.next().unwrap();
                     // Use a comma unless it's the last item
@@ -617,10 +685,13 @@ impl Node<PipeExpression> {
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
                         let formatted = if val.end == self.end {
-                            let indentation = options.get_indentation(indentation_level);
-                            val.format(&indentation).trim_end_matches('\n').to_string()
+                            val.recast(options, indentation_level)
+                                .trim_end_matches('\n')
+                                .to_string()
                         } else {
-                            val.format(&indentation).trim_end_matches('\n').to_string()
+                            val.recast(options, indentation_level + 1)
+                                .trim_end_matches('\n')
+                                .to_string()
                         };
                         if let NonCodeValue::BlockComment { .. } = val.value {
                             s += "\n";
@@ -1252,7 +1323,8 @@ part001 = startSketchOn('XY')
 
     #[test]
     fn test_recast_large_file() {
-        let some_program_string = r#"// define nts
+        let some_program_string = r#"@settings(units=mm)
+// define nts
 radius = 6.0
 width = 144.0
 length = 83.0
@@ -1376,7 +1448,8 @@ tabs_l = startSketchOn({
         // Its VERY important this comes back with zero new lines.
         assert_eq!(
             recasted,
-            r#"// define nts
+            r#"@settings(units = mm)
+// define nts
 radius = 6.0
 width = 144.0
 length = 83.0

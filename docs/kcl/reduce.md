@@ -43,7 +43,7 @@ fn sum(arr) {
 
 /* The above is basically like this pseudo-code:
 fn sum(arr):
-    let sumSoFar = 0
+    sumSoFar = 0
     for i in arr:
         sumSoFar = add(sumSoFar, i)
     return sumSoFar */
@@ -79,10 +79,11 @@ fn decagon(radius) {
   stepAngle = 1 / 10 * tau()
 
   // Start the decagon sketch at this point.
-  startOfDecagonSketch = startSketchAt([cos(0) * radius, sin(0) * radius])
+  startOfDecagonSketch = startSketchOn('XY')
+    |> startProfileAt([cos(0) * radius, sin(0) * radius], %)
 
-  // Use a `reduce` to draw the remaining decagon sides.
-  // For each number in the array 1..10, run the given function,
+    // Use a `reduce` to draw the remaining decagon sides.
+    // For each number in the array 1..10, run the given function,
   // which takes a partially-sketched decagon and adds one more edge to it.
   fullDecagon = reduce([1..10], startOfDecagonSketch, fn(i, partialDecagon) {
     // Draw one edge of the decagon.
@@ -96,14 +97,15 @@ fn decagon(radius) {
 
 /* The `decagon` above is basically like this pseudo-code:
 fn decagon(radius):
-    let stepAngle = (1/10) * tau()
-    let startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+    stepAngle = (1/10) * tau()
+    plane = startSketchOn('XY')
+    startOfDecagonSketch = startProfileAt([(cos(0)*radius), (sin(0) * radius)], plane)
 
     // Here's the reduce part.
-    let partialDecagon = startOfDecagonSketch
+    partialDecagon = startOfDecagonSketch
     for i in [1..10]:
-        let x = cos(stepAngle * i) * radius
-        let y = sin(stepAngle * i) * radius
+        x = cos(stepAngle * i) * radius
+        y = sin(stepAngle * i) * radius
         partialDecagon = lineTo([x, y], partialDecagon)
     fullDecagon = partialDecagon // it's now full
     return fullDecagon */

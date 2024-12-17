@@ -9,6 +9,8 @@ use crate::{
     std::Args,
 };
 
+use super::args::FromArgs;
+
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
 pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -23,15 +25,19 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// If `num` is negative, the result will be too.
 ///
 /// ```no_run
-/// assertEqual(rem(7, divisor: 4),  3, 0.01, "remainder is 3")
-/// assertEqual(rem(-7, divisor: 4), -3, 0.01, "remainder is 3")
-/// assertEqual(rem(7, divisor: -4), 3, 0.01, "remainder is 3")
+/// assertEqual(rem( 7,  divisor =  4),  3, 0.01, "remainder is 3" )
+/// assertEqual(rem(-7,  divisor =  4), -3, 0.01, "remainder is -3")
+/// assertEqual(rem( 7,  divisor = -4),  3, 0.01, "remainder is 3" )
 /// ```
 #[stdlib {
     name = "rem",
     tags = ["math"],
     keywords = true,
     unlabeled_first = true,
+    arg_docs = {
+        num = "The number which will be divided by `divisor`.",
+        divisor = "The number which will divide `num`.",
+    }
 }]
 fn inner_rem(num: i64, divisor: i64) -> Result<i64, KclError> {
     Ok(num % divisor)
@@ -48,7 +54,7 @@ pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the cosine of a number (in radians).
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 30,
@@ -57,7 +63,7 @@ pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///  
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "cos",
@@ -78,7 +84,7 @@ pub async fn sin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the sine of a number (in radians).
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -87,7 +93,7 @@ pub async fn sin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "sin",
@@ -108,7 +114,7 @@ pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the tangent of a number (in radians).
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -117,7 +123,7 @@ pub async fn tan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "tan",
@@ -137,12 +143,12 @@ pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Return the value of `pi`. Archimedes’ constant (π).
 ///
 /// ```no_run
-/// const circumference = 70
+/// circumference = 70
 ///
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///  |> circle({ center = [0, 0], radius = circumference/ (2 * pi()) }, %)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "pi",
@@ -163,7 +169,7 @@ pub async fn sqrt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Compute the square root of a number.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -172,7 +178,7 @@ pub async fn sqrt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "sqrt",
@@ -193,9 +199,9 @@ pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the absolute value of a number.
 ///
 /// ```no_run
-/// const myAngle = -120
+/// myAngle = -120
 ///
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([8, 0], %)
 ///   |> angledLine({
@@ -209,7 +215,7 @@ pub async fn abs(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   }, %)
 ///   |> close(%)
 ///
-/// const baseExtrusion = extrude(5, sketch001)
+/// baseExtrusion = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "abs",
@@ -230,14 +236,14 @@ pub async fn round(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// Round a number to the nearest integer.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///    |> startProfileAt([0, 0], %)
 ///    |> lineTo([12, 10], %)
 ///    |> line([round(7.02986), 0], %)
 ///    |> yLineTo(0, %)
 ///    |> close(%)
 ///
-///  const extrude001 = extrude(5, sketch001)
+/// extrude001 = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "round",
@@ -258,14 +264,14 @@ pub async fn floor(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// Compute the largest integer less than or equal to a number.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///    |> startProfileAt([0, 0], %)
 ///    |> lineTo([12, 10], %)
 ///    |> line([floor(7.02986), 0], %)
 ///    |> yLineTo(0, %)
 ///    |> close(%)
 ///
-///  const extrude001 = extrude(5, sketch001)
+/// extrude001 = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "floor",
@@ -286,14 +292,14 @@ pub async fn ceil(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Compute the smallest integer greater than or equal to a number.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([12, 10], %)
 ///   |> line([ceil(7.02986), 0], %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const extrude001 = extrude(5, sketch001)
+/// extrude001 = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "ceil",
@@ -314,7 +320,7 @@ pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the minimum of the given arguments.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 70,
@@ -323,7 +329,7 @@ pub async fn min(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> line([20, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "min",
@@ -351,7 +357,7 @@ pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the maximum of the given arguments.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 70,
@@ -360,7 +366,7 @@ pub async fn max(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> line([20, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "max",
@@ -402,7 +408,7 @@ pub async fn pow(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Compute the number to a power.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -411,7 +417,7 @@ pub async fn pow(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "pow",
@@ -432,7 +438,7 @@ pub async fn acos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Compute the arccosine of a number (in radians).
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = toDegrees(acos(0.5)),
@@ -442,7 +448,7 @@ pub async fn acos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///   |> lineTo([12, 0], %)
 ///   |> close(%)
 ///
-/// const extrude001 = extrude(5, sketch001)
+/// extrude001 = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "acos",
@@ -463,7 +469,7 @@ pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Compute the arcsine of a number (in radians).
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = toDegrees(asin(0.5)),
@@ -472,7 +478,7 @@ pub async fn asin(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const extrude001 = extrude(5, sketch001)
+/// extrude001 = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "asin",
@@ -493,7 +499,7 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Compute the arctangent of a number (in radians).
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = toDegrees(atan(1.25)),
@@ -502,7 +508,7 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const extrude001 = extrude(5, sketch001)
+/// extrude001 = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "atan",
@@ -510,6 +516,36 @@ pub async fn atan(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 }]
 fn inner_atan(num: f64) -> Result<f64, KclError> {
     Ok(num.atan())
+}
+
+/// Compute the four quadrant arctangent of Y and X (in radians).
+pub async fn atan2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (y, x) = FromArgs::from_args(&args, 0)?;
+    let result = inner_atan2(y, x)?;
+
+    Ok(args.make_user_val_from_f64(result))
+}
+
+/// Compute the four quadrant arctangent of Y and X (in radians).
+///
+/// ```no_run
+/// sketch001 = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle = toDegrees(atan2(1.25, 2)),
+///     length = 20,
+///   }, %)
+///   |> yLineTo(0, %)
+///   |> close(%)
+///
+/// extrude001 = extrude(5, sketch001)
+/// ```
+#[stdlib {
+    name = "atan2",
+    tags = ["math"],
+}]
+fn inner_atan2(y: f64, x: f64) -> Result<f64, KclError> {
+    Ok(y.atan2(x))
 }
 
 /// Compute the logarithm of the number with respect to an arbitrary base.
@@ -544,14 +580,14 @@ pub async fn log(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// and `log10()` can produce more accurate results for base 10.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([log(100, 5), 0], %)
 ///   |> line([5, 8], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "log",
@@ -572,14 +608,14 @@ pub async fn log2(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Compute the base 2 logarithm of the number.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([log2(100), 0], %)
 ///   |> line([5, 8], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "log2",
@@ -600,14 +636,14 @@ pub async fn log10(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// Compute the base 10 logarithm of the number.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([log10(100), 0], %)
 ///   |> line([5, 8], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "log10",
@@ -628,14 +664,14 @@ pub async fn ln(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Compute the natural logarithm of the number.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([ln(100), 15], %)
 ///   |> line([5, -6], %)
 ///   |> line([-10, -10], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "ln",
@@ -655,7 +691,7 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 /// Return the value of Euler’s number `e`.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 30,
@@ -664,7 +700,7 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///  
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "e",
@@ -684,7 +720,7 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -693,7 +729,7 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "tau",
@@ -714,7 +750,7 @@ pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// Converts a number from degrees to radians.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -723,7 +759,7 @@ pub async fn to_radians(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "toRadians",
@@ -744,7 +780,7 @@ pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// Converts a number from radians to degrees.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
@@ -753,7 +789,7 @@ pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "toDegrees",

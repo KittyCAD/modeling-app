@@ -68,19 +68,19 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// will smoothly blend the transition.
 ///
 /// ```no_run
-/// const width = 20
-/// const length = 10
-/// const thickness = 1
-/// const filletRadius = 2
+/// width = 20
+/// length = 10
+/// thickness = 1
+/// filletRadius = 2
 ///
-/// const mountingPlateSketch = startSketchOn("XY")
+/// mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
 ///   |> lineTo([width/2, -length/2], %, $edge1)
 ///   |> lineTo([width/2, length/2], %, $edge2)
 ///   |> lineTo([-width/2, length/2], %, $edge3)
 ///   |> close(%, $edge4)
 ///
-/// const mountingPlate = extrude(thickness, mountingPlateSketch)
+/// mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> fillet({
 ///     radius = filletRadius,
 ///     tags = [
@@ -93,19 +93,19 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 ///
 /// ```no_run
-/// const width = 20
-/// const length = 10
-/// const thickness = 1
-/// const filletRadius = 1
+/// width = 20
+/// length = 10
+/// thickness = 1
+/// filletRadius = 1
 ///
-/// const mountingPlateSketch = startSketchOn("XY")
+/// mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
 ///   |> lineTo([width/2, -length/2], %, $edge1)
 ///   |> lineTo([width/2, length/2], %, $edge2)
 ///   |> lineTo([-width/2, length/2], %, $edge3)
 ///   |> close(%, $edge4)
 ///
-/// const mountingPlate = extrude(thickness, mountingPlateSketch)
+/// mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> fillet({
 ///     radius = filletRadius,
 ///     tolerance = 0.000001,
@@ -119,6 +119,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "fillet",
+    feature_tree_operation = true,
 }]
 async fn inner_fillet(
     data: FilletData,
@@ -142,7 +143,7 @@ async fn inner_fillet(
     for edge_tag in data.tags {
         let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
 
-        let id = exec_state.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
@@ -195,7 +196,7 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 /// Get the opposite edge to the edge given.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLine({
@@ -213,7 +214,7 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 ///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius = 3,
 ///     tags = [getOppositeEdge(referenceEdge)],
@@ -224,11 +225,11 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 }]
 async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock() {
-        return Ok(exec_state.id_generator.next_uuid());
+        return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
@@ -268,7 +269,7 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 /// Get the next adjacent edge to the edge given.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLine({
@@ -286,7 +287,7 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 ///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius = 3,
 ///     tags = [getNextAdjacentEdge(referenceEdge)],
@@ -301,11 +302,11 @@ async fn inner_get_next_adjacent_edge(
     args: Args,
 ) -> Result<Uuid, KclError> {
     if args.ctx.is_mock() {
-        return Ok(exec_state.id_generator.next_uuid());
+        return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
@@ -353,7 +354,7 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 /// Get the previous adjacent edge to the edge given.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLine({
@@ -371,7 +372,7 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 ///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 ///   |> fillet({
 ///     radius = 3,
 ///     tags = [getPreviousAdjacentEdge(referenceEdge)],
@@ -386,11 +387,11 @@ async fn inner_get_previous_adjacent_edge(
     args: Args,
 ) -> Result<Uuid, KclError> {
     if args.ctx.is_mock() {
-        return Ok(exec_state.id_generator.next_uuid());
+        return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args

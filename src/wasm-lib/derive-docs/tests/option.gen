@@ -15,7 +15,7 @@ mod test_examples_show {
             settings: Default::default(),
             context_type: crate::execution::ContextType::Mock,
         };
-        ctx.run(program.into(), &mut crate::ExecState::default())
+        ctx.run(program.into(), &mut crate::ExecState::new())
             .await
             .unwrap();
     }
@@ -92,6 +92,7 @@ impl crate::docs::StdLibFn for Show {
             schema: generator.root_schema_for::<Option<f64>>(),
             required: false,
             label_required: true,
+            description: String::new().to_string(),
         }]
     }
 
@@ -106,6 +107,7 @@ impl crate::docs::StdLibFn for Show {
             schema,
             required: true,
             label_required: true,
+            description: String::new(),
         })
     }
 
@@ -114,6 +116,10 @@ impl crate::docs::StdLibFn for Show {
     }
 
     fn deprecated(&self) -> bool {
+        false
+    }
+
+    fn feature_tree_operation(&self) -> bool {
         false
     }
 
