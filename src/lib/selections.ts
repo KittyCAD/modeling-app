@@ -491,9 +491,7 @@ function resetAndSetEngineEntitySelectionCmds(
 }
 
 /**
- * @deprecated was made for guards on modeling machine.
- * Now the selection command bar argument input handles this.
- * Leaving until we're sure it's not needed elsewhere.
+ * Is the selection a single cursor in a sketch pipe expression chain?
  */
 export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
@@ -514,19 +512,6 @@ export function isSelectionLastLine(
   i = 0
 ) {
   return selectionRanges.graphSelections[i]?.codeRef?.range[1] === code.length
-}
-
-/**
- * @deprecated was made for guards on modeling machine.
- * Now the selection command bar argument input handles this.
- * Leaving until we're sure it's not needed elsewhere.
- */
-export function isRangeBetweenCharacters(selectionRanges: Selections) {
-  return (
-    selectionRanges.graphSelections.length === 1 &&
-    selectionRanges.graphSelections[0]?.codeRef?.range[0] === 0 &&
-    selectionRanges.graphSelections[0]?.codeRef?.range[1] === 0
-  )
 }
 
 export type CommonASTNode = {
