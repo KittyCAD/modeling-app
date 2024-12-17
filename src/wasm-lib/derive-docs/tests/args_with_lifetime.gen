@@ -14,7 +14,7 @@ mod test_examples_someFn {
             settings: Default::default(),
             context_type: crate::execution::ContextType::Mock,
         };
-        ctx.run(program.into(), &mut crate::ExecState::default())
+        ctx.run(program.into(), &mut crate::ExecState::new())
             .await
             .unwrap();
     }
@@ -115,6 +115,10 @@ impl crate::docs::StdLibFn for SomeFn {
     }
 
     fn deprecated(&self) -> bool {
+        false
+    }
+
+    fn feature_tree_operation(&self) -> bool {
         false
     }
 

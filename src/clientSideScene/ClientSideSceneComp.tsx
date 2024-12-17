@@ -174,8 +174,13 @@ export const ClientSideScene = ({
 const Overlays = () => {
   const { context } = useModelingContext()
   if (context.mouseState.type === 'isDragging') return null
+  // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
+  // over the length labels on the line segments
   return (
-    <div className="absolute inset-0 pointer-events-none">
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: '99999999' }}
+    >
       {Object.entries(context.segmentOverlays)
         .filter((a) => a[1].visible)
         .map(([pathToNodeString, overlay], index) => {
@@ -433,8 +438,6 @@ export async function deleteSegment({
   if (!sketchDetails) return
   await sceneEntitiesManager.updateAstAndRejigSketch(
     pathToNode,
-    sketchDetails.sketchNodePaths,
-    sketchDetails.planeNodePath,
     modifiedAst,
     sketchDetails.zAxis,
     sketchDetails.yAxis,

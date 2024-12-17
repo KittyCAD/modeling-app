@@ -4,6 +4,8 @@ excerpt: "Start a new 2-dimensional sketch at a given point on the 'XY' plane."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated.
+
 Start a new 2-dimensional sketch at a given point on the 'XY' plane.
 
 
