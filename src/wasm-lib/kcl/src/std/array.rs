@@ -144,7 +144,8 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   stepAngle = (1/10) * tau()
 ///
 ///   // Start the decagon sketch at this point.
-///   startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///   startOfDecagonSketch = startSketchOn('XY')
+///     |> startProfileAt([(cos(0)*radius), (sin(0) * radius)], %)
 ///
 ///   // Use a `reduce` to draw the remaining decagon sides.
 ///   // For each number in the array 1..10, run the given function,
@@ -164,7 +165,8 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// The `decagon` above is basically like this pseudo-code:
 /// fn decagon(radius):
 ///     stepAngle = (1/10) * tau()
-///     startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///     plane = startSketchOn('XY')
+///     startOfDecagonSketch = startProfileAt([(cos(0)*radius), (sin(0) * radius)], plane)
 ///
 ///     // Here's the reduce part.
 ///     partialDecagon = startOfDecagonSketch

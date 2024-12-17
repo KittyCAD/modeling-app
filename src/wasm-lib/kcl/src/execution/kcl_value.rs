@@ -8,9 +8,12 @@ use crate::{
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
     execution::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
-    parsing::ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
+    parsing::{
+        ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
+        token::NumericSuffix,
+    },
     std::{args::Arg, FnAsArg},
-    ExecState, ExecutorContext, KclError, SourceRange,
+    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -84,6 +87,11 @@ pub enum KclValue {
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
+    Module {
+        value: ModuleId,
+        #[serde(rename = "__meta")]
+        meta: Vec<Metadata>,
+    },
     KclNone {
         value: KclNone,
         #[serde(rename = "__meta")]
@@ -143,6 +151,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::String { meta, .. } => to_vec_sr(&meta),
             KclValue::Array { meta, .. } => to_vec_sr(&meta),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
+            KclValue::Module { meta, .. } => to_vec_sr(&meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
         }
@@ -173,6 +182,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Array { meta, .. } => to_vec_sr(meta),
             KclValue::Object { meta, .. } => to_vec_sr(meta),
+            KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
         }
     }
@@ -198,6 +208,7 @@ impl KclValue {
             KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
+            KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
         }
     }
@@ -263,6 +274,7 @@ impl KclValue {
             KclValue::String { .. } => "string (text)",
             KclValue::Array { .. } => "array (list)",
             KclValue::Object { .. } => "object",
+            KclValue::Module { .. } => "module",
             KclValue::KclNone { .. } => "None",
         }
     }
@@ -549,6 +561,55 @@ impl KclValue {
                 &ctx,
             )
             .await
+        }
+    }
+}
+
+// TODO called UnitLen so as not to clash with UnitLength in settings)
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum UnitLen {
+    Mm,
+    Cm,
+    M,
+    Inches,
+    Feet,
+    Yards,
+}
+
+impl TryFrom<NumericSuffix> for UnitLen {
+    type Error = ();
+
+    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
+        match suffix {
+            NumericSuffix::Mm => Ok(Self::Mm),
+            NumericSuffix::Cm => Ok(Self::Cm),
+            NumericSuffix::M => Ok(Self::M),
+            NumericSuffix::Inch => Ok(Self::Inches),
+            NumericSuffix::Ft => Ok(Self::Feet),
+            NumericSuffix::Yd => Ok(Self::Yards),
+            _ => Err(()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum UnitAngle {
+    Degrees,
+    Radians,
+}
+
+impl TryFrom<NumericSuffix> for UnitAngle {
+    type Error = ();
+
+    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
+        match suffix {
+            NumericSuffix::Deg => Ok(Self::Degrees),
+            NumericSuffix::Rad => Ok(Self::Radians),
+            _ => Err(()),
         }
     }
 }

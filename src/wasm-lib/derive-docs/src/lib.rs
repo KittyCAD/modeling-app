@@ -779,6 +779,8 @@ fn rust_type_to_openapi_type(t: &str) -> String {
 
     if t == "f64" {
         return "number".to_string();
+    } else if t == "u32" {
+        return "integer".to_string();
     } else if t == "str" {
         return "string".to_string();
     } else {
@@ -813,7 +815,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::execution::ContextType::Mock,
             };
 
-            ctx.run(program.into(), &mut crate::ExecState::default()).await.unwrap();
+            ctx.run(program.into(), &mut crate::ExecState::new()).await.unwrap();
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
