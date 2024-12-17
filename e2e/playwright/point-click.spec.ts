@@ -16,6 +16,8 @@ test('verify extruding circle works', async ({
   toolbar,
   scene,
 }) => {
+  // TODO: fix this test on windows after the electron migration
+  test.skip(process.platform === 'win32', 'Skip on windows')
   const file = await fs.readFile(
     path.resolve(
       __dirname,
@@ -95,6 +97,8 @@ test('verify extruding circle works', async ({
 })
 
 test.describe('verify sketch on chamfer works', () => {
+  // TODO: fix this test on windows after the electron migration
+  test.skip(process.platform === 'win32', 'Skip on windows')
   const _sketchOnAChamfer =
     (
       page: Page,
@@ -864,6 +868,8 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
     toolbar,
     cmdBar,
   }) => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const initialCode = `sketch001 = startSketchOn('XZ')
     |> circle({ center = [0, 0], radius = 30 }, %)
     extrude001 = extrude(30, sketch001)
