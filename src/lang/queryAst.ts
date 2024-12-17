@@ -397,6 +397,7 @@ function moreNodePathFromSourceRange(
       }
       return path
     }
+    return path
   }
 
   console.error('not implemented: ' + node.type)

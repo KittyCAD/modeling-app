@@ -112,16 +112,20 @@ export const loftValidator = async ({
   context: CommandBarContext
 }): Promise<boolean | string> => {
   if (!isSelections(data.selection)) {
-    return 'Unable to revolve, selections are missing'
+    return 'Unable to loft, selections are missing'
+  }
+  const { selection } = data
+
+  if (selection.graphSelections.some((s) => s.artifact?.type !== 'solid2D')) {
+    return 'Unable to loft, some selection are not solid2Ds'
   }
 
-  // TODO: should this be part of canLoftSelection? And should we use that here?
   const sectionIds = data.selection.graphSelections.flatMap((s) =>
     s.artifact?.type === 'solid2D' ? s.artifact.pathId : []
   )
 
   if (sectionIds.length < 2) {
-    return 'Unable to loft, selection contains less than two sections'
+    return 'Unable to loft, selection contains less than two solid2Ds'
   }
 
   const loftCommand = async () => {

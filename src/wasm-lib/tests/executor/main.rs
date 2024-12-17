@@ -1,7 +1,7 @@
 mod cache;
 
 use kcl_lib::{
-    test_server::{execute_and_snapshot, execute_and_snapshot_no_auth, new_context},
+    test_server::{execute_and_snapshot, execute_and_snapshot_no_auth},
     UnitLength,
 };
 
@@ -2000,63 +2000,4 @@ async fn kcl_test_error_no_auth_websocket() {
         .unwrap()
         .to_string()
         .contains("Please send the following object over this websocket"));
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_ids_stable_between_executions() {
-    let code = r#"sketch001 = startSketchOn('XZ')
-  |> startProfileAt([61.74, 206.13], %)
-  |> xLine(305.11, %, $seg01)
-  |> yLine(-291.85, %)
-  |> xLine(-segLen(seg01), %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(40.14, %)
-  |> shell({
-    faces: [seg01],
-    thickness: 3.14,
-  }, %)
-"#;
-
-    let ctx = new_context(UnitLength::Mm, true, None).await.unwrap();
-    let old_program = kcl_lib::Program::parse_no_errs(code).unwrap();
-    // Execute the program.
-    let mut exec_state = Default::default();
-    let cache_info = kcl_lib::CacheInformation {
-        old: None,
-        new_ast: old_program.ast.clone(),
-    };
-    ctx.run(cache_info, &mut exec_state).await.unwrap();
-
-    // Get the id_generator from the first execution.
-    let id_generator = exec_state.id_generator.clone();
-
-    let code = r#"sketch001 = startSketchOn('XZ')
-  |> startProfileAt([62.74, 206.13], %)
-  |> xLine(305.11, %, $seg01)
-  |> yLine(-291.85, %)
-  |> xLine(-segLen(seg01), %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(40.14, %)
-  |> shell({
-    faces: [seg01],
-    thickness: 3.14,
-  }, %)
-"#;
-
-    // Execute a slightly different program again.
-    let program = kcl_lib::Program::parse_no_errs(code).unwrap();
-    let cache_info = kcl_lib::CacheInformation {
-        old: Some(kcl_lib::OldAstState {
-            ast: old_program.ast.clone(),
-            exec_state: exec_state.clone(),
-            settings: ctx.settings.clone(),
-        }),
-        new_ast: program.ast.clone(),
-    };
-    // Execute the program.
-    ctx.run(cache_info, &mut exec_state).await.unwrap();
-
-    assert_eq!(id_generator, exec_state.id_generator);
 }

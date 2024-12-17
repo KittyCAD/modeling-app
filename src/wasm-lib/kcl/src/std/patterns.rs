@@ -179,7 +179,8 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   p2 = [ l + x,  l + y]
 ///   p3 = [ l + x, -l + y]
 ///
-///   return startSketchAt(p0)
+///   return startSketchOn('XY')
+///   |> startProfileAt(p0, %)
 ///   |> lineTo(p1, %)
 ///   |> lineTo(p2, %)
 ///   |> lineTo(p3, %)
@@ -218,7 +219,8 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   p2 = [ l + x,  l + y]
 ///   p3 = [ l + x, -l + y]
 ///   
-///   return startSketchAt(p0)
+///   return startSketchOn('XY')
+///   |> startProfileAt(p0, %)
 ///   |> lineTo(p1, %)
 ///   |> lineTo(p2, %)
 ///   |> lineTo(p3, %)
@@ -274,7 +276,8 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///     { rotation: { angle: 45 * i } },
 ///   ]
 /// }
-/// startSketchAt([0, 0])
+/// startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> polygon({
 ///        radius: 10,
 ///        numSides: 4,
@@ -285,8 +288,9 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   |> patternTransform(3, transform, %)
 /// ```
 #[stdlib {
-     name = "patternTransform",
- }]
+    name = "patternTransform",
+    feature_tree_operation = true,
+}]
 async fn inner_pattern_transform<'a>(
     total_instances: u32,
     transform_function: FunctionParam<'a>,
@@ -322,8 +326,8 @@ async fn inner_pattern_transform<'a>(
 ///   |> patternTransform2d(4, transform, %)
 /// ```
 #[stdlib {
-     name = "patternTransform2d",
- }]
+    name = "patternTransform2d",
+}]
 async fn inner_pattern_transform_2d<'a>(
     total_instances: u32,
     transform_function: FunctionParam<'a>,
@@ -378,7 +382,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Vec<T>, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     let resp = args
         .send_modeling_cmd(
@@ -762,6 +766,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// ```
 #[stdlib {
     name = "patternLinear3d",
+    feature_tree_operation = true,
 }]
 async fn inner_pattern_linear_3d(
     data: LinearPattern3dData,
@@ -981,6 +986,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 /// ```
 #[stdlib {
     name = "patternCircular3d",
+    feature_tree_operation = true,
 }]
 async fn inner_pattern_circular_3d(
     data: CircularPattern3dData,
@@ -1029,7 +1035,7 @@ async fn pattern_circular(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Geometries, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let num_repetitions = match data.repetitions() {
         RepetitionsNeeded::More(n) => n,
         RepetitionsNeeded::None => {

@@ -5,7 +5,8 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program,
+    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, KclErrorWithOutputs, ModuleId,
+    OldAstState, Program,
 };
 use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
@@ -85,7 +86,7 @@ pub async fn execute(
 
     // Populate from the old exec state if it exists.
     if let Some(program_memory_override) = program_memory_override {
-        exec_state.memory = program_memory_override;
+        exec_state.mod_local.memory = program_memory_override;
     } else {
         // If we are in mock mode, we don't want to use any cache.
         if let Some(old) = read_old_ast_memory().await {
@@ -103,14 +104,16 @@ pub async fn execute(
             &mut exec_state,
         )
         .await
-        .map_err(String::from)
     {
         if !is_mock {
             bust_cache().await;
         }
 
+        // Add additional outputs to the error.
+        let error = KclErrorWithOutputs::new(err, exec_state.mod_local.operations.clone());
+
         // Throw the error.
-        return Err(err);
+        return Err(serde_json::to_string(&error).map_err(|serde_err| serde_err.to_string())?);
     }
 
     if !is_mock {

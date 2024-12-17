@@ -111,6 +111,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```
 #[stdlib {
     name = "loft",
+    feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
     arg_docs = {
@@ -141,7 +142,7 @@ async fn inner_loft(
         }));
     }
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::Loft {

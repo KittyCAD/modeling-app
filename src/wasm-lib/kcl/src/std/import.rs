@@ -177,6 +177,7 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "import",
+    feature_tree_operation = true,
     tags = [],
 }]
 async fn inner_import(
@@ -299,13 +300,13 @@ async fn inner_import(
 
     if args.ctx.is_mock() {
         return Ok(ImportedGeometry {
-            id: exec_state.id_generator.next_uuid(),
+            id: exec_state.next_uuid(),
             value: import_files.iter().map(|f| f.path.to_string()).collect(),
             meta: vec![args.source_range.into()],
         });
     }
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let resp = args
         .send_modeling_cmd(
             id,
