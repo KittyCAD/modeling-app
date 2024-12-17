@@ -95,7 +95,8 @@ fn cube(length, center) {
   p2 = [l + x, l + y]
   p3 = [l + x, -l + y]
 
-  return startSketchAt(p0)
+  return startSketchOn('XY')
+    |> startProfileAt(p0, %)
     |> lineTo(p1, %)
     |> lineTo(p2, %)
     |> lineTo(p3, %)
@@ -132,7 +133,8 @@ fn cube(length, center) {
   p2 = [l + x, l + y]
   p3 = [l + x, -l + y]
 
-  return startSketchAt(p0)
+  return startSketchOn('XY')
+    |> startProfileAt(p0, %)
     |> lineTo(p1, %)
     |> lineTo(p2, %)
     |> lineTo(p3, %)
@@ -195,7 +197,8 @@ fn transform(i) {
     { rotation = { angle = 45 * i } }
   ]
 }
-startSketchAt([0, 0])
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> polygon({
        radius = 10,
        numSides = 4,
