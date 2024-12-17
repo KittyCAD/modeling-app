@@ -119,6 +119,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "fillet",
+    feature_tree_operation = true,
 }]
 async fn inner_fillet(
     data: FilletData,
@@ -142,7 +143,7 @@ async fn inner_fillet(
     for edge_tag in data.tags {
         let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
 
-        let id = exec_state.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
@@ -224,11 +225,11 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 }]
 async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock() {
-        return Ok(exec_state.id_generator.next_uuid());
+        return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
@@ -301,11 +302,11 @@ async fn inner_get_next_adjacent_edge(
     args: Args,
 ) -> Result<Uuid, KclError> {
     if args.ctx.is_mock() {
-        return Ok(exec_state.id_generator.next_uuid());
+        return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
@@ -386,11 +387,11 @@ async fn inner_get_previous_adjacent_edge(
     args: Args,
 ) -> Result<Uuid, KclError> {
     if args.ctx.is_mock() {
-        return Ok(exec_state.id_generator.next_uuid());
+        return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args

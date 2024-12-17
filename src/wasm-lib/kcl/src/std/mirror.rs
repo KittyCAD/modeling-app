@@ -121,7 +121,7 @@ async fn inner_mirror_2d(
             let (axis, origin) = axis.axis_and_origin()?;
 
             args.batch_modeling_cmd(
-                exec_state.id_generator.next_uuid(),
+                exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirror {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     axis,
@@ -134,7 +134,7 @@ async fn inner_mirror_2d(
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
             args.batch_modeling_cmd(
-                exec_state.id_generator.next_uuid(),
+                exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     edge_id,

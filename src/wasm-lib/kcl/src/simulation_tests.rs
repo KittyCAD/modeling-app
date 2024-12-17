@@ -91,7 +91,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
     )
     .await;
     match exec_res {
-        Ok((program_memory, png)) => {
+        Ok((program_memory, ops, png)) => {
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
@@ -104,9 +104,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     ".environments[].**[].z[]" => rounded_redaction(4),
                 });
             });
+            assert_snapshot(test_name, "Operations executed", || {
+                insta::assert_json_snapshot!("ops", ops);
+            });
         }
         Err(e) => {
-            match e {
+            match e.error {
                 crate::errors::ExecError::Kcl(error) => {
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
@@ -121,6 +124,10 @@ async fn execute(test_name: &str, render_to_png: bool) {
 
                     assert_snapshot(test_name, "Error from executing", || {
                         insta::assert_snapshot!("execution_error", report);
+                    });
+
+                    assert_snapshot(test_name, "Operations executed", || {
+                        insta::assert_json_snapshot!("ops", e.exec_state.mod_local.operations);
                     });
                 }
                 e => {
@@ -685,6 +692,27 @@ mod import_export {
 }
 mod import_glob {
     const TEST_NAME: &str = "import_glob";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_whole {
+    const TEST_NAME: &str = "import_whole";
 
     /// Test parsing KCL.
     #[test]
@@ -1546,6 +1574,69 @@ mod kw_fn_unlabeled_but_has_label {
 }
 mod kw_fn_with_defaults {
     const TEST_NAME: &str = "kw_fn_with_defaults";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod boolean_logical_and {
+    const TEST_NAME: &str = "boolean_logical_and";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod boolean_logical_or {
+    const TEST_NAME: &str = "boolean_logical_or";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod boolean_logical_multiple {
+    const TEST_NAME: &str = "boolean_logical_multiple";
 
     /// Test parsing KCL.
     #[test]
