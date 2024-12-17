@@ -104,8 +104,8 @@ export function getOperationIcon(op: Operation): CustomIconName {
  * for use in the feature tree UI
  */
 export const operationFilters = [
-  isNotStdLibInUserFunction,
   isNotUserFunctionWithNoOperations,
+  isNotStdLibInUserFunction,
   isNotUserFunctionReturn,
 ]
 
