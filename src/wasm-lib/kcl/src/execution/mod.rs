@@ -21,7 +21,7 @@ type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use function_param::FunctionParam;
-pub use kcl_value::{KclObjectFields, KclValue};
+pub use kcl_value::{KclObjectFields, KclValue, UnitLen};
 use uuid::Uuid;
 
 mod annotations;
