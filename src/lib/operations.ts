@@ -112,31 +112,34 @@ export function filterOperations(operations: Operation[]): Operation[] {
  */
 const operationFilters = [
   isNotUserFunctionWithNoOperations,
-  isNotStdLibInUserFunction,
+  isNotInsideUserFunction,
   isNotUserFunctionReturn,
 ]
 
 /**
- * A filter to exclude StdLibCall operations that occur
- * between a UserDefinedFunctionCall and the next UserDefinedFunctionReturn
- * from a list of operations
+ * A filter to exclude everything that occurs inside a UserDefinedFunctionCall
+ * and its corresponding UserDefinedFunctionReturn from a list of operations.
+ * This works even when there are nested function calls.
  */
-function isNotStdLibInUserFunction(operations: Operation[]): Operation[] {
+function isNotInsideUserFunction(operations: Operation[]): Operation[] {
   const ops: Operation[] = []
   let depth = 0
   for (const op of operations) {
-    if (depth > 0 && op.type === 'StdLibCall') {
-      // Skip stdlib calls inside user-defined functions.
-      continue
+    if (depth === 0) {
+      ops.push(op)
     }
     if (op.type === 'UserDefinedFunctionCall') {
       depth++
     }
     if (op.type === 'UserDefinedFunctionReturn') {
       depth--
+      console.assert(
+        depth >= 0,
+        'Unbalanced UserDefinedFunctionCall and UserDefinedFunctionReturn; too many returns'
+      )
     }
-    ops.push(op)
   }
+  // Depth could be non-zero here if there was an error in execution.
   return ops
 }
 

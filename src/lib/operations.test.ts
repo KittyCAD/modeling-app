@@ -109,7 +109,6 @@ describe('operations filtering', () => {
       stdlib('std3'),
       stdlib('std4'),
       userCall('foo2'),
-      userCall('foo3-nested'),
       stdlib('std8'),
     ])
   })
