@@ -625,7 +625,6 @@ export const ModelingMachineProvider = ({
           }
 
           const canShell = canShellSelection(selectionRanges)
-          console.log('canShellSelection', canShellSelection(selectionRanges))
           if (err(canShell)) return false
           return canShell
         },
