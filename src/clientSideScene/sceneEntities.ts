@@ -1159,13 +1159,12 @@ export class SceneEntities {
 
         // Update the primary AST and unequip the rectangle tool
         await kclManager.executeAstMock(_ast)
+        sceneInfra.modelingSend({ type: 'Finish rectangle' })
 
         // lee: I had this at the bottom of the function, but it's
         // possible sketchFromKclValue "fails" when sketching on a face,
         // and this couldn't wouldn't run.
         await codeManager.updateEditorWithAstAndWriteToFile(_ast)
-
-        sceneInfra.modelingSend({ type: 'Finish rectangle' })
       },
     })
     return { updatedEntryNodePath, updatedSketchNodePaths }
@@ -1350,13 +1349,12 @@ export class SceneEntities {
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
+          sceneInfra.modelingSend({ type: 'Finish center rectangle' })
 
           // lee: I had this at the bottom of the function, but it's
           // possible sketchFromKclValue "fails" when sketching on a face,
           // and this couldn't wouldn't run.
           await codeManager.updateEditorWithAstAndWriteToFile(_ast)
-
-          sceneInfra.modelingSend({ type: 'Finish center rectangle' })
         }
       },
     })
@@ -1539,9 +1537,8 @@ export class SceneEntities {
 
           // Update the primary AST and unequip the rectangle tool
           await kclManager.executeAstMock(_ast)
-          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
-
           sceneInfra.modelingSend({ type: 'Finish circle' })
+          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
         }
       },
     })
