@@ -136,3 +136,5 @@ export const VIEW_NAMES_SEMANTIC = {
   [AxisNames.NEG_Y]: 'Front',
   [AxisNames.NEG_Z]: 'Bottom',
 } as const
+/** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
+export const SIDEBAR_BUTTON_SUFFIX = '-sidebar-button'
