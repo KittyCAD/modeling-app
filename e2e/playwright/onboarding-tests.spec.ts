@@ -425,7 +425,7 @@ test.describe('Onboarding tests', () => {
   })
 })
 
-test.fixme(
+test(
   'Restarting onboarding on desktop takes one attempt',
   { tag: '@electron' },
   async ({ browser: _ }, testInfo) => {

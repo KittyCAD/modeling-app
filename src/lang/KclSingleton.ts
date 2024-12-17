@@ -359,10 +359,8 @@ export class KclManager {
     // updateArtifactGraph relies on updated executeState/programMemory
     await this.engineCommandManager.updateArtifactGraph(this.ast)
     this._executeCallback()
-    if (!isInterrupted) {
+    if (!isInterrupted)
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
-    }
-
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
@@ -404,6 +402,7 @@ export class KclManager {
 
     this._logs = logs
     this.addDiagnostics(kclErrorsToDiagnostics(errors))
+
     this._execState = execState
     this._programMemory = execState.memory
     if (!errors.length) {
@@ -415,7 +414,7 @@ export class KclManager {
     // problem this solves, but either way we should strive to remove it.
     Array.from(this.engineCommandManager.artifactGraph).forEach(
       ([commandId, artifact]) => {
-        if (!('codeRef' in artifact)) return
+        if (!('codeRef' in artifact && artifact.codeRef)) return
         const _node1 = getNodeFromPath<Node<CallExpression>>(
           this.ast,
           artifact.codeRef.pathToNode,
