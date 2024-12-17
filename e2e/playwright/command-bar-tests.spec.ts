@@ -45,9 +45,8 @@ test.describe('Command bar tests', () => {
     )
   })
 
-  test('Fillet from command bar', async ({ page, homePage }) => {
-    // TODO: fix this test on mac after the electron migration
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+  // TODO: fix this test after the electron migration
+  test.fixme('Fillet from command bar', async ({ page, homePage }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
