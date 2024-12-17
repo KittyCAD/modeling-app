@@ -1,6 +1,13 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from './fixtureSetup'
-import { doAndWaitForImageDiff } from '../test-utils'
+import {
+  checkIfPaneIsOpen,
+  closePane,
+  doAndWaitForImageDiff,
+  openPane,
+} from '../test-utils'
+import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
+import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
 
 export class ToolbarFixture {
   public page: Page
@@ -20,6 +27,10 @@ export class ToolbarFixture {
   filePane!: Locator
   exeIndicator!: Locator
   treeInputField!: Locator
+  /** The sidebar button for the Feature Tree pane */
+  featureTreeId = 'feature-tree' as const
+  /** The pane element for the Feature Tree */
+  featureTreePane!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -41,6 +52,7 @@ export class ToolbarFixture {
     this.treeInputField = page.getByTestId('tree-input-field')
 
     this.filePane = page.locator('#files-pane')
+    this.featureTreePane = page.locator('#feature-tree-pane')
     this.fileCreateToast = page.getByText('Successfully created')
     this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
   }
@@ -90,5 +102,79 @@ export class ToolbarFixture {
     if (wait) {
       await expect(this.exeIndicator).toBeVisible({ timeout: 15_000 })
     }
+  }
+
+  async closePane(paneId: SidebarType) {
+    return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
+  }
+  async openPane(paneId: SidebarType) {
+    return openPane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
+  }
+  async checkIfPaneIsOpen(paneId: SidebarType) {
+    return checkIfPaneIsOpen(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
+  }
+
+  async openFeatureTreePane() {
+    return this.openPane(this.featureTreeId)
+  }
+  async closeFeatureTreePane() {
+    await this.closePane(this.featureTreeId)
+  }
+  async checkIfFeatureTreePaneIsOpen() {
+    return this.checkIfPaneIsOpen(this.featureTreeId)
+  }
+
+  /**
+   * Get a specific operation button from the Feature Tree pane
+   */
+  async getFeatureTreeOperation(operationName: string, operationIndex: number) {
+    if (!(await this.checkIfFeatureTreePaneIsOpen())) {
+      await this.openFeatureTreePane()
+    }
+    await expect(this.featureTreePane).toBeVisible()
+    return this.featureTreePane
+      .getByRole('button', {
+        name: operationName,
+      })
+      .nth(operationIndex)
+  }
+
+  /**
+   * View source on a specific operation in the Feature Tree pane.
+   * @param operationName The name of the operation type
+   * @param operationIndex The index out of operations of this type
+   */
+  async viewSourceOnOperation(operationName: string, operationIndex: number) {
+    const operationButton = await this.getFeatureTreeOperation(
+      operationName,
+      operationIndex
+    )
+    const viewSourceMenuButton = this.page.getByRole('button', {
+      name: 'View KCL source code',
+    })
+
+    await operationButton.click({ button: 'right' })
+    await expect(viewSourceMenuButton).toBeVisible()
+    await viewSourceMenuButton.click()
+  }
+
+  /**
+   * Go to definition on a specific operation in the Feature Tree pane
+   */
+  async goToDefinitionOnOperation(
+    operationName: string,
+    operationIndex: number
+  ) {
+    const operationButton = await this.getFeatureTreeOperation(
+      operationName,
+      operationIndex
+    )
+    const goToDefinitionMenuButton = this.page.getByRole('button', {
+      name: 'View function definition',
+    })
+
+    await operationButton.click({ button: 'right' })
+    await expect(goToDefinitionMenuButton).toBeVisible()
+    await goToDefinitionMenuButton.click()
   }
 }
