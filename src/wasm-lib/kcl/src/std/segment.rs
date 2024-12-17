@@ -22,7 +22,8 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///
 /// ```no_run
 /// w = 15
-/// cube = startSketchAt([0, 0])
+/// cube = startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> line([w, 0], %, $line1)
 ///   |> line([0, w], %, $line2)
 ///   |> line([-w, 0], %, $line3)
@@ -31,7 +32,8 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> extrude(5, %)
 ///
 /// fn cylinder(radius, tag) {
-///   return startSketchAt([0, 0])
+///   return startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> circle({ radius = radius, center = segEnd(tag) }, %)
 ///   |> extrude(radius, %)
 /// }
@@ -141,7 +143,8 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///
 /// ```no_run
 /// w = 15
-/// cube = startSketchAt([0, 0])
+/// cube = startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> line([w, 0], %, $line1)
 ///   |> line([0, w], %, $line2)
 ///   |> line([-w, 0], %, $line3)
@@ -150,7 +153,8 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///   |> extrude(5, %)
 ///
 /// fn cylinder(radius, tag) {
-///   return startSketchAt([0, 0])
+///   return startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> circle({ radius = radius, center = segStart(tag) }, %)
 ///   |> extrude(radius, %)
 /// }
