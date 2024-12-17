@@ -1109,5 +1109,3 @@ export function getObjExprProperty(
   if (index === -1) return null
   return { expr: node.properties[index].value, index }
 }
-
-
