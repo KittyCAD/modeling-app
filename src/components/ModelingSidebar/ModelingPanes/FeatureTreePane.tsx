@@ -314,15 +314,16 @@ const OperationItem = (props: { item: Operation }) => {
   async function selectFunctionDefinition() {
     if (props.item.type !== 'UserDefinedFunctionCall') return
     const selectionSnapshot = modelingState.context.selectionRanges
+    const functionRange = sourceRangeFromRust(props.item.functionSourceRange)
+    // For some reason, the cursor goes to the end of the source range we
+    // select.  So set the end equal to the beginning.
+    functionRange[1] = functionRange[0]
     modelingSend({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
         selection: {
-          codeRef: codeRefFromRange(
-            sourceRangeFromRust(props.item.functionSourceRange),
-            kclManager.ast
-          ),
+          codeRef: codeRefFromRange(functionRange, kclManager.ast),
         },
       },
     })

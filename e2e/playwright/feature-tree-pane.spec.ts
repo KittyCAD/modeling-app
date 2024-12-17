@@ -118,9 +118,7 @@ test.describe('Feature Tree pane', () => {
         await editor.expectState({
           highlightedCode: '',
           diagnostics: [],
-          // TODO: in future we'd like this to select the entire function definition
-          // or the first line of the function definition
-          activeLines: ['}'],
+          activeLines: ['fn triangle()'],
         })
         await expect(
           editor.activeLine.first(),
