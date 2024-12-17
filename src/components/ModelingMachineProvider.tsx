@@ -67,12 +67,7 @@ import {
   startSketchOnDefault,
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
-import {
-  doesSceneHaveExtrudedSketch,
-  doesSceneHaveSweepableSketch,
-  getNodePathFromSourceRange,
-  isSingleCursorInPipe,
-} from 'lang/queryAst'
+import { getNodePathFromSourceRange, isSingleCursorInPipe } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
@@ -82,7 +77,6 @@ import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
-import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addEdgeTreatment'
 import {
   ExportIntent,
   EngineConnectionStateType,

@@ -18,10 +18,8 @@ import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
 import {
-  doesPipeHaveCallExp,
   getNodeFromPath,
   getNodePathFromSourceRange,
-  hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
@@ -498,132 +496,6 @@ export function isSketchPipe(selectionRanges: Selections) {
   return isCursorInSketchCommandRange(
     engineCommandManager.artifactGraph,
     selectionRanges
-  )
-}
-
-/**
- * @deprecated was made for shell guard on modeling machine.
- * Now the selection command bar argument input handles this.
- * Leaving until we're sure it's not needed elsewhere.
- */
-export function isSelectionLastLine(
-  selectionRanges: Selections,
-  code: string,
-  i = 0
-) {
-  return selectionRanges.graphSelections[i]?.codeRef?.range[1] === code.length
-}
-
-export type CommonASTNode = {
-  selection: Selection
-  ast: Program
-}
-
-function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
-  return {
-    selection: selectionRanges.graphSelections[i],
-    ast: kclManager.ast,
-  }
-}
-
-function nodeHasExtrude(node: CommonASTNode) {
-  return (
-    doesPipeHaveCallExp({
-      calleeName: 'extrude',
-      ...node,
-    }) ||
-    doesPipeHaveCallExp({
-      calleeName: 'revolve',
-      ...node,
-    }) ||
-    doesPipeHaveCallExp({
-      calleeName: 'loft',
-      ...node,
-    })
-  )
-}
-
-function nodeHasClose(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'close',
-    ...node,
-  })
-}
-function nodeHasCircle(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'circle',
-    ...node,
-  })
-}
-
-/**
- * @deprecated was made for sweeps guard on modeling machine.
- * Now the selection command bar argument input handles this.
- * Leaving until we're sure it's not needed elsewhere.
- */
-export function canSweepSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isSketchPipe(selection) &&
-    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    (commonNodes.every((n) => nodeHasClose(n)) ||
-      commonNodes.every((n) => nodeHasCircle(n))) &&
-    commonNodes.every((n) => !nodeHasExtrude(n))
-  )
-}
-
-/**
- * @deprecated was made for revolve guard on modeling machine.
- * Now the selection command bar argument input handles this.
- * Leaving until we're sure it's not needed elsewhere.
- */
-export function canRevolveSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isSketchPipe(selection) &&
-    (commonNodes.every((n) => nodeHasClose(n)) ||
-      commonNodes.every((n) => nodeHasCircle(n)))
-  )
-}
-
-/**
- * @deprecated was made for loft guard on modeling machine.
- * Now the selection command bar argument input handles this.
- * Leaving until we're sure it's not needed elsewhere.
- */
-export function canLoftSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isCursorInSketchCommandRange(
-      engineCommandManager.artifactGraph,
-      selection
-    ) &&
-    commonNodes.length > 1 &&
-    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n)) &&
-    commonNodes.every((n) => !nodeHasExtrude(n))
-  )
-}
-
-/**
- * @deprecated was made for shell guard on modeling machine.
- * Now the selection command bar argument input handles this.
- * Leaving until we're sure it's not needed elsewhere.
- */
-export function canShellSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return commonNodes.every(
-    (n) =>
-      n.selection.artifact?.type === 'cap' ||
-      n.selection.artifact?.type === 'wall'
   )
 }
 
