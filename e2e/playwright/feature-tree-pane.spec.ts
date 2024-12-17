@@ -118,7 +118,7 @@ test.describe('Feature Tree pane', () => {
         await editor.expectState({
           highlightedCode: '',
           diagnostics: [],
-          activeLines: ['fn triangle()'],
+          activeLines: ['export fn triangle() {'],
         })
         await expect(
           editor.activeLine.first(),
