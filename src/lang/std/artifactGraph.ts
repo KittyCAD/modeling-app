@@ -211,7 +211,7 @@ function mergeArtifacts(
   // merging artifacts of different types should never happen, but if it does, just return the new artifact
   if (oldArtifact.type !== newArtifact.type) return newArtifact
   const _oldArtifact = oldArtifact as any as GenericArtifact
-  let mergedArtifact = { ...oldArtifact, ...newArtifact } as GenericArtifact
+  const mergedArtifact = { ...oldArtifact, ...newArtifact } as GenericArtifact
   Object.entries(newArtifact as any as GenericArtifact).forEach(
     ([propName, value]) => {
       const otherValue = _oldArtifact[propName]
@@ -220,17 +220,7 @@ function mergeArtifacts(
       }
     }
   )
-  // TODO: Remove this any cast
-  let typeCastArtifact = mergedArtifact as any as Artifact
-
-  if ('codeRef' in typeCastArtifact && typeCastArtifact.codeRef) {
-    // In the creation of this artifact above this subtle
-    // type shifting got lost due to the type casting
-    typeCastArtifact.codeRef.range = sourceRangeFromRust(
-      typeCastArtifact.codeRef.range as unknown as RustSourceRange
-    )
-  }
-  return typeCastArtifact
+  return mergedArtifact as any as Artifact
 }
 
 /**
