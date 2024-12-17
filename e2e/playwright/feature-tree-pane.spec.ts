@@ -65,6 +65,7 @@ test.describe('Feature Tree pane', () => {
         })
         await homePage.openProject('test-sample')
         await scene.waitForExecutionDone()
+        await editor.closePane()
         await toolbar.openFeatureTreePane()
       })
 
