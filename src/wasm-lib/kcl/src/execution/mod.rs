@@ -24,6 +24,7 @@ pub use function_param::FunctionParam;
 pub use kcl_value::{KclObjectFields, KclValue};
 use uuid::Uuid;
 
+mod annotations;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
@@ -36,8 +37,8 @@ use crate::{
     execution::cache::{CacheInformation, CacheResult},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{
-        BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, Program as AstProgram,
-        TagDeclarator, TagNode,
+        BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, NonCodeValue,
+        Program as AstProgram, TagDeclarator, TagNode,
     },
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
@@ -88,6 +89,8 @@ pub struct ModuleState {
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
+    /// Settings specified from annotations.
+    pub settings: MetaSettings,
 }
 
 impl Default for ExecState {
@@ -183,6 +186,56 @@ impl GlobalState {
         );
         global.path_to_source_id.insert(root_path, root_id);
         global
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct MetaSettings {
+    pub default_length_units: kcl_value::UnitLen,
+    pub default_angle_units: kcl_value::UnitAngle,
+}
+
+impl Default for MetaSettings {
+    fn default() -> Self {
+        MetaSettings {
+            default_length_units: kcl_value::UnitLen::Mm,
+            default_angle_units: kcl_value::UnitAngle::Degrees,
+        }
+    }
+}
+
+impl MetaSettings {
+    fn update_from_annotation(&mut self, annotation: &NonCodeValue, source_range: SourceRange) -> Result<(), KclError> {
+        let properties = annotations::expect_properties(annotations::SETTINGS, annotation, source_range)?;
+
+        for p in properties {
+            match &*p.inner.key.name {
+                annotations::SETTINGS_UNIT_LENGTH => {
+                    let value = annotations::expect_ident(&p.inner.value)?;
+                    let value = kcl_value::UnitLen::from_str(value, source_range)?;
+                    self.default_length_units = value;
+                }
+                annotations::SETTINGS_UNIT_ANGLE => {
+                    let value = annotations::expect_ident(&p.inner.value)?;
+                    let value = kcl_value::UnitAngle::from_str(value, source_range)?;
+                    self.default_angle_units = value;
+                }
+                name => {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: format!(
+                            "Unexpected settings key: `{name}`; expected one of `{}`, `{}`",
+                            annotations::SETTINGS_UNIT_LENGTH,
+                            annotations::SETTINGS_UNIT_ANGLE
+                        ),
+                        source_ranges: vec![source_range],
+                    }))
+                }
+            }
+        }
+
+        Ok(())
     }
 }
 
@@ -2020,6 +2073,22 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
+        if let Some((annotation, source_range)) = program
+            .non_code_meta
+            .start_nodes
+            .iter()
+            .filter_map(|n| {
+                n.annotation(annotations::SETTINGS)
+                    .map(|result| (result, n.as_source_range()))
+            })
+            .next()
+        {
+            exec_state
+                .mod_local
+                .settings
+                .update_from_annotation(annotation, source_range)?;
+        }
+
         let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in &program.body {

@@ -8,7 +8,10 @@ use crate::{
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
     execution::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
-    parsing::ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
+    parsing::{
+        ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
+        token::NumericSuffix,
+    },
     std::{args::Arg, FnAsArg},
     ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
 };
@@ -558,6 +561,55 @@ impl KclValue {
                 &ctx,
             )
             .await
+        }
+    }
+}
+
+// TODO called UnitLen so as not to clash with UnitLength in settings)
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum UnitLen {
+    Mm,
+    Cm,
+    M,
+    Inches,
+    Feet,
+    Yards,
+}
+
+impl TryFrom<NumericSuffix> for UnitLen {
+    type Error = ();
+
+    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
+        match suffix {
+            NumericSuffix::Mm => Ok(Self::Mm),
+            NumericSuffix::Cm => Ok(Self::Cm),
+            NumericSuffix::M => Ok(Self::M),
+            NumericSuffix::Inch => Ok(Self::Inches),
+            NumericSuffix::Ft => Ok(Self::Feet),
+            NumericSuffix::Yd => Ok(Self::Yards),
+            _ => Err(()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum UnitAngle {
+    Degrees,
+    Radians,
+}
+
+impl TryFrom<NumericSuffix> for UnitAngle {
+    type Error = ();
+
+    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
+        match suffix {
+            NumericSuffix::Deg => Ok(Self::Degrees),
+            NumericSuffix::Rad => Ok(Self::Radians),
+            _ => Err(()),
         }
     }
 }

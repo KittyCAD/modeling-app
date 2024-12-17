@@ -56,14 +56,13 @@ impl NumericSuffix {
 impl FromStr for NumericSuffix {
     type Err = CompilationError;
 
-    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "_" => Ok(NumericSuffix::Count),
             "mm" => Ok(NumericSuffix::Mm),
             "cm" => Ok(NumericSuffix::Cm),
             "m" => Ok(NumericSuffix::M),
-            "inch" => Ok(NumericSuffix::Inch),
-            "in" => Ok(NumericSuffix::Inch),
+            "inch" | "in" => Ok(NumericSuffix::Inch),
             "ft" => Ok(NumericSuffix::Ft),
             "yd" => Ok(NumericSuffix::Yd),
             "deg" => Ok(NumericSuffix::Deg),
