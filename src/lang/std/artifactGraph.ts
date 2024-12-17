@@ -1,13 +1,7 @@
-import {
-  PathToNode,
-  Program,
-  SourceRange,
-  sourceRangeFromRust,
-} from 'lang/wasm'
+import { PathToNode, Program, SourceRange } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
-import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type ArtifactId = string
 
