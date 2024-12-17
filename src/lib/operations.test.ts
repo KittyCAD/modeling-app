@@ -54,10 +54,17 @@ describe('operations filtering', () => {
       userCall('foo'),
       userReturn(),
       stdlib('std2'),
+      userCall('bar'),
+      userReturn(),
       stdlib('std3'),
     ]
     const actual = filterOperations(operations)
     expect(actual).toEqual([stdlib('std1'), stdlib('std2'), stdlib('std3')])
+  })
+  it('preserves user-defined function calls at the end of the list', async () => {
+    const operations = [stdlib('std1'), userCall('foo')]
+    const actual = filterOperations(operations)
+    expect(actual).toEqual([stdlib('std1'), userCall('foo')])
   })
   it('drops all user-defined function return operations', async () => {
     // The returns allow us to group operations with the call, but we never

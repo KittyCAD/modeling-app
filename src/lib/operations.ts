@@ -144,40 +144,36 @@ function isNotInsideUserFunction(operations: Operation[]): Operation[] {
 }
 
 /**
- * A filter to exclude UserDefinedFunctionCall operations
- * that don't have any operations inside them
- * from a list of operations
+ * A filter to exclude UserDefinedFunctionCall operations and their
+ * corresponding UserDefinedFunctionReturn that don't have any operations inside
+ * them from a list of operations.
  */
 function isNotUserFunctionWithNoOperations(
   operations: Operation[]
 ): Operation[] {
-  const ops: Operation[] = []
-  for (let i = 0; i < operations.length; i++) {
-    const op = operations[i]
-    if (op.type !== 'UserDefinedFunctionCall') {
-      // Not a call.  Preserve it.
-      ops.push(op)
-      continue
-    }
-    // If this is a call at the end of the array, skip it.
-    const nextIndex = i + 1
-    if (nextIndex >= operations.length) continue
+  return operations.filter((op, index) => {
+    if (
+      op.type === 'UserDefinedFunctionCall' &&
+      // If this is a call at the end of the array, it's preserved.
+      index < operations.length - 1 &&
+      operations[index + 1].type === 'UserDefinedFunctionReturn'
+    )
+      return false
+    if (
+      op.type === 'UserDefinedFunctionReturn' &&
+      // If this return is at the beginning of the array, it's preserved.
+      index > 0 &&
+      operations[index - 1].type === 'UserDefinedFunctionCall'
+    )
+      return false
 
-    const nextOp = operations[nextIndex]
-    if (nextOp.type === 'UserDefinedFunctionReturn') {
-      // Next op is a return.  Skip the call and the return.
-      i++
-      continue
-    }
-    // Preserve the call.
-    ops.push(op)
-  }
-  return ops
+    return true
+  })
 }
 
 /**
- * A third filter to exclude UserDefinedFunctionReturn operations
- * from a list of operations
+ * A filter to exclude UserDefinedFunctionReturn operations from a list of
+ * operations.
  */
 function isNotUserFunctionReturn(ops: Operation[]): Operation[] {
   return ops.filter((op) => op.type !== 'UserDefinedFunctionReturn')
