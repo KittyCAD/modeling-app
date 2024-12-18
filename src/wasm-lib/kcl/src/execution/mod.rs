@@ -25,6 +25,7 @@ pub use kcl_value::{KclObjectFields, KclValue};
 use uuid::Uuid;
 
 mod annotations;
+mod artifact;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
@@ -48,6 +49,7 @@ use crate::{
 };
 
 // Re-exports.
+pub use artifact::{Artifact, ArtifactId, ArtifactInner};
 pub use cad_op::Operation;
 
 /// State for executing a program.
@@ -67,6 +69,8 @@ pub struct GlobalState {
     pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    /// Output map of UUIDs to artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
@@ -156,6 +160,11 @@ impl ExecState {
         self.global.id_generator.next_uuid()
     }
 
+    pub fn add_artifact(&mut self, artifact: Artifact) {
+        let id = artifact.id;
+        self.global.artifacts.insert(id, artifact);
+    }
+
     async fn add_module(
         &mut self,
         path: std::path::PathBuf,
@@ -193,6 +202,7 @@ impl GlobalState {
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
+            artifacts: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.

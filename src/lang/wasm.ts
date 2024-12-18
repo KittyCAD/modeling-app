@@ -45,7 +45,11 @@ import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRang
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
+import { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
+import { ArtifactId } from 'wasm-lib/kcl/bindings/ArtifactId'
 
+export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
+export type { ArtifactId } from 'wasm-lib/kcl/bindings/ArtifactId'
 export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -247,6 +251,7 @@ export const isPathToNodeNumber = (
 export interface ExecState {
   memory: ProgramMemory
   operations: Operation[]
+  artifacts: { [key in ArtifactId]?: Artifact }
 }
 
 /**
@@ -257,6 +262,7 @@ export function emptyExecState(): ExecState {
   return {
     memory: ProgramMemory.empty(),
     operations: [],
+    artifacts: {},
   }
 }
 
@@ -264,6 +270,7 @@ function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
     memory: ProgramMemory.fromRaw(execOutcome.memory),
     operations: execOutcome.operations,
+    artifacts: execOutcome.artifacts,
   }
 }
 
