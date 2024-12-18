@@ -8,6 +8,7 @@ test.describe('Testing Camera Movement', () => {
     // TODO: fix this test on windows too after the electron migration
     const winOrMac =
       process.platform === 'win32' || process.platform === 'darwin'
+    // eslint-disable-next-line
     test.skip(winOrMac, 'Skip on windows')
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
