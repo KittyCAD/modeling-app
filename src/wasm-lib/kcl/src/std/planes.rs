@@ -209,7 +209,7 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
 
     // Set the color.
     args.batch_modeling_cmd(
-        exec_state.id_generator.next_uuid(),
+        exec_state.next_uuid(),
         ModelingCmd::from(mcmd::PlaneSetColor {
             color,
             plane_id: plane.id,

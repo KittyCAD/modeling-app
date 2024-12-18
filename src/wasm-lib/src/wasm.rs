@@ -86,7 +86,7 @@ pub async fn execute(
 
     // Populate from the old exec state if it exists.
     if let Some(program_memory_override) = program_memory_override {
-        exec_state.memory = program_memory_override;
+        exec_state.mod_local.memory = program_memory_override;
     } else {
         // If we are in mock mode, we don't want to use any cache.
         if let Some(old) = read_old_ast_memory().await {
@@ -110,7 +110,7 @@ pub async fn execute(
         }
 
         // Add additional outputs to the error.
-        let error = KclErrorWithOutputs::new(err, exec_state.operations.clone());
+        let error = KclErrorWithOutputs::new(err, exec_state.mod_local.operations.clone());
 
         // Throw the error.
         return Err(serde_json::to_string(&error).map_err(|serde_err| serde_err.to_string())?);

@@ -353,7 +353,6 @@ pub struct CompilationError {
 }
 
 impl CompilationError {
-    #[allow(dead_code)]
     pub(crate) fn err(source_range: SourceRange, message: impl ToString) -> CompilationError {
         CompilationError {
             source_range,

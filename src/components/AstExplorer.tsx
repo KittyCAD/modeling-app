@@ -109,6 +109,7 @@ function DisplayObj({
       setHasCursor(false)
     }
   }, [node.start, node.end, node.type])
+
   return (
     <pre
       ref={ref}

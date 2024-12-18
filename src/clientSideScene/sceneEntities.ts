@@ -51,6 +51,7 @@ import {
   defaultSourceRange,
   sourceRangeFromRust,
   resultIsOk,
+  SourceRange,
 } from 'lang/wasm'
 import {
   engineCommandManager,
@@ -102,6 +103,7 @@ import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { radToDeg } from 'three/src/math/MathUtils'
+import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
 
 type DraftSegment = 'line' | 'tangentialArcTo'
 
@@ -584,11 +586,12 @@ export class SceneEntities {
       )
 
       let seg: Group
-      const _node1 = getNodeFromPath<CallExpression>(
+      const _node1 = getNodeFromPath<Node<CallExpression>>(
         maybeModdedAst,
         segPathToNode,
         'CallExpression'
       )
+
       if (err(_node1)) return
       const callExpName = _node1.node?.callee?.name
 
@@ -611,6 +614,15 @@ export class SceneEntities {
               from: segment.from,
               to: segment.to,
             }
+
+      const startRange = _node1.node.start
+      const endRange = _node1.node.end
+      const sourceRange: SourceRange = [startRange, endRange, true]
+      const selection: Selections = computeSelectionFromSourceRangeAndAST(
+        sourceRange,
+        maybeModdedAst
+      )
+
       const result = initSegment({
         prevSegment: sketch.paths[index - 1],
         callExpName,
@@ -623,6 +635,7 @@ export class SceneEntities {
         theme: sceneInfra._theme,
         isSelected,
         sceneInfra,
+        selection,
       })
       if (err(result)) return
       const { group: _group, updateOverlaysCallback } = result
@@ -2350,4 +2363,28 @@ export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
 
 function massageFormats(a: Vec3Array | Point3d): Vector3 {
   return isArray(a) ? new Vector3(a[0], a[1], a[2]) : new Vector3(a.x, a.y, a.z)
+}
+
+/**
+ * Given a SourceRange [x,y,boolean] create a Selections object which contains
+ * graphSelections with the artifact and codeRef.
+ * This can be passed to 'Set selection' to internally set the selection of the
+ * modelingMachine from code.
+ */
+function computeSelectionFromSourceRangeAndAST(
+  sourceRange: SourceRange,
+  ast: Node<Program>
+): Selections {
+  const artifactGraph = engineCommandManager.artifactGraph
+  const artifact = getArtifactFromRange(sourceRange, artifactGraph) || undefined
+  const selection: Selections = {
+    graphSelections: [
+      {
+        artifact,
+        codeRef: codeRefFromRange(sourceRange, ast),
+      },
+    ],
+    otherSelections: [],
+  }
+  return selection
 }
