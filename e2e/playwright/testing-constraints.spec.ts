@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test'
-
-import { getUtils, setup, tearDown, TEST_COLORS } from './test-utils'
+import {
+  test as testFixture,
+  expect as expectFixture,
+} from './fixtures/fixtureSetup'
+import { join } from 'path'
+import {
+  getUtils,
+  setup,
+  tearDown,
+  TEST_COLORS,
+  executorInputPath,
+} from './test-utils'
+import * as fsp from 'fs/promises'
 import { XOR } from 'lib/utils'
 
 test.beforeEach(async ({ context, page }, testInfo) => {
@@ -1027,4 +1038,59 @@ part002 = startSketchOn('XZ')
     // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
     await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
   })
+})
+testFixture.describe('Electron constraint tests', () => {
+  testFixture(
+    'Able to double click label to set constraint',
+    { tag: '@electron' },
+    async ({ tronApp, homePage, scene, editor, toolbar }) => {
+      await tronApp.initialise({
+        fixtures: { homePage, scene, editor, toolbar },
+        folderSetupFn: async (dir) => {
+          const bracketDir = join(dir, 'test-sample')
+          await fsp.mkdir(bracketDir, { recursive: true })
+          await fsp.copyFile(
+            executorInputPath('angled_line.kcl'),
+            join(bracketDir, 'main.kcl')
+          )
+        },
+      })
+      const [clickHandler] = scene.makeMouseHelpers(600, 300)
+
+      await test.step('setup test', async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: 'test-sample',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.openProject('test-sample')
+        await scene.waitForExecutionDone()
+      })
+
+      await test.step('Double click to constrain', async () => {
+        await clickHandler()
+        await tronApp.page.getByRole('button', { name: 'Edit Sketch' }).click()
+        const child = tronApp.page
+          .locator('.segment-length-label-text')
+          .first()
+          .locator('xpath=..')
+        await child.dblclick()
+        const cmdBarSubmitButton = tronApp.page.getByRole('button', {
+          name: 'arrow right Continue',
+        })
+        await cmdBarSubmitButton.click()
+        await expectFixture(tronApp.page.locator('.cm-content')).toContainText(
+          'length001 = 15.3'
+        )
+        await expectFixture(tronApp.page.locator('.cm-content')).toContainText(
+          '|> angledLine([9, length001], %)'
+        )
+        await tronApp.page.getByRole('button', { name: 'Exit Sketch' }).click()
+      })
+    }
+  )
 })
