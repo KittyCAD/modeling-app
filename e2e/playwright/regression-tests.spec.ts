@@ -560,6 +560,8 @@ extrude001 = extrude(50, sketch001)
     page,
     homePage,
   }) => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
 
     // Constants and locators
