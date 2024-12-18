@@ -929,11 +929,14 @@ sketch002 = startSketchOn(extrude001, $seg01)
     const selectClose = () => page.getByText(`close(%)`).click()
     const clickEmpty = () => page.mouse.click(950, 100)
 
-    // expect fillet button without any bodies in the scene
+    // Now that we don't disable toolbar buttons based on selection,
+    // but rather based on a "selection" step in the command palette,
+    // the fillet button should always be enabled with a good network connection.
+    // I'm not sure if this test is actually useful anymore.
     await selectSegment()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
     await clickEmpty()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
 
     // test fillet button with the body in the scene
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
@@ -943,7 +946,7 @@ extrude001 = extrude(10, sketch001)`
     await selectSegment()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
     await selectClose()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
     await clickEmpty()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
   })
