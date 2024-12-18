@@ -23,6 +23,12 @@ engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
 export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
 
+declare global {
+  interface Window {
+    editorManager: EditorManager
+  }
+}
+
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager()
 
