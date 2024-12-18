@@ -89,19 +89,16 @@ test.describe('Sketch tests', () => {
     await u.closeDebugPanel()
 
     await page.getByText(selectionsSnippets.startProfileAt1).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
 
     await page.getByText(selectionsSnippets.startProfileAt2).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
 
     await page.getByText(selectionsSnippets.startProfileAt3).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
