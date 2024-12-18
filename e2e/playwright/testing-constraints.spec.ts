@@ -4,8 +4,10 @@ import {
   getUtils,
   TEST_COLORS,
   pollEditorLinesSelectedLength,
+  executorInputPath,
 } from './test-utils'
 import { XOR } from 'lib/utils'
+import path from 'node:path'
 
 test.describe('Testing constraints', () => {
   test('Can constrain line length', async ({ page, homePage }) => {
@@ -999,105 +1001,112 @@ part002 = startSketchOn('XZ')
     }
   })
 
-  test.fixme('Horizontally constrained line remains selected after applying constraint', async ({
-    page,
-    homePage,
-  }) => {
-    test.setTimeout(70_000)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn('XY')
+  test.fixme(
+    'Horizontally constrained line remains selected after applying constraint',
+    async ({ page, homePage }) => {
+      test.setTimeout(70_000)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn('XY')
     |> startProfileAt([-1.05, -1.07], %)
     |> line([3.79, 2.68], %, $seg01)
     |> line([3.13, -2.4], %)`
+        )
+      })
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+
+      await page.getByText('line([3.79, 2.68], %, $seg01)').click()
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeEnabled({ timeout: 10_000 })
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+      // Wait for overlays to populate
+      await page.waitForTimeout(1000)
+
+      await page.waitForTimeout(100)
+      const lineBefore = await u.getSegmentBodyCoords(
+        `[data-overlay-index="1"]`,
+        0
       )
-    })
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+      expect(
+        await u.getGreatestPixDiff(lineBefore, TEST_COLORS.WHITE)
+      ).toBeLessThan(3)
+      await page.mouse.move(lineBefore.x, lineBefore.y)
+      await page.waitForTimeout(50)
+      await page.mouse.click(lineBefore.x, lineBefore.y)
+      expect(
+        await u.getGreatestPixDiff(lineBefore, TEST_COLORS.BLUE)
+      ).toBeLessThan(3)
 
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+      await page
+        .getByRole('button', {
+          name: 'Length: open menu',
+        })
+        .click()
+      await page.waitForTimeout(500)
+      await page
+        .getByRole('button', { name: 'Horizontal', exact: true })
+        .click()
+      await page.waitForTimeout(500)
 
-    await page.getByText('line([3.79, 2.68], %, $seg01)').click()
-    await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
-      { timeout: 10_000 }
-    )
-    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+      await pollEditorLinesSelectedLength(page, 1)
+      let activeLinesContent = await page.locator('.cm-activeLine').all()
+      await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
 
-    // Wait for overlays to populate
-    await page.waitForTimeout(1000)
+      // Wait for code editor to settle.
+      await page.waitForTimeout(2000)
 
-    await page.waitForTimeout(100)
-    const lineBefore = await u.getSegmentBodyCoords(
-      `[data-overlay-index="1"]`,
-      0
-    )
-    expect(
-      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.WHITE)
-    ).toBeLessThan(3)
-    await page.mouse.move(lineBefore.x, lineBefore.y)
-    await page.waitForTimeout(50)
-    await page.mouse.click(lineBefore.x, lineBefore.y)
-    expect(
-      await u.getGreatestPixDiff(lineBefore, TEST_COLORS.BLUE)
-    ).toBeLessThan(3)
+      // If the overlay-angle is updated the THREE.js scene is in a good state
+      await expect(
+        await page.locator('[data-overlay-index="1"]')
+      ).toHaveAttribute('data-overlay-angle', '0')
 
-    await page
-      .getByRole('button', {
-        name: 'Length: open menu',
-      })
-      .click()
-    await page.waitForTimeout(500)
-    await page.getByRole('button', { name: 'Horizontal', exact: true }).click()
-    await page.waitForTimeout(500)
+      const lineAfter = await u.getSegmentBodyCoords(
+        `[data-overlay-index="1"]`,
+        0
+      )
 
-    await pollEditorLinesSelectedLength(page, 1)
-    let activeLinesContent = await page.locator('.cm-activeLine').all()
-    await expect(activeLinesContent[0]).toHaveText(`|> xLine(3.13, %)`)
+      const linebb = await u.getBoundingBox('[data-overlay-index="1"]')
+      await page.mouse.move(linebb.x, linebb.y, { steps: 25 })
+      await page.mouse.click(linebb.x, linebb.y)
 
-    // Wait for code editor to settle.
-    await page.waitForTimeout(2000)
+      await expect
+        .poll(
+          async () => await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE)
+        )
+        .toBeLessThan(3)
 
-    // If the overlay-angle is updated the THREE.js scene is in a good state
-    await expect(
-      await page.locator('[data-overlay-index="1"]')
-    ).toHaveAttribute('data-overlay-angle', '0')
+      await page.waitForTimeout(500)
 
-    const lineAfter = await u.getSegmentBodyCoords(
-      `[data-overlay-index="1"]`,
-      0
-    )
+      // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
+      await page.waitForTimeout(200)
+      // await page.getByRole('button', { name: 'length', exact: true }).click()
+      await page.getByTestId('constraint-length').click()
 
-    const linebb = await u.getBoundingBox('[data-overlay-index="1"]')
-    await page.mouse.move(linebb.x, linebb.y, { steps: 25 })
-    await page.mouse.click(linebb.x, linebb.y)
+      await page
+        .getByTestId('cmd-bar-arg-value')
+        .getByRole('textbox')
+        .fill('10')
+      await page
+        .getByRole('button', {
+          name: 'arrow right Continue',
+        })
+        .click()
 
-    await expect
-      .poll(async () => await u.getGreatestPixDiff(lineAfter, TEST_COLORS.BLUE))
-      .toBeLessThan(3)
+      await pollEditorLinesSelectedLength(page, 1)
+      activeLinesContent = await page.locator('.cm-activeLine').all()
+      await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
 
-    await page.waitForTimeout(500)
-
-    // await expect(page.getByRole('button', { name: 'length', exact: true })).toBeVisible()
-    await page.waitForTimeout(200)
-    // await page.getByRole('button', { name: 'length', exact: true }).click()
-    await page.getByTestId('constraint-length').click()
-
-    await page.getByTestId('cmd-bar-arg-value').getByRole('textbox').fill('10')
-    await page
-      .getByRole('button', {
-        name: 'arrow right Continue',
-      })
-      .click()
-
-    await pollEditorLinesSelectedLength(page, 1)
-    activeLinesContent = await page.locator('.cm-activeLine').all()
-    await expect(activeLinesContent[0]).toHaveText(`|> xLine(length001, %)`)
-
-    // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
-  })
+      // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    }
+  )
 })
 test.describe('Electron constraint tests', () => {
   test(
@@ -1105,11 +1114,11 @@ test.describe('Electron constraint tests', () => {
     { tag: '@electron' },
     async ({ page, context, homePage, scene, editor, toolbar }) => {
       await context.folderSetupFn(async (dir) => {
-        const bracketDir = join(dir, 'test-sample')
+        const bracketDir = path.join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.copyFile(
           executorInputPath('angled_line.kcl'),
-          join(bracketDir, 'main.kcl')
+          path.join(bracketDir, 'main.kcl')
         )
       })
       const [clickHandler] = scene.makeMouseHelpers(600, 300)
@@ -1140,10 +1149,10 @@ test.describe('Electron constraint tests', () => {
           name: 'arrow right Continue',
         })
         await cmdBarSubmitButton.click()
-        await expectFixture(page.locator('.cm-content')).toContainText(
+        await expect(page.locator('.cm-content')).toContainText(
           'length001 = 15.3'
         )
-        await expectFixture(page.locator('.cm-content')).toContainText(
+        await expect(page.locator('.cm-content')).toContainText(
           '|> angledLine([9, length001], %)'
         )
         await page.getByRole('button', { name: 'Exit Sketch' }).click()

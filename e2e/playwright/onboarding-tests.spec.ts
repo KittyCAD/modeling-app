@@ -37,18 +37,25 @@ test.describe('Onboarding tests', () => {
         page.getByText('Welcome to Modeling App! This')
       ).toBeVisible()
 
-    // Test that the onboarding pane loaded
-    await expect(page.getByText('Welcome to Modeling App! This')).toBeVisible()
+      // Test that the onboarding pane loaded
+      await expect(
+        page.getByText('Welcome to Modeling App! This')
+      ).toBeVisible()
 
-    // *and* that the code is shown in the editor
-    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
+      // *and* that the code is shown in the editor
+      await expect(page.locator('.cm-content')).toContainText(
+        '// Shelf Bracket'
+      )
 
-    // Make sure the model loaded
-    const XYPlanePoint = { x: 774, y: 116 } as const
-    const modelColor: [number, number, number] = [45, 45, 45]
-    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-    expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
-  })
+      // Make sure the model loaded
+      const XYPlanePoint = { x: 774, y: 116 } as const
+      const modelColor: [number, number, number] = [45, 45, 45]
+      await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+      expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(
+        8
+      )
+    }
+  )
 
   test(
     'Desktop: fresh onboarding executes and loads',

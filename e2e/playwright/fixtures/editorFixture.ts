@@ -148,25 +148,27 @@ export class EditorFixture {
     return openPane(this.page, this.paneButtonTestId)
   }
   scrollToText(text: string, placeCursor?: boolean) {
-    return this.page.evaluate((args: { text: string, placeCursor?: boolean }) => {
-      // editorManager is available on the window object.
-      // @ts-ignore
-      let index = editorManager._editorView.docView.view.state.doc
-        .toString()
-        .indexOf(args.text)
-      // @ts-ignore
-      editorManager._editorView.focus()
-      // @ts-ignore
-      editorManager._editorView.dispatch({
-        selection: window.EditorSelection.create([
-          window.EditorSelection.cursor(index)
-        ]),
-        effects: [
-          window.EditorView.scrollIntoView(
-            window.EditorSelection.range(index, index + 1)
-          )
-        ]
-      })
-    }, { text, placeCursor })
+    return this.page.evaluate(
+      (args: { text: string; placeCursor?: boolean }) => {
+        // error TS2339: Property 'docView' does not exist on type 'EditorView'.
+        // Except it does so :shrug:
+        // @ts-ignore
+        let index = window.editorManager._editorView?.docView.view.state.doc
+          .toString()
+          .indexOf(args.text)
+        window.editorManager._editorView?.focus()
+        window.editorManager._editorView?.dispatch({
+          selection: window.EditorSelection.create([
+            window.EditorSelection.cursor(index),
+          ]),
+          effects: [
+            window.EditorView.scrollIntoView(
+              window.EditorSelection.range(index, index + 1)
+            ),
+          ],
+        })
+      },
+      { text, placeCursor }
+    )
   }
 }

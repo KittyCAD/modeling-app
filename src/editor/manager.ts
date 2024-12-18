@@ -15,6 +15,13 @@ import {
 import { StateFrom } from 'xstate'
 import { markOnce } from 'lib/performance'
 
+declare global {
+  interface Window {
+    EditorSelection: typeof EditorSelection
+    EditorView: typeof EditorView
+  }
+}
+
 // We need to be able to create these during tests dynamically (via
 // page.evaluate) So that's why this exists.
 window.EditorSelection = EditorSelection
@@ -30,7 +37,6 @@ const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export default class EditorManager {
-  private _editorView: EditorView | null = null
   private _copilotEnabled: boolean = true
 
   private _isShiftDown: boolean = false
@@ -51,6 +57,8 @@ export default class EditorManager {
   private _convertToVariableCallback: () => void = () => {}
 
   private _highlightRange: Array<[number, number]> = [[0, 0]]
+
+  public _editorView: EditorView | null = null
 
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled

@@ -1,7 +1,7 @@
 import { test, expect } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
-import { getUtils, setup, tearDown } from './test-utils'
+import { getUtils } from './test-utils'
 
 test.describe('Testing Camera Movement', () => {
   test('Can move camera reliably', async ({ page, context, homePage }) => {
@@ -339,7 +339,10 @@ test.describe('Testing Camera Movement', () => {
     })
   })
 
-  test(`Zoom by scroll should not fire while orbiting`, async ({ homePage, page }) => {
+  test(`Zoom by scroll should not fire while orbiting`, async ({
+    homePage,
+    page,
+  }) => {
     // TODO: fix this test on windows after the electron migration
     test.skip(process.platform === 'win32', 'Skip on windows')
     /**
@@ -478,7 +481,10 @@ test.describe('Testing Camera Movement', () => {
     }
   })
 
-  test('Right-click opens context menu when not dragged', async ({ homePage, page }) => {
+  test('Right-click opens context menu when not dragged', async ({
+    homePage,
+    page,
+  }) => {
     const u = await getUtils(page)
 
     await homePage.goToModelingScene()
@@ -502,4 +508,3 @@ test.describe('Testing Camera Movement', () => {
     })
   })
 })
-

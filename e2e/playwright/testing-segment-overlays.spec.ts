@@ -1187,18 +1187,24 @@ test.describe('Testing segment overlays', () => {
           await u.waitForPageLoad()
           await page.waitForTimeout(1000)
 
-          await expect.poll(async () => {
-            await editor.scrollToText(lineOfInterest)
-            await page.waitForTimeout(1000)
-            await page.keyboard.press('ArrowRight')
-            await page.waitForTimeout(500)
-            await page.keyboard.press('ArrowLeft')
-            await page.waitForTimeout(500)
-            try {
-              await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
-              return true
-            } catch(_) { return false }
-          }).toBe(true)
+          await expect
+            .poll(async () => {
+              await editor.scrollToText(lineOfInterest)
+              await page.waitForTimeout(1000)
+              await page.keyboard.press('ArrowRight')
+              await page.waitForTimeout(500)
+              await page.keyboard.press('ArrowLeft')
+              await page.waitForTimeout(500)
+              try {
+                await expect(
+                  page.getByRole('button', { name: 'Edit Sketch' })
+                ).toBeVisible()
+                return true
+              } catch (_) {
+                return false
+              }
+            })
+            .toBe(true)
           await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
           await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
