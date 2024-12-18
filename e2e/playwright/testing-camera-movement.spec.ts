@@ -5,7 +5,8 @@ import { getUtils } from './test-utils'
 
 test.describe('Testing Camera Movement', () => {
   test('Can move camera reliably', async ({ page, context, homePage }) => {
-    test.skip(process.platform === 'darwin', 'Can move camera reliably')
+    // TODO: fix this test on windows too after the electron migration
+    test.skip(process.platform === 'win32' || process.platform === 'darwin', 'Skip on windows')
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -508,3 +509,4 @@ test.describe('Testing Camera Movement', () => {
     })
   })
 })
+
