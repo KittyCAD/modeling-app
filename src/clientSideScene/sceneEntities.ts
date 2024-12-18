@@ -1250,8 +1250,10 @@ export class SceneEntities {
     groupOfDrafts.setRotationFromQuaternion(orientation)
     this.scene.add(groupOfDrafts)
 
+    const DRAFT_POINT_RADIUS = 6
+
     const createPoint = (center: Vector3): number => {
-      const geometry = new SphereGeometry(6)
+      const geometry = new SphereGeometry(DRAFT_POINT_RADIUS)
       const color = getThemeColorForThreeJs(sceneInfra._theme)
       const material = new MeshBasicMaterial({ color })
 
@@ -1273,31 +1275,35 @@ export class SceneEntities {
       // A 3-point circle is undefined if it doesn't have 3 points :)
       if (points.length != 3) return undefined
 
-      // y = (a/b)x + m
-      // a and b variables for the slopes and mid-points
-      const a = [
-        points[1].x - points[0].x,
-        points[2].x - points[1].x,
-      ]
+      // y = (i/j)(x-h) + b
+      // m and n variables for the slopes
+      const i = [points[1].x - points[0].x, points[2].x - points[1].x]
+      const j = [points[1].y - points[0].y, points[2].y - points[1].y]
 
+      // Our / threejs coordinate system affects this a lot. If you take this
+      // code into a different code base, you may have to adjust a/b to being
+      // -1/a/b, b/a, etc! In this case, a/-b did the trick.
+      const m = [(i[0] / -j[0]), (i[1] / -j[1])]
+
+      const h = [
+        (points[0].x + points[1].x) / 2,
+        (points[1].x + points[2].x) / 2,
+      ]
       const b = [
-        points[1].y - points[0].y,
-        points[2].y - points[1].y,
+        (points[0].y + points[1].y) / 2,
+        (points[1].y + points[2].y) / 2,
       ]
 
-      // m offset
-      const m = [
-        points[0].y - (a[0] / b[0]) * points[0].x,
-        points[2].y - (a[1] / b[1]) * points[2].x,
-      ]
+      // Algebraically derived
+      const x = (-m[0]*h[0] + b[0]-b[1] + m[1]*h[1]) / (m[1]-m[0])
+      const y = m[0]*(x - h[0]) + b[0]
 
-      const x = (m[1] - m[0]) / ((b[0] / a[0]) - (b[1] / a[1]))
-      const y = (b[0] / a[0]) * x + m[0]
+      const center = new Vector3(x, y, 0)
+      const radius = Math.sqrt((points[1].x - x)**2 + (points[1].y - y)**2)
 
       return {
-        // Adjust for our coordinate system
-        center: new Vector3(x, y, 0),
-        radius: Math.sqrt((points[1].x - x)**2 + (points[1].y - y)**2),
+        center,
+        radius,
       }
     }
 
@@ -1343,10 +1349,6 @@ export class SceneEntities {
 
     // The target of our dragging
     let target = undefined
-
-    const findObjectOfType = (objects, type: string) => {
-      intersects[0]?.object.userData?.type === CIRCLE_3_POINT_DRAFT_POINT
-    }
 
     sceneInfra.setCallbacks({
       async onDrag(args) {
