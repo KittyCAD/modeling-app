@@ -313,6 +313,8 @@ export class KclManager {
       this.addDiagnostics(await lintAst({ ast: ast }))
       setSelectionFilterToDefault(execState.memory, this.engineCommandManager)
 
+      console.log('executeAst artifacts', execState.artifacts)
+
       if (args.zoomToFit) {
         let zoomObjectId: string | undefined = ''
         if (args.zoomOnRangeAndType) {
