@@ -13,7 +13,7 @@ p = startSketchOn('XY')
   |> angledLine({ angle = 60, length = triangleLen }, %, $a)
   |> angledLine({ angle = 180, length = triangleLen }, %, $b)
   |> angledLine({ angle = 300, length = triangleLen }, %, $c)
-  |> extrude(triangleHeight, %)
+  |> extrude(length = triangleHeight)
 
 fn circl(x, face) {
   return startSketchOn(p, face)
@@ -24,7 +24,7 @@ fn circl(x, face) {
 
 c1 = circl(-200, c)
 plumbus1 = c1
-  |> extrude(plumbusLen, %)
+  |> extrude(length = plumbusLen)
   |> fillet({
        radius = 5,
        tags = [
@@ -34,7 +34,7 @@ plumbus1 = c1
      }, %)
 c2 = circl(200, a)
 plumbus0 = c2
-  |> extrude(plumbusLen, %)
+  |> extrude(length = plumbusLen)
   |> fillet({
        radius = 5,
        tags = [

@@ -80,12 +80,12 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 356,
-                411,
+                426,
                 0
               ],
               "tag": {
-                "end": 410,
-                "start": 404,
+                "end": 425,
+                "start": 419,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -95,13 +95,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                516,
-                603,
+                540,
+                627,
                 0
               ],
               "tag": {
-                "end": 602,
-                "start": 596,
+                "end": 626,
+                "start": 620,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -111,13 +111,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                609,
-                660,
+                633,
+                684,
                 0
               ],
               "tag": {
-                "end": 659,
-                "start": 653,
+                "end": 683,
+                "start": 677,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -203,7 +203,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     356,
-                    411,
+                    426,
                     0
                   ]
                 },
@@ -212,8 +212,8 @@ snapshot_kind: text
                   99.94
                 ],
                 "tag": {
-                  "end": 410,
-                  "start": 404,
+                  "end": 425,
+                  "start": 419,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -227,8 +227,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    417,
-                    425,
+                    432,
+                    440,
                     0
                   ]
                 },
@@ -420,7 +420,7 @@ snapshot_kind: text
                       "id": "[uuid]",
                       "sourceRange": [
                         356,
-                        411,
+                        426,
                         0
                       ]
                     },
@@ -429,8 +429,8 @@ snapshot_kind: text
                       99.94
                     ],
                     "tag": {
-                      "end": 410,
-                      "start": 404,
+                      "end": 425,
+                      "start": 419,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -445,12 +445,12 @@ snapshot_kind: text
                     "id": "[uuid]",
                     "sourceRange": [
                       356,
-                      411,
+                      426,
                       0
                     ],
                     "tag": {
-                      "end": 410,
-                      "start": 404,
+                      "end": 425,
+                      "start": 419,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -460,8 +460,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      404,
-                      410,
+                      419,
+                      425,
                       0
                     ]
                   }
@@ -479,13 +479,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      516,
-                      603,
+                      540,
+                      627,
                       0
                     ],
                     "tag": {
-                      "end": 602,
-                      "start": 596,
+                      "end": 626,
+                      "start": 620,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -495,8 +495,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      596,
-                      602,
+                      620,
+                      626,
                       0
                     ]
                   }
@@ -514,13 +514,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      609,
-                      660,
+                      633,
+                      684,
                       0
                     ],
                     "tag": {
-                      "end": 659,
-                      "start": 653,
+                      "end": 683,
+                      "start": 677,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -530,8 +530,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      653,
-                      659,
+                      677,
+                      683,
                       0
                     ]
                   }
@@ -565,8 +565,8 @@ snapshot_kind: text
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "end": 602,
-                "start": 596,
+                "end": 626,
+                "start": 620,
                 "type": "TagDeclarator",
                 "value": "seg03"
               }
@@ -577,8 +577,8 @@ snapshot_kind: text
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "end": 659,
-                "start": 653,
+                "end": 683,
+                "start": 677,
                 "type": "TagDeclarator",
                 "value": "seg04"
               }
@@ -603,13 +603,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1192,
-                1240,
+                1225,
+                1273,
                 0
               ],
               "tag": {
-                "end": 1239,
-                "start": 1218,
+                "end": 1272,
+                "start": 1251,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -619,13 +619,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1246,
-                1348,
+                1279,
+                1381,
                 0
               ],
               "tag": {
-                "end": 1347,
-                "start": 1326,
+                "end": 1380,
+                "start": 1359,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB001"
               },
@@ -635,13 +635,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1354,
-                1474,
+                1387,
+                1507,
                 0
               ],
               "tag": {
-                "end": 1473,
-                "start": 1452,
+                "end": 1506,
+                "start": 1485,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC001"
               },
@@ -651,8 +651,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1480,
-                1527,
+                1513,
+                1569,
                 0
               ],
               "tag": null,
@@ -667,8 +667,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1192,
-                    1240,
+                    1225,
+                    1273,
                     0
                   ]
                 },
@@ -677,8 +677,8 @@ snapshot_kind: text
                   278.35
                 ],
                 "tag": {
-                  "end": 1239,
-                  "start": 1218,
+                  "end": 1272,
+                  "start": 1251,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -692,8 +692,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1246,
-                    1348,
+                    1279,
+                    1381,
                     0
                   ]
                 },
@@ -702,8 +702,8 @@ snapshot_kind: text
                   278.35
                 ],
                 "tag": {
-                  "end": 1347,
-                  "start": 1326,
+                  "end": 1380,
+                  "start": 1359,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB001"
                 },
@@ -717,8 +717,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1354,
-                    1474,
+                    1387,
+                    1507,
                     0
                   ]
                 },
@@ -727,8 +727,8 @@ snapshot_kind: text
                   146.08
                 ],
                 "tag": {
-                  "end": 1473,
-                  "start": 1452,
+                  "end": 1506,
+                  "start": 1485,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC001"
                 },
@@ -742,8 +742,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1480,
-                    1527,
+                    1513,
+                    1569,
                     0
                   ]
                 },
@@ -762,8 +762,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1533,
-                    1541,
+                    1575,
+                    1583,
                     0
                   ]
                 },
@@ -850,12 +850,12 @@ snapshot_kind: text
                     "id": "[uuid]",
                     "sourceRange": [
                       356,
-                      411,
+                      426,
                       0
                     ],
                     "tag": {
-                      "end": 410,
-                      "start": 404,
+                      "end": 425,
+                      "start": 419,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -865,13 +865,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      516,
-                      603,
+                      540,
+                      627,
                       0
                     ],
                     "tag": {
-                      "end": 602,
-                      "start": 596,
+                      "end": 626,
+                      "start": 620,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -881,13 +881,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      609,
-                      660,
+                      633,
+                      684,
                       0
                     ],
                     "tag": {
-                      "end": 659,
-                      "start": 653,
+                      "end": 683,
+                      "start": 677,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -973,7 +973,7 @@ snapshot_kind: text
                         "id": "[uuid]",
                         "sourceRange": [
                           356,
-                          411,
+                          426,
                           0
                         ]
                       },
@@ -982,8 +982,8 @@ snapshot_kind: text
                         99.94
                       ],
                       "tag": {
-                        "end": 410,
-                        "start": 404,
+                        "end": 425,
+                        "start": 419,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -997,8 +997,8 @@ snapshot_kind: text
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          417,
-                          425,
+                          432,
+                          440,
                           0
                         ]
                       },
@@ -1190,7 +1190,7 @@ snapshot_kind: text
                             "id": "[uuid]",
                             "sourceRange": [
                               356,
-                              411,
+                              426,
                               0
                             ]
                           },
@@ -1199,8 +1199,8 @@ snapshot_kind: text
                             99.94
                           ],
                           "tag": {
-                            "end": 410,
-                            "start": 404,
+                            "end": 425,
+                            "start": 419,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -1215,12 +1215,12 @@ snapshot_kind: text
                           "id": "[uuid]",
                           "sourceRange": [
                             356,
-                            411,
+                            426,
                             0
                           ],
                           "tag": {
-                            "end": 410,
-                            "start": 404,
+                            "end": 425,
+                            "start": 419,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -1230,8 +1230,8 @@ snapshot_kind: text
                       "__meta": [
                         {
                           "sourceRange": [
-                            404,
-                            410,
+                            419,
+                            425,
                             0
                           ]
                         }
@@ -1249,13 +1249,13 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            516,
-                            603,
+                            540,
+                            627,
                             0
                           ],
                           "tag": {
-                            "end": 602,
-                            "start": 596,
+                            "end": 626,
+                            "start": 620,
                             "type": "TagDeclarator",
                             "value": "seg03"
                           },
@@ -1265,8 +1265,8 @@ snapshot_kind: text
                       "__meta": [
                         {
                           "sourceRange": [
-                            596,
-                            602,
+                            620,
+                            626,
                             0
                           ]
                         }
@@ -1284,13 +1284,13 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            609,
-                            660,
+                            633,
+                            684,
                             0
                           ],
                           "tag": {
-                            "end": 659,
-                            "start": 653,
+                            "end": 683,
+                            "start": 677,
                             "type": "TagDeclarator",
                             "value": "seg04"
                           },
@@ -1300,8 +1300,8 @@ snapshot_kind: text
                       "__meta": [
                         {
                           "sourceRange": [
-                            653,
-                            659,
+                            677,
+                            683,
                             0
                           ]
                         }
@@ -1335,8 +1335,8 @@ snapshot_kind: text
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 602,
-                      "start": 596,
+                      "end": 626,
+                      "start": 620,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     }
@@ -1347,8 +1347,8 @@ snapshot_kind: text
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 659,
-                      "start": 653,
+                      "end": 683,
+                      "start": 677,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     }
@@ -1367,8 +1367,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    1113,
-                    1145,
+                    1146,
+                    1178,
                     0
                   ]
                 }
@@ -1387,8 +1387,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1151,
-                  1186,
+                  1184,
+                  1219,
                   0
                 ]
               }
@@ -1405,8 +1405,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1192,
-                        1240,
+                        1225,
+                        1273,
                         0
                       ]
                     },
@@ -1415,8 +1415,8 @@ snapshot_kind: text
                       278.35
                     ],
                     "tag": {
-                      "end": 1239,
-                      "start": 1218,
+                      "end": 1272,
+                      "start": 1251,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
@@ -1430,13 +1430,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1192,
-                      1240,
+                      1225,
+                      1273,
                       0
                     ],
                     "tag": {
-                      "end": 1239,
-                      "start": 1218,
+                      "end": 1272,
+                      "start": 1251,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
@@ -1446,8 +1446,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      1218,
-                      1239,
+                      1251,
+                      1272,
                       0
                     ]
                   }
@@ -1464,8 +1464,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1246,
-                        1348,
+                        1279,
+                        1381,
                         0
                       ]
                     },
@@ -1474,8 +1474,8 @@ snapshot_kind: text
                       278.35
                     ],
                     "tag": {
-                      "end": 1347,
-                      "start": 1326,
+                      "end": 1380,
+                      "start": 1359,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB001"
                     },
@@ -1489,13 +1489,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1246,
-                      1348,
+                      1279,
+                      1381,
                       0
                     ],
                     "tag": {
-                      "end": 1347,
-                      "start": 1326,
+                      "end": 1380,
+                      "start": 1359,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB001"
                     },
@@ -1505,8 +1505,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      1326,
-                      1347,
+                      1359,
+                      1380,
                       0
                     ]
                   }
@@ -1523,8 +1523,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1354,
-                        1474,
+                        1387,
+                        1507,
                         0
                       ]
                     },
@@ -1533,8 +1533,8 @@ snapshot_kind: text
                       146.08
                     ],
                     "tag": {
-                      "end": 1473,
-                      "start": 1452,
+                      "end": 1506,
+                      "start": 1485,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC001"
                     },
@@ -1548,13 +1548,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1354,
-                      1474,
+                      1387,
+                      1507,
                       0
                     ],
                     "tag": {
-                      "end": 1473,
-                      "start": 1452,
+                      "end": 1506,
+                      "start": 1485,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC001"
                     },
@@ -1564,8 +1564,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      1452,
-                      1473,
+                      1485,
+                      1506,
                       0
                     ]
                   }
@@ -1575,8 +1575,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  1151,
-                  1186,
+                  1184,
+                  1219,
                   0
                 ]
               }
@@ -1588,8 +1588,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                1151,
-                1186,
+                1184,
+                1219,
                 0
               ]
             }
@@ -1667,8 +1667,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1192,
-                  1240,
+                  1225,
+                  1273,
                   0
                 ]
               },
@@ -1677,8 +1677,8 @@ snapshot_kind: text
                 278.35
               ],
               "tag": {
-                "end": 1239,
-                "start": 1218,
+                "end": 1272,
+                "start": 1251,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -1692,13 +1692,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1192,
-                1240,
+                1225,
+                1273,
                 0
               ],
               "tag": {
-                "end": 1239,
-                "start": 1218,
+                "end": 1272,
+                "start": 1251,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -1708,8 +1708,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                1218,
-                1239,
+                1251,
+                1272,
                 0
               ]
             }
@@ -1727,8 +1727,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  752,
-                  800,
+                  776,
+                  824,
                   0
                 ]
               },
@@ -1737,8 +1737,8 @@ snapshot_kind: text
                 277.34
               ],
               "tag": {
-                "end": 799,
-                "start": 778,
+                "end": 823,
+                "start": 802,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA003"
               },
@@ -1753,8 +1753,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                778,
-                799,
+                802,
+                823,
                 0
               ]
             }
@@ -1772,8 +1772,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1246,
-                  1348,
+                  1279,
+                  1381,
                   0
                 ]
               },
@@ -1782,8 +1782,8 @@ snapshot_kind: text
                 278.35
               ],
               "tag": {
-                "end": 1347,
-                "start": 1326,
+                "end": 1380,
+                "start": 1359,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB001"
               },
@@ -1797,13 +1797,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1246,
-                1348,
+                1279,
+                1381,
                 0
               ],
               "tag": {
-                "end": 1347,
-                "start": 1326,
+                "end": 1380,
+                "start": 1359,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB001"
               },
@@ -1813,8 +1813,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                1326,
-                1347,
+                1359,
+                1380,
                 0
               ]
             }
@@ -1832,8 +1832,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  806,
-                  907,
+                  830,
+                  931,
                   0
                 ]
               },
@@ -1842,8 +1842,8 @@ snapshot_kind: text
                 277.34
               ],
               "tag": {
-                "end": 906,
-                "start": 885,
+                "end": 930,
+                "start": 909,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB002"
               },
@@ -1858,8 +1858,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                885,
-                906,
+                909,
+                930,
                 0
               ]
             }
@@ -1877,8 +1877,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1354,
-                  1474,
+                  1387,
+                  1507,
                   0
                 ]
               },
@@ -1887,8 +1887,8 @@ snapshot_kind: text
                 146.08
               ],
               "tag": {
-                "end": 1473,
-                "start": 1452,
+                "end": 1506,
+                "start": 1485,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC001"
               },
@@ -1902,13 +1902,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1354,
-                1474,
+                1387,
+                1507,
                 0
               ],
               "tag": {
-                "end": 1473,
-                "start": 1452,
+                "end": 1506,
+                "start": 1485,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC001"
               },
@@ -1918,8 +1918,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                1452,
-                1473,
+                1485,
+                1506,
                 0
               ]
             }
@@ -1937,8 +1937,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  913,
-                  1033,
+                  937,
+                  1057,
                   0
                 ]
               },
@@ -1947,8 +1947,8 @@ snapshot_kind: text
                 172.53999999999996
               ],
               "tag": {
-                "end": 1032,
-                "start": 1011,
+                "end": 1056,
+                "start": 1035,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC002"
               },
@@ -1963,8 +1963,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                1011,
-                1032,
+                1035,
+                1056,
                 0
               ]
             }
@@ -2043,7 +2043,7 @@ snapshot_kind: text
                 "id": "[uuid]",
                 "sourceRange": [
                   356,
-                  411,
+                  426,
                   0
                 ]
               },
@@ -2052,8 +2052,8 @@ snapshot_kind: text
                 99.94
               ],
               "tag": {
-                "end": 410,
-                "start": 404,
+                "end": 425,
+                "start": 419,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2068,12 +2068,12 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 356,
-                411,
+                426,
                 0
               ],
               "tag": {
-                "end": 410,
-                "start": 404,
+                "end": 425,
+                "start": 419,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2083,8 +2083,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                404,
-                410,
+                419,
+                425,
                 0
               ]
             }
@@ -2103,13 +2103,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                516,
-                603,
+                540,
+                627,
                 0
               ],
               "tag": {
-                "end": 602,
-                "start": 596,
+                "end": 626,
+                "start": 620,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -2119,8 +2119,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                596,
-                602,
+                620,
+                626,
                 0
               ]
             }
@@ -2139,13 +2139,13 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                609,
-                660,
+                633,
+                684,
                 0
               ],
               "tag": {
-                "end": 659,
-                "start": 653,
+                "end": 683,
+                "start": 677,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -2155,8 +2155,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                653,
-                659,
+                677,
+                683,
                 0
               ]
             }
@@ -2243,7 +2243,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     356,
-                    411,
+                    426,
                     0
                   ]
                 },
@@ -2252,8 +2252,8 @@ snapshot_kind: text
                   99.94
                 ],
                 "tag": {
-                  "end": 410,
-                  "start": 404,
+                  "end": 425,
+                  "start": 419,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2267,8 +2267,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    417,
-                    425,
+                    432,
+                    440,
                     0
                   ]
                 },
@@ -2460,7 +2460,7 @@ snapshot_kind: text
                       "id": "[uuid]",
                       "sourceRange": [
                         356,
-                        411,
+                        426,
                         0
                       ]
                     },
@@ -2469,8 +2469,8 @@ snapshot_kind: text
                       99.94
                     ],
                     "tag": {
-                      "end": 410,
-                      "start": 404,
+                      "end": 425,
+                      "start": 419,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2485,12 +2485,12 @@ snapshot_kind: text
                     "id": "[uuid]",
                     "sourceRange": [
                       356,
-                      411,
+                      426,
                       0
                     ],
                     "tag": {
-                      "end": 410,
-                      "start": 404,
+                      "end": 425,
+                      "start": 419,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2500,8 +2500,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      404,
-                      410,
+                      419,
+                      425,
                       0
                     ]
                   }
@@ -2519,13 +2519,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      516,
-                      603,
+                      540,
+                      627,
                       0
                     ],
                     "tag": {
-                      "end": 602,
-                      "start": 596,
+                      "end": 626,
+                      "start": 620,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2535,8 +2535,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      596,
-                      602,
+                      620,
+                      626,
                       0
                     ]
                   }
@@ -2554,13 +2554,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      609,
-                      660,
+                      633,
+                      684,
                       0
                     ],
                     "tag": {
-                      "end": 659,
-                      "start": 653,
+                      "end": 683,
+                      "start": 677,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2570,8 +2570,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      653,
-                      659,
+                      677,
+                      683,
                       0
                     ]
                   }
@@ -2599,8 +2599,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1192,
-                    1240,
+                    1225,
+                    1273,
                     0
                   ]
                 },
@@ -2609,8 +2609,8 @@ snapshot_kind: text
                   278.35
                 ],
                 "tag": {
-                  "end": 1239,
-                  "start": 1218,
+                  "end": 1272,
+                  "start": 1251,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -2624,8 +2624,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1246,
-                    1348,
+                    1279,
+                    1381,
                     0
                   ]
                 },
@@ -2634,8 +2634,8 @@ snapshot_kind: text
                   278.35
                 ],
                 "tag": {
-                  "end": 1347,
-                  "start": 1326,
+                  "end": 1380,
+                  "start": 1359,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB001"
                 },
@@ -2649,8 +2649,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1354,
-                    1474,
+                    1387,
+                    1507,
                     0
                   ]
                 },
@@ -2659,8 +2659,8 @@ snapshot_kind: text
                   146.08
                 ],
                 "tag": {
-                  "end": 1473,
-                  "start": 1452,
+                  "end": 1506,
+                  "start": 1485,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC001"
                 },
@@ -2674,8 +2674,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1480,
-                    1527,
+                    1513,
+                    1569,
                     0
                   ]
                 },
@@ -2694,8 +2694,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1533,
-                    1541,
+                    1575,
+                    1583,
                     0
                   ]
                 },
@@ -2782,12 +2782,12 @@ snapshot_kind: text
                     "id": "[uuid]",
                     "sourceRange": [
                       356,
-                      411,
+                      426,
                       0
                     ],
                     "tag": {
-                      "end": 410,
-                      "start": 404,
+                      "end": 425,
+                      "start": 419,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -2797,13 +2797,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      516,
-                      603,
+                      540,
+                      627,
                       0
                     ],
                     "tag": {
-                      "end": 602,
-                      "start": 596,
+                      "end": 626,
+                      "start": 620,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -2813,13 +2813,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      609,
-                      660,
+                      633,
+                      684,
                       0
                     ],
                     "tag": {
-                      "end": 659,
-                      "start": 653,
+                      "end": 683,
+                      "start": 677,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -2905,7 +2905,7 @@ snapshot_kind: text
                         "id": "[uuid]",
                         "sourceRange": [
                           356,
-                          411,
+                          426,
                           0
                         ]
                       },
@@ -2914,8 +2914,8 @@ snapshot_kind: text
                         99.94
                       ],
                       "tag": {
-                        "end": 410,
-                        "start": 404,
+                        "end": 425,
+                        "start": 419,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -2929,8 +2929,8 @@ snapshot_kind: text
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          417,
-                          425,
+                          432,
+                          440,
                           0
                         ]
                       },
@@ -3122,7 +3122,7 @@ snapshot_kind: text
                             "id": "[uuid]",
                             "sourceRange": [
                               356,
-                              411,
+                              426,
                               0
                             ]
                           },
@@ -3131,8 +3131,8 @@ snapshot_kind: text
                             99.94
                           ],
                           "tag": {
-                            "end": 410,
-                            "start": 404,
+                            "end": 425,
+                            "start": 419,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -3147,12 +3147,12 @@ snapshot_kind: text
                           "id": "[uuid]",
                           "sourceRange": [
                             356,
-                            411,
+                            426,
                             0
                           ],
                           "tag": {
-                            "end": 410,
-                            "start": 404,
+                            "end": 425,
+                            "start": 419,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -3162,8 +3162,8 @@ snapshot_kind: text
                       "__meta": [
                         {
                           "sourceRange": [
-                            404,
-                            410,
+                            419,
+                            425,
                             0
                           ]
                         }
@@ -3181,13 +3181,13 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            516,
-                            603,
+                            540,
+                            627,
                             0
                           ],
                           "tag": {
-                            "end": 602,
-                            "start": 596,
+                            "end": 626,
+                            "start": 620,
                             "type": "TagDeclarator",
                             "value": "seg03"
                           },
@@ -3197,8 +3197,8 @@ snapshot_kind: text
                       "__meta": [
                         {
                           "sourceRange": [
-                            596,
-                            602,
+                            620,
+                            626,
                             0
                           ]
                         }
@@ -3216,13 +3216,13 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            609,
-                            660,
+                            633,
+                            684,
                             0
                           ],
                           "tag": {
-                            "end": 659,
-                            "start": 653,
+                            "end": 683,
+                            "start": 677,
                             "type": "TagDeclarator",
                             "value": "seg04"
                           },
@@ -3232,8 +3232,8 @@ snapshot_kind: text
                       "__meta": [
                         {
                           "sourceRange": [
-                            653,
-                            659,
+                            677,
+                            683,
                             0
                           ]
                         }
@@ -3267,8 +3267,8 @@ snapshot_kind: text
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 602,
-                      "start": 596,
+                      "end": 626,
+                      "start": 620,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     }
@@ -3279,8 +3279,8 @@ snapshot_kind: text
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 659,
-                      "start": 653,
+                      "end": 683,
+                      "start": 677,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     }
@@ -3299,8 +3299,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    1113,
-                    1145,
+                    1146,
+                    1178,
                     0
                   ]
                 }
@@ -3319,8 +3319,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1151,
-                  1186,
+                  1184,
+                  1219,
                   0
                 ]
               }
@@ -3337,8 +3337,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1192,
-                        1240,
+                        1225,
+                        1273,
                         0
                       ]
                     },
@@ -3347,8 +3347,8 @@ snapshot_kind: text
                       278.35
                     ],
                     "tag": {
-                      "end": 1239,
-                      "start": 1218,
+                      "end": 1272,
+                      "start": 1251,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
@@ -3362,13 +3362,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1192,
-                      1240,
+                      1225,
+                      1273,
                       0
                     ],
                     "tag": {
-                      "end": 1239,
-                      "start": 1218,
+                      "end": 1272,
+                      "start": 1251,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA002"
                     },
@@ -3378,8 +3378,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      1218,
-                      1239,
+                      1251,
+                      1272,
                       0
                     ]
                   }
@@ -3396,8 +3396,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1246,
-                        1348,
+                        1279,
+                        1381,
                         0
                       ]
                     },
@@ -3406,8 +3406,8 @@ snapshot_kind: text
                       278.35
                     ],
                     "tag": {
-                      "end": 1347,
-                      "start": 1326,
+                      "end": 1380,
+                      "start": 1359,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB001"
                     },
@@ -3421,13 +3421,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1246,
-                      1348,
+                      1279,
+                      1381,
                       0
                     ],
                     "tag": {
-                      "end": 1347,
-                      "start": 1326,
+                      "end": 1380,
+                      "start": 1359,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB001"
                     },
@@ -3437,8 +3437,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      1326,
-                      1347,
+                      1359,
+                      1380,
                       0
                     ]
                   }
@@ -3455,8 +3455,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        1354,
-                        1474,
+                        1387,
+                        1507,
                         0
                       ]
                     },
@@ -3465,8 +3465,8 @@ snapshot_kind: text
                       146.08
                     ],
                     "tag": {
-                      "end": 1473,
-                      "start": 1452,
+                      "end": 1506,
+                      "start": 1485,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC001"
                     },
@@ -3480,13 +3480,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      1354,
-                      1474,
+                      1387,
+                      1507,
                       0
                     ],
                     "tag": {
-                      "end": 1473,
-                      "start": 1452,
+                      "end": 1506,
+                      "start": 1485,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC001"
                     },
@@ -3496,8 +3496,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      1452,
-                      1473,
+                      1485,
+                      1506,
                       0
                     ]
                   }
@@ -3507,8 +3507,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  1151,
-                  1186,
+                  1184,
+                  1219,
                   0
                 ]
               }
@@ -3525,8 +3525,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    752,
-                    800,
+                    776,
+                    824,
                     0
                   ]
                 },
@@ -3535,8 +3535,8 @@ snapshot_kind: text
                   277.34
                 ],
                 "tag": {
-                  "end": 799,
-                  "start": 778,
+                  "end": 823,
+                  "start": 802,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA003"
                 },
@@ -3550,8 +3550,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    806,
-                    907,
+                    830,
+                    931,
                     0
                   ]
                 },
@@ -3560,8 +3560,8 @@ snapshot_kind: text
                   277.34
                 ],
                 "tag": {
-                  "end": 906,
-                  "start": 885,
+                  "end": 930,
+                  "start": 909,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -3575,8 +3575,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    913,
-                    1033,
+                    937,
+                    1057,
                     0
                   ]
                 },
@@ -3585,8 +3585,8 @@ snapshot_kind: text
                   172.54
                 ],
                 "tag": {
-                  "end": 1032,
-                  "start": 1011,
+                  "end": 1056,
+                  "start": 1035,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -3600,8 +3600,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1039,
-                    1086,
+                    1063,
+                    1119,
                     0
                   ]
                 },
@@ -3620,8 +3620,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1092,
-                    1100,
+                    1125,
+                    1133,
                     0
                   ]
                 },
@@ -3708,12 +3708,12 @@ snapshot_kind: text
                     "id": "[uuid]",
                     "sourceRange": [
                       356,
-                      411,
+                      426,
                       0
                     ],
                     "tag": {
-                      "end": 410,
-                      "start": 404,
+                      "end": 425,
+                      "start": 419,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3723,13 +3723,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      516,
-                      603,
+                      540,
+                      627,
                       0
                     ],
                     "tag": {
-                      "end": 602,
-                      "start": 596,
+                      "end": 626,
+                      "start": 620,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3739,13 +3739,13 @@ snapshot_kind: text
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      609,
-                      660,
+                      633,
+                      684,
                       0
                     ],
                     "tag": {
-                      "end": 659,
-                      "start": 653,
+                      "end": 683,
+                      "start": 677,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3831,7 +3831,7 @@ snapshot_kind: text
                         "id": "[uuid]",
                         "sourceRange": [
                           356,
-                          411,
+                          426,
                           0
                         ]
                       },
@@ -3840,8 +3840,8 @@ snapshot_kind: text
                         99.94
                       ],
                       "tag": {
-                        "end": 410,
-                        "start": 404,
+                        "end": 425,
+                        "start": 419,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -3855,8 +3855,8 @@ snapshot_kind: text
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          417,
-                          425,
+                          432,
+                          440,
                           0
                         ]
                       },
@@ -4048,7 +4048,7 @@ snapshot_kind: text
                             "id": "[uuid]",
                             "sourceRange": [
                               356,
-                              411,
+                              426,
                               0
                             ]
                           },
@@ -4057,8 +4057,8 @@ snapshot_kind: text
                             99.94
                           ],
                           "tag": {
-                            "end": 410,
-                            "start": 404,
+                            "end": 425,
+                            "start": 419,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -4073,12 +4073,12 @@ snapshot_kind: text
                           "id": "[uuid]",
                           "sourceRange": [
                             356,
-                            411,
+                            426,
                             0
                           ],
                           "tag": {
-                            "end": 410,
-                            "start": 404,
+                            "end": 425,
+                            "start": 419,
                             "type": "TagDeclarator",
                             "value": "seg02"
                           },
@@ -4088,8 +4088,8 @@ snapshot_kind: text
                       "__meta": [
                         {
                           "sourceRange": [
-                            404,
-                            410,
+                            419,
+                            425,
                             0
                           ]
                         }
@@ -4107,13 +4107,13 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            516,
-                            603,
+                            540,
+                            627,
                             0
                           ],
                           "tag": {
-                            "end": 602,
-                            "start": 596,
+                            "end": 626,
+                            "start": 620,
                             "type": "TagDeclarator",
                             "value": "seg03"
                           },
@@ -4123,8 +4123,8 @@ snapshot_kind: text
                       "__meta": [
                         {
                           "sourceRange": [
-                            596,
-                            602,
+                            620,
+                            626,
                             0
                           ]
                         }
@@ -4142,13 +4142,13 @@ snapshot_kind: text
                           "faceId": "[uuid]",
                           "id": "[uuid]",
                           "sourceRange": [
-                            609,
-                            660,
+                            633,
+                            684,
                             0
                           ],
                           "tag": {
-                            "end": 659,
-                            "start": 653,
+                            "end": 683,
+                            "start": 677,
                             "type": "TagDeclarator",
                             "value": "seg04"
                           },
@@ -4158,8 +4158,8 @@ snapshot_kind: text
                       "__meta": [
                         {
                           "sourceRange": [
-                            653,
-                            659,
+                            677,
+                            683,
                             0
                           ]
                         }
@@ -4193,8 +4193,8 @@ snapshot_kind: text
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 602,
-                      "start": 596,
+                      "end": 626,
+                      "start": 620,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     }
@@ -4205,8 +4205,8 @@ snapshot_kind: text
                     "length": 50.0,
                     "edgeId": "[uuid]",
                     "tag": {
-                      "end": 659,
-                      "start": 653,
+                      "end": 683,
+                      "start": 677,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     }
@@ -4225,8 +4225,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    674,
-                    706,
+                    698,
+                    730,
                     0
                   ]
                 }
@@ -4245,8 +4245,8 @@ snapshot_kind: text
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  712,
-                  746,
+                  736,
+                  770,
                   0
                 ]
               }
@@ -4263,8 +4263,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        752,
-                        800,
+                        776,
+                        824,
                         0
                       ]
                     },
@@ -4273,8 +4273,8 @@ snapshot_kind: text
                       277.34
                     ],
                     "tag": {
-                      "end": 799,
-                      "start": 778,
+                      "end": 823,
+                      "start": 802,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA003"
                     },
@@ -4289,8 +4289,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      778,
-                      799,
+                      802,
+                      823,
                       0
                     ]
                   }
@@ -4307,8 +4307,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        806,
-                        907,
+                        830,
+                        931,
                         0
                       ]
                     },
@@ -4317,8 +4317,8 @@ snapshot_kind: text
                       277.34
                     ],
                     "tag": {
-                      "end": 906,
-                      "start": 885,
+                      "end": 930,
+                      "start": 909,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentB002"
                     },
@@ -4333,8 +4333,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      885,
-                      906,
+                      909,
+                      930,
                       0
                     ]
                   }
@@ -4351,8 +4351,8 @@ snapshot_kind: text
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        913,
-                        1033,
+                        937,
+                        1057,
                         0
                       ]
                     },
@@ -4361,8 +4361,8 @@ snapshot_kind: text
                       172.53999999999996
                     ],
                     "tag": {
-                      "end": 1032,
-                      "start": 1011,
+                      "end": 1056,
+                      "start": 1035,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentC002"
                     },
@@ -4377,8 +4377,8 @@ snapshot_kind: text
                 "__meta": [
                   {
                     "sourceRange": [
-                      1011,
-                      1032,
+                      1035,
+                      1056,
                       0
                     ]
                   }
@@ -4388,8 +4388,8 @@ snapshot_kind: text
             "__meta": [
               {
                 "sourceRange": [
-                  712,
-                  746,
+                  736,
+                  770,
                   0
                 ]
               }

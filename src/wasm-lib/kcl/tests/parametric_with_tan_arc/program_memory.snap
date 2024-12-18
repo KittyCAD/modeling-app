@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
 description: Program memory after executing parametric_with_tan_arc.kcl
 snapshot_kind: text
 ---
@@ -51,7 +50,7 @@ snapshot_kind: text
               "id": "[uuid]",
               "sourceRange": [
                 266,
-                290,
+                293,
                 0
               ],
               "tag": null,
@@ -61,8 +60,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                296,
-                347,
+                299,
+                350,
                 0
               ],
               "tag": null,
@@ -72,19 +71,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                353,
-                379,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
+                356,
                 385,
-                409,
                 0
               ],
               "tag": null,
@@ -94,8 +82,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                415,
-                440,
+                391,
+                418,
                 0
               ],
               "tag": null,
@@ -105,8 +93,19 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                446,
-                529,
+                424,
+                452,
+                0
+              ],
+              "tag": null,
+              "type": "extrudePlane"
+            },
+            {
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                458,
+                541,
                 0
               ],
               "tag": null,
@@ -116,8 +115,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                535,
-                560,
+                547,
+                575,
                 0
               ],
               "tag": null,
@@ -127,8 +126,8 @@ snapshot_kind: text
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                566,
-                574,
+                581,
+                589,
                 0
               ],
               "tag": null,
@@ -144,7 +143,7 @@ snapshot_kind: text
                   "id": "[uuid]",
                   "sourceRange": [
                     266,
-                    290,
+                    293,
                     0
                   ]
                 },
@@ -163,8 +162,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    296,
-                    347,
+                    299,
+                    350,
                     0
                   ]
                 },
@@ -188,28 +187,28 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    353,
-                    379,
-                    0
-                  ]
-                },
-                "from": [
-                  -0.7236,
-                  8.7236
-                ],
-                "tag": null,
-                "to": [
-                  -9.7236,
-                  8.7236
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
+                    356,
                     385,
-                    409,
+                    0
+                  ]
+                },
+                "from": [
+                  -0.7236,
+                  8.7236
+                ],
+                "tag": null,
+                "to": [
+                  -9.7236,
+                  8.7236
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    391,
+                    418,
                     0
                   ]
                 },
@@ -228,8 +227,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    415,
-                    440,
+                    424,
+                    452,
                     0
                   ]
                 },
@@ -248,8 +247,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    446,
-                    529,
+                    458,
+                    541,
                     0
                   ]
                 },
@@ -273,8 +272,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    535,
-                    560,
+                    547,
+                    575,
                     0
                   ]
                 },
@@ -293,8 +292,8 @@ snapshot_kind: text
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    566,
-                    574,
+                    581,
+                    589,
                     0
                   ]
                 },

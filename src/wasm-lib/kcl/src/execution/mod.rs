@@ -2669,20 +2669,20 @@ fn hmm = (x) => {
   return x
 }
 
-const yo = 5 + 6
+yo = 5 + 6
 
-const abc = 3
-const identifierGuy = 5
-const part001 = startSketchOn('XY')
+abc = 3
+identifierGuy = 5
+part001 = startSketchOn('XY')
 |> startProfileAt([-1.2, 4.83], %)
-|> line([2.8, 0], %)
+|> line(end = [2.8, 0])
 |> angledLine([100 + 100, 3.01], %)
 |> angledLine([abc, 3.02], %)
 |> angledLine([def(yo), 3.03], %)
 |> angledLine([ghi(2), 3.04], %)
 |> angledLine([jkl(yo) + 2, 3.05], %)
-|> close(%)
-const yo2 = hmm([identifierGuy + 5])"#;
+|> close()
+yo2 = hmm([identifierGuy + 5])"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -2692,11 +2692,11 @@ const yo2 = hmm([identifierGuy + 5])"#;
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([3, 4], %, $seg01)
-  |> line([
+  |> line(end = [3, 4], tag = $seg01)
+  |> line(end = [
   min(segLen(seg01), myVar),
   -legLen(segLen(seg01), myVar)
-], %)
+])
 "#;
 
         parse_execute(ast).await.unwrap();
@@ -2707,11 +2707,11 @@ const part001 = startSketchOn('XY')
         let ast = r#"const myVar = 3
 const part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([3, 4], %, $seg01)
-  |> line([
+  |> line(end = [3, 4], tag = $seg01)
+  |> line(end = [
   min(segLen(seg01), myVar),
   legLen(segLen(seg01), myVar)
-], %)
+])
 "#;
 
         parse_execute(ast).await.unwrap();
@@ -2751,11 +2751,11 @@ fn thing = () => {
 
 const firstExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> line([0, l], %)
-  |> line([w, 0], %)
-  |> line([0, thing()], %)
-  |> close(%)
-  |> extrude(h, %)"#;
+  |> line(end = [0, l])
+  |> line(end = [w, 0])
+  |> line(end = [0, thing()])
+  |> close()
+  |> extrude(length = h)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -2772,11 +2772,11 @@ fn thing = (x) => {
 
 const firstExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> line([0, l], %)
-  |> line([w, 0], %)
-  |> line([0, thing(8)], %)
-  |> close(%)
-  |> extrude(h, %)"#;
+  |> line(end = [0, l])
+  |> line(end = [w, 0])
+  |> line(end = [0, thing(8)])
+  |> close()
+  |> extrude(length = h)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -2793,11 +2793,11 @@ fn thing = (x) => {
 
 const firstExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> line([0, l], %)
-  |> line([w, 0], %)
-  |> line(thing(8), %)
-  |> close(%)
-  |> extrude(h, %)"#;
+  |> line(end = [0, l])
+  |> line(end = [w, 0])
+  |> line(end = thing(8))
+  |> close()
+  |> extrude(length = h)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -2818,11 +2818,11 @@ fn thing = (x) => {
 
 const firstExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> line([0, l], %)
-  |> line([w, 0], %)
-  |> line([0, thing(8)], %)
-  |> close(%)
-  |> extrude(h, %)"#;
+  |> line(end = [0, l])
+  |> line(end = [w, 0])
+  |> line(end = [0, thing(8)])
+  |> close()
+  |> extrude(length = h)"#;
 
         parse_execute(ast).await.unwrap();
     }
@@ -2832,11 +2832,11 @@ const firstExtrude = startSketchOn('XY')
         let ast = r#"fn box = (h, l, w) => {
  const myBox = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
+    |> line(end = [0, l])
+    |> line(end = [w, 0])
+    |> line(end = [0, -l])
+    |> close()
+    |> extrude(length = h)
 
   return myBox
 }
@@ -2851,11 +2851,11 @@ const fnBox = box(3, 6, 10)"#;
         let ast = r#"fn box = (obj) => {
  let myBox = startSketchOn('XY')
     |> startProfileAt(obj.start, %)
-    |> line([0, obj.l], %)
-    |> line([obj.w, 0], %)
-    |> line([0, -obj.l], %)
-    |> close(%)
-    |> extrude(obj.h, %)
+    |> line(end = [0, obj.l])
+    |> line(end = [obj.w, 0])
+    |> line(end = [0, -obj.l])
+    |> close()
+    |> extrude(length = obj.h)
 
   return myBox
 }
@@ -2870,11 +2870,11 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
         let ast = r#"fn box = (obj) => {
  let myBox = startSketchOn('XY')
     |> startProfileAt(obj["start"], %)
-    |> line([0, obj["l"]], %)
-    |> line([obj["w"], 0], %)
-    |> line([0, -obj["l"]], %)
-    |> close(%)
-    |> extrude(obj["h"], %)
+    |> line(end = [0, obj["l"]])
+    |> line(end = [obj["w"], 0])
+    |> line(end = [0, -obj["l"]])
+    |> close()
+    |> extrude(length = obj["h"])
 
   return myBox
 }
@@ -2889,11 +2889,11 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
         let ast = r#"fn box = (obj) => {
  let myBox = startSketchOn('XY')
     |> startProfileAt(obj["start"], %)
-    |> line([0, obj["l"]], %)
-    |> line([obj["w"], 0], %)
-    |> line([10 - obj["w"], -obj.l], %)
-    |> close(%)
-    |> extrude(obj["h"], %)
+    |> line(end = [0, obj["l"]])
+    |> line(end = [obj["w"], 0])
+    |> line(end = [10 - obj["w"], -obj.l])
+    |> close()
+    |> extrude(length = obj["h"])
 
   return myBox
 }
@@ -2911,17 +2911,17 @@ fn test2 = () => {
   return {
     thing: startSketchOn('XY')
       |> startProfileAt([0, 0], %)
-      |> line([0, 1], %)
-      |> line([1, 0], %)
-      |> line([0, -1], %)
-      |> close(%)
+      |> line(end = [0, 1])
+      |> line(end = [1, 0])
+      |> line(end = [0, -1])
+      |> close()
   }
 }
 
 const x2 = test2()
 
 x2.thing
-  |> extrude(10, %)
+  |> extrude(length = 10)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -2932,11 +2932,11 @@ x2.thing
         let ast = r#"fn box = (obj) => {
 let myBox = startSketchOn('XY')
     |> startProfileAt(obj.start, %)
-    |> line([0, obj.l], %)
-    |> line([obj.w, 0], %)
-    |> line([0, -obj.l], %)
-    |> close(%)
-    |> extrude(obj.h, %)
+    |> line(end = [0, obj.l])
+    |> line(end = [obj.w, 0])
+    |> line(end = [0, -obj.l])
+    |> close()
+    |> extrude(length = obj.h)
 
   return myBox
 }
@@ -2954,11 +2954,11 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
         let ast = r#"fn box = (h, l, w, start) => {
  const myBox = startSketchOn('XY')
     |> startProfileAt([0,0], %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
+    |> line(end = [0, l])
+    |> line(end = [w, 0])
+    |> line(end = [0, -l])
+    |> close()
+    |> extrude(length = h)
 
   return myBox
 }
@@ -2976,11 +2976,11 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
         let ast = r#"fn box = (arr) => {
  let myBox =startSketchOn('XY')
     |> startProfileAt(arr[0], %)
-    |> line([0, arr[1]], %)
-    |> line([arr[2], 0], %)
-    |> line([0, -arr[1]], %)
-    |> close(%)
-    |> extrude(arr[3], %)
+    |> line(end = [0, arr[1]])
+    |> line(end = [arr[2], 0])
+    |> line(end = [0, -arr[1]])
+    |> close()
+    |> extrude(length = arr[3])
 
   return myBox
 }
@@ -3054,7 +3054,7 @@ fn transform = (replicaId) => {
 fn layer = () => {
   return startSketchOn("XY")
     |> circle({ center: [0, 0], radius: 1 }, %, $tag1)
-    |> extrude(10, %)
+    |> extrude(length = 10)
 }
 
 const x = 5
@@ -3123,10 +3123,10 @@ fn thickness = () => { return 0.56 }
 
 const bracket = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> line([0, leg1], %)
-  |> line([leg2, 0], %)
-  |> line([0, -thickness()], %)
-  |> line([-leg2 + thickness(), 0], %)
+  |> line(end = [0, leg1])
+  |> line(end = [leg2, 0])
+  |> line(end = [0, -thickness()])
+  |> line(end = [-leg2 + thickness(), 0])
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -3314,10 +3314,10 @@ const thickness = 0.56 // inches. App does not support square root function yet
 
 const bracket = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> line([0, leg1], %)
-  |> line([leg2, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-leg2 + thickness, 0], %)
+  |> line(end = [0, leg1])
+  |> line(end = [leg2, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [-leg2 + thickness, 0])
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -3351,13 +3351,13 @@ const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
 const thickness = 0.32 // inches. App does not support square root function yet
 const bracket = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-    |> line([0, leg1], %)
-  |> line([leg2, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-1 * leg2 + thickness, 0], %)
-  |> line([0, -1 * leg1 + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
+    |> line(end = [0, leg1])
+  |> line(end = [leg2, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [-1 * leg2 + thickness, 0])
+  |> line(end = [0, -1 * leg1 + thickness])
+  |> close()
+  |> extrude(length = width)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -3375,13 +3375,13 @@ const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
 const thickness = 0.32 // inches. App does not support square root function yet
 const bracket = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-    |> line([0, leg1], %)
-  |> line([leg2, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-1 * leg2 + thickness, 0], %)
-  |> line([0, -1 * leg1 + thickness], %)
-  |> close(%)
-  |> extrude(width, %)
+    |> line(end = [0, leg1])
+  |> line(end = [leg2, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [-1 * leg2 + thickness, 0])
+  |> line(end = [0, -1 * leg1 + thickness])
+  |> close()
+  |> extrude(length = width)
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -3542,11 +3542,11 @@ let w = f() + f()
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
@@ -3572,11 +3572,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
@@ -3602,11 +3602,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         let old = r#" // Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
@@ -3614,11 +3614,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
@@ -3646,11 +3646,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         let old = r#" // Removed the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
@@ -3658,11 +3658,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
@@ -3690,11 +3690,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         let old = r#" // Removed the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %) // my thing
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0]) // my thing
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
@@ -3702,11 +3702,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
@@ -3735,11 +3735,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
@@ -3774,11 +3774,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
@@ -3808,11 +3808,11 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
   |> startProfileAt([-12, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -24], %)
-  |> line([-24, 0], %)
-  |> close(%)
-  |> extrude(6, %)
+  |> line(end = [24, 0])
+  |> line(end = [0, -24])
+  |> line(end = [-24, 0])
+  |> close()
+  |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
 shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
@@ -3843,9 +3843,9 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
 |> xLine(305.11, %, $seg01)
 |> yLine(-291.85, %)
 |> xLine(-segLen(seg01), %)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
-|> close(%)
-|> extrude(40.14, %)
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> close()
+|> extrude(length = 40.14)
 |> shell({
     faces: [seg01],
     thickness: 3.14,
@@ -3872,9 +3872,9 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
 |> xLine(305.11, %, $seg01)
 |> yLine(-291.85, %)
 |> xLine(-segLen(seg01), %)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
-|> close(%)
-|> extrude(40.14, %)
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> close()
+|> extrude(length = 40.14)
 |> shell({
     faces: [seg01],
     thickness: 3.14,

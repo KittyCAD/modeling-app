@@ -21,9 +21,10 @@ use crate::{
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch_set) = args.get_number_sketch_set()?;
+    let sketch_set = args.get_unlabeled_kw_arg("sketch_set")?;
+    let length = args.get_kw_arg("length")?;
 
-    let result = inner_extrude(length, sketch_set, exec_state, args).await?;
+    let result = inner_extrude(sketch_set, length, exec_state, args).await?;
 
     Ok(result.into())
 }
@@ -35,22 +36,22 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```no_run
 /// example = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> line([10, 0], %)
+///   |> line(end = [10, 0])
 ///   |> arc({
 ///     angleStart = 120,
 ///     angleEnd = 0,
 ///     radius = 5,
 ///   }, %)
-///   |> line([5, 0], %)
-///   |> line([0, 10], %)
+///   |> line(end = [5, 0])
+///   |> line(end = [0, 10])
 ///   |> bezierCurve({
 ///     control1 = [-10, 0],
 ///     control2 = [2, 10],
 ///     to = [-5, 10],
 ///   }, %)
-///   |> line([-5, -2], %)
-///   |> close(%)
-///   |> extrude(10, %)
+///   |> line(end = [-5, -2])
+///   |> close()
+///   |> extrude(length = 10)
 /// ```
 ///
 /// ```no_run
@@ -61,26 +62,32 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     angleEnd = -60,
 ///     radius = 5,
 ///   }, %)
-///   |> line([10, 0], %)
-///   |> line([5, 0], %)
+///   |> line(end = [10, 0])
+///   |> line(end = [5, 0])
 ///   |> bezierCurve({
 ///     control1 = [-3, 0],
 ///     control2 = [2, 10],
 ///     to = [-5, 10],
 ///   }, %)
-///   |> line([-4, 10], %)
-///   |> line([-5, -2], %)
-///   |> close(%)
+///   |> line(end = [-4, 10])
+///   |> line(end = [-5, -2])
+///   |> close()
 ///
-/// example = extrude(10, exampleSketch)
+/// example = extrude(exampleSketch, length = 10)
 /// ```
 #[stdlib {
     name = "extrude",
     feature_tree_operation = true,
+    keywords = true,
+    unlabeled_first = true,
+    arg_docs = {
+        sketch_set = "Which sketches should be extruded",
+        length = "How far to extrude the given sketches",
+    }
 }]
 async fn inner_extrude(
-    length: f64,
     sketch_set: SketchSet,
+    length: f64,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidSet, KclError> {

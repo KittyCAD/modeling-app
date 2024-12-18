@@ -1,6 +1,7 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing sketch_on_face_circle_tagged.kcl
+snapshot_kind: text
 ---
 {
   "environments": [
@@ -33,7 +34,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 160,
+                    "end": 169,
                     "id": {
                       "end": 26,
                       "name": "sg",
@@ -94,33 +95,34 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                         {
                           "arguments": [
                             {
-                              "elements": [
-                                {
-                                  "end": 93,
-                                  "raw": "0",
-                                  "start": 92,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": 0.0
-                                },
-                                {
-                                  "end": 100,
-                                  "name": "scale",
-                                  "start": 95,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                }
-                              ],
-                              "end": 101,
-                              "start": 91,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "end": 104,
-                              "start": 103,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "end"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "end": 99,
+                                    "raw": "0",
+                                    "start": 98,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": 0.0
+                                  },
+                                  {
+                                    "end": 106,
+                                    "name": "scale",
+                                    "start": 101,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                ],
+                                "end": 107,
+                                "start": 97,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             }
                           ],
                           "callee": {
@@ -129,106 +131,111 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                             "start": 86,
                             "type": "Identifier"
                           },
-                          "end": 105,
+                          "end": 108,
                           "start": 86,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
                             {
-                              "elements": [
-                                {
-                                  "end": 124,
-                                  "name": "scale",
-                                  "start": 119,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                },
-                                {
-                                  "end": 127,
-                                  "raw": "0",
-                                  "start": 126,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": 0.0
-                                }
-                              ],
-                              "end": 128,
-                              "start": 118,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "end": 131,
-                              "start": 130,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 117,
-                            "name": "line",
-                            "start": 113,
-                            "type": "Identifier"
-                          },
-                          "end": 132,
-                          "start": 113,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "elements": [
-                                {
-                                  "end": 147,
-                                  "raw": "0",
-                                  "start": 146,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": 0.0
-                                },
-                                {
-                                  "argument": {
-                                    "end": 155,
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "end"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "end": 133,
                                     "name": "scale",
-                                    "start": 150,
+                                    "start": 128,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "end": 155,
-                                  "operator": "-",
-                                  "start": 149,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
-                                }
-                              ],
-                              "end": 156,
-                              "start": 145,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "end": 159,
-                              "start": 158,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                                  {
+                                    "end": 136,
+                                    "raw": "0",
+                                    "start": 135,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": 0.0
+                                  }
+                                ],
+                                "end": 137,
+                                "start": 127,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             }
                           ],
                           "callee": {
-                            "end": 144,
+                            "end": 120,
                             "name": "line",
-                            "start": 140,
+                            "start": 116,
                             "type": "Identifier"
                           },
-                          "end": 160,
-                          "start": 140,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "end": 138,
+                          "start": 116,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "type": "Identifier",
+                                "name": "end"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "end": 159,
+                                    "raw": "0",
+                                    "start": 158,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": 0.0
+                                  },
+                                  {
+                                    "argument": {
+                                      "end": 167,
+                                      "name": "scale",
+                                      "start": 162,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "end": 167,
+                                    "operator": "-",
+                                    "start": 161,
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
+                                  }
+                                ],
+                                "end": 168,
+                                "start": 157,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 150,
+                            "name": "line",
+                            "start": 146,
+                            "type": "Identifier"
+                          },
+                          "end": 169,
+                          "start": 146,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         }
                       ],
-                      "end": 160,
+                      "end": 169,
                       "start": 29,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -236,7 +243,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     "start": 24,
                     "type": "VariableDeclarator"
                   },
-                  "end": 160,
+                  "end": 169,
                   "kind": "const",
                   "start": 24,
                   "type": "VariableDeclaration",
@@ -244,25 +251,25 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 },
                 {
                   "argument": {
-                    "end": 173,
+                    "end": 182,
                     "name": "sg",
-                    "start": 171,
+                    "start": 180,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 173,
-                  "start": 164,
+                  "end": 182,
+                  "start": 173,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 175,
+              "end": 184,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "end": 164,
-                      "start": 160,
+                      "end": 173,
+                      "start": 169,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -274,7 +281,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               },
               "start": 20
             },
-            "end": 175,
+            "end": 184,
             "params": [
               {
                 "type": "Parameter",
@@ -333,7 +340,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
             {
               "sourceRange": [
                 7,
-                175,
+                184,
                 0
               ]
             }
@@ -351,8 +358,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  283,
-                  336,
+                  298,
+                  351,
                   0
                 ]
               },
@@ -367,8 +374,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               ],
               "radius": 5.0,
               "tag": {
-                "end": 335,
-                "start": 326,
+                "end": 350,
+                "start": 341,
                 "type": "TagDeclarator",
                 "value": "myCircle"
               },
@@ -382,13 +389,13 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                283,
-                336,
+                298,
+                351,
                 0
               ],
               "tag": {
-                "end": 335,
-                "start": 326,
+                "end": 350,
+                "start": 341,
                 "type": "TagDeclarator",
                 "value": "myCircle"
               },
@@ -398,8 +405,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
           "__meta": [
             {
               "sourceRange": [
-                326,
-                335,
+                341,
+                350,
                 0
               ]
             }
@@ -415,7 +422,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "id": "[uuid]",
               "sourceRange": [
                 86,
-                105,
+                108,
                 0
               ],
               "tag": null,
@@ -425,8 +432,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                113,
-                132,
+                116,
+                138,
                 0
               ],
               "tag": null,
@@ -436,8 +443,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                140,
-                160,
+                146,
+                169,
                 0
               ],
               "tag": null,
@@ -447,8 +454,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                208,
-                216,
+                217,
+                225,
                 0
               ],
               "tag": null,
@@ -464,7 +471,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     86,
-                    105,
+                    108,
                     0
                   ]
                 },
@@ -483,8 +490,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    113,
-                    132,
+                    116,
+                    138,
                     0
                   ]
                 },
@@ -503,8 +510,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    140,
-                    160,
+                    146,
+                    169,
                     0
                   ]
                 },
@@ -523,8 +530,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    208,
-                    216,
+                    217,
+                    225,
                     0
                   ]
                 },
@@ -617,13 +624,13 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                283,
-                336,
+                298,
+                351,
                 0
               ],
               "tag": {
-                "end": 335,
-                "start": 326,
+                "end": 350,
+                "start": 341,
                 "type": "TagDeclarator",
                 "value": "myCircle"
               },
@@ -638,8 +645,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    283,
-                    336,
+                    298,
+                    351,
                     0
                   ]
                 },
@@ -654,8 +661,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 ],
                 "radius": 5.0,
                 "tag": {
-                  "end": 335,
-                  "start": 326,
+                  "end": 350,
+                  "start": 341,
                   "type": "TagDeclarator",
                   "value": "myCircle"
                 },
@@ -694,7 +701,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       86,
-                      105,
+                      108,
                       0
                     ],
                     "tag": null,
@@ -704,8 +711,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      113,
-                      132,
+                      116,
+                      138,
                       0
                     ],
                     "tag": null,
@@ -715,8 +722,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      140,
-                      160,
+                      146,
+                      169,
                       0
                     ],
                     "tag": null,
@@ -726,8 +733,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      208,
-                      216,
+                      217,
+                      225,
                       0
                     ],
                     "tag": null,
@@ -743,7 +750,7 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                         "id": "[uuid]",
                         "sourceRange": [
                           86,
-                          105,
+                          108,
                           0
                         ]
                       },
@@ -762,8 +769,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          113,
-                          132,
+                          116,
+                          138,
                           0
                         ]
                       },
@@ -782,8 +789,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          140,
-                          160,
+                          146,
+                          169,
                           0
                         ]
                       },
@@ -802,8 +809,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          208,
-                          216,
+                          217,
+                          225,
                           0
                         ]
                       },
@@ -890,8 +897,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "__meta": [
                 {
                   "sourceRange": [
-                    248,
-                    277,
+                    263,
+                    292,
                     0
                   ]
                 }
@@ -910,8 +917,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  283,
-                  336,
+                  298,
+                  351,
                   0
                 ]
               }
@@ -928,8 +935,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        283,
-                        336,
+                        298,
+                        351,
                         0
                       ]
                     },
@@ -944,8 +951,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     ],
                     "radius": 5.0,
                     "tag": {
-                      "end": 335,
-                      "start": 326,
+                      "end": 350,
+                      "start": 341,
                       "type": "TagDeclarator",
                       "value": "myCircle"
                     },
@@ -959,13 +966,13 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      283,
-                      336,
+                      298,
+                      351,
                       0
                     ],
                     "tag": {
-                      "end": 335,
-                      "start": 326,
+                      "end": 350,
+                      "start": 341,
                       "type": "TagDeclarator",
                       "value": "myCircle"
                     },
@@ -975,8 +982,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
                 "__meta": [
                   {
                     "sourceRange": [
-                      326,
-                      335,
+                      341,
+                      350,
                       0
                     ]
                   }
@@ -986,8 +993,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
             "__meta": [
               {
                 "sourceRange": [
-                  283,
-                  336,
+                  298,
+                  351,
                   0
                 ]
               }
@@ -999,8 +1006,8 @@ description: Program memory after executing sketch_on_face_circle_tagged.kcl
           "__meta": [
             {
               "sourceRange": [
-                283,
-                336,
+                298,
+                351,
                 0
               ]
             }

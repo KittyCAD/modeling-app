@@ -5,5 +5,5 @@ const height = 3
 const body = startSketchOn('XY')
       |> startProfileAt([center[0]+radius, center[1]], %)
       |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
-      |> close(%)
-      |> extrude(height, %)
+      |> close()
+      |> extrude(length = height)

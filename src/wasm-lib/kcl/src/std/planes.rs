@@ -67,11 +67,11 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // Loft a square and a circle on the `XY` plane using offset.
 /// squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('XY', 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
@@ -83,11 +83,11 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // Loft a square and a circle on the `XZ` plane using offset.
 /// squareSketch = startSketchOn('XZ')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('XZ', 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
@@ -99,11 +99,11 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // Loft a square and a circle on the `YZ` plane using offset.
 /// squareSketch = startSketchOn('YZ')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('YZ', 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
@@ -115,11 +115,11 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // Loft a square and a circle on the `-XZ` plane using offset.
 /// squareSketch = startSketchOn('-XZ')
 ///     |> startProfileAt([-100, 200], %)
-///     |> line([200, 0], %)
-///     |> line([0, -200], %)
-///     |> line([-200, 0], %)
-///     |> lineTo([profileStartX(%), profileStartY(%)], %)
-///     |> close(%)
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
 ///
 /// circleSketch = startSketchOn(offsetPlane('-XZ', -150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
@@ -135,9 +135,9 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// // Triangle on the plane 4 units above
 /// startSketchOn(offsetPlane("XY", 4))
 ///   |> startProfileAt([0, 0], %)
-///   |> line([10, 0], %)
-///   |> line([0, 10], %)
-///   |> close(%)
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> close()
 /// ```
 
 #[stdlib {

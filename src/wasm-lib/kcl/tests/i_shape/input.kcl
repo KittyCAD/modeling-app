@@ -8,7 +8,7 @@ corner_radius = 5.0
 // but I measured intentionally to not be symmetric,
 // because your wrist isn't a perfect cylindrical surface
 brace_base = startSketchAt([corner_radius, 0])
-  |> line([width - corner_radius, 0.0], %)
+  |> line(end = [width - corner_radius, 0.0])
   |> tangentialArcToRelative([corner_radius, corner_radius], %)
   |> yLine(25.0 - corner_radius, %)
   |> tangentialArcToRelative([-corner_radius, corner_radius], %)
@@ -47,4 +47,4 @@ inner = startSketchAt([0, 0])
 
 final = brace_base
   |> hole(inner, %)
-  |> extrude(3.0, %)
+  |> extrude(length = 3.0)

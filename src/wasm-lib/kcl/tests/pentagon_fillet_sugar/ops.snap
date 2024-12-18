@@ -27,15 +27,8 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          389,
-          403,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          405,
-          406,
+          398,
+          412,
           0
         ]
       }
@@ -43,7 +36,7 @@ snapshot_kind: text
     "name": "extrude",
     "sourceRange": [
       381,
-      407,
+      413,
       0
     ],
     "type": "StdLibCall",
@@ -53,15 +46,15 @@ snapshot_kind: text
     "type": "UserDefinedFunctionCall",
     "name": "circl",
     "functionSourceRange": [
-      417,
-      567,
+      423,
+      573,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      574,
-      588,
+      580,
+      594,
       0
     ]
   },
@@ -69,23 +62,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          452,
-          453,
+          458,
+          459,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          455,
-          459,
+          461,
+          465,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      438,
-      460,
+      444,
+      466,
       0
     ],
     "type": "StdLibCall",
@@ -98,23 +91,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          616,
-          626,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          628,
-          629,
+          631,
+          641,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      608,
-      630,
+      614,
+      642,
       0
     ],
     "type": "StdLibCall",
@@ -124,23 +110,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          643,
-          763,
+          655,
+          775,
           0
         ]
       },
       "solid": {
         "sourceRange": [
-          765,
-          766,
+          777,
+          778,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      636,
-      767,
+      648,
+      779,
       0
     ],
     "type": "StdLibCall",
@@ -150,15 +136,15 @@ snapshot_kind: text
     "type": "UserDefinedFunctionCall",
     "name": "circl",
     "functionSourceRange": [
-      417,
-      567,
+      423,
+      573,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      773,
-      786,
+      785,
+      798,
       0
     ]
   },
@@ -166,23 +152,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          452,
-          453,
+          458,
+          459,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          455,
-          459,
+          461,
+          465,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      438,
-      460,
+      444,
+      466,
       0
     ],
     "type": "StdLibCall",
@@ -195,23 +181,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          814,
-          824,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          826,
-          827,
+          835,
+          845,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      806,
-      828,
+      818,
+      846,
       0
     ],
     "type": "StdLibCall",
@@ -221,23 +200,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          841,
-          961,
+          859,
+          979,
           0
         ]
       },
       "solid": {
         "sourceRange": [
-          963,
-          964,
+          981,
+          982,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      834,
-      965,
+      852,
+      983,
       0
     ],
     "type": "StdLibCall",
