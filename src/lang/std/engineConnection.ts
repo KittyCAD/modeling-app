@@ -1397,6 +1397,7 @@ export class EngineCommandManager extends EventTarget {
           enableSSAO: true,
           showScaleGrid: false,
           cameraProjection: 'perspective',
+          cameraOrbit: 'spherical',
         }
   }
 
@@ -1445,6 +1446,7 @@ export class EngineCommandManager extends EventTarget {
       enableSSAO: true,
       showScaleGrid: false,
       cameraProjection: 'orthographic',
+      cameraOrbit: 'spherical',
     },
     // When passed, use a completely separate connecting code path that simply
     // opens a websocket and this is a function that is called when connected.
