@@ -1,16 +1,6 @@
-import {
-  Expr,
-  PathToNode,
-  Program,
-  SourceRange,
-  VariableDeclaration,
-} from 'lang/wasm'
+import { ExecState, Expr, PathToNode, Program, SourceRange } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
-import {
-  getNodeFromPath,
-  getNodePathFromSourceRange,
-  traverse,
-} from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
@@ -174,10 +164,12 @@ export function createArtifactGraph({
   orderedCommands,
   responseMap,
   ast,
+  execStateArtifacts,
 }: {
   orderedCommands: Array<OrderedCommand>
   responseMap: ResponseMap
   ast: Node<Program>
+  execStateArtifacts: ExecState['artifacts']
 }) {
   const myMap = new Map<ArtifactId, Artifact>()
 
@@ -199,6 +191,7 @@ export function createArtifactGraph({
       getArtifact: (id: ArtifactId) => myMap.get(id),
       currentPlaneId,
       ast,
+      execStateArtifacts,
     })
     artifactsToUpdate.forEach(({ id, artifact }) => {
       const mergedArtifact = mergeArtifacts(myMap.get(id), artifact)
@@ -250,6 +243,7 @@ export function getArtifactsToUpdate({
   responseMap,
   currentPlaneId,
   ast,
+  execStateArtifacts,
 }: {
   orderedCommand: OrderedCommand
   responseMap: ResponseMap
@@ -257,6 +251,7 @@ export function getArtifactsToUpdate({
   getArtifact: (id: ArtifactId) => Artifact | undefined
   currentPlaneId: ArtifactId
   ast: Node<Program>
+  execStateArtifacts: ExecState['artifacts']
 }): Array<{
   id: ArtifactId
   artifact: Artifact
@@ -292,13 +287,6 @@ export function getArtifactsToUpdate({
       plane?.type === 'plane' ? plane?.codeRef : { range, pathToNode }
     const existingPlane = getArtifact(currentPlaneId)
     if (existingPlane?.type === 'wall') {
-      let existingPlaneCodeRef = existingPlane.codeRef
-      if (!existingPlaneCodeRef) {
-        const astWalkCodeRef = getWallOrCapPlaneCodeRef(ast, codeRef.pathToNode)
-        if (!err(astWalkCodeRef)) {
-          existingPlaneCodeRef = astWalkCodeRef
-        }
-      }
       return [
         {
           id: currentPlaneId,
@@ -309,18 +297,11 @@ export function getArtifactsToUpdate({
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             sweepId: existingPlane.sweepId,
             pathIds: existingPlane.pathIds,
-            codeRef: existingPlaneCodeRef,
+            codeRef: existingPlane.codeRef,
           },
         },
       ]
     } else if (existingPlane?.type === 'cap') {
-      let existingPlaneCodeRef = existingPlane.codeRef
-      if (!existingPlaneCodeRef) {
-        const astWalkCodeRef = getWallOrCapPlaneCodeRef(ast, codeRef.pathToNode)
-        if (!err(astWalkCodeRef)) {
-          existingPlaneCodeRef = astWalkCodeRef
-        }
-      }
       return [
         {
           id: currentPlaneId,
@@ -331,7 +312,7 @@ export function getArtifactsToUpdate({
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             sweepId: existingPlane.sweepId,
             pathIds: existingPlane.pathIds,
-            codeRef: existingPlaneCodeRef,
+            codeRef: existingPlane.codeRef,
           },
         },
       ]
@@ -467,16 +448,33 @@ export function getArtifactsToUpdate({
           const path = getArtifact(seg.pathId)
           if (path?.type === 'path' && seg?.type === 'segment') {
             lastPath = path
+            const extraArtifact = Object.values(execStateArtifacts).find(
+              (a) => a?.type === 'StartSketchOnFace' && a.faceId === face_id
+            )
+            const sketchOnFaceSourceRange = extraArtifact?.sourceRange
+            const wallArtifact: Artifact = {
+              type: 'wall',
+              id: face_id,
+              segId: curve_id,
+              edgeCutEdgeIds: [],
+              sweepId: path.sweepId,
+              pathIds: [],
+            }
+
+            if (sketchOnFaceSourceRange) {
+              const range: SourceRange = [
+                sketchOnFaceSourceRange[0],
+                sketchOnFaceSourceRange[1],
+                true,
+              ]
+              wallArtifact.codeRef = {
+                range,
+                pathToNode: getNodePathFromSourceRange(ast, range),
+              }
+            }
             returnArr.push({
               id: face_id,
-              artifact: {
-                type: 'wall',
-                id: face_id,
-                segId: curve_id,
-                edgeCutEdgeIds: [],
-                sweepId: path.sweepId,
-                pathIds: [],
-              },
+              artifact: wallArtifact,
             })
             returnArr.push({
               id: curve_id,
@@ -500,16 +498,33 @@ export function getArtifactsToUpdate({
       if ((cap === 'top' || cap === 'bottom') && face_id) {
         const path = lastPath
         if (path?.type === 'path') {
+          const extraArtifact = Object.values(execStateArtifacts).find(
+            (a) => a?.type === 'StartSketchOnFace' && a.faceId === face_id
+          )
+          const sketchOnFaceSourceRange = extraArtifact?.sourceRange
+          const capArtifact: Artifact = {
+            type: 'cap',
+            id: face_id,
+            subType: cap === 'bottom' ? 'start' : 'end',
+            edgeCutEdgeIds: [],
+            sweepId: path.sweepId,
+            pathIds: [],
+          }
+          if (sketchOnFaceSourceRange) {
+            const range: SourceRange = [
+              sketchOnFaceSourceRange[0],
+              sketchOnFaceSourceRange[1],
+              true,
+            ]
+
+            capArtifact.codeRef = {
+              range,
+              pathToNode: getNodePathFromSourceRange(ast, range),
+            }
+          }
           returnArr.push({
             id: face_id,
-            artifact: {
-              type: 'cap',
-              id: face_id,
-              subType: cap === 'bottom' ? 'start' : 'end',
-              edgeCutEdgeIds: [],
-              sweepId: path.sweepId,
-              pathIds: [],
-            },
+            artifact: capArtifact,
           })
           const sweep = getArtifact(path.sweepId)
           if (sweep?.type !== 'sweep') return
@@ -1131,84 +1146,6 @@ function isNodeSafe(node: Expr): boolean {
   return false
 }
 
-/** {@deprecated} this information should come from the ArtifactGraph not digging around in the AST */
-function getWallOrCapPlaneCodeRef(
-  ast: Node<Program>,
-  pathToNode: PathToNode
-): CodeRef | Error {
-  const varDec = getNodeFromPath<VariableDeclaration>(
-    ast,
-    pathToNode,
-    'VariableDeclaration'
-  )
-  if (err(varDec)) return varDec
-  if (varDec.node.type !== 'VariableDeclaration')
-    return new Error('Expected VariableDeclaration')
-  const init = varDec.node.declaration.init
-  let varName = ''
-  if (
-    init.type === 'CallExpression' &&
-    init.callee.type === 'Identifier' &&
-    (init.callee.name === 'circle' || init.callee.name === 'startProfileAt')
-  ) {
-    const secondArg = init.arguments[1]
-    if (secondArg.type === 'Identifier') {
-      varName = secondArg.name
-    }
-  } else if (init.type === 'PipeExpression') {
-    const firstExpr = init.body[0]
-    if (
-      firstExpr.type === 'CallExpression' &&
-      firstExpr.callee.type === 'Identifier' &&
-      firstExpr.callee.name === 'startProfileAt'
-    ) {
-      const secondArg = firstExpr.arguments[1]
-      if (secondArg.type === 'Identifier') {
-        varName = secondArg.name
-      }
-    }
-  }
-  if (varName === '') return new Error('Could not find variable name')
-
-  let currentVariableName = ''
-  const planeCodeRef: Array<{
-    path: PathToNode
-    sketchName: string
-    range: SourceRange
-  }> = []
-  traverse(ast, {
-    leave: (node) => {
-      if (node.type === 'VariableDeclaration') {
-        currentVariableName = ''
-      }
-    },
-    enter: (node, path) => {
-      if (node.type === 'VariableDeclaration') {
-        currentVariableName = node.declaration.id.name
-      }
-      if (
-        // match `${varName} = startSketchOn(...)`
-        node.type === 'CallExpression' &&
-        node.callee.name === 'startSketchOn' &&
-        node.arguments[0].type === 'Identifier' &&
-        currentVariableName === varName
-      ) {
-        planeCodeRef.push({
-          path,
-          sketchName: currentVariableName,
-          range: [node.start, node.end, true],
-        })
-      }
-    },
-  })
-  if (!planeCodeRef.length)
-    return new Error('No paths found depending on extrude')
-
-  return {
-    pathToNode: planeCodeRef[0].path,
-    range: planeCodeRef[0].range,
-  }
-}
 /**
  * Get an artifact from a code source range
  */

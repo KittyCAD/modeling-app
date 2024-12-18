@@ -313,8 +313,6 @@ export class KclManager {
       this.addDiagnostics(await lintAst({ ast: ast }))
       setSelectionFilterToDefault(execState.memory, this.engineCommandManager)
 
-      console.log('executeAst artifacts', execState.artifacts)
-
       if (args.zoomToFit) {
         let zoomObjectId: string | undefined = ''
         if (args.zoomOnRangeAndType) {
@@ -359,7 +357,10 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/programMemory
-    await this.engineCommandManager.updateArtifactGraph(this.ast)
+    await this.engineCommandManager.updateArtifactGraph(
+      this.ast,
+      execState.artifacts
+    )
     this._executeCallback()
     if (!isInterrupted)
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
