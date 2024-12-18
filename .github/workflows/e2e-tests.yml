@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main, pierremtb/electron-tests-one-last-try-16-core-win ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -39,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, self-hosted-windows-8-cores]
+        # TODO: enable self-hosted-windows-8-cores once available
         os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
