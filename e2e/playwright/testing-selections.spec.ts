@@ -872,15 +872,14 @@ extrude001 = extrude(10, sketch001)
       page.getByText(`line([4.99, -0.46], %, $seg01)`).click()
     const clickEmpty = () => page.mouse.click(700, 460)
     await selectUnExtrudable()
-    // expect extrude button to be disabled
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
 
     await clickEmpty()
 
     // expect active line to contain nothing
     await expect(page.locator('.cm-activeLine')).toHaveText('')
-    // and extrude to still be disabled
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
 
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
 sketch002 = startSketchOn(extrude001, $seg01)
@@ -893,8 +892,9 @@ sketch002 = startSketchOn(extrude001, $seg01)
     await u.codeLocator.fill(codeToAdd)
 
     await selectUnExtrudable()
-    // expect extrude button to be disabled
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
 
     await clickEmpty()
     await expect(page.locator('.cm-activeLine')).toHaveText('')
@@ -1195,7 +1195,9 @@ extrude001 = extrude(50, sketch001)
     ).not.toBeDisabled()
 
     await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
 
     await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
     await expect(
@@ -1206,7 +1208,9 @@ extrude001 = extrude(50, sketch001)
     ).not.toBeDisabled()
 
     await page.getByText(selectionsSnippets.editOnly).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).not.toBeDisabled()
@@ -1214,7 +1218,9 @@ extrude001 = extrude(50, sketch001)
     await page
       .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
       .click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).not.toBeVisible()
