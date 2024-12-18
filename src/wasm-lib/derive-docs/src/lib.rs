@@ -40,6 +40,12 @@ struct StdlibMetadata {
     #[serde(default)]
     deprecated: bool,
 
+    /// Whether the function is displayed in the feature tree.
+    /// If true, calls to the function will be available for display.
+    /// If false, calls to the function will never be displayed.
+    #[serde(default)]
+    feature_tree_operation: bool,
+
     /// If true, expects keyword arguments.
     /// If false, expects positional arguments.
     #[serde(default)]
@@ -239,6 +245,12 @@ fn do_stdlib_inner(
     };
 
     let unpublished = if metadata.unpublished {
+        quote! { true }
+    } else {
+        quote! { false }
+    };
+
+    let feature_tree_operation = if metadata.feature_tree_operation {
         quote! { true }
     } else {
         quote! { false }
@@ -468,6 +480,10 @@ fn do_stdlib_inner(
 
             fn deprecated(&self) -> bool {
                 #deprecated
+            }
+
+            fn feature_tree_operation(&self) -> bool {
+                #feature_tree_operation
             }
 
             fn examples(&self) -> Vec<String> {
@@ -763,6 +779,8 @@ fn rust_type_to_openapi_type(t: &str) -> String {
 
     if t == "f64" {
         return "number".to_string();
+    } else if t == "u32" {
+        return "integer".to_string();
     } else if t == "str" {
         return "string".to_string();
     } else {
@@ -787,7 +805,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
 
     quote! {
         #[tokio::test(flavor = "multi_thread")]
-        async fn #test_name_mock() {
+        async fn #test_name_mock() -> miette::Result<()> {
             let program = crate::Program::parse_no_errs(#code_block).unwrap();
             let ctx = crate::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
@@ -797,15 +815,33 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::execution::ContextType::Mock,
             };
 
-            ctx.run(program.into(), &mut crate::ExecState::default()).await.unwrap();
+            if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new()).await {
+                    return Err(miette::Report::new(crate::errors::Report {
+                        error: e,
+                        filename: format!("{}{}", #fn_name, #index),
+                        kcl_source: #code_block.to_string(),
+                    }));
+            }
+            Ok(())
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-        async fn #test_name() {
+        async fn #test_name() -> miette::Result<()> {
             let code = #code_block;
             // Note, `crate` must be kcl_lib
-            let result = crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm, None).await.unwrap();
+            let result = match crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm, None).await {
+                Err(crate::errors::ExecError::Kcl(e)) => {
+                    return Err(miette::Report::new(crate::errors::Report {
+                        error: e,
+                        filename: format!("{}{}", #fn_name, #index),
+                        kcl_source: #code_block.to_string(),
+                    }));
+                }
+                Err(other_err)=> panic!("{}", other_err),
+                Ok(img) => img,
+            };
             twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #output_test_name_str), &result, 0.99);
+            Ok(())
         }
     }
 }

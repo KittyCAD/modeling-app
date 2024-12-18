@@ -79,6 +79,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 #[stdlib {
     name = "sweep",
+    feature_tree_operation = true,
 }]
 async fn inner_sweep(
     data: SweepData,
@@ -86,7 +87,7 @@ async fn inner_sweep(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::Sweep {
