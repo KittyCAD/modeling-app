@@ -570,6 +570,8 @@ export const modelingMachine = setup({
       canRectangleOrCircleTool({ sketchDetails }),
     'next is circle': ({ context: { sketchDetails, currentTool } }) =>
       currentTool === 'circle' && canRectangleOrCircleTool({ sketchDetails }),
+    'next is circle 3 point': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'circle3Points' && canRectangleOrCircleTool({ sketchDetails }),
     'next is line': ({ context }) => context.currentTool === 'line',
     'next is none': ({ context }) => context.currentTool === 'none',
   },
@@ -977,6 +979,19 @@ export const modelingMachine = setup({
         .then(() => {
           return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
         })
+    },
+    setupDraftCircle3Point: ({ context: { sketchDetails }, event }) => {
+      // if (event.type !== 'circle3PointToolSelected') return
+      console.log(event.type)
+      if (!sketchDetails || !event.data) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager.setupDraftCircle3Point(
+        sketchDetails.sketchPathToNode,
+        new Vector3(...sketchDetails.zAxis),
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.origin)
+      )
     },
     'set up draft line without teardown': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
@@ -2338,6 +2353,10 @@ export const modelingMachine = setup({
               target: 'Center Rectangle tool',
               guard: 'next is center rectangle',
             },
+            {
+              target: 'circle3PointToolSelected',
+              guard: 'next is circle 3 point',
+            },
           ],
 
           entry: ['assign tool in context', 'reset selections'],
@@ -2370,6 +2389,28 @@ export const modelingMachine = setup({
 
           initial: 'Awaiting origin',
           entry: 'listen for circle origin',
+        },
+        circle3PointToolSelected: {
+          on: {
+            'change tool': 'Change Tool',
+          },
+
+          states: {
+            circle3PointsAwaiting: {
+              on: {
+                circle3PointsDefined: {
+                  target: 'circle3PointsFinished',
+                },
+              },
+            },
+
+            circle3PointsFinished: {
+              always: '#Modeling.Sketch.SketchIdle',
+            },
+          },
+
+          initial: 'circle3PointsAwaiting',
+          entry: 'setupDraftCircle3Point',
         },
       },
 
