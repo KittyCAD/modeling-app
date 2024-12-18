@@ -66,6 +66,7 @@ pub mod lint;
 mod log;
 mod lsp;
 mod parsing;
+mod refgraph;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
