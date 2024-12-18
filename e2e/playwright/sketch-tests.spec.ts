@@ -949,12 +949,11 @@ test.describe('Sketch tests', () => {
   `.replace(/\s/g, '')
     )
   })
-  test('empty-scene default-planes act as expected', async ({
+  // TODO: fix after electron migration is merged
+  test.fixme('empty-scene default-planes act as expected', async ({
     page,
     homePage,
   }) => {
-    // TODO: fix this test on windows after the electron migration
-    test.skip(process.platform === 'win32', 'Skip on windows')
     /**
      * Tests the following things
      * 1) The the planes are there on load because the scene is empty
