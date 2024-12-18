@@ -69,7 +69,7 @@ interface SegmentArtifactRich extends BaseArtifact {
 /** A Sweep is a more generic term for extrude, revolve, loft and sweep*/
 interface SweepArtifact extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve'
+  subType: 'extrusion' | 'revolve' | 'loft'
   pathId: string
   surfaceIds: Array<string>
   edgeIds: Array<string>
@@ -77,7 +77,7 @@ interface SweepArtifact extends BaseArtifact {
 }
 interface SweepArtifactRich extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve'
+  subType: 'extrusion' | 'revolve' | 'loft'
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
   edges: Array<SweepEdge>
@@ -187,6 +187,7 @@ export function createArtifactGraph({
       myMap.set(id, mergedArtifact)
     })
   })
+  console.log('Solid3dGetExtrusionFaceInfo ag', myMap)
   return myMap
 }
 
@@ -372,32 +373,42 @@ export function getArtifactsToUpdate({
         })
     }
     return returnArr
-  } else if (cmd.type === 'extrude' || cmd.type === 'revolve') {
+  } else if (
+    cmd.type === 'extrude' ||
+    cmd.type === 'revolve' ||
+    cmd.type === 'loft'
+  ) {
     const subType = cmd.type === 'extrude' ? 'extrusion' : cmd.type
+    const extrudeOrRevolve = cmd.type === 'extrude' || cmd.type === 'revolve'
+    console.log('Solid3dGetExtrusionFaceInfo response.data', response.data)
     returnArr.push({
       id,
       artifact: {
         type: 'sweep',
         subType: subType,
         id,
-        pathId: cmd.target,
+        // TODO: check what is needed here with target for loft
+        pathId: extrudeOrRevolve ? cmd.target : cmd.section_ids[0],
         surfaceIds: [],
         edgeIds: [],
         codeRef: { range, pathToNode },
       },
     })
-    const path = getArtifact(cmd.target)
-    if (path?.type === 'path')
-      returnArr.push({
-        id: cmd.target,
-        artifact: { ...path, sweepId: id },
-      })
+    if (extrudeOrRevolve) {
+      const path = getArtifact(cmd.target)
+      if (path?.type === 'path')
+        returnArr.push({
+          id: cmd.target,
+          artifact: { ...path, sweepId: id },
+        })
+    }
     return returnArr
   } else if (
     cmd.type === 'solid3d_get_extrusion_face_info' &&
     response?.type === 'modeling' &&
     response.data.modeling_response.type === 'solid3d_get_extrusion_face_info'
   ) {
+    console.log('TS Solid3dGetExtrusionFaceInfo cmd response', cmd, response)
     let lastPath: PathArtifact
     response.data.modeling_response.data.faces.forEach(
       ({ curve_id, cap, face_id }) => {

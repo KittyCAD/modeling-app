@@ -174,6 +174,7 @@ export async function getEventForSelectWithPoint({
   Models['OkModelingCmdResponse_type'],
   { type: 'select_with_point' }
 >): Promise<ModelingMachineEvent | null> {
+  console.log('Solid3dGetExtrusionFaceInfo getEventForSelectWithPoint', data)
   if (!data?.entity_id) {
     return {
       type: 'Set selection',
@@ -210,6 +211,7 @@ export async function getEventForSelectWithPoint({
   }
 
   let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
+  console.log('found _artifact from selection', _artifact)
   const codeRefs = getCodeRefsByArtifactId(
     data.entity_id,
     engineCommandManager.artifactGraph
@@ -941,6 +943,7 @@ export function updateSelections(
 ): Selections | Error {
   if (err(ast)) return ast
 
+  console.log('updateSelections pathToNodeMap', pathToNodeMap)
   const newSelections = Object.entries(pathToNodeMap)
     .map(([index, pathToNode]): Selection | undefined => {
       const previousSelection =
