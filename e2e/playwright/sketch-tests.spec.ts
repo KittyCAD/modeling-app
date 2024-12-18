@@ -954,107 +954,107 @@ test.describe('Sketch tests', () => {
     )
   })
   // TODO: fix after electron migration is merged
-  test.fixme('empty-scene default-planes act as expected', async ({
-    page,
-    homePage,
-  }) => {
-    /**
-     * Tests the following things
-     * 1) The the planes are there on load because the scene is empty
-     * 2) The planes don't changes color when hovered initially
-     * 3) Putting something in the scene makes the planes hidden
-     * 4) Removing everything from the scene shows the plans again
-     * 3) Once "start sketch" is click, the planes do respond to hovers
-     * 4) Selecting a plan works as expected, i.e. sketch mode
-     * 5) Reloading the scene with something already in the scene means the planes are hidden
-     */
+  test.fixme(
+    'empty-scene default-planes act as expected',
+    async ({ page, homePage }) => {
+      /**
+       * Tests the following things
+       * 1) The the planes are there on load because the scene is empty
+       * 2) The planes don't changes color when hovered initially
+       * 3) Putting something in the scene makes the planes hidden
+       * 4) Removing everything from the scene shows the plans again
+       * 3) Once "start sketch" is click, the planes do respond to hovers
+       * 4) Selecting a plan works as expected, i.e. sketch mode
+       * 5) Reloading the scene with something already in the scene means the planes are hidden
+       */
 
-    const u = await getUtils(page)
-    await homePage.goToModelingScene()
+      const u = await getUtils(page)
+      await homePage.goToModelingScene()
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    const XYPlanePoint = { x: 774, y: 116 } as const
-    const unHoveredColor: [number, number, number] = [47, 47, 93]
-    expect(
-      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
-    ).toBeLessThan(8)
+      const XYPlanePoint = { x: 774, y: 116 } as const
+      const unHoveredColor: [number, number, number] = [47, 47, 93]
+      expect(
+        await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+      ).toBeLessThan(8)
 
-    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-    await page.waitForTimeout(200)
+      await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+      await page.waitForTimeout(200)
 
-    // color should not change for having been hovered
-    expect(
-      await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
-    ).toBeLessThan(8)
+      // color should not change for having been hovered
+      expect(
+        await u.getGreatestPixDiff(XYPlanePoint, unHoveredColor)
+      ).toBeLessThan(8)
 
-    await u.openAndClearDebugPanel()
+      await u.openAndClearDebugPanel()
 
-    await u.codeLocator.fill(`sketch001 = startSketchOn('XY')
+      await u.codeLocator.fill(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line([20, 0], %)
     |> line([0, 20], %)
     |> xLine(-20, %)
   `)
 
-    await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.expectCmdLog('[data-message-type="execution-done"]')
 
-    const noPlanesColor: [number, number, number] = [30, 30, 30]
-    expect(
-      await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
-    ).toBeLessThan(3)
+      const noPlanesColor: [number, number, number] = [30, 30, 30]
+      expect(
+        await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
+      ).toBeLessThan(3)
 
-    await u.clearCommandLogs()
-    await u.removeCurrentCode()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.clearCommandLogs()
+      await u.removeCurrentCode()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
 
-    await expect
-      .poll(() => u.getGreatestPixDiff(XYPlanePoint, unHoveredColor), {
-        timeout: 5_000,
-      })
-      .toBeLessThan(8)
+      await expect
+        .poll(() => u.getGreatestPixDiff(XYPlanePoint, unHoveredColor), {
+          timeout: 5_000,
+        })
+        .toBeLessThan(8)
 
-    // click start Sketch
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y, { steps: 50 })
-    const hoveredColor: [number, number, number] = [93, 93, 127]
-    // now that we're expecting the user to select a plan, it does respond to hover
-    await expect
-      .poll(() => u.getGreatestPixDiff(XYPlanePoint, hoveredColor))
-      .toBeLessThan(8)
+      // click start Sketch
+      await page.getByRole('button', { name: 'Start Sketch' }).click()
+      await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y, { steps: 50 })
+      const hoveredColor: [number, number, number] = [93, 93, 127]
+      // now that we're expecting the user to select a plan, it does respond to hover
+      await expect
+        .poll(() => u.getGreatestPixDiff(XYPlanePoint, hoveredColor))
+        .toBeLessThan(8)
 
-    await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
-    await page.waitForTimeout(600)
+      await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
+      await page.waitForTimeout(600)
 
-    await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
-    await page.waitForTimeout(200)
-    await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
-    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
+      await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
+      await page.waitForTimeout(200)
+      await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
+      await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([11.8, 9.09], %)
     |> line([3.39, -3.39], %)
   `)
 
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn('XZ')
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `sketch001 = startSketchOn('XZ')
     |> startProfileAt([11.8, 9.09], %)
     |> line([3.39, -3.39], %)
   `
-      )
-    })
+        )
+      })
 
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
+      await u.openDebugPanel()
+      await u.expectCmdLog('[data-message-type="execution-done"]')
+      await u.closeDebugPanel()
 
-    // expect there to be no planes on load since there's something in the scene
-    expect(
-      await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
-    ).toBeLessThan(3)
-  })
+      // expect there to be no planes on load since there's something in the scene
+      expect(
+        await u.getGreatestPixDiff(XYPlanePoint, noPlanesColor)
+      ).toBeLessThan(3)
+    }
+  )
 
   test('Can attempt to sketch on revolved face', async ({ page, homePage }) => {
     const u = await getUtils(page)

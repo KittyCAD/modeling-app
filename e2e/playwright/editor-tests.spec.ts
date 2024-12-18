@@ -511,7 +511,7 @@ test.describe('Editor tests', () => {
 
     /* add the following code to the editor (~ error is not a valid line)
       * the old check here used $ but this is for tags so it changed meaning.
-      * hopefully ~ doesnt change meaning
+      * hopefully ~ doesn't change meaning
     ~ error
     const topAng = 30
     const bottomAng = 25

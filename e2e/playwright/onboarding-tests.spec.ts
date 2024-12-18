@@ -148,7 +148,7 @@ test.describe('Onboarding tests', () => {
       )
 
       // There used to be old code here that checked if we stored the reset
-      // code into localStorage but that isnt the case on desktop. It gets
+      // code into localStorage but that isn't the case on desktop. It gets
       // saved to the file system, which we have other tests for.
     }
   )

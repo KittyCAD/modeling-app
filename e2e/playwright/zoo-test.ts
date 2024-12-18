@@ -185,8 +185,8 @@ export const test = (
       }
 
       // Create a consistent way to resize the page across electron and web.
-      // (lee) I had to do everyhting in the book to make electron change its
-      // damn window size. I succeded in making it consistently and reliably
+      // (lee) I had to do everything in the book to make electron change its
+      // damn window size. I succeeded in making it consistently and reliably
       // do it after a whole afternoon.
       tronApp.page.setBodyDimensions = async function (dims: {
         width: number
