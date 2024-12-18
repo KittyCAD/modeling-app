@@ -149,12 +149,6 @@ export const fileLoader: LoaderFunction = async (
       ? await getProjectInfo(projectPath)
       : null
 
-    console.log('maybeProjectInfo', {
-      maybeProjectInfo,
-      defaultProjectData,
-      projectPathData,
-    })
-
     const projectData: IndexLoaderData = {
       code,
       project: maybeProjectInfo ?? defaultProjectData,
