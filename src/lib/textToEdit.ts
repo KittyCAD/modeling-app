@@ -6,6 +6,9 @@ import { Selections } from './selections'
 import { ArtifactGraph, getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { SourceRange } from 'lang/wasm'
 import toast from 'react-hot-toast'
+import { codeManager, kclManager } from './singletons'
+import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
+import { uuidv4 } from './utils'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -253,8 +256,55 @@ export async function doPromptEdit({
     return result
   } catch (e) {
     toast.dismiss(toastId)
+    toast.error(
+      'Failed to edit your KCL code, please try again with a different prompt or selection'
+    )
     console.error('textToCadComplete', e)
   }
 
   return textToCadComplete
+}
+
+export async function doWholeFlow({
+  prompt,
+  selections,
+  code,
+  token,
+  artifactGraph,
+}: {
+  prompt: string
+  selections: Selections
+  code: string
+  token?: string
+  artifactGraph: ArtifactGraph
+}) {
+  const result = await doPromptEdit({
+    prompt,
+    selections,
+    code,
+    token,
+    artifactGraph,
+  })
+  if (err(result)) return Promise.reject(result)
+  console.log('result', result)
+  const oldCode = codeManager.code
+  const { code: newCode } = result
+  codeManager.updateCodeEditor(newCode)
+  await kclManager.executeCode()
+  const toastId = uuidv4()
+
+  toast.success(
+    () =>
+      ToastPromptToEditCadSuccess({
+        toastId,
+        data: result,
+        token,
+        oldCode,
+      }),
+    {
+      id: toastId,
+      duration: Infinity,
+      icon: null,
+    }
+  )
 }
