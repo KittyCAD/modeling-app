@@ -46,16 +46,9 @@ import {
   applyConstraintLength,
 } from './Toolbar/setAngleLength'
 import {
-  canSweepSelection,
   handleSelectionBatch,
-  isSelectionLastLine,
-  isRangeBetweenCharacters,
-  isSketchPipe,
   Selections,
   updateSelections,
-  canLoftSelection,
-  canRevolveSelection,
-  canShellSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -76,8 +69,6 @@ import {
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
   artifactIsPlaneWithPaths,
-  doesSceneHaveExtrudedSketch,
-  doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
@@ -90,7 +81,6 @@ import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { modelingMachineEvent } from 'editor/manager'
-import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addEdgeTreatment'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -578,93 +568,12 @@ export const ModelingMachineProvider = ({
         },
       },
       guards: {
-        'has valid sweep selection': ({ context: { selectionRanges } }) => {
-          // A user can begin extruding if they either have 1+ faces selected or nothing selected
-          // TODO: I believe this guard only allows for extruding a single face at a time
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            // they have no selection, we should enable the button
-            // so they can select the face through the cmdbar
-            // BUT only if there's extrudable geometry
-            return doesSceneHaveSweepableSketch(kclManager.ast)
-          }
-          if (!isSketchPipe(selectionRanges)) return false
-
-          const canSweep = canSweepSelection(selectionRanges)
-          if (err(canSweep)) return false
-          return canSweep
-        },
-        'has valid revolve selection': ({ context: { selectionRanges } }) => {
-          // A user can begin extruding if they either have 1+ faces selected or nothing selected
-          // TODO: I believe this guard only allows for extruding a single face at a time
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            // they have no selection, we should enable the button
-            // so they can select the face through the cmdbar
-            // BUT only if there's extrudable geometry
-            return doesSceneHaveSweepableSketch(kclManager.ast)
-          }
-          if (!isSketchPipe(selectionRanges)) return false
-
-          const canSweep = canRevolveSelection(selectionRanges)
-          if (err(canSweep)) return false
-          return canSweep
-        },
-        'has valid loft selection': ({ context: { selectionRanges } }) => {
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            const count = 2
-            return doesSceneHaveSweepableSketch(kclManager.ast, count)
-          }
-
-          const canLoft = canLoftSelection(selectionRanges)
-          if (err(canLoft)) return false
-          return canLoft
-        },
-        'has valid shell selection': ({
-          context: { selectionRanges },
-          event,
-        }) => {
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            return doesSceneHaveExtrudedSketch(kclManager.ast)
-          }
-
-          const canShell = canShellSelection(selectionRanges)
-          if (err(canShell)) return false
-          return canShell
-        },
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
           if (!commandBarState.matches('Closed')) return false
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
-        },
-        'has valid edge treatment selection': ({
-          context: { selectionRanges },
-        }) => {
-          return hasValidEdgeTreatmentSelection({
-            selectionRanges,
-            ast: kclManager.ast,
-            code: codeManager.code,
-          })
         },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false

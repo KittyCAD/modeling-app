@@ -18,10 +18,8 @@ import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
 import {
-  doesPipeHaveCallExp,
   getNodeFromPath,
   getNodePathFromSourceRange,
-  hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
@@ -490,120 +488,14 @@ function resetAndSetEngineEntitySelectionCmds(
   ]
 }
 
+/**
+ * Is the selection a single cursor in a sketch pipe expression chain?
+ */
 export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
     engineCommandManager.artifactGraph,
     selectionRanges
-  )
-}
-
-export function isSelectionLastLine(
-  selectionRanges: Selections,
-  code: string,
-  i = 0
-) {
-  return selectionRanges.graphSelections[i]?.codeRef?.range[1] === code.length
-}
-
-export function isRangeBetweenCharacters(selectionRanges: Selections) {
-  return (
-    selectionRanges.graphSelections.length === 1 &&
-    selectionRanges.graphSelections[0]?.codeRef?.range[0] === 0 &&
-    selectionRanges.graphSelections[0]?.codeRef?.range[1] === 0
-  )
-}
-
-export type CommonASTNode = {
-  selection: Selection
-  ast: Program
-}
-
-function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
-  return {
-    selection: selectionRanges.graphSelections[i],
-    ast: kclManager.ast,
-  }
-}
-
-function nodeHasExtrude(node: CommonASTNode) {
-  return (
-    doesPipeHaveCallExp({
-      calleeName: 'extrude',
-      ...node,
-    }) ||
-    doesPipeHaveCallExp({
-      calleeName: 'revolve',
-      ...node,
-    }) ||
-    doesPipeHaveCallExp({
-      calleeName: 'loft',
-      ...node,
-    })
-  )
-}
-
-function nodeHasClose(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'close',
-    ...node,
-  })
-}
-function nodeHasCircle(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'circle',
-    ...node,
-  })
-}
-
-export function canSweepSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isSketchPipe(selection) &&
-    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    (commonNodes.every((n) => nodeHasClose(n)) ||
-      commonNodes.every((n) => nodeHasCircle(n))) &&
-    commonNodes.every((n) => !nodeHasExtrude(n))
-  )
-}
-
-export function canRevolveSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isSketchPipe(selection) &&
-    (commonNodes.every((n) => nodeHasClose(n)) ||
-      commonNodes.every((n) => nodeHasCircle(n)))
-  )
-}
-
-export function canLoftSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isCursorInSketchCommandRange(
-      engineCommandManager.artifactGraph,
-      selection
-    ) &&
-    commonNodes.length > 1 &&
-    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n)) &&
-    commonNodes.every((n) => !nodeHasExtrude(n))
-  )
-}
-
-export function canShellSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return commonNodes.every(
-    (n) =>
-      n.selection.artifact?.type === 'cap' ||
-      n.selection.artifact?.type === 'wall'
   )
 }
 

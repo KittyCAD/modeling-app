@@ -125,7 +125,9 @@ export const fileLoader: LoaderFunction = async (
 
       // If persistCode in localStorage is present, it'll persist that code
       // through *anything*. INTENDED FOR TESTS.
-      code = codeManager.localStoragePersistCode() || code
+      if (window.electron.process.env.IS_PLAYWRIGHT) {
+        code = codeManager.localStoragePersistCode() || code
+      }
 
       // Update both the state and the editor's code.
       // We explicitly do not write to the file here since we are loading from
