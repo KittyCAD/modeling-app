@@ -3,6 +3,7 @@ import { useMachine } from '@xstate/react'
 import { ContextMenu, ContextMenuItem } from 'components/ContextMenu'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import Loading from 'components/Loading'
+import { selectionChangedObservable } from 'components/ModelingMachineProvider'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclProvider'
 import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
@@ -53,12 +54,11 @@ const featureTreeMachine = setup({
     clearTargetSourceRange: assign({
       targetSourceRange: undefined,
     }),
-    scrollIntoView: () => {},
     sendSelectionEvent: () => {},
     openCodePane: () => {},
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogDMAJgAsxABwBGAOwBWFSsPbz-XboA0IAJ6Jd-NcRUBOAGwaPutet0m6gC+QbaomLgERMT0pLJQjKwcXDg8xHSiYLJxUADCdBBgAAposjQsBcWlYADymbICwkgg4pLScgrKCBrOxIYauoZqbhomvu76tg4IKgHEXtr8HktqAYb6+iFh6Nh4hGAksfGJbJzcJLBgVCzS8dSX1xiQjQqtUjLyzV0q+i4qo+sVPwhm5tD8pogPKZXGo1PwAfo3Pw3KYtiBwrsogcYnQcidkucyNkMNQXs03u1PqAuoNdMRhvCNBt9O43E5tBDuro3MR9KM1B41IZfNp9PwVGiMZF9odccdmKcUmkIHIaGSxBJ3h0voh1oZiAZ+R5jRYhZyPG59WCBYtkRpRt5JTtpdEjgkFQTUiQ4lJSbomhq2h9OohtMRPLDkdpjLpvKDJvZVEsdMizPb9B59LSNCFQiBZJV4M0pXsiK9NZSQwgALQBfiuDNGS3ePwaNzm+lI0weQzwzO6bQDJ0RUvY8hUctB7XU3XaFygoGaMyDUYeTko+YBNQbHyC7SgwzDzEynF4j1nL2TrVUpSIatzhuZwzNwX-duJhBwsOzbdQlHrAUeyPF1sTdfELzSDIshyfJChKMor0rHUEAMfRwxRLMVFFYY53FTlhn1KFDEzfx40tQ88xLLFZTPJIIIuK4wBuHJEODZD3Bce17XFFlBShTNOR6fUAl0Hs9G8fg9ChYDRxo+U6KVEgVQQ8kKzYmcEH4c1iPDNQwURFFNCMbQZOo095MVQkfQwVjpxADAMkQAZ6xGbcRmRUEiJUWwqGQGya3+R8m36V8NH3WwACM6AwByAFsnLMcMNDcno3E80xvJAHBSCgAALfzo3mPxNHhYwM2FWwAHdyAwXLHDhWxcrAHL8qcjlbwCrQfifF9W3Cj9nKSlKPO0LzcyCIA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogDMAJgAsxABwBGAOwBWFSsPbz-XboA0IAJ6Jd-NcRUBOAGwaPutet0m6gC+QbaomLgERMT0pLJQjKwcXDg8xLBgVCzS8dQZWRiQAsJIIOKS0nIKyggq+i4qGqb6KvyGam7adbYOCB6mrmpq-E2G+m78bqYhYejYeIRgJLHxiWyc3CQQcjTFCuVSMvKlNWOGxAZNah43FmqGPYgebudd19r8kxpN3iGhILI6BA4ApwvMokt9hJDlUTogALSeR4IeF+fTEDxqIwaT78fQefTaDQzEBgyKLEjkKhQipHaqIMwuTqtTRmXSGJoeZFTDEBLH43SY7SdQwkskLaIrBLMdYpHg0mHHUA1eEabTIlQGDGagnObT6fSfIliubkyV0OLSpIbVIkfJgbKWhWVJVKVRuFzfb78OoqTH9AnInHnAKCtnefh6fomiISpYxC2rGXJTbEbayMDOulwhD8ZEeQweYgerrjKaaIzaGPginEDMAdwABLAMJgwI3dFnYaAMHRRAj2fwLliOe8OvoAuqQFRkBgnh5tMR9BpdNoxoK6ro3PpbAAjOgYXsAWwHzmH2LH28nthwpCgAAs5whCYvl6v1-0J9vbPXyBh744wy2PeYB3o+iBqrYNS3EuK5rhOn5bju9gDoYQ6+BeC7jpOfxBEAA */
   id: 'featureTree',
   states: {
     idle: {
@@ -69,15 +69,9 @@ const featureTreeMachine = setup({
         },
       },
     },
+
     goingToKclSource: {
       states: {
-        openingCodePane: {
-          entry: ['openCodePane'],
-          on: {
-            codePaneOpen: 'selecting',
-          },
-        },
-
         selecting: {
           on: {
             selected: {
@@ -85,31 +79,18 @@ const featureTreeMachine = setup({
             },
           },
 
-          entry: 'sendSelectionEvent',
+          entry: ['openCodePane', 'sendSelectionEvent'],
         },
 
         done: {
           type: 'final',
-          entry: ['scrollIntoView', 'clearTargetSourceRange'],
+          entry: ['clearTargetSourceRange'],
 
           always: '#featureTree.idle',
         },
-
-        init: {
-          always: [
-            {
-              target: 'selecting',
-              reenter: true,
-              guard: 'codePaneIsOpen',
-            },
-            {
-              target: 'openingCodePane',
-              reenter: true,
-            },
-          ],
-        },
       },
-      initial: 'init',
+
+      initial: 'selecting',
     },
   },
 
@@ -125,10 +106,8 @@ export const FeatureTreePane = () => {
           modelingState.context.store.openPanes.includes('code'),
       },
       actions: {
-        scrollIntoView: () => {
-          editorManager.scrollToSelection()
-        },
         openCodePane: () => {
+          console.warn('openCodePane event')
           modelingSend({
             type: 'Set context',
             data: {
@@ -137,7 +116,7 @@ export const FeatureTreePane = () => {
           })
         },
         sendSelectionEvent: ({ context }) => {
-          console.log('sendSelectionEvent', context)
+          console.warn('sendSelectionEvent', context)
           if (!context.targetSourceRange) {
             return
           }
@@ -158,6 +137,7 @@ export const FeatureTreePane = () => {
                     kclManager.ast
                   ),
                 },
+                scrollIntoView: true,
               },
             })
           } else {
@@ -172,6 +152,7 @@ export const FeatureTreePane = () => {
                     kclManager.ast
                   ),
                 },
+                scrollIntoView: true,
               },
             })
           }
@@ -201,21 +182,14 @@ export const FeatureTreePane = () => {
   const operationList = filterOperations(unfilteredOperationList)
 
   useEffect(() => {
-    const predicate =
-      featureTreeState.matches({
-        goingToKclSource: 'openingCodePane',
-      }) && modelingState.context.store.openPanes.includes('code')
-    console.log('openPanes watcher', predicate)
-    if (predicate) {
-      featureTreeSend({ type: 'codePaneOpen' })
-    }
-  }, [modelingState.context.store.openPanes])
-
-  useEffect(() => {
-    if (featureTreeState.matches({ goingToKclSource: 'selecting' })) {
-      featureTreeSend({ type: 'selected' })
-    }
-  }, [modelingState.context.selectionRanges])
+    const subscription = selectionChangedObservable.subscribe((selection) => {
+      console.warn('selection changed', selection)
+      if (featureTreeState.matches({ goingToKclSource: 'selecting' })) {
+        featureTreeSend({ type: 'selected' })
+      }
+    })
+    return () => subscription.unsubscribe()
+  }, [featureTreeState, selectionChangedObservable])
 
   function goToError() {
     modelingSend({
@@ -466,23 +440,6 @@ const OperationItem = (props: {
     engineCommandManager.artifactGraph,
   ])
 
-  async function openCodePane() {
-    modelingSend({
-      type: 'Set context',
-      data: {
-        openPanes: [...modelingState.context.store.openPanes, 'code'],
-      },
-    })
-
-    // Now wait for a timeout and poll for the pane to be open
-    // so we know we can advance
-    await pollUntil(
-      100,
-      () => modelingState.context.store.openPanes.includes('code'),
-      20
-    )
-  }
-
   /**
    * For now we can only enter the "edit" flow for the startSketchOn operation.
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
@@ -497,47 +454,6 @@ const OperationItem = (props: {
     }
   }
 
-  async function selectFunctionDefinition() {
-    if (props.item.type !== 'UserDefinedFunctionCall') return
-    const selectionSnapshot = modelingState.context.selectionRanges
-    const functionRange = sourceRangeFromRust(props.item.functionSourceRange)
-    // For some reason, the cursor goes to the end of the source range we
-    // select.  So set the end equal to the beginning.
-    functionRange[1] = functionRange[0]
-    modelingSend({
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: {
-          codeRef: codeRefFromRange(functionRange, kclManager.ast),
-        },
-      },
-    })
-
-    // Now wait for a timeout and poll for the selection to be set
-    // so we know we can advance
-    await pollUntil(
-      100,
-      () =>
-        modelingState.context.selectionRanges.graphSelections?.[0].codeRef
-          .range[0] !== selectionSnapshot.graphSelections[0].codeRef.range[0],
-      20
-    )
-  }
-
-  async function openToFunctionDefinition() {
-    if (props.item.type !== 'UserDefinedFunctionCall') return
-    await openCodePane()
-    await selectFunctionDefinition()
-    editorManager.scrollToSelection()
-  }
-
-  async function openToDefinition() {
-    await openCodePane()
-    await selectOperation()
-    editorManager.scrollToSelection()
-  }
-
   const menuItems = useMemo(
     () => [
       <ContextMenuItem
@@ -546,6 +462,7 @@ const OperationItem = (props: {
           if (props.item.type === 'UserDefinedFunctionReturn') {
             return
           }
+          console.warn('sending goToKclSource', props.item.sourceRange)
           props.send({
             type: 'goToKclSource',
             data: {
@@ -564,12 +481,14 @@ const OperationItem = (props: {
                 if (props.item.type !== 'UserDefinedFunctionCall') {
                   return
                 }
+                const functionRange = props.item.functionSourceRange
+                // For some reason, the cursor goes to the end of the source
+                // range we select.  So set the end equal to the beginning.
+                functionRange[1] = functionRange[0]
                 props.send({
                   type: 'goToKclSource',
                   data: {
-                    targetSourceRange: sourceRangeFromRust(
-                      props.item.functionSourceRange
-                    ),
+                    targetSourceRange: sourceRangeFromRust(functionRange),
                   },
                 })
               }}
