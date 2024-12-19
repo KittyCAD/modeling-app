@@ -2057,10 +2057,10 @@ impl ExecutorContext {
                 // supporting that.
 
                 // Cache bust time.
-                return CacheResult {
+                CacheResult {
                     clear_scene: true,
                     program: new_ast,
-                };
+                }
             }
             std::cmp::Ordering::Greater => {
                 // the new AST is longer than the old AST, which means
@@ -2074,10 +2074,10 @@ impl ExecutorContext {
                     .body
                     .extend_from_slice(&new_ast.body[old_ast.body.len()..]);
 
-                return CacheResult {
+                CacheResult {
                     clear_scene: false,
                     program: generated_program,
-                };
+                }
             }
             std::cmp::Ordering::Equal => {
                 // currently unreachable, but lets pretend like the code
@@ -2089,10 +2089,10 @@ impl ExecutorContext {
                 // so but i think many things. This def needs to change
                 // when the code above changes.
 
-                return CacheResult {
+                CacheResult {
                     clear_scene: false,
                     program: generated_program,
-                };
+                }
             }
         }
     }
