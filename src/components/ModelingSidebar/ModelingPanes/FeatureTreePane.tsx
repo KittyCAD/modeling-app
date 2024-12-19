@@ -40,6 +40,9 @@ const featureTreeMachine = setup({
     context: {} as { targetSourceRange?: SourceRange },
     events: {} as FeatureTreeEvent,
   },
+  guards: {
+    codePaneIsOpen: () => false,
+  },
   actions: {
     saveTargetSourceRange: assign({
       targetSourceRange: ({ event }) =>
@@ -55,7 +58,7 @@ const featureTreeMachine = setup({
     openCodePane: () => {},
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogDMAJgAsxABwBGAOwBWFSsPbz-XboA0IAJ6Jd-NcRUBOAGwaPutet0m6gC+QbaomLgERMQAbqRgAO6kslCsHFw4PNQQciTJMXQA1iTh2HiEYCRxicmpbJzcYAj5dCyYMrICgl0K4pLScgrKCNoexPz67m4qlmq60yoatg4Iaoa6xPrazhoqVh6eboYhYehlUZWx8UkpaQ2ZNGA4OHQ4xKIUmMivALbEpZEKlVrrU7hkeM1ZAU2gNOkIekgQH0pB0ho5+G5iAcJhonB5JhjdstEGoMcQ3LoDipth5+MYdiFQiBZHQIHAFADykRehIUYNEcMALQeYkIMZqNz8FReXTaQwaOkabQnECci55ShgHn9VECxBmFxubQzTRmXTy6Wi6ZYgJqfT6HweNTaI3HJlqoFXGq3ergrWI5GwtEIDRqUVOFTkyxS7QSuWS0OMoJAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogDMAJgAsxABwBGAOwBWFSsPbz-XboA0IAJ6Jd-NcRUBOAGwaPutet0m6gC+QbaomLgERMT0pLJQjKwcXDg8xHSiYLJxUADCdBBgAAposjQsBcWlYADymbICwkgg4pLScgrKCBrOxIYauoZqbhomvu76tg4IKgHEXtr8HktqAYb6+iFh6Nh4hGAksfGJbJzcJLBgVCzS8dSX1xiQjQqtUjLyzV0q+i4qo+sVPwhm5tD8pogPKZXGo1PwAfo3Pw3KYtiBwrsogcYnQcidkucyNkMNQXs03u1PqAuoNdMRhvCNBt9O43E5tBDuro3MR9KM1B41IZfNp9PwVGiMZF9odccdmKcUmkIHIaGSxBJ3h0voh1oZiAZ+R5jRYhZyPG59WCBYtkRpRt5JTtpdEjgkFQTUiQ4lJSbomhq2h9OohtMRPLDkdpjLpvKDJvZVEsdMizPb9B59LSNCFQiBZJV4M0pXsiK9NZSQwgALQBfiuDNGS3ePwaNzm+lI0weQzwzO6bQDJ0RUvY8hUctB7XU3XaFygoGaMyDUYeTko+YBNQbHyC7SgwzDzEynF4j1nL2TrVUpSIatzhuZwzNwX-duJhBwsOzbdQlHrAUeyPF1sTdfELzSDIshyfJChKMor0rHUEAMfRwxRLMVFFYY53FTlhn1KFDEzfx40tQ88xLLFZTPJIIIuK4wBuHJEODZD3Bce17XFFlBShTNOR6fUAl0Hs9G8fg9ChYDRxo+U6KVEgVQQ8kKzYmcEH4c1iPDNQwURFFNCMbQZOo095MVQkfQwVjpxADAMkQAZ6xGbcRmRUEiJUWwqGQGya3+R8m36V8NH3WwACM6AwByAFsnLMcMNDcno3E80xvJAHBSCgAALfzo3mPxNHhYwM2FWwAHdyAwXLHDhWxcrAHL8qcjlbwCrQfifF9W3Cj9nKSlKPO0LzcyCIA */
   id: 'featureTree',
   states: {
     idle: {
@@ -88,9 +91,25 @@ const featureTreeMachine = setup({
         done: {
           type: 'final',
           entry: ['scrollIntoView', 'clearTargetSourceRange'],
+
+          always: '#featureTree.idle',
+        },
+
+        init: {
+          always: [
+            {
+              target: 'selecting',
+              reenter: true,
+              guard: 'codePaneIsOpen',
+            },
+            {
+              target: 'openingCodePane',
+              reenter: true,
+            },
+          ],
         },
       },
-      initial: 'openingCodePane',
+      initial: 'init',
     },
   },
 
@@ -101,6 +120,10 @@ export const FeatureTreePane = () => {
   const { send: modelingSend, state: modelingState } = useModelingContext()
   const [featureTreeState, featureTreeSend] = useMachine(
     featureTreeMachine.provide({
+      guards: {
+        codePaneIsOpen: () =>
+          modelingState.context.store.openPanes.includes('code'),
+      },
       actions: {
         scrollIntoView: () => {
           editorManager.scrollToSelection()
