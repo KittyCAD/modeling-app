@@ -9,6 +9,12 @@ rust-version = "1.73"
 [lib]
 crate-type = ["cdylib"]
 
+# DO NOT MERGE ME WITH THIS PLEASE
+#
+# FOR THE LOVE OF GOD DON'T HIT APPROVE PR WITHOUT ASKING ME TO REMOVE THIS
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
 [dependencies]
 bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }
 data-encoding = "2.6.0"

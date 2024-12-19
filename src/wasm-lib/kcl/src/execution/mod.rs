@@ -40,9 +40,11 @@ use crate::{
         BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, NonCodeValue,
         Program as AstProgram, TagDeclarator, TagNode,
     },
+    refgraph::extract_refgraph,
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
+    walk::{Node as WalkNode, Visitable},
     ExecError, Program,
 };
 
@@ -2002,9 +2004,13 @@ impl ExecutorContext {
             return None;
         }
 
-        let mut old_ast = old.ast.inner;
+        let mut old_ast = old.ast;
+        let mut new_ast = info.new_ast;
+
+        // ensure the trees are hashed. in all likelyhood this happened before
+        // here, in which case it'll noop, but we don't want to compare
+        // None to None here.
         old_ast.compute_digest();
-        let mut new_ast = info.new_ast.inner.clone();
         new_ast.compute_digest();
 
         // Check if the digest is the same.
@@ -2012,13 +2018,35 @@ impl ExecutorContext {
             return None;
         }
 
-        // Check if the changes were only to Non-code areas, like comments or whitespace.
+        let (clear_scene, program) = self.create_new_program(old_ast, new_ast);
 
-        // For any unhandled cases just re-execute the whole thing.
-        Some(CacheResult {
-            clear_scene: true,
-            program: info.new_ast,
-        })
+        Some(CacheResult { clear_scene, program })
+    }
+
+    /// INTERNAL
+    fn create_new_program(&self, old_ast: Node<AstProgram>, new_ast: Node<AstProgram>) -> (bool, Node<AstProgram>) {
+        let mut constructed_program = new_ast.clone();
+        constructed_program.inner.body = vec![];
+
+        // if we need to bail at any time we can return (true, new_ast) as our
+        // "error" condition -- don't do anything smart and just rebuild the
+        // whole world.
+
+        for (old_element, new_element) in old_ast.body.iter().zip(new_ast.body.iter()) {
+            let old_element_node: WalkNode = (old_element).into();
+            let new_element_node: WalkNode = (new_element).into();
+
+            if old_element_node.digest() == new_element_node.digest() {
+                continue;
+            }
+
+            // if there's a diff drag it in
+            constructed_program.inner.body.push(new_element.clone());
+
+            // and now let's double check nothing depends on us
+        }
+
+        (false, constructed_program)
     }
 
     /// Perform the execution of a program.

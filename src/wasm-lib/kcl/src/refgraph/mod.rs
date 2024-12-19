@@ -8,14 +8,14 @@ use std::sync::{Arc, Mutex};
 
 ///
 type Declaration<'tree> = (
-    types::NodeRef<'tree, types::Program>,
+    Vec<types::NodeRef<'tree, types::Program>>,
     Node<'tree>,
     &'tree types::Identifier,
 );
 
 ///
 type Reference<'tree> = (
-    types::NodeRef<'tree, types::Program>,
+    Vec<types::NodeRef<'tree, types::Program>>,
     Node<'tree>,
     &'tree types::Identifier,
 );
@@ -56,9 +56,10 @@ impl<'tree> Scope<'tree> {
         for child in &self.children {
             for (declaration, (ref_program, ref_node, ref_id)) in child.edges() {
                 match declaration {
-                    Some((decl_program, decl_node, decl_id)) => {
+                    Some((mut decl_programs, decl_node, decl_id)) => {
+                        decl_programs.insert(0, self.program);
                         edges.push((
-                            Some((decl_program, decl_node.clone(), decl_id)),
+                            Some((decl_programs, decl_node.clone(), decl_id)),
                             (ref_program, ref_node.clone(), ref_id),
                         ));
                     }
@@ -123,14 +124,18 @@ impl<'tree> Visitor<'tree> for ScopeVisitor<'tree> {
                     .lock()
                     .unwrap()
                     .declarations
-                    .push((program, node.clone(), &vd.declaration.id));
+                    .push((vec![program], node.clone(), &vd.declaration.id));
 
                 let node: Node = (&vd.declaration.init).into();
                 node.visit(self.clone())?;
             }
             Node::Identifier(id) => {
                 let program = self.scope.lock().unwrap().program;
-                self.scope.lock().unwrap().references.push((program, node.clone(), &id));
+                self.scope
+                    .lock()
+                    .unwrap()
+                    .references
+                    .push((vec![program], node.clone(), &id));
             }
             _ => {
                 for child in node.children() {
