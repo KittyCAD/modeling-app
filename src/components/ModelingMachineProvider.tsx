@@ -322,7 +322,7 @@ export const ModelingMachineProvider = ({
               selection: EditorSelection,
               scrollIntoView: boolean | undefined
             ) => {
-              if (!selection) return // TODO less of hack for the below please
+              // TODO less of hack for the below please
               if (!editorManager.editorView) {
                 console.warn('no editorView')
                 selectionChangedObservable.next(selection)
