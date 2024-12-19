@@ -1,5 +1,5 @@
 import type { Page, Locator } from '@playwright/test'
-import { expect } from './fixtureSetup'
+import { expect } from '../zoo-test'
 import { doAndWaitForImageDiff } from '../test-utils'
 
 export class ToolbarFixture {
