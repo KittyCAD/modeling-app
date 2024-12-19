@@ -107,7 +107,7 @@ import { Subject } from 'rxjs'
  * This RxJs Subject is used to notify subscribers like the feature tree when
  * the selection changes in the editor.
  */
-export const selectionChangedObservable = new Subject<EditorSelection>()
+export const selectionChangedObservable = new Subject<void>()
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -304,7 +304,6 @@ export const ModelingMachineProvider = ({
         }),
         'Set selection': assign(
           ({ context: { selectionRanges, sketchDetails }, event }) => {
-            console.warn('top of Set selection action', event)
             // this was needed for ts after adding 'Set selection' action to on done modal events
             const setSelections =
               ('data' in event &&
@@ -324,8 +323,7 @@ export const ModelingMachineProvider = ({
             ) => {
               // TODO less of hack for the below please
               if (!editorManager.editorView) {
-                console.warn('no editorView')
-                selectionChangedObservable.next(selection)
+                selectionChangedObservable.next()
                 return
               }
 
@@ -339,8 +337,7 @@ export const ModelingMachineProvider = ({
                   ],
                   scrollIntoView,
                 })
-                console.warn('dispatched selection', selection)
-                selectionChangedObservable.next(selection)
+                selectionChangedObservable.next()
               })
             }
 

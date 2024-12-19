@@ -31,7 +31,6 @@ export const FeatureTreePane = () => {
       },
       actions: {
         openCodePane: () => {
-          console.warn('openCodePane event')
           modelingSend({
             type: 'Set context',
             data: {
@@ -40,14 +39,12 @@ export const FeatureTreePane = () => {
           })
         },
         sendEditFlowStart: () => {
-          console.warn('sendEditFlowStart')
           modelingSend({ type: 'Enter sketch' })
         },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
         },
         sendSelectionEvent: ({ context }) => {
-          console.warn('sendSelectionEvent', context)
           if (!context.targetSourceRange) {
             return
           }
@@ -133,8 +130,7 @@ export const FeatureTreePane = () => {
 
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {
-    const subscription = selectionChangedObservable.subscribe((selection) => {
-      console.warn('selection changed', selection)
+    const subscription = selectionChangedObservable.subscribe(() => {
       featureTreeSend({ type: 'selected' })
     })
     return () => subscription.unsubscribe()
@@ -340,11 +336,9 @@ const OperationItem = (props: {
     () => [
       <ContextMenuItem
         onClick={() => {
-          console.log('view source', props.item)
           if (props.item.type === 'UserDefinedFunctionReturn') {
             return
           }
-          console.warn('sending goToKclSource', props.item.sourceRange)
           props.send({
             type: 'goToKclSource',
             data: {
@@ -359,7 +353,6 @@ const OperationItem = (props: {
         ? [
             <ContextMenuItem
               onClick={() => {
-                console.log('view function source', props.item)
                 if (props.item.type !== 'UserDefinedFunctionCall') {
                   return
                 }
