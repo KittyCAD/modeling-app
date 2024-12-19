@@ -76,7 +76,7 @@ test.describe('Editor tests', () => {
     await u.openDebugPanel()
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
-    ).toHaveCount(2)
+    ).toHaveCount(1)
     await expect(
       page.locator('[data-message-type="execution-done"]')
     ).toHaveCount(2)
@@ -100,7 +100,54 @@ test.describe('Editor tests', () => {
     ).toHaveCount(3)
     await expect(
       page.locator('[data-receive-command-type="scene_clear_all"]')
+    ).toHaveCount(1)
+  })
+
+  test('ensure we use the cache, and do not clear on append', async ({
+    homePage,
+    page,
+  }) => {
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
+
+    await u.codeLocator.click()
+    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, -10], %)
+  |> line([20, 0], %)
+  |> line([0, 20], %)
+  |> line([-20, 0], %)
+  |> close(%)`)
+
+    // Ensure we execute the first time.
+    await u.openDebugPanel()
+    await expect(
+      page.locator('[data-receive-command-type="scene_clear_all"]')
+    ).toHaveCount(1)
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
     ).toHaveCount(2)
+
+    // Add whitespace to the end of the code.
+    await u.codeLocator.click()
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('Home')
+    await page.keyboard.type('const x = 1')
+    await page.keyboard.press('Enter')
+    await page.keyboard.press('Enter')
+
+    await u.openDebugPanel()
+    await expect(
+      page.locator('[data-message-type="execution-done"]')
+    ).toHaveCount(3)
+    await expect(
+      page.locator('[data-receive-command-type="scene_clear_all"]')
+    ).toHaveCount(1)
   })
 
   test('if you click the format button it formats your code', async ({
