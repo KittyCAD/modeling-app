@@ -669,6 +669,7 @@ function setSelectionFilter(
       })
     : { engineEvents: undefined }
   if (!restorePreviousSelections || !engineEvents) {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     engineCommandManager
       .sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -678,7 +679,6 @@ function setSelectionFilter(
           filter,
         },
       })
-      .catch(reportError)
     return
   }
   const modelingCmd: ModelingCmdReq_type[] = []
