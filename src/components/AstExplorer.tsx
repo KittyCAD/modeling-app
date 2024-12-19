@@ -21,7 +21,8 @@ export function AstExplorer() {
   const node = _node
 
   return (
-    <div id="ast-explorer" className="relative">
+    <details id="ast-explorer" className="relative">
+      <summary>AST Explorer</summary>
       <div className="">
         filter out keys:<div className="w-2 inline-block"></div>
         {['start', 'end', 'type'].map((key) => {
@@ -58,7 +59,7 @@ export function AstExplorer() {
           />
         </pre>
       </div>
-    </div>
+    </details>
   )
 }
 

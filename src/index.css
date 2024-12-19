@@ -311,6 +311,14 @@ code {
     @apply bg-chalkboard-20 text-chalkboard-80;
     @apply dark:bg-chalkboard-80 dark:text-chalkboard-30;
   }
+
+  button.reset {
+    @apply bg-transparent border-transparent m-0 p-0 rounded-none text-base;
+  }
+
+  button.reset:hover {
+    @apply bg-transparent border-transparent;
+  }
 }
 
 #code-mirror-override .cm-scroller,

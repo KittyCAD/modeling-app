@@ -75,6 +75,7 @@ import {
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
+  artifactIsPlaneWithPaths,
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   getNodePathFromSourceRange,
@@ -100,6 +101,13 @@ import { useFileContext } from 'hooks/useFileContext'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Subject } from 'rxjs'
+
+/**
+ * This RxJs Subject is used to notify subscribers like the feature tree when
+ * the selection changes in the editor.
+ */
+export const selectionChangedObservable = new Subject<EditorSelection>()
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -296,6 +304,7 @@ export const ModelingMachineProvider = ({
         }),
         'Set selection': assign(
           ({ context: { selectionRanges, sketchDetails }, event }) => {
+            console.warn('top of Set selection action', event)
             // this was needed for ts after adding 'Set selection' action to on done modal events
             const setSelections =
               ('data' in event &&
@@ -309,9 +318,16 @@ export const ModelingMachineProvider = ({
               null
             if (!setSelections) return {}
 
-            const dispatchSelection = (selection?: EditorSelection) => {
+            const dispatchSelection = (
+              selection: EditorSelection,
+              scrollIntoView: boolean | undefined
+            ) => {
               if (!selection) return // TODO less of hack for the below please
-              if (!editorManager.editorView) return
+              if (!editorManager.editorView) {
+                console.warn('no editorView')
+                selectionChangedObservable.next(selection)
+                return
+              }
 
               setTimeout(() => {
                 if (!editorManager.editorView) return
@@ -321,7 +337,10 @@ export const ModelingMachineProvider = ({
                     modelingMachineEvent,
                     Transaction.addToHistory.of(false),
                   ],
+                  scrollIntoView,
                 })
+                console.warn('dispatched selection', selection)
+                selectionChangedObservable.next(selection)
               })
             }
 
@@ -364,7 +383,13 @@ export const ModelingMachineProvider = ({
               } = handleSelectionBatch({
                 selections,
               })
-              codeMirrorSelection && dispatchSelection(codeMirrorSelection)
+              codeMirrorSelection &&
+                dispatchSelection(
+                  codeMirrorSelection,
+                  setSelections.scrollIntoView
+                    ? setSelections.scrollIntoView
+                    : undefined
+                )
               engineEvents &&
                 engineEvents.forEach((event) => {
                   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -647,6 +672,9 @@ export const ModelingMachineProvider = ({
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
+          if (artifactIsPlaneWithPaths(selectionRanges)) {
+            return true
+          }
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(

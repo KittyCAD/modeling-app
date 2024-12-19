@@ -89,6 +89,7 @@ export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
       selection?: Selection
+      scrollIntoView?: boolean
     }
   | {
       selectionType: 'axisSelection'
@@ -731,6 +732,8 @@ export const modelingMachine = setup({
     },
     'AST delete selection': ({ context: { selectionRanges } }) => {
       ;(async () => {
+        const errorMessage =
+          'Unable to delete selection. Please edit manually in code pane.'
         let ast = kclManager.ast
 
         const modifiedAst = await deleteFromSelection(
@@ -739,7 +742,10 @@ export const modelingMachine = setup({
           kclManager.programMemory,
           getFaceDetails
         )
-        if (err(modifiedAst)) return
+        if (err(modifiedAst)) {
+          toast.error(errorMessage)
+          return
+        }
 
         const testExecute = await executeAst({
           ast: modifiedAst,
@@ -748,7 +754,7 @@ export const modelingMachine = setup({
           programMemoryOverride: ProgramMemory.empty(),
         })
         if (testExecute.errors.length) {
-          toast.error('Unable to delete part')
+          toast.error(errorMessage)
           return
         }
 

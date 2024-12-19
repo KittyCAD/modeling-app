@@ -13,7 +13,11 @@ import { engineCommandManager } from '../lib/singletons'
 
 import { Spinner } from './Spinner'
 
-const Loading = ({ children }: React.PropsWithChildren) => {
+interface LoadingProps extends React.PropsWithChildren {
+  className?: string
+}
+
+const Loading = ({ children, className }: LoadingProps) => {
   const [error, setError] = useState<ConnectionError>(ConnectionError.Unset)
 
   useEffect(() => {
@@ -64,7 +68,7 @@ const Loading = ({ children }: React.PropsWithChildren) => {
 
   return (
     <div
-      className="body-bg flex flex-col items-center justify-center h-screen"
+      className={`body-bg flex flex-col items-center justify-center h-screen ${className}`}
       data-testid="loading"
     >
       <Spinner />

@@ -56,6 +56,7 @@
     "react-modal": "^3.16.1",
     "react-modal-promise": "^1.0.2",
     "react-router-dom": "^6.28.0",
+    "rxjs": "^7.8.1",
     "sketch-helpers": "^0.0.4",
     "three": "^0.166.1",
     "ua-parser-js": "^1.0.37",

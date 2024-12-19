@@ -207,6 +207,32 @@ export default class EditorManager {
     })
   }
 
+  /**
+   * Scroll to the first selection in the editor.
+   */
+  scrollToSelection() {
+    if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
+
+    const firstSelection = this._selectionRanges.graphSelections[0]
+
+    this._editorView.focus()
+    this._editorView.dispatch({
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(
+            firstSelection.codeRef.range[0],
+            firstSelection.codeRef.range[1]
+          ),
+          { y: 'center' }
+        ),
+      ],
+      annotations: [
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
   scrollToFirstErrorDiagnosticIfExists() {
     if (!this._editorView) return
 
