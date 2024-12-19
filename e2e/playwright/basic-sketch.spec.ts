@@ -149,7 +149,7 @@ test.describe('Basic sketch', () => {
     await doBasicSketch(page, homePage, ['code'])
   })
 
-  test.fixme('code pane closed at start', async ({ page, homePage }) => {
+  test('code pane closed at start', async ({ page, homePage }) => {
     // Load the app with the code panes
     await page.addInitScript(async (persistModelingContext) => {
       localStorage.setItem(
