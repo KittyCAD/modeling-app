@@ -24,7 +24,7 @@ import {
   useState,
 } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
-import { Actor, assign, createActor, Prop, setup } from 'xstate'
+import { Actor, assign, Prop, setup } from 'xstate'
 
 type FeatureTreeEvent =
   | {
@@ -41,6 +41,15 @@ const featureTreeMachine = setup({
     events: {} as FeatureTreeEvent,
   },
   actions: {
+    saveTargetSourceRange: assign({
+      targetSourceRange: ({ event }) =>
+        event.type === 'goToKclSource'
+          ? event.data.targetSourceRange
+          : undefined,
+    }),
+    clearTargetSourceRange: assign({
+      targetSourceRange: undefined,
+    }),
     scrollIntoView: () => {},
     sendSelectionEvent: () => {},
     openCodePane: () => {},
@@ -53,6 +62,7 @@ const featureTreeMachine = setup({
       on: {
         goToKclSource: {
           target: 'goingToKclSource',
+          actions: 'saveTargetSourceRange',
         },
       },
     },
@@ -69,7 +79,6 @@ const featureTreeMachine = setup({
           on: {
             selected: {
               target: 'done',
-              actions: 'scrollIntoView',
             },
           },
 
@@ -78,6 +87,7 @@ const featureTreeMachine = setup({
 
         done: {
           type: 'final',
+          entry: ['scrollIntoView', 'clearTargetSourceRange'],
         },
       },
       initial: 'openingCodePane',
