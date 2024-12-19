@@ -1,11 +1,12 @@
 import { Diagnostic } from '@codemirror/lint'
+import { useMachine } from '@xstate/react'
 import { ContextMenu, ContextMenuItem } from 'components/ContextMenu'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import Loading from 'components/Loading'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclProvider'
 import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
-import { sourceRangeFromRust } from 'lang/wasm'
+import { SourceRange, sourceRangeFromRust } from 'lang/wasm'
 import {
   filterOperations,
   getOperationIcon,
@@ -14,11 +15,137 @@ import {
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
-import { ComponentProps, useCallback, useMemo, useRef, useState } from 'react'
+import {
+  ComponentProps,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { Actor, assign, createActor, Prop, setup } from 'xstate'
+
+type FeatureTreeEvent =
+  | {
+      type: 'goToKclSource'
+      data: { targetSourceRange: SourceRange }
+    }
+  | { type: 'codePaneOpen' }
+  | { type: 'selected' }
+  | { type: 'done' }
+
+const featureTreeMachine = setup({
+  types: {
+    context: {} as { targetSourceRange?: SourceRange },
+    events: {} as FeatureTreeEvent,
+  },
+  actions: {
+    scrollIntoView: () => {},
+    sendSelectionEvent: () => {},
+    openCodePane: () => {},
+  },
+}).createMachine({
+  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogDMAJgAsxABwBGAOwBWFSsPbz-XboA0IAJ6Jd-NcRUBOAGwaPutet0m6gC+QbaomLgERMQAbqRgAO6kslCsHFw4PNQQciTJMXQA1iTh2HiEYCRxicmpbJzcYAj5dCyYMrICgl0K4pLScgrKCNoexPz67m4qlmq60yoatg4Iaoa6xPrazhoqVh6eboYhYehlUZWx8UkpaQ2ZNGA4OHQ4xKIUmMivALbEpZEKlVrrU7hkeM1ZAU2gNOkIekgQH0pB0ho5+G5iAcJhonB5JhjdstEGoMcQ3LoDipth5+MYdiFQiBZHQIHAFADykRehIUYNEcMALQeYkIMZqNz8FReXTaQwaOkabQnECci55ShgHn9VECxBmFxubQzTRmXTy6Wi6ZYgJqfT6HweNTaI3HJlqoFXGq3ergrWI5GwtEIDRqUVOFTkyxS7QSuWS0OMoJAA */
+  id: 'featureTree',
+  states: {
+    idle: {
+      on: {
+        goToKclSource: {
+          target: 'goingToKclSource',
+        },
+      },
+    },
+    goingToKclSource: {
+      states: {
+        openingCodePane: {
+          entry: ['openCodePane'],
+          on: {
+            codePaneOpen: 'selecting',
+          },
+        },
+
+        selecting: {
+          on: {
+            selected: {
+              target: 'done',
+              actions: 'scrollIntoView',
+            },
+          },
+
+          entry: 'sendSelectionEvent',
+        },
+
+        done: {
+          type: 'final',
+        },
+      },
+      initial: 'openingCodePane',
+    },
+  },
+
+  initial: 'idle',
+})
 
 export const FeatureTreePane = () => {
   const { send: modelingSend, state: modelingState } = useModelingContext()
+  const [featureTreeState, featureTreeSend] = useMachine(
+    featureTreeMachine.provide({
+      actions: {
+        scrollIntoView: () => {
+          editorManager.scrollToSelection()
+        },
+        openCodePane: () => {
+          modelingSend({
+            type: 'Set context',
+            data: {
+              openPanes: [...modelingState.context.store.openPanes, 'code'],
+            },
+          })
+        },
+        sendSelectionEvent: ({ context }) => {
+          console.log('sendSelectionEvent', context)
+          if (!context.targetSourceRange) {
+            return
+          }
+          const artifact = context.targetSourceRange
+            ? getArtifactFromRange(
+                context.targetSourceRange,
+                engineCommandManager.artifactGraph
+              )
+            : null
+          if (!artifact || !('codeRef' in artifact)) {
+            modelingSend({
+              type: 'Set selection',
+              data: {
+                selectionType: 'singleCodeCursor',
+                selection: {
+                  codeRef: codeRefFromRange(
+                    context.targetSourceRange,
+                    kclManager.ast
+                  ),
+                },
+              },
+            })
+          } else {
+            modelingSend({
+              type: 'Set selection',
+              data: {
+                selectionType: 'singleCodeCursor',
+                selection: {
+                  artifact: artifact,
+                  codeRef: codeRefFromRange(
+                    context.targetSourceRange,
+                    kclManager.ast
+                  ),
+                },
+              },
+            })
+          }
+        },
+      },
+    })
+  )
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
   const parseErrors = kclManager.errors.filter((e) => e.kind !== 'engine')
@@ -39,6 +166,23 @@ export const FeatureTreePane = () => {
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = filterOperations(unfilteredOperationList)
+
+  useEffect(() => {
+    const predicate =
+      featureTreeState.matches({
+        goingToKclSource: 'openingCodePane',
+      }) && modelingState.context.store.openPanes.includes('code')
+    console.log('openPanes watcher', predicate)
+    if (predicate) {
+      featureTreeSend({ type: 'codePaneOpen' })
+    }
+  }, [modelingState.context.store.openPanes])
+
+  useEffect(() => {
+    if (featureTreeState.matches({ goingToKclSource: 'selecting' })) {
+      featureTreeSend({ type: 'selected' })
+    }
+  }, [modelingState.context.selectionRanges])
 
   function goToError() {
     modelingSend({
@@ -91,7 +235,13 @@ export const FeatureTreePane = () => {
                 'sourceRange' in operation ? operation.sourceRange[0] : 'start'
               }`
 
-              return <OperationItem key={key} item={operation} />
+              return (
+                <OperationItem
+                  key={key}
+                  item={operation}
+                  send={featureTreeSend}
+                />
+              )
             })}
           </>
         )}
@@ -211,7 +361,10 @@ const OperationItemWrapper = ({
  * A button with an icon, name, and context menu
  * for an operation in the feature tree.
  */
-const OperationItem = (props: { item: Operation }) => {
+const OperationItem = (props: {
+  item: Operation
+  send: Prop<Actor<typeof featureTreeMachine>, 'send'>
+}) => {
   const { send: modelingSend, state: modelingState } = useModelingContext()
   const kclContext = useKclContext()
   const name =
@@ -354,13 +507,39 @@ const OperationItem = (props: { item: Operation }) => {
 
   const menuItems = useMemo(
     () => [
-      <ContextMenuItem onClick={toSync(openToDefinition, reportRejection)}>
+      <ContextMenuItem
+        onClick={() => {
+          console.log('view source', props.item)
+          if (props.item.type === 'UserDefinedFunctionReturn') {
+            return
+          }
+          props.send({
+            type: 'goToKclSource',
+            data: {
+              targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+            },
+          })
+        }}
+      >
         View KCL source code
       </ContextMenuItem>,
       ...(props.item.type === 'UserDefinedFunctionCall'
         ? [
             <ContextMenuItem
-              onClick={toSync(openToFunctionDefinition, reportRejection)}
+              onClick={() => {
+                console.log('view function source', props.item)
+                if (props.item.type !== 'UserDefinedFunctionCall') {
+                  return
+                }
+                props.send({
+                  type: 'goToKclSource',
+                  data: {
+                    targetSourceRange: sourceRangeFromRust(
+                      props.item.functionSourceRange
+                    ),
+                  },
+                })
+              }}
             >
               View function definition
             </ContextMenuItem>,
