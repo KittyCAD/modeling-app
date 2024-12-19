@@ -114,10 +114,36 @@ See later source ranges for more context. about the sweep`,
         }
       }
       if (artifact?.type === 'segment') {
-        prompts.push({
-          prompt: `This selection is of a segment, likely an individual part of a profile. Segments are often "constrained" by the use of variables and relationships with other segments. Adding tags to segments helps refer to their length, angle or other properties`,
-          range: convertAppRangeToApiRange(selection.codeRef.range, code),
-        })
+        if (!artifact.surfaceId) {
+          prompts.push({
+            prompt: `This selection is of a segment, likely an individual part of a profile. Segments are often "constrained" by the use of variables and relationships with other segments. Adding tags to segments helps refer to their length, angle or other properties`,
+            range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          })
+        } else {
+          prompts.push({
+            prompt: `This selection is for a segment (line, xLine, angledLine etc) that has been swept (a general-sweep, either an extrusion, revolve, sweep or loft).
+Because it now refers to an edge the way to refer to this edge is to add a tag to the segment, and then use that tag directly.
+i.e. \`fillet({ radius = someInteger, tags = [newTag] }, %)\` will work in the case of filleting this edge
+See later source ranges for more context. about the sweep`,
+            range: convertAppRangeToApiRange(selection.codeRef.range, code),
+          })
+          let path = getArtifactOfTypes(
+            { key: artifact.pathId, types: ['path'] },
+            artifactGraph
+          )
+          if (!err(path)) {
+            const sweep = getArtifactOfTypes(
+              { key: path.sweepId, types: ['sweep'] },
+              artifactGraph
+            )
+            if (!err(sweep)) {
+              prompts.push({
+                prompt: `This is the sweep's source range from the user's main selection of the edge.`,
+                range: convertAppRangeToApiRange(sweep.codeRef.range, code),
+              })
+            }
+          }
+        }
       }
       return prompts
     })
