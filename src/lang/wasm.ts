@@ -43,6 +43,7 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
+import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
 
 export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
@@ -245,6 +246,7 @@ export const isPathToNodeNumber = (
 
 export interface ExecState {
   memory: ProgramMemory
+  operations: Operation[]
 }
 
 /**
@@ -254,12 +256,14 @@ export interface ExecState {
 export function emptyExecState(): ExecState {
   return {
     memory: ProgramMemory.empty(),
+    operations: [],
   }
 }
 
 function execStateFromRaw(raw: RawExecState): ExecState {
   return {
     memory: ProgramMemory.fromRaw(raw.modLocal.memory),
+    operations: raw.modLocal.operations,
   }
 }
 

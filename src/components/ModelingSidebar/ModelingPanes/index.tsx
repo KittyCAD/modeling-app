@@ -17,12 +17,14 @@ import { useKclContext } from 'lang/KclProvider'
 import { editorManager } from 'lib/singletons'
 import { ContextFrom } from 'xstate'
 import { settingsMachine } from 'machines/settingsMachine'
+import { FeatureTreePane } from './FeatureTreePane'
 
 export type SidebarType =
   | 'code'
   | 'debug'
   | 'export'
   | 'files'
+  | 'feature-tree'
   | 'logs'
   | 'lspMessages'
   | 'variables'
@@ -69,6 +71,23 @@ export type SidebarAction = {
 // changes to be a spinning loader on loading.
 
 export const sidebarPanes: SidebarPane[] = [
+  {
+    id: 'feature-tree',
+    icon: 'model',
+    keybinding: 'Shift + T',
+    sidebarName: 'Feature Tree',
+    Content: (props) => (
+      <>
+        <ModelingPaneHeader
+          id={props.id}
+          icon="model"
+          title="Feature Tree"
+          onClose={props.onClose}
+        />
+        <FeatureTreePane />
+      </>
+    ),
+  },
   {
     id: 'code',
     icon: 'code',

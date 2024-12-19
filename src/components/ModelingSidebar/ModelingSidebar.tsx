@@ -20,6 +20,7 @@ import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { onboardingPaths } from 'routes/Onboarding/paths'
+import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -302,7 +303,7 @@ function ModelingPaneButton({
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
         name={paneConfig.sidebarName}
-        data-testid={paneConfig.id + '-pane-button'}
+        data-testid={paneConfig.id + SIDEBAR_BUTTON_SUFFIX}
         disabled={disabledText !== undefined}
         aria-disabled={disabledText !== undefined}
         {...props}
