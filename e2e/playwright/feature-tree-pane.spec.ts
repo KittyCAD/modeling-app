@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures/fixtureSetup'
+import { test, expect } from './zoo-test'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 
@@ -39,18 +39,15 @@ test.describe('Feature Tree pane', () => {
   test(
     'User can go to definition and go to function definition',
     { tag: '@electron' },
-    async ({ tronApp, homePage, scene, editor, toolbar }) => {
-      await tronApp.initialise({
-        fixtures: { homePage, scene, editor, toolbar },
-        folderSetupFn: async (dir) => {
-          const bracketDir = join(dir, 'test-sample')
-          await fsp.mkdir(bracketDir, { recursive: true })
-          await fsp.writeFile(
-            join(bracketDir, 'main.kcl'),
-            FEATURE_TREE_EXAMPLE_CODE,
-            'utf-8'
-          )
-        },
+    async ({ context, homePage, scene, editor, toolbar }) => {
+      await context.folderSetupFn(async (dir) => {
+        const bracketDir = join(dir, 'test-sample')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.writeFile(
+          join(bracketDir, 'main.kcl'),
+          FEATURE_TREE_EXAMPLE_CODE,
+          'utf-8'
+        )
       })
 
       await test.step('setup test', async () => {
