@@ -17,9 +17,17 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
       }
 
       if (window.electron.process.env.IS_PLAYWRIGHT) {
-        // skip file picker, save to default location
+        // Skip file picker, save to the test dir downloads directory
+        const testSettingsPath = await window.electron.getAppTestProperty(
+          'TEST_SETTINGS_FILE_KEY'
+        )
+        const downloadDir = window.electron.join(
+          testSettingsPath,
+          'downloads-during-playwright'
+        )
+        await window.electron.mkdir(downloadDir, { recursive: true })
         await window.electron.writeFile(
-          file.name,
+          window.electron.join(downloadDir, file.name),
           new Uint8Array(file.contents)
         )
         toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
