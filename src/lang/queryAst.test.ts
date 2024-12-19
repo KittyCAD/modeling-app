@@ -10,7 +10,6 @@ import {
   isNodeSafeToReplace,
   isTypeInValue,
   getNodePathFromSourceRange,
-  doesPipeHaveCallExp,
   hasExtrudeSketch,
   findUsesOfTagInPipe,
   hasSketchPipeBeenExtruded,
@@ -359,82 +358,6 @@ describe('testing getNodePathFromSourceRange', () => {
     if (err(_node)) throw _node
     expect(_node.node.type).toEqual('Identifier')
     expect(_node.node.name).toEqual('bar')
-  })
-})
-
-describe('testing doesPipeHave', () => {
-  it('finds close', () => {
-    const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, $seg01)
-  |> angledLine([-35, length001], %)
-  |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen(seg01)], %)
-  |> close(%)
-`
-    const ast = assertParse(exampleCode)
-
-    const result = doesPipeHaveCallExp({
-      calleeName: 'close',
-      ast,
-      selection: {
-        codeRef: codeRefFromRange([100, 101, true], ast),
-      },
-    })
-    expect(result).toEqual(true)
-  })
-  it('finds extrude', () => {
-    const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, $seg01)
-  |> angledLine([-35, length001], %)
-  |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen(seg01)], %)
-  |> close(%)
-  |> extrude(1, %)
-`
-    const ast = assertParse(exampleCode)
-
-    const result = doesPipeHaveCallExp({
-      calleeName: 'extrude',
-      ast,
-      selection: {
-        codeRef: codeRefFromRange([100, 101, true], ast),
-      },
-    })
-    expect(result).toEqual(true)
-  })
-  it('does NOT find close', () => {
-    const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, $seg01)
-  |> angledLine([-35, length001], %)
-  |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen(seg01)], %)
-`
-    const ast = assertParse(exampleCode)
-
-    const result = doesPipeHaveCallExp({
-      calleeName: 'close',
-      ast,
-      selection: {
-        codeRef: codeRefFromRange([100, 101, true], ast),
-      },
-    })
-    expect(result).toEqual(false)
-  })
-  it('returns false if not a pipe', () => {
-    const exampleCode = `length001 = 2`
-    const ast = assertParse(exampleCode)
-
-    const result = doesPipeHaveCallExp({
-      calleeName: 'close',
-      ast,
-      selection: {
-        codeRef: codeRefFromRange([9, 10, true], ast),
-      },
-    })
-    expect(result).toEqual(false)
   })
 })
 

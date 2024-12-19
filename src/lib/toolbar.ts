@@ -71,7 +71,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        disabled: (state) => !state.matches('idle'),
         title: ({ sketchPathId }) =>
           `${sketchPathId ? 'Edit' : 'Start'} Sketch`,
         showTitle: true,
@@ -89,7 +88,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
-        disabled: (state) => !state.can({ type: 'Extrude' }),
         icon: 'extrude',
         status: 'available',
         title: 'Extrude',
@@ -104,9 +102,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
-        // TODO: disabled
-        // Who's state is this?
-        disabled: (state) => !state.can({ type: 'Revolve' }),
         icon: 'revolve',
         status: DEV ? 'available' : 'kcl-only',
         title: 'Revolve',
@@ -144,7 +139,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Loft', groupId: 'modeling' },
           }),
-        disabled: (state) => !state.can({ type: 'Loft' }),
         icon: 'loft',
         status: 'available',
         title: 'Loft',
@@ -172,7 +166,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'fillet3d',
         status: DEV ? 'available' : 'kcl-only',
-        disabled: (state) => !state.can({ type: 'Fillet' }),
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
@@ -196,7 +189,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Shell', groupId: 'modeling' },
           })
         },
-        disabled: (state) => !state.can({ type: 'Shell' }),
         icon: 'shell',
         status: 'available',
         title: 'Shell',
