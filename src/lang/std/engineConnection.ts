@@ -1,6 +1,7 @@
 import {
   defaultRustSourceRange,
   defaultSourceRange,
+  ExecState,
   Program,
   RustSourceRange,
   SourceRange,
@@ -2116,11 +2117,15 @@ export class EngineCommandManager extends EventTarget {
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
   }
-  updateArtifactGraph(ast: Node<Program>) {
+  updateArtifactGraph(
+    ast: Node<Program>,
+    execStateArtifacts: ExecState['artifacts']
+  ) {
     this.artifactGraph = createArtifactGraph({
       orderedCommands: this.orderedCommands,
       responseMap: this.responseMap,
       ast,
+      execStateArtifacts,
     })
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {

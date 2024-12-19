@@ -357,7 +357,10 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/programMemory
-    await this.engineCommandManager.updateArtifactGraph(this.ast)
+    await this.engineCommandManager.updateArtifactGraph(
+      this.ast,
+      execState.artifacts
+    )
     this._executeCallback()
     if (!isInterrupted)
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
