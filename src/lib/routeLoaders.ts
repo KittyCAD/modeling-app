@@ -87,12 +87,13 @@ export const fileLoader: LoaderFunction = async (
   )
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
+  let code = ''
+
   if (!isBrowserProject && projectPathData) {
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
 
     const urlObj = new URL(routerData.request.url)
-    let code = ''
 
     if (!urlObj.pathname.endsWith('/settings')) {
       const fallbackFile = isDesktop()
@@ -121,6 +122,10 @@ export const fileLoader: LoaderFunction = async (
         encoding: 'utf-8',
       })
       code = normalizeLineEndings(code)
+
+      // If persistCode in localStorage is present, it'll persist that code
+      // through *anything*. INTENDED FOR TESTS.
+      code = codeManager.localStoragePersistCode() || code
 
       // Update both the state and the editor's code.
       // We explicitly do not write to the file here since we are loading from
@@ -165,7 +170,7 @@ export const fileLoader: LoaderFunction = async (
   }
 
   return {
-    code: '',
+    code,
     project: {
       name: BROWSER_PROJECT_NAME,
       path: '/' + BROWSER_PROJECT_NAME,
