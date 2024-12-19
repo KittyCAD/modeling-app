@@ -1,6 +1,6 @@
 //! The executor for the AST.
 
-use std::{path::PathBuf, sync::Arc};
+use std::{cmp::Ordering, path::PathBuf, sync::Arc};
 
 use anyhow::Result;
 use async_recursion::async_recursion;
@@ -2040,13 +2040,41 @@ impl ExecutorContext {
                 continue;
             }
 
-            // if there's a diff drag it in
-            constructed_program.inner.body.push(new_element.clone());
+            // abort early beacause we can't mark elements for delete,
+            // here we need to map old_element to the engine id and clear
+            // that, but we have no facilities for that yet.
 
+            return (true, new_ast);
+
+            // // if there's a diff drag it in
+            // constructed_program.inner.body.push(new_element.clone());
             // and now let's double check nothing depends on us
         }
 
-        (false, constructed_program)
+        match new_ast.body.len().cmp(&old_ast.body.len()) {
+            Ordering::Less => {
+                // the new_ast is LESS THAN than the old_ast -- we've REMOVED
+                // nodes to the body.
+                //
+                // we should queue up the remaining nodes to delete, but for
+                // now we have to bail.
+                (true, new_ast)
+            }
+            Ordering::Greater => {
+                // the new_ast is GREATER than the old_ast -- we've ADDED
+                // nodes to the body.
+                constructed_program
+                    .inner
+                    .body
+                    .extend_from_slice(&new_ast.body[old_ast.body.len()..]);
+                (false, constructed_program)
+            }
+            Ordering::Equal => {
+                // If we got here, we can use the constructed program as built
+                // above.
+                (false, constructed_program)
+            }
+        }
     }
 
     /// Perform the execution of a program.
