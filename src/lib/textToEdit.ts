@@ -6,9 +6,12 @@ import { Selections } from './selections'
 import { ArtifactGraph, getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { SourceRange } from 'lang/wasm'
 import toast from 'react-hot-toast'
-import { codeManager, kclManager } from './singletons'
+import { codeManager, editorManager, kclManager } from './singletons'
 import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
 import { uuidv4 } from './utils'
+import { diffLines } from 'diff'
+import { Transaction, EditorSelection, SelectionRange } from '@codemirror/state'
+import { modelingMachineEvent } from 'editor/manager'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -290,6 +293,17 @@ export async function doWholeFlow({
   const oldCode = codeManager.code
   const { code: newCode } = result
   codeManager.updateCodeEditor(newCode)
+  const diff = reBuildNewCodeWithRanges(oldCode, newCode)
+  const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
+    EditorSelection.range(range[0], range[1])
+  )
+  editorManager?.editorView?.dispatch({
+    selection: EditorSelection.create(
+      ranges,
+      selections.graphSelections.length - 1
+    ),
+    annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
+  })
   await kclManager.executeCode()
   const toastId = uuidv4()
 
@@ -307,4 +321,31 @@ export async function doWholeFlow({
       icon: null,
     }
   )
+}
+
+const reBuildNewCodeWithRanges = (
+  oldCode: string,
+  newCode: string
+): {
+  newCode: string
+  insertRanges: SourceRange[]
+} => {
+  let insertRanges: SourceRange[] = []
+  const changes = diffLines(oldCode, newCode)
+  let newCodeWithRanges = ''
+  for (const change of changes) {
+    if (!change.added && !change.removed) {
+      // no change add it to newCodeWithRanges
+      newCodeWithRanges += change.value
+    } else if (change.added && !change.removed) {
+      const start = newCodeWithRanges.length
+      const end = start + change.value.length
+      insertRanges.push([start, end, true])
+      newCodeWithRanges += change.value
+    }
+  }
+  return {
+    newCode: newCodeWithRanges,
+    insertRanges,
+  }
 }
