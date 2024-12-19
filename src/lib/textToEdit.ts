@@ -5,6 +5,7 @@ import { err, reportRejection } from './trap'
 import { Selections } from './selections'
 import { ArtifactGraph, getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { SourceRange } from 'lang/wasm'
+import toast from 'react-hot-toast'
 
 function sourceIndexToLineColumn(
   code: string,
@@ -180,6 +181,7 @@ export async function doPromptEdit({
   token?: string
   artifactGraph: ArtifactGraph
 }): Promise<Models['TextToCadIteration_type'] | Error> {
+  const toastId = toast.loading('Submitting to Edit AI...')
   const submitResult = await submitPromptToEditToQueue({
     prompt,
     selections,
@@ -220,9 +222,11 @@ export async function doPromptEdit({
 
   try {
     const result = await textToCadComplete
+    toast.dismiss(toastId)
     console.log('textToCadComplete', result)
     return result
   } catch (e) {
+    toast.dismiss(toastId)
     console.error('textToCadComplete', e)
   }
 
