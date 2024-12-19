@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pierremtb/issue4838-re-enable-code-pane-closed-at-start ]
   pull_request:
     branches: [ main ]
 
