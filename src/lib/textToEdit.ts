@@ -2,7 +2,6 @@ import { Models } from '@kittycad/lib'
 import { VITE_KC_API_BASE_URL } from 'env'
 import crossPlatformFetch from './crossPlatformFetch'
 import { err, reportRejection } from './trap'
-import { toSync } from './utils'
 import { Selections } from './selections'
 import { ArtifactGraph, getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { SourceRange } from 'lang/wasm'
@@ -193,40 +192,28 @@ export async function doPromptEdit({
   const textToCadComplete = new Promise<Models['TextToCadIteration_type']>(
     (resolve, reject) => {
       ;(async () => {
-        // const value = await textToCadQueued
-        // if (value instanceof Error) {
-        //   reject(value)
-        // }
-
         const MAX_CHECK_TIMEOUT = 3 * 60_000
-        const CHECK_INTERVAL = 3000
+        const CHECK_DELAY = 200
 
         let timeElapsed = 0
-        const interval = setInterval(
-          toSync(async () => {
-            timeElapsed += CHECK_INTERVAL
-            if (timeElapsed >= MAX_CHECK_TIMEOUT) {
-              clearInterval(interval)
-              reject(new Error('Text-to-CAD API timed out'))
-            }
 
-            const check = await getPromptToEditResult(submitResult.id, token)
-            if (check instanceof Error) {
-              clearInterval(interval)
-              reject(check)
-            }
+        while (timeElapsed < MAX_CHECK_TIMEOUT) {
+          const check = await getPromptToEditResult(submitResult.id, token)
+          console.log('check', check)
+          if (check instanceof Error || check.status === 'failed') {
+            console.log('check failed', check)
+            reject(check)
+            return
+          } else if (check.status === 'completed') {
+            resolve(check)
+            return
+          }
 
-            if (check instanceof Error || check.status === 'failed') {
-              console.log('check failed', check)
-              clearInterval(interval)
-              reject(check)
-            } else if (check.status === 'completed') {
-              clearInterval(interval)
-              resolve(check)
-            }
-          }, reportRejection),
-          CHECK_INTERVAL
-        )
+          await new Promise((r) => setTimeout(r, CHECK_DELAY))
+          timeElapsed += CHECK_DELAY
+        }
+
+        reject(new Error('Text-to-CAD API timed out'))
       })().catch(reportRejection)
     }
   )
