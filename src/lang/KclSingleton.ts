@@ -1,5 +1,5 @@
 import { executeAst, lintAst } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
+import { handleSelectionBatch, Selections } from 'lib/selections'
 import {
   KCLError,
   complilationErrorsToDiagnostics,
@@ -28,7 +28,10 @@ import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { EntityType_type } from '@kittycad/lib/dist/types/src/models'
+import {
+  EntityType_type,
+  ModelingCmdReq_type,
+} from '@kittycad/lib/dist/types/src/models'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -311,7 +314,7 @@ export class KclManager {
     // Do not send send scene commands if the program was interrupted, go to clean up
     if (!isInterrupted) {
       this.addDiagnostics(await lintAst({ ast: ast }))
-      setSelectionFilterToDefault(execState.memory, this.engineCommandManager)
+      setSelectionFilterToDefault(this.engineCommandManager)
 
       if (args.zoomToFit) {
         let zoomObjectId: string | undefined = ''
@@ -603,8 +606,11 @@ export class KclManager {
     return Promise.all(thePromises)
   }
   /** TODO: this function is hiding unawaited asynchronous work */
-  defaultSelectionFilter() {
-    setSelectionFilterToDefault(this.programMemory, this.engineCommandManager)
+  defaultSelectionFilter(restorePreviousSelections?: Selections) {
+    setSelectionFilterToDefault(
+      this.engineCommandManager,
+      restorePreviousSelections
+    )
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(filter: EntityType_type[]) {
@@ -640,25 +646,66 @@ const defaultSelectionFilter: EntityType_type[] = [
 
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilterToDefault(
-  programMemory: ProgramMemory,
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  restorePreviousSelections?: Selections
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  setSelectionFilter(defaultSelectionFilter, engineCommandManager)
+  setSelectionFilter(
+    defaultSelectionFilter,
+    engineCommandManager,
+    restorePreviousSelections
+  )
 }
 
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilter(
   filter: EntityType_type[],
-  engineCommandManager: EngineCommandManager
+  engineCommandManager: EngineCommandManager,
+  restorePreviousSelections?: Selections
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'set_selection_filter',
-      filter,
-    },
+  const { engineEvents } = restorePreviousSelections
+    ? handleSelectionBatch({
+        selections: restorePreviousSelections,
+      })
+    : { engineEvents: undefined }
+  if (!restorePreviousSelections || !engineEvents) {
+    engineCommandManager
+      .sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'set_selection_filter',
+          filter,
+        },
+      })
+      .catch(reportError)
+    return
+  }
+  const modelingCmd: ModelingCmdReq_type[] = []
+  engineEvents.forEach((event) => {
+    if (event.type === 'modeling_cmd_req') {
+      modelingCmd.push({
+        cmd_id: uuidv4(),
+        cmd: event.cmd,
+      })
+    }
   })
+  // batch is needed other wise the selection flickers.
+  engineCommandManager
+    .sendSceneCommand({
+      type: 'modeling_cmd_batch_req',
+      batch_id: uuidv4(),
+      requests: [
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_selection_filter',
+            filter,
+          },
+        },
+        ...modelingCmd,
+      ],
+      responses: false,
+    })
+    .catch(reportError)
 }
