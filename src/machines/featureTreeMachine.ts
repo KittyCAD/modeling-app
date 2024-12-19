@@ -1,5 +1,5 @@
-import { SourceRange } from "lang/wasm"
-import { assign, setup } from "xstate"
+import { SourceRange } from 'lang/wasm'
+import { assign, setup } from 'xstate'
 
 type FeatureTreeEvent =
   | {

@@ -151,7 +151,7 @@ export const FeatureTreePane = () => {
         className="absolute inset-0 p-1 box-border overflow-auto"
       >
         {kclManager.isExecuting ? (
-          <Loading>Building feature tree...</Loading>
+          <Loading className="h-full">Building feature tree...</Loading>
         ) : (
           <>
             {parseErrors.length > 0 && (
