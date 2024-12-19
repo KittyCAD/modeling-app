@@ -57,6 +57,7 @@ macro_rules! eprint {
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
 mod coredump;
+mod diff;
 mod docs;
 mod engine;
 mod errors;

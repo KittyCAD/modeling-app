@@ -7,10 +7,18 @@ use crate::{
 use std::sync::{Arc, Mutex};
 
 ///
-type Declaration<'tree> = (Node<'tree>, &'tree types::Identifier);
+type Declaration<'tree> = (
+    types::NodeRef<'tree, types::Program>,
+    Node<'tree>,
+    &'tree types::Identifier,
+);
 
 ///
-type Reference<'tree> = (Node<'tree>, &'tree types::Identifier);
+type Reference<'tree> = (
+    types::NodeRef<'tree, types::Program>,
+    Node<'tree>,
+    &'tree types::Identifier,
+);
 
 ///
 type RefEdge<'tree> = (Option<Declaration<'tree>>, Reference<'tree>);
@@ -18,6 +26,9 @@ type RefEdge<'tree> = (Option<Declaration<'tree>>, Reference<'tree>);
 ///
 #[derive(Clone, Debug)]
 pub struct Scope<'tree> {
+    ///
+    pub program: types::NodeRef<'tree, types::Program>,
+
     ///
     pub declarations: Vec<Declaration<'tree>>,
 
@@ -29,8 +40,9 @@ pub struct Scope<'tree> {
 }
 
 impl<'tree> Scope<'tree> {
-    pub fn new() -> Self {
+    pub fn new(program: types::NodeRef<'tree, types::Program>) -> Self {
         Scope {
+            program,
             declarations: vec![],
             references: vec![],
             children: vec![],
@@ -42,26 +54,29 @@ impl<'tree> Scope<'tree> {
         let mut unmatched_refs = self.references.clone();
 
         for child in &self.children {
-            for (declaration, (ref_node, ref_id)) in child.edges() {
+            for (declaration, (ref_program, ref_node, ref_id)) in child.edges() {
                 match declaration {
-                    Some((decl_node, decl_id)) => {
-                        edges.push((Some((decl_node.clone(), decl_id)), (ref_node.clone(), ref_id)));
+                    Some((decl_program, decl_node, decl_id)) => {
+                        edges.push((
+                            Some((decl_program, decl_node.clone(), decl_id)),
+                            (ref_program, ref_node.clone(), ref_id),
+                        ));
                     }
                     None => {
-                        unmatched_refs.push((ref_node.clone(), ref_id));
+                        unmatched_refs.push((ref_program, ref_node.clone(), ref_id));
                     }
                 }
             }
         }
 
-        for (ref_node, ref_id) in unmatched_refs.into_iter() {
+        for (ref_program, ref_node, ref_id) in unmatched_refs.into_iter() {
             edges.push((
                 self.declarations
                     .iter()
-                    .filter(|(_, decl_id)| decl_id.name == ref_id.name)
+                    .filter(|(_, _, decl_id)| decl_id.name == ref_id.name)
                     .cloned()
                     .next(),
-                (ref_node.clone(), ref_id),
+                (ref_program, ref_node.clone(), ref_id),
             ));
         }
 
@@ -76,9 +91,9 @@ pub struct ScopeVisitor<'tree> {
 }
 
 impl<'tree> ScopeVisitor<'tree> {
-    pub fn new() -> Self {
+    pub fn new(program: types::NodeRef<'tree, types::Program>) -> Self {
         Self {
-            scope: Arc::new(Mutex::new(Scope::new())),
+            scope: Arc::new(Mutex::new(Scope::new(program))),
         }
     }
 }
@@ -87,8 +102,8 @@ impl<'tree> Visitor<'tree> for ScopeVisitor<'tree> {
     type Error = std::convert::Infallible;
 
     fn visit_node(&self, node: Node<'tree>) -> Result<bool, Self::Error> {
-        if let Node::Program(_program) = node {
-            let csv = ScopeVisitor::new();
+        if let Node::Program(program) = node {
+            let csv = ScopeVisitor::new(program);
             for child in node.children() {
                 child.visit(csv.clone())?;
             }
@@ -103,18 +118,19 @@ impl<'tree> Visitor<'tree> for ScopeVisitor<'tree> {
 
         match node {
             Node::VariableDeclaration(vd) => {
-                // process and return
+                let program = self.scope.lock().unwrap().program;
                 self.scope
                     .lock()
                     .unwrap()
                     .declarations
-                    .push((node.clone(), &vd.declaration.id));
+                    .push((program, node.clone(), &vd.declaration.id));
 
                 let node: Node = (&vd.declaration.init).into();
                 node.visit(self.clone())?;
             }
             Node::Identifier(id) => {
-                self.scope.lock().unwrap().references.push((node.clone(), &id));
+                let program = self.scope.lock().unwrap().program;
+                self.scope.lock().unwrap().references.push((program, node.clone(), &id));
             }
             _ => {
                 for child in node.children() {
@@ -127,20 +143,14 @@ impl<'tree> Visitor<'tree> for ScopeVisitor<'tree> {
     }
 }
 
-pub fn extract_refgraph<'a, 'tree>(node: Node<'tree>) -> Result<Scope<'tree>, std::convert::Infallible> {
-    let sv = ScopeVisitor::new();
+pub fn extract_refgraph<'a, 'tree>(
+    program: types::NodeRef<'tree, types::Program>,
+) -> Result<Scope<'tree>, std::convert::Infallible> {
+    let sv = ScopeVisitor::new(program);
+    let node: Node = (program).into();
 
-    match node {
-        Node::Program(_) => {
-            // here we can avoid walking the root since that's going to create
-            // a new scope.
-            for child in node.children() {
-                child.visit(sv.clone())?;
-            }
-        }
-        _ => {
-            node.visit(sv.clone())?;
-        }
+    for child in node.children() {
+        child.visit(sv.clone())?;
     }
 
     let x = sv.scope.lock().unwrap().clone();
@@ -171,18 +181,18 @@ fn myfn = () => {
 "
         );
 
-        let refgraph = extract_refgraph((&program).into()).unwrap();
+        let refgraph = extract_refgraph(&program).unwrap();
 
         let edges = refgraph.edges().into_iter().collect::<Vec<_>>();
         assert_eq!(edges.len(), 3);
 
         // sin is a global so we are chilin
-        let (decl, (_ref_node, ref_id)) = edges.get(2).unwrap();
+        let (decl, (_ref_prog, _ref_node, ref_id)) = edges.get(2).unwrap();
         assert_eq!("sin", ref_id.name);
         assert!(decl.is_none());
 
         // myfn's foo
-        let (decl, (_ref_node, ref_id)) = edges.get(1).unwrap();
+        let (decl, (_ref_prog, _ref_node, ref_id)) = edges.get(1).unwrap();
         assert_eq!("foo", ref_id.name);
         assert!(decl.is_some());
         // todo: check this is actually refering to the parent scope foo
@@ -202,7 +212,7 @@ fn myfn = () => {
 "
         );
 
-        let refgraph = extract_refgraph((&program).into()).unwrap();
+        let refgraph = extract_refgraph(&program).unwrap();
 
         assert_eq!(3, refgraph.declarations.len());
         assert_eq!(
@@ -210,7 +220,7 @@ fn myfn = () => {
             refgraph
                 .declarations
                 .iter()
-                .map(|(_, id)| id.name.as_str())
+                .map(|(_, _, id)| id.name.as_str())
                 .collect::<Vec<_>>()
                 .as_slice()
         );
@@ -221,7 +231,7 @@ fn myfn = () => {
             refgraph
                 .references
                 .iter()
-                .map(|(_, id)| id.name.as_str())
+                .map(|(_, _, id)| id.name.as_str())
                 .collect::<Vec<_>>()
                 .as_slice()
         );
@@ -234,7 +244,7 @@ fn myfn = () => {
             &["foo"],
             myfn.declarations
                 .iter()
-                .map(|(_, id)| id.name.as_str())
+                .map(|(_, _, id)| id.name.as_str())
                 .collect::<Vec<_>>()
                 .as_slice()
         );
@@ -244,7 +254,7 @@ fn myfn = () => {
             &["sin", "foo"],
             myfn.references
                 .iter()
-                .map(|(_, id)| id.name.as_str())
+                .map(|(_, _, id)| id.name.as_str())
                 .collect::<Vec<_>>()
                 .as_slice()
         );
