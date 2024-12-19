@@ -61,23 +61,30 @@ if (process.defaultApp) {
 // Must be done before ready event.
 registerStartupListeners()
 
-const createWindow = (filePath?: string): BrowserWindow => {
-  const newWindow = new BrowserWindow({
-    autoHideMenuBar: true,
-    show: false,
-    width: 1800,
-    height: 1200,
-    webPreferences: {
-      nodeIntegration: false, // do not give the application implicit system access
-      contextIsolation: true, // expose system functions in preload
-      sandbox: false, // expose nodejs in preload
-      preload: path.join(__dirname, './preload.js'),
-    },
-    icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
-    frame: os.platform() !== 'darwin',
-    titleBarStyle: 'hiddenInset',
-    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
-  })
+const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
+  let newWindow
+
+  if (reuse) {
+    newWindow = mainWindow
+  }
+  if (!newWindow) {
+    newWindow = new BrowserWindow({
+      autoHideMenuBar: true,
+      show: false,
+      width: 1800,
+      height: 1200,
+      webPreferences: {
+        nodeIntegration: false, // do not give the application implicit system access
+        contextIsolation: true, // expose system functions in preload
+        sandbox: false, // expose nodejs in preload
+        preload: path.join(__dirname, './preload.js'),
+      },
+      icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
+      frame: os.platform() !== 'darwin',
+      titleBarStyle: 'hiddenInset',
+      backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
+    })
+  }
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
@@ -110,7 +117,9 @@ const createWindow = (filePath?: string): BrowserWindow => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  newWindow.show()
+  if (!reuse) {
+    if (!process.env.HEADLESS) newWindow.show()
+  }
 
   return newWindow
 }
@@ -133,6 +142,25 @@ app.on('ready', (event, data) => {
 // For now there is no good reason to separate these out to another file(s)
 // There is just not enough code to warrant it and further abstracts everything
 // which is already quite abstracted
+
+// @ts-ignore
+// electron/electron.d.ts has done type = App, making declaration merging not
+// possible :(
+app.resizeWindow = async (width: number, height: number) => {
+  return mainWindow?.setSize(width, height)
+}
+
+// @ts-ignore can't declaration merge with App
+app.testProperty = {}
+
+ipcMain.handle('app.testProperty', (event, propertyName) => {
+  // @ts-ignore can't declaration merge with App
+  return app.testProperty[propertyName]
+})
+
+ipcMain.handle('app.resizeWindow', (event, data) => {
+  return mainWindow?.setSize(data[0], data[1])
+})
 
 ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)

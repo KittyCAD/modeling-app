@@ -28,6 +28,7 @@ data = {
     "content": 
         f'''
         **{release_version}** is now available! Check out the latest features and improvements here: <https://zoo.dev/modeling-app/download>
+
         {modified_release_body}
         ''',
     "username": "Modeling App Release Updates",
