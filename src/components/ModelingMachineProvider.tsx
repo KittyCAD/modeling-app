@@ -103,6 +103,10 @@ import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { Subject } from 'rxjs'
 
+/**
+ * This RxJs Subject is used to notify subscribers like the feature tree when
+ * the selection changes in the editor.
+ */
 export const selectionChangedObservable = new Subject<EditorSelection>()
 
 type MachineContext<T extends AnyStateMachine> = {
@@ -319,7 +323,11 @@ export const ModelingMachineProvider = ({
               scrollIntoView: boolean | undefined
             ) => {
               if (!selection) return // TODO less of hack for the below please
-              if (!editorManager.editorView) return
+              if (!editorManager.editorView) {
+                console.warn('no editorView')
+                selectionChangedObservable.next(selection)
+                return
+              }
 
               setTimeout(() => {
                 if (!editorManager.editorView) return
@@ -331,6 +339,7 @@ export const ModelingMachineProvider = ({
                   ],
                   scrollIntoView,
                 })
+                console.warn('dispatched selection', selection)
                 selectionChangedObservable.next(selection)
               })
             }

@@ -14,25 +14,25 @@ import {
   getOperationLabel,
 } from 'lib/operations'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { reportRejection } from 'lib/trap'
-import { toSync } from 'lib/utils'
-import {
-  ComponentProps,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { Actor, assign, Prop, setup } from 'xstate'
+import { kclEditorMountedObservable } from './KclEditorPane'
 
 type FeatureTreeEvent =
   | {
       type: 'goToKclSource'
       data: { targetSourceRange: SourceRange }
     }
-  | { type: 'codePaneOpen' }
+  | {
+      type: 'selectOperation'
+      data: { targetSourceRange: SourceRange }
+    }
+  | {
+      type: 'enterEditFlow'
+      data: { targetSourceRange: SourceRange }
+    }
+  | { type: 'codePaneOpened' }
   | { type: 'selected' }
   | { type: 'done' }
 
@@ -47,24 +47,34 @@ const featureTreeMachine = setup({
   actions: {
     saveTargetSourceRange: assign({
       targetSourceRange: ({ event }) =>
-        event.type === 'goToKclSource'
-          ? event.data.targetSourceRange
-          : undefined,
+        'data' in event ? event.data.targetSourceRange : undefined,
     }),
     clearTargetSourceRange: assign({
       targetSourceRange: undefined,
     }),
     sendSelectionEvent: () => {},
     openCodePane: () => {},
+    sendEditFlowStart: () => {},
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogDMAJgAsxABwBGAOwBWFSsPbz-XboA0IAJ6Jd-NcRUBOAGwaPutet0m6gC+QbaomLgERMT0pLJQjKwcXDg8xLBgVCzS8dQZWRiQAsJIIOKS0nIKyggq+i4qGqb6KvyGam7adbYOCB6mrmpq-E2G+m78bqYhYejYeIRgJLHxiWyc3CQQcjTFCuVSMvKlNWOGxAZNah43FmqGPYgebudd19r8kxpN3iGhILI6BA4ApwvMokt9hJDlUTogALSeR4IeF+fTEDxqIwaT78fQefTaDQzEBgyKLEjkKhQipHaqIMwuTqtTRmXSGJoeZFTDEBLH43SY7SdQwkskLaIrBLMdYpHg0mHHUA1eEabTIlQGDGagnObT6fSfIliubkyV0OLSpIbVIkfJgbKWhWVJVKVRuFzfb78OoqTH9AnInHnAKCtnefh6fomiISpYxC2rGXJTbEbayMDOulwhD8ZEeQweYgerrjKaaIzaGPginEDMAdwABLAMJgwI3dFnYaAMHRRAj2fwLliOe8OvoAuqQFRkBgnh5tMR9BpdNoxoK6ro3PpbAAjOgYXsAWwHzmH2LH28nthwpCgAAs5whCYvl6v1-0J9vbPXyBh744wy2PeYB3o+iBqrYNS3EuK5rhOn5bju9gDoYQ6+BeC7jpOfxBEAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QDMwEMAuBXATmAKnmAHQCWEANmAMRQD2+dA0gMYUDKduLYA2gAwBdRKAAOdWKQyk6AOxEgAHogCMAFn7EAbAFYAHAHYAnGoOm9OgMw6tAGhABPRBsvF+a6wYBM-A-0uWepYGAL4h9qiYuAREZJQ0sGBULBgA8qJgOJgysgLCSCDiktJyCsoIKipabmo6-Co2Wip+-DoG9k4IWpp+Ae6W-N16KpZeYRHo2HiEYCTkVNRgshiZAKIQUgBiFHQA7nkKRVI5ZapergN6el46515GVdYdiN4GbjpGXiNGV2pan+MQJEpjFZsR6KRZFBGKwOFwcDxiIlktIodRkWAUpADgUjiV5AVyipWipiGZupYVCY1D5+F5ngg-jpiJ8DFo1OoDA13GNwkDJtEZiQIVCYWxONwSBA5DQcWIJMdSoTVG0yTodGoPAZKfwjP52o5EHVNIYvNd9M0zJZAcDBbERdDmOL4Yi6BlZJCoABhOgQMAABTQshoLF9AaDYHSS2xQkOCvxpy6lWIbS0Bm8JkM+ksDKZLK8bL0-S8NOCNoF01iGJSnqRSUxqKg6PrWIgcsK8ZOyq6aj0avTbU1Hg0KgZzVcrU+Xn+9Q+dPLUUrYOrjeI0uD1HbeK7oCJBj7xkafhMX28agZJeqHz0RhstTUD21WgXIKFxCWKxwnvWWx2uzrKKes2KIxvk8rFDuShGpY1RaKMRiHr4va9gyegPsQQRmiYVK+GYL52mCH6ZN+GwYNsexrjKm6xrinZKruqhaLBmr8PUvj6F4nGoeoxDEpYCFMVSowfPhS7CnQnpinCkoAQ2QGKLAGCYCQaDIJ+AAUxoAJTULaYnghJopOtJCIkCunpbnRBIMQgBZvAhzS3O4HJoemDJziyRgBF5D71DcomgmZLaruZaIKUpKzEKpGnabpFaBbJNZQoljaWRB9FQYy9xkj8VLnPomGjoatk-CmAx1KYWgFpYfyhHyekJURX5Qj+ZF-il8mKcpUVqZkmmsTpDVvk1JG-hRoVQGlirWZlZpvIEC3uHSgQanYxUPKSRh6pSXI+N0NJhHyshhvABRDUQcbpTN5QALRrZ0N3TtoVJwYW7F0lUAVvvMYCXdNiY0mOfzPbU+4jOO6pffahmOrCEqmX9CbdjVXgpmmcGaloehVbUObFdYzKeFtVQqJh+5Q2CDpSfDiITYjkHlEWrjqh86rqB4N5FZ0mqo1jup1J8lT5ToFPiZJxk01KMr0xlRLNLBdLarOmomPdzg0toRa3rqXwqMLosGeLcMuiQbpLJ6Pp+oGwYy9diD8ZoNhsjVfzYyWVi5hrfNeTBJIfDVBt07RV2JtYqNOxjrs4x7xVVcQva3p8Fg0oYviB8FtZB+B-3dhojvoy7WPR3jnTqEYGF6w+2p6vcrEi-V8VvhNlE28HOc2emrhNLUIzBD3GpjtqxCcd4nGcsEn0N4ujXLMRLWkeRuy26HNgYZSNyBHB6r0rHcHENYr0WNhIx6AbI3z2N-5Zx2Ie5+4a961Y2MEzvnRoeXxrJ8t+7XGfs-NVAVqi8W6-TbkjGyGh5pBCCEtc4yc1YIAeKjMOhhey+FGM0Q6IQgA */
   id: 'featureTree',
   states: {
     idle: {
       on: {
         goToKclSource: {
           target: 'goingToKclSource',
+          actions: 'saveTargetSourceRange',
+        },
+
+        selectOperation: {
+          entry: () => console.warn('fucking select operation'),
+          target: 'selecting',
+          actions: 'saveTargetSourceRange',
+        },
+
+        enterEditFlow: {
+          target: 'enteringEditFlow',
           actions: 'saveTargetSourceRange',
         },
       },
@@ -79,18 +89,76 @@ const featureTreeMachine = setup({
             },
           },
 
-          entry: ['openCodePane', 'sendSelectionEvent'],
+          entry: ['sendSelectionEvent'],
+
+          after: {
+            '500': '#featureTree.idle',
+          },
         },
 
         done: {
-          type: 'final',
           entry: ['clearTargetSourceRange'],
+          always: '#featureTree.idle',
+        },
 
+        openingCodePane: {
+          on: {
+            codePaneOpened: 'selecting',
+          },
+
+          entry: 'openCodePane',
+        },
+      },
+
+      initial: 'openingCodePane',
+    },
+
+    selecting: {
+      states: {
+        selecting: {
+          on: {
+            selected: 'done',
+          },
+
+          entry: 'sendSelectionEvent',
+
+          after: {
+            '500': {
+              target: '#featureTree.idle',
+              reenter: true,
+            },
+          },
+        },
+
+        done: {
+          always: '#featureTree.idle',
+          entry: 'clearTargetSourceRange',
+        },
+      },
+
+      initial: 'selecting',
+    },
+
+    enteringEditFlow: {
+      states: {
+        selecting: {
+          on: {
+            selected: 'done',
+          },
+
+          after: {
+            '500': '#featureTree.idle',
+          },
+        },
+
+        done: {
           always: '#featureTree.idle',
         },
       },
 
       initial: 'selecting',
+      entry: 'sendSelectionEvent',
+      exit: ['clearTargetSourceRange', 'sendEditFlowStart'],
     },
   },
 
@@ -103,7 +171,8 @@ export const FeatureTreePane = () => {
     featureTreeMachine.provide({
       guards: {
         codePaneIsOpen: () =>
-          modelingState.context.store.openPanes.includes('code'),
+          modelingState.context.store.openPanes.includes('code') &&
+          editorManager.editorView !== null,
       },
       actions: {
         openCodePane: () => {
@@ -114,6 +183,10 @@ export const FeatureTreePane = () => {
               openPanes: [...modelingState.context.store.openPanes, 'code'],
             },
           })
+        },
+        sendEditFlowStart: () => {
+          console.warn('sendEditFlowStart')
+          modelingSend({ type: 'Enter sketch' })
         },
         sendSelectionEvent: ({ context }) => {
           console.warn('sendSelectionEvent', context)
@@ -182,14 +255,30 @@ export const FeatureTreePane = () => {
   const operationList = filterOperations(unfilteredOperationList)
 
   useEffect(() => {
+    const codeOpen = modelingState.context.store.openPanes.includes('code')
+    if (editorManager.editorView !== null) {
+      if (codeOpen) {
+        featureTreeSend({ type: 'codePaneOpened' })
+      }
+    } else {
+      const mountedSubscription = kclEditorMountedObservable.subscribe(
+        (mounted) => {
+          if (mounted && codeOpen) {
+            featureTreeSend({ type: 'codePaneOpened' })
+          }
+        }
+      )
+      return () => mountedSubscription.unsubscribe()
+    }
+  }, [modelingState.context.store.openPanes])
+
+  useEffect(() => {
     const subscription = selectionChangedObservable.subscribe((selection) => {
       console.warn('selection changed', selection)
-      if (featureTreeState.matches({ goingToKclSource: 'selecting' })) {
-        featureTreeSend({ type: 'selected' })
-      }
+      featureTreeSend({ type: 'selected' })
     })
     return () => subscription.unsubscribe()
-  }, [featureTreeState, selectionChangedObservable])
+  }, [featureTreeState.value, selectionChangedObservable])
 
   function goToError() {
     modelingSend({
@@ -298,28 +387,6 @@ const VisibilityToggle = (props: VisibilityToggleProps) => {
 }
 
 /**
- * Wait until a predicate is true or a timeout is reached
- * TODO: this is a temporary solution until we have a better way to
- * wait for things like selections to be set. It's whack get rid of it if you're reading this.
- */
-function pollUntil(timeout: number, predicate: () => boolean, interval = 20) {
-  return new Promise<void>((resolve) => {
-    const t = setTimeout(() => {
-      const i = setInterval(() => {
-        if (predicate()) {
-          clearTimeout(t)
-          clearInterval(i)
-          resolve()
-        }
-      }, interval)
-
-      clearInterval(i)
-      resolve()
-    }, timeout)
-  })
-}
-
-/**
  * More generic version of OperationListItem,
  * to be used for default planes after we fix them and
  * add them to the artifact graph / feature tree
@@ -372,16 +439,11 @@ const OperationItem = (props: {
   item: Operation
   send: Prop<Actor<typeof featureTreeMachine>, 'send'>
 }) => {
-  const { send: modelingSend, state: modelingState } = useModelingContext()
   const kclContext = useKclContext()
   const name =
     'name' in props.item && props.item.name !== null
       ? getOperationLabel(props.item)
       : 'anonymous'
-  const jsSourceRange =
-    'sourceRange' in props.item
-      ? sourceRangeFromRust(props.item.sourceRange)
-      : null
   const errors = useMemo(() => {
     return kclContext.diagnostics.filter(
       (diag) =>
@@ -391,66 +453,34 @@ const OperationItem = (props: {
         diag.to <= props.item.sourceRange[1]
     )
   }, [kclContext.diagnostics.length])
-  const artifact = jsSourceRange
-    ? getArtifactFromRange(jsSourceRange, engineCommandManager.artifactGraph)
-    : null
 
-  const selectOperation = useCallback(async () => {
-    if (!jsSourceRange) {
+  function selectOperation() {
+    if (props.item.type === 'UserDefinedFunctionReturn') {
       return
     }
-    const selectionSnapshot = modelingState.context.selectionRanges
-    if (!artifact || !('codeRef' in artifact)) {
-      modelingSend({
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: {
-            codeRef: codeRefFromRange(jsSourceRange, kclManager.ast),
-          },
-        },
-      })
-    } else {
-      modelingSend({
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: {
-            artifact: artifact,
-            codeRef: codeRefFromRange(jsSourceRange, kclManager.ast),
-          },
-        },
-      })
-    }
-
-    // Now wait for a timeout and poll for the selection to be set
-    // so we know we can advance
-    await pollUntil(
-      100,
-      () =>
-        modelingState.context.selectionRanges.graphSelections?.[0].codeRef
-          .range[0] !== selectionSnapshot.graphSelections[0].codeRef.range[0],
-      20
-    )
-  }, [
-    artifact,
-    jsSourceRange,
-    modelingSend,
-    props.item,
-    engineCommandManager.artifactGraph,
-  ])
+    props.send({
+      type: 'selectOperation',
+      data: {
+        targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+      },
+    })
+  }
 
   /**
    * For now we can only enter the "edit" flow for the startSketchOn operation.
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
-  async function enterEditFlow() {
+  function enterEditFlow() {
     if (
       props.item.type === 'StdLibCall' &&
       props.item.name === 'startSketchOn'
     ) {
-      await selectOperation()
-      modelingSend({ type: 'Enter sketch' })
+      props.send({
+        type: 'enterEditFlow',
+        data: {
+          targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+        },
+      })
     }
   }
 
@@ -498,7 +528,7 @@ const OperationItem = (props: {
           ]
         : []),
     ],
-    [modelingSend, props.item]
+    [props.item, props.send]
   )
 
   return (
@@ -506,8 +536,8 @@ const OperationItem = (props: {
       icon={getOperationIcon(props.item)}
       name={name}
       menuItems={menuItems}
-      onClick={toSync(selectOperation, reportRejection)}
-      onDoubleClick={() => toSync(enterEditFlow, reportRejection)()}
+      onClick={selectOperation}
+      onDoubleClick={enterEditFlow}
       errors={errors}
     />
   )

@@ -44,6 +44,7 @@ import {
 } from '@codemirror/autocomplete'
 import CodeEditor from './CodeEditor'
 import { codeManagerHistoryCompartment } from 'lang/codeManager'
+import { Subject } from 'rxjs'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -54,6 +55,12 @@ export const editorShortcutMeta = {
     display: 'Ctrl + Shift + C',
   },
 }
+
+/**
+ * This RxJs Subject is used to notify subscribers, like the feature tree,
+ * when the editor has been mounted and is ready to be interacted with.
+ */
+export const kclEditorMountedObservable = new Subject<boolean>()
 
 export const KclEditorPane = () => {
   const {
@@ -174,6 +181,7 @@ export const KclEditorPane = () => {
             if (_editorView === null) return
 
             editorManager.setEditorView(_editorView)
+            kclEditorMountedObservable.next(true)
 
             // On first load of this component, ensure we show the current errors
             // in the editor.
