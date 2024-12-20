@@ -1829,7 +1829,7 @@ extrude001 = extrude(5, profile003)
       await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
     })
   })
-  test('A sketch with only "startProfileAt" and no segments should still be able to be continued ', async ({
+  test('A sketch with only "startProfileAt" and no segments should still be able to be continued', async ({
     homePage,
     scene,
     toolbar,
