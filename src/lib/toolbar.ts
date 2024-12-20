@@ -432,10 +432,19 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'circle-three-points',
-          onClick: () =>
-            console.error('Three-point circle not yet implemented'),
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({
+                  Sketch: 'circle3PointToolSelect',
+                })
+                  ? 'circle3Points'
+                  : 'none',
+              },
+            }),
           icon: 'circle',
-          status: 'unavailable',
+          status: 'available',
           title: 'Three-point circle',
           showTitle: false,
           description: 'Draw a circle defined by three points',

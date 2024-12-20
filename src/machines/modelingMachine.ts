@@ -215,6 +215,7 @@ export type SketchTool =
   | 'rectangle'
   | 'center rectangle'
   | 'circle'
+  | 'circle3Points'
   | 'none'
 
 export type ModelingMachineEvent =
@@ -238,7 +239,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
-  | { type: 'Cancel' }
+  | { type: 'Cancel'; cleanup?: () => void }
   | { type: 'CancelSketch' }
   | { type: 'Add start point' }
   | { type: 'Make segment horizontal' }
@@ -318,6 +319,7 @@ export type ModelingMachineEvent =
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
+  | { type: 'circle3PointsFinished'; cleanup?: () => void }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
 
@@ -566,6 +568,9 @@ export const modelingMachine = setup({
       canRectangleOrCircleTool({ sketchDetails }),
     'next is circle': ({ context: { sketchDetails, currentTool } }) =>
       currentTool === 'circle' && canRectangleOrCircleTool({ sketchDetails }),
+    'next is circle 3 point': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'circle3Points' &&
+      canRectangleOrCircleTool({ sketchDetails }),
     'next is line': ({ context }) => context.currentTool === 'line',
     'next is none': ({ context }) => context.currentTool === 'none',
   },
@@ -973,6 +978,25 @@ export const modelingMachine = setup({
         .then(() => {
           return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
         })
+    },
+    entryDraftCircle3Point: ({ context: { sketchDetails }, event }) => {
+      if (event.type !== 'change tool') return
+      if (event.data?.tool !== 'circle3Points') return
+      if (!sketchDetails) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager.entryDraftCircle3Point(
+        sketchDetails.sketchPathToNode,
+        new Vector3(...sketchDetails.zAxis),
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.origin)
+      )
+    },
+    exitDraftCircle3Point: ({ event }) => {
+      if (event.type !== 'circle3PointsFinished' && event.type !== 'Cancel')
+        return
+      if (!event.cleanup) return
+      event.cleanup()
     },
     'set up draft line without teardown': ({ context: { sketchDetails } }) => {
       if (!sketchDetails) return
@@ -2336,6 +2360,10 @@ export const modelingMachine = setup({
               target: 'Center Rectangle tool',
               guard: 'next is center rectangle',
             },
+            {
+              target: 'circle3PointToolSelect',
+              guard: 'next is circle 3 point',
+            },
           ],
 
           entry: ['assign tool in context', 'reset selections'],
@@ -2368,6 +2396,25 @@ export const modelingMachine = setup({
 
           initial: 'Awaiting origin',
           entry: 'listen for circle origin',
+        },
+        circle3PointToolSelect: {
+          on: {
+            'change tool': 'Change Tool',
+          },
+
+          states: {
+            circle3PointsAwaiting: {
+              on: {
+                circle3PointsFinished: {
+                  target: '#Modeling.Sketch.SketchIdle',
+                },
+              },
+            },
+          },
+
+          initial: 'circle3PointsAwaiting',
+          entry: 'entryDraftCircle3Point',
+          exit: 'exitDraftCircle3Point',
         },
       },
 
