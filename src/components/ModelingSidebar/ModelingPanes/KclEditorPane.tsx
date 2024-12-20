@@ -94,19 +94,9 @@ export const KclEditorPane = () => {
   }, [])
 
   useEffect(() => {
-    console.log('KclEditorPane useEffect', {
-      editorIsMounted,
-      lastSelectionEvent,
-      editorView: editorManager.editorView,
-    })
     if (!editorIsMounted || !lastSelectionEvent || !editorManager.editorView) {
       return
     }
-
-    console.log('KclEditorPane useEffect dispatch', {
-      code: codeManager.code,
-      lastSelectionEvent,
-    })
     editorManager.editorView.dispatch({
       selection: lastSelectionEvent.codeMirrorSelection,
       annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
