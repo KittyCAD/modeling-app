@@ -1,31 +1,17 @@
-import { test, expect } from '@playwright/test'
-
-import { commonPoints, getUtils, setup, tearDown } from './test-utils'
-import { uuidv4 } from 'lib/utils'
+import { test, expect } from './zoo-test'
+import { commonPoints, getUtils } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
-
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
+import { uuidv4 } from 'lib/utils'
 
 test.describe('Test network and connection issues', () => {
   test('simulate network down and network little widget', async ({
     page,
-    browserName,
+    homePage,
   }) => {
-    // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari until `window.tearDown` is working there'
-    )
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     const networkToggle = page.getByTestId('network-toggle')
 
@@ -64,7 +50,7 @@ test.describe('Test network and connection issues', () => {
     })
 
     // Expect the network to be down
-    await expect(networkToggle).toContainText('Offline')
+    await expect(networkToggle).toContainText('Problem')
 
     // Click the network widget
     await networkWidget.click()
@@ -95,26 +81,19 @@ test.describe('Test network and connection issues', () => {
 
   test('Engine disconnect & reconnect in sketch mode', async ({
     page,
-    browserName,
+    homePage,
   }) => {
     // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari until `window.tearDown` is working there'
-    )
     const networkToggle = page.getByTestId('network-toggle')
 
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
+
     await u.openDebugPanel()
-
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled({ timeout: 15000 })
-
     // click on "Start Sketch" button
     await u.clearCommandLogs()
     await page.getByRole('button', { name: 'Start Sketch' }).click()
@@ -157,7 +136,7 @@ test.describe('Test network and connection issues', () => {
     })
 
     // Expect the network to be down
-    await expect(networkToggle).toContainText('Offline')
+    await expect(networkToggle).toContainText('Problem')
 
     // Ensure we are not in sketch mode
     await expect(

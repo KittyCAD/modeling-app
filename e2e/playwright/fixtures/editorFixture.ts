@@ -29,7 +29,7 @@ export class EditorFixture {
   reConstruct = (page: Page) => {
     this.page = page
 
-    this.codeContent = page.locator('.cm-content')
+    this.codeContent = page.locator('.cm-content[data-language="kcl"]')
     this.diagnosticsTooltip = page.locator('.cm-tooltip-lint')
     this.diagnosticsGutterIcon = page.locator('.cm-lint-marker-error')
     this.activeLine = this.page.locator('.cm-activeLine')
@@ -54,13 +54,13 @@ export class EditorFixture {
         }
       }
       if (!shouldNormalise) {
-        const expectStart = expect(this.codeContent)
+        const expectStart = expect.poll(() => this.codeContent.textContent())
         if (not) {
-          const result = await expectStart.not.toContainText(code, { timeout })
+          const result = await expectStart.not.toContain(code)
           await resetPane()
           return result
         }
-        const result = await expectStart.toContainText(code, { timeout })
+        const result = await expectStart.toContain(code)
         await resetPane()
         return result
       }
@@ -146,5 +146,29 @@ export class EditorFixture {
   }
   openPane() {
     return openPane(this.page, this.paneButtonTestId)
+  }
+  scrollToText(text: string, placeCursor?: boolean) {
+    return this.page.evaluate(
+      (args: { text: string; placeCursor?: boolean }) => {
+        // error TS2339: Property 'docView' does not exist on type 'EditorView'.
+        // Except it does so :shrug:
+        // @ts-ignore
+        let index = window.editorManager._editorView?.docView.view.state.doc
+          .toString()
+          .indexOf(args.text)
+        window.editorManager._editorView?.focus()
+        window.editorManager._editorView?.dispatch({
+          selection: window.EditorSelection.create([
+            window.EditorSelection.cursor(index),
+          ]),
+          effects: [
+            window.EditorView.scrollIntoView(
+              window.EditorSelection.range(index, index + 1)
+            ),
+          ],
+        })
+      },
+      { text, placeCursor }
+    )
   }
 }

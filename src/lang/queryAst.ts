@@ -845,33 +845,6 @@ export function isLinesParallelAndConstrained(
   }
 }
 
-export function doesPipeHaveCallExp({
-  ast,
-  selection,
-  calleeName,
-}: {
-  calleeName: string
-  ast: Program
-  selection: Selection
-}): boolean {
-  const pipeExpressionMeta = getNodeFromPath<PipeExpression>(
-    ast,
-    selection?.codeRef?.pathToNode,
-    'PipeExpression'
-  )
-  if (err(pipeExpressionMeta)) {
-    console.error(pipeExpressionMeta)
-    return false
-  }
-  const pipeExpression = pipeExpressionMeta.node
-  if (pipeExpression.type !== 'PipeExpression') return false
-  return pipeExpression.body.some(
-    (expression) =>
-      expression.type === 'CallExpression' &&
-      expression.callee.name === calleeName
-  )
-}
-
 export function hasExtrudeSketch({
   ast,
   selection,

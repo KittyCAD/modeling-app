@@ -14,10 +14,14 @@ interface HomePageState {
 export class HomePageFixture {
   public page: Page
 
+  projectSection!: Locator
   projectCard!: Locator
   projectCardTitle!: Locator
   projectCardFile!: Locator
   projectCardFolder!: Locator
+  projectButtonNew!: Locator
+  projectButtonContinue!: Locator
+  projectTextName!: Locator
   sortByDateBtn!: Locator
   sortByNameBtn!: Locator
 
@@ -28,10 +32,18 @@ export class HomePageFixture {
   reConstruct = (page: Page) => {
     this.page = page
 
+    this.projectSection = this.page.getByTestId('home-section')
+
     this.projectCard = this.page.getByTestId('project-link')
     this.projectCardTitle = this.page.getByTestId('project-title')
     this.projectCardFile = this.page.getByTestId('project-file-count')
     this.projectCardFolder = this.page.getByTestId('project-folder-count')
+
+    this.projectButtonNew = this.page.getByTestId('home-new-file')
+    this.projectTextName = this.page.getByTestId('cmd-bar-arg-value')
+    this.projectButtonContinue = this.page.getByRole('button', {
+      name: 'Continue',
+    })
 
     this.sortByDateBtn = this.page.getByTestId('home-sort-by-modified')
     this.sortByNameBtn = this.page.getByTestId('home-sort-by-name')
@@ -91,10 +103,25 @@ export class HomePageFixture {
       .toEqual(expectedState)
   }
 
+  createAndGoToProject = async (projectTitle: string) => {
+    await expect(this.projectSection).not.toHaveText('Loading your Projects...')
+    await this.projectButtonNew.click()
+    await this.projectTextName.click()
+    await this.projectTextName.fill(projectTitle)
+    await this.projectButtonContinue.click()
+  }
+
   openProject = async (projectTitle: string) => {
     const projectCard = this.projectCard.locator(
       this.page.getByText(projectTitle)
     )
     await projectCard.click()
+  }
+
+  goToModelingScene = async (name: string = 'testDefault') => {
+    // On web this is a no-op. There is no project view.
+    if (process.env.PLATFORM === 'web') return
+
+    await this.createAndGoToProject(name)
   }
 }

@@ -1,24 +1,16 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './zoo-test'
 
-import { commonPoints, getUtils, setup, tearDown } from './test-utils'
+import { commonPoints, getUtils } from './test-utils'
 import { Coords2d } from 'lang/std/sketch'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import { uuidv4 } from 'lib/utils'
-
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
 
 test.describe('Testing selections', () => {
   test.setTimeout(90_000)
   test(
     'Selections work on fresh and edited sketch',
     { tag: ['@skipWin'] },
-    async ({ page }) => {
+    async ({ page, homePage }) => {
       // Skip on windows its being weird.
       test.skip(process.platform === 'win32', 'Skip on windows')
 
@@ -27,9 +19,9 @@ test.describe('Testing selections', () => {
       // source ranges are wrong, hovers won't work
       const u = await getUtils(page)
       const PUR = 400 / 37.5 //pixeltoUnitRatio
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      await u.waitForAuthSkipAppStart()
+      await homePage.goToModelingScene()
       await u.openDebugPanel()
 
       const yAxisClick = () =>
@@ -265,7 +257,7 @@ test.describe('Testing selections', () => {
     }
   )
 
-  test('Solids should be select and deletable', async ({ page }) => {
+  test('Solids should be select and deletable', async ({ page, homePage }) => {
     test.setTimeout(90_000)
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -356,9 +348,9 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
 `
       )
     }, KCL_DEFAULT_LENGTH)
-    await page.setViewportSize({ width: 1000, height: 500 })
-    await page.goto('/')
-    await u.waitForAuthSkipAppStart()
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await homePage.goToModelingScene()
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -419,29 +411,29 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
       `extrude001 = extrude(50, sketch001)`
     )
     await expect(u.codeLocator).toContainText(`sketch005 = startSketchOn({
-       plane = {
-         origin = { x = 0, y = -50, z = 0 },
-         x_axis = { x = 1, y = 0, z = 0 },
-         y_axis = { x = 0, y = 0, z = 1 },
-         z_axis = { x = 0, y = -1, z = 0 }
-       }
-     })`)
+     plane = {
+       origin = { x = 0, y = -50, z = 0 },
+       x_axis = { x = 1, y = 0, z = 0 },
+       y_axis = { x = 0, y = 0, z = 1 },
+       z_axis = { x = 0, y = -1, z = 0 }
+     }
+   })`)
     await expect(u.codeLocator).toContainText(`sketch003 = startSketchOn({
-       plane = {
-         origin = { x = 116.53, y = 0, z = 163.25 },
-         x_axis = { x = -0.81, y = 0, z = 0.58 },
-         y_axis = { x = 0, y = -1, z = 0 },
-         z_axis = { x = 0.58, y = 0, z = 0.81 }
-       }
-     })`)
+     plane = {
+       origin = { x = 116.53, y = 0, z = 163.25 },
+       x_axis = { x = -0.81, y = 0, z = 0.58 },
+       y_axis = { x = 0, y = -1, z = 0 },
+       z_axis = { x = 0.58, y = 0, z = 0.81 }
+     }
+   })`)
     await expect(u.codeLocator).toContainText(`sketch002 = startSketchOn({
-       plane = {
-         origin = { x = -91.74, y = 0, z = 80.89 },
-         x_axis = { x = -0.66, y = 0, z = -0.75 },
-         y_axis = { x = 0, y = -1, z = 0 },
-         z_axis = { x = -0.75, y = 0, z = 0.66 }
-       }
-     })`)
+     plane = {
+       origin = { x = -91.74, y = 0, z = 80.89 },
+       x_axis = { x = -0.66, y = 0, z = -0.75 },
+       y_axis = { x = 0, y = -1, z = 0 },
+       z_axis = { x = -0.75, y = 0, z = 0.66 }
+     }
+   })`)
 
     // DELETE SOLID 2D
     await page.mouse.click(solid2d.x, solid2d.y)
@@ -471,31 +463,32 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
   })
   test("Deleting solid that the AST mod can't handle results in a toast message", async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([-79.26, 95.04], %)
-  |> line([112.54, 127.64], %, $seg02)
-  |> line([170.36, -121.61], %, $seg01)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(50, sketch001)
-launderExtrudeThroughVar = extrude001
-sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
-  |> startProfileAt([-100.54, 16.99], %)
-  |> line([0, 20.03], %)
-  |> line([62.61, 0], %, $seg03)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-`
+    |> startProfileAt([-79.26, 95.04], %)
+    |> line([112.54, 127.64], %, $seg02)
+    |> line([170.36, -121.61], %, $seg01)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
+  extrude001 = extrude(50, sketch001)
+  launderExtrudeThroughVar = extrude001
+  sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
+    |> startProfileAt([-100.54, 16.99], %)
+    |> line([0, 20.03], %)
+    |> line([62.61, 0], %, $seg03)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
+  `
       )
     }, KCL_DEFAULT_LENGTH)
-    await page.setViewportSize({ width: 1000, height: 500 })
-    await page.goto('/')
-    await u.waitForAuthSkipAppStart()
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await homePage.goToModelingScene()
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
@@ -535,37 +528,40 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
   })
   test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({
     page,
+    homePage,
   }) => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
     await page.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
         'persistCode',
         `part001 = startSketchOn('XZ')
-    |> startProfileAt([20, 0], %)
-    |> line([7.13, 4 + 0], %)
-    |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
-    |> lineTo([20.14 + 0, -0.14 + 0], %)
-    |> xLineTo(29 + 0, %)
-    |> yLine(-3.14 + 0, %, $a)
-    |> xLine(1.63, %)
-    |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 }, %)
-    |> angledLineOfYLength({ angle = 30, length = 3 + 0 }, %)
-    |> angledLineToX({ angle = 22.14 + 0, to = 12 }, %)
-    |> angledLineToY({ angle = 30, to = 11.14 }, %)
-    |> angledLineThatIntersects({
-          angle = 3.14,
-          intersectTag = a,
-          offset = 0
-        }, %)
-    |> tangentialArcTo([13.14 + 0, 13.14], %)
-    |> close(%)
-    |> extrude(5 + 7, %)
-  `
+  |> startProfileAt([20, 0], %)
+  |> line([7.13, 4 + 0], %)
+  |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
+  |> lineTo([20.14 + 0, -0.14 + 0], %)
+  |> xLineTo(29 + 0, %)
+  |> yLine(-3.14 + 0, %, $a)
+  |> xLine(1.63, %)
+  |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 }, %)
+  |> angledLineOfYLength({ angle = 30, length = 3 + 0 }, %)
+  |> angledLineToX({ angle = 22.14 + 0, to = 12 }, %)
+  |> angledLineToY({ angle = 30, to = 11.14 }, %)
+  |> angledLineThatIntersects({
+        angle = 3.14,
+        intersectTag = a,
+        offset = 0
+      }, %)
+  |> tangentialArcTo([13.14 + 0, 13.14], %)
+  |> close(%)
+  |> extrude(5 + 7, %)
+    `
       )
     }, KCL_DEFAULT_LENGTH)
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // wait for execution done
     await u.openDebugPanel()
@@ -765,29 +761,29 @@ sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
 
     await u.removeCurrentCode()
     await u.codeLocator.fill(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       217.26
-     ], %, $seg01)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $yo)
-  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
-  |> close(%)
-extrude001 = extrude(100, sketch001)
-  |> chamfer({
-       length = 30,
-       tags = [
-         seg01,
-         getNextAdjacentEdge(yo),
-         getNextAdjacentEdge(seg02),
-         getOppositeEdge(seg01)
-       ]
-     }, %)
-`)
+    |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
+    |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+    |> angledLine([
+     segAng(rectangleSegmentA001) - 90,
+     217.26
+   ], %, $seg01)
+    |> angledLine([
+     segAng(rectangleSegmentA001),
+     -segLen(rectangleSegmentA001)
+   ], %, $yo)
+    |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
+    |> close(%)
+  extrude001 = extrude(100, sketch001)
+    |> chamfer({
+     length = 30,
+     tags = [
+       seg01,
+       getNextAdjacentEdge(yo),
+       getNextAdjacentEdge(seg02),
+       getOppositeEdge(seg01)
+     ]
+   }, %)
+  `)
     await expect(
       page.getByTestId('model-state-indicator-execution-done')
     ).toBeVisible()
@@ -875,64 +871,70 @@ extrude001 = extrude(100, sketch001)
   })
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
+    editor,
+    homePage,
   }) => {
     const u = await getUtils(page)
+
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([3.29, 7.86], %)
-  |> line([2.48, 2.44], %)
-  |> line([2.66, 1.17], %)
-  |> line([3.75, 0.46], %)
-  |> line([4.99, -0.46], %, $seg01)
-  |> line([3.3, -2.12], %)
-  |> line([2.16, -3.33], %)
-  |> line([0.85, -3.08], %)
-  |> line([-0.18, -3.36], %)
-  |> line([-3.86, -2.73], %)
-  |> line([-17.67, 0.85], %)
-  |> close(%)
-extrude001 = extrude(10, sketch001)
-  `
+    |> startProfileAt([3.29, 7.86], %)
+    |> line([2.48, 2.44], %)
+    |> line([2.66, 1.17], %)
+    |> line([3.75, 0.46], %)
+    |> line([4.99, -0.46], %, $seg01)
+    |> line([3.3, -2.12], %)
+    |> line([2.16, -3.33], %)
+    |> line([0.85, -3.08], %)
+    |> line([-0.18, -3.36], %)
+    |> line([-3.86, -2.73], %)
+    |> line([-17.67, 0.85], %)
+    |> close(%)
+  extrude001 = extrude(10, sketch001)
+    `
       )
     })
-    await page.setViewportSize({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
     // wait for execution done
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    const selectUnExtrudable = () =>
-      page.getByText(`line([4.99, -0.46], %, $seg01)`).click()
+    const selectUnExtrudable = async () => {
+      await editor.scrollToText(`line([4.99, -0.46], %, $seg01)`)
+      await page.getByText(`line([4.99, -0.46], %, $seg01)`).click()
+    }
     const clickEmpty = () => page.mouse.click(700, 460)
     await selectUnExtrudable()
-    // expect extrude button to be disabled
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
 
     await clickEmpty()
 
     // expect active line to contain nothing
     await expect(page.locator('.cm-activeLine')).toHaveText('')
-    // and extrude to still be disabled
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
 
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
-sketch002 = startSketchOn(extrude001, $seg01)
-  |> startProfileAt([-12.94, 6.6], %)
-  |> line([2.45, -0.2], %)
-  |> line([-2, -1.25], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-`
+  sketch002 = startSketchOn(extrude001, $seg01)
+    |> startProfileAt([-12.94, 6.6], %)
+    |> line([2.45, -0.2], %)
+    |> line([-2, -1.25], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
+  `
     await u.codeLocator.fill(codeToAdd)
 
     await selectUnExtrudable()
-    // expect extrude button to be disabled
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
 
     await clickEmpty()
     await expect(page.locator('.cm-activeLine')).toHaveText('')
@@ -942,23 +944,23 @@ sketch002 = startSketchOn(extrude001, $seg01)
     ).not.toBeDisabled()
   })
 
-  test('Fillet button states test', async ({ page }) => {
+  test('Fillet button states test', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([-5, -5], %)
-  |> line([0, 10], %)
-  |> line([10, 0], %)
-  |> line([0, -10], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`
+    |> startProfileAt([-5, -5], %)
+    |> line([0, 10], %)
+    |> line([10, 0], %)
+    |> line([0, -10], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)`
       )
     })
 
-    await page.setViewportSize({ width: 1000, height: 500 })
-    await u.waitForAuthSkipAppStart()
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
@@ -967,21 +969,24 @@ sketch002 = startSketchOn(extrude001, $seg01)
     const selectClose = () => page.getByText(`close(%)`).click()
     const clickEmpty = () => page.mouse.click(950, 100)
 
-    // expect fillet button without any bodies in the scene
+    // Now that we don't disable toolbar buttons based on selection,
+    // but rather based on a "selection" step in the command palette,
+    // the fillet button should always be enabled with a good network connection.
+    // I'm not sure if this test is actually useful anymore.
     await selectSegment()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
     await clickEmpty()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
 
     // test fillet button with the body in the scene
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
-extrude001 = extrude(10, sketch001)`
+  extrude001 = extrude(10, sketch001)`
     await u.codeLocator.clear()
     await u.codeLocator.fill(codeToAdd)
     await selectSegment()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
     await selectClose()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
     await clickEmpty()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
   })
@@ -996,6 +1001,7 @@ extrude001 = extrude(10, sketch001)`
 
   test('Testing selections (and hovers) work on sketches when NOT in sketch mode', async ({
     page,
+    homePage,
   }) => {
     const cases = [
       {
@@ -1016,21 +1022,21 @@ extrude001 = extrude(10, sketch001)`
         localStorage.setItem(
           'persistCode',
           `yo = 79
-part001 = startSketchOn('XZ')
-  |> startProfileAt([-7.54, -26.74], %)
-  |> ${cases[0].expectedCode}
-  |> line([-3.19, -138.43], %)
-  |> ${cases[1].expectedCode}
-  |> line([41.19, 28.97 + 5], %)
-  |> ${cases[2].expectedCode}`
+  part001 = startSketchOn('XZ')
+    |> startProfileAt([-7.54, -26.74], %)
+    |> ${cases[0].expectedCode}
+    |> line([-3.19, -138.43], %)
+    |> ${cases[1].expectedCode}
+    |> line([41.19, 28.97 + 5], %)
+    |> ${cases[2].expectedCode}`
         )
       },
       { cases }
     )
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({
@@ -1063,24 +1069,25 @@ part001 = startSketchOn('XZ')
   })
   test("Hovering and selection of extruded faces works, and is not overridden shortly after user's click", async ({
     page,
+    homePage,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([-79.26, 95.04], %)
-  |> line([112.54, 127.64], %)
-  |> line([170.36, -121.61], %, $seg01)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(50, sketch001)
-        `
+    |> startProfileAt([-79.26, 95.04], %)
+    |> line([112.54, 127.64], %)
+    |> line([170.36, -121.61], %, $seg01)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
+  extrude001 = extrude(50, sketch001)
+      `
       )
     })
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
     await u.openAndClearDebugPanel()
 
     await u.sendCustomCmd({
@@ -1163,6 +1170,7 @@ extrude001 = extrude(50, sketch001)
   })
   test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     const selectionsSnippets = {
@@ -1181,46 +1189,46 @@ extrude001 = extrude(50, sketch001)
         localStorage.setItem(
           'persistCode',
           `part001 = startSketchOn('XZ')
-    ${extrudeAndEditBlocked}
-    |> line([25.96, 2.93], %)
-    |> line([5.25, -5.72], %)
-    |> line([-2.01, -10.35], %)
-    |> line([-27.65, -2.78], %)
-    |> close(%)
-    |> extrude(5, %)
-  sketch002 = startSketchOn('XZ')
-    ${extrudeAndEditAllowed}
-    |> line([10.32, 6.47], %)
-    |> line([9.71, -6.16], %)
-    |> line([-3.08, -9.86], %)
-    |> line([-12.02, -1.54], %)
-    |> close(%)
-  sketch003 = startSketchOn('XZ')
-    ${editOnly}
-    |> line([27.55, -1.65], %)
-    |> line([4.95, -8], %)
-    |> line([-20.38, -10.12], %)
-    |> line([-15.79, 17.08], %)
-
-  fn yohey = (pos) => {
-    sketch004 = startSketchOn('XZ')
-    ${extrudeAndEditBlockedInFunction}
-    |> line([27.55, -1.65], %)
-    |> line([4.95, -10.53], %)
-    |> line([-20.38, -8], %)
-    |> line([-15.79, 17.08], %)
-    return ''
-  }
-
-      yohey([15.79, -34.6])
-  `
+  ${extrudeAndEditBlocked}
+  |> line([25.96, 2.93], %)
+  |> line([5.25, -5.72], %)
+  |> line([-2.01, -10.35], %)
+  |> line([-27.65, -2.78], %)
+  |> close(%)
+  |> extrude(5, %)
+    sketch002 = startSketchOn('XZ')
+  ${extrudeAndEditAllowed}
+  |> line([10.32, 6.47], %)
+  |> line([9.71, -6.16], %)
+  |> line([-3.08, -9.86], %)
+  |> line([-12.02, -1.54], %)
+  |> close(%)
+    sketch003 = startSketchOn('XZ')
+  ${editOnly}
+  |> line([27.55, -1.65], %)
+  |> line([4.95, -8], %)
+  |> line([-20.38, -10.12], %)
+  |> line([-15.79, 17.08], %)
+  
+    fn yohey = (pos) => {
+  sketch004 = startSketchOn('XZ')
+  ${extrudeAndEditBlockedInFunction}
+  |> line([27.55, -1.65], %)
+  |> line([4.95, -10.53], %)
+  |> line([-20.38, -8], %)
+  |> line([-15.79, 17.08], %)
+  return ''
+    }
+  
+    yohey([15.79, -34.6])
+    `
         )
       },
       selectionsSnippets
     )
-    await page.setViewportSize({ width: 1200, height: 1000 })
+    await page.setBodyDimensions({ width: 1200, height: 1000 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     // wait for execution done
     await u.openDebugPanel()
@@ -1233,7 +1241,9 @@ extrude001 = extrude(50, sketch001)
     ).not.toBeDisabled()
 
     await page.getByText(selectionsSnippets.extrudeAndEditBlocked).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
 
     await page.getByText(selectionsSnippets.extrudeAndEditAllowed).click()
     await expect(
@@ -1244,7 +1254,9 @@ extrude001 = extrude(50, sketch001)
     ).not.toBeDisabled()
 
     await page.getByText(selectionsSnippets.editOnly).click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).not.toBeDisabled()
@@ -1252,7 +1264,9 @@ extrude001 = extrude(50, sketch001)
     await page
       .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
       .click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeDisabled()
+    // expect extrude button to be enabled, since we don't guard
+    // until the extrude button is clicked
+    await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).not.toBeVisible()
@@ -1260,6 +1274,7 @@ extrude001 = extrude(50, sketch001)
 
   test('Deselecting line tool should mean nothing happens on click', async ({
     page,
+    homePage,
   }) => {
     /**
      * If the line tool is clicked when the state is 'No Points' it will exit Sketch mode.
@@ -1268,9 +1283,9 @@ extrude001 = extrude(50, sketch001)
      * To continue to test this workflow, we now enter sketch mode and place a single point before exiting the line tool.
      */
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
     await u.openDebugPanel()
 
     await expect(

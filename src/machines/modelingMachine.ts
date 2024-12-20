@@ -287,6 +287,7 @@ export type ModelingMachineEvent =
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
+  | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
       type: 'Add rectangle origin'
       data: [x: number, y: number]
@@ -420,11 +421,6 @@ export const modelingMachine = setup({
   },
   guards: {
     'Selection is on face': () => false,
-    'has valid sweep selection': () => false,
-    'has valid revolve selection': () => false,
-    'has valid loft selection': () => false,
-    'has valid shell selection': () => false,
-    'has valid edge treatment selection': () => false,
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
@@ -1752,6 +1748,11 @@ export const modelingMachine = setup({
         return {} as SketchDetailsUpdate
       }
     ),
+    'submit-prompt-edit': fromPromise(
+      async ({ input }: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {
+        console.log('doing thing', input)
+      }
+    ),
   },
   // end services
 }).createMachine({
@@ -1776,33 +1777,28 @@ export const modelingMachine = setup({
 
         Extrude: {
           target: 'idle',
-          guard: 'has valid sweep selection',
           actions: ['AST extrude'],
           reenter: false,
         },
 
         Revolve: {
           target: 'idle',
-          guard: 'has valid revolve selection',
           actions: ['AST revolve'],
           reenter: false,
         },
 
         Loft: {
           target: 'Applying loft',
-          guard: 'has valid loft selection',
           reenter: true,
         },
 
         Shell: {
           target: 'Applying shell',
-          guard: 'has valid shell selection',
           reenter: true,
         },
 
         Fillet: {
           target: 'idle',
-          guard: 'has valid edge treatment selection',
           actions: ['AST fillet'],
           reenter: false,
         },
@@ -1838,6 +1834,8 @@ export const modelingMachine = setup({
           target: 'Applying offset plane',
           reenter: true,
         },
+
+        'Prompt-to-edit': 'Applying Prompt-to-edit',
       },
 
       entry: 'reset client scene mouse handlers',
@@ -2729,6 +2727,26 @@ export const modelingMachine = setup({
         },
         onDone: ['idle'],
         onError: ['idle'],
+      },
+    },
+
+    'Applying Prompt-to-edit': {
+      invoke: {
+        src: 'submit-prompt-edit',
+        id: 'submit-prompt-edit',
+
+        input: ({ event }) => {
+          if (event.type !== 'Prompt-to-edit' || !event.data) {
+            return {
+              prompt: '',
+              selection: { graphSelections: [], otherSelections: [] },
+            }
+          }
+          return event.data
+        },
+
+        onDone: 'idle',
+        onError: 'idle',
       },
     },
   },
