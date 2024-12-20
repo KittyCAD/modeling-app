@@ -20,17 +20,18 @@ import { featureTreeMachine } from 'machines/featureTreeMachine'
 import {
   editorIsMountedSelector,
   kclEditorActor,
-  selectionEventIdSelector,
+  selectionEventSelector,
 } from 'machines/kclEditorMachine'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const lastSelectionEventId = useSelector(
     kclEditorActor,
-    selectionEventIdSelector
+    selectionEventSelector
   )
   const { send: modelingSend, state: modelingState } = useModelingContext()
-  const [featureTreeState, featureTreeSend] = useMachine(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_featureTreeState, featureTreeSend] = useMachine(
     featureTreeMachine.provide({
       guards: {
         codePaneIsOpen: () =>
@@ -53,6 +54,7 @@ export const FeatureTreePane = () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
         },
         sendSelectionEvent: ({ context }) => {
+          console.log('sendSelectionEvent', context)
           if (!context.targetSourceRange) {
             return
           }
@@ -62,6 +64,10 @@ export const FeatureTreePane = () => {
                 engineCommandManager.artifactGraph
               )
             : null
+          console.log('sendSelectionEvent', {
+            artifact,
+            hasCodeRef: artifact && 'codeRef' in artifact,
+          })
           if (!artifact || !('codeRef' in artifact)) {
             modelingSend({
               type: 'Set selection',
@@ -120,16 +126,18 @@ export const FeatureTreePane = () => {
   // Watch for changes in the open panes and send an event to the feature tree machine
   useEffect(() => {
     const codeOpen = modelingState.context.store.openPanes.includes('code')
+    console.log('panes useEffect', {
+      codeOpen,
+      isEditorMounted,
+    })
     if (codeOpen && isEditorMounted) {
       featureTreeSend({ type: 'codePaneOpened' })
     }
-  }, [modelingState.context.store.openPanes])
+  }, [modelingState.context.store.openPanes, isEditorMounted])
 
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {
-    if (featureTreeState.matches('selecting')) {
-      featureTreeSend({ type: 'selected' })
-    }
+    featureTreeSend({ type: 'selected' })
   }, [lastSelectionEventId])
 
   function goToError() {

@@ -75,7 +75,6 @@ import {
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
-import { EditorSelection } from '@codemirror/state'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
@@ -301,16 +300,6 @@ export const ModelingMachineProvider = ({
               null
             if (!setSelections) return {}
 
-            const dispatchSelection = (
-              selection: EditorSelection,
-              scrollIntoView: boolean
-            ) => {
-              kclEditorActor.send({
-                type: 'setLastSelectionEvent',
-                data: { codeMirrorSelection: selection, scrollIntoView },
-              })
-            }
-
             let selections: Selections = {
               graphSelections: [],
               otherSelections: [],
@@ -350,11 +339,15 @@ export const ModelingMachineProvider = ({
               } = handleSelectionBatch({
                 selections,
               })
-              codeMirrorSelection &&
-                dispatchSelection(
-                  codeMirrorSelection,
-                  setSelections.scrollIntoView ?? false
-                )
+              if (codeMirrorSelection) {
+                kclEditorActor.send({
+                  type: 'setLastSelectionEvent',
+                  data: {
+                    codeMirrorSelection,
+                    scrollIntoView: setSelections.scrollIntoView ?? false,
+                  },
+                })
+              }
               engineEvents &&
                 engineEvents.forEach((event) => {
                   // eslint-disable-next-line @typescript-eslint/no-floating-promises

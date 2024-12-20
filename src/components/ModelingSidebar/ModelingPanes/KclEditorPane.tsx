@@ -47,7 +47,7 @@ import { codeManagerHistoryCompartment } from 'lang/codeManager'
 import {
   editorIsMountedSelector,
   kclEditorActor,
-  selectionEventIdSelector,
+  selectionEventSelector,
 } from 'machines/kclEditorMachine'
 import { useSelector } from '@xstate/react'
 import { modelingMachineEvent } from 'editor/manager'
@@ -66,10 +66,7 @@ export const KclEditorPane = () => {
   const {
     settings: { context },
   } = useSettingsAuthContext()
-  const lastSelectionEvent = useSelector(
-    kclEditorActor,
-    selectionEventIdSelector
-  )
+  const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const theme =
     context.app.theme.current === Themes.System
@@ -88,8 +85,22 @@ export const KclEditorPane = () => {
     editorManager.redo()
   })
 
+  // When this component unmounts, we need to tell the machine that the editor
   useEffect(() => {
-    if (!editorManager.editorView || !lastSelectionEvent) return
+    return () => {
+      kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
+    }
+  }, [])
+
+  useEffect(() => {
+    console.log('KclEditorPane useEffect', {
+      editorIsMounted,
+      lastSelectionEvent,
+      editorView: editorManager.editorView,
+    })
+    if (!editorIsMounted || !lastSelectionEvent || !editorManager.editorView) {
+      return
+    }
 
     editorManager.editorView.dispatch({
       selection: lastSelectionEvent.codeMirrorSelection,
@@ -196,6 +207,7 @@ export const KclEditorPane = () => {
             if (_editorView === null) return
 
             editorManager.setEditorView(_editorView)
+            kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
 
             // On first load of this component, ensure we show the current errors
             // in the editor.

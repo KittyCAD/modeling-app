@@ -57,7 +57,7 @@ export const kclEditorMachine = setup({
 export const kclEditorActor = createActor(kclEditorMachine).start()
 
 /** Watch for changes to `lastSelectionEvent` */
-export const selectionEventIdSelector = (
+export const selectionEventSelector = (
   snapshot?: StateFrom<typeof kclEditorMachine>
 ) => snapshot?.context?.lastSelectionEvent
 
