@@ -120,7 +120,11 @@ export class CmdBarFixture {
   }
 
   openCmdBar = async (selectCmd?: 'promptToEdit') => {
-    await this.cmdBarOpenBtn.click()
+    // TODO why does this button not work in electron tests?
+    // await this.cmdBarOpenBtn.click()
+    await this.page.keyboard.down('ControlOrMeta')
+    await this.page.keyboard.press('KeyK')
+    await this.page.keyboard.up('ControlOrMeta')
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
     if (selectCmd === 'promptToEdit') {
       const promptEditCommand = this.page.getByText(
