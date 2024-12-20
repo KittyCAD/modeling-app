@@ -239,7 +239,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
-  | { type: 'Cancel', cleanup?: () => void }
+  | { type: 'Cancel'; cleanup?: () => void }
   | { type: 'CancelSketch' }
   | { type: 'Add start point' }
   | { type: 'Make segment horizontal' }
@@ -318,7 +318,7 @@ export type ModelingMachineEvent =
   | { type: 'Finish rectangle' }
   | { type: 'Finish center rectangle' }
   | { type: 'Finish circle' }
-  | { type: 'circle3PointsFinished', cleanup?: () => void }
+  | { type: 'circle3PointsFinished'; cleanup?: () => void }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
 
@@ -997,7 +997,8 @@ export const modelingMachine = setup({
       )
     },
     exitDraftCircle3Point: ({ event }) => {
-      if (event.type !== 'circle3PointsFinished' && event.type !== 'Cancel') return
+      if (event.type !== 'circle3PointsFinished' && event.type !== 'Cancel')
+        return
       if (!event.cleanup) return
       event.cleanup()
     },

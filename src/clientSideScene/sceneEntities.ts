@@ -1281,7 +1281,7 @@ export class SceneEntities {
       if (points.length !== 3) return undefined
 
       // y = (i/j)(x-h) + b
-      // m and n variables for the slopes
+      // i and j variables for the slopes
       const i = [points[1].x - points[0].x, points[2].x - points[1].x]
       const j = [points[1].y - points[0].y, points[2].y - points[1].y]
 
@@ -1419,7 +1419,8 @@ export class SceneEntities {
           }, %)`)
 
         if (err(kclCircle3Point) || kclCircle3Point.program === null) return
-        if (kclCircle3Point.program.body[0].type !== 'ExpressionStatement') return
+        if (kclCircle3Point.program.body[0].type !== 'ExpressionStatement')
+          return
 
         const clonedStartSketchOnASTNode = structuredClone(startSketchOnASTNode)
         startSketchOnASTNode.node.declaration.init = createPipeExpression([
