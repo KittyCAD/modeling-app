@@ -128,9 +128,7 @@ export class ToolbarFixture {
    * Get a specific operation button from the Feature Tree pane
    */
   async getFeatureTreeOperation(operationName: string, operationIndex: number) {
-    if (!(await this.checkIfFeatureTreePaneIsOpen())) {
-      await this.openFeatureTreePane()
-    }
+    await this.openFeatureTreePane()
     await expect(this.featureTreePane).toBeVisible()
     return this.featureTreePane
       .getByRole('button', {
