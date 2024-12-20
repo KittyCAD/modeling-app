@@ -452,8 +452,7 @@ export function ToastPromptToEditCadSuccess({
             data-negative-button={'reject'}
             name={'Reject'}
             onClick={() => {
-              // TODO add telemetry when we know how sendTelemetry is setup for /user/text-to-cad/
-              // sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
+              sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
               codeManager.updateCodeEditor(oldCode)
               kclManager.executeCode().catch(reportRejection)
               toast.dismiss(toastId)
@@ -469,7 +468,6 @@ export function ToastPromptToEditCadSuccess({
             }}
             name="Accept"
             onClick={() => {
-              // TODO add telemetry when we know how sendTelemetry is setup for /user/text-to-cad/
               sendTelemetry(modelId, 'accepted', token).catch(reportRejection)
               toast.dismiss(toastId)
             }}
