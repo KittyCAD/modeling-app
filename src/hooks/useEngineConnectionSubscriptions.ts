@@ -56,7 +56,6 @@ export function useEngineConnectionSubscriptions() {
         ;(async () => {
           if (stateRef.current.matches('Sketch no face')) return
           const event = await getEventForSelectWithPoint(engineEvent)
-          console.log('event', event)
           event && send(event)
         })().catch(reportRejection)
       },

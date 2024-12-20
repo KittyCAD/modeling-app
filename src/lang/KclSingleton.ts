@@ -606,10 +606,10 @@ export class KclManager {
     return Promise.all(thePromises)
   }
   /** TODO: this function is hiding unawaited asynchronous work */
-  defaultSelectionFilter(restorePreviousSelections?: Selections) {
+  defaultSelectionFilter(selectionsToRestore?: Selections) {
     setSelectionFilterToDefault(
       this.engineCommandManager,
-      restorePreviousSelections
+      selectionsToRestore
     )
   }
   /** TODO: this function is hiding unawaited asynchronous work */
@@ -647,13 +647,13 @@ const defaultSelectionFilter: EntityType_type[] = [
 /** TODO: This function is not synchronous but is currently treated as such */
 function setSelectionFilterToDefault(
   engineCommandManager: EngineCommandManager,
-  restorePreviousSelections?: Selections
+  selectionsToRestore?: Selections
 ) {
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   setSelectionFilter(
     defaultSelectionFilter,
     engineCommandManager,
-    restorePreviousSelections
+    selectionsToRestore
   )
 }
 
@@ -661,14 +661,14 @@ function setSelectionFilterToDefault(
 function setSelectionFilter(
   filter: EntityType_type[],
   engineCommandManager: EngineCommandManager,
-  restorePreviousSelections?: Selections
+  selectionsToRestore?: Selections
 ) {
-  const { engineEvents } = restorePreviousSelections
+  const { engineEvents } = selectionsToRestore
     ? handleSelectionBatch({
-        selections: restorePreviousSelections,
+        selections: selectionsToRestore,
       })
     : { engineEvents: undefined }
-  if (!restorePreviousSelections || !engineEvents) {
+  if (!selectionsToRestore || !engineEvents) {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
