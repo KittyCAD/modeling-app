@@ -44,8 +44,8 @@ import {
 } from '@codemirror/autocomplete'
 import CodeEditor from './CodeEditor'
 import { codeManagerHistoryCompartment } from 'lang/codeManager'
-import { useModelingContext } from 'hooks/useModelingContext'
 import {
+  editorIsMountedSelector,
   kclEditorActor,
   selectionEventIdSelector,
 } from 'machines/kclEditorMachine'
@@ -70,7 +70,7 @@ export const KclEditorPane = () => {
     kclEditorActor,
     selectionEventIdSelector
   )
-  const { state: modelingState } = useModelingContext()
+  const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const theme =
     context.app.theme.current === Themes.System
       ? getSystemTheme()
@@ -96,7 +96,7 @@ export const KclEditorPane = () => {
       annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
       scrollIntoView: lastSelectionEvent.scrollIntoView,
     })
-  }, [editorManager.editorView, lastSelectionEvent])
+  }, [editorIsMounted, lastSelectionEvent])
 
   const textWrapping = context.textEditor.textWrapping
   const cursorBlinking = context.textEditor.blinkingCursor

@@ -15,17 +15,13 @@ import {
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
-import { Actor, Prop, StateFrom } from 'xstate'
+import { Actor, Prop } from 'xstate'
 import { featureTreeMachine } from 'machines/featureTreeMachine'
 import {
+  editorIsMountedSelector,
   kclEditorActor,
-  kclEditorMachine,
   selectionEventIdSelector,
 } from 'machines/kclEditorMachine'
-
-const editorIsMountedSelector = (
-  snapshot?: StateFrom<typeof kclEditorMachine>
-) => snapshot?.context?.isKclEditorMounted
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
@@ -34,7 +30,7 @@ export const FeatureTreePane = () => {
     selectionEventIdSelector
   )
   const { send: modelingSend, state: modelingState } = useModelingContext()
-  const [_, featureTreeSend] = useMachine(
+  const [featureTreeState, featureTreeSend] = useMachine(
     featureTreeMachine.provide({
       guards: {
         codePaneIsOpen: () =>
@@ -131,8 +127,9 @@ export const FeatureTreePane = () => {
 
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {
-    console.log('selection changed', modelingState.context.selectionRanges)
-    featureTreeSend({ type: 'selected' })
+    if (featureTreeState.matches('selecting')) {
+      featureTreeSend({ type: 'selected' })
+    }
   }, [lastSelectionEventId])
 
   function goToError() {

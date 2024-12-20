@@ -75,12 +75,11 @@ import {
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
-import { EditorSelection, Transaction } from '@codemirror/state'
+import { EditorSelection } from '@codemirror/state'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { modelingMachineEvent } from 'editor/manager'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -92,14 +91,7 @@ import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { promptToEditFlow } from 'lib/promptToEdit'
-import { Subject } from 'rxjs'
 import { kclEditorActor } from 'machines/kclEditorMachine'
-
-/**
- * This RxJs Subject is used to notify subscribers like the feature tree when
- * the selection changes in the editor.
- */
-export const selectionChangedObservable = new Subject<void>()
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

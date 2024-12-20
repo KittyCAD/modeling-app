@@ -60,3 +60,8 @@ export const kclEditorActor = createActor(kclEditorMachine).start()
 export const selectionEventIdSelector = (
   snapshot?: StateFrom<typeof kclEditorMachine>
 ) => snapshot?.context?.lastSelectionEvent
+
+/** Watch for the editorView to be mounted */
+export const editorIsMountedSelector = (
+  snapshot?: StateFrom<typeof kclEditorMachine>
+) => snapshot?.context?.isKclEditorMounted
