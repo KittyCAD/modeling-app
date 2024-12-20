@@ -210,7 +210,7 @@ export async function doPromptEdit({
   token?: string
   artifactGraph: ArtifactGraph
 }): Promise<Models['TextToCadIteration_type'] | Error> {
-  const toastId = toast.loading('Submitting to Edit AI...')
+  const toastId = toast.loading('Submitting to Text-to-CAD API...')
   const submitResult = await submitPromptToEditToQueue({
     prompt,
     selections,

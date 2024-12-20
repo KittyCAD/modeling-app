@@ -71,7 +71,7 @@ test.describe('Check the happy path, for basic changing color', () => {
       const green: [number, number, number] = [108, 152, 75]
       const notGreen: [number, number, number] = [132, 132, 132]
       const body2NotGreen: [number, number, number] = [88, 88, 88]
-      const submittingToast = page.getByText('Submitting to Edit AI...')
+      const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
       const successToast = page.getByText('Prompt to edit successful')
       const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
       const rejectBtn = page.getByRole('button', { name: 'close Reject' })
@@ -155,7 +155,7 @@ test.describe('bad path', () => {
       body1CapCoords.y
     )
     const yellow: [number, number, number] = [179, 179, 131]
-    const submittingToast = page.getByText('Submitting to Edit AI...')
+    const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
     const failToast = page.getByText(
       'Failed to edit your KCL code, please try again with a different prompt or selection'
     )
