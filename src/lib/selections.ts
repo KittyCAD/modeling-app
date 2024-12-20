@@ -781,6 +781,14 @@ export function codeToIdSelections(
             }
           }
         }
+
+        if (entry.artifact.type === 'sweep') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
+          }
+        }
       })
 
       if (bestCandidate) {
