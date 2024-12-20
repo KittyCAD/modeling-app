@@ -268,7 +268,8 @@ export async function doPromptEdit({
   return textToCadComplete
 }
 
-export async function doWholeFlow({
+/** takes care of the whole submit prompt to endpoint flow including the accept-reject toast once the result is back */
+export async function promptToEditFlow({
   prompt,
   selections,
   code,

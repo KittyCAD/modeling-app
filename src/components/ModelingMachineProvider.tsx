@@ -100,7 +100,7 @@ import { useFileContext } from 'hooks/useFileContext'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { doWholeFlow } from 'lib/textToEdit'
+import { promptToEditFlow } from 'lib/promptToEdit'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -1200,7 +1200,7 @@ export const ModelingMachineProvider = ({
           }
         ),
         'submit-prompt-edit': fromPromise(async ({ input }) => {
-          return await doWholeFlow({
+          return await promptToEditFlow({
             code: codeManager.code,
             prompt: input.prompt,
             selections: input.selection,
