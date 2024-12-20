@@ -61,7 +61,7 @@ If you need to operate on this cap, for example for sketching on the face, you c
           } i.e. \`startSketchOn(someSweepVariable, ${
             artifact.subType === 'end' ? 'END' : 'START'
           })\`
-When they made this selection they main have intended this surface directly or meant something more broad like the sweep itself.
+When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
 See later source ranges for more context.`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
         })
@@ -153,8 +153,6 @@ See later source ranges for more context. about the sweep`,
       }
       return prompts
     })
-  console.log('prompts')
-  ranges.map((a) => console.log(a.prompt))
   const body: Models['TextToCadIterationBody_type'] = {
     original_source_code: code,
     prompt,
@@ -179,7 +177,6 @@ See later source ranges for more context. about the sweep`,
   if (!data.id) {
     return new Error('No id returned from Text-to-CAD API')
   }
-  console.log('data', data)
   return data
 }
 
@@ -233,9 +230,7 @@ export async function doPromptEdit({
 
         while (timeElapsed < MAX_CHECK_TIMEOUT) {
           const check = await getPromptToEditResult(submitResult.id, token)
-          console.log('check', check)
           if (check instanceof Error || check.status === 'failed') {
-            console.log('check failed', check)
             reject(check)
             return
           } else if (check.status === 'completed') {
@@ -255,7 +250,6 @@ export async function doPromptEdit({
   try {
     const result = await textToCadComplete
     toast.dismiss(toastId)
-    console.log('textToCadComplete', result)
     return result
   } catch (e) {
     toast.dismiss(toastId)
@@ -290,7 +284,6 @@ export async function promptToEditFlow({
     artifactGraph,
   })
   if (err(result)) return Promise.reject(result)
-  console.log('result', result)
   const oldCode = codeManager.code
   const { code: newCode } = result
   codeManager.updateCodeEditor(newCode)

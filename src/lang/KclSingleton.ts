@@ -607,10 +607,7 @@ export class KclManager {
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   defaultSelectionFilter(selectionsToRestore?: Selections) {
-    setSelectionFilterToDefault(
-      this.engineCommandManager,
-      selectionsToRestore
-    )
+    setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
   }
   /** TODO: this function is hiding unawaited asynchronous work */
   setSelectionFilter(filter: EntityType_type[]) {
