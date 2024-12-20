@@ -68,11 +68,6 @@ export class KclManager {
   private _wasmInitFailed = true
   private _hasErrors = false
   private _switchedFiles = false
-  private _defaultPlanesVisibility = {
-    xy: true,
-    yz: true,
-    xz: true,
-  }
 
   engineCommandManager: EngineCommandManager
 
