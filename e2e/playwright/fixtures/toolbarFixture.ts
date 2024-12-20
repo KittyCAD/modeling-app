@@ -11,7 +11,10 @@ export class ToolbarFixture {
   offsetPlaneButton!: Locator
   startSketchBtn!: Locator
   lineBtn!: Locator
+  tangentialArcBtn!: Locator
+  circleBtn!: Locator
   rectangleBtn!: Locator
+  lengthConstraintBtn!: Locator
   exitSketchBtn!: Locator
   editSketchBtn!: Locator
   fileTreeBtn!: Locator
@@ -33,7 +36,10 @@ export class ToolbarFixture {
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.startSketchBtn = page.getByTestId('sketch')
     this.lineBtn = page.getByTestId('line')
+    this.tangentialArcBtn = page.getByTestId('tangential-arc')
+    this.circleBtn = page.getByTestId('circle-center')
     this.rectangleBtn = page.getByTestId('corner-rectangle')
+    this.lengthConstraintBtn = page.getByTestId('constraint-length')
     this.exitSketchBtn = page.getByTestId('sketch-exit')
     this.editSketchBtn = page.getByText('Edit Sketch')
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
@@ -90,5 +96,14 @@ export class ToolbarFixture {
     if (wait) {
       await expect(this.exeIndicator).toBeVisible({ timeout: 15_000 })
     }
+  }
+  selectCenterRectangle = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Corner rectangle:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-center-rectangle')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-center-rectangle').click()
   }
 }

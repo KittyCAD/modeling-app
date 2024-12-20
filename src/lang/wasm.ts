@@ -44,7 +44,11 @@ import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
+import { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
+import { ArtifactId } from 'wasm-lib/kcl/bindings/ArtifactId'
 
+export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
+export type { ArtifactId } from 'wasm-lib/kcl/bindings/ArtifactId'
 export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -245,6 +249,7 @@ export const isPathToNodeNumber = (
 
 export interface ExecState {
   memory: ProgramMemory
+  artifacts: { [key in ArtifactId]?: Artifact }
 }
 
 /**
@@ -254,12 +259,14 @@ export interface ExecState {
 export function emptyExecState(): ExecState {
   return {
     memory: ProgramMemory.empty(),
+    artifacts: {},
   }
 }
 
 function execStateFromRaw(raw: RawExecState): ExecState {
   return {
     memory: ProgramMemory.fromRaw(raw.modLocal.memory),
+    artifacts: raw.global.artifacts,
   }
 }
 
@@ -494,26 +501,6 @@ export function sketchFromKclValue(
 }
 
 export const executor = async (
-  node: Node<Program>,
-  engineCommandManager: EngineCommandManager,
-  programMemoryOverride: ProgramMemory | Error | null = null
-): Promise<ExecState> => {
-  if (programMemoryOverride !== null && err(programMemoryOverride))
-    return Promise.reject(programMemoryOverride)
-
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  engineCommandManager.startNewSession()
-  const _programMemory = await _executor(
-    node,
-    engineCommandManager,
-    programMemoryOverride
-  )
-  await engineCommandManager.waitForAllCommands()
-
-  return _programMemory
-}
-
-export const _executor = async (
   node: Node<Program>,
   engineCommandManager: EngineCommandManager,
   programMemoryOverride: ProgramMemory | Error | null = null

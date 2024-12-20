@@ -28,7 +28,7 @@ export function removeConstrainingValuesInfo({
   | Error {
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
-    if (err(tmp)) return tmp
+    if (tmp instanceof Error) return tmp
     return tmp.node
   })
   const _err1 = _nodes.find(err)

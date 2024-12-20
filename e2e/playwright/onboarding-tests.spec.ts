@@ -437,7 +437,7 @@ test.describe('Onboarding tests', () => {
   )
 })
 
-test.fixme(
+test(
   'Restarting onboarding on desktop takes one attempt',
   {
     appSettings: {
