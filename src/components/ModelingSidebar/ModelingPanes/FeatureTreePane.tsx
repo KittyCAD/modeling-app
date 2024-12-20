@@ -25,10 +25,7 @@ import {
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
-  const lastSelectionEvent = useSelector(
-    kclEditorActor,
-    selectionEventSelector
-  )
+  const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const { send: modelingSend, state: modelingState } = useModelingContext()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_featureTreeState, featureTreeSend] = useMachine(
@@ -129,7 +126,7 @@ export const FeatureTreePane = () => {
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {
     featureTreeSend({ type: 'selected' })
-  }, [lastSelectionEventId])
+  }, [lastSelectionEvent])
 
   function goToError() {
     featureTreeSend({ type: 'goToError' })
