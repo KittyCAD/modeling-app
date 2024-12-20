@@ -1,9 +1,8 @@
 import { Diagnostic } from '@codemirror/lint'
-import { useMachine } from '@xstate/react'
+import { useMachine, useSelector } from '@xstate/react'
 import { ContextMenu, ContextMenuItem } from 'components/ContextMenu'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import Loading from 'components/Loading'
-import { selectionChangedObservable } from 'components/ModelingMachineProvider'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useKclContext } from 'lang/KclProvider'
 import { codeRefFromRange, getArtifactFromRange } from 'lang/std/artifactGraph'
@@ -16,13 +15,26 @@ import {
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
-import { Actor, Prop } from 'xstate'
-import { kclEditorMountedObservable } from './KclEditorPane'
+import { Actor, Prop, StateFrom } from 'xstate'
 import { featureTreeMachine } from 'machines/featureTreeMachine'
+import {
+  kclEditorActor,
+  kclEditorMachine,
+  selectionEventIdSelector,
+} from 'machines/kclEditorMachine'
+
+const editorIsMountedSelector = (
+  snapshot?: StateFrom<typeof kclEditorMachine>
+) => snapshot?.context?.isKclEditorMounted
 
 export const FeatureTreePane = () => {
+  const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
+  const lastSelectionEventId = useSelector(
+    kclEditorActor,
+    selectionEventIdSelector
+  )
   const { send: modelingSend, state: modelingState } = useModelingContext()
-  const [featureTreeState, featureTreeSend] = useMachine(
+  const [_, featureTreeSend] = useMachine(
     featureTreeMachine.provide({
       guards: {
         codePaneIsOpen: () =>
@@ -112,29 +124,16 @@ export const FeatureTreePane = () => {
   // Watch for changes in the open panes and send an event to the feature tree machine
   useEffect(() => {
     const codeOpen = modelingState.context.store.openPanes.includes('code')
-    if (editorManager.editorView !== null) {
-      if (codeOpen) {
-        featureTreeSend({ type: 'codePaneOpened' })
-      }
-    } else {
-      const mountedSubscription = kclEditorMountedObservable.subscribe(
-        (mounted) => {
-          if (mounted && codeOpen) {
-            featureTreeSend({ type: 'codePaneOpened' })
-          }
-        }
-      )
-      return () => mountedSubscription.unsubscribe()
+    if (codeOpen && isEditorMounted) {
+      featureTreeSend({ type: 'codePaneOpened' })
     }
   }, [modelingState.context.store.openPanes])
 
   // Watch for changes in the selection and send an event to the feature tree machine
   useEffect(() => {
-    const subscription = selectionChangedObservable.subscribe(() => {
-      featureTreeSend({ type: 'selected' })
-    })
-    return () => subscription.unsubscribe()
-  }, [featureTreeState.value, selectionChangedObservable])
+    console.log('selection changed', modelingState.context.selectionRanges)
+    featureTreeSend({ type: 'selected' })
+  }, [lastSelectionEventId])
 
   function goToError() {
     featureTreeSend({ type: 'goToError' })

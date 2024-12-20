@@ -14,6 +14,7 @@ import {
 } from '@codemirror/lint'
 import { StateFrom } from 'xstate'
 import { markOnce } from 'lib/performance'
+import { kclEditorActor } from 'machines/kclEditorMachine'
 
 declare global {
   interface Window {
@@ -70,6 +71,7 @@ export default class EditorManager {
 
   setEditorView(editorView: EditorView) {
     this._editorView = editorView
+    kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
     this.overrideTreeHighlighterUpdateForPerformanceTracking()
   }
 

@@ -93,6 +93,7 @@ import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { promptToEditFlow } from 'lib/promptToEdit'
 import { Subject } from 'rxjs'
+import { kclEditorActor } from 'machines/kclEditorMachine'
 
 /**
  * This RxJs Subject is used to notify subscribers like the feature tree when
@@ -310,25 +311,11 @@ export const ModelingMachineProvider = ({
 
             const dispatchSelection = (
               selection: EditorSelection,
-              scrollIntoView: boolean | undefined
+              scrollIntoView: boolean
             ) => {
-              // TODO less of hack for the below please
-              if (!editorManager.editorView) {
-                selectionChangedObservable.next()
-                return
-              }
-
-              setTimeout(() => {
-                if (!editorManager.editorView) return
-                editorManager.editorView.dispatch({
-                  selection,
-                  annotations: [
-                    modelingMachineEvent,
-                    Transaction.addToHistory.of(false),
-                  ],
-                  scrollIntoView,
-                })
-                selectionChangedObservable.next()
+              kclEditorActor.send({
+                type: 'setLastSelectionEvent',
+                data: { codeMirrorSelection: selection, scrollIntoView },
               })
             }
 
@@ -374,9 +361,7 @@ export const ModelingMachineProvider = ({
               codeMirrorSelection &&
                 dispatchSelection(
                   codeMirrorSelection,
-                  setSelections.scrollIntoView
-                    ? setSelections.scrollIntoView
-                    : undefined
+                  setSelections.scrollIntoView ?? false
                 )
               engineEvents &&
                 engineEvents.forEach((event) => {
