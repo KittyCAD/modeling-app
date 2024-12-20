@@ -25,7 +25,7 @@ import {
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
-  const lastSelectionEventId = useSelector(
+  const lastSelectionEvent = useSelector(
     kclEditorActor,
     selectionEventSelector
   )
