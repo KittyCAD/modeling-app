@@ -7,7 +7,7 @@ type SelectionEvent = {
 }
 type KclEditorMachineEvent =
   | { type: 'setKclEditorMounted'; data: boolean }
-  | { type: 'setLastSelectionEvent'; data: SelectionEvent }
+  | { type: 'setLastSelectionEvent'; data?: SelectionEvent }
 
 interface KclEditorMachineContext {
   isKclEditorMounted: boolean

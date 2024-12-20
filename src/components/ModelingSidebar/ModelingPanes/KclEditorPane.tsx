@@ -89,6 +89,7 @@ export const KclEditorPane = () => {
   useEffect(() => {
     return () => {
       kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
+      kclEditorActor.send({ type: 'setLastSelectionEvent', data: undefined })
     }
   }, [])
 
@@ -102,6 +103,10 @@ export const KclEditorPane = () => {
       return
     }
 
+    console.log('KclEditorPane useEffect dispatch', {
+      code: codeManager.code,
+      lastSelectionEvent,
+    })
     editorManager.editorView.dispatch({
       selection: lastSelectionEvent.codeMirrorSelection,
       annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
