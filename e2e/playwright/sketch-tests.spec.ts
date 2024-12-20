@@ -7,8 +7,6 @@ import {
   getMovementUtils,
   getUtils,
   PERSIST_MODELING_CONTEXT,
-  setup,
-  tearDown,
   TEST_COLORS,
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
