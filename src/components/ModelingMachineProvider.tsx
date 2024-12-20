@@ -91,6 +91,7 @@ import { useFileContext } from 'hooks/useFileContext'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { promptToEditFlow } from 'lib/promptToEdit'
 import { Subject } from 'rxjs'
 
 /**
@@ -1132,6 +1133,15 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
+        'submit-prompt-edit': fromPromise(async ({ input }) => {
+          return await promptToEditFlow({
+            code: codeManager.code,
+            prompt: input.prompt,
+            selections: input.selection,
+            token,
+            artifactGraph: engineCommandManager.artifactGraph,
+          })
+        }),
       },
     }),
     {

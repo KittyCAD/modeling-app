@@ -17,7 +17,7 @@ import { getNextFileName } from './desktopFS'
 import { reportRejection } from './trap'
 import { toSync } from './utils'
 
-export async function submitTextToCadPrompt(
+async function submitTextToCadPrompt(
   prompt: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
@@ -45,7 +45,7 @@ export async function submitTextToCadPrompt(
   return data
 }
 
-export async function getTextToCadResult(
+async function getTextToCadResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
