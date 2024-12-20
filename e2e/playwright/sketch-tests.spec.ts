@@ -99,6 +99,7 @@ test.describe('Sketch tests', () => {
   })
   test('Can delete most of a sketch and the line tool will still work', async ({
     page,
+    scene,
     homePage,
   }) => {
     const u = await getUtils(page)
@@ -113,6 +114,8 @@ test.describe('Sketch tests', () => {
     })
 
     await homePage.goToModelingScene()
+
+    await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 587, y: 270 }, 15)
 
     await expect(async () => {
       await page.mouse.click(700, 200)
@@ -137,10 +140,11 @@ test.describe('Sketch tests', () => {
     await page.waitForTimeout(100)
 
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
-    await page.waitForTimeout(100)
+    await page.waitForTimeout(500)
     // click start profileAt handle to continue profile
-    await page.mouse.click(702, 407)
+    await page.mouse.click(702, 406, { delay: 500 })
     await page.waitForTimeout(100)
+    await page.mouse.move(800, 150)
 
     await expect(async () => {
       // click to add segment
@@ -1379,19 +1383,19 @@ test.describe('multi-profile sketching', () => {
     await test.step('Create a close profile stopping mid profile to equip the tangential arc, and than back to the line tool', async () => {
       await startProfile1()
       await editor.expectEditor.toContain(
-        `profile001 = startProfileAt([4.61, 12.21], sketch001)`
+        `profile001 = startProfileAt([-2.17, 12.21], sketch001)`
       )
 
       await endLineStartTanArc()
       await editor.expectEditor.toContain(`|> line([9.02, -0.55], %)`)
       await toolbar.tangentialArcBtn.click()
       await page.waitForTimeout(100)
-      await endLineStartTanArc()
+      await page.mouse.click(745, 359)
+      await page.waitForTimeout(100)
+      await endLineStartTanArc({ delay: 544 })
 
       await endArcStartLine()
-      await editor.expectEditor.toContain(
-        `|> tangentialArcTo([16.61, 4.14], %)`
-      )
+      await editor.expectEditor.toContain(`|> tangentialArcTo([9.83, 4.14], %)`)
       await toolbar.lineBtn.click()
       await page.waitForTimeout(100)
       await endArcStartLine()
@@ -1399,16 +1403,18 @@ test.describe('multi-profile sketching', () => {
       await page.mouse.click(572, 110)
       await editor.expectEditor.toContain(`|> line([-11.73, 5.35], %)`)
       await startProfile1()
-      await editor.expectEditor
-        .toContain(`|> lineTo([profileStartX(%), profileStartY(%)], %)
-      |> close(%)`)
+      await editor.expectEditor.toContain(
+        `|> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`,
+        { shouldNormalise: true }
+      )
       await page.waitForTimeout(100)
     })
 
     await test.step('Without unequipping from the last step, make another profile, and one that is not closed', async () => {
       await startProfile2()
       await editor.expectEditor.toContain(
-        `profile002 = startProfileAt([19.12, 11.53], sketch001)`
+        `profile002 = startProfileAt([12.34, 11.53], sketch001)`
       )
       await profile2Point2()
       await editor.expectEditor.toContain(`|> line([9.43, -0.68], %)`)
@@ -1421,9 +1427,9 @@ test.describe('multi-profile sketching', () => {
 
       await circle1Center()
       await page.waitForTimeout(100)
-      await circle1Radius()
+      await circle1Radius({ delay: 500 })
       await editor.expectEditor.toContain(
-        `profile003 = circle({ center = [23.19, 6.98], radius = 2.5 }, sketch001)`
+        `profile003 = circle({ center = [16.41, 6.98], radius = 2.5 }, sketch001)`
       )
 
       await test.step('hover in empty space to wait for overlays to get out of the way', async () => {
