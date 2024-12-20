@@ -14,6 +14,7 @@ import {
 } from '@codemirror/lint'
 import { StateFrom } from 'xstate'
 import { markOnce } from 'lib/performance'
+import { kclEditorActor } from 'machines/kclEditorMachine'
 
 declare global {
   interface Window {
@@ -70,6 +71,7 @@ export default class EditorManager {
 
   setEditorView(editorView: EditorView) {
     this._editorView = editorView
+    kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
     this.overrideTreeHighlighterUpdateForPerformanceTracking()
   }
 
@@ -201,6 +203,32 @@ export default class EditorManager {
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
         setDiagnosticsEvent,
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
+  /**
+   * Scroll to the first selection in the editor.
+   */
+  scrollToSelection() {
+    if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
+
+    const firstSelection = this._selectionRanges.graphSelections[0]
+
+    this._editorView.focus()
+    this._editorView.dispatch({
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(
+            firstSelection.codeRef.range[0],
+            firstSelection.codeRef.range[1]
+          ),
+          { y: 'center' }
+        ),
+      ],
+      annotations: [
         updateOutsideEditorEvent,
         Transaction.addToHistory.of(false),
       ],

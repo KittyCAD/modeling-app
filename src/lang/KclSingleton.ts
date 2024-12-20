@@ -32,6 +32,7 @@ import {
   EntityType_type,
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
+import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -58,7 +59,9 @@ export class KclManager {
   private _execState: ExecState = emptyExecState()
   private _programMemory: ProgramMemory = ProgramMemory.empty()
   lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
+  lastSuccessfulOperations: Operation[] = []
   private _logs: string[] = []
+  private _errors: KCLError[] = []
   private _diagnostics: Diagnostic[] = []
   private _isExecuting = false
   private _executeIsStale: ExecuteArgs | null = null
@@ -72,7 +75,8 @@ export class KclManager {
   private _astCallBack: (arg: Node<Program>) => void = () => {}
   private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
-  private _kclErrorsCallBack: (errors: Diagnostic[]) => void = () => {}
+  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
+  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
 
@@ -106,6 +110,13 @@ export class KclManager {
     return this._execState
   }
 
+  get errors() {
+    return this._errors
+  }
+  set errors(errors) {
+    this._errors = errors
+    this._kclErrorsCallBack(errors)
+  }
   get logs() {
     return this._logs
   }
@@ -135,7 +146,7 @@ export class KclManager {
 
   setDiagnosticsForCurrentErrors() {
     editorManager?.setDiagnostics(this.diagnostics)
-    this._kclErrorsCallBack(this.diagnostics)
+    this._diagnosticsCallback(this.diagnostics)
   }
 
   get isExecuting() {
@@ -188,21 +199,24 @@ export class KclManager {
     setProgramMemory,
     setAst,
     setLogs,
-    setKclErrors,
+    setErrors,
+    setDiagnostics,
     setIsExecuting,
     setWasmInitFailed,
   }: {
     setProgramMemory: (arg: ProgramMemory) => void
     setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
-    setKclErrors: (errors: Diagnostic[]) => void
+    setErrors: (errors: KCLError[]) => void
+    setDiagnostics: (errors: Diagnostic[]) => void
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
     this._programMemoryCallBack = setProgramMemory
     this._astCallBack = setAst
     this._logsCallBack = setLogs
-    this._kclErrorsCallBack = setKclErrors
+    this._kclErrorsCallBack = setErrors
+    this._diagnosticsCallback = setDiagnostics
     this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
   }
@@ -352,11 +366,13 @@ export class KclManager {
     }
 
     this.logs = logs
+    this.errors = errors
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulOperations = execState.operations
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/programMemory
@@ -411,6 +427,7 @@ export class KclManager {
     this._programMemory = execState.memory
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulOperations = execState.operations
     }
     if (updates !== 'artifactRanges') return
 
