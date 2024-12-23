@@ -3,6 +3,7 @@ use std::{any::type_name, collections::HashMap, num::NonZeroU32};
 use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
+use schemars::JsonSchema;
 
 use super::shapes::PolygonType;
 use crate::{
@@ -320,15 +321,6 @@ impl Args {
                 source_range: self.source_range,
             }],
         )
-    }
-
-    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> KclValue {
-        KclValue::Int {
-            value: n,
-            meta: vec![Metadata {
-                source_range: self.source_range,
-            }],
-        }
     }
 
     pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
@@ -1686,5 +1678,47 @@ impl From<Args> for Vec<Metadata> {
         vec![Metadata {
             source_range: value.source_range,
         }]
+    }
+}
+
+// This type is named `Number` since it appears in docs.  Ints are generally an
+// implementation detail.
+/// A number that can be either a floating point number or an integer.
+#[derive(Debug, Clone, Copy, JsonSchema, ts_rs::TS, PartialEq)]
+#[ts(export)]
+pub(crate) enum Number {
+    Float(f64),
+    Int(i64),
+}
+
+impl Number {
+    pub fn to_f64(&self) -> f64 {
+        match self {
+            Self::Float(f) => *f,
+            Self::Int(i) => *i as f64,
+        }
+    }
+
+    pub fn to_kcl_value(&self, source_range: SourceRange) -> KclValue {
+        match self {
+            Self::Float(f) => KclValue::Number {
+                value: *f,
+                meta: vec![source_range.into()],
+            },
+            Self::Int(i) => KclValue::Int {
+                value: *i,
+                meta: vec![source_range.into()],
+            },
+        }
+    }
+}
+
+impl FromKclValue<'_> for Number {
+    fn from_kcl_val(arg: &KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Number { value, meta: _ } => Some(Number::Float(*value)),
+            KclValue::Int { value, meta: _ } => Some(Number::Int(*value)),
+            _ => None,
+        }
     }
 }
