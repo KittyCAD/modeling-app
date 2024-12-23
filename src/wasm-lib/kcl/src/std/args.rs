@@ -1693,21 +1693,21 @@ pub(crate) enum NumberArg {
 }
 
 impl NumberArg {
-    pub fn to_f64(&self) -> f64 {
+    pub fn to_f64(self) -> f64 {
         match self {
-            Self::Float(f) => *f,
-            Self::Int(i) => *i as f64,
+            Self::Float(f) => f,
+            Self::Int(i) => i as f64,
         }
     }
 
-    pub fn to_kcl_value(&self, source_range: SourceRange) -> KclValue {
+    pub fn to_kcl_value(self, source_range: SourceRange) -> KclValue {
         match self {
             Self::Float(f) => KclValue::Number {
-                value: *f,
+                value: f,
                 meta: vec![source_range.into()],
             },
             Self::Int(i) => KclValue::Int {
-                value: *i,
+                value: i,
                 meta: vec![source_range.into()],
             },
         }
