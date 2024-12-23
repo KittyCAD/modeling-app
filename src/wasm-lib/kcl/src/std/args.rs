@@ -1681,17 +1681,18 @@ impl From<Args> for Vec<Metadata> {
     }
 }
 
-// This type is named `Number` since it appears in docs.  Ints are generally an
-// implementation detail.
+// This type is named the way it is since it appears in docs.  Ints are
+// generally an implementation detail.  But this shouldn't conflict with the
+// `Number` variant of [`KclValue`].
 /// A number that can be either a floating point number or an integer.
 #[derive(Debug, Clone, Copy, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
-pub(crate) enum Number {
+pub(crate) enum NumberArg {
     Float(f64),
     Int(i64),
 }
 
-impl Number {
+impl NumberArg {
     pub fn to_f64(&self) -> f64 {
         match self {
             Self::Float(f) => *f,
@@ -1713,11 +1714,11 @@ impl Number {
     }
 }
 
-impl FromKclValue<'_> for Number {
+impl FromKclValue<'_> for NumberArg {
     fn from_kcl_val(arg: &KclValue) -> Option<Self> {
         match arg {
-            KclValue::Number { value, meta: _ } => Some(Number::Float(*value)),
-            KclValue::Int { value, meta: _ } => Some(Number::Int(*value)),
+            KclValue::Number { value, meta: _ } => Some(NumberArg::Float(*value)),
+            KclValue::Int { value, meta: _ } => Some(NumberArg::Int(*value)),
             _ => None,
         }
     }

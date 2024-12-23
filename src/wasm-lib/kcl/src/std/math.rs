@@ -9,7 +9,7 @@ use crate::{
     std::Args,
 };
 
-use super::args::{FromArgs, Number};
+use super::args::{FromArgs, NumberArg};
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
@@ -42,12 +42,12 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         divisor = "The number which will divide `num`.",
     }
 }]
-fn inner_rem(num: Number, divisor: Number) -> Number {
+fn inner_rem(num: NumberArg, divisor: NumberArg) -> NumberArg {
     match (num, divisor) {
         // Possible implicit conversion from int to float.
-        (Number::Float(_), _) | (_, Number::Float(_)) => Number::Float(num.to_f64() % divisor.to_f64()),
+        (NumberArg::Float(_), _) | (_, NumberArg::Float(_)) => NumberArg::Float(num.to_f64() % divisor.to_f64()),
         // Preserve ints.
-        (Number::Int(n), Number::Int(d)) => Number::Int(n % d),
+        (NumberArg::Int(n), NumberArg::Int(d)) => NumberArg::Int(n % d),
     }
 }
 
