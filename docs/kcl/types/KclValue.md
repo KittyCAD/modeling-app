@@ -57,7 +57,7 @@ Any KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`Number`](/docs/kcl/types/Number)|  | No |
+| `type` |enum: `Number`|  | No |
 | `value` |`number`|  | No |
 | `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
 

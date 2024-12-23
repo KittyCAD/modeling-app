@@ -1,5 +1,5 @@
 ---
-title: "Number"
+title: "NumberArg"
 excerpt: "A number that can be either a floating point number or an integer."
 layout: manual
 ---
