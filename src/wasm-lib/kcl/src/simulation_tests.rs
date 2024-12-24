@@ -91,7 +91,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
     )
     .await;
     match exec_res {
-        Ok((program_memory, ops, png)) => {
+        Ok((program_memory, ops, artifact_commands, png)) => {
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
@@ -106,6 +106,9 @@ async fn execute(test_name: &str, render_to_png: bool) {
             });
             assert_snapshot(test_name, "Operations executed", || {
                 insta::assert_json_snapshot!("ops", ops);
+            });
+            assert_snapshot(test_name, "Artifact commands", || {
+                insta::assert_json_snapshot!("artifact_commands", artifact_commands);
             });
         }
         Err(e) => {
@@ -128,6 +131,10 @@ async fn execute(test_name: &str, render_to_png: bool) {
 
                     assert_snapshot(test_name, "Operations executed", || {
                         insta::assert_json_snapshot!("ops", e.exec_state.mod_local.operations);
+                    });
+
+                    assert_snapshot(test_name, "Artifact commands", || {
+                        insta::assert_json_snapshot!("artifact_commands", e.exec_state.global.artifact_commands);
                     });
                 }
                 e => {

@@ -8,6 +8,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    batch_cmd,
     errors::KclError,
     execution::{ExecState, KclValue, Sketch, SketchSet},
     std::{revolve::AxisOrEdgeReference, Args},
@@ -120,27 +121,29 @@ async fn inner_mirror_2d(
         AxisOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
 
-            args.batch_modeling_cmd(
+            batch_cmd!(
+                exec_state,
+                args,
                 exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirror {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     axis,
                     point: origin,
-                }),
-            )
-            .await?;
+                })
+            );
         }
         AxisOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
-            args.batch_modeling_cmd(
+            batch_cmd!(
+                exec_state,
+                args,
                 exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     edge_id,
-                }),
-            )
-            .await?;
+                })
+            );
         }
     };
 

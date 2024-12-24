@@ -14,6 +14,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    batch_cmd,
     errors::{KclError, KclErrorDetails},
     execution::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
     parsing::ast::types::TagNode,
@@ -105,7 +106,9 @@ async fn inner_circle(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
@@ -116,9 +119,8 @@ async fn inner_circle(
                 radius: data.radius.into(),
                 relative: false,
             },
-        }),
-    )
-    .await?;
+        })
+    );
 
     let current_path = Path::Circle {
         base: BasePath {
@@ -142,8 +144,12 @@ async fn inner_circle(
 
     new_sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id }))
-        .await?;
+    batch_cmd!(
+        exec_state,
+        args,
+        id,
+        ModelingCmd::from(mcmd::ClosePath { path_id: new_sketch.id })
+    );
 
     Ok(new_sketch)
 }
@@ -332,7 +338,9 @@ async fn inner_polygon(
         let from = sketch.current_pen_position()?;
         let id = exec_state.next_uuid();
 
-        args.batch_modeling_cmd(
+        batch_cmd!(
+            exec_state,
+            args,
             id,
             ModelingCmd::from(mcmd::ExtendPath {
                 path: sketch.id.into(),
@@ -340,9 +348,8 @@ async fn inner_polygon(
                     end: KPoint2d::from(*vertex).with_z(0.0).map(LengthUnit),
                     relative: false,
                 },
-            }),
-        )
-        .await?;
+            })
+        );
 
         let current_path = Path::ToPoint {
             base: BasePath {
@@ -367,7 +374,9 @@ async fn inner_polygon(
     let from = sketch.current_pen_position()?;
     let close_id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         close_id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
@@ -375,9 +384,8 @@ async fn inner_polygon(
                 end: KPoint2d::from(vertices[0]).with_z(0.0).map(LengthUnit),
                 relative: false,
             },
-        }),
-    )
-    .await?;
+        })
+    );
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -397,11 +405,12 @@ async fn inner_polygon(
 
     sketch.paths.push(current_path);
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
-    )
-    .await?;
+        ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id })
+    );
 
     Ok(sketch)
 }

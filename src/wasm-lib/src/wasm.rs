@@ -110,7 +110,11 @@ pub async fn execute(
         }
 
         // Add additional outputs to the error.
-        let error = KclErrorWithOutputs::new(err, exec_state.mod_local.operations.clone());
+        let error = KclErrorWithOutputs::new(
+            err,
+            exec_state.mod_local.operations.clone(),
+            exec_state.global.artifact_commands.clone(),
+        );
 
         // Throw the error.
         return Err(serde_json::to_string(&error).map_err(|serde_err| serde_err.to_string())?);

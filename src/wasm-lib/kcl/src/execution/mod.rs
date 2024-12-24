@@ -49,7 +49,7 @@ use crate::{
 };
 
 // Re-exports.
-pub use artifact::{Artifact, ArtifactId, ArtifactInner};
+pub use artifact::{Artifact, ArtifactCommand, ArtifactId, ArtifactInner};
 pub use cad_op::Operation;
 
 /// State for executing a program.
@@ -71,6 +71,9 @@ pub struct GlobalState {
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// Output map of UUIDs to artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Output commands to allow building the artifact graph by the caller.
+    /// This corresponds to OrderedCommands on the TS side.
+    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
@@ -107,6 +110,9 @@ pub struct ExecOutcome {
     pub operations: Vec<Operation>,
     /// Output map of UUIDs to artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Output commands to allow building the artifact graph by the caller.
+    /// This corresponds to OrderedCommands on the TS side.
+    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 impl Default for ExecState {
@@ -148,6 +154,7 @@ impl ExecState {
             memory: self.mod_local.memory,
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
+            artifact_commands: self.global.artifact_commands,
         }
     }
 
@@ -166,6 +173,10 @@ impl ExecState {
     pub fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id;
         self.global.artifacts.insert(id, artifact);
+    }
+
+    pub fn add_artifact_command(&mut self, cmd: ArtifactCommand) {
+        self.global.artifact_commands.push(cmd);
     }
 
     async fn add_module(
@@ -206,6 +217,7 @@ impl GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
+            artifact_commands: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.
@@ -2515,7 +2527,7 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                ModelingCmd::from(mcmd::ZoomToFit {
+                &ModelingCmd::from(mcmd::ZoomToFit {
                     object_ids: Default::default(),
                     animated: false,
                     padding: 0.1,
@@ -2529,7 +2541,7 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                ModelingCmd::from(mcmd::TakeSnapshot {
+                &ModelingCmd::from(mcmd::TakeSnapshot {
                     format: ImageFormat::Png,
                 }),
             )

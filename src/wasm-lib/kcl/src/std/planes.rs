@@ -7,6 +7,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    batch_cmd,
     errors::KclError,
     execution::{ExecState, KclValue, Plane, PlaneType},
     std::{sketch::PlaneData, Args},
@@ -194,7 +195,9 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
         a: 0.3,
     };
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         plane.id,
         ModelingCmd::from(mcmd::MakePlane {
             clobber: false,
@@ -203,19 +206,19 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
             x_axis: plane.x_axis.into(),
             y_axis: plane.y_axis.into(),
             hide: Some(false),
-        }),
-    )
-    .await?;
+        })
+    );
 
     // Set the color.
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         exec_state.next_uuid(),
         ModelingCmd::from(mcmd::PlaneSetColor {
             color,
             plane_id: plane.id,
-        }),
-    )
-    .await?;
+        })
+    );
 
     Ok(())
 }
