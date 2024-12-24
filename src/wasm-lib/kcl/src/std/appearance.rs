@@ -11,6 +11,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::{
+    batch_cmd,
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, KclValue, Solid, SolidSet},
     std::Args,
@@ -38,7 +39,7 @@ pub struct AppearanceData {
 }
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
-pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid_set): (AppearanceData, SolidSet) = args.get_data_and_solid_set()?;
 
     // Validate the data.
@@ -57,7 +58,7 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
         }));
     }
 
-    let result = inner_appearance(data, solid_set, args).await?;
+    let result = inner_appearance(data, solid_set, exec_state, args).await?;
     Ok(result.into())
 }
 
@@ -264,7 +265,12 @@ pub async fn appearance(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 #[stdlib {
     name = "appearance",
 }]
-async fn inner_appearance(data: AppearanceData, solid_set: SolidSet, args: Args) -> Result<SolidSet, KclError> {
+async fn inner_appearance(
+    data: AppearanceData,
+    solid_set: SolidSet,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<SolidSet, KclError> {
     let solids: Vec<Box<Solid>> = solid_set.into();
 
     for solid in &solids {
@@ -283,7 +289,9 @@ async fn inner_appearance(data: AppearanceData, solid_set: SolidSet, args: Args)
             a: 100.0,
         };
 
-        args.batch_modeling_cmd(
+        batch_cmd!(
+            exec_state,
+            args,
             uuid::Uuid::new_v4(),
             ModelingCmd::from(mcmd::ObjectSetMaterialParamsPbr {
                 object_id: solid.id,
@@ -291,9 +299,8 @@ async fn inner_appearance(data: AppearanceData, solid_set: SolidSet, args: Args)
                 metalness: data.metalness.unwrap_or_default() as f32 / 100.0,
                 roughness: data.roughness.unwrap_or_default() as f32 / 100.0,
                 ambient_occlusion: 0.0,
-            }),
-        )
-        .await?;
+            })
+        );
 
         // Idk if we want to actually modify the memory for the colors, but I'm not right now since
         // I can't think of a use case for it.

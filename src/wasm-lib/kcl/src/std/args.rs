@@ -8,8 +8,8 @@ use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExecutorContext, ExtrudeSurface, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
-        SketchSurface, Solid, SolidSet, TagIdentifier,
+        ArtifactCommand, ExecState, ExecutorContext, ExtrudeSurface, KclObjectFields, KclValue, Metadata, Sketch,
+        SketchSet, SketchSurface, Solid, SolidSet, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -168,15 +168,29 @@ impl Args {
         &self,
         id: uuid::Uuid,
         cmd: ModelingCmd,
-    ) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await
+    ) -> Result<ArtifactCommand, crate::errors::KclError> {
+        self.ctx.engine.batch_modeling_cmd(id, self.source_range, &cmd).await?;
+        Ok(ArtifactCommand {
+            cmd_id: id,
+            range: self.source_range,
+            command: cmd,
+        })
     }
 
     // Add a modeling command to the batch that gets executed at the end of the file.
     // This is good for something like fillet or chamfer where the engine would
     // eat the path id if we executed it right away.
-    pub(crate) async fn batch_end_cmd(&self, id: uuid::Uuid, cmd: ModelingCmd) -> Result<(), crate::errors::KclError> {
-        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await
+    pub(crate) async fn batch_end_cmd(
+        &self,
+        id: uuid::Uuid,
+        cmd: ModelingCmd,
+    ) -> Result<ArtifactCommand, crate::errors::KclError> {
+        self.ctx.engine.batch_end_cmd(id, self.source_range, &cmd).await?;
+        Ok(ArtifactCommand {
+            cmd_id: id,
+            range: self.source_range,
+            command: cmd,
+        })
     }
 
     /// Send the modeling cmd and wait for the response.
@@ -184,8 +198,16 @@ impl Args {
         &self,
         id: uuid::Uuid,
         cmd: ModelingCmd,
-    ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+    ) -> Result<(ArtifactCommand, OkWebSocketResponseData), KclError> {
+        let resp_data = self.ctx.engine.send_modeling_cmd(id, self.source_range, &cmd).await?;
+        Ok((
+            ArtifactCommand {
+                cmd_id: id,
+                range: self.source_range,
+                command: cmd,
+            },
+            resp_data,
+        ))
     }
 
     fn get_tag_info_from_memory<'a, 'e>(
