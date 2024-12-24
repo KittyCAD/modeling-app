@@ -304,3 +304,12 @@ pub struct FnAsArg<'a> {
     pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }
+
+/// Batch a modeling command and save its `ArtifactCommand`.
+#[macro_export]
+macro_rules! batch_cmd {
+    ($exec_state: expr, $args: expr, $cmd_id: expr, $cmd: expr) => {{
+        let artifact_cmd = $args.batch_modeling_cmd($cmd_id, $cmd).await?;
+        $exec_state.add_artifact_command(artifact_cmd);
+    }};
+}

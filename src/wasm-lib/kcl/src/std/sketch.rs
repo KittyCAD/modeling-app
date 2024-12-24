@@ -11,6 +11,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::batch_cmd;
 use crate::execution::{Artifact, ArtifactId, ArtifactInner};
 use crate::{
     errors::{KclError, KclErrorDetails},
@@ -127,7 +128,9 @@ async fn inner_line_to(
     let from = sketch.current_pen_position()?;
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
@@ -135,9 +138,8 @@ async fn inner_line_to(
                 end: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
                 relative: false,
             },
-        }),
-    )
-    .await?;
+        })
+    );
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -302,7 +304,9 @@ async fn inner_line(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
@@ -310,9 +314,8 @@ async fn inner_line(
                 end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative: true,
             },
-        }),
-    )
-    .await?;
+        })
+    );
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -491,7 +494,9 @@ async fn inner_angled_line(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
@@ -499,9 +504,8 @@ async fn inner_angled_line(
                 end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative,
             },
-        }),
-    )
-    .await?;
+        })
+    );
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -1148,7 +1152,9 @@ async fn make_sketch_plane_from_orientation(
                 PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0),
                 _ => plane.x_axis,
             };
-            args.batch_modeling_cmd(
+            batch_cmd!(
+                exec_state,
+                args,
                 plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
                     clobber,
@@ -1157,9 +1163,8 @@ async fn make_sketch_plane_from_orientation(
                     x_axis: x_axis.into(),
                     y_axis: plane.y_axis.into(),
                     hide,
-                }),
-            )
-            .await?;
+                })
+            );
         }
         PlaneData::Plane {
             origin,
@@ -1167,7 +1172,9 @@ async fn make_sketch_plane_from_orientation(
             y_axis,
             z_axis: _,
         } => {
-            args.batch_modeling_cmd(
+            batch_cmd!(
+                exec_state,
+                args,
                 plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
                     clobber,
@@ -1176,9 +1183,8 @@ async fn make_sketch_plane_from_orientation(
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
                     hide,
-                }),
-            )
-            .await?;
+                })
+            );
         }
     }
 
@@ -1265,7 +1271,9 @@ pub(crate) async fn inner_start_profile_at(
     // Enter sketch mode on the surface.
     // We call this here so you can reuse the sketch surface for multiple sketches.
     let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         id,
         ModelingCmd::from(mcmd::EnableSketchMode {
             animated: false,
@@ -1278,23 +1286,22 @@ pub(crate) async fn inner_start_profile_at(
             } else {
                 None
             },
-        }),
-    )
-    .await?;
+        })
+    );
 
     let id = exec_state.next_uuid();
     let path_id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath {}))
-        .await?;
-    args.batch_modeling_cmd(
+    batch_cmd!(exec_state, args, path_id, ModelingCmd::from(mcmd::StartPath {}));
+    batch_cmd!(
+        exec_state,
+        args,
         id,
         ModelingCmd::from(mcmd::MovePathPen {
             path: path_id.into(),
             to: KPoint2d::from(to).with_z(0.0).map(LengthUnit),
-        }),
-    )
-    .await?;
+        })
+    );
 
     let current_path = BasePath {
         from: to,
@@ -1450,17 +1457,22 @@ pub(crate) async fn inner_close(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }))
-        .await?;
+    batch_cmd!(
+        exec_state,
+        args,
+        id,
+        ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id })
+    );
 
     // If we are sketching on a plane we can close the sketch now.
     if let SketchSurface::Plane(_) = sketch.on {
         // We were on a plane, disable the sketch mode.
-        args.batch_modeling_cmd(
+        batch_cmd!(
+            exec_state,
+            args,
             exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
-        )
-        .await?;
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {})
+        );
     }
 
     let current_path = Path::ToPoint {
@@ -1596,7 +1608,9 @@ pub(crate) async fn inner_arc(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
@@ -1607,9 +1621,8 @@ pub(crate) async fn inner_arc(
                 radius: LengthUnit(radius),
                 relative: false,
             },
-        }),
-    )
-    .await?;
+        })
+    );
 
     let current_path = Path::Arc {
         base: BasePath {
@@ -1676,7 +1689,9 @@ pub(crate) async fn inner_arc_to(
     let id = exec_state.next_uuid();
 
     // The start point is taken from the path you are extending.
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
@@ -1693,9 +1708,8 @@ pub(crate) async fn inner_arc_to(
                 },
                 relative: false,
             },
-        }),
-    )
-    .await?;
+        })
+    );
 
     let start = [from.x, from.y];
     let interior = data.interior;
@@ -1848,7 +1862,9 @@ async fn inner_tangential_arc(
             let end_angle = start_angle + offset;
             let (center, to) = arc_center_and_end(from, start_angle, end_angle, radius);
 
-            args.batch_modeling_cmd(
+            batch_cmd!(
+                exec_state,
+                args,
                 id,
                 ModelingCmd::from(mcmd::ExtendPath {
                     path: sketch.id.into(),
@@ -1856,9 +1872,8 @@ async fn inner_tangential_arc(
                         radius: LengthUnit(radius),
                         offset,
                     },
-                }),
-            )
-            .await?;
+                })
+            );
             (center, to.into(), ccw)
         }
     };
@@ -1957,7 +1972,7 @@ async fn inner_tangential_arc_to(
 
     let delta = [to_x - from.x, to_y - from.y];
     let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
+    batch_cmd!(exec_state, args, id, tan_arc_to(&sketch, &delta));
 
     let current_path = Path::TangentialArcTo {
         base: BasePath {
@@ -2040,7 +2055,7 @@ async fn inner_tangential_arc_to_relative(
     }
 
     let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
+    batch_cmd!(exec_state, args, id, tan_arc_to(&sketch, &delta));
 
     let current_path = Path::TangentialArcTo {
         base: BasePath {
@@ -2161,7 +2176,9 @@ async fn inner_bezier_curve(
 
     let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
@@ -2171,9 +2188,8 @@ async fn inner_bezier_curve(
                 end: KPoint2d::from(delta).with_z(0.0).map(LengthUnit),
                 relative,
             },
-        }),
-    )
-    .await?;
+        })
+    );
 
     let current_path = Path::ToPoint {
         base: BasePath {
@@ -2250,25 +2266,27 @@ async fn inner_hole(
 ) -> Result<Sketch, KclError> {
     let hole_sketches: Vec<Sketch> = hole_sketch.into();
     for hole_sketch in hole_sketches {
-        args.batch_modeling_cmd(
+        batch_cmd!(
+            exec_state,
+            args,
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid2dAddHole {
                 object_id: sketch.id,
                 hole_id: hole_sketch.id,
-            }),
-        )
-        .await?;
+            })
+        );
 
         // suggestion (mike)
         // we also hide the source hole since its essentially "consumed" by this operation
-        args.batch_modeling_cmd(
+        batch_cmd!(
+            exec_state,
+            args,
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: hole_sketch.id,
                 hidden: true,
-            }),
-        )
-        .await?;
+            })
+        );
     }
 
     Ok(sketch)

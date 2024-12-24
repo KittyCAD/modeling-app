@@ -232,7 +232,7 @@ async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState,
     let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
-    let resp = args
+    let (a_cmd, resp) = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
@@ -242,6 +242,7 @@ async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState,
             }),
         )
         .await?;
+    exec_state.add_artifact_command(a_cmd);
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetOppositeEdge(opposite_edge),
     } = &resp
@@ -309,7 +310,7 @@ async fn inner_get_next_adjacent_edge(
     let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
-    let resp = args
+    let (a_cmd, resp) = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
@@ -319,6 +320,7 @@ async fn inner_get_next_adjacent_edge(
             }),
         )
         .await?;
+    exec_state.add_artifact_command(a_cmd);
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(adjacent_edge),
     } = &resp
@@ -394,7 +396,7 @@ async fn inner_get_previous_adjacent_edge(
     let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
-    let resp = args
+    let (a_cmd, resp) = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
@@ -404,6 +406,7 @@ async fn inner_get_previous_adjacent_edge(
             }),
         )
         .await?;
+    exec_state.add_artifact_command(a_cmd);
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetPrevAdjacentEdge(adjacent_edge),
     } = &resp

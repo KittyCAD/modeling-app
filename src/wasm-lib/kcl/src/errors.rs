@@ -3,7 +3,7 @@ use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
-    execution::Operation,
+    execution::{ArtifactCommand, Operation},
     lsp::IntoDiagnostic,
     source_range::{ModuleId, SourceRange},
 };
@@ -100,18 +100,23 @@ pub enum KclError {
     Internal(KclErrorDetails),
 }
 
-#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
+#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq)]
 #[error("{error}")]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct KclErrorWithOutputs {
     pub error: KclError,
     pub operations: Vec<Operation>,
+    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 impl KclErrorWithOutputs {
-    pub fn new(error: KclError, operations: Vec<Operation>) -> Self {
-        Self { error, operations }
+    pub fn new(error: KclError, operations: Vec<Operation>, artifact_commands: Vec<ArtifactCommand>) -> Self {
+        Self {
+            error,
+            operations,
+            artifact_commands,
+        }
     }
 }
 

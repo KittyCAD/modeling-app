@@ -223,9 +223,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         &self,
         id: uuid::Uuid,
         source_range: SourceRange,
-        cmd: ModelingCmd,
+        cmd: &ModelingCmd,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        self.batch_modeling_cmd(id, source_range, &cmd).await?;
+        self.batch_modeling_cmd(id, source_range, cmd).await?;
 
         // Flush the batch queue.
         self.flush_batch(false, source_range).await
