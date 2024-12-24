@@ -1,4 +1,5 @@
 import {
+  ArtifactCommand,
   defaultRustSourceRange,
   defaultSourceRange,
   Program,
@@ -2115,9 +2116,10 @@ export class EngineCommandManager extends EventTarget {
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
   }
-  updateArtifactGraph(ast: Program) {
+  updateArtifactGraph(ast: Program, artifactCommands: ArtifactCommand[]) {
     this.artifactGraph = createArtifactGraph({
       orderedCommands: this.orderedCommands,
+      artifactCommands,
       responseMap: this.responseMap,
       ast,
     })
