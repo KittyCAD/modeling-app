@@ -76,7 +76,9 @@ impl EngineConnection {
                     "".into()
                 }
             }
-            kcmc::ModelingCmd::SketchModeDisable(kcmc::SketchModeDisable {}) => "scene->disableSketchMode();".into(),
+            kcmc::ModelingCmd::SketchModeDisable(kcmc::SketchModeDisable { .. }) => {
+                "scene->disableSketchMode();".into()
+            }
             kcmc::ModelingCmd::MakePlane(kcmc::MakePlane {
                 origin,
                 x_axis,
@@ -105,7 +107,7 @@ impl EngineConnection {
                     size.0
                 )
             }
-            kcmc::ModelingCmd::StartPath(kcmc::StartPath {}) => {
+            kcmc::ModelingCmd::StartPath(kcmc::StartPath { .. }) => {
                 let sketch_id = format!("sketch_{}", cpp_id);
                 let path_id = format!("path_{}", cpp_id);
                 format!(

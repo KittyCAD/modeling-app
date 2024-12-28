@@ -127,7 +127,7 @@ async fn inner_extrude(
             exec_state,
             args,
             exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {})
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default())
         );
         solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
     }
