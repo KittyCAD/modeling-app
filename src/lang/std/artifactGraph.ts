@@ -1,4 +1,10 @@
-import { ArtifactCommand, PathToNode, Program, SourceRange } from 'lang/wasm'
+import {
+  ArtifactCommand,
+  PathToNode,
+  Program,
+  SourceRange,
+  sourceRangeFromRust,
+} from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
@@ -153,12 +159,10 @@ export interface OrderedCommand {
  * should return data on how to update the map, and not do so directly.
  */
 export function createArtifactGraph({
-  orderedCommands,
   artifactCommands,
   responseMap,
   ast,
 }: {
-  orderedCommands: Array<OrderedCommand>
   artifactCommands: Array<ArtifactCommand>
   responseMap: ResponseMap
   ast: Program
@@ -168,33 +172,15 @@ export function createArtifactGraph({
   /** see docstring for {@link getArtifactsToUpdate} as to why this is needed */
   let currentPlaneId = ''
 
-  let adjustment = 0
-  let found = false
-  orderedCommands.forEach((orderedCommand, index) => {
-    const artifactCommand = artifactCommands[index - adjustment]
-    let adjustedArtifactCommand: ArtifactCommand | null = artifactCommand
-    if (
-      !found &&
-      orderedCommand.command.type === 'modeling_cmd_req' &&
-      adjustedArtifactCommand?.cmdId !== orderedCommand.command.cmd_id
-    ) {
-      adjustment += 1
-      adjustedArtifactCommand = null
+  for (const artifactCommand of artifactCommands) {
+    if (artifactCommand.command.type === 'enable_sketch_mode') {
+      currentPlaneId = artifactCommand.command.entity_id
     }
-    if (adjustedArtifactCommand) {
-      found = true
-    }
-    if (orderedCommand.command?.type === 'modeling_cmd_req') {
-      if (orderedCommand.command.cmd.type === 'enable_sketch_mode') {
-        currentPlaneId = orderedCommand.command.cmd.entity_id
-      }
-      if (orderedCommand.command.cmd.type === 'sketch_mode_disable') {
-        currentPlaneId = ''
-      }
+    if (artifactCommand.command.type === 'sketch_mode_disable') {
+      currentPlaneId = ''
     }
     const artifactsToUpdate = getArtifactsToUpdate({
-      orderedCommand,
-      artifactCommand: adjustedArtifactCommand,
+      artifactCommand,
       responseMap,
       getArtifact: (id: ArtifactId) => myMap.get(id),
       currentPlaneId,
@@ -204,9 +190,6 @@ export function createArtifactGraph({
       const mergedArtifact = mergeArtifacts(myMap.get(id), artifact)
       myMap.set(id, mergedArtifact)
     })
-  })
-  if (!found) {
-    console.warn('No artifact commands found for ordered commands')
   }
   return myMap
 }
@@ -248,15 +231,13 @@ function mergeArtifacts(
  * can remove this.
  */
 export function getArtifactsToUpdate({
-  orderedCommand: { command, range },
   artifactCommand,
   getArtifact,
   responseMap,
   currentPlaneId,
   ast,
 }: {
-  orderedCommand: OrderedCommand
-  artifactCommand: ArtifactCommand | null
+  artifactCommand: ArtifactCommand
   responseMap: ResponseMap
   /** Passing in a getter because we don't wan this function to update the map directly */
   getArtifact: (id: ArtifactId) => Artifact | undefined
@@ -266,27 +247,14 @@ export function getArtifactsToUpdate({
   id: ArtifactId
   artifact: Artifact
 }> {
+  const range = sourceRangeFromRust(artifactCommand.range)
   const pathToNode = getNodePathFromSourceRange(ast, range)
 
-  // expect all to be `modeling_cmd_req` as batch commands have
-  // already been expanded before being added to orderedCommands
-  if (command.type !== 'modeling_cmd_req') return []
-  const id = command.cmd_id
+  const id = artifactCommand.cmdId
   const response = responseMap[id]
-  const cmd = command.cmd
+  const cmd = artifactCommand.command
   const returnArr: ReturnType<typeof getArtifactsToUpdate> = []
   if (!response) return returnArr
-  // Verify that the artifact command matches the ordered command.
-  if (artifactCommand && artifactCommand?.cmdId !== id) {
-    console.warn(
-      `Artifact command id ${artifactCommand?.cmdId} does not match ordered command id ${id}`
-    )
-  }
-  if (artifactCommand && artifactCommand?.command.type !== cmd.type) {
-    console.warn(
-      `Artifact command type ${artifactCommand?.command.type} does not match ordered command ${cmd.type}`
-    )
-  }
   if (cmd.type === 'make_plane' && range[1] !== 0) {
     // If we're calling `make_plane` and the code range doesn't end at `0`
     // it's not a default plane, but a custom one from the offsetPlane standard library function

@@ -2118,7 +2118,6 @@ export class EngineCommandManager extends EventTarget {
   }
   updateArtifactGraph(ast: Program, artifactCommands: ArtifactCommand[]) {
     this.artifactGraph = createArtifactGraph({
-      orderedCommands: this.orderedCommands,
       artifactCommands,
       responseMap: this.responseMap,
       ast,
