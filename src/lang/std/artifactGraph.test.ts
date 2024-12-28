@@ -1,7 +1,12 @@
-import { makeDefaultPlanes, assertParse, initPromise, Program } from 'lang/wasm'
+import {
+  makeDefaultPlanes,
+  assertParse,
+  initPromise,
+  Program,
+  ArtifactCommand,
+} from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import {
-  OrderedCommand,
   ResponseMap,
   createArtifactGraph,
   filterArtifacts,
@@ -120,7 +125,7 @@ type CodeKey = keyof typeof codeToWriteCacheFor
 
 type CacheShape = {
   [key in CodeKey]: {
-    orderedCommands: OrderedCommand[]
+    artifactCommands: ArtifactCommand[]
     responseMap: ResponseMap
   }
 }
@@ -149,9 +154,10 @@ beforeAll(async () => {
         for (const [codeKey, code] of cacheEntries) {
           const ast = assertParse(code)
           await kclManager.executeAst({ ast })
+          const execState = kclManager.execState
 
           cacheToWriteToFileTemp[codeKey] = {
-            orderedCommands: engineCommandManager.orderedCommands,
+            artifactCommands: execState.artifactCommands,
             responseMap: engineCommandManager.responseMap,
           }
         }
@@ -177,12 +183,12 @@ describe('testing createArtifactGraph', () => {
     it('setup', () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
       } = getCommands('exampleCodeOffsetPlanes')
       ast = _ast
-      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({ artifactCommands, responseMap, ast })
     })
 
     it(`there should be one sketch`, () => {
@@ -222,12 +228,12 @@ describe('testing createArtifactGraph', () => {
     it('setup', () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
       } = getCommands('exampleCode1')
       ast = _ast
-      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({ artifactCommands, responseMap, ast })
     })
 
     it('there should be two planes for the extrusion and the sketch on face', () => {
@@ -317,12 +323,12 @@ describe('testing createArtifactGraph', () => {
     it(`setup`, () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
       } = getCommands('exampleCodeNo3D')
       ast = _ast
-      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({ artifactCommands, responseMap, ast })
     })
 
     it('there should be two planes, one for each sketch path', () => {
@@ -382,12 +388,12 @@ describe('capture graph of sketchOnFaceOnFace...', () => {
     it('setup', async () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
       } = getCommands('sketchOnFaceOnFaceEtc')
       ast = _ast
-      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({ artifactCommands, responseMap, ast })
 
       // Ostensibly this takes a screen shot of the graph of the artifactGraph
       // but it's it also tests that all of the id links are correct because if one
@@ -404,10 +410,10 @@ function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
   const file = fs.readFileSync(fullPath, 'utf-8')
   const parsed: CacheShape = JSON.parse(file)
   // these either already exist from the last run, or were created in
-  const orderedCommands = parsed[codeKey].orderedCommands
+  const artifactCommands = parsed[codeKey].artifactCommands
   const responseMap = parsed[codeKey].responseMap
   return {
-    orderedCommands,
+    artifactCommands,
     responseMap,
     ast,
   }
@@ -635,16 +641,13 @@ async function GraphTheGraph(
 
 describe('testing getArtifactsToUpdate', () => {
   it('should return an array of artifacts to update', () => {
-    const { orderedCommands, responseMap, ast } = getCommands('exampleCode1')
-    const map = createArtifactGraph({ orderedCommands, responseMap, ast })
+    const { artifactCommands, responseMap, ast } = getCommands('exampleCode1')
+    const map = createArtifactGraph({ artifactCommands, responseMap, ast })
     const getArtifact = (id: string) => map.get(id)
     const currentPlaneId = 'UUID-1'
     const getUpdateObjects = (type: Models['ModelingCmd_type']['type']) => {
       const artifactsToUpdate = getArtifactsToUpdate({
-        orderedCommand: orderedCommands.find(
-          (a) =>
-            a.command.type === 'modeling_cmd_req' && a.command.cmd.type === type
-        )!,
+        artifactCommand: artifactCommands.find((a) => a.command.type === type)!,
         responseMap,
         getArtifact,
         currentPlaneId,
