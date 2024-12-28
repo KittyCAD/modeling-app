@@ -1293,7 +1293,7 @@ pub(crate) async fn inner_start_profile_at(
     let id = exec_state.next_uuid();
     let path_id = exec_state.next_uuid();
 
-    batch_cmd!(exec_state, args, path_id, ModelingCmd::from(mcmd::StartPath {}));
+    batch_cmd!(exec_state, args, path_id, ModelingCmd::from(mcmd::StartPath::default()));
     batch_cmd!(
         exec_state,
         args,
@@ -1472,7 +1472,7 @@ pub(crate) async fn inner_close(
             exec_state,
             args,
             exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {})
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default())
         );
     }
 

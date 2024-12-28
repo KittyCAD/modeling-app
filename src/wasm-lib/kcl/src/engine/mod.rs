@@ -106,7 +106,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             source_range,
-            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll {}),
+            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
         )
         .await?;
 
