@@ -10,7 +10,7 @@ use crate::SourceRange;
 /// created.
 ///
 /// This aspires to replace `OrderedCommand` in TS.
-#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactCommand {
@@ -22,13 +22,6 @@ pub struct ArtifactCommand {
     /// without an engine command, in which case, we would make this field
     /// optional.
     pub command: ModelingCmd,
-}
-
-impl PartialEq for ArtifactCommand {
-    fn eq(&self, other: &Self) -> bool {
-        // ModelingCmd does not implement PartialEq, so we can't derive it.
-        self.cmd_id == other.cmd_id
-    }
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS, JsonSchema)]
