@@ -229,6 +229,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
       parsed.kind,
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
+      [],
       []
     )
   }
@@ -623,6 +624,7 @@ export const modifyAstForSketch = async (
       parsed.kind,
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
+      [],
       []
     )
 
@@ -692,6 +694,7 @@ export function programMemoryInit(): ProgramMemory | Error {
       parsed.kind,
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
+      [],
       []
     )
   }
