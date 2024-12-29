@@ -4,7 +4,8 @@
   "description": "Zoo KCL language support for CodeMirror 6.",
   "main": "src/index.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "vitest --config vitest.main.config.ts run"
   },
   "type": "module",
   "repository": "https://github.com/KittyCAD/modeling-app",
@@ -18,5 +19,7 @@
     "typescript": "^5.7.2"
   },
   "devDependencies": {
+    "@lezer/generator": "^1.7.2",
+    "vitest": "^2.1.8"
   }
 }
