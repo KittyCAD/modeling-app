@@ -94,6 +94,18 @@ pub struct ModuleState {
     pub settings: MetaSettings,
 }
 
+/// Outcome from executing a program.  This is used in WebAssembly/WASM.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecOutcome {
+    /// Program variable bindings of the top-level module.
+    pub memory: ProgramMemory,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
+}
+
 impl Default for ExecState {
     fn default() -> Self {
         Self::new()
@@ -121,6 +133,25 @@ impl ExecState {
             global,
             mod_local: ModuleState::default(),
         };
+    }
+
+    /// Convert to an output for WebAssembly/WASM.
+    pub fn to_wasm_outcome(mut self) -> ExecOutcome {
+        // Clear closed-over program memory inside closures.  This is
+        // destructive.  It greatly reduces the amount of data crossing the WASM
+        // boundary that we won't ever use.
+        for env in self.mut_memory().environments.iter_mut() {
+            for (_, value) in env.bindings.iter_mut() {
+                if let KclValue::Function { memory, .. } = value {
+                    *memory = Box::new(ProgramMemory::new());
+                }
+            }
+        }
+
+        ExecOutcome {
+            memory: self.mod_local.memory,
+            operations: self.mod_local.operations,
+        }
     }
 
     pub fn memory(&self) -> &ProgramMemory {
