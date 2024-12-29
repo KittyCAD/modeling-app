@@ -1,0 +1,22 @@
+{
+  "name": "@kittycad/codemirror-lang-kcl",
+  "version": "1.0.0",
+  "description": "Zoo KCL language support for CodeMirror 6.",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "type": "module",
+  "repository": "https://github.com/KittyCAD/modeling-app",
+  "author": "Zoo Engineering Team",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@codemirror/language": "^6.10.3",
+    "@codemirror/state": "^6.4.1",
+    "@lezer/highlight": "^1.2.1",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+  }
+}

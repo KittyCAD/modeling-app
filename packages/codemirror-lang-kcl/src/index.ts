@@ -2,6 +2,7 @@
 
 import {
   LRLanguage,
+  LanguageSupport,
   indentNodeProp,
   continuedIndent,
   delimitedIndent,
@@ -35,3 +36,7 @@ export const KclLanguage = LRLanguage.define({
     commentTokens: { line: '//', block: { open: '/*', close: '*/' } },
   },
 })
+
+export function kcl() {
+  return new LanguageSupport(KclLanguage)
+}
