@@ -94,6 +94,18 @@ pub struct ModuleState {
     pub settings: MetaSettings,
 }
 
+/// Outcome of executing a program.  This is used in TS.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecOutcome {
+    /// Program variable bindings of the top-level module.
+    pub memory: ProgramMemory,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
+}
+
 impl Default for ExecState {
     fn default() -> Self {
         Self::new()
@@ -121,6 +133,18 @@ impl ExecState {
             global,
             mod_local: ModuleState::default(),
         };
+    }
+
+    /// Convert to execution outcome when running in WebAssembly.  We want to
+    /// reduce the amount of data that crosses the WASM boundary as much as
+    /// possible.
+    pub fn to_wasm_outcome(self) -> ExecOutcome {
+        // Fields are opt-in so that we don't accidentally leak private internal
+        // state when we add more to ExecState.
+        ExecOutcome {
+            memory: self.mod_local.memory,
+            operations: self.mod_local.operations,
+        }
     }
 
     pub fn memory(&self) -> &ProgramMemory {
