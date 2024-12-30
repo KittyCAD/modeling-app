@@ -1,6 +1,5 @@
 import { KclLanguage } from '../src/index.ts'
 import { fileTests } from '@lezer/generator/dist/test'
-import { expect, test } from 'vitest'
 
 import * as fs from 'fs'
 import * as path from 'path'
