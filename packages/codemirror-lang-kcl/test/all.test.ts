@@ -3,9 +3,8 @@ import { fileTests } from '@lezer/generator/dist/test'
 
 import * as fs from 'fs'
 import * as path from 'path'
-import { fileURLToPath } from 'url'
 
-let caseDir = path.dirname(fileURLToPath(import.meta.url))
+let caseDir = path.dirname(__filename)
 
 for (let file of fs.readdirSync(caseDir)) {
   if (!/\.txt$/.test(file)) continue
