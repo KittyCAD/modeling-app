@@ -1,4 +1,4 @@
-import { KclLanguage } from '../src/index.ts'
+import { KclLanguage } from '../src/index'
 import { fileTests } from '@lezer/generator/dist/test'
 
 import * as fs from 'fs'
