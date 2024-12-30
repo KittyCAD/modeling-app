@@ -4,3 +4,4 @@ dist
 tsconfig.tsbuildinfo
 *.d.ts
 *.js
+!rollup.config.js
