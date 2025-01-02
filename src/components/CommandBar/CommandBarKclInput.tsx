@@ -1,5 +1,11 @@
-import { Completion } from '@codemirror/autocomplete'
-import { EditorView, ViewUpdate } from '@codemirror/view'
+import {
+  closeBrackets,
+  closeBracketsKeymap,
+  Completion,
+  completionKeymap,
+  completionStatus,
+} from '@codemirror/autocomplete'
+import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -95,6 +101,7 @@ function CommandBarKclInput({
     label: v.key,
     detail: String(roundOff(v.value as number)),
   }))
+  const varMentionsExtension = varMentions(varMentionData)
 
   const { setContainer } = useCodeMirror({
     container: editorRef.current,
@@ -112,23 +119,40 @@ function CommandBarKclInput({
         ? getSystemTheme()
         : settings.context.app.theme.current,
     extensions: [
-      EditorView.domEventHandlers({
-        keydown: (event) => {
-          if (event.key === 'Backspace' && value === '') {
-            event.preventDefault()
-            stepBack()
-          } else if (event.key === 'Enter') {
-            event.preventDefault()
-            handleSubmit()
-          }
-        },
-      }),
-      varMentions(varMentionData),
+      varMentionsExtension,
       EditorView.updateListener.of((vu: ViewUpdate) => {
         if (vu.docChanged) {
           setValue(vu.state.doc.toString())
         }
       }),
+      closeBrackets(),
+      keymap.of([
+        ...closeBracketsKeymap,
+        ...completionKeymap,
+        {
+          key: 'Enter',
+          run: (editor) => {
+            // Only submit if there is no completion active
+            if (completionStatus(editor.state) === null) {
+              handleSubmit()
+              return true
+            } else {
+              return false
+            }
+          },
+        },
+        {
+          key: 'Backspace',
+          run: (editor) => {
+            // Only step back if the editor is empty
+            if (editor.state.doc.toString() === '') {
+              stepBack()
+              return true
+            }
+            return false
+          },
+        },
+      ]),
     ],
   })
 
@@ -221,16 +245,16 @@ function CommandBarKclInput({
             spellCheck="false"
             autoFocus
             onChange={(e) => setNewVariableName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.currentTarget.value === '' && e.key === 'Backspace') {
-                setCreateNewVariable(false)
-              }
-            }}
-            onKeyUp={(e) => {
-              if (e.key === 'Enter') {
-                handleSubmit()
-              }
-            }}
+            // onKeyDown={(e) => {
+            //   if (e.currentTarget.value === '' && e.key === 'Backspace') {
+            //     setCreateNewVariable(false)
+            //   }
+            // }}
+            // onKeyUp={(e) => {
+            //   // if (e.key === 'Enter') {
+            //   //   handleSubmit()
+            //   // }
+            // }}
           />
           <span
             className={
