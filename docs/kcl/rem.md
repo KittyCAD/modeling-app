@@ -9,7 +9,7 @@ Compute the remainder after dividing `num` by `div`.
 If `num` is negative, the result will be too.
 
 ```js
-rem(num: NumberArg, divisor: NumberArg) -> NumberArg
+rem(num: number, divisor: number) -> number
 ```
 
 ### Tags
@@ -21,12 +21,12 @@ rem(num: NumberArg, divisor: NumberArg) -> NumberArg
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`NumberArg`](/docs/kcl/types/NumberArg) | The number which will be divided by `divisor`. | Yes |
-| `divisor` | [`NumberArg`](/docs/kcl/types/NumberArg) | The number which will divide `num`. | Yes |
+| `num` | `number` | The number which will be divided by `divisor`. | Yes |
+| `divisor` | `number` | The number which will divide `num`. | Yes |
 
 ### Returns
 
-[`NumberArg`](/docs/kcl/types/NumberArg) - A number.
+`number` 
 
 
 ### Examples
