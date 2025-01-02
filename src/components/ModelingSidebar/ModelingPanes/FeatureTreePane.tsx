@@ -22,11 +22,13 @@ import {
   kclEditorActor,
   selectionEventSelector,
 } from 'machines/kclEditorMachine'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 export const FeatureTreePane = () => {
   const isEditorMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const { send: modelingSend, state: modelingState } = useModelingContext()
+  const { commandBarSend } = useCommandsContext()
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_featureTreeState, featureTreeSend] = useMachine(
     featureTreeMachine.provide({
@@ -92,7 +94,12 @@ export const FeatureTreePane = () => {
           }
         },
       },
-    })
+    }),
+    {
+      input: {
+        commandBarSend,
+      },
+    }
   )
   // If there are parse errors we show the last successful operations
   // and overlay a message on top of the pane
@@ -311,14 +318,12 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (
-      props.item.type === 'StdLibCall' &&
-      props.item.name === 'startSketchOn'
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterEditFlow',
         data: {
           targetSourceRange: sourceRangeFromRust(props.item.sourceRange),
+          currentOperation: props.item,
         },
       })
     }

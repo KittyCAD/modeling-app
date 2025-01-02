@@ -23,7 +23,7 @@ interface StdLibCallInfo {
   prepareToEdit?:
     | ExecuteCommandEventPayload
     | ((
-        props: Omit<EnterEditFlowProps, 'onComplete'>
+        props: Omit<EnterEditFlowProps, 'commandBarSend'>
       ) => ExecuteCommandEventPayload | Promise<ExecuteCommandEventPayload>)
 }
 
@@ -268,20 +268,22 @@ function isNotUserFunctionReturn(ops: Operation[]): Operation[] {
   return ops.filter((op) => op.type !== 'UserDefinedFunctionReturn')
 }
 
-interface EnterEditFlowProps {
+export interface EnterEditFlowProps {
   item: Operation
   artifact?: Artifact
-  onComplete: ReturnType<typeof useCommandsContext>['commandBarSend']
+  commandBarSend: ReturnType<typeof useCommandsContext>['commandBarSend']
 }
 
 export async function enterEditFlow({
   item,
   artifact,
-  onComplete,
+  commandBarSend: onComplete,
 }: EnterEditFlowProps) {
   if (item.type !== 'StdLibCall') return
 
   const stdLibInfo = stdLibMap[item.name]
+
+  console.log('enterEditFlow', { item, stdLibInfo, artifact })
 
   if (stdLibInfo && stdLibInfo.prepareToEdit) {
     if (typeof stdLibInfo.prepareToEdit === 'function') {
@@ -289,16 +291,12 @@ export async function enterEditFlow({
         item,
         artifact,
       })
-      console.log('', {
-        item,
-        artifact,
-        eventPayload,
-      })
       onComplete({
         type: 'Find and select command',
         data: eventPayload,
       })
     } else {
+      console.log('simple prepareToEdit', stdLibInfo.prepareToEdit)
       onComplete({
         type: 'Find and select command',
         data: stdLibInfo.prepareToEdit,
