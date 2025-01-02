@@ -805,7 +805,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
 
     quote! {
         #[tokio::test(flavor = "multi_thread")]
-        async fn #test_name_mock() {
+        async fn #test_name_mock() -> miette::Result<()> {
             let program = crate::Program::parse_no_errs(#code_block).unwrap();
             let ctx = crate::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
@@ -815,15 +815,33 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::execution::ContextType::Mock,
             };
 
-            ctx.run(program.into(), &mut crate::ExecState::new()).await.unwrap();
+            if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new()).await {
+                    return Err(miette::Report::new(crate::errors::Report {
+                        error: e,
+                        filename: format!("{}{}", #fn_name, #index),
+                        kcl_source: #code_block.to_string(),
+                    }));
+            }
+            Ok(())
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-        async fn #test_name() {
+        async fn #test_name() -> miette::Result<()> {
             let code = #code_block;
             // Note, `crate` must be kcl_lib
-            let result = crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm, None).await.unwrap();
+            let result = match crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm, None).await {
+                Err(crate::errors::ExecError::Kcl(e)) => {
+                    return Err(miette::Report::new(crate::errors::Report {
+                        error: e,
+                        filename: format!("{}{}", #fn_name, #index),
+                        kcl_source: #code_block.to_string(),
+                    }));
+                }
+                Err(other_err)=> panic!("{}", other_err),
+                Ok(img) => img,
+            };
             twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #output_test_name_str), &result, 0.99);
+            Ok(())
         }
     }
 }

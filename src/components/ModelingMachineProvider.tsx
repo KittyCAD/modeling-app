@@ -46,16 +46,9 @@ import {
   applyConstraintLength,
 } from './Toolbar/setAngleLength'
 import {
-  canSweepSelection,
   handleSelectionBatch,
-  isSelectionLastLine,
-  isRangeBetweenCharacters,
-  isSketchPipe,
   Selections,
   updateSelections,
-  canLoftSelection,
-  canRevolveSelection,
-  canShellSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -75,21 +68,17 @@ import {
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
-  doesSceneHaveExtrudedSketch,
-  doesSceneHaveSweepableSketch,
+  artifactIsPlaneWithPaths,
   getNodePathFromSourceRange,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
-import { EditorSelection, Transaction } from '@codemirror/state'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { modelingMachineEvent } from 'editor/manager'
-import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addEdgeTreatment'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -100,6 +89,8 @@ import { useFileContext } from 'hooks/useFileContext'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { promptToEditFlow } from 'lib/promptToEdit'
+import { kclEditorActor } from 'machines/kclEditorMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -309,22 +300,6 @@ export const ModelingMachineProvider = ({
               null
             if (!setSelections) return {}
 
-            const dispatchSelection = (selection?: EditorSelection) => {
-              if (!selection) return // TODO less of hack for the below please
-              if (!editorManager.editorView) return
-
-              setTimeout(() => {
-                if (!editorManager.editorView) return
-                editorManager.editorView.dispatch({
-                  selection,
-                  annotations: [
-                    modelingMachineEvent,
-                    Transaction.addToHistory.of(false),
-                  ],
-                })
-              })
-            }
-
             let selections: Selections = {
               graphSelections: [],
               otherSelections: [],
@@ -364,7 +339,15 @@ export const ModelingMachineProvider = ({
               } = handleSelectionBatch({
                 selections,
               })
-              codeMirrorSelection && dispatchSelection(codeMirrorSelection)
+              if (codeMirrorSelection) {
+                kclEditorActor.send({
+                  type: 'setLastSelectionEvent',
+                  data: {
+                    codeMirrorSelection,
+                    scrollIntoView: setSelections.scrollIntoView ?? false,
+                  },
+                })
+              }
               engineEvents &&
                 engineEvents.forEach((event) => {
                   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -556,78 +539,6 @@ export const ModelingMachineProvider = ({
         },
       },
       guards: {
-        'has valid sweep selection': ({ context: { selectionRanges } }) => {
-          // A user can begin extruding if they either have 1+ faces selected or nothing selected
-          // TODO: I believe this guard only allows for extruding a single face at a time
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            // they have no selection, we should enable the button
-            // so they can select the face through the cmdbar
-            // BUT only if there's extrudable geometry
-            return doesSceneHaveSweepableSketch(kclManager.ast)
-          }
-          if (!isSketchPipe(selectionRanges)) return false
-
-          const canSweep = canSweepSelection(selectionRanges)
-          if (err(canSweep)) return false
-          return canSweep
-        },
-        'has valid revolve selection': ({ context: { selectionRanges } }) => {
-          // A user can begin extruding if they either have 1+ faces selected or nothing selected
-          // TODO: I believe this guard only allows for extruding a single face at a time
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            // they have no selection, we should enable the button
-            // so they can select the face through the cmdbar
-            // BUT only if there's extrudable geometry
-            return doesSceneHaveSweepableSketch(kclManager.ast)
-          }
-          if (!isSketchPipe(selectionRanges)) return false
-
-          const canSweep = canRevolveSelection(selectionRanges)
-          if (err(canSweep)) return false
-          return canSweep
-        },
-        'has valid loft selection': ({ context: { selectionRanges } }) => {
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            const count = 2
-            return doesSceneHaveSweepableSketch(kclManager.ast, count)
-          }
-
-          const canLoft = canLoftSelection(selectionRanges)
-          if (err(canLoft)) return false
-          return canLoft
-        },
-        'has valid shell selection': ({
-          context: { selectionRanges },
-          event,
-        }) => {
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            return doesSceneHaveExtrudedSketch(kclManager.ast)
-          }
-
-          const canShell = canShellSelection(selectionRanges)
-          if (err(canShell)) return false
-          return canShell
-        },
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
@@ -635,18 +546,12 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
-        'has valid edge treatment selection': ({
-          context: { selectionRanges },
-        }) => {
-          return hasValidEdgeTreatmentSelection({
-            selectionRanges,
-            ast: kclManager.ast,
-            code: codeManager.code,
-          })
-        },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
+          if (artifactIsPlaneWithPaths(selectionRanges)) {
+            return true
+          }
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(
@@ -1198,6 +1103,15 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
+        'submit-prompt-edit': fromPromise(async ({ input }) => {
+          return await promptToEditFlow({
+            code: codeManager.code,
+            prompt: input.prompt,
+            selections: input.selection,
+            token,
+            artifactGraph: engineCommandManager.artifactGraph,
+          })
+        }),
       },
     }),
     {

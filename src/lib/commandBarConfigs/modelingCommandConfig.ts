@@ -80,6 +80,10 @@ export type ModelingCommandSchema = {
   'Text-to-CAD': {
     prompt: string
   }
+  'Prompt-to-edit': {
+    prompt: string
+    selection: Selections
+  }
 }
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
@@ -478,6 +482,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Use the Zoo Text-to-CAD API to generate part starters.',
     icon: 'chat',
     args: {
+      prompt: {
+        inputType: 'text',
+        required: true,
+      },
+    },
+  },
+  'Prompt-to-edit': {
+    description: 'Use Zoo AI to edit your kcl',
+    icon: 'chat',
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: [
+          'solid2D',
+          'segment',
+          'sweepEdge',
+          'cap',
+          'wall',
+          'edgeCut',
+          'edgeCutEdge',
+        ],
+        multiple: true,
+        required: true,
+        skip: true,
+      },
       prompt: {
         inputType: 'text',
         required: true,
