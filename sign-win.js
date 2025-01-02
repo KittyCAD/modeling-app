@@ -32,4 +32,7 @@ exports.default = async (configuration) => {
   )
 
   console.log('Signing using signWin.js script: successful')
+  throw new Error(
+    `Signing using signWin.js script: fake throw`
+  )
 }
