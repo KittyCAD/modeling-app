@@ -163,7 +163,7 @@ jobs:
         run: yarn electron-builder --config
 
       - name: Build the app (release)
-        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') }}
+        if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -174,7 +174,7 @@ jobs:
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
-        # TODO: fix flakes on electron-notarize
+        # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.0
         with:
           timeout_minutes: 10
@@ -234,7 +234,8 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-        # TODO: fix flakes on electron-notarize
+          DEBUG: "electron-notarize*"
+        # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
         uses: nick-fields/retry@v3.0.0
         with:
           timeout_minutes: 10
