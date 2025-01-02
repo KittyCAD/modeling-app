@@ -99,5 +99,5 @@ async fn inner_sweep(
     )
     .await?;
 
-    do_post_extrude(sketch, 0.0, exec_state, args).await
+    do_post_extrude(sketch, 0.0, exec_state, args, None).await
 }

@@ -125,7 +125,7 @@ async fn inner_extrude(
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
         )
         .await?;
-        solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
+        solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone(), None).await?);
     }
 
     Ok(solids.into())
@@ -136,6 +136,7 @@ pub(crate) async fn do_post_extrude(
     length: f64,
     exec_state: &mut ExecState,
     args: Args,
+    force_object_id: Option<Uuid>,
 ) -> Result<Box<Solid>, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
@@ -163,14 +164,16 @@ pub(crate) async fn do_post_extrude(
         sketch.id = face.solid.sketch.id;
     }
 
+    let object_id = force_object_id.unwrap_or(sketch.id);
+
     #[cfg(target_arch = "wasm32")]
-    web_sys::console::log_1(&format!("Rust Solid3dGetExtrusionFaceInfo cmd edge_id={:?} object_id={:?}", any_edge_id, sketch.id).into());
+    web_sys::console::log_1(&format!("Rust Solid3dGetExtrusionFaceInfo cmd edge_id={:?} object_id={:?}", any_edge_id, object_id).into());
     let solid3d_info = args
         .send_modeling_cmd(
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
                 edge_id: any_edge_id,
-                object_id: sketch.id,
+                object_id: object_id,
             }),
         )
         .await?;

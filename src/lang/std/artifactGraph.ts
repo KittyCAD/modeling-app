@@ -373,32 +373,49 @@ export function getArtifactsToUpdate({
         })
     }
     return returnArr
-  } else if (
-    cmd.type === 'extrude' ||
-    cmd.type === 'revolve' ||
-    cmd.type === 'loft'
-  ) {
+  } else if (cmd.type === 'extrude' || cmd.type === 'revolve') {
     const subType = cmd.type === 'extrude' ? 'extrusion' : cmd.type
-    const extrudeOrRevolve = cmd.type === 'extrude' || cmd.type === 'revolve'
-    console.log('Solid3dGetExtrusionFaceInfo response.data', response.data)
     returnArr.push({
       id,
       artifact: {
         type: 'sweep',
         subType: subType,
         id,
-        // TODO: check what is needed here with target for loft
-        pathId: extrudeOrRevolve ? cmd.target : cmd.section_ids[0],
+        pathId: cmd.target,
         surfaceIds: [],
         edgeIds: [],
         codeRef: { range, pathToNode },
       },
     })
-    if (extrudeOrRevolve) {
-      const path = getArtifact(cmd.target)
+    const path = getArtifact(cmd.target)
+    if (path?.type === 'path')
+      returnArr.push({
+        id: cmd.target,
+        artifact: { ...path, sweepId: id },
+      })
+    return returnArr
+  } else if (
+    cmd.type === 'loft' &&
+    response.type === 'modeling' &&
+    response.data.modeling_response.type === 'loft'
+  ) {
+    returnArr.push({
+      id,
+      artifact: {
+        type: 'sweep',
+        subType: 'loft',
+        id,
+        pathId: response.data.modeling_response.data.solid_id,
+        surfaceIds: [],
+        edgeIds: [],
+        codeRef: { range, pathToNode },
+      },
+    })
+    for (const sectionId of cmd.section_ids) {
+      const path = getArtifact(sectionId)
       if (path?.type === 'path')
         returnArr.push({
-          id: cmd.target,
+          id: sectionId,
           artifact: { ...path, sweepId: id },
         })
     }

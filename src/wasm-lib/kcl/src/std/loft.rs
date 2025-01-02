@@ -4,7 +4,10 @@ use std::num::NonZeroU32;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
+use kcmc::{
+    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData,
+    ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
 
 use crate::{
@@ -142,19 +145,32 @@ async fn inner_loft(
         }));
     }
 
-    let id = exec_state.next_uuid();
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::Loft {
-            section_ids: sketches.iter().map(|group| group.id).collect(),
-            base_curve_index,
-            bez_approximate_rational,
-            tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
-            v_degree,
-        }),
-    )
-    .await?;
+    let id: uuid::Uuid = exec_state.next_uuid();
+    let resp = args
+        .send_modeling_cmd(
+            id,
+            ModelingCmd::from(mcmd::Loft {
+                section_ids: sketches.iter().map(|group| group.id).collect(),
+                base_curve_index,
+                bez_approximate_rational,
+                tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                v_degree,
+            }),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Loft(data),
+    } = &resp
+    else {
+        return Err(KclError::Engine(KclErrorDetails {
+            message: format!("mcmd::Loft response was not as expected: {:?}", resp),
+            source_ranges: vec![args.source_range],
+        }));
+    };
+
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("Rust Loft solid_id={:?}", data.solid_id).into());
 
     // Using the first sketch as the base curve, idk we might want to change this later.
-    do_post_extrude(sketches[0].clone(), 0.0, exec_state, args).await
+    do_post_extrude(sketches[0].clone(), 0.0, exec_state, args, Some(data.solid_id)).await
 }
