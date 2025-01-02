@@ -1169,6 +1169,15 @@ export async function deleteFromSelection(
               pathToNode = path
               extrudeNameToDelete = dec.id.name
             }
+            if (
+              dec.init.type === 'CallExpression' &&
+              dec.init.callee.name === 'loft' &&
+              dec.init.arguments?.[0].type === 'ArrayExpression' &&
+              dec.init.arguments?.[0].elements.some(a => a.type === 'Identifier' && a.name === varDecName)
+            ) {
+              pathToNode = path
+              extrudeNameToDelete = dec.id.name
+            }
           }
         },
       })
