@@ -1,10 +1,10 @@
 ---
 title: "NumberArg"
-excerpt: "A number that can be either a floating point number or an integer."
+excerpt: "A number."
 layout: manual
 ---
 
-A number that can be either a floating point number or an integer.
+A number.
 
 
 

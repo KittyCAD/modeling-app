@@ -26,7 +26,7 @@ rem(num: NumberArg, divisor: NumberArg) -> NumberArg
 
 ### Returns
 
-[`NumberArg`](/docs/kcl/types/NumberArg) - A number that can be either a floating point number or an integer.
+[`NumberArg`](/docs/kcl/types/NumberArg) - A number.
 
 
 ### Examples
