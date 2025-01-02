@@ -1684,7 +1684,7 @@ impl From<Args> for Vec<Metadata> {
 // This type is named the way it is since it appears in docs.  Ints are
 // generally an implementation detail.  But this shouldn't conflict with the
 // `Number` variant of [`KclValue`].
-/// A number that can be either a floating point number or an integer.
+/// A number.
 #[derive(Debug, Clone, Copy, JsonSchema, ts_rs::TS, PartialEq)]
 #[ts(export)]
 pub(crate) enum NumberArg {
