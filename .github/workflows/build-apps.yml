@@ -164,7 +164,7 @@ jobs:
         # this is just not doing any codesign or release yml generation
         run: yarn electron-builder --config
 
-      - name: Build the app (release, macOS only)
+      - name: Build the app (release, macOS with retries)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'macos-14' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
@@ -176,9 +176,11 @@ jobs:
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           DEBUG: "electron-notarize*"
         # TODO: fix flakes on electron-notarize
-        run: yarn electron-builder --config --publish always || yarn electron-builder --config --publish always
+        run: |
+          retries=2
+          until yarn electron-builder --config --publish always || [[ "$retries" -le 0 ]]; do sleep 1; ((--retries)); done
 
-      - name: Build the app (release, Linux or Windows)
+      - name: Build the app (release, not macOS)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os != 'macos-14' }}
         env:
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
