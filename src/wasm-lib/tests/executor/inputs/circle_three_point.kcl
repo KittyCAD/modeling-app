@@ -1,7 +1,7 @@
-exampleSketch = startSketchOn('XY')
-|> circleThreePoint({
-  p1 = [20, 20],
-  p2 = [25, 15],
-  p3 = [30, 10],
-}, %)
-
+sketch001 = startSketchOn('XY')
+  |> circleThreePoint({
+    p1 = [25, 25],
+    p2 = [30, 20],
+    p3 = [27, 15],
+  }, %) 
+example = extrude(10, sketch001)
