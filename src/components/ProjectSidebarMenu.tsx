@@ -210,7 +210,7 @@ function ProjectMenuPopover({
   return (
     <Popover className="relative">
       <Popover.Button
-        className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary dark:hover:bg-chalkboard-90"
+        className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
         <div className="flex flex-col items-start py-0.5">
