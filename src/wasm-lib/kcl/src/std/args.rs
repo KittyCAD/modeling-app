@@ -3,7 +3,6 @@ use std::{any::type_name, collections::HashMap, num::NonZeroU32};
 use anyhow::Result;
 use kcmc::{websocket::OkWebSocketResponseData, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 
 use super::shapes::PolygonType;
 use crate::{
@@ -1678,43 +1677,5 @@ impl From<Args> for Vec<Metadata> {
         vec![Metadata {
             source_range: value.source_range,
         }]
-    }
-}
-
-// This type is named the way it is since it appears in docs.  Ints are
-// generally an implementation detail.  But this shouldn't conflict with the
-// `Number` variant of [`KclValue`].
-/// A number.
-#[derive(Debug, Clone, Copy, JsonSchema, ts_rs::TS, PartialEq)]
-#[ts(export)]
-pub(crate) enum NumberArg {
-    Float(f64),
-    Int(i64),
-}
-
-impl NumberArg {
-    pub fn to_f64(self) -> f64 {
-        match self {
-            Self::Float(f) => f,
-            Self::Int(i) => i as f64,
-        }
-    }
-
-    pub fn to_kcl_value(self, source_range: SourceRange) -> KclValue {
-        let meta = vec![source_range.into()];
-        match self {
-            Self::Float(f) => KclValue::Number { value: f, meta },
-            Self::Int(i) => KclValue::Int { value: i, meta },
-        }
-    }
-}
-
-impl FromKclValue<'_> for NumberArg {
-    fn from_kcl_val(arg: &KclValue) -> Option<Self> {
-        match arg {
-            KclValue::Number { value, meta: _ } => Some(NumberArg::Float(*value)),
-            KclValue::Int { value, meta: _ } => Some(NumberArg::Int(*value)),
-            _ => None,
-        }
     }
 }

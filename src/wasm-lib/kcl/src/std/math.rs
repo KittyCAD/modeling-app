@@ -9,16 +9,16 @@ use crate::{
     std::Args,
 };
 
-use super::args::{FromArgs, NumberArg};
+use super::args::FromArgs;
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
 pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let n = args.get_unlabeled_kw_arg("number to divide")?;
     let d = args.get_kw_arg("divisor")?;
-    let float_or_int = inner_rem(n, d);
+    let remainder = inner_rem(n, d);
 
-    Ok(float_or_int.to_kcl_value(args.source_range))
+    Ok(args.make_user_val_from_f64(remainder))
 }
 
 /// Compute the remainder after dividing `num` by `div`.
@@ -42,13 +42,8 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         divisor = "The number which will divide `num`.",
     }
 }]
-fn inner_rem(num: NumberArg, divisor: NumberArg) -> NumberArg {
-    match (num, divisor) {
-        // Possible implicit conversion from int to float.
-        (NumberArg::Float(_), _) | (_, NumberArg::Float(_)) => NumberArg::Float(num.to_f64() % divisor.to_f64()),
-        // Preserve ints.
-        (NumberArg::Int(n), NumberArg::Int(d)) => NumberArg::Int(n % d),
-    }
+fn inner_rem(num: f64, divisor: f64) -> f64 {
+    num % divisor
 }
 
 /// Compute the cosine of a number (in radians).
