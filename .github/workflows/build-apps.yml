@@ -164,8 +164,8 @@ jobs:
         # this is just not doing any codesign or release yml generation
         run: yarn electron-builder --config
 
-      - name: Build the app (release)
-        if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
+      - name: Build the app (release, macOS only)
+        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'macos-14' }}
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
@@ -174,8 +174,14 @@ jobs:
           CSC_LINK: ${{ secrets.APPLE_CERTIFICATE }}
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
+        # TODO: fix flakes on electron-notarize
+        run: yarn electron-builder --config --publish always || yarn electron-builder --config --publish always
+
+      - name: Build the app (release, Linux or Windows)
+        if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os != 'macos-14' }}
+        env:
+          WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
         run: yarn electron-builder --config --publish always
 
       - name: List artifacts in out/
