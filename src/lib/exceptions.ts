@@ -1,3 +1,6 @@
+import { kclManager } from 'lib/singletons'
+import { reloadModule, getModule } from 'lib/wasmWrapper'
+
 let initialized = false
 
 /**
@@ -8,12 +11,16 @@ let initialized = false
  */
 export const initializeWindowExceptionHandler = () => {
   if (window && !initialized) {
-    window.addEventListener('error', (event) => {
+    window.addEventListener('error', async (event) => {
       if (matchImportExportErrorCrash(event.message)) {
         // do global singleton cleanup
-        console.log('doing cleanup!')
+        kclManager.executeAstCleanUp()
+
+        await reloadModule()
+        getModule().default()
       }
     })
+    // Make sure we only initialize this event listener once
     initialized = true
   } else {
     console.error(
