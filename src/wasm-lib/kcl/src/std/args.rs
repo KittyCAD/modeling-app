@@ -61,28 +61,34 @@ impl KwArgs {
 pub struct Args {
     /// Positional args.
     pub args: Vec<Arg>,
+    /// Keyword arguments
     pub kw_args: KwArgs,
     pub source_range: SourceRange,
     pub ctx: ExecutorContext,
+    /// If this call happens inside a pipe (|>) expression, this holds the LHS of that |>.
+    /// Otherwise it's None.
+    pipe_value: Option<Arg>,
 }
 
 impl Args {
-    pub fn new(args: Vec<Arg>, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+    pub fn new(args: Vec<Arg>, source_range: SourceRange, ctx: ExecutorContext, pipe_value: Option<Arg>) -> Self {
         Self {
             args,
             kw_args: Default::default(),
             source_range,
             ctx,
+            pipe_value,
         }
     }
 
     /// Collect the given keyword arguments.
-    pub fn new_kw(kw_args: KwArgs, source_range: SourceRange, ctx: ExecutorContext) -> Self {
+    pub fn new_kw(kw_args: KwArgs, source_range: SourceRange, ctx: ExecutorContext, pipe_value: Option<Arg>) -> Self {
         Self {
             args: Default::default(),
             kw_args,
             source_range,
             ctx,
+            pipe_value,
         }
     }
 
@@ -101,6 +107,7 @@ impl Args {
                 settings: Default::default(),
                 context_type: crate::execution::ContextType::Mock,
             },
+            pipe_value: None,
         })
     }
 
@@ -133,12 +140,17 @@ impl Args {
     where
         T: FromKclValue<'a>,
     {
-        let Some(ref arg) = self.kw_args.unlabeled else {
-            return Err(KclError::Semantic(KclErrorDetails {
+        let arg = self
+            .kw_args
+            .unlabeled
+            .as_ref()
+            .or(self.args.first())
+            .or(self.pipe_value.as_ref())
+            .ok_or(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![self.source_range],
                 message: format!("This function requires a value for the special unlabeled first parameter, '{label}'"),
-            }));
-        };
+            }))?;
+
         T::from_kcl_val(&arg.value).ok_or_else(|| {
             KclError::Semantic(KclErrorDetails {
                 source_ranges: arg.source_ranges(),
@@ -181,7 +193,7 @@ impl Args {
         exec_state: &'e mut ExecState,
         tag: &'a TagIdentifier,
     ) -> Result<&'e crate::execution::TagEngineInfo, KclError> {
-        if let KclValue::TagIdentifier(t) = exec_state.memory.get(&tag.value, self.source_range)? {
+        if let KclValue::TagIdentifier(t) = exec_state.memory().get(&tag.value, self.source_range)? {
             Ok(t.info.as_ref().ok_or_else(|| {
                 KclError::Type(KclErrorDetails {
                     message: format!("Tag `{}` does not have engine info", tag.value),
@@ -247,12 +259,12 @@ impl Args {
                 // Find all the solids on the same shared sketch.
                 ids.extend(
                     exec_state
-                        .memory
+                        .memory()
                         .find_solids_on_sketch(solid.sketch.id)
                         .iter()
                         .flat_map(|eg| eg.get_all_edge_cut_ids()),
                 );
-                ids.extend(exec_state.dynamic_state.edge_cut_ids_on_sketch(sketch_id));
+                ids.extend(exec_state.mod_local.dynamic_state.edge_cut_ids_on_sketch(sketch_id));
                 traversed_sketches.push(sketch_id);
             }
 
@@ -308,15 +320,6 @@ impl Args {
                 source_range: self.source_range,
             }],
         )
-    }
-
-    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> KclValue {
-        KclValue::Int {
-            value: n,
-            meta: vec![Metadata {
-                source_range: self.source_range,
-            }],
-        }
     }
 
     pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
@@ -408,13 +411,6 @@ impl Args {
     }
 
     pub(crate) fn get_sketch_and_optional_tag(&self) -> Result<(Sketch, Option<TagNode>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_sketches_and_data<'a, T>(&'a self) -> Result<(Vec<Sketch>, Option<T>), KclError>
-    where
-        T: FromArgs<'a> + serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
-    {
         FromArgs::from_args(self, 0)
     }
 
@@ -865,22 +861,6 @@ impl<'a> FromKclValue<'a> for crate::std::polar::PolarCoordsData {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::std::loft::LoftData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let_field_of!(obj, v_degree?);
-        let_field_of!(obj, bez_approximate_rational?);
-        let_field_of!(obj, base_curve_index?);
-        let_field_of!(obj, tolerance?);
-        Some(Self {
-            v_degree,
-            bez_approximate_rational,
-            base_curve_index,
-            tolerance,
-        })
-    }
-}
-
 impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let s = arg.as_str()?;
@@ -1092,6 +1072,20 @@ impl<'a> FromKclValue<'a> for super::fillet::FilletData {
             radius,
             tolerance,
             tags,
+        })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::sweep::SweepData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, path);
+        let_field_of!(obj, sectional?);
+        let_field_of!(obj, tolerance?);
+        Some(Self {
+            path,
+            sectional,
+            tolerance,
         })
     }
 }

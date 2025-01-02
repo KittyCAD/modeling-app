@@ -65,7 +65,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///
 /// ```no_run
 /// // Loft a square and a circle on the `XY` plane using offset.
-/// const squareSketch = startSketchOn('XY')
+/// squareSketch = startSketchOn('XY')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
 ///     |> line([0, -200], %)
@@ -73,7 +73,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const circleSketch = startSketchOn(offsetPlane('XY', 150))
+/// circleSketch = startSketchOn(offsetPlane('XY', 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -81,7 +81,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///
 /// ```no_run
 /// // Loft a square and a circle on the `XZ` plane using offset.
-/// const squareSketch = startSketchOn('XZ')
+/// squareSketch = startSketchOn('XZ')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
 ///     |> line([0, -200], %)
@@ -89,7 +89,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const circleSketch = startSketchOn(offsetPlane('XZ', 150))
+/// circleSketch = startSketchOn(offsetPlane('XZ', 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -97,7 +97,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///
 /// ```no_run
 /// // Loft a square and a circle on the `YZ` plane using offset.
-/// const squareSketch = startSketchOn('YZ')
+/// squareSketch = startSketchOn('YZ')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
 ///     |> line([0, -200], %)
@@ -105,7 +105,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const circleSketch = startSketchOn(offsetPlane('YZ', 150))
+/// circleSketch = startSketchOn(offsetPlane('YZ', 150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -113,7 +113,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///
 /// ```no_run
 /// // Loft a square and a circle on the `-XZ` plane using offset.
-/// const squareSketch = startSketchOn('-XZ')
+/// squareSketch = startSketchOn('-XZ')
 ///     |> startProfileAt([-100, 200], %)
 ///     |> line([200, 0], %)
 ///     |> line([0, -200], %)
@@ -121,7 +121,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 ///     |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///     |> close(%)
 ///
-/// const circleSketch = startSketchOn(offsetPlane('-XZ', -150))
+/// circleSketch = startSketchOn(offsetPlane('-XZ', -150))
 ///     |> circle({ center = [0, 100], radius = 50 }, %)
 ///
 /// loft([squareSketch, circleSketch])
@@ -142,6 +142,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 
 #[stdlib {
     name = "offsetPlane",
+    feature_tree_operation = true,
 }]
 async fn inner_offset_plane(
     std_plane: StandardPlane,
@@ -208,7 +209,7 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
 
     // Set the color.
     args.batch_modeling_cmd(
-        exec_state.id_generator.next_uuid(),
+        exec_state.next_uuid(),
         ModelingCmd::from(mcmd::PlaneSetColor {
             color,
             plane_id: plane.id,

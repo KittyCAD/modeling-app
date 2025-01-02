@@ -22,7 +22,8 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///
 /// ```no_run
 /// w = 15
-/// cube = startSketchAt([0, 0])
+/// cube = startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> line([w, 0], %, $line1)
 ///   |> line([0, w], %, $line2)
 ///   |> line([-w, 0], %, $line3)
@@ -30,8 +31,9 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> close(%)
 ///   |> extrude(5, %)
 ///
-/// fn cylinder = (radius, tag) => {
-///   return startSketchAt([0, 0])
+/// fn cylinder(radius, tag) {
+///   return startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> circle({ radius = radius, center = segEnd(tag) }, %)
 ///   |> extrude(radius, %)
 /// }
@@ -67,7 +69,7 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// Compute the ending point of the provided line segment along the 'x' axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %, $thing)
 ///   |> line([0, 5], %)
@@ -75,7 +77,7 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///   |> line([-20, 10], %)
 ///   |> close(%)
 ///  
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "segEndX",
@@ -103,7 +105,7 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// Compute the ending point of the provided line segment along the 'y' axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %)
 ///   |> line([0, 3], %, $thing)
@@ -112,7 +114,7 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///  
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "segEndY",
@@ -141,7 +143,8 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///
 /// ```no_run
 /// w = 15
-/// cube = startSketchAt([0, 0])
+/// cube = startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> line([w, 0], %, $line1)
 ///   |> line([0, w], %, $line2)
 ///   |> line([-w, 0], %, $line3)
@@ -149,8 +152,9 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///   |> close(%)
 ///   |> extrude(5, %)
 ///
-/// fn cylinder = (radius, tag) => {
-///   return startSketchAt([0, 0])
+/// fn cylinder(radius, tag) {
+///   return startSketchOn('XY')
+///   |> startProfileAt([0, 0], %)
 ///   |> circle({ radius = radius, center = segStart(tag) }, %)
 ///   |> extrude(radius, %)
 /// }
@@ -186,7 +190,7 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 /// Compute the starting point of the provided line segment along the 'x' axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %, $thing)
 ///   |> line([0, 5], %)
@@ -194,7 +198,7 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line([-20, 10], %)
 ///   |> close(%)
 ///  
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "segStartX",
@@ -222,7 +226,7 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 /// Compute the starting point of the provided line segment along the 'y' axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([20, 0], %)
 ///   |> line([0, 3], %, $thing)
@@ -231,7 +235,7 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///  
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "segStartY",
@@ -259,7 +263,7 @@ pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<K
 /// sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([5, 0], %)
 ///   |> line([20, 5], %)
@@ -267,7 +271,7 @@ pub async fn last_segment_x(_exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line([-15, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "lastSegX",
@@ -299,7 +303,7 @@ pub async fn last_segment_y(_exec_state: &mut ExecState, args: Args) -> Result<K
 /// sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([5, 0], %)
 ///   |> line([20, 5], %)
@@ -307,7 +311,7 @@ pub async fn last_segment_y(_exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line([-15, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "lastSegY",
@@ -337,7 +341,7 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// Compute the length of the provided line segment.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 60,
@@ -353,7 +357,7 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///   }, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "segLen",
@@ -383,7 +387,7 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// Compute the angle (in degrees) of the provided line segment.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([5, 10], %, $seg01)
@@ -393,7 +397,7 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///   |> angledLine([segAng(seg01), -15], %)
 ///   |> close(%)
 ///
-/// const example = extrude(4, exampleSketch)
+/// example = extrude(4, exampleSketch)
 /// ```
 #[stdlib {
     name = "segAng",
@@ -528,7 +532,7 @@ pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> 
 /// Returns the angle to match the given length for x.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([2, 5], %, $seg01)
 ///   |> angledLineToX([
@@ -537,7 +541,7 @@ pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> 
 ///      ], %)
 ///   |> close(%)
 ///
-/// const extrusion = extrude(5, sketch001)
+/// extrusion = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "angleToMatchLengthX",
@@ -591,7 +595,7 @@ pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> 
 /// Returns the angle to match the given length for y.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([1, 2], %, $seg01)
 ///   |> angledLine({
@@ -601,7 +605,7 @@ pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> 
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///  
-/// const extrusion = extrude(5, sketch001)
+/// extrusion = extrude(5, sketch001)
 /// ```
 #[stdlib {
     name = "angleToMatchLengthY",

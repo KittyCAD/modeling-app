@@ -2,4 +2,4 @@ fn add(x, y) {
   return x + y
 }
 
-three = add(x: 1)
+three = add(x = 1)

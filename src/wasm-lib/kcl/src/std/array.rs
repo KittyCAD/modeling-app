@@ -30,7 +30,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Given a list like `[a, b, c]`, and a function like `f`, returns
 /// `[f(a), f(b), f(c)]`
 /// ```no_run
-/// const r = 10 // radius
+/// r = 10 // radius
 /// fn drawCircle(id) {
 ///   return startSketchOn("XY")
 ///     |> circle({ center: [id * 2 * r, 0], radius: r}, %)
@@ -39,15 +39,15 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// // Call `drawCircle`, passing in each element of the array.
 /// // The outputs from each `drawCircle` form a new array,
 /// // which is the return value from `map`.
-/// const circles = map(
+/// circles = map(
 ///   [1..3],
 ///   drawCircle
 /// )
 /// ```
 /// ```no_run
-/// const r = 10 // radius
+/// r = 10 // radius
 /// // Call `map`, using an anonymous function instead of a named one.
-/// const circles = map(
+/// circles = map(
 ///   [1..3],
 ///   fn(id) {
 ///     return startSketchOn("XY")
@@ -106,17 +106,17 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// using the previous value and the element.
 /// ```no_run
 /// // This function adds two numbers.
-/// fn add = (a, b) => { return a + b }
+/// fn add(a, b) { return a + b }
 ///
 /// // This function adds an array of numbers.
 /// // It uses the `reduce` function, to call the `add` function on every
 /// // element of the `arr` parameter. The starting value is 0.
-/// fn sum = (arr) => { return reduce(arr, 0, add) }
+/// fn sum(arr) { return reduce(arr, 0, add) }
 ///
 /// /*
 /// The above is basically like this pseudo-code:
 /// fn sum(arr):
-///     let sumSoFar = 0
+///     sumSoFar = 0
 ///     for i in arr:
 ///         sumSoFar = add(sumSoFar, i)
 ///     return sumSoFar
@@ -139,20 +139,21 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 /// ```no_run
 /// // Declare a function that sketches a decagon.
-/// fn decagon = (radius) => {
+/// fn decagon(radius) {
 ///   // Each side of the decagon is turned this many degrees from the previous angle.
 ///   stepAngle = (1/10) * tau()
 ///
 ///   // Start the decagon sketch at this point.
-///   startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///   startOfDecagonSketch = startSketchOn('XY')
+///     |> startProfileAt([(cos(0)*radius), (sin(0) * radius)], %)
 ///
 ///   // Use a `reduce` to draw the remaining decagon sides.
 ///   // For each number in the array 1..10, run the given function,
 ///   // which takes a partially-sketched decagon and adds one more edge to it.
 ///   fullDecagon = reduce([1..10], startOfDecagonSketch, fn(i, partialDecagon) {
 ///       // Draw one edge of the decagon.
-///       let x = cos(stepAngle * i) * radius
-///       let y = sin(stepAngle * i) * radius
+///       x = cos(stepAngle * i) * radius
+///       y = sin(stepAngle * i) * radius
 ///       return lineTo([x, y], partialDecagon)
 ///   })
 ///
@@ -163,14 +164,15 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// /*
 /// The `decagon` above is basically like this pseudo-code:
 /// fn decagon(radius):
-///     let stepAngle = (1/10) * tau()
-///     let startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///     stepAngle = (1/10) * tau()
+///     plane = startSketchOn('XY')
+///     startOfDecagonSketch = startProfileAt([(cos(0)*radius), (sin(0) * radius)], plane)
 ///
 ///     // Here's the reduce part.
-///     let partialDecagon = startOfDecagonSketch
+///     partialDecagon = startOfDecagonSketch
 ///     for i in [1..10]:
-///         let x = cos(stepAngle * i) * radius
-///         let y = sin(stepAngle * i) * radius
+///         x = cos(stepAngle * i) * radius
+///         y = sin(stepAngle * i) * radius
 ///         partialDecagon = lineTo([x, y], partialDecagon)
 ///     fullDecagon = partialDecagon // it's now full
 ///     return fullDecagon
@@ -224,8 +226,8 @@ async fn call_reduce_closure<'a>(
 /// Returns a new array with the element appended.
 ///
 /// ```no_run
-/// let arr = [1, 2, 3]
-/// let new_arr = push(arr, 4)
+/// arr = [1, 2, 3]
+/// new_arr = push(arr, 4)
 /// assertEqual(new_arr[3], 4, 0.00001, "4 was added to the end of the array")
 /// ```
 #[stdlib {

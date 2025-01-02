@@ -12,5 +12,10 @@ KCL value for an optional parameter which was not given an argument. (remember, 
 
 
 
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `digest` |`[, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`, `integer`]`|  | No |
 
 

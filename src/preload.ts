@@ -7,6 +7,8 @@ import packageJson from '../package.json'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import chokidar from 'chokidar'
 
+const resizeWindow = (width: number, height: number) =>
+  ipcRenderer.invoke('app.resizeWindow', [width, height])
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
@@ -18,13 +20,19 @@ const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
 const onUpdateDownloaded = (
   callback: (value: { version: string; releaseNotes: string }) => void
-) => ipcRenderer.on('update-downloaded', (_event, value) => callback(value))
+) =>
+  ipcRenderer.on('update-downloaded', (_event: any, value) => callback(value))
 const onUpdateDownloadStart = (
   callback: (value: { version: string }) => void
-) => ipcRenderer.on('update-download-start', (_event, value) => callback(value))
+) =>
+  ipcRenderer.on('update-download-start', (_event: any, value) =>
+    callback(value)
+  )
 const onUpdateError = (callback: (value: Error) => void) =>
-  ipcRenderer.on('update-error', (_event, value) => callback(value))
+  ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
+const getAppTestProperty = (propertyName: string) =>
+  ipcRenderer.invoke('app.testProperty', propertyName)
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -157,14 +165,15 @@ contextBridge.exposeInMainWorld('electron', {
     isWindows,
     isLinux,
   },
+  // Use this to access dynamic properties from the node side.
+  // INTENDED ONLY TO BE USED FOR TESTS.
+  getAppTestProperty,
   process: {
-    // Setter/getter has to be created because
-    // these are read-only over the boundary.
+    // These are read-only over the boundary.
     env: Object.assign(
       {},
       exposeProcessEnvs([
         'NODE_ENV',
-        'TEST_SETTINGS_FILE_KEY',
         'VITE_KC_API_WS_MODELING_URL',
         'VITE_KC_API_BASE_URL',
         'VITE_KC_SITE_BASE_URL',
@@ -189,4 +198,5 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateError,
   appRestart,
   getArgvParsed,
+  resizeWindow,
 })

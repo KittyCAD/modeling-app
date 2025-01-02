@@ -43,6 +43,8 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
+import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
 
 export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
@@ -65,6 +67,7 @@ export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
 export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
+export type { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type SyntaxType =
   | 'Program'
@@ -115,6 +118,13 @@ export function sourceRangeFromRust(s: RustSourceRange): SourceRange {
  */
 export function defaultSourceRange(): SourceRange {
   return [0, 0, true]
+}
+
+/**
+ * Create a default RustSourceRange for testing or as a placeholder.
+ */
+export function defaultRustSourceRange(): RustSourceRange {
+  return [0, 0, 0]
 }
 
 export const wasmUrl = () => {
@@ -212,7 +222,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0])
+      sourceRangeFromRust(parsed.sourceRanges[0]),
+      []
     )
   }
 }
@@ -235,6 +246,7 @@ export const isPathToNodeNumber = (
 
 export interface ExecState {
   memory: ProgramMemory
+  operations: Operation[]
 }
 
 /**
@@ -244,12 +256,14 @@ export interface ExecState {
 export function emptyExecState(): ExecState {
   return {
     memory: ProgramMemory.empty(),
+    operations: [],
   }
 }
 
 function execStateFromRaw(raw: RawExecState): ExecState {
   return {
-    memory: ProgramMemory.fromRaw(raw.memory),
+    memory: ProgramMemory.fromRaw(raw.modLocal.memory),
+    operations: raw.modLocal.operations,
   }
 }
 
@@ -531,11 +545,12 @@ export const _executor = async (
     return execStateFromRaw(execState)
   } catch (e: any) {
     console.log(e)
-    const parsed: RustKclError = JSON.parse(e.toString())
+    const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
     const kclError = new KCLError(
-      parsed.kind,
-      parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0])
+      parsed.error.kind,
+      parsed.error.msg,
+      sourceRangeFromRust(parsed.error.sourceRanges[0]),
+      parsed.operations
     )
 
     return Promise.reject(kclError)
@@ -594,7 +609,8 @@ export const modifyAstForSketch = async (
     const kclError = new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0])
+      sourceRangeFromRust(parsed.sourceRanges[0]),
+      []
     )
 
     console.log(kclError)
@@ -662,7 +678,8 @@ export function programMemoryInit(): ProgramMemory | Error {
     return new KCLError(
       parsed.kind,
       parsed.msg,
-      sourceRangeFromRust(parsed.sourceRanges[0])
+      sourceRangeFromRust(parsed.sourceRanges[0]),
+      []
     )
   }
 }

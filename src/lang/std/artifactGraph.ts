@@ -872,14 +872,20 @@ export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
   }
 }
 
-export function isSolid2D(artifact: Artifact): artifact is solid2D {
-  return (artifact as solid2D).pathId !== undefined
-}
-
-export function isSegment(artifact: Artifact): artifact is SegmentArtifact {
-  return (artifact as SegmentArtifact).pathId !== undefined
-}
-
-export function isSweep(artifact: Artifact): artifact is SweepArtifact {
-  return (artifact as SweepArtifact).pathId !== undefined
+/**
+ * Get an artifact from a code source range
+ */
+export function getArtifactFromRange(
+  range: SourceRange,
+  artifactGraph: ArtifactGraph
+): Artifact | null {
+  for (const artifact of artifactGraph.values()) {
+    if ('codeRef' in artifact) {
+      const match =
+        artifact.codeRef?.range[0] === range[0] &&
+        artifact.codeRef.range[1] === range[1]
+      if (match) return artifact
+    }
+  }
+  return null
 }

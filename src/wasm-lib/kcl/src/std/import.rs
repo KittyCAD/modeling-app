@@ -148,23 +148,23 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// [KCL modules](/docs/kcl/modules).
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.obj")
+/// model = import("tests/inputs/cube.obj")
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.obj", {format: "obj", units: "m"})
+/// model = import("tests/inputs/cube.obj", {format: "obj", units: "m"})
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.gltf")
+/// model = import("tests/inputs/cube.gltf")
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.sldprt")
+/// model = import("tests/inputs/cube.sldprt")
 /// ```
 ///
 /// ```no_run
-/// const model = import("tests/inputs/cube.step")
+/// model = import("tests/inputs/cube.step")
 /// ```
 ///
 /// ```no_run
@@ -177,6 +177,7 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "import",
+    feature_tree_operation = true,
     tags = [],
 }]
 async fn inner_import(
@@ -299,13 +300,13 @@ async fn inner_import(
 
     if args.ctx.is_mock() {
         return Ok(ImportedGeometry {
-            id: exec_state.id_generator.next_uuid(),
+            id: exec_state.next_uuid(),
             value: import_files.iter().map(|f| f.path.to_string()).collect(),
             meta: vec![args.source_range.into()],
         });
     }
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let resp = args
         .send_modeling_cmd(
             id,

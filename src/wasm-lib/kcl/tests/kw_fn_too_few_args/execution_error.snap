@@ -12,6 +12,6 @@ KCL Semantic error
  2 │ │     return x + y
  3 │ ╰─▶ }
  4 │     
- 5 │     three = add(x: 1)
-   ·             ─────────
+ 5 │     three = add(x = 1)
+   ·             ──────────
    ╰────

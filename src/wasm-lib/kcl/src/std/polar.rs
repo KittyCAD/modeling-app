@@ -34,7 +34,7 @@ pub async fn polar(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// cartesian (x/y/z grid) coordinates.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(polar({angle: 30, length: 5}), %, $thing)
 ///   |> line([0, 5], %)
@@ -42,7 +42,7 @@ pub async fn polar(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   |> line([-20, 10], %)
 ///   |> close(%)
 ///  
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "polar",
