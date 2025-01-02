@@ -22,17 +22,17 @@ exports.default = async (configuration) => {
     )
   }
 
-  execSync(
-    `smctl sign --fingerprint="${
-      process.env.WINDOWS_CERTIFICATE_THUMBPRINT
-    }" --input "${String(configuration.path)}"`,
-    {
-      stdio: 'inherit',
-    }
-  )
-
-  console.log('Signing using signWin.js script: successful')
-  throw new Error(
-    `Signing using signWin.js script: fake throw`
-  )
+  try {
+    execSync(
+      `smctl sign --fingerprint="${process.env.WINDOWS_CERTIFICATE_THUMBPRINT
+      }" --input "${String(configuration.path)}"`,
+      {
+        stdio: 'inherit',
+      }
+    )
+    console.log('Signing using signWin.js script: successful')
+    throw new Error('Signing using signWin.js script: failed:')
+  } catch (error) {
+    throw new Error('Signing using signWin.js script: failed:', error)
+  }
 }
