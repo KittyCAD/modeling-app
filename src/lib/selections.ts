@@ -172,7 +172,6 @@ export async function getEventForSelectWithPoint({
   Models['OkModelingCmdResponse_type'],
   { type: 'select_with_point' }
 >): Promise<ModelingMachineEvent | null> {
-  console.log('Solid3dGetExtrusionFaceInfo getEventForSelectWithPoint', data)
   if (!data?.entity_id) {
     return {
       type: 'Set selection',

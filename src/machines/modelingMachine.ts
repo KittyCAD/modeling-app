@@ -1664,7 +1664,6 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Delete selection'] | undefined
       }) => {
-        console.log('input', input)
         if (!input) {
           return new Error('No input provided')
         }
@@ -2555,7 +2554,6 @@ export const modelingMachine = setup({
         src: 'deleteSelectionAstMod',
         id: 'deleteSelectionAstMod',
         input: ({ event, context }) => {
-          console.log('event', event)
           if (event.type !== 'Delete selection') return undefined
           // TODO: there has to be a better way to pass `context` right?
           if (!context.selectionRanges) return undefined
