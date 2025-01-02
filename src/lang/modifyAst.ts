@@ -1149,11 +1149,11 @@ export async function deleteFromSelection(
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
       varDec.node.init.type === 'PipeExpression') ||
-    selection.artifact?.type === 'sweep'
+    (selection.artifact?.type === 'sweep' || selection.artifact?.type === 'plane')
   ) {
     let extrudeNameToDelete = ''
     let pathToNode: PathToNode | null = null
-    if (selection.artifact?.type !== 'sweep') {
+    if (selection.artifact?.type !== 'sweep' && selection.artifact?.type !== 'plane') {
       const varDecName = varDec.node.id.name
       traverse(astClone, {
         enter: (node, path) => {
