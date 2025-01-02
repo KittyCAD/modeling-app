@@ -176,10 +176,7 @@ jobs:
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
           DEBUG: "electron-notarize*"
-        run: |
-          electron_builder_command="yarn electron-builder --config --publish always"
-          # Retry once on failure as mac notarization can be flaky
-          $electron_builder_command || $electron_builder_command
+        run: yarn electron-builder --config --publish always
 
       - name: List artifacts in out/
         run: ls -R out

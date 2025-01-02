@@ -16,7 +16,8 @@ mac:
       arch:
         - x64
         - arm64
-  notarize: true
+  notarize:
+    teamId: 92H8YB3B95
   fileAssociations:
     - ext: kcl
       name: kcl
