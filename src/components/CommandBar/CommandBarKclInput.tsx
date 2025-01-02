@@ -245,16 +245,16 @@ function CommandBarKclInput({
             spellCheck="false"
             autoFocus
             onChange={(e) => setNewVariableName(e.target.value)}
-            // onKeyDown={(e) => {
-            //   if (e.currentTarget.value === '' && e.key === 'Backspace') {
-            //     setCreateNewVariable(false)
-            //   }
-            // }}
-            // onKeyUp={(e) => {
-            //   // if (e.key === 'Enter') {
-            //   //   handleSubmit()
-            //   // }
-            // }}
+            onKeyDown={(e) => {
+              if (e.currentTarget.value === '' && e.key === 'Backspace') {
+                setCreateNewVariable(false)
+              }
+            }}
+            onKeyUp={(e) => {
+              if (e.key === 'Enter' && canSubmit) {
+                handleSubmit()
+              }
+            }}
           />
           <span
             className={
