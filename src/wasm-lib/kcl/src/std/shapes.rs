@@ -17,7 +17,10 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
     parsing::ast::types::TagNode,
-    std::Args,
+    std::{
+        utils::{calculate_circle_center, distance},
+        Args,
+    },
 };
 
 /// A sketch surface or a sketch.
@@ -143,6 +146,67 @@ async fn inner_circle(
         .await?;
 
     Ok(new_sketch)
+}
+
+/// Data for drawing a 3-point circle
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct CircleThreePointData {
+    /// Point one for circle derivation.
+    pub p1: [f64; 2],
+    /// Point two for circle derivation.
+    pub p2: [f64; 2],
+    /// Point three for circle derivation.
+    pub p3: [f64; 2],
+}
+
+/// Sketch a 3-point circle.
+pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch_surface_or_group, tag): (CircleThreePointData, SketchOrSurface, Option<TagNode>) =
+        args.get_circle_three_point_args()?;
+
+    let sketch = inner_circle_three_point(data, sketch_surface_or_group, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
+}
+
+/// Construct a circle derived from 3 points.
+///
+/// ```no_run
+/// exampleSketch = startSketchOn("XY")
+///   |> circleThreePoint({
+///     p1 = [10,10],
+///     p2 = [20,8],
+///     p3 = [15,5]
+///   }, %)
+///
+/// example = extrude(5, exampleSketch)
+/// ```
+#[stdlib {
+    name = "circleThreePoint",
+}]
+async fn inner_circle_three_point(
+    data: CircleThreePointData,
+    sketch_surface_or_group: SketchOrSurface,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let center = calculate_circle_center(data.p1, data.p2, data.p3);
+    inner_circle(
+        CircleData {
+            center,
+            // It can be the distance to any of the 3 points - they all lay on the circumference.
+            radius: distance(center.into(), data.p2.into()),
+        },
+        sketch_surface_or_group,
+        tag,
+        exec_state,
+        args,
+    )
+    .await
 }
 
 /// Type of the polygon
