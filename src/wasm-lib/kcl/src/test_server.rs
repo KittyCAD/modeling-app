@@ -41,7 +41,7 @@ pub async fn execute_and_snapshot_ast(
     let ctx = new_context(units, true, project_directory).await?;
     do_execute_and_snapshot(&ctx, ast)
         .await
-        .map(|(state, snap)| (state.memory, state.operations, snap))
+        .map(|(state, snap)| (state.mod_local.memory, state.mod_local.operations, snap))
 }
 
 pub async fn execute_and_snapshot_no_auth(

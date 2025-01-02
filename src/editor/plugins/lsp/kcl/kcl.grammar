@@ -5,6 +5,7 @@
   mult @left
   add @left
   comp @left
+  logic @left
   pipe @left
   range
 }
@@ -40,7 +41,8 @@ expression[@isGroup=Expression] {
     expression !add AddOp expression |
     expression !mult MultOp expression |
     expression !exp ExpOp expression |
-    expression !comp CompOp expression
+    expression !comp CompOp expression |
+    expression !logic LogicOp expression
   } |
   UnaryExpression { UnaryOp expression } |
   ParenthesizedExpression { "(" expression ")" } |
@@ -89,6 +91,7 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
   AddOp { "+" | "-" }
   MultOp { "/" | "*" | "\\" }
   ExpOp { "^" }
+  LogicOp { "|" | "&" }
   BangOp { "!" }
   CompOp { "==" | "!=" | "<=" | ">=" | "<" | ">" }
   Equals { "=" }

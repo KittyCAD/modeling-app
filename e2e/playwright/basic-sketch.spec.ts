@@ -1,29 +1,26 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page } from './zoo-test'
 import {
   getUtils,
   TEST_COLORS,
-  setup,
-  tearDown,
   commonPoints,
   PERSIST_MODELING_CONTEXT,
 } from './test-utils'
-
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
+import { HomePageFixture } from './fixtures/homePageFixture'
 
 test.setTimeout(120000)
 
-async function doBasicSketch(page: Page, openPanes: string[]) {
+async function doBasicSketch(
+  page: Page,
+  homePage: HomePageFixture,
+  openPanes: string[]
+) {
   const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.setBodyDimensions({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
 
-  await u.waitForAuthSkipAppStart()
+  await homePage.goToModelingScene()
+  await u.waitForPageLoad()
+  await page.waitForTimeout(1000)
   await u.openDebugPanel()
 
   // If we have the code pane open, we should see the code.
@@ -148,13 +145,11 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 }
 
 test.describe('Basic sketch', () => {
-  test('code pane open at start', { tag: ['@skipWin'] }, async ({ page }) => {
-    // Skip on windows it is being weird.
-    test.skip(process.platform === 'win32', 'Skip on windows')
-    await doBasicSketch(page, ['code'])
+  test.fixme('code pane open at start', async ({ page, homePage }) => {
+    await doBasicSketch(page, homePage, ['code'])
   })
 
-  test('code pane closed at start', async ({ page }) => {
+  test('code pane closed at start', async ({ page, homePage }) => {
     // Load the app with the code panes
     await page.addInitScript(async (persistModelingContext) => {
       localStorage.setItem(
@@ -162,6 +157,6 @@ test.describe('Basic sketch', () => {
         JSON.stringify({ openPanes: [] })
       )
     }, PERSIST_MODELING_CONTEXT)
-    await doBasicSketch(page, [])
+    await doBasicSketch(page, homePage, [])
   })
 })

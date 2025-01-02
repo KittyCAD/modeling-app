@@ -101,7 +101,6 @@ layout: manual
 * [`sin`](kcl/sin)
 * [`sqrt`](kcl/sqrt)
 * [`startProfileAt`](kcl/startProfileAt)
-* [`startSketchAt`](kcl/startSketchAt)
 * [`startSketchOn`](kcl/startSketchOn)
 * [`sweep`](kcl/sweep)
 * [`tan`](kcl/tan)
