@@ -1701,15 +1701,10 @@ impl NumberArg {
     }
 
     pub fn to_kcl_value(self, source_range: SourceRange) -> KclValue {
+        let meta = vec![source_range.into()];
         match self {
-            Self::Float(f) => KclValue::Number {
-                value: f,
-                meta: vec![source_range.into()],
-            },
-            Self::Int(i) => KclValue::Int {
-                value: i,
-                meta: vec![source_range.into()],
-            },
+            Self::Float(f) => KclValue::Number { value: f, meta },
+            Self::Int(i) => KclValue::Int { value: i, meta },
         }
     }
 }
