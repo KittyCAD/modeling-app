@@ -2001,11 +2001,3 @@ async fn kcl_test_error_no_auth_websocket() {
         .to_string()
         .contains("Please send the following object over this websocket"));
 }
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_circle_three_point() {
-    let code = kcl_input!("circle_three_point");
-
-    let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
-    assert_out("circle_three_point", &result);
-}

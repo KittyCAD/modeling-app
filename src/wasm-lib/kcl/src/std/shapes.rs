@@ -166,7 +166,7 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XY")
-///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5], %)
+///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
 ///
 /// example = extrude(5, exampleSketch)
 /// ```
