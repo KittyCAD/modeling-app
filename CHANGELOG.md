@@ -19,6 +19,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [v0.34.0] - 2024-12-19
+
+##### Added
+* Under the hood: Basic program generation for improved caching
+
+##### Fixed
+* Issue with the code editor getting stuck on a sample part for some macOS users on v0.33.0
+
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.33.0...v0.34.0
+
+## [v0.33.0] - 2024-12-19
+
+##### Changed
+* KCL: completions to use new `=` syntax for object arguments instead of old `:`
+* KCL: stdlib function `startSketchAt()` now deprecated, with`startSketchOn()` remaining the preferred option
+* KCL: unlabeled first parameter now defaults to `%`
+
+##### Added
+* KCL: completion supported from import statements
+* KCL: Implemented boolean logical and/or, thanks @guptaarnav!
+* Dry-run validation for Loft
+* Double click label on sketch to dimension
+
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.32.0...v0.33.0
+
+## [v0.32.0] - 2024-12-16
+
+##### Changed
+* Multi-profile sketch on v31 didn't prove stable enough and is now pulled back. Will be enabled again in a subsequent release.
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.31.0...v0.32.0
+
+## [v0.31.0] - 2024-12-14
+
+#### What's Changed
+
+##### Added
+* Multi profile sketching
+* KCL stdlib: Add atan2 function 
+* KCL: Keyword fn args like "x = 1" not like "x: 1"
+* make pipe have a hole 
+* Color picker in the code pane 
+* KCL: sweep function
+* Add a right-click menu to the stream
+
+##### Changed 
+* Loft uses kw arguments
+
+##### Fixed
+* Fix onboarding rendering 
+* Fix KCL warnings in doc comments from let, const, and new fn syntax 
+
 ## [v0.30.0] - 2024-12-11
 
 ##### Added
@@ -1486,3 +1540,4 @@ Changelog:
 - Add onboarding
 - Update CI with formatter checks and working builds
 - Include various bug fixes & improvements
+
