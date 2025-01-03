@@ -163,10 +163,13 @@ pub struct CircleThreePointData {
 
 /// Sketch a 3-point circle.
 pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_surface_or_group, tag): (CircleThreePointData, SketchOrSurface, Option<TagNode>) =
-        args.get_circle_three_point_args()?;
+    let p1 = args.get_kw_arg("p1")?;
+    let p2 = args.get_kw_arg("p2")?;
+    let p3 = args.get_kw_arg("p3")?;
+    let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
+    let tag = args.get_kw_arg_opt("tag");
 
-    let sketch = inner_circle_three_point(data.p1, data.p2, data.p3, sketch_surface_or_group, tag, exec_state, args).await?;
+    let sketch = inner_circle_three_point(p1, p2, p3, sketch_surface_or_group, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
