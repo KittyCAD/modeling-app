@@ -157,10 +157,9 @@ beforeAll(async () => {
         for (const [codeKey, code] of cacheEntries) {
           const ast = assertParse(code)
           await kclManager.executeAst({ ast })
-          const execState = kclManager.execState
 
           cacheToWriteToFileTemp[codeKey] = {
-            artifactCommands: execState.artifactCommands,
+            artifactCommands: kclManager.execState.artifactCommands,
             responseMap: engineCommandManager.responseMap,
             execStateArtifacts: kclManager.execState.artifacts,
           }
