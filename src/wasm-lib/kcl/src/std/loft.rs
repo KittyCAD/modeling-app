@@ -158,6 +158,7 @@ async fn inner_loft(
             }),
         )
         .await?;
+
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Loft(data),
     } = &resp
@@ -167,9 +168,6 @@ async fn inner_loft(
             source_ranges: vec![args.source_range],
         }));
     };
-
-    #[cfg(target_arch = "wasm32")]
-    web_sys::console::log_1(&format!("Rust Loft result solid_id={:?}", data.solid_id).into());
 
     // Take the sketch with the most paths, and override its id with the loft's solid_id (to get its faces)
     let mut desc_sorted_sketches = sketches.to_vec();

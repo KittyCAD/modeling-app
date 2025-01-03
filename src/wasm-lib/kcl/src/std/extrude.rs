@@ -147,8 +147,6 @@ pub(crate) async fn do_post_extrude(
 
     // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
     // So, let's just use the first one.
-    #[cfg(target_arch = "wasm32")]
-    web_sys::console::log_1(&format!("Rust Solid3dGetExtrusionFaceInfo sketch={:?}", sketch).into());
     let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
         return Err(KclError::Type(KclErrorDetails {
             message: "Expected a non-empty sketch".to_string(),
@@ -163,8 +161,6 @@ pub(crate) async fn do_post_extrude(
         sketch.id = face.solid.sketch.id;
     }
 
-    #[cfg(target_arch = "wasm32")]
-    web_sys::console::log_1(&format!("Rust Solid3dGetExtrusionFaceInfo cmd edge_id={:?} object_id={:?}", any_edge_id, sketch.id).into());
     let solid3d_info = args
         .send_modeling_cmd(
             exec_state.next_uuid(),
