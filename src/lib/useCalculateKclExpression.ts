@@ -89,11 +89,7 @@ export function useCalculateKclExpression({
   useEffect(() => {
     const execAstAndSetResult = async () => {
       const programMemory = programMemoryFromVariables(
-        findAllPreviousVariables(kclManager.ast, kclManager.programMemory, [
-          code.length,
-          code.length,
-          true,
-        ]).variables
+        availableVarInfo.variables
       )
       if (programMemory instanceof Error) {
         setCalcResult('NAN')

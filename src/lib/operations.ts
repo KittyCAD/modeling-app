@@ -3,19 +3,10 @@ import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
-import {
-  findAllPreviousVariables,
-  getNodePathFromSourceRange,
-} from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { sourceRangeFromRust } from 'lang/wasm'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
-import { useCalculateKclExpression } from './useCalculateKclExpression'
-import {
-  getCalculatedKclExpressionValue,
-  programMemoryFromVariables,
-  stringToKclExpression,
-} from './kclHelpers'
+import { stringToKclExpression } from './kclHelpers'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -75,16 +66,6 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
       if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2D') {
         return baseCommand
       }
-      const programMemory = programMemoryFromVariables(
-        findAllPreviousVariables(kclManager.ast, kclManager.programMemory, [
-          codeManager.code.length,
-          codeManager.code.length,
-          true,
-        ]).variables
-      )
-      if (err(programMemory)) {
-        return baseCommand
-      }
       const argDefaultValues = {
         selection: {
           graphSelections: [
@@ -100,7 +81,7 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
             item.labeledArgs?.['length']?.sourceRange[0],
             item.labeledArgs?.['length']?.sourceRange[1]
           ),
-          programMemory,
+          programMemory: kclManager.programMemory.clone(),
         }),
         nodeToEdit: getNodePathFromSourceRange(
           kclManager.ast,

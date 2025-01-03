@@ -1,7 +1,7 @@
-import { err, trap } from './trap'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import { err } from './trap'
+import { engineCommandManager } from 'lib/singletons'
 import { parse, ProgramMemory, resultIsOk } from 'lang/wasm'
-import { findAllPreviousVariables, PrevVariable } from 'lang/queryAst'
+import { PrevVariable } from 'lang/queryAst'
 import { executeAst } from 'lang/langHelpers'
 import { KclExpression } from './commandTypes'
 
