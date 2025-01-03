@@ -148,19 +148,6 @@ async fn inner_circle(
     Ok(new_sketch)
 }
 
-/// Data for drawing a 3-point circle
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct CircleThreePointData {
-    /// Point one for circle derivation.
-    pub p1: [f64; 2],
-    /// Point two for circle derivation.
-    pub p2: [f64; 2],
-    /// Point three for circle derivation.
-    pub p3: [f64; 2],
-}
-
 /// Sketch a 3-point circle.
 pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let p1 = args.get_kw_arg("p1")?;
