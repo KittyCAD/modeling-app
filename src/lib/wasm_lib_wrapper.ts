@@ -7,6 +7,26 @@
  * gets reinitialized and we do not use that old reference
  */
 
+import {
+  parse_wasm as ParseWasm,
+  recast_wasm as RecastWasm,
+  execute as Execute,
+  kcl_lint as KclLint,
+  modify_ast_for_sketch_wasm as ModifyAstForSketch,
+  is_points_ccw as IsPointsCcw,
+  get_tangential_arc_to_info as GetTangentialArcToInfo,
+  program_memory_init as ProgramMemoryInit,
+  make_default_planes as MakeDefaultPlanes,
+  coredump as CoreDump,
+  toml_stringify as TomlStringify,
+  default_app_settings as DefaultAppSettings,
+  parse_app_settings as ParseAppSettings,
+  parse_project_settings as ParseProjectSettings,
+  default_project_settings as DefaultProjectSettings,
+  base64_decode as Base64Decode,
+  clear_scene_and_bust_cache as ClearSceneAndBustCache,
+} from '../wasm-lib/pkg/wasm_lib'
+
 type ModuleType = typeof import('../wasm-lib/pkg/wasm_lib')
 
 // Stores the result of the import of the wasm_lib file
@@ -25,94 +45,64 @@ export function getModule(): ModuleType {
 export async function init(module_or_path: any) {
   return await getModule().default(module_or_path)
 }
-export function parse_wasm(kcl_program_source: string) {
-  return getModule().parse_wasm(kcl_program_source)
+export const parse_wasm: typeof ParseWasm = (...args) => {
+  return getModule().parse_wasm(...args)
 }
-export function recast_wasm(json_str: string) {
-  return getModule().recast_wasm(json_str)
+export const recast_wasm: typeof RecastWasm = (...args) => {
+  return getModule().recast_wasm(...args)
 }
-export function execute(
-  program_ast_json: string,
-  program_memory_override_str: string,
-  settings: string,
-  engine_manager: any,
-  fs_manager: any
-) {
-  return getModule().execute(
-    program_ast_json,
-    program_memory_override_str,
-    settings,
-    engine_manager,
-    fs_manager
-  )
+export const execute: typeof Execute = (...args) => {
+  return getModule().execute(...args)
 }
-export function kcl_lint(program_ast_json: string) {
-  return getModule().kcl_lint(program_ast_json)
+export const kcl_lint: typeof KclLint = (...args) => {
+  return getModule().kcl_lint(...args)
 }
-export function modify_ast_for_sketch_wasm(
-  manager: any,
-  program_ast_json: string,
-  sketch_name: string,
-  plane_type: string,
-  sketch_id: string
-) {
-  return getModule().modify_ast_for_sketch_wasm(
-    manager,
-    program_ast_json,
-    sketch_name,
-    plane_type,
-    sketch_id
-  )
+export const modify_ast_for_sketch_wasm: typeof ModifyAstForSketch = (
+  ...args
+) => {
+  return getModule().modify_ast_for_sketch_wasm(...args)
 }
-export function is_points_ccw(points: Float64Array) {
-  return getModule().is_points_ccw(points)
+export const is_points_ccw: typeof IsPointsCcw = (...args) => {
+  return getModule().is_points_ccw(...args)
 }
-export function get_tangential_arc_to_info(
-  arc_start_point_x: number,
-  arc_start_point_y: number,
-  arc_end_point_x: number,
-  arc_end_point_y: number,
-  tan_previous_point_x: number,
-  tan_previous_point_y: number,
-  obtuse: boolean
-) {
-  return getModule().get_tangential_arc_to_info(
-    arc_start_point_x,
-    arc_start_point_y,
-    arc_end_point_x,
-    arc_end_point_y,
-    tan_previous_point_x,
-    tan_previous_point_y,
-    obtuse
-  )
+export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
+  ...args
+) => {
+  return getModule().get_tangential_arc_to_info(...args)
 }
-export function program_memory_init() {
-  return getModule().program_memory_init()
+export const program_memory_init: typeof ProgramMemoryInit = (...args) => {
+  return getModule().program_memory_init(...args)
 }
-export function make_default_planes(engine_manager: any) {
-  return getModule().make_default_planes(engine_manager)
+export const make_default_planes: typeof MakeDefaultPlanes = (...args) => {
+  return getModule().make_default_planes(...args)
 }
-export function coredump(core_dump_manager: any) {
-  return getModule().coredump(core_dump_manager)
+export const coredump: typeof CoreDump = (...args) => {
+  return getModule().coredump(...args)
 }
-export function toml_stringify(json: string) {
-  return getModule().toml_stringify(json)
+export const toml_stringify: typeof TomlStringify = (...args) => {
+  return getModule().toml_stringify(...args)
 }
-export function default_app_settings() {
-  return getModule().default_app_settings()
+export const default_app_settings: typeof DefaultAppSettings = (...args) => {
+  return getModule().default_app_settings(...args)
 }
-export function parse_app_settings(toml_str: string) {
-  return getModule().parse_app_settings(toml_str)
+export const parse_app_settings: typeof ParseAppSettings = (...args) => {
+  return getModule().parse_app_settings(...args)
 }
-export function parse_project_settings(toml_str: string) {
-  return getModule().parse_project_settings(toml_str)
+export const parse_project_settings: typeof ParseProjectSettings = (
+  ...args
+) => {
+  return getModule().parse_project_settings(...args)
 }
-export function default_project_settings() {
-  return getModule().default_project_settings()
+export const default_project_settings: typeof DefaultProjectSettings = (
+  ...args
+) => {
+  return getModule().default_project_settings(...args)
 }
-export function base64_decode(input: string) {
-  return getModule().base64_decode(input)
+export const base64_decode: typeof Base64Decode = (...args) => {
+  return getModule().base64_decode(...args)
 }
-export function clear_scene_and_bust_cache(engine_manager: any) {
-  return getModule().clear_scene_and_bust_cache(engine_manager)
+export const clear_scene_and_bust_cache: typeof ClearSceneAndBustCache = (
+  ...args
+) => {
+  return getModule().clear_scene_and_bust_cache(...args)
 }
