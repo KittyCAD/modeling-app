@@ -7,27 +7,28 @@ let initialized = false
 /**
  * WASM/Rust runtime can panic and the original try/catch/finally blocks will not trigger
  * on the await promise. The interface will killed. This means we need to catch the error at
- * the globla/DOM level. This will have to interface with whatever controlflow that needs to be picked up
+ * the global/DOM level. This will have to interface with whatever controlflow that needs to be picked up
  * within the error branch in the typescript to cover the application state.
  */
 export const initializeWindowExceptionHandler = () => {
   if (window && !initialized) {
     window.addEventListener('error', (event) => {
-      if (matchImportExportErrorCrash(event.message)) {
-        // do global singleton cleanup
-        kclManager.executeAstCleanUp()
-        toast.error(
-          'You have hit a KCL execution bug! Put your KCL code in a github issue to help us resolve this bug.'
-        )
-        reloadModule()
-          .then(() => {
-            getModule().default()
-          })
-          .catch((e) => {
-            console.error('Failed to initialize WASM lib')
+      void (async () => {
+        if (matchImportExportErrorCrash(event.message)) {
+          // do global singleton cleanup
+          kclManager.executeAstCleanUp()
+          toast.error(
+            'You have hit a KCL execution bug! Put your KCL code in a github issue to help us resolve this bug.'
+          )
+          try {
+            await reloadModule()
+            await getModule().default()
+          } catch (e) {
+            console.error('Failed to initialize wasm_lib')
             console.error(e)
-          })
-      }
+          }
+        }
+      })()
     })
     // Make sure we only initialize this event listener once
     initialized = true
