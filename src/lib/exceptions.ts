@@ -1,5 +1,5 @@
 import { kclManager } from 'lib/singletons'
-import { reloadModule, getModule } from 'lib/wasmWrapper'
+import { reloadModule, getModule } from 'lib/wasm_lib_wrapper'
 
 let initialized = false
 
