@@ -24,8 +24,7 @@ exports.default = async (configuration) => {
 
   try {
     execSync(
-      `smctl sign --fingerprint="${
-        process.env.WINDOWS_CERTIFICATE_THUMBPRINT
+      `smctl sign --fingerprint="${process.env.WINDOWS_CERTIFICATE_THUMBPRINT
       }" --input "${String(configuration.path)}"`,
       {
         stdio: 'inherit',
@@ -33,6 +32,6 @@ exports.default = async (configuration) => {
     )
     console.log('Signing using signWin.js script: successful')
   } catch (error) {
-    console.error('Signing using signWin.js script: failed:', error)
+    throw new Error('Signing using signWin.js script: failed:', error)
   }
 }

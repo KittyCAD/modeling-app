@@ -38,7 +38,7 @@ win:
     #     - arm64
   signingHashAlgorithms:
     - sha256
-  sign: "./sign-win.js"
+  sign: "./scripts/sign-win.js"
   publisherName: "KittyCAD Inc" # needs to be exactly like on Digicert
   icon: "assets/icon.ico"
   fileAssociations:
