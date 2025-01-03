@@ -50,7 +50,6 @@ lazy_static! {
         set.insert("record", TokenType::Keyword);
         set.insert("struct", TokenType::Keyword);
         set.insert("object", TokenType::Keyword);
-        set.insert("_", TokenType::Keyword);
 
         set.insert("string", TokenType::Type);
         set.insert("number", TokenType::Type);
@@ -147,9 +146,9 @@ fn line_comment(i: &mut Input<'_>) -> PResult<Token> {
 fn number(i: &mut Input<'_>) -> PResult<Token> {
     let number_parser = alt((
         // Digits before the decimal point.
-        (digit1, opt(('.', digit1))).map(|_| ()),
+        (digit1, opt(('.', digit1)), opt('_'), opt(alt(super::NUM_SUFFIXES))).map(|_| ()),
         // No digits before the decimal point.
-        ('.', digit1).map(|_| ()),
+        ('.', digit1, opt('_'), opt(alt(super::NUM_SUFFIXES))).map(|_| ()),
     ));
     let (value, range) = number_parser.take().with_span().parse_next(i)?;
     Ok(Token::from_range(
@@ -188,7 +187,7 @@ fn word(i: &mut Input<'_>) -> PResult<Token> {
 
 fn operator(i: &mut Input<'_>) -> PResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "|", "^",
+        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "|", "&",
     ))
     .with_span()
     .parse_next(i)?;
@@ -366,6 +365,7 @@ mod tests {
 
     use super::*;
     use crate::parsing::token::TokenSlice;
+
     fn assert_parse_err<'i, P, O, E>(mut p: P, s: &'i str)
     where
         O: std::fmt::Debug,
@@ -379,7 +379,8 @@ mod tests {
         assert!(p.parse_next(&mut input).is_err(), "parsed {s} but should have failed");
     }
 
-    fn assert_parse_ok<'i, P, O, E>(mut p: P, s: &'i str)
+    // Returns the token and whether any more input is remaining to tokenize.
+    fn assert_parse_ok<'i, P, O, E>(mut p: P, s: &'i str) -> (O, bool)
     where
         E: std::fmt::Debug,
         O: std::fmt::Debug,
@@ -392,14 +393,27 @@ mod tests {
         };
         let res = p.parse_next(&mut input);
         assert!(res.is_ok(), "failed to parse {s}, got {}", res.unwrap_err());
+        (res.unwrap(), !input.is_empty())
     }
 
     #[test]
     fn test_number() {
-        for valid in [
-            "1", "1 abc", "1.1", "1.1 abv", "1.1 abv", "1", ".1", "5?", "5 + 6", "5 + a", "5.5", "1abc",
+        for (valid, expected) in [
+            ("1", false),
+            ("1 abc", true),
+            ("1.1", false),
+            ("1.1 abv", true),
+            ("1.1 abv", true),
+            ("1", false),
+            (".1", false),
+            ("5?", true),
+            ("5 + 6", true),
+            ("5 + a", true),
+            ("5.5", false),
+            ("1abc", true),
         ] {
-            assert_parse_ok(number, valid);
+            let (_, remaining) = assert_parse_ok(number, valid);
+            assert_eq!(expected, remaining, "`{valid}` expected another token to be {expected}");
         }
 
         for invalid in ["a", "?", "?5"] {
@@ -416,6 +430,27 @@ mod tests {
     }
 
     #[test]
+    fn test_number_suffix() {
+        for (valid, expected_val, expected_next) in [
+            ("1_", 1.0, false),
+            ("1_mm", 1.0, false),
+            ("1_yd", 1.0, false),
+            ("1m", 1.0, false),
+            ("1inch", 1.0, false),
+            ("1toot", 1.0, true),
+            ("1.4inch t", 1.4, true),
+        ] {
+            let (t, remaining) = assert_parse_ok(number, valid);
+            assert_eq!(expected_next, remaining);
+            assert_eq!(
+                Some(expected_val),
+                t.numeric_value(),
+                "{valid} has incorrect numeric value, expected {expected_val} {t:?}"
+            );
+        }
+    }
+
+    #[test]
     fn test_word() {
         for valid in ["a", "a ", "a5", "a5a"] {
             assert_parse_ok(word, valid);
@@ -429,7 +464,7 @@ mod tests {
     #[test]
     fn test_operator() {
         for valid in [
-            "+", "+ ", "-", "<=", "<= ", ">=", ">= ", "> ", "< ", "| ", "|> ", "^ ", "% ", "+* ",
+            "+", "+ ", "-", "<=", "<= ", ">=", ">= ", "> ", "< ", "|> ", "^ ", "% ", "+* ", "| ", "& ",
         ] {
             assert_parse_ok(operator, valid);
         }
@@ -714,5 +749,31 @@ const things = "things"
                 );
             }
         }
+    }
+    #[test]
+    fn test_boolean_literal() {
+        let module_id = ModuleId::default();
+        let actual = lex("true", module_id).unwrap();
+        let expected = Token {
+            token_type: TokenType::Keyword,
+            value: "true".to_owned(),
+            start: 0,
+            end: 4,
+            module_id,
+        };
+        assert_eq!(actual.tokens[0], expected);
+    }
+    #[test]
+    fn test_word_starting_with_keyword() {
+        let module_id = ModuleId::default();
+        let actual = lex("truee", module_id).unwrap();
+        let expected = Token {
+            token_type: TokenType::Word,
+            value: "truee".to_owned(),
+            start: 0,
+            end: 5,
+            module_id,
+        };
+        assert_eq!(actual.tokens[0], expected);
     }
 }

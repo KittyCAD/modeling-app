@@ -1,7 +1,7 @@
 import { TEST } from 'env'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { lineHighlightField } from 'editor/highlightextension'
 import { onMouseDragMakeANewNumber, onMouseDragRegex } from 'lib/utils'
@@ -36,7 +36,7 @@ import interact from '@replit/codemirror-interact'
 import { kclManager, editorManager, codeManager } from 'lib/singletons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLspContext } from 'components/LspProvider'
-import { Prec, EditorState, Extension } from '@codemirror/state'
+import { Prec, EditorState, Extension, Transaction } from '@codemirror/state'
 import {
   closeBrackets,
   closeBracketsKeymap,
@@ -44,6 +44,13 @@ import {
 } from '@codemirror/autocomplete'
 import CodeEditor from './CodeEditor'
 import { codeManagerHistoryCompartment } from 'lang/codeManager'
+import {
+  editorIsMountedSelector,
+  kclEditorActor,
+  selectionEventSelector,
+} from 'machines/kclEditorMachine'
+import { useSelector } from '@xstate/react'
+import { modelingMachineEvent } from 'editor/manager'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -59,6 +66,8 @@ export const KclEditorPane = () => {
   const {
     settings: { context },
   } = useSettingsAuthContext()
+  const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
+  const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const theme =
     context.app.theme.current === Themes.System
       ? getSystemTheme()
@@ -75,6 +84,25 @@ export const KclEditorPane = () => {
     e.preventDefault()
     editorManager.redo()
   })
+
+  // When this component unmounts, we need to tell the machine that the editor
+  useEffect(() => {
+    return () => {
+      kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
+      kclEditorActor.send({ type: 'setLastSelectionEvent', data: undefined })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!editorIsMounted || !lastSelectionEvent || !editorManager.editorView) {
+      return
+    }
+    editorManager.editorView.dispatch({
+      selection: lastSelectionEvent.codeMirrorSelection,
+      annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
+      scrollIntoView: lastSelectionEvent.scrollIntoView,
+    })
+  }, [editorIsMounted, lastSelectionEvent])
 
   const textWrapping = context.textEditor.textWrapping
   const cursorBlinking = context.textEditor.blinkingCursor
@@ -174,6 +202,7 @@ export const KclEditorPane = () => {
             if (_editorView === null) return
 
             editorManager.setEditorView(_editorView)
+            kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
 
             // On first load of this component, ensure we show the current errors
             // in the editor.
