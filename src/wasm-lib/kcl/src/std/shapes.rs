@@ -166,7 +166,7 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     let (data, sketch_surface_or_group, tag): (CircleThreePointData, SketchOrSurface, Option<TagNode>) =
         args.get_circle_three_point_args()?;
 
-    let sketch = inner_circle_three_point(data, sketch_surface_or_group, tag, exec_state, args).await?;
+    let sketch = inner_circle_three_point(data.p1, data.p2, data.p3, sketch_surface_or_group, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -176,30 +176,37 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XY")
-///   |> circleThreePoint({
-///     p1 = [10,10],
-///     p2 = [20,8],
-///     p3 = [15,5]
-///   }, %)
+///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5], %)
 ///
 /// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "circleThreePoint",
+    keywords = true,
+    unlabeled_first = true,
+    arg_docs = {
+        p1 = "1st point to derive the circle.",
+        p2 = "2nd point to derive the circle.",
+        p3 = "3rd point to derive the circle.",
+        sketch_surface_or_group = "Plane or surface to sketch on.",
+        tag = "Identifier for the circle to reference elsewhere.",
+    }
 }]
 async fn inner_circle_three_point(
-    data: CircleThreePointData,
+    p1: [f64; 2],
+    p2: [f64; 2],
+    p3: [f64; 2],
     sketch_surface_or_group: SketchOrSurface,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let center = calculate_circle_center(data.p1, data.p2, data.p3);
+    let center = calculate_circle_center(p1, p2, p3);
     inner_circle(
         CircleData {
             center,
             // It can be the distance to any of the 3 points - they all lay on the circumference.
-            radius: distance(center.into(), data.p2.into()),
+            radius: distance(center.into(), p2.into()),
         },
         sketch_surface_or_group,
         tag,
