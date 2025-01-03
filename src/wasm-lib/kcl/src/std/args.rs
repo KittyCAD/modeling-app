@@ -322,15 +322,6 @@ impl Args {
         )
     }
 
-    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> KclValue {
-        KclValue::Int {
-            value: n,
-            meta: vec![Metadata {
-                source_range: self.source_range,
-            }],
-        }
-    }
-
     pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
         let array = f
             .into_iter()
