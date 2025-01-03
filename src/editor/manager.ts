@@ -14,6 +14,19 @@ import {
 } from '@codemirror/lint'
 import { StateFrom } from 'xstate'
 import { markOnce } from 'lib/performance'
+import { kclEditorActor } from 'machines/kclEditorMachine'
+
+declare global {
+  interface Window {
+    EditorSelection: typeof EditorSelection
+    EditorView: typeof EditorView
+  }
+}
+
+// We need to be able to create these during tests dynamically (via
+// page.evaluate) So that's why this exists.
+window.EditorSelection = EditorSelection
+window.EditorView = EditorView
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -25,7 +38,6 @@ const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
 export default class EditorManager {
-  private _editorView: EditorView | null = null
   private _copilotEnabled: boolean = true
 
   private _isShiftDown: boolean = false
@@ -47,6 +59,8 @@ export default class EditorManager {
 
   private _highlightRange: Array<[number, number]> = [[0, 0]]
 
+  public _editorView: EditorView | null = null
+
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled
   }
@@ -57,6 +71,7 @@ export default class EditorManager {
 
   setEditorView(editorView: EditorView) {
     this._editorView = editorView
+    kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
     this.overrideTreeHighlighterUpdateForPerformanceTracking()
   }
 
@@ -188,6 +203,32 @@ export default class EditorManager {
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
         setDiagnosticsEvent,
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
+  /**
+   * Scroll to the first selection in the editor.
+   */
+  scrollToSelection() {
+    if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
+
+    const firstSelection = this._selectionRanges.graphSelections[0]
+
+    this._editorView.focus()
+    this._editorView.dispatch({
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(
+            firstSelection.codeRef.range[0],
+            firstSelection.codeRef.range[1]
+          ),
+          { y: 'center' }
+        ),
+      ],
+      annotations: [
         updateOutsideEditorEvent,
         Transaction.addToHistory.of(false),
       ],

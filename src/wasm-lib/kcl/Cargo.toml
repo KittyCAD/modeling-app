@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.28"
+version = "0.2.29"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -22,7 +22,7 @@ clap = { version = "4.5.21", default-features = false, optional = true, features
 ] }
 convert_case = "0.6.0"
 dashmap = "6.1.0"
-derive-docs = { version = "0.1.32", path = "../derive-docs" }
+derive-docs = { version = "0.1.33", path = "../derive-docs" }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
 form_urlencoded = "1.2.1"
@@ -82,9 +82,9 @@ tokio = { version = "1.41.1", features = ["sync", "time"] }
 tower-lsp = { version = "0.20.0", default-features = false, features = [
     "runtime-agnostic",
 ] }
-wasm-bindgen = "0.2.91"
-wasm-bindgen-futures = "0.4.44"
-web-sys = { version = "0.3.72", features = ["console"] }
+wasm-bindgen = "0.2.99"
+wasm-bindgen-futures = "0.4.49"
+web-sys = { version = "0.3.76", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 approx = "0.5"

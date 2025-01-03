@@ -142,6 +142,7 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
 
 #[stdlib {
     name = "offsetPlane",
+    feature_tree_operation = true,
 }]
 async fn inner_offset_plane(
     std_plane: StandardPlane,
@@ -208,7 +209,7 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
 
     // Set the color.
     args.batch_modeling_cmd(
-        exec_state.id_generator.next_uuid(),
+        exec_state.next_uuid(),
         ModelingCmd::from(mcmd::PlaneSetColor {
             color,
             plane_id: plane.id,

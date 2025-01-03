@@ -242,6 +242,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 #[stdlib {
     name = "revolve",
+    feature_tree_operation = true,
 }]
 async fn inner_revolve(
     data: RevolveData,
@@ -263,7 +264,7 @@ async fn inner_revolve(
 
     let angle = Angle::from_degrees(data.angle.unwrap_or(360.0));
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     match data.axis {
         AxisOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;

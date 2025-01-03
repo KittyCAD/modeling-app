@@ -33,7 +33,7 @@ use crate::{
     SourceRange,
 };
 
-use super::ast::types::LabelledExpression;
+use super::{ast::types::LabelledExpression, token::NumericSuffix};
 
 thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
@@ -95,10 +95,6 @@ impl ParseContext {
                 if e.source_range == err.source_range {
                     *e = err;
                     return;
-                }
-
-                if e.source_range.start() > err.source_range.end() {
-                    break;
                 }
             }
             errors.push(err);
@@ -287,38 +283,86 @@ fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     alt((non_code_node_leading_whitespace, non_code_node_no_leading_whitespace)).parse_next(i)
 }
 
+fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
+    let at = at_sign.parse_next(i)?;
+    let name = binding_name.parse_next(i)?;
+    let mut end = name.end;
+
+    let properties = if peek(open_paren).parse_next(i).is_ok() {
+        open_paren(i)?;
+        ignore_whitespace(i);
+        let properties: Vec<_> = separated(
+            0..,
+            separated_pair(
+                terminated(identifier, opt(whitespace)),
+                terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+                expression,
+            )
+            .map(|(key, value)| Node {
+                start: key.start,
+                end: value.end(),
+                module_id: key.module_id,
+                inner: ObjectProperty {
+                    key,
+                    value,
+                    digest: None,
+                },
+            }),
+            comma_sep,
+        )
+        .parse_next(i)?;
+        ignore_trailing_comma(i);
+        ignore_whitespace(i);
+        end = close_paren(i)?.end;
+        Some(properties)
+    } else {
+        None
+    };
+
+    let value = NonCodeValue::Annotation { name, properties };
+    Ok(Node::new(
+        NonCodeNode { value, digest: None },
+        at.start,
+        end,
+        at.module_id,
+    ))
+}
+
 // Matches remaining three cases of NonCodeValue
 fn non_code_node_no_leading_whitespace(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
-    any.verify_map(|token: Token| {
-        if token.is_code_token() {
-            None
-        } else {
-            let value = match token.token_type {
-                TokenType::Whitespace if token.value.contains("\n\n") => NonCodeValue::NewLine,
-                TokenType::LineComment => NonCodeValue::BlockComment {
-                    value: token.value.trim_start_matches("//").trim().to_owned(),
-                    style: CommentStyle::Line,
-                },
-                TokenType::BlockComment => NonCodeValue::BlockComment {
-                    style: CommentStyle::Block,
-                    value: token
-                        .value
-                        .trim_start_matches("/*")
-                        .trim_end_matches("*/")
-                        .trim()
-                        .to_owned(),
-                },
-                _ => return None,
-            };
-            Some(Node::new(
-                NonCodeNode { value, digest: None },
-                token.start,
-                token.end,
-                token.module_id,
-            ))
-        }
-    })
-    .context(expected("Non-code token (comments or whitespace)"))
+    alt((
+        annotation,
+        any.verify_map(|token: Token| {
+            if token.is_code_token() {
+                None
+            } else {
+                let value = match token.token_type {
+                    TokenType::Whitespace if token.value.contains("\n\n") => NonCodeValue::NewLine,
+                    TokenType::LineComment => NonCodeValue::BlockComment {
+                        value: token.value.trim_start_matches("//").trim().to_owned(),
+                        style: CommentStyle::Line,
+                    },
+                    TokenType::BlockComment => NonCodeValue::BlockComment {
+                        style: CommentStyle::Block,
+                        value: token
+                            .value
+                            .trim_start_matches("/*")
+                            .trim_end_matches("*/")
+                            .trim()
+                            .to_owned(),
+                    },
+                    _ => return None,
+                };
+                Some(Node::new(
+                    NonCodeNode { value, digest: None },
+                    token.start,
+                    token.end,
+                    token.module_id,
+                ))
+            }
+        })
+        .context(expected("Non-code token (comments or whitespace)")),
+    ))
     .parse_next(i)
 }
 
@@ -351,22 +395,6 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
     ))
     .parse_next(i)?;
 
-    // All child parsers have been run.
-    // First, ensure they all have a % in their args.
-    let calls_without_substitution = tail.iter().find_map(|(_nc, call_expr, _nc2)| {
-        if !call_expr.has_substitution_arg() {
-            Some(call_expr.into())
-        } else {
-            None
-        }
-    });
-    if let Some(source_range) = calls_without_substitution {
-        let err = CompilationError::fatal(
-            source_range,
-            "All expressions in a pipeline must use the % (substitution operator)",
-        );
-        return Err(ErrMode::Cut(err.into()));
-    }
     // Time to structure the return value.
     let mut code_count = 0;
     let mut max_noncode_end = 0;
@@ -457,9 +485,16 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                let x: f64 = token.value.parse().map_err(|_| {
+                let x: f64 = token.numeric_value().ok_or_else(|| {
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
+
+                if token.numeric_suffix().is_some() {
+                    ParseContext::err(CompilationError::err(
+                        (&token).into(),
+                        "Unit of Measure suffixes are experimental and currently do nothing.",
+                    ));
+                }
 
                 Ok((LiteralValue::Number(x), token))
             }
@@ -501,6 +536,8 @@ fn binary_operator(i: &mut TokenSlice) -> PResult<BinaryOperator> {
             ">=" => BinaryOperator::Gte,
             "<" => BinaryOperator::Lt,
             "<=" => BinaryOperator::Lte,
+            "|" => BinaryOperator::Or,
+            "&" => BinaryOperator::And,
             _ => {
                 return Err(CompilationError::fatal(
                     token.as_source_range(),
@@ -754,7 +791,7 @@ fn array_end_start(i: &mut TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
 }
 
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
-    let key = identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     Ok(Node {
         start: key.start,
@@ -778,7 +815,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
-    let expr = expression
+    let expr = expression_but_not_ascription
         .context(expected(
             "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
         ))
@@ -1086,7 +1123,7 @@ fn member_expression_dot(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usiz
     period.parse_next(i)?;
     let property = alt((
         sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
-        identifier.map(Box::new).map(LiteralIdentifier::Identifier),
+        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
     ))
     .parse_next(i)?;
     let end = property.end();
@@ -1099,7 +1136,7 @@ fn member_expression_subscript(i: &mut TokenSlice) -> PResult<(LiteralIdentifier
     let property = alt((
         sketch_keyword.map(Box::new).map(LiteralIdentifier::Identifier),
         literal.map(LiteralIdentifier::Literal),
-        identifier.map(Box::new).map(LiteralIdentifier::Identifier),
+        nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
     ))
     .parse_next(i)?;
 
@@ -1113,7 +1150,7 @@ fn member_expression_subscript(i: &mut TokenSlice) -> PResult<(LiteralIdentifier
 fn member_expression(i: &mut TokenSlice) -> PResult<Node<MemberExpression>> {
     // This is an identifier, followed by a sequence of members (aka properties)
     // First, the identifier.
-    let id = identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
+    let id = nameable_identifier.context(expected("the identifier of the object whose property you're trying to access, e.g. in 'shape.size.width', 'shape' is the identifier")).parse_next(i)?;
     // Now a sequence of members.
     let member = alt((member_expression_dot, member_expression_subscript)).context(expected("a member/property, e.g. size.x and size['height'] and size[0] are all different ways to access a member/property of 'size'"));
     let mut members: Vec<_> = repeat(1.., member)
@@ -1186,6 +1223,7 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
                     x @ NonCodeValue::InlineComment { .. } => x,
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
+                    x @ NonCodeValue::Annotation { .. } => x,
                 };
                 Node::new(
                     NonCodeNode { value, ..nc.inner },
@@ -1206,6 +1244,7 @@ fn noncode_just_after_code(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
                     x @ NonCodeValue::InlineComment { .. } => x,
                     x @ NonCodeValue::NewLineBlockComment { .. } => x,
                     x @ NonCodeValue::NewLine => x,
+                    x @ NonCodeValue::Annotation { .. } => x,
                 };
                 Node::new(NonCodeNode { value, ..nc.inner }, nc.start, nc.end, nc.module_id)
             }
@@ -1245,7 +1284,7 @@ fn body_items_within_function(i: &mut TokenSlice) -> PResult<WithinFunction> {
             (import_stmt.map(BodyItem::ImportStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
         Token { ref value, .. } if value == "return" =>
             (return_stmt.map(BodyItem::ReturnStatement), opt(noncode_just_after_code)).map(WithinFunction::BodyItem),
-        token if !token.is_code_token() => {
+        token if !token.is_code_token() || token.token_type == TokenType::At => {
             non_code_node.map(WithinFunction::NonCode)
         },
         _ =>
@@ -1444,7 +1483,7 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
     require_whitespace(i)?;
 
     let (mut selector, path) = alt((
-        string_literal.map(|s| (ImportSelector::None(None), Some(s))),
+        string_literal.map(|s| (ImportSelector::None { alias: None }, Some(s))),
         glob.map(|t| {
             let s = t.as_source_range();
             (
@@ -1507,7 +1546,7 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         ));
     }
 
-    if let ImportSelector::None(ref mut a) = selector {
+    if let ImportSelector::None { alias: ref mut a } = selector {
         if let Some(alias) = opt(preceded(
             (whitespace, import_as_keyword, whitespace),
             identifier.context(expected("an identifier to alias the import")),
@@ -1553,7 +1592,9 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
 }
 
 fn import_item(i: &mut TokenSlice) -> PResult<Node<ImportItem>> {
-    let name = identifier.context(expected("an identifier to import")).parse_next(i)?;
+    let name = nameable_identifier
+        .context(expected("an identifier to import"))
+        .parse_next(i)?;
     let start = name.start;
     let module_id = name.module_id;
     let alias = opt(preceded(
@@ -1622,6 +1663,24 @@ fn return_stmt(i: &mut TokenSlice) -> PResult<Node<ReturnStatement>> {
 
 /// Parse a KCL expression.
 fn expression(i: &mut TokenSlice) -> PResult<Expr> {
+    let expr = expression_but_not_ascription.parse_next(i)?;
+    let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
+
+    // TODO this is probably not giving ascription the right precedence, but I have no idea how Winnow is handling that.
+    // Since we're not creating AST nodes for ascription, I don't think it matters right now.
+    if let Some((colon, _, _)) = ty {
+        ParseContext::err(CompilationError::err(
+            // Sadly there is no SourceRange for the type itself
+            colon.into(),
+            "Type ascription is experimental and currently does nothing.",
+        ));
+    }
+
+    Ok(expr)
+}
+
+// TODO once we remove the old record instantiation syntax, we can accept types ascription anywhere.
+fn expression_but_not_ascription(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         pipe_expression.map(Box::new).map(Expr::PipeExpression),
         expression_but_not_pipe,
@@ -1678,7 +1737,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
         literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
-        identifier.map(Box::new).map(Expr::Identifier),
+        nameable_identifier.map(Box::new).map(Expr::Identifier),
         array,
         object.map(Box::new).map(Expr::ObjectExpression),
         pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
@@ -1697,7 +1756,7 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
         member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
-        identifier.map(Box::new).map(Expr::Identifier),
+        nameable_identifier.map(Box::new).map(Expr::Identifier),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
     ))
@@ -1871,6 +1930,24 @@ fn identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     any.try_map(Node::<Identifier>::try_from)
         .context(expected("an identifier, e.g. 'width' or 'myPart'"))
         .parse_next(i)
+}
+
+fn nameable_identifier(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
+    let result = identifier.parse_next(i)?;
+
+    if !result.is_nameable() {
+        let desc = if result.name == "_" {
+            "Underscores"
+        } else {
+            "Names with a leading underscore"
+        };
+        ParseContext::err(CompilationError::err(
+            SourceRange::new(result.start, result.end, result.module_id),
+            format!("{desc} cannot be referred to, only declared."),
+        ));
+    }
+
+    Ok(result)
 }
 
 fn sketch_keyword(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
@@ -2224,9 +2301,8 @@ fn question_mark(i: &mut TokenSlice) -> PResult<()> {
     Ok(())
 }
 
-fn at_sign(i: &mut TokenSlice) -> PResult<()> {
-    TokenType::At.parse_from(i)?;
-    Ok(())
+fn at_sign(i: &mut TokenSlice) -> PResult<Token> {
+    TokenType::At.parse_from(i)
 }
 
 fn fun(i: &mut TokenSlice) -> PResult<Token> {
@@ -2257,7 +2333,7 @@ fn arguments(i: &mut TokenSlice) -> PResult<Vec<Expr>> {
 
 fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
     separated_pair(
-        terminated(identifier, opt(whitespace)),
+        terminated(nameable_identifier, opt(whitespace)),
         terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
         expression,
     )
@@ -2293,15 +2369,29 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
                 .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
         }),
         // Primitive types
-        one_of(TokenType::Type).map(|token: Token| {
-            FnArgPrimitive::from_str(&token.value)
-                .map(FnArgType::Primitive)
-                .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
-        }),
+        (
+            one_of(TokenType::Type),
+            opt(delimited(open_paren, uom_for_type, close_paren)),
+        )
+            .map(|(token, suffix)| {
+                if suffix.is_some() {
+                    ParseContext::err(CompilationError::err(
+                        (&token).into(),
+                        "Unit of Measure types are experimental and currently do nothing.",
+                    ));
+                }
+                FnArgPrimitive::from_str(&token.value)
+                    .map(FnArgType::Primitive)
+                    .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
+            }),
     ))
     .parse_next(i)?
     .map_err(|e: CompilationError| ErrMode::Backtrack(ContextError::from(e)))?;
     Ok(type_)
+}
+
+fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
+    any.try_map(|t: Token| t.value.parse()).parse_next(i)
 }
 
 struct ParamDescription {
@@ -2490,7 +2580,7 @@ fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
 }
 
 fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
-    let fn_name = identifier(i)?;
+    let fn_name = nameable_identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
     let args = arguments(i)?;
@@ -2531,7 +2621,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
-    let fn_name = identifier(i)?;
+    let fn_name = nameable_identifier(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = open_paren.parse_next(i)?;
     ignore_whitespace(i);
@@ -2539,6 +2629,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
     let args = labeled_arguments(i)?;
     ignore_whitespace(i);
+    opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
 
     Ok(Node {
@@ -3464,6 +3555,18 @@ mySk1 = startSketchAt([0, 0])"#;
     }
 
     #[track_caller]
+    fn assert_no_fatal(p: &str) -> (Node<Program>, Vec<CompilationError>) {
+        let result = crate::parsing::top_level_parse(p);
+        let result = result.0.unwrap();
+        assert!(
+            result.1.iter().all(|e| e.severity != Severity::Fatal),
+            "found: {:#?}",
+            result.1
+        );
+        (result.0.unwrap(), result.1)
+    }
+
+    #[track_caller]
     fn assert_err(p: &str, msg: &str, src_expected: [usize; 2]) {
         let result = crate::parsing::top_level_parse(p);
         let err = result.unwrap_errs().next().unwrap();
@@ -3554,6 +3657,22 @@ height = [obj["a"] -1, 0]"#;
     #[test]
     fn test_anon_fn() {
         crate::parsing::top_level_parse("foo(42, fn(x) { return x + 1 })").unwrap();
+    }
+
+    #[test]
+    fn test_annotation_fn() {
+        crate::parsing::top_level_parse(
+            r#"fn foo() {
+  @annotated
+  return 1
+}"#,
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn test_annotation_settings() {
+        crate::parsing::top_level_parse("@settings(units = mm)").unwrap();
     }
 
     #[test]
@@ -3861,6 +3980,25 @@ e
     }
 
     #[test]
+    fn fn_decl_uom_ty() {
+        let some_program_string = r#"fn foo(x: number(mm)): number(_) { return 1 }"#;
+        let (_, errs) = assert_no_fatal(some_program_string);
+        assert_eq!(errs.len(), 2);
+    }
+
+    #[test]
+    fn error_underscore() {
+        let (_, errs) = assert_no_fatal("_foo(_blah, _)");
+        assert_eq!(errs.len(), 3, "found: {:#?}", errs);
+    }
+
+    #[test]
+    fn error_type_ascription() {
+        let (_, errs) = assert_no_fatal("a + b: number");
+        assert_eq!(errs.len(), 1, "found: {:#?}", errs);
+    }
+
+    #[test]
     fn zero_param_function() {
         let code = r#"
         fn firstPrimeNumber = () => {
@@ -4036,19 +4174,6 @@ let other_thing = 2 * cos(3)"#;
 let myBox = box([0,0], -3, -16, -10)
 "#;
         crate::parsing::top_level_parse(some_program_string).unwrap();
-    }
-
-    #[test]
-    fn must_use_percent_in_pipeline_fn() {
-        let some_program_string = r#"
-        foo()
-            |> bar(2)
-        "#;
-        assert_err(
-            some_program_string,
-            "All expressions in a pipeline must use the % (substitution operator)",
-            [30, 36],
-        );
     }
 
     #[test]
@@ -4242,6 +4367,20 @@ var baz = 2
  baz = 2
 "#
         );
+    }
+
+    #[test]
+    fn test_unary_not_on_keyword_bool() {
+        let some_program_string = r#"!true"#;
+        let module_id = ModuleId::default();
+        let tokens = crate::parsing::token::lex(some_program_string, module_id).unwrap(); // Updated import path
+        let actual = match unary_expression.parse(tokens.as_slice()) {
+            // Use tokens.as_slice() for parsing
+            Ok(x) => x,
+            Err(e) => panic!("{e:?}"),
+        };
+        assert_eq!(actual.operator, UnaryOperator::Not);
+        crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
     }
 }
 
@@ -4501,6 +4640,11 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         r#"x = 3
         obj = { x, y: 4}"#
     );
+    snapshot_test!(bj, "true");
+    snapshot_test!(bk, "truee");
+    snapshot_test!(bl, "x = !true");
+    snapshot_test!(bm, "x = true & false");
+    snapshot_test!(bn, "x = true | false");
     snapshot_test!(kw_function_unnamed_first, r#"val = foo(x, y = z)"#);
     snapshot_test!(kw_function_all_named, r#"val = foo(x = a, y = b)"#);
     snapshot_test!(kw_function_decl_all_labeled, r#"fn foo(x, y) { return 1 }"#);

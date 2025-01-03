@@ -59,6 +59,12 @@ pub struct StdLibFnArg {
     pub schema: schemars::schema::RootSchema,
     /// If the argument is required.
     pub required: bool,
+    /// Additional information that could be used instead of the type's description.
+    /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
+    /// how this argument is meant to be used.
+    /// Empty string means this has no docs.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub description: String,
     /// Even in functions that use keyword arguments, not every parameter requires a label (most do though).
     /// Some functions allow one unlabeled parameter, which has to be first in the
     /// argument list.
@@ -106,6 +112,11 @@ impl StdLibFnArg {
     }
 
     pub fn description(&self) -> Option<String> {
+        // Check if we explicitly gave this stdlib arg a description.
+        if !self.description.is_empty() {
+            return Some(self.description.clone());
+        }
+        // If not, then try to get something meaningful from the schema.
         get_description_string_from_schema(&self.schema.clone())
     }
 }
@@ -153,6 +164,9 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
 
     /// If the function is deprecated.
     fn deprecated(&self) -> bool;
+
+    /// If the function should appear in the feature tree.
+    fn feature_tree_operation(&self) -> bool;
 
     /// Any example code blocks.
     fn examples(&self) -> Vec<String>;
@@ -507,13 +521,13 @@ fn get_autocomplete_snippet_from_schema(
                     }
 
                     if prop_name == "color" {
-                        fn_docs.push_str(&format!("\t{}: ${{{}:\"#ff0000\"}},\n", prop_name, i));
+                        fn_docs.push_str(&format!("\t{} = ${{{}:\"#ff0000\"}},\n", prop_name, i));
                         i += 1;
                         continue;
                     }
 
                     if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(prop, i)? {
-                        fn_docs.push_str(&format!("\t{}: {},\n", prop_name, snippet));
+                        fn_docs.push_str(&format!("\t{} = {},\n", prop_name, snippet));
                         i = new_index + 1;
                     }
                 }
@@ -879,8 +893,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"fillet({
-	radius: ${0:3.14},
-	tags: [${1:"tag_or_edge_fn"}],
+	radius = ${0:3.14},
+	tags = [${1:"tag_or_edge_fn"}],
 }, ${2:%})${}"#
         );
     }
@@ -900,11 +914,11 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternCircular3d({
-	instances: ${0:10},
-	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
-	center: [${4:3.14}, ${5:3.14}, ${6:3.14}],
-	arcDegrees: ${7:3.14},
-	rotateDuplicates: ${8:false},
+	instances = ${0:10},
+	axis = [${1:3.14}, ${2:3.14}, ${3:3.14}],
+	center = [${4:3.14}, ${5:3.14}, ${6:3.14}],
+	arcDegrees = ${7:3.14},
+	rotateDuplicates = ${8:false},
 }, ${9:%})${}"#
         );
     }
@@ -916,7 +930,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"revolve({
-	axis: ${0:"X"},
+	axis = ${0:"X"},
 }, ${1:%})${}"#
         );
     }
@@ -928,8 +942,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"circle({
-	center: [${0:3.14}, ${1:3.14}],
-	radius: ${2:3.14},
+	center = [${0:3.14}, ${1:3.14}],
+	radius = ${2:3.14},
 }, ${3:%})${}"#
         );
     }
@@ -941,9 +955,9 @@ mod tests {
         assert_eq!(
             snippet,
             r#"arc({
-	angleStart: ${0:3.14},
-	angleEnd: ${1:3.14},
-	radius: ${2:3.14},
+	angleStart = ${0:3.14},
+	angleEnd = ${1:3.14},
+	radius = ${2:3.14},
 }, ${3:%})${}"#
         );
     }
@@ -962,9 +976,9 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternLinear2d({
-	instances: ${0:10},
-	distance: ${1:3.14},
-	axis: [${2:3.14}, ${3:3.14}],
+	instances = ${0:10},
+	distance = ${1:3.14},
+	axis = [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#
         );
     }
@@ -976,7 +990,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"appearance({
-	color: ${0:"#
+	color = ${0:"#
                 .to_owned()
                 + "\"#"
                 + r#"ff0000"},
@@ -998,7 +1012,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"sweep({
-	path: ${0:sketch000},
+	path = ${0:sketch000},
 }, ${1:%})${}"#
         );
     }

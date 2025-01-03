@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
 description: Program memory after executing sketch_on_face_after_fillets_referencing_face.kcl
 snapshot_kind: text
 ---
@@ -1506,7 +1505,7 @@ snapshot_kind: text
             ]
           },
           "height": 10.0,
-          "startCapId": "[uuid]",
+          "startCapId": null,
           "endCapId": "[uuid]",
           "__meta": [
             {

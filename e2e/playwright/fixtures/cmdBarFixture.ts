@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 type CmdBarSerialised =
@@ -26,9 +26,11 @@ type CmdBarSerialised =
 
 export class CmdBarFixture {
   public page: Page
+  cmdBarOpenBtn!: Locator
 
   constructor(page: Page) {
     this.page = page
+    this.cmdBarOpenBtn = page.getByTestId('command-bar-open-button')
   }
   reConstruct = (page: Page) => {
     this.page = page
@@ -114,6 +116,23 @@ export class CmdBarFixture {
       }
     } else {
       await this.page.keyboard.press('Enter')
+    }
+  }
+
+  openCmdBar = async (selectCmd?: 'promptToEdit') => {
+    // TODO why does this button not work in electron tests?
+    // await this.cmdBarOpenBtn.click()
+    await this.page.keyboard.down('ControlOrMeta')
+    await this.page.keyboard.press('KeyK')
+    await this.page.keyboard.up('ControlOrMeta')
+    await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
+    if (selectCmd === 'promptToEdit') {
+      const promptEditCommand = this.page.getByText(
+        'Use Zoo AI to edit your kcl'
+      )
+      await expect(promptEditCommand.first()).toBeVisible()
+      await promptEditCommand.first().scrollIntoViewIfNeeded()
+      await promptEditCommand.first().click()
     }
   }
 }

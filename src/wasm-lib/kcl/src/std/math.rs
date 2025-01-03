@@ -16,9 +16,9 @@ use super::args::FromArgs;
 pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let n = args.get_unlabeled_kw_arg("number to divide")?;
     let d = args.get_kw_arg("divisor")?;
-    let result = inner_rem(n, d)?;
+    let remainder = inner_rem(n, d);
 
-    Ok(args.make_user_val_from_i64(result))
+    Ok(args.make_user_val_from_f64(remainder))
 }
 
 /// Compute the remainder after dividing `num` by `div`.
@@ -28,15 +28,22 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// assertEqual(rem( 7,  divisor =  4),  3, 0.01, "remainder is 3" )
 /// assertEqual(rem(-7,  divisor =  4), -3, 0.01, "remainder is -3")
 /// assertEqual(rem( 7,  divisor = -4),  3, 0.01, "remainder is 3" )
+/// assertEqual(rem( 6,    divisor = 2.5), 1,   0.01, "remainder is 1" )
+/// assertEqual(rem( 6.5,  divisor = 2.5), 1.5, 0.01, "remainder is 1.5" )
+/// assertEqual(rem( 6.5,  divisor = 2),   0.5, 0.01, "remainder is 0.5" )
 /// ```
 #[stdlib {
     name = "rem",
     tags = ["math"],
     keywords = true,
     unlabeled_first = true,
+    arg_docs = {
+        num = "The number which will be divided by `divisor`.",
+        divisor = "The number which will divide `num`.",
+    }
 }]
-fn inner_rem(num: i64, divisor: i64) -> Result<i64, KclError> {
-    Ok(num % divisor)
+fn inner_rem(num: f64, divisor: f64) -> f64 {
+    num % divisor
 }
 
 /// Compute the cosine of a number (in radians).
