@@ -1692,45 +1692,6 @@ export const modelingMachine = setup({
         if (err(filletResult)) return filletResult
       }
     ),
-    'set-up-draft-circle': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-rectangle': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'set-up-draft-center-rectangle': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails'> & {
-          data: [x: number, y: number]
-        }
-      }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
-    'setup-client-side-sketch-segments': fromPromise(
-      async (_: {
-        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
-      }) => {
-        return undefined
-      }
-    ),
-    'split-sketch-pipe-if-needed': fromPromise(
-      async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
-        return {} as SketchDetailsUpdate
-      }
-    ),
     'submit-prompt-edit': fromPromise(
       async ({ input }: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {
         console.log('doing thing', input)
