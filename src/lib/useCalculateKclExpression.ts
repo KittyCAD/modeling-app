@@ -5,7 +5,10 @@ import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
 import { Expr } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
-import { getCalculatedKclExpressionValue } from './kclHelpers'
+import {
+  getCalculatedKclExpressionValue,
+  programMemoryFromVariables,
+} from './kclHelpers'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -85,10 +88,27 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
+      const programMemory = programMemoryFromVariables(
+        findAllPreviousVariables(kclManager.ast, kclManager.programMemory, [
+          code.length,
+          code.length,
+          true,
+        ]).variables
+      )
+      if (programMemory instanceof Error) {
+        setCalcResult('NAN')
+        setValueNode(null)
+        return
+      }
       const result = await getCalculatedKclExpressionValue({
         value,
-        variables: availableVarInfo.variables,
+        programMemory,
       })
+      if (result instanceof Error || 'errors' in result) {
+        setCalcResult('NAN')
+        setValueNode(null)
+        return
+      }
       setCalcResult(result?.valueAsString || 'NAN')
       result?.astNode && setValueNode(result.astNode)
     }

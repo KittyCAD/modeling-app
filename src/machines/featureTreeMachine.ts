@@ -42,16 +42,17 @@ export const featureTreeMachine = setup({
     codePaneIsOpen: () => false,
   },
   actors: {
-    prepareEditCommand: fromPromise<unknown, EnterEditFlowProps & { commandBarSend: CommandBarSend } >(
-      async ({ input }) => {
-        const { commandBarSend, ...editFlowProps } = input
-        const editFlowResult = await enterEditFlow(editFlowProps)
-        if (err(editFlowResult)) return editFlowResult
-        console.log('edit flow input', input)
-        input.commandBarSend(editFlowResult)
-        console.log('Edit flow result', editFlowResult)
-      }
-    ),
+    prepareEditCommand: fromPromise<
+      unknown,
+      EnterEditFlowProps & { commandBarSend: CommandBarSend }
+    >(async ({ input }) => {
+      const { commandBarSend, ...editFlowProps } = input
+      const editFlowResult = await enterEditFlow(editFlowProps)
+      if (err(editFlowResult)) return editFlowResult
+      console.log('edit flow input', input)
+      input.commandBarSend(editFlowResult)
+      console.log('Edit flow result', editFlowResult)
+    }),
   },
   actions: {
     saveTargetSourceRange: assign({

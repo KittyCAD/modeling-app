@@ -3,11 +3,19 @@ import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import {
+  findAllPreviousVariables,
+  getNodePathFromSourceRange,
+} from 'lang/queryAst'
 import { sourceRangeFromRust } from 'lang/wasm'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { useCalculateKclExpression } from './useCalculateKclExpression'
+import {
+  getCalculatedKclExpressionValue,
+  programMemoryFromVariables,
+  stringToKclExpression,
+} from './kclHelpers'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -67,6 +75,16 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
       if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2D') {
         return baseCommand
       }
+      const programMemory = programMemoryFromVariables(
+        findAllPreviousVariables(kclManager.ast, kclManager.programMemory, [
+          codeManager.code.length,
+          codeManager.code.length,
+          true,
+        ]).variables
+      )
+      if (err(programMemory)) {
+        return baseCommand
+      }
       const argDefaultValues = {
         selection: {
           graphSelections: [
@@ -77,13 +95,13 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
           ],
           otherSelections: [],
         },
-        // TODO: Need to implement refactor to make this not a hook
-        // distance: await useCalculateKclExpression({
-        //   value: codeManager.code.slice(
-        //     item.labeledArgs?.['length']?.sourceRange[0],
-        //     item.labeledArgs?.['length']?.sourceRange[1]
-        //   )
-        // }),
+        distance: await stringToKclExpression({
+          value: codeManager.code.slice(
+            item.labeledArgs?.['length']?.sourceRange[0],
+            item.labeledArgs?.['length']?.sourceRange[1]
+          ),
+          programMemory,
+        }),
         nodeToEdit: getNodePathFromSourceRange(
           kclManager.ast,
           sourceRangeFromRust(item.sourceRange)
@@ -278,8 +296,10 @@ export interface EnterEditFlowProps {
 export async function enterEditFlow({
   item,
   artifact,
-}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent>{
-  if (item.type !== 'StdLibCall') {return new Error('Not a StdLibCall')}
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  if (item.type !== 'StdLibCall') {
+    return new Error('Not a StdLibCall')
+  }
   const stdLibInfo = stdLibMap[item.name]
 
   if (stdLibInfo && stdLibInfo.prepareToEdit) {

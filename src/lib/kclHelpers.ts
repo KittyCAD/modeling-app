@@ -1,32 +1,18 @@
 import { err, trap } from './trap'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { parse, ProgramMemory, resultIsOk } from 'lang/wasm'
-import { PrevVariable } from 'lang/queryAst'
+import { findAllPreviousVariables, PrevVariable } from 'lang/queryAst'
 import { executeAst } from 'lang/langHelpers'
+import { KclExpression } from './commandTypes'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
-/**
- * Calculate the value of the KCL expression,
- * given the value and the variables that are available
- */
-export async function getCalculatedKclExpressionValue({
-  value,
-  variables,
-}: {
-  value: string
+export function programMemoryFromVariables(
   variables: PrevVariable<string | number>[]
-}) {
-  // Create a one-line program that assigns the value to a variable
-  const dummyProgramCode = `const ${DUMMY_VARIABLE_NAME} = ${value}`
-  const pResult = parse(dummyProgramCode)
-  if (err(pResult) || !resultIsOk(pResult)) return
-  const ast = pResult.program
-
-  // Populate the program memory with the passed-in variables
-  const programMemoryOverride: ProgramMemory = ProgramMemory.empty()
+): ProgramMemory | Error {
+  const memory: ProgramMemory = ProgramMemory.empty()
   for (const { key, value } of variables) {
-    const error = programMemoryOverride.set(
+    const error = memory.set(
       key,
       typeof value === 'number'
         ? {
@@ -40,19 +26,33 @@ export async function getCalculatedKclExpressionValue({
             __meta: [],
           }
     )
-    if (trap(error, { suppress: true })) return
+    if (err(error)) return error
   }
+  return memory
+}
 
-  console.log(
-    'programMemoryOverride',
-    JSON.stringify(programMemoryOverride, null, 2)
-  )
+/**
+ * Calculate the value of the KCL expression,
+ * given the value and the variables that are available
+ */
+export async function getCalculatedKclExpressionValue({
+  value,
+  programMemory,
+}: {
+  value: string
+  programMemory: ProgramMemory
+}) {
+  // Create a one-line program that assigns the value to a variable
+  const dummyProgramCode = `const ${DUMMY_VARIABLE_NAME} = ${value}`
+  const pResult = parse(dummyProgramCode)
+  if (err(pResult) || !resultIsOk(pResult)) return pResult
+  const ast = pResult.program
 
   // Execute the program without hitting the engine
   const { execState } = await executeAst({
     ast,
     engineCommandManager,
-    programMemoryOverride,
+    programMemoryOverride: programMemory,
   })
 
   // Find the variable declaration for the result
@@ -71,4 +71,29 @@ export async function getCalculatedKclExpressionValue({
     valueAsString:
       typeof resultRawValue === 'number' ? String(resultRawValue) : 'NAN',
   }
+}
+
+export async function stringToKclExpression({
+  value,
+  programMemory,
+}: {
+  value: string
+  programMemory: ProgramMemory
+}) {
+  const calculatedResult = await getCalculatedKclExpressionValue({
+    value,
+    programMemory,
+  })
+  if (
+    err(calculatedResult) ||
+    'errors' in calculatedResult ||
+    !calculatedResult.astNode
+  ) {
+    return calculatedResult
+  }
+  return {
+    valueAst: calculatedResult.astNode,
+    valueCalculated: calculatedResult.valueAsString,
+    valueText: value,
+  } satisfies KclExpression
 }
