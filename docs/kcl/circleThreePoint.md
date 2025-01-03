@@ -9,7 +9,7 @@ Construct a circle derived from 3 points.
 
 
 ```js
-circleThreePoint(data: CircleThreePointData, sketch_surface_or_group: SketchOrSurface, tag?: TagDeclarator) -> Sketch
+circleThreePoint(p1: [number], p2: [number], p3: [number], sketch_surface_or_group: SketchOrSurface, tag?: TagDeclarator) -> Sketch
 ```
 
 
@@ -17,9 +17,11 @@ circleThreePoint(data: CircleThreePointData, sketch_surface_or_group: SketchOrSu
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`CircleThreePointData`](/docs/kcl/types/CircleThreePointData) | Data for drawing a 3-point circle | Yes |
-| `sketch_surface_or_group` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | A sketch surface or a sketch. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) |  | No |
+| `p1` | `[number]` | 1st point to derive the circle. | Yes |
+| `p2` | `[number]` | 2nd point to derive the circle. | Yes |
+| `p3` | `[number]` | 3rd point to derive the circle. | Yes |
+| `sketch_surface_or_group` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on. | Yes |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Identifier for the circle to reference elsewhere. | No |
 
 ### Returns
 
@@ -30,11 +32,7 @@ circleThreePoint(data: CircleThreePointData, sketch_surface_or_group: SketchOrSu
 
 ```js
 exampleSketch = startSketchOn("XY")
-  |> circleThreePoint({
-       p1 = [10, 10],
-       p2 = [20, 8],
-       p3 = [15, 5]
-     }, %)
+  |> circleThreePoint(p1 = [10, 10], p2 = [20, 8], p3 = [15, 5])
 
 example = extrude(5, exampleSketch)
 ```
