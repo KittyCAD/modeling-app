@@ -1,12 +1,13 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { Artifact, getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
-import { engineCommandManager, kclManager } from './singletons'
+import { codeManager, engineCommandManager, kclManager } from './singletons'
 import { err } from './trap'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { sourceRangeFromRust } from 'lang/wasm'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
+import { useCalculateKclExpression } from './useCalculateKclExpression'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -76,12 +77,13 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
           ],
           otherSelections: [],
         },
-        // distance: await useCalculateKclExpression(
-        //   codeManager.code.slice(
+        // TODO: Need to implement refactor to make this not a hook
+        // distance: await useCalculateKclExpression({
+        //   value: codeManager.code.slice(
         //     item.labeledArgs?.['length']?.sourceRange[0],
         //     item.labeledArgs?.['length']?.sourceRange[1]
         //   )
-        // ),
+        // }),
         nodeToEdit: getNodePathFromSourceRange(
           kclManager.ast,
           sourceRangeFromRust(item.sourceRange)
@@ -271,19 +273,14 @@ function isNotUserFunctionReturn(ops: Operation[]): Operation[] {
 export interface EnterEditFlowProps {
   item: Operation
   artifact?: Artifact
-  commandBarSend: ReturnType<typeof useCommandsContext>['commandBarSend']
 }
 
 export async function enterEditFlow({
   item,
   artifact,
-  commandBarSend: onComplete,
-}: EnterEditFlowProps) {
-  if (item.type !== 'StdLibCall') return
-
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent>{
+  if (item.type !== 'StdLibCall') {return new Error('Not a StdLibCall')}
   const stdLibInfo = stdLibMap[item.name]
-
-  console.log('enterEditFlow', { item, stdLibInfo, artifact })
 
   if (stdLibInfo && stdLibInfo.prepareToEdit) {
     if (typeof stdLibInfo.prepareToEdit === 'function') {
@@ -291,16 +288,17 @@ export async function enterEditFlow({
         item,
         artifact,
       })
-      onComplete({
+      return {
         type: 'Find and select command',
         data: eventPayload,
-      })
+      }
     } else {
-      console.log('simple prepareToEdit', stdLibInfo.prepareToEdit)
-      onComplete({
+      return {
         type: 'Find and select command',
         data: stdLibInfo.prepareToEdit,
-      })
+      }
     }
   }
+
+  return new Error('No prepareToEdit function found')
 }

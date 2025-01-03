@@ -3,9 +3,11 @@ import { getArtifactFromRange } from 'lang/std/artifactGraph'
 import { SourceRange, sourceRangeFromRust } from 'lang/wasm'
 import { enterEditFlow, EnterEditFlowProps } from 'lib/operations'
 import { engineCommandManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { assign, fromPromise, setup } from 'xstate'
 
+type CommandBarSend = ReturnType<typeof useCommandsContext>['commandBarSend']
 type FeatureTreeEvent =
   | {
       type: 'goToKclSource'
@@ -27,7 +29,7 @@ type FeatureTreeEvent =
 type FeatureTreeContext = {
   targetSourceRange?: SourceRange
   currentOperation?: Operation
-  commandBarSend: ReturnType<typeof useCommandsContext>['commandBarSend']
+  commandBarSend: CommandBarSend
 }
 
 export const featureTreeMachine = setup({
@@ -40,10 +42,13 @@ export const featureTreeMachine = setup({
     codePaneIsOpen: () => false,
   },
   actors: {
-    prepareEditCommand: fromPromise<unknown, EnterEditFlowProps>(
+    prepareEditCommand: fromPromise<unknown, EnterEditFlowProps & { commandBarSend: CommandBarSend } >(
       async ({ input }) => {
-        const editFlowResult = await enterEditFlow(input)
+        const { commandBarSend, ...editFlowProps } = input
+        const editFlowResult = await enterEditFlow(editFlowProps)
+        if (err(editFlowResult)) return editFlowResult
         console.log('edit flow input', input)
+        input.commandBarSend(editFlowResult)
         console.log('Edit flow result', editFlowResult)
       }
     ),
