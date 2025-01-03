@@ -1,6 +1,7 @@
 import { kclManager } from 'lib/singletons'
 import { reloadModule, getModule } from 'lib/wasm_lib_wrapper'
 import toast from 'react-hot-toast'
+import { reportRejection } from './trap'
 
 let initialized = false
 
@@ -28,7 +29,7 @@ export const initializeWindowExceptionHandler = () => {
             console.error(e)
           }
         }
-      })()
+      })().catch(reportRejection)
     })
     // Make sure we only initialize this event listener once
     initialized = true
