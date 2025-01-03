@@ -2,6 +2,7 @@ import {
   ArtifactCommand,
   defaultRustSourceRange,
   defaultSourceRange,
+  ExecState,
   Program,
   RustSourceRange,
   SourceRange,
@@ -38,6 +39,7 @@ import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -2116,11 +2118,16 @@ export class EngineCommandManager extends EventTarget {
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
   }
-  updateArtifactGraph(ast: Program, artifactCommands: ArtifactCommand[]) {
+  updateArtifactGraph(
+    ast: Node<Program>,
+    artifactCommands: ArtifactCommand[],
+    execStateArtifacts: ExecState['artifacts']
+  ) {
     this.artifactGraph = createArtifactGraph({
       artifactCommands,
       responseMap: this.responseMap,
       ast,
+      execStateArtifacts,
     })
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {

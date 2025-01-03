@@ -378,7 +378,8 @@ export class KclManager {
     // updateArtifactGraph relies on updated executeState/programMemory
     await this.engineCommandManager.updateArtifactGraph(
       this.ast,
-      execState.artifactCommands
+      execState.artifactCommands,
+      execState.artifacts
     )
     this._executeCallback()
     if (!isInterrupted) {
