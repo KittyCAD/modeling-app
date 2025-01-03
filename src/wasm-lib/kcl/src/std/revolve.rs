@@ -296,7 +296,7 @@ async fn inner_revolve(
         }
     }
 
-    do_post_extrude(sketch, 0.0, exec_state, args, None).await
+    do_post_extrude(sketch, 0.0, exec_state, args).await
 }
 
 #[cfg(test)]

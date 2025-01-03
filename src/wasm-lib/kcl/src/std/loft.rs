@@ -168,9 +168,10 @@ async fn inner_loft(
         }));
     };
 
-    #[cfg(target_arch = "wasm32")]
-    web_sys::console::log_1(&format!("Rust Loft solid_id={:?}", data.solid_id).into());
-
-    // Using the first sketch as the base curve, idk we might want to change this later.
-    do_post_extrude(sketches[0].clone(), 0.0, exec_state, args, Some(data.solid_id)).await
+    // Take the sketch with the most paths, and override its id with the loft's solid_id (to get its faces)
+    let mut desc_sorted_sketches = sketches.to_vec();
+    desc_sorted_sketches.sort_by(|s0, s1| s1.paths.len().cmp(&s0.paths.len()));
+    let mut sketch = desc_sorted_sketches[0].clone();
+    sketch.id = data.solid_id;
+    do_post_extrude(sketch, 0.0, exec_state, args).await
 }
