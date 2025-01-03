@@ -29,7 +29,9 @@ export function revolveSketch(
   pathToSketchNode: PathToNode,
   shouldPipe = false,
   angle: Expr = createLiteral(4),
-  axis: Selections
+  axisOrEdge: String,
+  axis: String,
+  edge: Selections
 ):
   | {
       modifiedAst: Node<Program>
@@ -41,31 +43,45 @@ export function revolveSketch(
   const sketchNode = getNodeFromPath(clonedAst, pathToSketchNode)
   if (err(sketchNode)) return sketchNode
 
-  // testing code
-  const pathToAxisSelection = getNodePathFromSourceRange(
-    clonedAst,
-    axis.graphSelections[0]?.codeRef.range
-  )
+  let generatedAxis
 
-  const lineNode = getNodeFromPath<CallExpression>(
-    clonedAst,
-    pathToAxisSelection,
-    'CallExpression'
-  )
-  if (err(lineNode)) return lineNode
+  if (axisOrEdge === 'Edge') {
+    console.log('1')
+    // testing code
+    const pathToAxisSelection = getNodePathFromSourceRange(
+      clonedAst,
+      edge.graphSelections[0]?.codeRef.range
+    )
+    const lineNode = getNodeFromPath<CallExpression>(
+      clonedAst,
+      pathToAxisSelection,
+      'CallExpression'
+    )
+    console.log('2')
+    if (err(lineNode)) return lineNode
 
-  // TODO Kevin: What if |> close(%)?
-  // TODO Kevin: What if opposite edge
-  // TODO Kevin: What if the edge isn't planar to the sketch?
-  // TODO Kevin: add a tag.
-  const tagResult = mutateAstWithTagForSketchSegment(
-    clonedAst,
-    pathToAxisSelection
-  )
+    console.log('3')
+    // TODO Kevin: What if |> close(%)?
+    // TODO Kevin: What if opposite edge
+    // TODO Kevin: What if the edge isn't planar to the sketch?
+    // TODO Kevin: add a tag.
+    const tagResult = mutateAstWithTagForSketchSegment(
+      clonedAst,
+      pathToAxisSelection
+    )
 
-  // Have the tag whether it is already created or a new one is generated
-  if (err(tagResult)) return tagResult
-  const { tag } = tagResult
+    console.log('4')
+    // Have the tag whether it is already created or a new one is generated
+    if (err(tagResult)) return tagResult
+    const { tag } = tagResult
+    const axisSelection = edge?.graphSelections[0]?.artifact
+    generatedAxis = getEdgeTagCall(tag, axisSelection)
+    console.log('5')
+  } else {
+    generatedAxis = createLiteral(axis)
+    console.log('6')
+  }
+  console.log('7')
 
   /* Original Code */
   const { node: sketchExpression } = sketchNode
@@ -79,6 +95,7 @@ export function revolveSketch(
   if (err(sketchPipeExpressionNode)) return sketchPipeExpressionNode
   const { node: sketchPipeExpression } = sketchPipeExpressionNode
   const isInPipeExpression = sketchPipeExpression.type === 'PipeExpression'
+  console.log('8')
 
   const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
     clonedAst,
@@ -86,19 +103,20 @@ export function revolveSketch(
     'VariableDeclarator'
   )
   if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
+  console.log('9')
   const {
     node: sketchVariableDeclarator,
     shallowPath: sketchPathToDecleration,
   } = sketchVariableDeclaratorNode
+  console.log('10')
 
-  const axisSelection = axis?.graphSelections[0]?.artifact
+  if (!generatedAxis) return new Error('Axis selection is missing.')
 
-  if (!axisSelection) return new Error('Axis selection is missing.')
-
+  console.log('generatexAxis', generatedAxis)
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
-      axis: getEdgeTagCall(tag, axisSelection),
+      axis: generatedAxis,
     }),
     createIdentifier(sketchVariableDeclarator.id.name),
   ])

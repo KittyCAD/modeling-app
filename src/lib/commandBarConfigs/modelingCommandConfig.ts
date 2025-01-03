@@ -337,8 +337,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         skip: true,
       },
-      axis: {
+      axisOrEdge: {
+        inputType: 'options',
         required: true,
+        defaultValue: 'Axis',
+        options: [
+          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Edge', isCurrent: false, value: 'Edge' },
+        ],
+      },
+      axis: {
+        required: (commandContext) =>
+          ['Axis'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'options',
+        options: [
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+        ],
+      },
+      edge: {
+        required: (commandContext) =>
+          ['Edge'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,

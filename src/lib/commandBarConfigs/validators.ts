@@ -68,7 +68,7 @@ export const revolveAxisValidator = async ({
   }
 
   const sketchSelection = artifact.pathId
-  let edgeSelection = data.axis.graphSelections[0].artifact?.id
+  let edgeSelection = data.edge.graphSelections[0].artifact?.id
 
   if (!sketchSelection) {
     return 'Unable to revolve, sketch is missing'
