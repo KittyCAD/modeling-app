@@ -5,6 +5,9 @@
       "@kittycad/codemirror-lsp-client": [
         "../packages/codemirror-lsp-client/src/index.ts"
       ],
+      "@kittycad/codemirror-lang-kcl": [
+        "../packages/codemirror-lang-kcl/src/index.ts"
+      ],
       "/*": ["src/*"]
     },
     "types": [
