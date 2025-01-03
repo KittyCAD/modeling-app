@@ -1743,7 +1743,6 @@ export const modelingMachine = setup({
 
         Fillet: {
           target: 'Applying fillet',
-          guard: 'has valid edge treatment selection',
           reenter: false,
         },
 
