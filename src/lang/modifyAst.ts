@@ -1149,11 +1149,17 @@ export async function deleteFromSelection(
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
       varDec.node.init.type === 'PipeExpression') ||
-    selection.artifact?.type === 'sweep'
+    selection.artifact?.type === 'sweep' ||
+    selection.artifact?.type === 'plane' ||
+    !selection.artifact // aka expected to be a shell at this point
   ) {
     let extrudeNameToDelete = ''
     let pathToNode: PathToNode | null = null
-    if (selection.artifact?.type !== 'sweep') {
+    if (
+      selection.artifact &&
+      selection.artifact.type !== 'sweep' &&
+      selection.artifact.type !== 'plane'
+    ) {
       const varDecName = varDec.node.id.name
       traverse(astClone, {
         enter: (node, path) => {
@@ -1165,6 +1171,17 @@ export async function deleteFromSelection(
                 dec.init.callee.name === 'revolve') &&
               dec.init.arguments?.[1].type === 'Identifier' &&
               dec.init.arguments?.[1].name === varDecName
+            ) {
+              pathToNode = path
+              extrudeNameToDelete = dec.id.name
+            }
+            if (
+              dec.init.type === 'CallExpression' &&
+              dec.init.callee.name === 'loft' &&
+              dec.init.arguments?.[0].type === 'ArrayExpression' &&
+              dec.init.arguments?.[0].elements.some(
+                (a) => a.type === 'Identifier' && a.name === varDecName
+              )
             ) {
               pathToNode = path
               extrudeNameToDelete = dec.id.name
