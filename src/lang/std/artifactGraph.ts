@@ -405,7 +405,8 @@ export function getArtifactsToUpdate({
         type: 'sweep',
         subType: 'loft',
         id,
-        pathId: response.data.modeling_response.data.solid_id,
+        // TODO: make sure this is the right one to give here
+        pathId: cmd.section_ids[0],
         surfaceIds: [],
         edgeIds: [],
         codeRef: { range, pathToNode },

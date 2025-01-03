@@ -168,6 +168,9 @@ async fn inner_loft(
         }));
     };
 
+    #[cfg(target_arch = "wasm32")]
+    web_sys::console::log_1(&format!("Rust Loft result solid_id={:?}", data.solid_id).into());
+
     // Take the sketch with the most paths, and override its id with the loft's solid_id (to get its faces)
     let mut desc_sorted_sketches = sketches.to_vec();
     desc_sorted_sketches.sort_by(|s0, s1| s1.paths.len().cmp(&s0.paths.len()));
