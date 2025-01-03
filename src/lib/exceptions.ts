@@ -11,13 +11,18 @@ let initialized = false
  */
 export const initializeWindowExceptionHandler = () => {
   if (window && !initialized) {
-    window.addEventListener('error', async (event) => {
+    window.addEventListener('error', (event) => {
       if (matchImportExportErrorCrash(event.message)) {
         // do global singleton cleanup
         kclManager.executeAstCleanUp()
-
-        await reloadModule()
-        getModule().default()
+        reloadModule()
+          .then(() => {
+            getModule().default()
+          })
+          .catch((e) => {
+            console.error('Failed to initialize WASM lib')
+            console.error(e)
+          })
       }
     })
     // Make sure we only initialize this event listener once
