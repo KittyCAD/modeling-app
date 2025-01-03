@@ -683,8 +683,14 @@ describe('testing getArtifactsToUpdate', () => {
     const getArtifact = (id: string) => map.get(id)
     const currentPlaneId = 'UUID-1'
     const getUpdateObjects = (type: Models['ModelingCmd_type']['type']) => {
+      const artifactCommand = artifactCommands.find(
+        (a) => a.command.type === type
+      )
+      if (!artifactCommand) {
+        throw new Error(`No artifactCommand found for ${type}`)
+      }
       const artifactsToUpdate = getArtifactsToUpdate({
-        artifactCommand: artifactCommands.find((a) => a.command.type === type)!,
+        artifactCommand,
         responseMap,
         getArtifact,
         currentPlaneId,
