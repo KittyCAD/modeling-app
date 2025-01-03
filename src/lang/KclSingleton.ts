@@ -398,7 +398,7 @@ export class KclManager {
    * This file will interface with this cleanup as if it caught the original error
    * to properly restore the TS application state.
    */
-  async executeAstCleanUp() {
+  executeAstCleanUp() {
     this.isExecuting = false
     this.executeIsStale = null
     this.engineCommandManager.addCommandLog({
