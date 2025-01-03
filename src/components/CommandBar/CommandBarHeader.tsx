@@ -194,7 +194,7 @@ function ReviewingButton() {
       autoFocus
       type="submit"
       form="review-form"
-      className="w-fit !p-0 rounded-sm border !border-primary hover:shadow"
+      className="w-fit !p-0 rounded-sm hover:shadow"
       iconStart={{
         icon: 'checkmark',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
@@ -212,7 +212,7 @@ function GatheringArgsButton() {
       Element="button"
       type="submit"
       form="arg-form"
-      className="w-fit !p-0 rounded-sm border !border-primary hover:shadow"
+      className="w-fit !p-0 rounded-sm hover:shadow"
       iconStart={{
         icon: 'arrowRight',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',

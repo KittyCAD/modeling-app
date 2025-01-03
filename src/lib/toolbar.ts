@@ -150,10 +150,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             label: 'KCL docs',
             url: 'https://zoo.dev/docs/kcl/loft',
           },
-          {
-            label: 'GitHub discussion',
-            url: 'https://github.com/KittyCAD/modeling-app/discussions/613',
-          },
         ],
       },
       'break',

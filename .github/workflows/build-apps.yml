@@ -173,7 +173,13 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-        run: yarn electron-builder --config --publish always
+          DEBUG: "electron-notarize*"
+        # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
+        uses: nick-fields/retry@v3.0.0
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: yarn electron-builder --config --publish always
 
       - name: List artifacts in out/
         run: ls -R out
@@ -228,7 +234,13 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-        run: yarn electron-builder --config --publish always
+          DEBUG: "electron-notarize*"
+        # TODO: Fix electron-notarize flakes. The logs above should help gather more data on failures
+        uses: nick-fields/retry@v3.0.0
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: yarn electron-builder --config --publish always
 
       - uses: actions/upload-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' }}

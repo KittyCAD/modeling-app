@@ -10,7 +10,7 @@
   },
   "description": "Edit CAD visually or with code",
   "main": ".vite/build/main.js",
-  "license": "none",
+  "license": "MIT",
   "dependencies": {
     "@codemirror/autocomplete": "^6.17.0",
     "@codemirror/commands": "^6.6.0",
