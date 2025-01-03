@@ -18,7 +18,7 @@ import {
   base64_decode,
   clear_scene_and_bust_cache,
   reloadModule,
-} from 'lib/wasmWrapper'
+} from 'lib/wasm_lib_wrapper'
 
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
@@ -580,9 +580,8 @@ export const makeDefaultPlanes = async (
   engineCommandManager: EngineCommandManager
 ): Promise<DefaultPlanes> => {
   try {
-    const planes: DefaultPlanes = await make_default_planes(
-      engineCommandManager
-    )
+    const planes: DefaultPlanes =
+      await make_default_planes(engineCommandManager)
     return planes
   } catch (e) {
     // TODO: do something real with the error.
