@@ -1743,7 +1743,7 @@ export const modelingMachine = setup({
 
         Fillet: {
           target: 'Applying fillet',
-          reenter: false,
+          reenter: true,
         },
 
         Export: {
