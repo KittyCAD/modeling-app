@@ -31,7 +31,6 @@ exports.default = async (configuration) => {
       }
     )
     console.log('Signing using signWin.js script: successful')
-    throw new Error('Signing using signWin.js script: failed:')
   } catch (error) {
     throw new Error('Signing using signWin.js script: failed:', error)
   }
