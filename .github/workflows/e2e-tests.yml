@@ -18,7 +18,6 @@ permissions:
 jobs:
 
   check-rust-changes:
-    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     outputs:
       rust-changed: ${{ steps.filter.outputs.rust }}
@@ -35,7 +34,6 @@ jobs:
               - 'src/wasm-lib/**'
 
   electron:
-    if: github.event.pull_request.draft == false
     timeout-minutes: 60
     name: playwright:electron:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
     strategy:
