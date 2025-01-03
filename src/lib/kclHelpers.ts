@@ -15,7 +15,7 @@ export async function getCalculatedKclExpressionValue({
   variables,
 }: {
   value: string
-  variables: PrevVariable<string>[]
+  variables: PrevVariable<string | number>[]
 }) {
   // Create a one-line program that assigns the value to a variable
   const dummyProgramCode = `const ${DUMMY_VARIABLE_NAME} = ${value}`
@@ -24,22 +24,35 @@ export async function getCalculatedKclExpressionValue({
   const ast = pResult.program
 
   // Populate the program memory with the passed-in variables
-  const _programMem: ProgramMemory = ProgramMemory.empty()
+  const programMemoryOverride: ProgramMemory = ProgramMemory.empty()
   for (const { key, value } of variables) {
-    const error = _programMem.set(key, {
-      type: 'String',
-      value,
-      __meta: [],
-    })
+    const error = programMemoryOverride.set(
+      key,
+      typeof value === 'number'
+        ? {
+            type: 'Number',
+            value,
+            __meta: [],
+          }
+        : {
+            type: 'String',
+            value,
+            __meta: [],
+          }
+    )
     if (trap(error, { suppress: true })) return
   }
+
+  console.log(
+    'programMemoryOverride',
+    JSON.stringify(programMemoryOverride, null, 2)
+  )
 
   // Execute the program without hitting the engine
   const { execState } = await executeAst({
     ast,
     engineCommandManager,
-    // We make sure to send an empty program memory to denote we mean mock mode.
-    programMemoryOverride: kclManager.programMemory.clone(),
+    programMemoryOverride,
   })
 
   // Find the variable declaration for the result
