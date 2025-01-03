@@ -1,5 +1,6 @@
 import {
   ArtifactCommand,
+  ExecState,
   PathToNode,
   Program,
   SourceRange,
@@ -8,6 +9,7 @@ import {
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type ArtifactId = string
 
@@ -162,10 +164,12 @@ export function createArtifactGraph({
   artifactCommands,
   responseMap,
   ast,
+  execStateArtifacts,
 }: {
   artifactCommands: Array<ArtifactCommand>
   responseMap: ResponseMap
-  ast: Program
+  ast: Node<Program>
+  execStateArtifacts: ExecState['artifacts']
 }) {
   const myMap = new Map<ArtifactId, Artifact>()
 
@@ -185,6 +189,7 @@ export function createArtifactGraph({
       getArtifact: (id: ArtifactId) => myMap.get(id),
       currentPlaneId,
       ast,
+      execStateArtifacts,
     })
     artifactsToUpdate.forEach(({ id, artifact }) => {
       const mergedArtifact = mergeArtifacts(myMap.get(id), artifact)
@@ -236,13 +241,15 @@ export function getArtifactsToUpdate({
   responseMap,
   currentPlaneId,
   ast,
+  execStateArtifacts,
 }: {
   artifactCommand: ArtifactCommand
   responseMap: ResponseMap
   /** Passing in a getter because we don't wan this function to update the map directly */
   getArtifact: (id: ArtifactId) => Artifact | undefined
   currentPlaneId: ArtifactId
-  ast: Program
+  ast: Node<Program>
+  execStateArtifacts: ExecState['artifacts']
 }): Array<{
   id: ArtifactId
   artifact: Artifact
