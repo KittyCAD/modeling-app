@@ -1,5 +1,6 @@
 import { kclManager } from 'lib/singletons'
 import { reloadModule, getModule } from 'lib/wasm_lib_wrapper'
+import toast from 'react-hot-toast'
 
 let initialized = false
 
@@ -15,6 +16,9 @@ export const initializeWindowExceptionHandler = () => {
       if (matchImportExportErrorCrash(event.message)) {
         // do global singleton cleanup
         kclManager.executeAstCleanUp()
+        toast.error(
+          'You have hit a KCL execution bug! Put your KCL code in a github issue to help us resolve this bug.'
+        )
         reloadModule()
           .then(() => {
             getModule().default()
