@@ -166,17 +166,20 @@ export const featureTreeMachine = setup({
         prepareEditCommand: {
           invoke: {
             src: 'prepareEditCommand',
-            input: ({ context }) => ({
-              // currentOperation is guaranteed to be defined here
-              item: context.currentOperation!,
-              artifact: context.targetSourceRange
+            input: ({ context }) => {
+              const artifact = context.targetSourceRange
                 ? getArtifactFromRange(
                     context.targetSourceRange,
                     engineCommandManager.artifactGraph
                   ) ?? undefined
-                : undefined,
-              commandBarSend: context.commandBarSend,
-            }),
+                : undefined
+              return {
+                // currentOperation is guaranteed to be defined here
+                item: context.currentOperation!,
+                artifact,
+                commandBarSend: context.commandBarSend,
+              }
+            },
             onDone: {
               target: 'done',
               reenter: true,

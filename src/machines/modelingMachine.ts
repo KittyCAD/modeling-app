@@ -1,4 +1,5 @@
 import {
+  CallExpression,
   PathToNode,
   ProgramMemory,
   VariableDeclaration,
@@ -577,6 +578,13 @@ export const modelingMachine = setup({
   },
   // end guards
   actions: {
+    toastError: ({ event }) => {
+      if ('output' in event && event.output instanceof Error) {
+        toast.error(event.output.message)
+      } else if ('data' in event && event.data instanceof Error) {
+        toast.error(event.data.message)
+      }
+    },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
         'data' in event && event.data && 'tool' in event.data
@@ -631,7 +639,7 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'AST extrude': ({ context: { store }, event }) => {
+    'AST extrude': ({ event }) => {
       if (event.type !== 'Extrude') return
       ;(async () => {
         if (!event.data) return
@@ -1526,6 +1534,60 @@ export const modelingMachine = setup({
         return {} as SetSelections
       }
     ),
+    extrudeAstMod: fromPromise<
+      unknown,
+      ModelingCommandSchema['Extrude'] | undefined
+    >(async ({ input }) => {
+      if (!input) return new Error('No input provided')
+      const { selection, distance, nodeToEdit } = input
+      let ast = structuredClone(kclManager.ast)
+
+      // If this is an edit flow, first we're going to remove the old extrusion
+      if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+        const newBody = [...ast.body]
+        newBody.splice(nodeToEdit[1][0], 1)
+        ast.body = newBody
+      }
+
+      if (
+        'variableName' in distance &&
+        distance.variableName &&
+        distance.insertIndex !== undefined
+      ) {
+        const newBody = [...ast.body]
+        newBody.splice(distance.insertIndex, 0, distance.variableDeclarationAst)
+        ast.body = newBody
+      }
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        selection.graphSelections[0]?.codeRef.range
+      )
+      const extrudeSketchRes = extrudeSketch(
+        ast,
+        pathToNode,
+        false,
+        'variableName' in distance
+          ? distance.variableIdentifierAst
+          : distance.valueAst
+      )
+      if (err(extrudeSketchRes)) return extrudeSketchRes
+      const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
+
+      const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+        focusPath: [pathToExtrudeArg],
+        zoomToFit: true,
+        zoomOnRangeAndType: {
+          range: selection.graphSelections[0]?.codeRef.range,
+          type: 'path',
+        },
+      })
+
+      await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
+      if (updatedAst?.selections) {
+        editorManager.selectRange(updatedAst?.selections)
+      }
+    }),
     offsetPlaneAstMod: fromPromise(
       async ({
         input,
@@ -1717,9 +1779,8 @@ export const modelingMachine = setup({
         ],
 
         Extrude: {
-          target: 'idle',
-          actions: ['AST extrude'],
-          reenter: false,
+          target: 'Applying extrude',
+          reenter: true,
         },
 
         Revolve: {
@@ -2499,6 +2560,22 @@ export const modelingMachine = setup({
             'set new sketch metadata',
             'enter sketching mode',
           ],
+        },
+      },
+    },
+
+    'Applying extrude': {
+      invoke: {
+        src: 'extrudeAstMod',
+        id: 'extrudeAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Extrude') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
         },
       },
     },

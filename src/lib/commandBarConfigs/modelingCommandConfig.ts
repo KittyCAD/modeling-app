@@ -33,6 +33,8 @@ export type ModelingCommandSchema = {
     machine: components['schemas']['MachineInfoResponse']
   }
   Extrude: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
@@ -55,6 +57,8 @@ export type ModelingCommandSchema = {
     radius: KclCommandValue
   }
   'Offset plane': {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
     plane: Selections
     distance: KclCommandValue
   }
@@ -265,6 +269,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'extrude',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['solid2D', 'segment'],
@@ -355,6 +366,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description: 'Offset a plane.',
     icon: 'plane',
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       plane: {
         inputType: 'selection',
         selectionTypes: ['plane'],

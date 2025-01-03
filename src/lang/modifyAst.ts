@@ -169,12 +169,14 @@ export function findUniqueName(
   pad = 3,
   index = 1
 ): string {
-  let searchStr: string = typeof ast === 'string' ? ast : JSON.stringify(ast)
+  const toSearchString = (s: string) =>
+    `{"type":"VariableDeclarator","id":{"type":"Identifier","name":"${s}"`
+  let searchSource: string = typeof ast === 'string' ? ast : JSON.stringify(ast)
   const indexStr = String(index).padStart(pad, '0')
 
   const endingDigitsMatcher = /\d+$/
   const nameEndsInDigits = name.match(endingDigitsMatcher)
-  let nameIsInString = searchStr.includes(`:"${name}"`)
+  let nameIsInString = searchSource.includes(toSearchString(name))
 
   if (nameEndsInDigits !== null) {
     // base case: name is unique and ends in digits
@@ -185,17 +187,17 @@ export function findUniqueName(
     const newIndex = parseInt(nameEndsInDigits[1]) + 1
     const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
 
-    return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)
+    return findUniqueName(searchSource, nameWithoutDigits, newPad, newIndex)
   }
 
   const newName = `${name}${indexStr}`
-  nameIsInString = searchStr.includes(`:"${newName}"`)
+  nameIsInString = searchSource.includes(toSearchString(newName))
 
   // base case: name is unique and does not end in digits
   if (!nameIsInString) return newName
 
   // recursive case: name is not unique and does not end in digits
-  return findUniqueName(searchStr, name, pad, index + 1)
+  return findUniqueName(searchSource, name, pad, index + 1)
 }
 
 export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {

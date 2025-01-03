@@ -84,12 +84,10 @@ export async function stringToKclExpression({
     value,
     programMemory,
   })
-  if (
-    err(calculatedResult) ||
-    'errors' in calculatedResult ||
-    !calculatedResult.astNode
-  ) {
+  if (err(calculatedResult) || 'errors' in calculatedResult) {
     return calculatedResult
+  } else if (!calculatedResult.astNode) {
+    return new Error('Failed to calculate KCL expression')
   }
   return {
     valueAst: calculatedResult.astNode,

@@ -7,11 +7,15 @@ import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { sourceRangeFromRust } from 'lang/wasm'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { stringToKclExpression } from './kclHelpers'
+import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
 }
 type ExecuteCommandEventPayload = ExecuteCommandEvent['data']
+type PrepareToEditCallback = (
+  props: Omit<EnterEditFlowProps, 'commandBarSend'>
+) => ExecuteCommandEventPayload | Promise<ExecuteCommandEventPayload>
 
 interface StdLibCallInfo {
   label: string
@@ -20,13 +24,156 @@ interface StdLibCallInfo {
    * There are items which are honored by the feature tree
    * that do not yet have a corresponding modeling command.
    */
-  prepareToEdit?:
-    | ExecuteCommandEventPayload
-    | ((
-        props: Omit<EnterEditFlowProps, 'commandBarSend'>
-      ) => ExecuteCommandEventPayload | Promise<ExecuteCommandEventPayload>)
+  prepareToEdit?: ExecuteCommandEventPayload | PrepareToEditCallback
 }
 
+/**
+ * Gather up the argument values for the Extrude command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditExtrude: PrepareToEditCallback =
+  async function prepareToEditExtrude({ item, artifact }) {
+    const baseCommand = {
+      name: 'Extrude',
+      groupId: 'modeling',
+    }
+    if (!artifact || !('pathId' in artifact) || item.type !== 'StdLibCall') {
+      return baseCommand
+    }
+
+    // We have to go a little roundabout to get from the original artifact
+    // to the solid2DId that we need to pass to the Extrude command.
+    const pathArtifact = getArtifactOfTypes(
+      {
+        key: artifact.pathId,
+        types: ['path'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (
+      err(pathArtifact) ||
+      pathArtifact.type !== 'path' ||
+      !pathArtifact.solid2dId
+    )
+      return baseCommand
+    const solid2DArtifact = getArtifactOfTypes(
+      {
+        key: pathArtifact.solid2dId,
+        types: ['solid2D'],
+      },
+      engineCommandManager.artifactGraph
+    )
+    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2D') {
+      return baseCommand
+    }
+
+    // Convert the length argument from a string to a KCL expression
+    const distanceResult = await stringToKclExpression({
+      value: codeManager.code.slice(
+        item.labeledArgs?.['length']?.sourceRange[0],
+        item.labeledArgs?.['length']?.sourceRange[1]
+      ),
+      programMemory: kclManager.programMemory.clone(),
+    })
+    if (err(distanceResult) || 'errors' in distanceResult) {
+      return baseCommand
+    }
+
+    // Assemble the default argument values for the Extrude command,
+    // with `nodeToEdit` set, which will let the Extrude actor know
+    // to edit the node that corresponds to the StdLibCall.
+    const argDefaultValues: ModelingCommandSchema['Extrude'] = {
+      selection: {
+        graphSelections: [
+          {
+            artifact: solid2DArtifact,
+            codeRef: pathArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      distance: distanceResult,
+      nodeToEdit: getNodePathFromSourceRange(
+        kclManager.ast,
+        sourceRangeFromRust(item.sourceRange)
+      ),
+    }
+    return {
+      ...baseCommand,
+      argDefaultValues,
+    }
+  }
+
+const prepareToEditRevolve: PrepareToEditCallback =
+  async function prepareToEditRevolve({ item, artifact }) {
+    const baseCommand = {
+      name: 'Revolve',
+      groupId: 'modeling',
+    }
+    return baseCommand
+  }
+
+const prepareToEditLoft: PrepareToEditCallback =
+  async function prepareToEditLoft({ item, artifact }) {
+    const baseCommand = {
+      name: 'Loft',
+      groupId: 'modeling',
+    }
+    console.log('prepareToEditLoft', { item, artifact })
+    if (!artifact || !('pathId' in artifact) || item.type !== 'StdLibCall') {
+      return baseCommand
+    }
+    return baseCommand
+  }
+
+const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
+  item,
+  artifact,
+}) => {
+  const baseCommand = {
+    name: 'Offset Plane',
+    groupId: 'modeling',
+  }
+  return baseCommand
+  // TODO: Implement and uncomment
+  // if (!artifact || artifact.type !== 'plane' || item.type !== 'StdLibCall' || !item.labeledArgs?.['distance']) {
+  //   return baseCommand
+  // }
+
+  // // Convert the distance argument from a string to a KCL expression
+  // const distanceResult = await stringToKclExpression({
+  //   value: codeManager.code.slice(
+  //     item.labeledArgs?.['distance'].sourceRange[0],
+  //     item.labeledArgs?.['distance'].sourceRange[1]
+  //   ),
+  //   programMemory: kclManager.programMemory.clone(),
+  // })
+  // if (err(distanceResult) || 'errors' in distanceResult) {
+  //   return baseCommand
+  // }
+
+  // // Assemble the default argument values for the Offset Plane command,
+  // // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // // to edit the node that corresponds to the StdLibCall.
+  // const argDefaultValues: ModelingCommandSchema['Offset plane'] = {
+  //   distance: distanceResult,
+  //   plane: {
+  //     graphSelections: [],
+  //     otherSelections: [
+  //       { name: artifact.}
+  //     ],
+  //   },
+  //   nodeToEdit: getNodePathFromSourceRange(
+  //     kclManager.ast,
+  //     sourceRangeFromRust(item.sourceRange)
+  //   ),
+  // }
+}
+
+/**
+ * A map of standard library calls to their corresponding information
+ * for use in the feature tree UI.
+ */
 const stdLibMap: Record<string, StdLibCallInfo> = {
   chamfer: {
     label: 'Chamfer',
@@ -36,67 +183,7 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
   extrude: {
     label: 'Extrude',
     icon: 'extrude',
-    prepareToEdit: async ({ item, artifact }) => {
-      const baseCommand = {
-        name: 'Extrude',
-        groupId: 'modeling',
-      }
-      if (!artifact || !('pathId' in artifact) || item.type !== 'StdLibCall')
-        return baseCommand
-      const pathArtifact = getArtifactOfTypes(
-        {
-          key: artifact.pathId,
-          types: ['path'],
-        },
-        engineCommandManager.artifactGraph
-      )
-      if (
-        err(pathArtifact) ||
-        pathArtifact.type !== 'path' ||
-        !pathArtifact.solid2dId
-      )
-        return baseCommand
-      const solid2DArtifact = getArtifactOfTypes(
-        {
-          key: pathArtifact.solid2dId,
-          types: ['solid2D'],
-        },
-        engineCommandManager.artifactGraph
-      )
-      if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2D') {
-        return baseCommand
-      }
-      const argDefaultValues = {
-        selection: {
-          graphSelections: [
-            {
-              artifact: solid2DArtifact,
-              codeRef: pathArtifact.codeRef,
-            },
-          ],
-          otherSelections: [],
-        },
-        distance: await stringToKclExpression({
-          value: codeManager.code.slice(
-            item.labeledArgs?.['length']?.sourceRange[0],
-            item.labeledArgs?.['length']?.sourceRange[1]
-          ),
-          programMemory: kclManager.programMemory.clone(),
-        }),
-        nodeToEdit: getNodePathFromSourceRange(
-          kclManager.ast,
-          sourceRangeFromRust(item.sourceRange)
-        ),
-      }
-      console.log({
-        item: item,
-        argDefaultValues,
-      })
-      return {
-        ...baseCommand,
-        argDefaultValues,
-      }
-    },
+    prepareToEdit: prepareToEditExtrude,
   },
   fillet: {
     label: 'Fillet',
@@ -118,12 +205,11 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
   loft: {
     label: 'Loft',
     icon: 'loft',
-    prepareToEdit: () => ({ name: 'Loft', groupId: 'modeling' }),
+    prepareToEdit: prepareToEditLoft,
   },
   offsetPlane: {
     label: 'Offset Plane',
     icon: 'plane',
-    // TODO: Implement prepareToEdit
     // prepareToEdit: () => ({ type: 'Offset plane', data: { distance: 1 } }),
   },
   patternCircular2d: {
@@ -145,7 +231,7 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
-    prepareToEdit: () => ({ name: 'Revolve', groupId: 'modeling' }),
+    prepareToEdit: prepareToEditRevolve,
   },
   shell: {
     label: 'Shell',
