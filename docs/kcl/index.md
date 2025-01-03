@@ -35,6 +35,7 @@ layout: manual
 * [`ceil`](kcl/ceil)
 * [`chamfer`](kcl/chamfer)
 * [`circle`](kcl/circle)
+* [`circleThreePoint`](kcl/circleThreePoint)
 * [`close`](kcl/close)
 * [`cm`](kcl/cm)
 * [`cos`](kcl/cos)
