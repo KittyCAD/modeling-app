@@ -187,6 +187,7 @@ export function createArtifactGraph({
       myMap.set(id, mergedArtifact)
     })
   })
+  console.log('Solid3dGetExtrusionFaceInfo ag', myMap)
   return myMap
 }
 
@@ -424,6 +425,7 @@ export function getArtifactsToUpdate({
     response?.type === 'modeling' &&
     response.data.modeling_response.type === 'solid3d_get_extrusion_face_info'
   ) {
+    console.log('TS Solid3dGetExtrusionFaceInfo cmd response', cmd, response)
     let lastPath: PathArtifact
     response.data.modeling_response.data.faces.forEach(
       ({ curve_id, cap, face_id }) => {
