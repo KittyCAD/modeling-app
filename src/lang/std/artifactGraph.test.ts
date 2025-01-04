@@ -115,7 +115,7 @@ sketch002 = startSketchOn(offsetPlane001)
   |> line([6.78, 15.01], %)
 `
 
-// add more code snippets here and use `getCommands` to get the orderedCommands and responseMap for more tests
+// add more code snippets here and use `getCommands` to get the artifactCommands and responseMap for more tests
 const codeToWriteCacheFor = {
   exampleCode1,
   sketchOnFaceOnFaceEtc,
