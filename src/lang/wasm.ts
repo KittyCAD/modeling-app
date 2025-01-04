@@ -35,7 +35,7 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-import { ExecOutcome } from 'wasm-lib/kcl/bindings/ExecOutcome'
+import { ExecOutcome as RustExecOutcome } from 'wasm-lib/kcl/bindings/ExecOutcome'
 import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
@@ -260,7 +260,7 @@ export function emptyExecState(): ExecState {
   }
 }
 
-function execStateFromRust(execOutcome: ExecOutcome): ExecState {
+function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
     memory: ProgramMemory.fromRaw(execOutcome.memory),
     operations: execOutcome.operations,
@@ -535,7 +535,7 @@ export const _executor = async (
         jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
       }
     }
-    const execOutcome: ExecOutcome = await execute(
+    const execOutcome: RustExecOutcome = await execute(
       JSON.stringify(node),
       JSON.stringify(programMemoryOverride?.toRaw() || null),
       JSON.stringify({ settings: jsAppSettings }),
