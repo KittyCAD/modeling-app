@@ -133,7 +133,7 @@ pub async fn execute(
     // gloo-serialize crate instead.
     // DO NOT USE serde_wasm_bindgen::to_value(&exec_state).map_err(|e| e.to_string())
     // it will break the frontend.
-    JsValue::from_serde(&exec_state).map_err(|e| e.to_string())
+    JsValue::from_serde(&exec_state.to_wasm_outcome()).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute
