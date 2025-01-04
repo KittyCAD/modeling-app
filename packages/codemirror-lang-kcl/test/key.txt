@@ -1,0 +1,20 @@
+# colon (deprecated)
+
+x = { k: 123 }
+
+==>
+Program(VariableDeclaration(VariableDefinition,
+                            Equals,
+                            ObjectExpression(ObjectProperty(PropertyName,
+                                                            Number))))
+
+# equal
+
+x = { k = 123 }
+
+==>
+Program(VariableDeclaration(VariableDefinition,
+                            Equals,
+                            ObjectExpression(ObjectProperty(PropertyName,
+                                                            Equals,
+                                                            Number))))
