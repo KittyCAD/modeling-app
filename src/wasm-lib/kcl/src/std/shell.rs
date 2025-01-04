@@ -8,6 +8,7 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
+    batch_cmd,
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, KclValue, Solid, SolidSet},
     std::{sketch::FaceTag, Args},
@@ -229,16 +230,17 @@ async fn inner_shell(
         }));
     }
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         exec_state.next_uuid(),
         ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: false,
             face_ids,
             object_id: solids[0].id,
             shell_thickness: LengthUnit(data.thickness),
-        }),
-    )
-    .await?;
+        })
+    );
 
     Ok(solid_set)
 }
@@ -315,16 +317,17 @@ async fn inner_hollow(
     // If we do not do these for sketch on face, things will fail with face does not exist.
     args.flush_batch_for_solid_set(exec_state, solid.clone().into()).await?;
 
-    args.batch_modeling_cmd(
+    batch_cmd!(
+        exec_state,
+        args,
         exec_state.next_uuid(),
         ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: true,
             face_ids: Vec::new(), // This is empty because we want to hollow the entire object.
             object_id: solid.id,
             shell_thickness: LengthUnit(thickness),
-        }),
-    )
-    .await?;
+        })
+    );
 
     Ok(solid)
 }

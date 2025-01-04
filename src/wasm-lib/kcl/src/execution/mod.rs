@@ -25,6 +25,7 @@ pub use kcl_value::{KclObjectFields, KclValue};
 use uuid::Uuid;
 
 mod annotations;
+mod artifact;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
@@ -48,6 +49,7 @@ use crate::{
 };
 
 // Re-exports.
+pub use artifact::{Artifact, ArtifactCommand, ArtifactId, ArtifactInner};
 pub use cad_op::Operation;
 
 /// State for executing a program.
@@ -69,6 +71,11 @@ pub struct GlobalState {
     pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    /// Output map of UUIDs to artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Output commands to allow building the artifact graph by the caller.
+    /// This corresponds to OrderedCommands on the TS side.
+    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -135,6 +142,15 @@ impl ExecState {
         self.global.id_generator.next_uuid()
     }
 
+    pub fn add_artifact(&mut self, artifact: Artifact) {
+        let id = artifact.id;
+        self.global.artifacts.insert(id, artifact);
+    }
+
+    pub fn add_artifact_command(&mut self, cmd: ArtifactCommand) {
+        self.global.artifact_commands.push(cmd);
+    }
+
     async fn add_module(
         &mut self,
         path: std::path::PathBuf,
@@ -172,6 +188,8 @@ impl GlobalState {
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
+            artifacts: Default::default(),
+            artifact_commands: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.
@@ -2483,7 +2501,7 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                ModelingCmd::from(mcmd::ZoomToFit {
+                &ModelingCmd::from(mcmd::ZoomToFit {
                     object_ids: Default::default(),
                     animated: false,
                     padding: 0.1,
@@ -2497,7 +2515,7 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                ModelingCmd::from(mcmd::TakeSnapshot {
+                &ModelingCmd::from(mcmd::TakeSnapshot {
                     format: ImageFormat::Png,
                 }),
             )

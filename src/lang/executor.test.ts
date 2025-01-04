@@ -481,6 +481,7 @@ const theExtrude = startSketchOn('XY')
         'undefined_value',
         'memory item key `myVarZ` is not defined',
         [129, 135, true],
+        [],
         []
       )
     )

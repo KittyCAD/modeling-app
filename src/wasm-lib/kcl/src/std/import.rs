@@ -307,7 +307,7 @@ async fn inner_import(
     }
 
     let id = exec_state.next_uuid();
-    let resp = args
+    let (a_cmd, resp) = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::ImportFiles {
@@ -316,6 +316,7 @@ async fn inner_import(
             }),
         )
         .await?;
+    exec_state.add_artifact_command(a_cmd);
 
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::ImportFiles(imported_files),

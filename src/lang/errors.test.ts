@@ -10,6 +10,7 @@ describe('test kclErrToDiagnostic', () => {
         msg: 'Semantic error',
         sourceRange: [0, 1, true],
         operations: [],
+        artifactCommands: [],
       },
       {
         name: '',
@@ -18,6 +19,7 @@ describe('test kclErrToDiagnostic', () => {
         msg: 'Type error',
         sourceRange: [4, 5, true],
         operations: [],
+        artifactCommands: [],
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors)

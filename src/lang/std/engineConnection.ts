@@ -1,6 +1,8 @@
 import {
+  ArtifactCommand,
   defaultRustSourceRange,
   defaultSourceRange,
+  ExecState,
   Program,
   RustSourceRange,
   SourceRange,
@@ -37,6 +39,7 @@ import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1303,7 +1306,7 @@ export enum EngineCommandManagerEvents {
  *
  * As commands are send their state is tracked in {@link pendingCommands} and clear as soon as we receive a response.
  *
- * Also all commands that are sent are kept track of in {@link orderedCommands} and their responses are kept in {@link responseMap}
+ * Also all commands that are sent are kept track of in {@link __oldOrderedCommands} and their responses are kept in {@link responseMap}
  * Both of these data structures are used to process the {@link artifactGraph}.
  */
 
@@ -1331,10 +1334,11 @@ export class EngineCommandManager extends EventTarget {
   /**
    * The orderedCommands array of all the the commands sent to the engine, un-folded from batches, and made into one long
    * list of the individual commands, this is used to process all the commands into the artifactGraph
+   * @deprecated Use artifactCommands returned from the executor instead.
    */
-  orderedCommands: Array<OrderedCommand> = []
+  __oldOrderedCommands: Array<OrderedCommand> = []
   /**
-   * A map of the responses to the {@link orderedCommands}, when processing the commands into the artifactGraph, this response map allow
+   * A map of the responses to the {@link __oldOrderedCommands}, when processing the commands into the artifactGraph, this response map allow
    * us to look up the response by command id
    */
   responseMap: ResponseMap = {}
@@ -1830,7 +1834,7 @@ export class EngineCommandManager extends EventTarget {
     }
   }
   async startNewSession() {
-    this.orderedCommands = []
+    this.__oldOrderedCommands = []
     this.responseMap = {}
     await this.initPlanes()
   }
@@ -2074,7 +2078,7 @@ export class EngineCommandManager extends EventTarget {
     }
 
     if (message.command.type === 'modeling_cmd_req') {
-      this.orderedCommands.push({
+      this.__oldOrderedCommands.push({
         command: message.command,
         range: sourceRangeFromRust(message.range),
       })
@@ -2089,7 +2093,7 @@ export class EngineCommandManager extends EventTarget {
           cmd_id: req.cmd_id,
           cmd: req.cmd,
         }
-        this.orderedCommands.push({
+        this.__oldOrderedCommands.push({
           command: cmd,
           range,
         })
@@ -2115,11 +2119,16 @@ export class EngineCommandManager extends EventTarget {
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
   }
-  updateArtifactGraph(ast: Program) {
+  updateArtifactGraph(
+    ast: Node<Program>,
+    artifactCommands: ArtifactCommand[],
+    execStateArtifacts: ExecState['artifacts']
+  ) {
     this.artifactGraph = createArtifactGraph({
-      orderedCommands: this.orderedCommands,
+      artifactCommands,
       responseMap: this.responseMap,
       ast,
+      execStateArtifacts,
     })
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
