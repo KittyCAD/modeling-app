@@ -29,8 +29,8 @@ export function revolveSketch(
   pathToSketchNode: PathToNode,
   shouldPipe = false,
   angle: Expr = createLiteral(4),
-  axisOrEdge: String,
-  axis: String,
+  axisOrEdge: string,
+  axis: string,
   edge: Selections
 ):
   | {
@@ -66,6 +66,7 @@ export function revolveSketch(
     if (err(tagResult)) return tagResult
     const { tag } = tagResult
     const axisSelection = edge?.graphSelections[0]?.artifact
+    if (!axisSelection) return new Error('Generated axis selection is missing.')
     generatedAxis = getEdgeTagCall(tag, axisSelection)
   } else {
     generatedAxis = createLiteral(axis)
@@ -95,7 +96,7 @@ export function revolveSketch(
     shallowPath: sketchPathToDecleration,
   } = sketchVariableDeclaratorNode
 
-  if (!generatedAxis) return new Error('Axis selection is missing.')
+  if (!generatedAxis) return new Error('Generated axis selection is missing.')
 
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({

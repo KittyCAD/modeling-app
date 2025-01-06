@@ -47,7 +47,9 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
-    axis: Selections
+    axisOrEdge: string
+    axis: string
+    edge: Selections
   }
   Fillet: {
     // todo
