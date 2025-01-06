@@ -1230,12 +1230,13 @@ export class SceneEntities {
   // lee: Well, it appears all our code in sceneEntities each act as their own
   // kind of classes. In this case, I'll keep utility functions pertaining to
   // circle3Point here. Feel free to extract as needed.
-  entryDraftCircle3Point = async (
+  entryDraftCircle3Point = (
+    done: () => void,
     startSketchOnASTNodePath: PathToNode,
     forward: Vector3,
     up: Vector3,
     sketchOrigin: Vector3
-  ) => {
+  ): (() => void) => {
     // lee: Not a fan we need to re-iterate this dummy object all over the place
     // just to get the scale but okie dokie.
     const dummy = new Mesh()
@@ -1374,12 +1375,12 @@ export class SceneEntities {
       groupOfDrafts.add(groupCircle)
     }
 
-    const cleanup = () => {
-      this.scene.remove(groupOfDrafts)
-    }
-
     // The target of our dragging
     let target: Object3D | undefined = undefined
+
+    const cleanupFn = () => {
+      this.scene.remove(groupOfDrafts)
+    }
 
     sceneInfra.setCallbacks({
       async onDrag(args) {
@@ -1444,9 +1445,11 @@ export class SceneEntities {
         await kclManager.executeAstMock(astSnapshot)
         await codeManager.updateEditorWithAstAndWriteToFile(astSnapshot)
 
-        sceneInfra.modelingSend({ type: 'circle3PointsFinished', cleanup })
+        done()
       },
     })
+
+    return cleanupFn
   }
   setupDraftCircle = async (
     sketchPathToNode: PathToNode,
