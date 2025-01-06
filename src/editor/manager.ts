@@ -312,8 +312,12 @@ export default class EditorManager {
     }
     let codeBasedSelections = []
     for (const selection of selections.graphSelections) {
+      const safeEnd = Math.min(
+        selection.codeRef.range[1],
+        this._editorView?.state.doc.length || selection.codeRef.range[1]
+      )
       codeBasedSelections.push(
-        EditorSelection.cursor(selection.codeRef.range[0])
+        EditorSelection.range(selection.codeRef.range[0], safeEnd)
       )
     }
 
