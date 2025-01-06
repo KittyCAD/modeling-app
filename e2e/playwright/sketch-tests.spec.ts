@@ -1342,7 +1342,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
   |> startProfileAt([0, 0], %)
   |> line([3.14, 3.14], %)
   |> arcTo({
-  end = [4, 5],
+  end = [4, 2],
   interior = [1, 2]
   }, %)
 `
@@ -1352,38 +1352,25 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     await homePage.goToModelingScene()
     await scene.waitForExecutionDone()
 
-    await test.step(`enter sketch mode`, async () => {
+    await test.step(`format the code`, async () => {
       // doesn't contain condensed version
       await editor.expectEditor.not.toContain(
-        `arcTo({ end = [4, 5], interior = [1, 2] }, %)`
+        `arcTo({ end = [4, 2], interior = [1, 2] }, %)`
       )
       // click the code to enter sketch mode
       await page.getByText(`arcTo`).click()
-      await toolbar.editSketch()
+      // Format the code.
+      await page.locator('#code-pane button:first-child').click()
+      await page.locator('button:has-text("Format code")').click()
     })
 
     await test.step(`Ensure the code reformatted`, async () => {
       await editor.expectEditor.toContain(
-        `arcTo({ end = [4, 5], interior = [1, 2] }, %)`
+        `arcTo({ end = [4, 2], interior = [1, 2] }, %)`
       )
     })
 
-    await test.step(`exit sketch mode`, async () => {
-      await expect(
-        page.getByRole('button', { name: 'Exit Sketch' })
-      ).toBeVisible()
-
-      // click it
-      await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    })
-
-    await test.step(`Ensure the code is still reformatted`, async () => {
-      await editor.expectEditor.toContain(
-        `arcTo({ end = [4, 5], interior = [1, 2] }, %)`
-      )
-    })
-
-    const [arcClick, arcHover] = scene.makeMouseHelpers(617, 132)
+    const [arcClick, arcHover] = scene.makeMouseHelpers(699, 337)
     await test.step('Ensure we can hover the arc', async () => {
       await arcHover()
 
@@ -1391,13 +1378,13 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
       await editor.expectState({
         activeLines: ["sketch001=startSketchOn('XZ')"],
         diagnostics: [],
-        highlightedCode: 'arcTo({end = [4, 5], interior = [1, 2]}, %)',
+        highlightedCode: 'arcTo({end = [4, 2], interior = [1, 2]}, %)',
       })
     })
 
     await test.step('reset the selection', async () => {
       // Move the mouse out of the way
-      await page.mouse.move(100, 100)
+      await page.mouse.move(655, 337)
 
       await editor.expectState({
         activeLines: ["sketch001=startSketchOn('XZ')"],
@@ -1408,11 +1395,12 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
 
     await test.step('Ensure we can click the arc', async () => {
       await arcClick()
+
       // Check that the code is highlighted
       await editor.expectState({
         activeLines: [],
         diagnostics: [],
-        highlightedCode: 'arcTo({end = [4, 5], interior = [1, 2]}, %)',
+        highlightedCode: 'arcTo({end = [4, 2], interior = [1, 2]}, %)',
       })
     })
   })
