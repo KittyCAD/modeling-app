@@ -1324,7 +1324,7 @@ test.describe(`Sketching with offset planes`, () => {
   })
 })
 
-// Regresssion test for https://github.com/KittyCAD/modeling-app/issues/4891
+// Regression test for https://github.com/KittyCAD/modeling-app/issues/4891
 test.describe(`Click based selection don't brick the app when clicked out of range after format using cache`, () => {
   test(`Can select a line that reformmed after entering sketch mode`, async ({
     context,
@@ -1353,7 +1353,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     await scene.waitForExecutionDone()
 
     await test.step(`enter sketch mode`, async () => {
-      // doesnt contain condensed version
+      // doesn't contain condensed version
       await editor.expectEditor.not.toContain(
         `arcTo({ end = [4, 5], interior = [1, 2] }, %)`
       )
