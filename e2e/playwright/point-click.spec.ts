@@ -878,10 +878,7 @@ loft001 = loft([sketch001, sketch002])
   // One dumb hardcoded screen pixel value
   const testPoint = { x: 575, y: 200 }
   const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-  const [clickOnSketch2] = scene.makeMouseHelpers(
-    testPoint.x,
-    testPoint.y + 80
-  )
+  const [clickOnSketch2] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 80)
 
   await test.step(`Delete loft`, async () => {
     // Check for loft
