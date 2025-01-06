@@ -2568,9 +2568,17 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
     Ok(())
 }
 
+/// Either a positional or keyword function call.
+fn fn_call_pos_or_kw(i: &mut TokenSlice) -> PResult<Expr> {
+    alt((
+        fn_call.map(Box::new).map(Expr::CallExpression),
+        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
+    ))
+    .parse_next(i)
+}
+
 fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
-    let call = fn_call.parse_next(i)?;
-    let expr = Expr::CallExpression(Box::new(call));
+    let expr = fn_call_pos_or_kw.parse_next(i)?;
 
     let label = opt(label).parse_next(i)?;
     match label {
@@ -4654,6 +4662,7 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         kw_function_decl_with_default_and_type,
         r#"fn foo(x?: number = 2) { return 1 }"#
     );
+    snapshot_test!(kw_function_call_in_pipe, r#"val = 1 |> f(arg = x)"#);
 }
 
 #[allow(unused)]
