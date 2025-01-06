@@ -96,9 +96,10 @@ export class KclPlugin implements PluginValue {
 
     const newCode = viewUpdate.state.doc.toString()
     codeManager.code = newCode
-    codeManager.writeToFile()
 
-    this.scheduleUpdateDoc()
+    void codeManager.writeToFile().then(() => {
+      this.scheduleUpdateDoc()
+    })
   }
 
   scheduleUpdateDoc() {
@@ -117,6 +118,7 @@ export class KclPlugin implements PluginValue {
     }
 
     if (!this.client.ready) return
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     kclManager.executeCode()
   }
 

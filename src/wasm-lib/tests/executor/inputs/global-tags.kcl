@@ -80,10 +80,13 @@ const tabsR = startSketchOn(tabPlane)
   |> line([0, -tabLength / 3 * 2], %, $edge12)
   |> line([-tabWidth, -tabLength / 3], %, $edge13)
   |> close(%, $edge14)
-  |> hole(circle([
-       width / 2 + thk + tabWidth / 2,
-       length / 2 + thk - (tabLength / (3 / 2))
-     ], holeDiam / 2, %), %)
+  |> hole(circle({
+       center: [
+         width / 2 + thk + tabWidth / 2,
+         length / 2 + thk - (tabLength / (3 / 2))
+       ],
+       radius: holeDiam / 2
+     }, %), %)
   |> extrude(-tabThk, %)
   |> fillet({
        radius: holeDiam / 2,
@@ -94,7 +97,7 @@ const tabsR = startSketchOn(tabPlane)
      }, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
-       repetitions: 1,
+       instances: 2,
        distance: length + 2 * thk - (tabLength * 4 / 3)
      }, %)
 
@@ -105,10 +108,13 @@ const tabsL = startSketchOn(tabPlane)
   |> line([0, -tabLength / 3 * 2], %, $edge22)
   |> line([tabWidth, -tabLength / 3], %, $edge23)
   |> close(%, $edge24)
-  |> hole(circle([
-       -width / 2 - thk - (tabWidth / 2),
-       length / 2 + thk - (tabLength / (3 / 2))
-     ], holeDiam / 2, %), %)
+  |> hole(circle({
+       center: [
+         -width / 2 - thk - (tabWidth / 2),
+         length / 2 + thk - (tabLength / (3 / 2))
+       ],
+       radius: holeDiam / 2
+     }, %), %)
   |> extrude(-tabThk, %)
   |> fillet({
        radius: holeDiam / 2,
@@ -119,7 +125,7 @@ const tabsL = startSketchOn(tabPlane)
      }, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
-       repetitions: 1,
+       instances: 2,
        distance: length + 2 * thk - (tabLength * 4 / 3)
      }, %)
 

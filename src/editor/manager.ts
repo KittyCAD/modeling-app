@@ -1,8 +1,9 @@
 import { EditorView, ViewUpdate } from '@codemirror/view'
+import { syntaxTree } from '@codemirror/language'
 import { EditorSelection, Annotation, Transaction } from '@codemirror/state'
-import { engineCommandManager } from 'lib/singletons'
-import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { Selections, processCodeMirrorRanges, Selection } from 'lib/selections'
+import { engineCommandManager, kclManager } from 'lib/singletons'
+import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
+import { Selections, Selection, processCodeMirrorRanges } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
@@ -11,6 +12,21 @@ import {
   forEachDiagnostic,
   setDiagnosticsEffect,
 } from '@codemirror/lint'
+import { StateFrom } from 'xstate'
+import { markOnce } from 'lib/performance'
+import { kclEditorActor } from 'machines/kclEditorMachine'
+
+declare global {
+  interface Window {
+    EditorSelection: typeof EditorSelection
+    EditorView: typeof EditorView
+  }
+}
+
+// We need to be able to create these during tests dynamically (via
+// page.evaluate) So that's why this exists.
+window.EditorSelection = EditorSelection
+window.EditorView = EditorView
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
 export const updateOutsideEditorEvent = updateOutsideEditorAnnotation.of(true)
@@ -21,24 +37,19 @@ export const modelingMachineEvent = modelingMachineAnnotation.of(true)
 const setDiagnosticsAnnotation = Annotation.define<boolean>()
 export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 
-function diagnosticIsEqual(d1: Diagnostic, d2: Diagnostic): boolean {
-  return d1.from === d2.from && d1.to === d2.to && d1.message === d2.message
-}
-
 export default class EditorManager {
-  private _editorView: EditorView | null = null
   private _copilotEnabled: boolean = true
 
   private _isShiftDown: boolean = false
   private _selectionRanges: Selections = {
     otherSelections: [],
-    codeBasedSelections: [],
+    graphSelections: [],
   }
 
   private _lastEvent: { event: string; time: number } | null = null
 
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
-  private _modelingEvent: ModelingMachineEvent | null = null
+  private _modelingState: StateFrom<typeof modelingMachine> | null = null
 
   private _commandBarSend: (eventInfo: CommandBarMachineEvent) => void =
     () => {}
@@ -47,6 +58,8 @@ export default class EditorManager {
   private _convertToVariableCallback: () => void = () => {}
 
   private _highlightRange: Array<[number, number]> = [[0, 0]]
+
+  public _editorView: EditorView | null = null
 
   setCopilotEnabled(enabled: boolean) {
     this._copilotEnabled = enabled
@@ -58,6 +71,50 @@ export default class EditorManager {
 
   setEditorView(editorView: EditorView) {
     this._editorView = editorView
+    kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
+    this.overrideTreeHighlighterUpdateForPerformanceTracking()
+  }
+
+  overrideTreeHighlighterUpdateForPerformanceTracking() {
+    // @ts-ignore
+    this._editorView?.plugins.forEach((e) => {
+      let sawATreeDiff = false
+
+      // we cannot use <>.constructor.name since it will get destroyed
+      // when packaging the application.
+      const isTreeHighlightPlugin =
+        e?.value &&
+        e.value?.hasOwnProperty('tree') &&
+        e.value?.hasOwnProperty('decoratedTo') &&
+        e.value?.hasOwnProperty('decorations')
+
+      if (isTreeHighlightPlugin) {
+        let originalUpdate = e.value.update
+        // @ts-ignore
+        function performanceTrackingUpdate(args) {
+          /**
+           * TreeHighlighter.update will be called multiple times on start up.
+           * We do not want to track the highlight performance of an empty update.
+           * mark the syntax highlight one time when the new tree comes in with the
+           * initial code
+           */
+          const treeIsDifferent =
+            // @ts-ignore
+            !sawATreeDiff && this.tree !== syntaxTree(args.state)
+          if (treeIsDifferent && !sawATreeDiff) {
+            markOnce('code/willSyntaxHighlight')
+          }
+          // Call the original function
+          // @ts-ignore
+          originalUpdate.apply(this, [args])
+          if (treeIsDifferent && !sawATreeDiff) {
+            markOnce('code/didSyntaxHighlight')
+            sawATreeDiff = true
+          }
+        }
+        e.value.update = performanceTrackingUpdate
+      }
+    })
   }
 
   get editorView(): EditorView | null {
@@ -80,8 +137,8 @@ export default class EditorManager {
     this._modelingSend = send
   }
 
-  set modelingEvent(event: ModelingMachineEvent) {
-    this._modelingEvent = event
+  set modelingState(state: StateFrom<typeof modelingMachine>) {
+    this._modelingState = state
   }
 
   setCommandBarSend(send: (eventInfo: CommandBarMachineEvent) => void) {
@@ -96,10 +153,12 @@ export default class EditorManager {
     return this._highlightRange
   }
 
-  setHighlightRange(selections: Array<Selection['range']>): void {
-    this._highlightRange = selections
+  setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
+    this._highlightRange = range.map((s): [number, number] => {
+      return [s[0], s[1]]
+    })
 
-    const selectionsWithSafeEnds = selections.map((s): [number, number] => {
+    const selectionsWithSafeEnds = range.map((s): [number, number] => {
       const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
       return [s[0], safeEnd]
     })
@@ -116,25 +175,60 @@ export default class EditorManager {
     }
   }
 
+  /**
+   * Given an array of Diagnostics remove any duplicates by hashing a key
+   * in the format of from + ' ' + to + ' ' + message.
+   */
+  makeUniqueDiagnostics(duplicatedDiagnostics: Diagnostic[]): Diagnostic[] {
+    const uniqueDiagnostics: Diagnostic[] = []
+    const seenDiagnostic: { [key: string]: boolean } = {}
+
+    duplicatedDiagnostics.forEach((diagnostic: Diagnostic) => {
+      const hash = `${diagnostic.from} ${diagnostic.to} ${diagnostic.message}`
+      if (!seenDiagnostic[hash]) {
+        uniqueDiagnostics.push(diagnostic)
+        seenDiagnostic[hash] = true
+      }
+    })
+
+    return uniqueDiagnostics
+  }
+
   setDiagnostics(diagnostics: Diagnostic[]): void {
     if (!this._editorView) return
     // Clear out any existing diagnostics that are the same.
-    for (const diagnostic of diagnostics) {
-      for (const otherDiagnostic of diagnostics) {
-        if (diagnosticIsEqual(diagnostic, otherDiagnostic)) {
-          diagnostics = diagnostics.filter(
-            (d) => !diagnosticIsEqual(d, diagnostic)
-          )
-          diagnostics.push(diagnostic)
-          break
-        }
-      }
-    }
+    diagnostics = this.makeUniqueDiagnostics(diagnostics)
 
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
         setDiagnosticsEvent,
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
+  /**
+   * Scroll to the first selection in the editor.
+   */
+  scrollToSelection() {
+    if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
+
+    const firstSelection = this._selectionRanges.graphSelections[0]
+
+    this._editorView.focus()
+    this._editorView.dispatch({
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(
+            firstSelection.codeRef.range[0],
+            firstSelection.codeRef.range[1]
+          ),
+          { y: 'center' }
+        ),
+      ],
+      annotations: [
         updateOutsideEditorEvent,
         Transaction.addToHistory.of(false),
       ],
@@ -203,21 +297,23 @@ export default class EditorManager {
   }
 
   selectRange(selections: Selections) {
-    if (selections.codeBasedSelections.length === 0) {
+    if (selections?.graphSelections?.length === 0) {
       return
     }
     let codeBasedSelections = []
-    for (const selection of selections.codeBasedSelections) {
+    for (const selection of selections.graphSelections) {
       codeBasedSelections.push(
-        EditorSelection.range(selection.range[0], selection.range[1])
+        EditorSelection.range(
+          selection.codeRef.range[0],
+          selection.codeRef.range[1]
+        )
       )
     }
 
     codeBasedSelections.push(
       EditorSelection.cursor(
-        selections.codeBasedSelections[
-          selections.codeBasedSelections.length - 1
-        ].range[1]
+        selections.graphSelections[selections.graphSelections.length - 1]
+          .codeRef.range[1]
       )
     )
 
@@ -248,13 +344,11 @@ export default class EditorManager {
       return
     }
 
-    const ignoreEvents: ModelingMachineEvent['type'][] = ['change tool']
-
-    if (!this._modelingEvent) {
+    if (!this._modelingState) {
       return
     }
 
-    if (ignoreEvents.includes(this._modelingEvent.type)) {
+    if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
       return
     }
 
@@ -262,6 +356,7 @@ export default class EditorManager {
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges: this._selectionRanges,
       isShiftDown: this._isShiftDown,
+      ast: kclManager.ast,
     })
 
     if (!eventInfo) {
@@ -286,8 +381,9 @@ export default class EditorManager {
 
     this._lastEvent = { event: stringEvent, time: Date.now() }
     this._modelingSend(eventInfo.modelingEvent)
-    eventInfo.engineEvents.forEach((event) =>
+    eventInfo.engineEvents.forEach((event) => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       engineCommandManager.sendSceneCommand(event)
-    )
+    })
   }
 }

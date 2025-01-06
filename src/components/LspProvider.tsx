@@ -69,14 +69,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
-  const {
-    auth,
-    settings: {
-      context: {
-        modeling: { defaultUnit },
-      },
-    },
-  } = useSettingsAuthContext()
+  const { auth } = useSettingsAuthContext()
   const token = auth?.context.token
   const navigate = useNavigate()
 
@@ -92,7 +85,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const initEvent: KclWorkerOptions = {
       wasmUrl: wasmUrl(),
       token: token,
-      baseUnit: defaultUnit.current,
       apiBaseUrl: VITE_KC_API_BASE_URL,
     }
     lspWorker.postMessage({
@@ -160,7 +152,9 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
                 // Update the folding ranges, since the AST has changed.
                 // This is a hack since codemirror does not support async foldService.
                 // When they do we can delete this.
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 plugin.updateFoldingRanges()
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 plugin.requestSemanticTokens()
                 break
               case 'kcl/memoryUpdated':

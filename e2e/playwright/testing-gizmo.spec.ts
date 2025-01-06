@@ -1,52 +1,45 @@
-import { test, expect } from '@playwright/test'
-
-import { getUtils, setup, tearDown } from './test-utils'
+import { test, expect } from './zoo-test'
+import { getUtils } from './test-utils'
 import { uuidv4 } from 'lib/utils'
 import { TEST_CODE_GIZMO } from './storageStates'
 
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
-
 test.describe('Testing Gizmo', () => {
+  // TODO: fix this test on windows after the electron migration
+  test.skip(process.platform === 'win32', 'Skip on windows')
   const cases = [
     {
       testDescription: 'top view',
-      clickPosition: { x: 951, y: 385 },
+      clickPosition: { x: 951, y: 347 },
       expectedCameraPosition: { x: 800, y: -152, z: 4886.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'bottom view',
-      clickPosition: { x: 951, y: 429 },
+      clickPosition: { x: 951, y: 391 },
       expectedCameraPosition: { x: 800, y: -152, z: -4834.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'right view',
-      clickPosition: { x: 929, y: 417 },
+      clickPosition: { x: 929, y: 379 },
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'left view',
-      clickPosition: { x: 974, y: 397 },
+      clickPosition: { x: 974, y: 359 },
       expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'back view',
-      clickPosition: { x: 967, y: 421 },
+      clickPosition: { x: 967, y: 383 },
       expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'front view',
-      clickPosition: { x: 935, y: 393 },
+      clickPosition: { x: 935, y: 355 },
       expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
@@ -57,14 +50,17 @@ test.describe('Testing Gizmo', () => {
     expectedCameraTarget,
     testDescription,
   } of cases) {
-    test(`check ${testDescription}`, async ({ page, browserName }) => {
+    test(`check ${testDescription}`, async ({ page, homePage }) => {
       const u = await getUtils(page)
       await page.addInitScript((TEST_CODE_GIZMO) => {
         localStorage.setItem('persistCode', TEST_CODE_GIZMO)
       }, TEST_CODE_GIZMO)
-      await page.setViewportSize({ width: 1000, height: 500 })
 
-      await u.waitForAuthSkipAppStart()
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+
       await page.waitForTimeout(100)
       // wait for execution done
       await u.openDebugPanel()
@@ -140,7 +136,7 @@ test.describe('Testing Gizmo', () => {
     })
   }
 
-  test('Context menu and popover menu', async ({ page }) => {
+  test('Context menu and popover menu', async ({ page, homePage }) => {
     const testCase = {
       testDescription: 'Right view',
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
@@ -152,9 +148,9 @@ test.describe('Testing Gizmo', () => {
     await page.addInitScript((TEST_CODE_GIZMO) => {
       localStorage.setItem('persistCode', TEST_CODE_GIZMO)
     }, TEST_CODE_GIZMO)
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
     await page.waitForTimeout(100)
     // wait for execution done
     await u.openDebugPanel()
@@ -245,5 +241,84 @@ test.describe('Testing Gizmo', () => {
     await expect(gizmoPopoverButton).toBeVisible()
     await gizmoPopoverButton.click()
     await expect(buttonToTest).toBeVisible()
+  })
+})
+
+test.describe(`Testing gizmo, fixture-based`, () => {
+  test('Center on selection from menu', async ({
+    context,
+    page,
+    homePage,
+    cmdBar,
+    editor,
+    toolbar,
+    scene,
+  }) => {
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `
+        const sketch002 = startSketchOn('XZ')
+          |> startProfileAt([-108.83, -57.48], %)
+          |> angledLine([0, 105.13], %, $rectangleSegmentA001)
+          |> angledLine([
+               segAng(rectangleSegmentA001) - 90,
+               77.9
+             ], %)
+          |> angledLine([
+               segAng(rectangleSegmentA001),
+               -segLen(rectangleSegmentA001)
+             ], %)
+          |> close(%)
+        const sketch001 = startSketchOn('XZ')
+          |> circle({
+               center: [818.33, 168.1],
+               radius: 182.8
+             }, %)
+          |> extrude(50, %)
+      `
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await homePage.goToModelingScene()
+    const u = await getUtils(page)
+    await u.waitForPageLoad()
+
+    await test.step(`Setup`, async () => {
+      await scene.expectState({
+        camera: {
+          position: [11912.6, -39586.98, 21391.21],
+          target: [11912.6, -635, 3317.49],
+        },
+      })
+    })
+    const [clickCircle, moveToCircle] = scene.makeMouseHelpers(582, 217)
+
+    await test.step(`Select an edge of this circle`, async () => {
+      const circleSnippet =
+        'circle({ center: [818.33, 168.1], radius: 182.8 }, %)'
+      await moveToCircle()
+      await clickCircle()
+      await editor.expectState({
+        activeLines: [circleSnippet.slice(-5)],
+        highlightedCode: circleSnippet,
+        diagnostics: [],
+      })
+    })
+
+    await test.step(`Center on selection from menu`, async () => {
+      await scene.clickGizmoMenuItem('Center view on selection')
+    })
+
+    await test.step(`Verify the camera moved`, async () => {
+      await scene.expectState({
+        camera: {
+          position: [20785.58, -40221.98, 22343.46],
+          target: [20785.58, -1270, 4269.74],
+        },
+      })
+    })
   })
 })

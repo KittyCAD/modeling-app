@@ -46,6 +46,7 @@ export function configurationToSettingsPayload(
     },
     modeling: {
       defaultUnit: configuration?.settings?.modeling?.base_unit,
+      cameraProjection: configuration?.settings?.modeling?.camera_projection,
       mouseControls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),
@@ -72,7 +73,7 @@ export function projectConfigurationToSettingsPayload(
 ): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
-      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
+      // do not read in `theme`, because it is blocked on the project level
       themeColor: configuration?.settings?.app?.appearance?.color
         ? configuration?.settings?.app?.appearance?.color.toString()
         : undefined,
@@ -176,14 +177,15 @@ export async function loadAndValidateSettings(
 
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
-  const settings = createSettings()
+  let settingsNext = createSettings()
+
   // Because getting the default directory is async, we need to set it after
   if (onDesktop) {
     settings.app.projectDirectory.default = await getInitialDefaultDir()
   }
 
-  setSettingsAtLevel(
-    settings,
+  settingsNext = setSettingsAtLevel(
+    settingsNext,
     'user',
     configurationToSettingsPayload(appSettingsPayload)
   )
@@ -198,8 +200,8 @@ export async function loadAndValidateSettings(
       return Promise.reject(new Error('Invalid project settings'))
 
     const projectSettingsPayload = projectSettings
-    setSettingsAtLevel(
-      settings,
+    settingsNext = setSettingsAtLevel(
+      settingsNext,
       'project',
       projectConfigurationToSettingsPayload(projectSettingsPayload)
     )
@@ -207,7 +209,7 @@ export async function loadAndValidateSettings(
 
   // Return the settings object
   return {
-    settings,
+    settings: settingsNext,
     configuration: appSettingsPayload,
   }
 }
@@ -282,6 +284,27 @@ export function getChangedSettingsAtLevel(
   })
 
   return changedSettings
+}
+
+export function getAllCurrentSettings(
+  allSettings: typeof settings
+): SaveSettingsPayload {
+  const currentSettings = {} as SaveSettingsPayload
+  Object.entries(allSettings).forEach(([category, settingsCategory]) => {
+    const categoryKey = category as keyof typeof settings
+    Object.entries(settingsCategory).forEach(
+      ([setting, settingValue]: [string, Setting]) => {
+        const settingKey =
+          setting as keyof (typeof settings)[typeof categoryKey]
+        currentSettings[categoryKey] = {
+          ...currentSettings[categoryKey],
+          [settingKey]: settingValue.current,
+        }
+      }
+    )
+  })
+
+  return currentSettings
 }
 
 export function setSettingsAtLevel(

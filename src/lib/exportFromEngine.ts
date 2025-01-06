@@ -1,7 +1,6 @@
 import { engineCommandManager } from 'lib/singletons'
 import { type Models } from '@kittycad/lib'
 import { uuidv4 } from 'lib/utils'
-import { IS_PLAYWRIGHT_KEY } from '../../e2e/playwright/storageStates'
 
 // Isolating a function to call the engine to export the current scene.
 // Because it has given us trouble in automated testing environments.
@@ -22,12 +21,6 @@ export async function exportFromEngine({
     },
     cmd_id: uuidv4(),
   })
-
-  // If we are in playwright slow down the export.
-  const inPlaywright = window.localStorage.getItem(IS_PLAYWRIGHT_KEY)
-  if (inPlaywright === 'true') {
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-  }
 
   return exportPromise
 }

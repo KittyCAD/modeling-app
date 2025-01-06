@@ -2,7 +2,7 @@ import {
   AnyStateMachine,
   ContextFrom,
   EventFrom,
-  InterpreterFrom,
+  Actor,
   StateFrom,
 } from 'xstate'
 import { isDesktop } from './isDesktop'
@@ -14,6 +14,7 @@ import {
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from './commandTypes'
+import { DEV } from 'env'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
@@ -23,7 +24,7 @@ interface CreateMachineCommandProps<
   groupId: T['id']
   state: StateFrom<T>
   send: Function
-  actor: InterpreterFrom<T>
+  actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void
 }
@@ -46,7 +47,9 @@ export function createMachineCommand<
   | Command<T, typeof type, S[typeof type]>[]
   | null {
   const commandConfig = commandBarConfig && commandBarConfig[type]
+
   // There may be no command config for this event type,
+  // or the command may be inactive or hidden,
   // or there may be multiple commands to create.
   if (!commandConfig) {
     return null
@@ -71,13 +74,17 @@ export function createMachineCommand<
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
   }
 
-  // Hide commands based on platform by returning `null`
+  // Hide commands based on platform or development status by returning `null`
   // so the consumer can filter them out
   if ('hide' in commandConfig) {
     const { hide } = commandConfig
     if (hide === 'both') return null
     else if (hide === 'desktop' && isDesktop()) return null
     else if (hide === 'web' && !isDesktop()) return null
+  } else if ('status' in commandConfig) {
+    const { status } = commandConfig
+    if (status === 'inactive') return null
+    if (status === 'development' && !DEV) return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined
@@ -90,9 +97,9 @@ export function createMachineCommand<
     needsReview: commandConfig.needsReview || false,
     onSubmit: (data?: S[typeof type]) => {
       if (data !== undefined && data !== null) {
-        send(type, { data })
+        send({ type, data })
       } else {
-        send(type)
+        send({ type })
       }
     },
   }
@@ -110,6 +117,9 @@ export function createMachineCommand<
   if ('displayName' in commandConfig) {
     command.displayName = commandConfig.displayName
   }
+  if ('reviewMessage' in commandConfig) {
+    command.reviewMessage = commandConfig.reviewMessage
+  }
 
   return command
 }
@@ -124,7 +134,7 @@ function buildCommandArguments<
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
-  machineActor: InterpreterFrom<T>
+  machineActor: Actor<T>
 ): NonNullable<Command<T, CommandName, S>['args']> {
   const newArgs = {} as NonNullable<Command<T, CommandName, S>['args']>
 
@@ -143,14 +153,17 @@ export function buildCommandArgument<
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,
-  machineActor: InterpreterFrom<T>
+  machineActor: Actor<T>
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
+  // GOTCHA: modelingCommandConfig is not a 1:1 mapping to this baseCommandArgument
+  // You need to manually add key/value pairs here.
   const baseCommandArgument = {
     description: arg.description,
     required: arg.required,
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    warningMessage: arg.warningMessage ?? '',
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
@@ -170,10 +183,13 @@ export function buildCommandArgument<
       ...baseCommandArgument,
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
+      validation: arg.validation,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
   } else if (arg.inputType === 'kcl') {
     return {
       inputType: arg.inputType,
+      createVariableByDefault: arg.createVariableByDefault,
+      variableName: arg.variableName,
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }

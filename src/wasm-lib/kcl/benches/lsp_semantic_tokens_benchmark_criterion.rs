@@ -1,5 +1,5 @@
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
-use kcl_lib::lsp::test_util::kcl_lsp_server;
+use kcl_lib::kcl_lsp_server;
 use tokio::runtime::Runtime;
 use tower_lsp::LanguageServer;
 
@@ -42,6 +42,7 @@ fn bench_kcl_lsp_semantic_tokens(c: &mut Criterion) {
         ("math", MATH_PROGRAM),
         ("mike_stress_test", MIKE_STRESS_TEST_PROGRAM),
         ("global_tags", GLOBAL_TAGS_FILE),
+        ("lsystem", LSYSTEM_PROGRAM),
     ] {
         c.bench_with_input(BenchmarkId::new("semantic_tokens_", name), &code, |b, &s| {
             let rt = Runtime::new().unwrap();
@@ -61,5 +62,6 @@ const KITT_PROGRAM: &str = include_str!("../../tests/executor/inputs/kittycad_sv
 const PIPES_PROGRAM: &str = include_str!("../../tests/executor/inputs/pipes_on_pipes.kcl");
 const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../../tests/executor/inputs/math.kcl");
-const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../../tests/executor/inputs/mike_stress_test.kcl");
+const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../tests/mike_stress_test/input.kcl");
 const GLOBAL_TAGS_FILE: &str = include_str!("../../tests/executor/inputs/global-tags.kcl");
+const LSYSTEM_PROGRAM: &str = include_str!("../../tests/executor/inputs/lsystem.kcl");

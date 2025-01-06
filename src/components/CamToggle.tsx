@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { EngineCommandManagerEvents } from 'lang/std/engineConnection'
 import { engineCommandManager, sceneInfra } from 'lib/singletons'
 import { throttle, isReducedMotion } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
 
 const updateDollyZoom = throttle(
   (newFov: number) => sceneInfra.camControls.dollyZoom(newFov),
@@ -16,8 +17,8 @@ export const CamToggle = () => {
   useEffect(() => {
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
-      async () => {
-        sceneInfra.camControls.dollyZoom(fov)
+      () => {
+        sceneInfra.camControls.dollyZoom(fov).catch(reportRejection)
       }
     )
   }, [])
@@ -26,11 +27,11 @@ export const CamToggle = () => {
     if (isPerspective) {
       isReducedMotion()
         ? sceneInfra.camControls.useOrthographicCamera()
-        : sceneInfra.camControls.animateToOrthographic()
+        : sceneInfra.camControls.animateToOrthographic().catch(reportRejection)
     } else {
       isReducedMotion()
-        ? sceneInfra.camControls.usePerspectiveCamera()
-        : sceneInfra.camControls.animateToPerspective()
+        ? sceneInfra.camControls.usePerspectiveCamera().catch(reportRejection)
+        : sceneInfra.camControls.animateToPerspective().catch(reportRejection)
     }
     setIsPerspective(!isPerspective)
   }

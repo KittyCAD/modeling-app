@@ -12,7 +12,7 @@ export type InteractionMapItem = {
  * Controls both the available names for interaction map categories
  * and the order in which they are displayed.
  */
-export const interactionMapCategories = [
+const interactionMapCategories = [
   'Sketching',
   'Modeling',
   'Command Palette',
@@ -144,6 +144,13 @@ export const interactionMap: Record<
       title: 'Extrude',
       description:
         'Available while modeling with either a face selected or an empty selection, when not typing in the code editor.',
+    },
+    {
+      name: 'center-on-selection',
+      sequence: `${PRIMARY}+Alt+C`,
+      title: 'Center on selection',
+      description:
+        'Centers the view on the selected geometry, or everything if nothing is selected.',
     },
   ],
   'Code Editor': [

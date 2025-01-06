@@ -62,18 +62,18 @@ fn tr = (i) => {
 // Create the pegs on the top of the base
 const totalBumps = (wbumps * lbumps)-1
 const peg = startSketchOn(s, 'end')
-  |> circle([
+  |> circle({ center: [
        -(pitch*(wbumps-1)/2),
        -(pitch*(lbumps-1)/2)
-     ], bumpDiam / 2, %)
+     ], radius: bumpDiam / 2 }, %)
   |> patternLinear2d({
        axis: [1, 0],
-       repetitions: wbumps-1,
+       instances: wbumps,
        distance: pitch
      }, %)
   |> patternLinear2d({
        axis: [0, 1],
-       repetitions: lbumps-1,
+       instances: lbumps,
        distance: pitch
      }, %)
   |> extrude(bumpHeight, %)

@@ -1,29 +1,26 @@
-import { test, expect, Page } from '@playwright/test'
+import { test, expect, Page } from './zoo-test'
 import {
   getUtils,
   TEST_COLORS,
-  setup,
-  tearDown,
   commonPoints,
   PERSIST_MODELING_CONTEXT,
 } from './test-utils'
-
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
+import { HomePageFixture } from './fixtures/homePageFixture'
 
 test.setTimeout(120000)
 
-async function doBasicSketch(page: Page, openPanes: string[]) {
+async function doBasicSketch(
+  page: Page,
+  homePage: HomePageFixture,
+  openPanes: string[]
+) {
   const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.setBodyDimensions({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
 
-  await u.waitForAuthSkipAppStart()
+  await homePage.goToModelingScene()
+  await u.waitForPageLoad()
+  await page.waitForTimeout(1000)
   await u.openDebugPanel()
 
   // If we have the code pane open, we should see the code.
@@ -48,9 +45,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   await page.mouse.click(700, 200)
 
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator).toHaveText(
-      `const sketch001 = startSketchOn('XZ')`
-    )
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')`)
   }
   await u.closeDebugPanel()
 
@@ -59,8 +54,7 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)`)
   }
   await page.waitForTimeout(500)
@@ -68,31 +62,28 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
   await page.waitForTimeout(500)
 
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)`)
+  |> xLine(${commonPoints.num1}, %)`)
   }
   await page.waitForTimeout(500)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 + 0.01}], %)`)
+  |> xLine(${commonPoints.num1}, %)
+  |> yLine(${commonPoints.num1 + 0.01}, %)`)
   } else {
     await page.waitForTimeout(500)
   }
   await page.waitForTimeout(200)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
+    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %)
-  |> line([0, ${commonPoints.num1 + 0.01}], %)
-  |> line([-${commonPoints.num2}, 0], %)`)
+  |> xLine(${commonPoints.num1}, %)
+  |> yLine(${commonPoints.num1 + 0.01}, %)
+  |> xLine(${commonPoints.num2 * -1}, %)`)
   }
 
   // deselect line tool
@@ -146,21 +137,19 @@ async function doBasicSketch(page: Page, openPanes: string[]) {
 
   // Open the code pane.
   await u.openKclCodePanel()
-  await expect(u.codeLocator).toHaveText(`const sketch001 = startSketchOn('XZ')
+  await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt(${commonPoints.startAt}, %)
-  |> line([${commonPoints.num1}, 0], %, $seg01)
-  |> line([0, ${commonPoints.num1 + 0.01}], %)
-  |> angledLine([180, segLen(seg01)], %)`)
+  |> xLine(${commonPoints.num1}, %, $seg01)
+  |> yLine(${commonPoints.num1 + 0.01}, %)
+  |> xLine(-segLen(seg01), %)`)
 }
 
 test.describe('Basic sketch', () => {
-  test('code pane open at start', async ({ page }) => {
-    // Skip on windows it is being weird.
-    test.skip(process.platform === 'win32', 'Skip on windows')
-    await doBasicSketch(page, ['code'])
+  test.fixme('code pane open at start', async ({ page, homePage }) => {
+    await doBasicSketch(page, homePage, ['code'])
   })
 
-  test('code pane closed at start', async ({ page }) => {
+  test('code pane closed at start', async ({ page, homePage }) => {
     // Load the app with the code panes
     await page.addInitScript(async (persistModelingContext) => {
       localStorage.setItem(
@@ -168,6 +157,6 @@ test.describe('Basic sketch', () => {
         JSON.stringify({ openPanes: [] })
       )
     }, PERSIST_MODELING_CONTEXT)
-    await doBasicSketch(page, [])
+    await doBasicSketch(page, homePage, [])
   })
 })

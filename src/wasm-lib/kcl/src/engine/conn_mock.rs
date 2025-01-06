@@ -7,82 +7,114 @@ use std::{
 };
 
 use anyhow::Result;
-use kittycad::types::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
+use indexmap::IndexMap;
+use kcmc::{
+    ok_response::OkModelingCmdResponse,
+    websocket::{
+        BatchResponse, ModelingBatch, OkWebSocketResponseData, SuccessWebSocketResponse, WebSocketRequest,
+        WebSocketResponse,
+    },
+};
+use kittycad_modeling_cmds::{self as kcmc};
 
-use crate::{errors::KclError, executor::DefaultPlanes};
+use super::ExecutionKind;
+use crate::{
+    errors::KclError,
+    execution::{DefaultPlanes, IdGenerator},
+    SourceRange,
+};
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
+    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 impl EngineConnection {
     pub async fn new() -> Result<EngineConnection> {
         Ok(EngineConnection {
             batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(HashMap::new())),
+            batch_end: Arc::new(Mutex::new(IndexMap::new())),
+            execution_kind: Default::default(),
         })
     }
 }
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, _source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
+    }
+
+    async fn default_planes(
+        &self,
+        _id_generator: &mut IdGenerator,
+        _source_range: SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
         Ok(DefaultPlanes::default())
     }
 
-    async fn clear_scene_post_hook(&self, _source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(
+        &self,
+        _id_generator: &mut IdGenerator,
+        _source_range: SourceRange,
+    ) -> Result<(), KclError> {
         Ok(())
     }
 
     async fn inner_send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        _source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        _source_range: SourceRange,
+        cmd: WebSocketRequest,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
-            WebSocketRequest::ModelingCmdBatchReq {
+            WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
                 ref requests,
                 batch_id: _,
                 responses: _,
-            } => {
+            }) => {
                 // Create the empty responses.
                 let mut responses = HashMap::new();
                 for request in requests {
                     responses.insert(
-                        request.cmd_id.to_string(),
-                        kittycad::types::BatchResponse {
-                            response: Some(kittycad::types::OkModelingCmdResponse::Empty {}),
-                            errors: None,
+                        request.cmd_id,
+                        BatchResponse::Success {
+                            response: OkModelingCmdResponse::Empty {},
                         },
                     );
                 }
-                Ok(WebSocketResponse {
+                Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
                     request_id: Some(id),
-                    resp: Some(OkWebSocketResponseData::ModelingBatch { responses }),
-                    success: Some(true),
-                    errors: None,
-                })
+                    resp: OkWebSocketResponseData::ModelingBatch { responses },
+                    success: true,
+                }))
             }
-            _ => Ok(WebSocketResponse {
+            _ => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
                 request_id: Some(id),
-                resp: Some(OkWebSocketResponseData::Modeling {
-                    modeling_response: kittycad::types::OkModelingCmdResponse::Empty {},
-                }),
-                success: Some(true),
-                errors: None,
-            }),
+                resp: OkWebSocketResponseData::Modeling {
+                    modeling_response: OkModelingCmdResponse::Empty {},
+                },
+                success: true,
+            })),
         }
     }
 }

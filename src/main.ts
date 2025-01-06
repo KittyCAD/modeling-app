@@ -1,6 +1,5 @@
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
-
 import dotenv from 'dotenv'
 import {
   app,
@@ -19,6 +18,8 @@ import electronUpdater, { type AppUpdater } from 'electron-updater'
 import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
+import { reportRejection } from 'lib/trap'
+import argvFromYargs from './commandLineArgs'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -36,19 +37,12 @@ if (!process.env.NODE_ENV)
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
-console.log(process.env)
-
 process.env.VITE_KC_API_WS_MODELING_URL ??=
   'wss://api.zoo.dev/ws/modeling/commands'
 process.env.VITE_KC_API_BASE_URL ??= 'https://api.zoo.dev'
 process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
 process.env.VITE_KC_SKIP_AUTH ??= 'false'
 process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
-
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  app.quit()
-}
 
 const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
 
@@ -67,54 +61,65 @@ if (process.defaultApp) {
 // Must be done before ready event.
 registerStartupListeners()
 
-const createWindow = (filePath?: string): BrowserWindow => {
-  const newWindow = new BrowserWindow({
-    autoHideMenuBar: true,
-    show: false,
-    width: 1800,
-    height: 1200,
-    webPreferences: {
-      nodeIntegration: false, // do not give the application implicit system access
-      contextIsolation: true, // expose system functions in preload
-      sandbox: false, // expose nodejs in preload
-      preload: path.join(__dirname, './preload.js'),
-    },
-    icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
-    frame: os.platform() !== 'darwin',
-    titleBarStyle: 'hiddenInset',
-    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
-  })
+const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
+  let newWindow
+
+  if (reuse) {
+    newWindow = mainWindow
+  }
+  if (!newWindow) {
+    newWindow = new BrowserWindow({
+      autoHideMenuBar: true,
+      show: false,
+      width: 1800,
+      height: 1200,
+      webPreferences: {
+        nodeIntegration: false, // do not give the application implicit system access
+        contextIsolation: true, // expose system functions in preload
+        sandbox: false, // expose nodejs in preload
+        preload: path.join(__dirname, './preload.js'),
+      },
+      icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
+      frame: os.platform() !== 'darwin',
+      titleBarStyle: 'hiddenInset',
+      backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
+    })
+  }
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
+    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
   } else {
-    getProjectPathAtStartup(filePath).then((projectPath) => {
-      const startIndex = path.join(
-        __dirname,
-        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-      )
+    getProjectPathAtStartup(filePath)
+      .then(async (projectPath) => {
+        const startIndex = path.join(
+          __dirname,
+          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+        )
 
-      if (projectPath === null) {
-        newWindow.loadFile(startIndex)
-        return
-      }
+        if (projectPath === null) {
+          await newWindow.loadFile(startIndex)
+          return
+        }
 
-      console.log('Loading file', projectPath)
+        console.log('Loading file', projectPath)
 
-      const fullUrl = `/file/${encodeURIComponent(projectPath)}`
-      console.log('Full URL', fullUrl)
+        const fullUrl = `/file/${encodeURIComponent(projectPath)}`
+        console.log('Full URL', fullUrl)
 
-      newWindow.loadFile(startIndex, {
-        hash: fullUrl,
+        await newWindow.loadFile(startIndex, {
+          hash: fullUrl,
+        })
       })
-    })
+      .catch(reportRejection)
   }
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  newWindow.show()
+  if (!reuse) {
+    if (!process.env.HEADLESS) newWindow.show()
+  }
 
   return newWindow
 }
@@ -138,6 +143,25 @@ app.on('ready', (event, data) => {
 // There is just not enough code to warrant it and further abstracts everything
 // which is already quite abstracted
 
+// @ts-ignore
+// electron/electron.d.ts has done type = App, making declaration merging not
+// possible :(
+app.resizeWindow = async (width: number, height: number) => {
+  return mainWindow?.setSize(width, height)
+}
+
+// @ts-ignore can't declaration merge with App
+app.testProperty = {}
+
+ipcMain.handle('app.testProperty', (event, propertyName) => {
+  // @ts-ignore can't declaration merge with App
+  return app.testProperty[propertyName]
+})
+
+ipcMain.handle('app.resizeWindow', (event, data) => {
+  return mainWindow?.setSize(data[0], data[1])
+})
+
 ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
 })
@@ -157,7 +181,11 @@ ipcMain.handle('shell.openExternal', (event, data) => {
   return shell.openExternal(data)
 })
 
-ipcMain.handle('login', async (event, host) => {
+ipcMain.handle('argv.parser', (event, data) => {
+  return argvFromYargs
+})
+
+ipcMain.handle('startDeviceFlow', async (_, host: string) => {
   // Do an OAuth 2.0 Device Authorization Grant dance to get a token.
   // We quiet ts because we are not using this in the standard way.
   // @ts-ignore
@@ -175,20 +203,33 @@ ipcMain.handle('login', async (event, host) => {
 
   const handle = await client.deviceAuthorization()
 
-  shell.openExternal(handle.verification_uri_complete)
+  // Register this handle to be used later.
+  ipcMain.handleOnce('loginWithDeviceFlow', async () => {
+    if (!handle) {
+      return Promise.reject(
+        new Error(
+          'No handle available. Did you call startDeviceFlow before calling this?'
+        )
+      )
+    }
+    shell.openExternal(handle.verification_uri_complete).catch(reportRejection)
 
-  // Wait for the user to login.
-  try {
-    console.log('Polling for token')
-    const tokenSet = await handle.poll()
-    console.log('Received token set')
-    console.log(tokenSet)
-    return tokenSet.access_token
-  } catch (e) {
-    console.log(e)
-  }
+    // Wait for the user to login.
+    try {
+      console.log('Polling for token')
+      const tokenSet = await handle.poll()
+      console.log('Received token set')
+      console.log(tokenSet)
+      return tokenSet.access_token
+    } catch (e) {
+      console.log(e)
+    }
 
-  return Promise.reject(new Error('No access token received'))
+    return Promise.reject(new Error('No access token received'))
+  })
+
+  // Return the user code so the app can display it.
+  return handle.user_code
 })
 
 ipcMain.handle('kittycad', (event, data) => {
@@ -222,6 +263,7 @@ ipcMain.handle('find_machine_api', () => {
         const ip = service.addresses[0]
         const port = service.port
         // We want to return the ip address of the machine API.
+        console.log(`Machine API found at ${ip}:${port}`)
         resolve(`${ip}:${port}`)
       }
     )
@@ -235,26 +277,53 @@ export function getAutoUpdater(): AppUpdater {
   return autoUpdater
 }
 
-export async function checkForUpdates(autoUpdater: AppUpdater) {
-  // TODO: figure out how to get the update modal back
-  const result = await autoUpdater.checkForUpdatesAndNotify()
-  console.log(result)
-}
-
-app.on('ready', async () => {
+app.on('ready', () => {
   const autoUpdater = getAutoUpdater()
-  checkForUpdates(autoUpdater)
+  // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
+  // so at the moment this isn't worth enabling
+  autoUpdater.disableDifferentialDownload = true
+  setTimeout(() => {
+    autoUpdater.checkForUpdates().catch(reportRejection)
+  }, 1000)
   const fifteenMinutes = 15 * 60 * 1000
   setInterval(() => {
-    checkForUpdates(autoUpdater)
+    autoUpdater.checkForUpdates().catch(reportRejection)
   }, fifteenMinutes)
+
+  autoUpdater.on('error', (error) => {
+    console.error('updater-error', error)
+    mainWindow?.webContents.send('updater-error', error)
+  })
 
   autoUpdater.on('update-available', (info) => {
     console.log('update-available', info)
   })
 
+  autoUpdater.prependOnceListener('download-progress', (progress) => {
+    // For now, we'll send nothing and just start a loading spinner.
+    // See below for a TODO to send progress data to the renderer.
+    console.log('update-download-start', {
+      version: '',
+    })
+    mainWindow?.webContents.send('update-download-start', progress)
+  })
+
+  autoUpdater.on('download-progress', (progress) => {
+    // TODO: in a future PR (https://github.com/KittyCAD/modeling-app/issues/3994)
+    // send this data to mainWindow to show a progress bar for the download.
+    console.log('download-progress', progress)
+  })
+
   autoUpdater.on('update-downloaded', (info) => {
     console.log('update-downloaded', info)
+    mainWindow?.webContents.send('update-downloaded', {
+      version: info.version,
+      releaseNotes: info.releaseNotes,
+    })
+  })
+
+  ipcMain.handle('app.restart', () => {
+    autoUpdater.quitAndInstall()
   })
 })
 

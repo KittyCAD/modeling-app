@@ -1,4 +1,4 @@
-import { createMachine, assign } from 'xstate'
+import { assign, setup, fromPromise } from 'xstate'
 import { Models } from '@kittycad/lib'
 import withBaseURL from '../lib/withBaseURL'
 import { isDesktop } from 'lib/isDesktop'
@@ -14,6 +14,7 @@ import {
   writeTokenFile,
 } from 'lib/desktop'
 import { COOKIE_NAME } from 'lib/constants'
+import { markOnce } from 'lib/performance'
 
 const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
 
@@ -55,79 +56,93 @@ const persistedToken =
   localStorage?.getItem(TOKEN_PERSIST_KEY) ||
   ''
 
-export const authMachine = createMachine<UserContext, Events>(
-  {
-    /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwBmAEzYA7ABYAbAFZTcgBzGbN44adWANCACeiKbGdthypk4AnBFyVs6uQXYAvom+aFh4BMTk1LSQjExgAE6FVIXYKmIAhuhkpQC2GcLikpDSDPJKSCBqGlo6XQYIrk7YETYWctYRxmMWFk6+AUPj2I5OdjZyrnZOFmbJqRg4Ern0zDkABFQYHbo9mtoMuoOGFhHYxlZOhvbOsUGGRaIL4WbBONzWQxWYwWOx2H4HEBpY4tCAAeQwTEuskUd3UD36oEGIlMNlCuzk8Js0TcVisgP8iG2lmcGysb0mW3ByRSIAYVAgcF0yLxvUez0QIms5ImVJpNjpDKWxmw9PGdLh4Te00+iORjSylFRjFFBKeA0QThGQWcexMwWhniBCGiqrepisUVMdlszgieqO2BOdBNXXufXNRKMHtGVuphlJkXs4Wdriso2CCasdgipOidID6WDkAx6FNEYlCAT5jmcjrckMdj2b3GzpsjbBMVMWezDbGPMSQA */
-    id: 'Auth',
-    initial: 'checkIfLoggedIn',
-    states: {
-      checkIfLoggedIn: {
-        id: 'check-if-logged-in',
-        invoke: {
-          src: 'getUser',
-          id: 'check-logged-in',
-          onDone: [
-            {
-              target: 'loggedIn',
-              actions: assign((context, event) => ({
-                user: event.data.user,
-                token: event.data.token || context.token,
-              })),
-            },
-          ],
-          onError: [
-            {
-              target: 'loggedOut',
-              actions: assign({
-                user: () => undefined,
-              }),
-            },
-          ],
-        },
-      },
-      loggedIn: {
-        entry: ['goToIndexPage'],
-        on: {
-          'Log out': {
-            target: 'loggedOut',
-            actions: () => {
-              if (isDesktop()) writeTokenFile('')
-            },
+export const authMachine = setup({
+  types: {} as {
+    context: UserContext
+    events:
+      | Events
+      | {
+          type: 'xstate.done.actor.check-logged-in'
+          output: {
+            user: Models['User_type']
+            token: string
+          }
+        }
+  },
+  actions: {
+    goToIndexPage: () => {},
+    goToSignInPage: () => {},
+  },
+  actors: {
+    getUser: fromPromise(({ input }: { input: { token?: string } }) =>
+      getUser(input)
+    ),
+  },
+}).createMachine({
+  /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwAWQ9gBspuQCYAnAGYAHPYCsx+4ccAaEAE9E1q7YcoZyxrYR1m7mcrYAvnE+aFh4BMTk1LSQjExgAE55VHnYKmIAhuhkRQC2qcLikpDSDPJKSCBqGlo67QYI9gDs5tge5o6h5vau7oY+-v3mA9jWco4u5iu21ua2YcYJSRg4Eln0zJkABFQYrbqdmtoMun2GA7YjxuPmLqvGNh5zRCfJaOcyLUzuAYuFyGcwHEDJY6NCAAeQwTEuskUd3UDx6oD6Im2wUcAzkMJ2cjBxlMgIWLmwZLWljecjJTjh8IYVAgcF0iJxXUez0QIgGxhJZIpu2ptL8AWwtje1nCW2iq1shns8MRdXSlGRjEFeKevUQjkcy3sqwGHimbg83nlCF22GMytVUWMMUc8USCKO2BOdCN7Xu3VNBKMKsVFp2hm2vu+1id83slkVrgTxhcW0pNJ1geDkDR6GNEZFCAT1kZZLk9cMLltb0WdPMjewjjC1mzOZCtk5CSAA */
+  id: 'Auth',
+  initial: 'checkIfLoggedIn',
+  context: {
+    token: persistedToken,
+  },
+  states: {
+    checkIfLoggedIn: {
+      id: 'check-if-logged-in',
+      invoke: {
+        src: 'getUser',
+        input: ({ context }) => ({ token: context.token }),
+        id: 'check-logged-in',
+        onDone: [
+          {
+            target: 'loggedIn',
+            actions: assign(({ context, event }) => ({
+              user: event.output.user,
+              token: event.output.token || context.token,
+            })),
           },
-        },
-      },
-      loggedOut: {
-        entry: ['goToSignInPage'],
-        on: {
-          'Log in': {
-            target: 'checkIfLoggedIn',
+        ],
+        onError: [
+          {
+            target: 'loggedOut',
             actions: assign({
-              token: (_, event) => {
-                const token = event.token || ''
-                return token
-              },
+              user: () => undefined,
             }),
           },
+        ],
+      },
+    },
+    loggedIn: {
+      entry: ['goToIndexPage'],
+      on: {
+        'Log out': {
+          target: 'loggedOut',
+          actions: () => {
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            if (isDesktop()) writeTokenFile('')
+          },
         },
       },
     },
-    schema: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
-    predictableActionArguments: true,
-    preserveActionOrder: true,
-    context: {
-      token: persistedToken,
+    loggedOut: {
+      entry: ['goToSignInPage'],
+      on: {
+        'Log in': {
+          target: 'checkIfLoggedIn',
+          actions: assign({
+            token: ({ event }) => {
+              const token = event.token || ''
+              return token
+            },
+          }),
+        },
+      },
     },
   },
-  {
-    actions: {},
-    services: { getUser },
-    guards: {},
-    delays: {},
-  }
-)
+  schema: { events: {} as { type: 'Log out' } | { type: 'Log in' } },
+})
 
-async function getUser(context: UserContext) {
-  const token = await getAndSyncStoredToken(context)
+async function getUser(input: { token?: string }) {
+  const token = await getAndSyncStoredToken(input)
   const url = withBaseURL('/user')
   const headers: { [key: string]: string } = {
     'Content-Type': 'application/json',
@@ -142,21 +157,22 @@ async function getUser(context: UserContext) {
       LOCAL_USER.image = ''
     }
 
+    markOnce('code/didAuth')
     return {
       user: LOCAL_USER,
       token,
     }
   }
 
-  const userPromise = !isDesktop()
-    ? fetch(url, {
+  const userPromise = isDesktop()
+    ? getUserDesktop(token, VITE_KC_API_BASE_URL)
+    : fetch(url, {
         method: 'GET',
         credentials: 'include',
         headers,
       })
         .then((res) => res.json())
         .catch((err) => console.error('error from Browser getUser', err))
-    : getUserDesktop(context.token ?? '', VITE_KC_API_BASE_URL)
 
   const user = await userPromise
 
@@ -167,6 +183,7 @@ async function getUser(context: UserContext) {
 
   if ('error_code' in user) return Promise.reject(new Error(user.message))
 
+  markOnce('code/didAuth')
   return {
     user: user as Models['User_type'],
     token,
@@ -193,17 +210,20 @@ function getCookie(cname: string): string | null {
   return null
 }
 
-async function getAndSyncStoredToken(context: UserContext): Promise<string> {
+async function getAndSyncStoredToken(input: {
+  token?: string
+}): Promise<string> {
   // dev mode
   if (VITE_KC_DEV_TOKEN) return VITE_KC_DEV_TOKEN
 
   const token =
-    context.token && context.token !== ''
-      ? context.token
+    input.token && input.token !== ''
+      ? input.token
       : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
   if (token) {
     // has just logged in, update storage
     localStorage.setItem(TOKEN_PERSIST_KEY, token)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     isDesktop() && writeTokenFile(token)
     return token
   }

@@ -133,7 +133,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
           Element: 'button',
           'data-testid': 'user-sidebar-sign-out',
           children: 'Sign out',
-          onClick: () => send('Log out'),
+          onClick: () => send({ type: 'Log out' }),
           className: '', // Just making TS's filter type coercion happy 😠
         },
       ].filter(
@@ -168,7 +168,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   return (
     <Popover className="relative">
       <Popover.Button
-        className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+        className="relative group border-0 w-fit min-w-max p-0 rounded-l-full focus-visible:outline-appForeground"
         data-testid="user-sidebar-toggle"
       >
         <div className="flex items-center">
@@ -240,7 +240,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
                     <li key={id} className="contents">
                       <ActionButton
                         {...rest}
-                        className="!font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
+                        className="!font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 !border-none text-left focus-visible:outline-appForeground"
                         onMouseUp={() => {
                           close()
                         }}

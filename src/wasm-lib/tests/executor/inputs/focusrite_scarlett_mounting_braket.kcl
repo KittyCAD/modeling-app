@@ -1,6 +1,7 @@
 // A mounting bracket for the Focusrite Scarlett Solo audio interface
 // This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
 
+
 // define constants in mm
 const radius = 6.0
 const width = 144.0
@@ -79,10 +80,13 @@ const tabsR = startSketchOn(tabPlane)
   |> line([0, -tabLength / 3 * 2], %, $edge12)
   |> line([-tabWidth, -tabLength / 3], %, $edge13)
   |> close(%, $edge14)
-  |> hole(circle([
-       width / 2 + thk + tabWidth / 2,
-       length / 2 + thk - (tabLength / (3 / 2))
-     ], holeDiam / 2, %), %)
+  |> hole(circle({
+       center: [
+         width / 2 + thk + tabWidth / 2,
+         length / 2 + thk - (tabLength / (3 / 2))
+       ],
+       radius: holeDiam / 2
+     }, %), %)
   |> extrude(-tabThk, %)
   |> fillet({
        radius: holeDiam / 2,
@@ -93,7 +97,7 @@ const tabsR = startSketchOn(tabPlane)
      }, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
-       repetitions: 1,
+       instances: 2,
        distance: length + 2 * thk - (tabLength * 4 / 3)
      }, %)
 
@@ -104,10 +108,13 @@ const tabsL = startSketchOn(tabPlane)
   |> line([0, -tabLength / 3 * 2], %, $edge22)
   |> line([tabWidth, -tabLength / 3], %, $edge23)
   |> close(%, $edge24)
-  |> hole(circle([
-       -width / 2 - thk - (tabWidth / 2),
-       length / 2 + thk - (tabLength / (3 / 2))
-     ], holeDiam / 2, %), %)
+  |> hole(circle({
+       center: [
+         -width / 2 - thk - (tabWidth / 2),
+         length / 2 + thk - (tabLength / (3 / 2))
+       ],
+       radius: holeDiam / 2
+     }, %), %)
   |> extrude(-tabThk, %)
   |> fillet({
        radius: holeDiam / 2,
@@ -118,7 +125,7 @@ const tabsL = startSketchOn(tabPlane)
      }, %)
   |> patternLinear3d({
        axis: [0, -1, 0],
-       repetitions: 1,
+       instances: 2,
        distance: length + 2 * thk - (tabLength * 4 / 3)
      }, %)
 

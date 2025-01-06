@@ -17,8 +17,7 @@ import {
   KclWorkerOptions,
   CopilotWorkerOptions,
 } from 'editor/plugins/lsp/types'
-import { EngineCommandManager } from 'lang/std/engineConnection'
-import { err } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
 
 const intoServer: IntoServer = new IntoServer()
 const fromServer: FromServer | Error = FromServer.create()
@@ -46,21 +45,20 @@ export async function copilotLspRun(
 
 export async function kclLspRun(
   config: ServerConfig,
-  engineCommandManager: EngineCommandManager | null,
   token: string,
-  baseUnit: string,
   baseUrl: string
 ) {
   try {
     console.log('start kcl lsp')
-    await kcl_lsp_run(config, engineCommandManager, baseUnit, token, baseUrl)
+    await kcl_lsp_run(config, null, undefined, token, baseUrl)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
   }
 }
 
-onmessage = function (event) {
+// WebWorker message handler.
+onmessage = function (event: MessageEvent) {
   if (err(fromServer)) return
   const { worker, eventType, eventData }: LspWorkerEvent = event.data
 
@@ -70,7 +68,7 @@ onmessage = function (event) {
         | KclWorkerOptions
         | CopilotWorkerOptions
       initialise(wasmUrl)
-        .then((instantiatedModule) => {
+        .then(async (instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
           const config = new ServerConfig(
             intoServer,
@@ -81,17 +79,15 @@ onmessage = function (event) {
           switch (worker) {
             case LspWorker.Kcl:
               const kclData = eventData as KclWorkerOptions
-              kclLspRun(
-                config,
-                null,
-                kclData.token,
-                kclData.baseUnit,
-                kclData.apiBaseUrl
-              )
+              await kclLspRun(config, kclData.token, kclData.apiBaseUrl)
               break
             case LspWorker.Copilot:
               let copilotData = eventData as CopilotWorkerOptions
-              copilotLspRun(config, copilotData.token, copilotData.apiBaseUrl)
+              await copilotLspRun(
+                config,
+                copilotData.token,
+                copilotData.apiBaseUrl
+              )
               break
           }
         })
@@ -104,7 +100,7 @@ onmessage = function (event) {
       intoServer.enqueue(data)
       const json: jsrpc.JSONRPCRequest = Codec.decode(data)
       if (null != json.id) {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises, @typescript-eslint/no-non-null-assertion
         fromServer.responses.get(json.id)!.then((response) => {
           const encoded = Codec.encode(response as jsrpc.JSONRPCResponse)
           postMessage(encoded)
@@ -115,19 +111,17 @@ onmessage = function (event) {
       console.error('Worker: Unknown message type', worker, eventType)
   }
 }
-
-new Promise<void>(async (resolve) => {
+;(async () => {
   if (err(fromServer)) return
   for await (const requests of fromServer.requests) {
     const encoded = Codec.encode(requests as jsrpc.JSONRPCRequest)
     postMessage(encoded)
   }
-})
-
-new Promise<void>(async (resolve) => {
+})().catch(reportRejection)
+;(async () => {
   if (err(fromServer)) return
   for await (const notification of fromServer.notifications) {
     const encoded = Codec.encode(notification as jsrpc.JSONRPCRequest)
     postMessage(encoded)
   }
-})
+})().catch(reportRejection)

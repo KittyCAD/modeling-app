@@ -3,7 +3,7 @@ import { kclManager, engineCommandManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { ProgramMemory, Expr, parse } from 'lang/wasm'
+import { ProgramMemory, Expr, parse, resultIsOk } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
 import { executeAst } from 'lang/langHelpers'
 import { err, trap } from 'lib/trap'
@@ -34,9 +34,11 @@ export function useCalculateKclExpression({
 } {
   const { programMemory, code } = useKclContext()
   const { context } = useModelingContext()
+  // If there is no selection, use the end of the code
+  // so all variables are available
   const selectionRange:
-    | (typeof context.selectionRanges.codeBasedSelections)[number]['range']
-    | undefined = context.selectionRanges.codeBasedSelections[0]?.range
+    | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
+    | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -72,11 +74,12 @@ export function useCalculateKclExpression({
   }, [programMemory, newVariableName])
 
   useEffect(() => {
-    if (!programMemory || !selectionRange) return
+    if (!programMemory) return
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
       kclManager.programMemory,
-      selectionRange
+      // If there is no selection, use the end of the code
+      selectionRange || [code.length, code.length]
     )
     setAvailableVarInfo(varInfo)
   }, [kclManager.ast, kclManager.programMemory, selectionRange])
@@ -84,37 +87,38 @@ export function useCalculateKclExpression({
   useEffect(() => {
     const execAstAndSetResult = async () => {
       const _code = `const __result__ = ${value}`
-      const ast = parse(_code)
-      if (err(ast)) return
-      if (trap(ast, { suppress: true })) return
+      const pResult = parse(_code)
+      if (err(pResult) || !resultIsOk(pResult)) return
+      const ast = pResult.program
 
       const _programMem: ProgramMemory = ProgramMemory.empty()
       for (const { key, value } of availableVarInfo.variables) {
         const error = _programMem.set(key, {
-          type: 'UserVal',
+          type: 'String',
           value,
           __meta: [],
         })
         if (trap(error, { suppress: true })) return
       }
-      const { programMemory } = await executeAst({
+      const { execState } = await executeAst({
         ast,
         engineCommandManager,
-        useFakeExecutor: true,
+        // We make sure to send an empty program memory to denote we mean mock mode.
         programMemoryOverride: kclManager.programMemory.clone(),
       })
       const resultDeclaration = ast.body.find(
         (a) =>
           a.type === 'VariableDeclaration' &&
-          a.declarations?.[0]?.id?.name === '__result__'
+          a.declaration.id?.name === '__result__'
       )
       const init =
         resultDeclaration?.type === 'VariableDeclaration' &&
-        resultDeclaration?.declarations?.[0]?.init
-      const result = programMemory?.get('__result__')?.value
+        resultDeclaration?.declaration.init
+      const result = execState.memory?.get('__result__')?.value
       setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
       init && setValueNode(init)
     }
+    if (!value) return
     execAstAndSetResult().catch(() => {
       setCalcResult('NAN')
       setValueNode(null)

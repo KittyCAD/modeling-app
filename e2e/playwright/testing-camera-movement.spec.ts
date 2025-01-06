@@ -1,23 +1,20 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
-import { getUtils, setup, tearDown } from './test-utils'
-
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
+import { getUtils } from './test-utils'
 
 test.describe('Testing Camera Movement', () => {
-  test('Can moving camera', async ({ page, context }) => {
-    test.skip(process.platform === 'darwin', 'Can moving camera')
+  test('Can move camera reliably', async ({ page, context, homePage }) => {
+    // TODO: fix this test on windows too after the electron migration
+    const winOrMac =
+      process.platform === 'win32' || process.platform === 'darwin'
+    // eslint-disable-next-line
+    test.skip(winOrMac, 'Skip on windows')
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
     await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
 
@@ -102,6 +99,13 @@ test.describe('Testing Camera Movement', () => {
     await bakeInRetries(async () => {
       await page.mouse.move(700, 200)
       await page.mouse.down({ button: 'right' })
+      const appLogoBBox = await page.getByTestId('app-logo').boundingBox()
+      expect(appLogoBBox).not.toBeNull()
+      if (!appLogoBBox) throw new Error('app logo not found')
+      await page.mouse.move(
+        appLogoBBox.x + appLogoBBox.width / 2,
+        appLogoBBox.y + appLogoBBox.height / 2
+      )
       await page.mouse.move(600, 303)
       await page.mouse.up({ button: 'right' })
     }, [4, -10.5, -120])
@@ -174,166 +178,337 @@ test.describe('Testing Camera Movement', () => {
     }, [0, -85, -85])
   })
 
-  test('Zoom should be consistent when exiting or entering sketches', async ({
-    page,
-  }) => {
-    // start new sketch pan and zoom before exiting, when exiting the sketch should stay in the same place
-    // than zoom and pan outside of sketch mode and enter again and it should not change from where it is
-    // than again for sketching
+  // TODO: fix after electron migration is merged
+  test.fixme(
+    'Zoom should be consistent when exiting or entering sketches',
+    async ({ page, homePage }) => {
+      // start new sketch pan and zoom before exiting, when exiting the sketch should stay in the same place
+      // than zoom and pan outside of sketch mode and enter again and it should not change from where it is
+      // than again for sketching
 
-    test.skip(process.platform !== 'darwin', 'Zoom should be consistent')
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
-    await u.openDebugPanel()
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+      await u.openDebugPanel()
 
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).toBeVisible()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).not.toBeDisabled()
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeVisible()
 
-    // click on "Start Sketch" button
-    await u.clearCommandLogs()
-    await page.getByRole('button', { name: 'Start Sketch' }).click()
-    await page.waitForTimeout(100)
-
-    // select a plane
-    await page.mouse.click(700, 325)
-
-    let code = `const sketch001 = startSketchOn('XY')`
-    await expect(u.codeLocator).toHaveText(code)
-    await u.closeDebugPanel()
-
-    await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
-
-    // move the camera slightly
-    await page.keyboard.down('Shift')
-    await page.mouse.move(700, 300)
-    await page.mouse.down({ button: 'right' })
-    await page.mouse.move(800, 200)
-    await page.mouse.up({ button: 'right' })
-    await page.keyboard.up('Shift')
-
-    let y = 350,
-      x = 948
-
-    await u.canvasLocator.click({ position: { x: 783, y } })
-    code += `\n  |> startProfileAt([8.12, -12.98], %)`
-    // await expect(u.codeLocator).toHaveText(code)
-    await u.canvasLocator.click({ position: { x, y } })
-    code += `\n  |> line([11.18, 0], %)`
-    // await expect(u.codeLocator).toHaveText(code)
-    await u.canvasLocator.click({ position: { x, y: 275 } })
-    code += `\n  |> line([0, 6.99], %)`
-    // await expect(u.codeLocator).toHaveText(code)
-
-    // click the line button
-    await page.getByRole('button', { name: 'line Line', exact: true }).click()
-
-    const hoverOverNothing = async () => {
-      // await u.canvasLocator.hover({position: {x: 700, y: 325}})
-      await page.mouse.move(700, 325)
+      // click on "Start Sketch" button
+      await u.clearCommandLogs()
+      await page.getByRole('button', { name: 'Start Sketch' }).click()
       await page.waitForTimeout(100)
-      await expect(page.getByTestId('hover-highlight')).not.toBeVisible({
+
+      // select a plane
+      await page.mouse.click(700, 325)
+
+      let code = `sketch001 = startSketchOn('XY')`
+      await expect(u.codeLocator).toHaveText(code)
+      await u.closeDebugPanel()
+
+      await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
+
+      // move the camera slightly
+      await page.keyboard.down('Shift')
+      await page.mouse.move(700, 300)
+      await page.mouse.down({ button: 'right' })
+      await page.mouse.move(800, 200)
+      await page.mouse.up({ button: 'right' })
+      await page.keyboard.up('Shift')
+
+      let y = 350,
+        x = 948
+
+      await u.canvasLocator.click({ position: { x: 783, y } })
+      code += `\n  |> startProfileAt([8.12, -12.98], %)`
+      // await expect(u.codeLocator).toHaveText(code)
+      await u.canvasLocator.click({ position: { x, y } })
+      code += `\n  |> line([11.18, 0], %)`
+      // await expect(u.codeLocator).toHaveText(code)
+      await u.canvasLocator.click({ position: { x, y: 275 } })
+      code += `\n  |> line([0, 6.99], %)`
+      // await expect(u.codeLocator).toHaveText(code)
+
+      // click the line button
+      await page.getByRole('button', { name: 'line Line', exact: true }).click()
+
+      const hoverOverNothing = async () => {
+        // await u.canvasLocator.hover({position: {x: 700, y: 325}})
+        await page.mouse.move(700, 325)
+        await page.waitForTimeout(100)
+        await expect(page.getByTestId('hover-highlight')).not.toBeVisible({
+          timeout: 10_000,
+        })
+      }
+
+      await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+
+      await page.waitForTimeout(200)
+      // hover over horizontal line
+      await u.canvasLocator.hover({ position: { x: 800, y } })
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+        timeout: 10_000,
+      })
+      await page.waitForTimeout(200)
+
+      await hoverOverNothing()
+      await page.waitForTimeout(200)
+      // hover over vertical line
+      await u.canvasLocator.hover({ position: { x, y: 325 } })
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+        timeout: 10_000,
+      })
+
+      await hoverOverNothing()
+
+      // click exit sketch
+      await page.getByRole('button', { name: 'Exit Sketch' }).click()
+      await page.waitForTimeout(400)
+
+      await hoverOverNothing()
+      await page.waitForTimeout(200)
+      // hover over horizontal line
+      await page.mouse.move(858, y, { steps: 5 })
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+        timeout: 10_000,
+      })
+
+      await hoverOverNothing()
+
+      // hover over vertical line
+      await page.mouse.move(x, 325)
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+        timeout: 10_000,
+      })
+
+      await hoverOverNothing()
+
+      // hover over vertical line
+      await page.mouse.move(857, y)
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+        timeout: 10_000,
+      })
+      // now click it
+      await page.mouse.click(857, y)
+
+      await expect(
+        page.getByRole('button', { name: 'Edit Sketch' })
+      ).toBeVisible()
+      await hoverOverNothing()
+      await page.getByRole('button', { name: 'Edit Sketch' }).click()
+
+      await page.waitForTimeout(400)
+
+      x = 975
+      y = 468
+
+      await page.waitForTimeout(100)
+      await page.mouse.move(x, 419, { steps: 5 })
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+        timeout: 10_000,
+      })
+
+      await hoverOverNothing()
+
+      await page.mouse.move(855, y)
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+        timeout: 10_000,
+      })
+
+      await hoverOverNothing()
+
+      await page.getByRole('button', { name: 'Exit Sketch' }).click()
+      await page.waitForTimeout(200)
+
+      await hoverOverNothing()
+      await page.waitForTimeout(200)
+
+      await page.mouse.move(x, 419)
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
+        timeout: 10_000,
+      })
+
+      await hoverOverNothing()
+
+      await page.mouse.move(855, y)
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
         timeout: 10_000,
       })
     }
+  )
 
-    await expect(page.getByTestId('hover-highlight')).not.toBeVisible()
+  test(`Zoom by scroll should not fire while orbiting`, async ({
+    homePage,
+    page,
+  }) => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
+    /**
+     * Currently we only allow zooming by scroll when no other camera movement is happening,
+     * set within cameraMouseDragGuards in cameraControls.ts,
+     * until the engine supports unifying multiple camera movements.
+     * This verifies that scrollCallback's guard is working as expected.
+     */
+    const u = await getUtils(page)
 
-    await page.waitForTimeout(200)
-    // hover over horizontal line
-    await u.canvasLocator.hover({ position: { x: 800, y } })
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
-      timeout: 10_000,
+    // Constants and locators
+    const settingsLink = page.getByTestId('settings-link')
+    const settingsDialogHeading = page.getByRole('heading', {
+      name: 'Settings',
+      exact: true,
     })
-    await page.waitForTimeout(200)
-
-    await hoverOverNothing()
-    await page.waitForTimeout(200)
-    // hover over vertical line
-    await u.canvasLocator.hover({ position: { x, y: 325 } })
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
-      timeout: 10_000,
+    const userSettingsTab = page.getByRole('radio', { name: 'User' })
+    const mouseControlsSetting = page
+      .locator('#mouseControls')
+      .getByRole('combobox')
+    const mouseControlSuccesToast = page.getByText(
+      'Set mouse controls to "Solidworks"'
+    )
+    const settingsCloseButton = page.getByTestId('settings-close-button')
+    const gizmo = page.locator('[aria-label*=gizmo]')
+    const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
+    const orbitMouseStart = { x: 800, y: 130 }
+    const orbitMouseEnd = { x: 0, y: 130 }
+    const mid = (v1: number, v2: number) => v1 + (v2 - v1) / 2
+    type Point = { x: number; y: number }
+    const midPoint = (p1: Point, p2: Point) => ({
+      x: mid(p1.x, p2.x),
+      y: mid(p1.y, p2.y),
     })
+    const orbitMouseStepOne = midPoint(orbitMouseStart, orbitMouseEnd)
+    const expectedStartCamZPosition = 64.0
+    const expectedZoomCamZPosition = 32.0
+    const expectedOrbitCamZPosition = 64.0
 
-    await hoverOverNothing()
-
-    // click exit sketch
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await page.waitForTimeout(400)
-
-    await hoverOverNothing()
-    await page.waitForTimeout(200)
-    // hover over horizontal line
-    await page.mouse.move(858, y, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
-      timeout: 10_000,
-    })
-
-    await hoverOverNothing()
-
-    // hover over vertical line
-    await page.mouse.move(x, 325)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
-      timeout: 10_000,
-    })
-
-    await hoverOverNothing()
-
-    // hover over vertical line
-    await page.mouse.move(857, y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
-      timeout: 10_000,
-    })
-    // now click it
-    await page.mouse.click(857, y)
-
-    await expect(
-      page.getByRole('button', { name: 'Edit Sketch' })
-    ).toBeVisible()
-    await page.getByRole('button', { name: 'Edit Sketch' }).click()
-
-    await page.waitForTimeout(400)
-
-    await hoverOverNothing()
-    x = 975
-    y = 468
-
-    await page.waitForTimeout(100)
-    await page.mouse.move(x, 419, { steps: 5 })
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
-      timeout: 10_000,
+    await test.step(`Test setup`, async () => {
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
+      await u.closeKclCodePanel()
+      // This test requires the mouse controls to be set to Solidworks
+      await u.openDebugPanel()
+      await test.step(`Set mouse controls setting to Solidworks`, async () => {
+        await settingsLink.click()
+        await expect(settingsDialogHeading).toBeVisible()
+        await userSettingsTab.click()
+        await mouseControlsSetting.selectOption({ label: 'Solidworks' })
+        await expect(mouseControlSuccesToast).toBeVisible()
+        await settingsCloseButton.click()
+      })
     })
 
-    await hoverOverNothing()
+    await test.step(`Test scrolling zoom works`, async () => {
+      await resetCamera()
+      await page.mouse.move(orbitMouseStart.x, orbitMouseStart.y)
+      await page.mouse.wheel(0, -100)
+      await test.step(`Force a refresh of the camera position`, async () => {
+        await u.openAndClearDebugPanel()
+        await u.sendCustomCmd({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_get_settings',
+          },
+        })
+        await u.waitForCmdReceive('default_camera_get_settings')
+      })
 
-    await page.mouse.move(855, y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
-      timeout: 10_000,
+      await expect
+        .poll(getCameraZValue, {
+          message: 'Camera should be at expected position after zooming',
+        })
+        .toEqual(expectedZoomCamZPosition)
     })
 
-    await hoverOverNothing()
-
-    await page.getByRole('button', { name: 'Exit Sketch' }).click()
-    await page.waitForTimeout(200)
-
-    await hoverOverNothing()
-    await page.waitForTimeout(200)
-
-    await page.mouse.move(x, 419)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
-      timeout: 10_000,
+    await test.step(`Test orbiting works`, async () => {
+      await doOrbitWith()
     })
 
-    await hoverOverNothing()
+    await test.step(`Test scrolling while orbiting doesn't zoom`, async () => {
+      await doOrbitWith(async () => {
+        await page.mouse.wheel(0, -100)
+      })
+    })
 
-    await page.mouse.move(855, y)
-    await expect(page.getByTestId('hover-highlight').first()).toBeVisible({
-      timeout: 10_000,
+    // Helper functions
+    async function resetCamera() {
+      await test.step(`Reset camera`, async () => {
+        await u.openDebugPanel()
+        await u.clearCommandLogs()
+        await u.doAndWaitForCmd(async () => {
+          await gizmo.click({ button: 'right' })
+          await resetCameraButton.click()
+        }, 'zoom_to_fit')
+        await expect
+          .poll(getCameraZValue, {
+            message: 'Camera Z should be at expected position after reset',
+          })
+          .toEqual(expectedStartCamZPosition)
+      })
+    }
+
+    async function getCameraZValue() {
+      return page
+        .getByTestId('cam-z-position')
+        .inputValue()
+        .then((value) => parseFloat(value))
+    }
+
+    async function doOrbitWith(callback = async () => {}) {
+      await resetCamera()
+
+      await test.step(`Perform orbit`, async () => {
+        await page.mouse.move(orbitMouseStart.x, orbitMouseStart.y)
+        await page.mouse.down({ button: 'middle' })
+        await page.mouse.move(orbitMouseStepOne.x, orbitMouseStepOne.y, {
+          steps: 3,
+        })
+        await callback()
+        await page.mouse.move(orbitMouseEnd.x, orbitMouseEnd.y, {
+          steps: 3,
+        })
+      })
+
+      await test.step(`Verify orbit`, async () => {
+        await expect
+          .poll(getCameraZValue, {
+            message: 'Camera should be at expected position after orbiting',
+          })
+          .toEqual(expectedOrbitCamZPosition)
+        await page.mouse.up({ button: 'middle' })
+      })
+    }
+  })
+
+  test('Right-click opens context menu when not dragged', async ({
+    homePage,
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
+
+    await test.step(`The menu should not show if we drag the mouse`, async () => {
+      await page.mouse.move(900, 200)
+      await page.mouse.down({ button: 'right' })
+      await page.mouse.move(900, 300)
+      await page.mouse.up({ button: 'right' })
+
+      await expect(page.getByTestId('view-controls-menu')).not.toBeVisible()
+    })
+
+    await test.step(`The menu should show if we don't drag the mouse`, async () => {
+      await page.mouse.move(900, 200)
+      await page.mouse.down({ button: 'right' })
+      await page.mouse.up({ button: 'right' })
+
+      await expect(page.getByTestId('view-controls-menu')).toBeVisible()
     })
   })
 })

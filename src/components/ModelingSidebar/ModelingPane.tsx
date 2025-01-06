@@ -1,28 +1,31 @@
+import { ReactNode } from 'react'
 import styles from './ModelingPane.module.css'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useModelingContext } from 'hooks/useModelingContext'
 import { ActionButton } from 'components/ActionButton'
 import Tooltip from 'components/Tooltip'
 import { CustomIconName } from 'components/CustomIcon'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from 'components/ActionIcon'
+import { onboardingPaths } from 'routes/Onboarding/paths'
 
-export interface ModelingPaneProps
-  extends React.PropsWithChildren,
-    React.HTMLAttributes<HTMLDivElement> {
+export interface ModelingPaneProps {
+  id: string
+  children: ReactNode | ReactNode[]
+  className?: string
   icon?: CustomIconName | IconDefinition
-  title: string
+  title: ReactNode
   Menu?: React.ReactNode | React.FC
   detailsTestId?: string
   onClose: () => void
 }
 
 export const ModelingPaneHeader = ({
+  id,
   icon,
   title,
   Menu,
   onClose,
-}: Pick<ModelingPaneProps, 'icon' | 'title' | 'Menu' | 'onClose'>) => {
+}: Pick<ModelingPaneProps, 'id' | 'icon' | 'title' | 'Menu' | 'onClose'>) => {
   return (
     <div className={styles.header}>
       <div className="flex gap-2 items-center flex-1">
@@ -35,7 +38,7 @@ export const ModelingPaneHeader = ({
             bgClassName="!bg-transparent"
           />
         )}
-        <span>{title}</span>
+        <span data-testid={id + '-header'}>{title}</span>
       </div>
       {Menu instanceof Function ? <Menu /> : Menu}
       <ActionButton
@@ -46,7 +49,7 @@ export const ModelingPaneHeader = ({
           bgClassName: 'bg-transparent dark:bg-transparent',
         }}
         className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
-        onClick={onClose}
+        onClick={() => onClose()}
       >
         <Tooltip position="bottom-right" delay={750}>
           Close
@@ -57,26 +60,24 @@ export const ModelingPaneHeader = ({
 }
 
 export const ModelingPane = ({
-  title,
-  icon,
   id,
   children,
   className,
-  Menu,
   detailsTestId,
   onClose,
+  title,
   ...props
 }: ModelingPaneProps) => {
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
-  const { context } = useModelingContext()
   const pointerEventsCssClass =
-    context.store?.buttonDownInStream || onboardingStatus.current === 'camera'
+    onboardingStatus.current === onboardingPaths.CAMERA
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   return (
     <section
       {...props}
+      aria-label={title && typeof title === 'string' ? title : ''}
       data-testid={detailsTestId}
       id={id}
       className={
@@ -87,13 +88,7 @@ export const ModelingPane = ({
         (className || '')
       }
     >
-      <ModelingPaneHeader
-        icon={icon}
-        title={title}
-        Menu={Menu}
-        onClose={onClose}
-      />
-      <div className="relative w-full">{children}</div>
+      {children}
     </section>
   )
 }

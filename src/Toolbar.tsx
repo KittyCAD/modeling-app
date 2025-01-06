@@ -38,9 +38,8 @@ export function Toolbar({
     '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
 
   const sketchPathId = useMemo(() => {
-    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast)) {
+    if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast))
       return false
-    }
     return isCursorInSketchCommandRange(
       engineCommandManager.artifactGraph,
       context.selectionRanges
@@ -70,12 +69,12 @@ export function Toolbar({
    */
   const configCallbackProps: ToolbarItemCallbackProps = useMemo(
     () => ({
-      modelingStateMatches: state.matches,
+      modelingState: state,
       modelingSend: send,
       commandBarSend,
       sketchPathId,
     }),
-    [state.matches, send, commandBarSend, sketchPathId]
+    [state, send, commandBarSend, sketchPathId]
   )
 
   /**
@@ -100,6 +99,11 @@ export function Toolbar({
     function resolveItemConfig(
       maybeIconConfig: ToolbarItem
     ): ToolbarItemResolved {
+      const isDisabled =
+        disableAllButtons ||
+        maybeIconConfig.status !== 'available' ||
+        maybeIconConfig.disabled?.(state) === true
+
       return {
         ...maybeIconConfig,
         title:
@@ -113,10 +117,11 @@ export function Toolbar({
           typeof maybeIconConfig.hotkey === 'string'
             ? maybeIconConfig.hotkey
             : maybeIconConfig.hotkey?.(state),
-        disabled:
-          disableAllButtons ||
-          maybeIconConfig.status !== 'available' ||
-          maybeIconConfig.disabled?.(state) === true,
+        disabled: isDisabled,
+        disabledReason:
+          typeof maybeIconConfig.disabledReason === 'function'
+            ? maybeIconConfig.disabledReason(state)
+            : maybeIconConfig.disabledReason,
         disableHotkey: maybeIconConfig.disableHotkey?.(state),
         status: maybeIconConfig.status,
       }
@@ -124,7 +129,7 @@ export function Toolbar({
   }, [currentMode, disableAllButtons, configCallbackProps])
 
   return (
-    <menu className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-20 dark:border-chalkboard-80 border-t-0 shadow-sm">
+    <menu className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm">
       <ul
         {...props}
         ref={toolbarButtonsRef}
@@ -135,6 +140,7 @@ export function Toolbar({
       >
         {/* A menu item will either be a vertical line break, a button with a dropdown, or a single button */}
         {currentModeItems.map((maybeIconConfig, i) => {
+          // Vertical Line Break
           if (maybeIconConfig === 'break') {
             return (
               <div
@@ -143,6 +149,7 @@ export function Toolbar({
               />
             )
           } else if (Array.isArray(maybeIconConfig)) {
+            // A button with a dropdown
             return (
               <ActionButtonDropdown
                 Element="button"
@@ -209,6 +216,7 @@ export function Toolbar({
           }
           const itemConfig = maybeIconConfig
 
+          // A single button
           return (
             <div className="relative" key={itemConfig.id}>
               <ActionButton
@@ -273,6 +281,8 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   itemConfig: ToolbarItemResolved
   configCallbackProps: ToolbarItemCallbackProps
 }) {
+  const { state } = useModelingContext()
+
   useHotkeys(
     itemConfig.hotkey || '',
     () => {
@@ -336,6 +346,17 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
         )}
       </div>
       <p className="px-2 text-ch font-sans">{itemConfig.description}</p>
+      {/* Add disabled reason if item is disabled */}
+      {itemConfig.disabled && itemConfig.disabledReason && (
+        <>
+          <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
+          <p className="px-2 text-ch font-sans text-chalkboard-70 dark:text-chalkboard-40">
+            {typeof itemConfig.disabledReason === 'function'
+              ? itemConfig.disabledReason(state)
+              : itemConfig.disabledReason}
+          </p>
+        </>
+      )}
       {itemConfig.links.length > 0 && (
         <>
           <hr className="border-chalkboard-20 dark:border-chalkboard-80" />

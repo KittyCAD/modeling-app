@@ -2,6 +2,8 @@ import { SourceRange } from '../lang/wasm'
 
 import { v4 } from 'uuid'
 import { isDesktop } from './isDesktop'
+import { AnyMachineSnapshot } from 'xstate'
+import { AsyncFn } from './types'
 
 export const uuidv4 = v4
 
@@ -12,15 +14,43 @@ export function isArray(val: any): val is unknown[] {
   return Array.isArray(val)
 }
 
+/**
+ * An alternative to `Object.keys()` that returns an array of keys with types.
+ *
+ * It's UNSAFE because because of TS's structural subtyping and how at runtime, you can
+ * extend a JS object with whatever keys you want.
+ *
+ * Why we shouldn't be extending objects with arbitrary keys at run time, the structural subtyping
+ * issue could be a confusing bug, for example, in the below snippet `myKeys` is typed as
+ * `('x' | 'y')[]` but is really `('x' | 'y' | 'name')[]`
+ * ```ts
+ * interface Point { x: number; y: number }
+ * interface NamedPoint { x: number; y: number; name: string }
+ *
+ * let point: Point = { x: 1, y: 2 }
+ * let namedPoint: NamedPoint = { x: 1, y: 2, name: 'A' }
+ *
+ * // Structural subtyping allows this assignment
+ * point = namedPoint  // This is allowed because NamedPoint has all properties of Point
+ * const myKeys = unsafeTypedKeys(point) // typed as ('x' | 'y')[] but is really ('x' | 'y' | 'name')[]
+ * ```
+ */
+export function unsafeTypedKeys<T extends object>(obj: T): Array<keyof T> {
+  return Object.keys(obj) as Array<keyof T>
+}
+/*
+ * Predicate that checks if a value is not null and not undefined.  This is
+ * useful for functions like Array::filter() and Array::find() that have
+ * overloads that accept a type guard.
+ */
+export function isNonNullable<T>(val: T): val is NonNullable<T> {
+  return val !== null && val !== undefined
+}
+
 export function isOverlap(a: SourceRange, b: SourceRange) {
   const [startingRange, secondRange] = a[0] < b[0] ? [a, b] : [b, a]
   const [lastOfFirst, firstOfSecond] = [startingRange[1], secondRange[0]]
   return lastOfFirst >= firstOfSecond
-}
-
-export function roundOff(num: number, places: number = 2): number {
-  const x = Math.pow(10, places)
-  return Math.round(num * x) / x
 }
 
 export function getLength(a: [number, number], b: [number, number]): number {
@@ -103,6 +133,28 @@ export function deferExecution<T>(func: (args: T) => any, wait: number) {
   }
 
   return deferred
+}
+
+/**
+ * Wrap an async function so that it can be called in a sync context, catching
+ * rejections.
+ *
+ * It's common to want to run an async function in a sync context, like an event
+ * handler or callback.  But we want to catch errors.
+ *
+ * Note: The returned function doesn't block.  This isn't magic.
+ *
+ * @param onReject This callback type is from Promise.prototype.catch.
+ */
+export function toSync<F extends AsyncFn<F>>(
+  fn: F,
+  onReject: (
+    reason: any
+  ) => void | PromiseLike<void | null | undefined> | null | undefined
+): (...args: Parameters<F>) => void {
+  return (...args: Parameters<F>) => {
+    fn(...args).catch(onReject)
+  }
 }
 
 export function getNormalisedCoordinates({
@@ -207,4 +259,132 @@ export function isReducedMotion(): boolean {
 
 export function XOR(bool1: boolean, bool2: boolean): boolean {
   return (bool1 || bool2) && !(bool1 && bool2)
+}
+
+export function getActorNextEvents(snapshot: AnyMachineSnapshot) {
+  return [...new Set([...snapshot._nodes.flatMap((sn) => sn.ownEvents)])]
+}
+
+export const onMouseDragRegex = /-?\.?\b\d+\.?\d*\b/g
+
+export function simulateOnMouseDragMatch(text: string) {
+  return text.match(onMouseDragRegex)
+}
+
+export function roundOff(num: number, precision: number = 2): number {
+  const x = Math.pow(10, precision)
+  return Math.round(num * x) / x
+}
+
+/**
+ * Determine if the number as a string has any precision in the decimal places
+ * '1' -> 0
+ * '1.0' -> 1
+ * '1.01' -> 2
+ */
+function getPrecision(text: string): number {
+  const wholeFractionSplit = text.split('.')
+  const precision =
+    wholeFractionSplit.length === 2 ? wholeFractionSplit[1].split('').length : 0
+  return precision
+}
+
+/**
+ * Determines if a number string has a leading digit
+ * 0.1 -> yes
+ * -0.1 -> yes
+ * .1 -> no
+ * 10.1 -> no
+ * The text.split('.') should evaluate to ['','<decimals>']
+ */
+export function hasLeadingZero(text: string): boolean {
+  const wholeFractionSplit = text.split('.')
+  return wholeFractionSplit.length === 2
+    ? wholeFractionSplit[0] === '0' || wholeFractionSplit[0] === '-0'
+    : false
+}
+
+export function hasDigitsLeftOfDecimal(text: string): boolean | undefined {
+  const wholeFractionSplit = text.split('.')
+
+  if (wholeFractionSplit.length === 2) {
+    const wholeNumber = wholeFractionSplit[0]
+
+    if (wholeNumber.length === 0) {
+      return false
+    } else {
+      return true
+    }
+  }
+
+  if (wholeFractionSplit.length === 1) {
+    return true
+  }
+
+  // What if someone passes in 1..2.3.1...1.1.43
+  return undefined
+}
+
+export function onDragNumberCalculation(text: string, e: MouseEvent) {
+  const multiplier =
+    e.shiftKey && e.metaKey ? 0.01 : e.metaKey ? 0.1 : e.shiftKey ? 10 : 1
+
+  const delta = e.movementX * multiplier
+  const hasPeriod = text.includes('.')
+  const leadsWithZero = hasLeadingZero(text)
+  const addition = Number(text) + delta
+  const positiveAddition = e.movementX > 0
+  const negativeAddition = e.movementX < 0
+  const containsDigitsLeftOfDecimal = hasDigitsLeftOfDecimal(text)
+  let precision = Math.max(
+    getPrecision(text),
+    getPrecision(multiplier.toString())
+  )
+  const newVal = roundOff(addition, precision)
+
+  if (isNaN(newVal)) {
+    return
+  }
+
+  let formattedString = newVal.toString()
+  if (hasPeriod && !formattedString.includes('.')) {
+    // If the original number included a period lets add that back to the output string
+    // e.g. '1.0' add +1 then we get 2, we want to send '2.0' back since the original one had a decimal place
+    formattedString = formattedString.toString() + '.0'
+  }
+
+  /**
+   * Whenever you add two numbers you can always remove the the leading zero the result will make sense
+   * 1 + -0.01 = 0.99, the code would remove the leading 0 to make it .99 but since the number has a
+   * digit left of the decimal to begin with I want to make it 0.99.
+   * negativeAddition with fractional numbers will provide a leading 0.
+   */
+  const removeZeros =
+    positiveAddition ||
+    (negativeAddition && multiplier < 1 && !containsDigitsLeftOfDecimal)
+
+  /**
+   * If the original value has no leading 0
+   * If if the new updated value has a leading zero
+   * If the math operation means you can actually remove the zero.
+   */
+  if (!leadsWithZero && hasLeadingZero(formattedString) && removeZeros) {
+    if (formattedString[0] === '-') {
+      return ['-', formattedString.split('.')[1]].join('.')
+    } else {
+      return formattedString.substring(1)
+    }
+  }
+
+  return formattedString
+}
+
+export function onMouseDragMakeANewNumber(
+  text: string,
+  setText: (t: string) => void,
+  e: MouseEvent
+) {
+  const newVal = onDragNumberCalculation(text, e)
+  if (!newVal) return
+  setText(newVal)
 }

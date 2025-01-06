@@ -61,6 +61,7 @@ Mac_App_Distribution.provisionprofile
 *.tsbuildinfo
 src/wasm-lib/pkg
 
+.eslintcache
 venv
 .vite/
 

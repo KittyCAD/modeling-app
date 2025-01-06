@@ -5,7 +5,11 @@ use derive_docs::stdlib;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::{errors::KclError, executor::KclValue, std::Args};
+use crate::{
+    errors::KclError,
+    execution::{ExecState, KclValue},
+    std::Args,
+};
 
 /// Data for polar coordinates.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -19,7 +23,7 @@ pub struct PolarCoordsData {
 }
 
 /// Convert from polar/sphere coordinates to cartesian coordinates.
-pub async fn polar(args: Args) -> Result<KclValue, KclError> {
+pub async fn polar(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let data: PolarCoordsData = args.get_data()?;
     let result = inner_polar(&data)?;
 
@@ -30,7 +34,7 @@ pub async fn polar(args: Args) -> Result<KclValue, KclError> {
 /// cartesian (x/y/z grid) coordinates.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(polar({angle: 30, length: 5}), %, $thing)
 ///   |> line([0, 5], %)
@@ -38,7 +42,7 @@ pub async fn polar(args: Args) -> Result<KclValue, KclError> {
 ///   |> line([-20, 10], %)
 ///   |> close(%)
 ///  
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "polar",

@@ -1,5 +1,4 @@
 import { MouseEventHandler, useEffect, useRef, useState } from 'react'
-import { getNormalisedCoordinates } from '../lib/utils'
 import Loading from './Loading'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -18,6 +17,10 @@ import {
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import { err, reportRejection } from 'lib/trap'
+import { getArtifactOfTypes } from 'lang/std/artifactGraph'
+import { ViewControlContextMenu } from './ViewControlMenu'
 
 enum StreamState {
   Playing = 'playing',
@@ -28,10 +31,11 @@ enum StreamState {
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const [clickCoords, setClickCoords] = useState<{ x: number; y: number }>()
+  const videoWrapperRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
-  const { state, send, context } = useModelingContext()
+  const { state, send } = useModelingContext()
+  const { commandBarState } = useCommandsContext()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
@@ -53,9 +57,10 @@ export const Stream = () => {
    * executed. If we can find a way to do this from a more
    * central place, we can move this code there.
    */
-  async function executeCodeAndPlayStream() {
-    kclManager.executeCode(true).then(() => {
-      videoRef.current?.play().catch((e) => {
+  function executeCodeAndPlayStream() {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    kclManager.executeCode(true).then(async () => {
+      await videoRef.current?.play().catch((e) => {
         console.warn('Video playing was prevented', e, videoRef.current)
       })
       setStreamState(StreamState.Playing)
@@ -218,12 +223,12 @@ export const Stream = () => {
    */
   useEffect(() => {
     if (!kclManager.isExecuting) {
-      setTimeout(() =>
+      setTimeout(() => {
         // execute in the next event loop
         videoRef.current?.play().catch((e) => {
           console.warn('Video playing was prevented', e, videoRef.current)
         })
-      )
+      })
     }
   }, [kclManager.isExecuting])
 
@@ -255,84 +260,74 @@ export const Stream = () => {
     setIsLoading(false)
   }, [mediaStream])
 
-  const handleMouseDown: MouseEventHandler<HTMLDivElement> = (e) => {
+  const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
+    // If we've got no stream or connection, don't do anything
     if (!isNetworkOkay) return
     if (!videoRef.current) return
+    // If we're in sketch mode, don't send a engine-side select event
     if (state.matches('Sketch')) return
-    if (state.matches('Sketch no face')) return
-
-    const { x, y } = getNormalisedCoordinates({
-      clientX: e.clientX,
-      clientY: e.clientY,
-      el: videoRef.current,
-      ...context.store?.streamDimensions,
-    })
-
-    send({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: e.button,
-      },
-    })
-    setClickCoords({ x, y })
-  }
-
-  const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
-    if (!isNetworkOkay) return
-    if (!videoRef.current) return
-    send({
-      type: 'Set context',
-      data: {
-        buttonDownInStream: undefined,
-      },
-    })
-    if (state.matches('Sketch')) return
-    if (state.matches('idle.showPlanes')) return
-
-    if (!context.store?.didDragInStream && btnName(e).left) {
-      sendSelectEventToEngine(
-        e,
-        videoRef.current,
-        context.store?.streamDimensions
+    // Only respect default plane selection if we're on a selection command argument
+    if (
+      state.matches({ idle: 'showPlanes' }) &&
+      !(
+        commandBarState.matches('Gathering arguments') &&
+        commandBarState.context.currentArgument?.inputType === 'selection'
       )
-    }
+    )
+      return
+    // If we're mousing up from a camera drag, don't send a select event
+    if (sceneInfra.camControls.wasDragging === true) return
 
-    send({
-      type: 'Set context',
-      data: {
-        didDragInStream: false,
-      },
-    })
-    setClickCoords(undefined)
+    if (btnName(e.nativeEvent).left) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sendSelectEventToEngine(e, videoRef.current)
+    }
   }
 
-  const handleMouseMove: MouseEventHandler<HTMLVideoElement> = (e) => {
-    if (!isNetworkOkay) return
-    if (state.matches('Sketch')) return
-    if (state.matches('Sketch no face')) return
-    if (!clickCoords) return
-
-    const delta =
-      ((clickCoords.x - e.clientX) ** 2 + (clickCoords.y - e.clientY) ** 2) **
-      0.5
-
-    if (delta > 5 && !context.store?.didDragInStream) {
-      send({
-        type: 'Set context',
-        data: {
-          didDragInStream: true,
-        },
-      })
+  /**
+   * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
+   * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
+   */
+  const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> = (
+    e
+  ) => {
+    if (
+      !isNetworkOkay ||
+      !videoRef.current ||
+      state.matches('Sketch') ||
+      state.matches({ idle: 'showPlanes' }) ||
+      sceneInfra.camControls.wasDragging === true ||
+      !btnName(e.nativeEvent).left
+    ) {
+      return
     }
+
+    sendSelectEventToEngine(e, videoRef.current)
+      .then(({ entity_id }) => {
+        if (!entity_id) {
+          // No entity selected. This is benign
+          return
+        }
+        const path = getArtifactOfTypes(
+          { key: entity_id, types: ['path', 'solid2D', 'segment'] },
+          engineCommandManager.artifactGraph
+        )
+        if (err(path)) {
+          return path
+        }
+        sceneInfra.modelingSend({ type: 'Enter sketch' })
+      })
+      .catch(reportRejection)
   }
 
   return (
     <div
+      ref={videoWrapperRef}
       className="absolute inset-0 z-0"
       id="stream"
       data-testid="stream"
-      onMouseUp={handleMouseUp}
-      onMouseDown={handleMouseDown}
+      onClick={handleClick}
+      onDoubleClick={enterSketchModeIfSelectingSketch}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
@@ -342,7 +337,6 @@ export const Stream = () => {
         autoPlay
         controls={false}
         onPlay={() => setIsLoading(false)}
-        onMouseMoveCapture={handleMouseMove}
         className="w-full cursor-pointer h-full"
         disablePictureInPicture
         id="video-stream"
@@ -393,6 +387,14 @@ export const Stream = () => {
           </Loading>
         </div>
       )}
+      <ViewControlContextMenu
+        event="mouseup"
+        guard={(e) =>
+          sceneInfra.camControls.wasDragging === false &&
+          btnName(e).right === true
+        }
+        menuTargetElement={videoWrapperRef}
+      />
     </div>
   )
 }

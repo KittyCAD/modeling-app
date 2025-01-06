@@ -5,7 +5,7 @@ import { cameraMouseDragGuards } from 'lib/cameraControls'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
-import { throttle } from 'lib/utils'
+import { throttle, toSync } from 'lib/utils'
 import {
   sceneInfra,
   kclManager,
@@ -29,22 +29,25 @@ import {
   Expr,
   parse,
   recast,
+  defaultSourceRange,
+  resultIsOk,
+  ProgramMemory,
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
 import { getConstraintInfo } from 'lang/std/sketch'
 import { Dialog, Popover, Transition } from '@headlessui/react'
-import { LineInputsType } from 'lang/std/sketchcombos'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
 import { executeAst } from 'lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
-  makeRemoveSingleConstraintInput,
   removeSingleConstraintInfo,
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
-import { err, trap } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -98,15 +101,29 @@ export const ClientSideScene = ({
     canvas.appendChild(sceneInfra.renderer.domElement)
     canvas.appendChild(sceneInfra.labelRenderer.domElement)
     sceneInfra.animate()
-    canvas.addEventListener('mousemove', sceneInfra.onMouseMove, false)
+    canvas.addEventListener(
+      'mousemove',
+      toSync(sceneInfra.onMouseMove, reportRejection),
+      false
+    )
     canvas.addEventListener('mousedown', sceneInfra.onMouseDown, false)
-    canvas.addEventListener('mouseup', sceneInfra.onMouseUp, false)
+    canvas.addEventListener(
+      'mouseup',
+      toSync(sceneInfra.onMouseUp, reportRejection),
+      false
+    )
     sceneInfra.setSend(send)
     engineCommandManager.modelingSend = send
     return () => {
-      canvas?.removeEventListener('mousemove', sceneInfra.onMouseMove)
+      canvas?.removeEventListener(
+        'mousemove',
+        toSync(sceneInfra.onMouseMove, reportRejection)
+      )
       canvas?.removeEventListener('mousedown', sceneInfra.onMouseDown)
-      canvas?.removeEventListener('mouseup', sceneInfra.onMouseUp)
+      canvas?.removeEventListener(
+        'mouseup',
+        toSync(sceneInfra.onMouseUp, reportRejection)
+      )
     }
   }, [])
 
@@ -124,9 +141,10 @@ export const ClientSideScene = ({
     } else if (context.mouseState.type === 'isDragging') {
       cursor = 'grabbing'
     } else if (
-      state.matches('Sketch.Line tool') ||
-      state.matches('Sketch.Tangential arc to') ||
-      state.matches('Sketch.Rectangle tool')
+      state.matches({ Sketch: 'Line tool' }) ||
+      state.matches({ Sketch: 'Tangential arc to' }) ||
+      state.matches({ Sketch: 'Rectangle tool' }) ||
+      state.matches({ Sketch: 'Circle tool' })
     ) {
       cursor = 'crosshair'
     } else {
@@ -156,8 +174,13 @@ export const ClientSideScene = ({
 const Overlays = () => {
   const { context } = useModelingContext()
   if (context.mouseState.type === 'isDragging') return null
+  // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
+  // over the length labels on the line segments
   return (
-    <div className="absolute inset-0 pointer-events-none">
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: '99999999' }}
+    >
       {Object.entries(context.segmentOverlays)
         .filter((a) => a[1].visible)
         .map(([pathToNodeString, overlay], index) => {
@@ -187,12 +210,20 @@ const Overlay = ({
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
-  const _node1 = getNodeFromPath<CallExpression>(
+  // It's possible for the pathToNode to request a newer AST node
+  // than what's available in the AST at the moment of query.
+  // It eventually settles on being updated.
+  const _node1 = getNodeFromPath<Node<CallExpression>>(
     kclManager.ast,
     overlay.pathToNode,
     'CallExpression'
   )
-  if (err(_node1)) return
+
+  // For that reason, to prevent console noise, we do not use err here.
+  if (_node1 instanceof Error) {
+    console.warn('ast older than pathToNode, not fatal, eventually settles', '')
+    return
+  }
   const callExpression = _node1.node
 
   const constraints = getConstraintInfo(
@@ -214,9 +245,9 @@ const Overlay = ({
     overlay.visible &&
     typeof context?.segmentHoverMap?.[pathToNodeString] === 'number' &&
     !(
-      state.matches('Sketch.Line tool') ||
-      state.matches('Sketch.Tangential arc to') ||
-      state.matches('Sketch.Rectangle tool')
+      state.matches({ Sketch: 'Line tool' }) ||
+      state.matches({ Sketch: 'Tangential arc to' }) ||
+      state.matches({ Sketch: 'Rectangle tool' })
     )
 
   return (
@@ -271,15 +302,22 @@ const Overlay = ({
                 }
               />
             ))}
-          <SegmentMenu
-            verticalPosition={
-              overlay.windowCoords[1] > window.innerHeight / 2
-                ? 'top'
-                : 'bottom'
-            }
-            pathToNode={overlay.pathToNode}
-            stdLibFnName={constraints[0]?.stdLibFnName}
-          />
+          {/* delete circle is complicated by the fact it's the only segment in the
+          pipe expression. Maybe it should delete the entire pipeExpression, however
+          this will likely change soon when we implement multi-profile so we'll leave it for now
+          issue: https://github.com/KittyCAD/modeling-app/issues/3910
+          */}
+          {callExpression?.callee?.name !== 'circle' && (
+            <SegmentMenu
+              verticalPosition={
+                overlay.windowCoords[1] > window.innerHeight / 2
+                  ? 'top'
+                  : 'bottom'
+              }
+              pathToNode={overlay.pathToNode}
+              stdLibFnName={constraints[0]?.stdLibFnName}
+            />
+          )}
         </div>
       )}
     </div>
@@ -360,7 +398,7 @@ export async function deleteSegment({
   pathToNode: PathToNode
   sketchDetails: SketchDetails | null
 }) {
-  let modifiedAst: Program | Error = kclManager.ast
+  let modifiedAst: Node<Program> | Error = kclManager.ast
   const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
 
   const shouldContinueSegDelete = dependentRanges.length
@@ -382,13 +420,15 @@ export async function deleteSegment({
   if (err(modifiedAst)) return Promise.reject(modifiedAst)
 
   const newCode = recast(modifiedAst)
-  modifiedAst = parse(newCode)
-  if (err(modifiedAst)) return Promise.reject(modifiedAst)
+  const pResult = parse(newCode)
+  if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+  modifiedAst = pResult.program
 
   const testExecute = await executeAst({
     ast: modifiedAst,
-    useFakeExecutor: true,
     engineCommandManager: engineCommandManager,
+    // We make sure to send an empty program memory to denote we mean mock mode.
+    programMemoryOverride: ProgramMemory.empty(),
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')
@@ -470,7 +510,8 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { context, send } = useModelingContext()
+  const { commandBarSend } = useCommandsContext()
+  const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
       varName: string
@@ -514,6 +555,11 @@ const ConstraintSymbol = ({
       displayName: 'Intersection Offset',
       iconName: 'intersection-offset',
     },
+    radius: {
+      varName: 'radius',
+      displayName: 'Radius',
+      iconName: 'dimension',
+    },
 
     // implicit constraints
     vertical: {
@@ -542,12 +588,10 @@ const ConstraintSymbol = ({
       iconName: 'dimension',
     },
   }
-  const varName =
-    _type in varNameMap ? varNameMap[_type as LineInputsType].varName : 'var'
-  const name: CustomIconName = varNameMap[_type as LineInputsType].iconName
-  const displayName = varNameMap[_type as LineInputsType]?.displayName
-  const implicitDesc =
-    varNameMap[_type as LineInputsType]?.implicitConstraintDesc
+  const varName = varNameMap?.[_type]?.varName || 'var'
+  const name: CustomIconName = varNameMap[_type].iconName
+  const displayName = varNameMap[_type]?.displayName
+  const implicitDesc = varNameMap[_type]?.implicitConstraintDesc
 
   const _node = useMemo(
     () => getNodeFromPath<Expr>(kclManager.ast, pathToNode),
@@ -556,7 +600,9 @@ const ConstraintSymbol = ({
   if (err(_node)) return
   const node = _node.node
 
-  const range: SourceRange = node ? [node.start, node.end] : [0, 0]
+  const range: SourceRange = node
+    ? [node.start, node.end, true]
+    : defaultSourceRange()
 
   if (_type === 'intersectionTag') return null
 
@@ -578,25 +624,34 @@ const ConstraintSymbol = ({
           editorManager.setHighlightRange([range])
         }}
         onMouseLeave={() => {
-          editorManager.setHighlightRange([[0, 0]])
+          editorManager.setHighlightRange([defaultSourceRange()])
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
-        onClick={async () => {
+        onClick={toSync(async () => {
           if (!isConstrained) {
-            send({
-              type: 'Convert to variable',
+            commandBarSend({
+              type: 'Find and select command',
               data: {
-                pathToNode,
-                variableName: varName,
+                name: 'Constrain with named value',
+                groupId: 'modeling',
+                argDefaultValues: {
+                  currentValue: {
+                    pathToNode,
+                    variableName: varName,
+                    valueText: value,
+                  },
+                },
               },
             })
           } else if (isConstrained) {
             try {
-              const parsed = parse(recast(kclManager.ast))
-              if (trap(parsed)) return Promise.reject(parsed)
+              const pResult = parse(recast(kclManager.ast))
+              if (trap(pResult) || !resultIsOk(pResult))
+                return Promise.reject(pResult)
+
               const _node1 = getNodeFromPath<CallExpression>(
-                parsed,
+                pResult.program!,
                 pathToNode,
                 'CallExpression',
                 true
@@ -604,25 +659,29 @@ const ConstraintSymbol = ({
               if (trap(_node1)) return Promise.reject(_node1)
               const shallowPath = _node1.shallowPath
 
-              const input = makeRemoveSingleConstraintInput(
-                argPosition,
-                shallowPath
-              )
-              if (!input || !context.sketchDetails) return
+              if (!context.sketchDetails || !argPosition) return
               const transform = removeSingleConstraintInfo(
-                input,
+                shallowPath,
+                argPosition,
                 kclManager.ast,
                 kclManager.programMemory
               )
+
               if (!transform) return
               const { modifiedAst } = transform
-              kclManager.updateAst(modifiedAst, true)
+
+              await kclManager.updateAst(modifiedAst, true)
+
+              // Code editor will be updated in the modelingMachine.
+              const newCode = recast(modifiedAst)
+              if (err(newCode)) return
+              await codeManager.updateCodeEditor(newCode)
             } catch (e) {
               console.log('error', e)
             }
             toast.success('Constraint removed')
           }
-        }}
+        }, reportRejection)}
       >
         <CustomIcon name={name} />
       </button>
@@ -688,7 +747,7 @@ const ConstraintSymbol = ({
 
 const throttled = throttle((a: ReactCameraProperties) => {
   if (a.type === 'perspective' && a.fov) {
-    sceneInfra.camControls.dollyZoom(a.fov)
+    sceneInfra.camControls.dollyZoom(a.fov).catch(reportRejection)
   }
 }, 1000 / 15)
 
@@ -697,6 +756,7 @@ export const CamDebugSettings = () => {
     sceneInfra.camControls.reactCameraProperties
   )
   const [fov, setFov] = useState(12)
+  const { commandBarSend } = useCommandsContext()
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
@@ -714,18 +774,20 @@ export const CamDebugSettings = () => {
       <input
         type="checkbox"
         checked={camSettings.type === 'perspective'}
-        onChange={(e) => {
-          if (camSettings.type === 'perspective') {
-            sceneInfra.camControls.useOrthographicCamera()
-          } else {
-            sceneInfra.camControls.usePerspectiveCamera(true)
-          }
-        }}
+        onChange={() =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: {
+              groupId: 'settings',
+              name: 'modeling.cameraProjection',
+            },
+          })
+        }
       />
       <div>
         <button
           onClick={() => {
-            sceneInfra.camControls.resetCameraPosition()
+            sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
           }}
         >
           Reset Camera Position

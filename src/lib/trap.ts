@@ -2,13 +2,39 @@ import toast from 'react-hot-toast'
 
 type ExcludeErr<T> = Exclude<T, Error>
 
+/**
+ * Similar to Error, but more lightweight, without the stack trace.  It can also
+ * be used to represent a reason for not being able to provide an alternative,
+ * which isn't necessarily an error.
+ */
+export class Reason {
+  message: string
+
+  constructor(message: string) {
+    this.message = message
+  }
+
+  toError() {
+    return new Error(this.message)
+  }
+}
+
+/**
+ * This is intentionally *not* exported due to misuse.  We'd like to add a lint.
+ */
+function isErr<T>(value: ExcludeErr<T> | Error): value is Error {
+  return value instanceof Error
+}
+
 // Used to bubble errors up
 export function err<T>(value: ExcludeErr<T> | Error): value is Error {
-  if (!(value instanceof Error)) {
+  if (!isErr(value)) {
     return false
   }
 
+  // TODO: Remove this once we have a lint to prevent misuse of this function.
   console.error(value)
+
   return true
 }
 
@@ -21,7 +47,7 @@ export function cleanErrs<T>(
   const argsWOutErr: Array<ExcludeErr<T>> = []
   const argsWErr: Array<Error> = []
   for (const v of value) {
-    if (err(v)) {
+    if (isErr(v)) {
       argsWErr.push(v)
     } else {
       argsWOutErr.push(v)
@@ -30,9 +56,28 @@ export function cleanErrs<T>(
   return [argsWOutErr.length !== value.length, argsWOutErr, argsWErr]
 }
 
+export function report(
+  message: string,
+  { showToast }: { showToast: boolean } = { showToast: false }
+) {
+  console.error(message)
+  if (showToast) {
+    toast.error(message, { id: 'error' })
+  }
+}
+
 /**
- *  Used to report errors to user at a certain point in execution
- *  @returns boolean
+ * Report a promise rejection.  The type of reason is `any` so that it matches
+ * Promise.prototype.catch.
+ */
+export function reportRejection(reason: any) {
+  report((reason ?? 'Unknown promise rejection').toString())
+}
+
+/**
+ * Report an error to the user.  Trapping is the opposite of propagating an
+ * error.  We should propagate errors in low-level functions and trap at the top
+ * level.
  */
 export function trap<T>(
   value: ExcludeErr<T> | Error,
@@ -41,7 +86,7 @@ export function trap<T>(
     suppress?: boolean
   }
 ): value is Error {
-  if (!err(value)) {
+  if (!isErr(value)) {
     return false
   }
 

@@ -28,22 +28,22 @@ fn caster = (originStart) => {
     |> xLine(-3.543, %)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
     |> close(%)
-    |> hole(circle([
+    |> hole(circle({ center: [
          (3.543 - 2.756) / 2,
          (3.543 - 2.756) / 2
-       ], 8.8 / 2 / 25.4, %), %)
-    |> hole(circle([
+       ], radius: 8.8 / 2 / 25.4 }, %), %)
+    |> hole(circle({ center: [
          (3.543 - 2.756) / 2 + 2.756,
          (3.543 - 2.756) / 2
-       ], 8.8 / 2 / 25.4, %), %)
-    |> hole(circle([
+       ], radius: 8.8 / 2 / 25.4 }, %), %)
+    |> hole(circle({ center: [
          (3.543 - 2.756) / 2,
          (3.543 - 2.756) / 2 + 2.756
-       ], 8.8 / 2 / 25.4, %), %)
-    |> hole(circle([
+       ], radius: 8.8 / 2 / 25.4 }, %), %)
+    |> hole(circle({ center: [
          (3.543 - 2.756) / 2 + 2.756,
          (3.543 - 2.756) / 2 + 2.756
-       ], 8.8 / 2 / 25.4, %), %)
+       ], radius: 8.8 / 2 / 25.4 }, %), %)
     |> extrude(-.25, %)
 
   const sketch002c = startSketchOn(sketch001c, 'START')
@@ -69,7 +69,7 @@ fn caster = (originStart) => {
     }
   }
   const sketch003c = startSketchOn(plane002c)
-    |> circle([0, 1.2], 2.48 / 2, %)
+    |> circle({ center: [0, 1.2], radisu: 2.48 / 2 }, %)
   const examplec = extrude(-1 - (3 / 16), sketch003c)
   return examplec
 }
@@ -721,7 +721,7 @@ const sketch010fl = startSketchOn(extrude001fl, 'START')
   |> close(%)
   |> patternLinear2d({
        axis: [0, 1],
-       repetitions: 1,
+       instances: 2,
        distance: 1.22
      }, %)
 const extrude010fl = extrude(-thickness, sketch010fl)
@@ -759,7 +759,7 @@ const sketch012fl = startSketchOn(extrude001fl, 'START')
   |> close(%)
   |> patternLinear2d({
        axis: [0, -1],
-       repetitions: 1,
+       instances: 2,
        distance: 1.22
      }, %)
 const extrude012fl = extrude(-thickness, sketch012fl)
@@ -871,7 +871,7 @@ const sketch010fr = startSketchOn(extrude001fr, 'START')
   |> close(%)
   |> patternLinear2d({
        axis: [0, 1],
-       repetitions: 1,
+       instances: 2,
        distance: 1.22
      }, %)
 const extrude010fr = extrude(-thickness, sketch010fr)
@@ -909,7 +909,7 @@ const sketch012fr = startSketchOn(extrude001fr, 'START')
   |> close(%)
   |> patternLinear2d({
        axis: [0, -1],
-       repetitions: 1,
+       instances: 2,
        distance: 1.22
      }, %)
 const extrude012fr = extrude(-thickness, sketch012fr)
@@ -1021,7 +1021,7 @@ const sketch010rr = startSketchOn(extrude001rr, 'START')
   |> close(%)
   |> patternLinear2d({
        axis: [0, 1],
-       repetitions: 1,
+       instances: 2,
        distance: 1.22
      }, %)
 const extrude010rr = extrude(-thickness, sketch010rr)
@@ -1059,7 +1059,7 @@ const sketch012rr = startSketchOn(extrude001rr, 'START')
   |> close(%)
   |> patternLinear2d({
        axis: [0, -1],
-       repetitions: 1,
+       instances: 2,
        distance: 1.22
      }, %)
 const extrude012rr = extrude(-thickness, sketch012rr)
@@ -1170,7 +1170,7 @@ const sketch010rl = startSketchOn(extrude001rl, 'START')
   |> close(%)
   |> patternLinear2d({
        axis: [0, 1],
-       repetitions: 1,
+       instances: 2,
        distance: 1.22
      }, %)
 const extrude010rl = extrude(-thickness, sketch010rl)
@@ -1208,7 +1208,7 @@ const sketch012rl = startSketchOn(extrude001rl, 'START')
   |> close(%)
   |> patternLinear2d({
        axis: [0, -1],
-       repetitions: 1,
+       instances: 2,
        distance: 1.22
      }, %)
 const extrude012rl = extrude(-thickness, sketch012rl)

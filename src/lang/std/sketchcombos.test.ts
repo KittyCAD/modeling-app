@@ -1,4 +1,4 @@
-import { parse, Expr, recast, initPromise } from '../wasm'
+import { assertParse, Expr, recast, initPromise, Program } from '../wasm'
 import {
   getConstraintType,
   getTransformInfos,
@@ -9,9 +9,10 @@ import {
   getConstraintLevelFromSourceRange,
 } from './sketchcombos'
 import { ToolTip } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
+import { Selections, Selection } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
+import { codeRefFromRange } from './artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -65,8 +66,7 @@ describe('testing getConstraintType', () => {
 function getConstraintTypeFromSourceHelper(
   code: string
 ): ReturnType<typeof getConstraintType> | Error {
-  const ast = parse(code)
-  if (err(ast)) return ast
+  const ast = assertParse(code)
 
   const args = (ast.body[0] as any).expression.arguments[0].elements as [
     Expr,
@@ -78,8 +78,7 @@ function getConstraintTypeFromSourceHelper(
 function getConstraintTypeFromSourceHelper2(
   code: string
 ): ReturnType<typeof getConstraintType> | Error {
-  const ast = parse(code)
-  if (err(ast)) return ast
+  const ast = assertParse(code)
 
   const arg = (ast.body[0] as any).expression.arguments[0] as Expr
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
@@ -87,21 +86,105 @@ function getConstraintTypeFromSourceHelper2(
 }
 
 function makeSelections(
-  codeBaseSelections: Selections['codeBasedSelections']
+  graphSelections: Selections['graphSelections']
 ): Selections {
   return {
-    codeBasedSelections: codeBaseSelections,
+    graphSelections: graphSelections,
     otherSelections: [],
   }
 }
 
 describe('testing transformAstForSketchLines for equal length constraint', () => {
-  const inputScript = `const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
-const part001 = startSketchOn('XY')
+  describe(`should always reorder selections to have the base selection first`, () => {
+    const inputScript = `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 5], %)
+  |> line([-2, 5], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`
+
+    const expectedModifiedScript = `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([5, 5], %, $seg01)
+  |> angledLine([112, segLen(seg01)], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`
+
+    const selectLine = (
+      script: string,
+      lineNumber: number,
+      ast: Program
+    ): Selection => {
+      const lines = script.split('\n')
+      const codeBeforeLine = lines.slice(0, lineNumber).join('\n').length
+      const line = lines.find((_, i) => i === lineNumber)
+      if (!line) {
+        throw new Error(
+          `line index ${lineNumber} not found in test sample, friend`
+        )
+      }
+      const start = codeBeforeLine + line.indexOf('|> ' + 5)
+      const range: [number, number, boolean] = [start, start, true]
+      return {
+        codeRef: codeRefFromRange(range, ast),
+      }
+    }
+
+    async function applyTransformation(
+      inputCode: string,
+      selectionRanges: Selections['graphSelections']
+    ) {
+      const ast = assertParse(inputCode)
+      const execState = await enginelessExecutor(ast)
+      const transformInfos = getTransformInfos(
+        makeSelections(selectionRanges.slice(1)),
+        ast,
+        'equalLength'
+      )
+
+      const transformedSelection = makeSelections(selectionRanges)
+
+      const newAst = transformSecondarySketchLinesTagFirst({
+        ast,
+        selectionRanges: transformedSelection,
+        transformInfos,
+        programMemory: execState.memory,
+      })
+      if (err(newAst)) return Promise.reject(newAst)
+
+      const newCode = recast(newAst.modifiedAst)
+      return newCode
+    }
+
+    it(`Should reorder when user selects first-to-last`, async () => {
+      const ast = assertParse(inputScript)
+      const selectionRanges: Selections['graphSelections'] = [
+        selectLine(inputScript, 3, ast),
+        selectLine(inputScript, 4, ast),
+      ]
+
+      const newCode = await applyTransformation(inputScript, selectionRanges)
+      expect(newCode).toBe(expectedModifiedScript)
+    })
+
+    it(`Should reorder when user selects last-to-first`, async () => {
+      const ast = assertParse(inputScript)
+      const selectionRanges: Selections['graphSelections'] = [
+        selectLine(inputScript, 4, ast),
+        selectLine(inputScript, 3, ast),
+      ]
+
+      const newCode = await applyTransformation(inputScript, selectionRanges)
+      expect(newCode).toBe(expectedModifiedScript)
+    })
+  })
+  const inputScript = `myVar = 3
+myVar2 = 5
+myVar3 = 6
+myAng = 40
+myAng2 = 134
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %) // ln-should-get-tag
   |> lineTo([myVar, 1], %) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
@@ -132,12 +215,12 @@ const part001 = startSketchOn('XY')
   |> xLineTo(30, %) // ln-xLineTo-free should convert to xLine
   |> yLineTo(20, %) // ln-yLineTo-free should convert to yLine
 `
-  const expectModifiedScript = `const myVar = 3
-const myVar2 = 5
-const myVar3 = 6
-const myAng = 40
-const myAng2 = 134
-const part001 = startSketchOn('XY')
+  const expectModifiedScript = `myVar = 3
+myVar2 = 5
+myVar3 = 6
+myAng = 40
+myAng2 = 134
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
   |> angledLineToX([
@@ -205,22 +288,20 @@ const part001 = startSketchOn('XY')
   |> yLine(segLen(seg01), %) // ln-yLineTo-free should convert to yLine
 `
   it('should transform the ast', async () => {
-    const ast = parse(inputScript)
-    if (err(ast)) return Promise.reject(ast)
+    const ast = assertParse(inputScript)
 
-    const selectionRanges: Selections['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('//'))
       .map((ln) => {
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          type: 'default',
-          range: [start, start],
+          codeRef: codeRefFromRange([start, start, true], ast),
         }
       })
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges.slice(1)),
       ast,
@@ -231,7 +312,7 @@ const part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory,
+      programMemory: execState.memory,
     })
     if (err(newAst)) return Promise.reject(newAst)
 
@@ -241,10 +322,10 @@ const part001 = startSketchOn('XY')
 })
 
 describe('testing transformAstForSketchLines for vertical and horizontal constraint', () => {
-  const inputScript = `const myVar = 2
-const myVar2 = 12
-const myVar3 = -10
-const part001 = startSketchOn('XY')
+  const inputScript = `myVar = 2
+myVar2 = 12
+myVar3 = -10
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
@@ -269,10 +350,10 @@ const part001 = startSketchOn('XY')
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 `
   it('should transform horizontal lines the ast', async () => {
-    const expectModifiedScript = `const myVar = 2
-const myVar2 = 12
-const myVar3 = -10
-const part001 = startSketchOn('XY')
+    const expectModifiedScript = `myVar = 2
+myVar2 = 12
+myVar3 = -10
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> xLine(-6.28, %) // select for horizontal constraint 1
@@ -296,22 +377,20 @@ const part001 = startSketchOn('XY')
   |> xLineTo(myVar3, %) // select for horizontal constraint 10
   |> angledLineToY([301, myVar], %) // select for vertical constraint 10
 `
-    const ast = parse(inputScript)
-    if (err(ast)) return Promise.reject(ast)
+    const ast = assertParse(inputScript)
 
-    const selectionRanges: Selections['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for horizontal constraint'))
       .map((ln) => {
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          type: 'default',
-          range: [start, start],
+          codeRef: codeRefFromRange([start, start, true], ast),
         }
       })
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -322,7 +401,7 @@ const part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory,
+      programMemory: execState.memory,
       referenceSegName: '',
     })
     if (err(newAst)) return Promise.reject(newAst)
@@ -331,10 +410,10 @@ const part001 = startSketchOn('XY')
     expect(newCode).toBe(expectModifiedScript)
   })
   it('should transform vertical lines the ast', async () => {
-    const expectModifiedScript = `const myVar = 2
-const myVar2 = 12
-const myVar3 = -10
-const part001 = startSketchOn('XY')
+    const expectModifiedScript = `myVar = 2
+myVar2 = 12
+myVar3 = -10
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> lineTo([1, 1], %)
   |> line([-6.28, 1.4], %) // select for horizontal constraint 1
@@ -358,22 +437,20 @@ const part001 = startSketchOn('XY')
   |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
   |> yLineTo(myVar, %) // select for vertical constraint 10
 `
-    const ast = parse(inputScript)
-    if (err(ast)) return Promise.reject(ast)
+    const ast = assertParse(inputScript)
 
-    const selectionRanges: Selections['codeBasedSelections'] = inputScript
+    const selectionRanges: Selections['graphSelections'] = inputScript
       .split('\n')
       .filter((ln) => ln.includes('// select for vertical constraint'))
       .map((ln) => {
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          type: 'default',
-          range: [start, start],
+          codeRef: codeRefFromRange([start, start, true], ast),
         }
       })
 
-    const programMemory = await enginelessExecutor(ast)
+    const execState = await enginelessExecutor(ast)
     const transformInfos = getTransformInfos(
       makeSelections(selectionRanges),
       ast,
@@ -384,7 +461,7 @@ const part001 = startSketchOn('XY')
       ast,
       selectionRanges: makeSelections(selectionRanges),
       transformInfos,
-      programMemory,
+      programMemory: execState.memory,
       referenceSegName: '',
     })
     if (err(newAst)) return Promise.reject(newAst)
@@ -396,8 +473,8 @@ const part001 = startSketchOn('XY')
 
 describe('testing transformAstForSketchLines for vertical and horizontal distance constraints', () => {
   describe('testing setHorzDistance for line', () => {
-    const inputScript = `const myVar = 1
-const part001 = startSketchOn('XY')
+    const inputScript = `myVar = 1
+part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> line([0.31, 1.67], %) // base selection
   |> line([0.45, 1.46], %)
@@ -453,10 +530,9 @@ async function helperThing(
   linesOfInterest: string[],
   constraint: ConstraintType
 ): Promise<string> {
-  const ast = parse(inputScript)
-  if (err(ast)) return Promise.reject(ast)
+  const ast = assertParse(inputScript)
 
-  const selectionRanges: Selections['codeBasedSelections'] = inputScript
+  const selectionRanges: Selections['graphSelections'] = inputScript
     .split('\n')
     .filter((ln) =>
       linesOfInterest.some((lineOfInterest) => ln.includes(lineOfInterest))
@@ -465,12 +541,11 @@ async function helperThing(
       const comment = ln.split('//')[1]
       const start = inputScript.indexOf('//' + comment) - 7
       return {
-        type: 'default',
-        range: [start, start],
+        codeRef: codeRefFromRange([start, start, true], ast),
       }
     })
 
-  const programMemory = await enginelessExecutor(ast)
+  const execState = await enginelessExecutor(ast)
   const transformInfos = getTransformInfos(
     makeSelections(selectionRanges.slice(1)),
     ast,
@@ -481,7 +556,7 @@ async function helperThing(
     ast,
     selectionRanges: makeSelections(selectionRanges),
     transformInfos,
-    programMemory,
+    programMemory: execState.memory,
   })
 
   if (err(newAst)) return Promise.reject(newAst)
@@ -505,7 +580,7 @@ const baseThickHalf = baseThick / 2
 const halfHeight = totalHeight / 2
 const halfArmAngle = armAngle / 2
 
-const part001 = startSketchOn('XY')
+part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.05], %)
   |> line([0.01, 0.94 + 0], %) // partial
   |> xLine(3.03, %) // partial
@@ -522,10 +597,10 @@ const part001 = startSketchOn('XY')
   |> line([-1.49, 1.06], %) // free
   |> xLine(-3.43 + 0, %) // full
   |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full`
-    const ast = parse(code)
+    const ast = assertParse(code)
     const constraintLevels: ConstraintLevel[] = ['full', 'partial', 'free']
     constraintLevels.forEach((constraintLevel) => {
-      const recursivelySeachCommentsAndCheckConstraintLevel = (
+      const recursivelySearchCommentsAndCheckConstraintLevel = (
         str: string,
         offset: number = 0
       ): null => {
@@ -535,19 +610,19 @@ const part001 = startSketchOn('XY')
         }
         const offsetIndex = index - 7
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
-          [offsetIndex, offsetIndex],
+          [offsetIndex, offsetIndex, true],
           ast
         )
         if (err(expectedConstraintLevel)) {
           throw expectedConstraintLevel
         }
         expect(expectedConstraintLevel.level).toBe(constraintLevel)
-        return recursivelySeachCommentsAndCheckConstraintLevel(
+        return recursivelySearchCommentsAndCheckConstraintLevel(
           str,
           index + constraintLevel.length
         )
       }
-      recursivelySeachCommentsAndCheckConstraintLevel(code)
+      recursivelySearchCommentsAndCheckConstraintLevel(code)
     })
   })
 })

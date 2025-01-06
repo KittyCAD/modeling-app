@@ -74,7 +74,9 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                 selectedCommand.icon && (
                   <CustomIcon name={selectedCommand.icon} className="w-5 h-5" />
                 )}
-              {selectedCommand.displayName || selectedCommand.name}
+              <span data-testid="command-name">
+                {selectedCommand.displayName || selectedCommand.name}
+              </span>
             </p>
             {Object.entries(selectedCommand?.args || {})
               .filter(([_, argConfig]) =>
@@ -92,6 +94,10 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
 
                 return (
                   <button
+                    data-testid="cmd-bar-input-tab"
+                    data-is-current-arg={
+                      argName === currentArgument?.name ? 'true' : 'false'
+                    }
                     disabled={!isReviewing && currentArgument?.name === argName}
                     onClick={() => {
                       commandBarSend({
@@ -110,29 +116,38 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                   >
                     <span
                       data-testid={`arg-name-${argName.toLowerCase()}`}
+                      data-test-name="arg-name"
                       className="capitalize"
                     >
                       {argName}
                     </span>
                     <span className="sr-only">:&nbsp;</span>
-                    {argValue ? (
-                      arg.inputType === 'selection' ? (
-                        getSelectionTypeDisplayText(argValue as Selections)
-                      ) : arg.inputType === 'kcl' ? (
-                        roundOff(
-                          Number((argValue as KclCommandValue).valueCalculated),
-                          4
-                        )
-                      ) : typeof argValue === 'object' ? (
-                        arg.valueSummary ? (
-                          arg.valueSummary(argValue)
+                    <span data-testid="header-arg-value">
+                      {argValue ? (
+                        arg.inputType === 'selection' ? (
+                          getSelectionTypeDisplayText(argValue as Selections)
+                        ) : arg.inputType === 'kcl' ? (
+                          roundOff(
+                            Number(
+                              (argValue as KclCommandValue).valueCalculated
+                            ),
+                            4
+                          )
+                        ) : typeof argValue === 'object' ? (
+                          arg.valueSummary ? (
+                            arg.valueSummary(argValue)
+                          ) : (
+                            JSON.stringify(argValue)
+                          )
                         ) : (
-                          JSON.stringify(argValue)
+                          <em>
+                            {arg.valueSummary
+                              ? arg.valueSummary(argValue)
+                              : argValue}
+                          </em>
                         )
-                      ) : (
-                        <em>{argValue}</em>
-                      )
-                    ) : null}
+                      ) : null}
+                    </span>
                     {showShortcuts && (
                       <small className="absolute -top-[1px] right-full translate-x-1/2 px-0.5 rounded-sm bg-chalkboard-80 text-chalkboard-10 dark:bg-primary dark:text-chalkboard-100">
                         <span className="sr-only">Hotkey: </span>
@@ -179,7 +194,7 @@ function ReviewingButton() {
       autoFocus
       type="submit"
       form="review-form"
-      className="w-fit !p-0 rounded-sm border !border-primary hover:shadow"
+      className="w-fit !p-0 rounded-sm hover:shadow"
       iconStart={{
         icon: 'checkmark',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',
@@ -197,7 +212,7 @@ function GatheringArgsButton() {
       Element="button"
       type="submit"
       form="arg-form"
-      className="w-fit !p-0 rounded-sm border !border-primary hover:shadow"
+      className="w-fit !p-0 rounded-sm hover:shadow"
       iconStart={{
         icon: 'arrowRight',
         bgClassName: 'p-1 rounded-sm !bg-primary hover:brightness-110',

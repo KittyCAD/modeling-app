@@ -1,4 +1,4 @@
-import { parse, initPromise } from './wasm'
+import { assertParse, initPromise } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 
 beforeAll(async () => {
@@ -14,14 +14,13 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([-1.59, -1.54], %)
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)`
-    const programMemory = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
     // @ts-ignore
-    const sketch001 = programMemory?.get('mySketch001')
+    const sketch001 = execState.memory.get('mySketch001')
     expect(sketch001).toEqual({
-      type: 'UserVal',
-      __meta: [{ sourceRange: [46, 71] }],
+      type: 'Sketch',
       value: {
-        type: 'SketchGroup',
+        type: 'Sketch',
         on: expect.any(Object),
         start: {
           to: [0, 0],
@@ -29,17 +28,17 @@ const mySketch001 = startSketchOn('XY')
           tag: null,
           __geoMeta: {
             id: expect.any(String),
-            sourceRange: [46, 71],
+            sourceRange: [46, 71, 0],
           },
         },
-        value: [
+        paths: [
           {
             type: 'ToPoint',
             tag: null,
             to: [-1.59, -1.54],
             from: [0, 0],
             __geoMeta: {
-              sourceRange: [77, 102],
+              sourceRange: [77, 102, 0],
               id: expect.any(String),
             },
           },
@@ -49,13 +48,13 @@ const mySketch001 = startSketchOn('XY')
             from: [-1.59, -1.54],
             tag: null,
             __geoMeta: {
-              sourceRange: [108, 132],
+              sourceRange: [108, 132, 0],
               id: expect.any(String),
             },
           },
         ],
         id: expect.any(String),
-        __meta: [{ sourceRange: [46, 71] }],
+        __meta: [{ sourceRange: [46, 71, 0] }],
       },
     })
   })
@@ -68,11 +67,11 @@ const mySketch001 = startSketchOn('XY')
   |> lineTo([0.46, -5.82], %)
   // |> rx(45, %)
   |> extrude(2, %)`
-    const programMemory = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
     // @ts-ignore
-    const sketch001 = programMemory?.get('mySketch001')
+    const sketch001 = execState.memory.get('mySketch001')
     expect(sketch001).toEqual({
-      type: 'ExtrudeGroup',
+      type: 'Solid',
       id: expect.any(String),
       value: [
         {
@@ -80,23 +79,23 @@ const mySketch001 = startSketchOn('XY')
           faceId: expect.any(String),
           tag: null,
           id: expect.any(String),
-          sourceRange: [77, 102],
+          sourceRange: [77, 102, 0],
         },
         {
           type: 'extrudePlane',
           faceId: expect.any(String),
           tag: null,
           id: expect.any(String),
-          sourceRange: [108, 132],
+          sourceRange: [108, 132, 0],
         },
       ],
-      sketchGroup: {
+      sketch: {
         id: expect.any(String),
         __meta: expect.any(Array),
         on: expect.any(Object),
         start: expect.any(Object),
-        type: 'SketchGroup',
-        value: [
+        type: 'Sketch',
+        paths: [
           {
             type: 'ToPoint',
             from: [0, 0],
@@ -104,7 +103,7 @@ const mySketch001 = startSketchOn('XY')
             tag: null,
             __geoMeta: {
               id: expect.any(String),
-              sourceRange: [77, 102],
+              sourceRange: [77, 102, 0],
             },
           },
           {
@@ -114,7 +113,7 @@ const mySketch001 = startSketchOn('XY')
             tag: null,
             __geoMeta: {
               id: expect.any(String),
-              sourceRange: [108, 132],
+              sourceRange: [108, 132, 0],
             },
           },
         ],
@@ -122,7 +121,7 @@ const mySketch001 = startSketchOn('XY')
       height: 2,
       startCapId: expect.any(String),
       endCapId: expect.any(String),
-      __meta: [{ sourceRange: [46, 71] }],
+      __meta: [{ sourceRange: [46, 71, 0] }],
     })
   })
   test('sketch extrude and sketch on one of the faces', async () => {
@@ -148,12 +147,13 @@ const sk2 = startSketchOn('XY')
   |> extrude(2, %)
 
 `
-    const programMemory = await enginelessExecutor(parse(code))
+    const execState = await enginelessExecutor(assertParse(code))
+    const programMemory = execState.memory
     // @ts-ignore
-    const geos = [programMemory?.get('theExtrude'), programMemory?.get('sk2')]
+    const geos = [programMemory.get('theExtrude'), programMemory.get('sk2')]
     expect(geos).toEqual([
       {
-        type: 'ExtrudeGroup',
+        type: 'Solid',
         id: expect.any(String),
         value: [
           {
@@ -161,7 +161,7 @@ const sk2 = startSketchOn('XY')
             faceId: expect.any(String),
             tag: null,
             id: expect.any(String),
-            sourceRange: [69, 89],
+            sourceRange: [69, 89, 0],
           },
           {
             type: 'extrudePlane',
@@ -171,30 +171,29 @@ const sk2 = startSketchOn('XY')
               start: 114,
               type: 'TagDeclarator',
               value: 'p',
-              digest: null,
             },
             id: expect.any(String),
-            sourceRange: [95, 117],
+            sourceRange: [95, 117, 0],
           },
           {
             type: 'extrudePlane',
             faceId: expect.any(String),
             tag: null,
             id: expect.any(String),
-            sourceRange: [123, 142],
+            sourceRange: [123, 142, 0],
           },
         ],
-        sketchGroup: {
+        sketch: {
           id: expect.any(String),
           __meta: expect.any(Array),
           on: expect.any(Object),
           start: expect.any(Object),
-          type: 'SketchGroup',
+          type: 'Sketch',
           tags: {
             p: {
               __meta: [
                 {
-                  sourceRange: [114, 116],
+                  sourceRange: [114, 116, 0],
                 },
               ],
               type: 'TagIdentifier',
@@ -202,7 +201,7 @@ const sk2 = startSketchOn('XY')
               info: expect.any(Object),
             },
           },
-          value: [
+          paths: [
             {
               type: 'ToPoint',
               from: [0, 0],
@@ -210,7 +209,7 @@ const sk2 = startSketchOn('XY')
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
-                sourceRange: [69, 89],
+                sourceRange: [69, 89, 0],
               },
             },
             {
@@ -222,11 +221,10 @@ const sk2 = startSketchOn('XY')
                 start: 114,
                 type: 'TagDeclarator',
                 value: 'p',
-                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),
-                sourceRange: [95, 117],
+                sourceRange: [95, 117, 0],
               },
             },
             {
@@ -236,7 +234,7 @@ const sk2 = startSketchOn('XY')
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
-                sourceRange: [123, 142],
+                sourceRange: [123, 142, 0],
               },
             },
           ],
@@ -244,10 +242,10 @@ const sk2 = startSketchOn('XY')
         height: 2,
         startCapId: expect.any(String),
         endCapId: expect.any(String),
-        __meta: [{ sourceRange: [38, 63] }],
+        __meta: [{ sourceRange: [38, 63, 0] }],
       },
       {
-        type: 'ExtrudeGroup',
+        type: 'Solid',
         id: expect.any(String),
         value: [
           {
@@ -255,7 +253,7 @@ const sk2 = startSketchOn('XY')
             faceId: expect.any(String),
             tag: null,
             id: expect.any(String),
-            sourceRange: [373, 393],
+            sourceRange: [373, 393, 0],
           },
           {
             type: 'extrudePlane',
@@ -265,30 +263,29 @@ const sk2 = startSketchOn('XY')
               start: 417,
               type: 'TagDeclarator',
               value: 'o',
-              digest: null,
             },
             id: expect.any(String),
-            sourceRange: [399, 420],
+            sourceRange: [399, 420, 0],
           },
           {
             type: 'extrudePlane',
             faceId: expect.any(String),
             tag: null,
             id: expect.any(String),
-            sourceRange: [426, 445],
+            sourceRange: [426, 445, 0],
           },
         ],
-        sketchGroup: {
+        sketch: {
           id: expect.any(String),
           __meta: expect.any(Array),
           on: expect.any(Object),
           start: expect.any(Object),
-          type: 'SketchGroup',
+          type: 'Sketch',
           tags: {
             o: {
               __meta: [
                 {
-                  sourceRange: [417, 419],
+                  sourceRange: [417, 419, 0],
                 },
               ],
               type: 'TagIdentifier',
@@ -296,7 +293,7 @@ const sk2 = startSketchOn('XY')
               info: expect.any(Object),
             },
           },
-          value: [
+          paths: [
             {
               type: 'ToPoint',
               from: [0, 0],
@@ -304,7 +301,7 @@ const sk2 = startSketchOn('XY')
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
-                sourceRange: [373, 393],
+                sourceRange: [373, 393, 0],
               },
             },
             {
@@ -316,11 +313,10 @@ const sk2 = startSketchOn('XY')
                 start: 417,
                 type: 'TagDeclarator',
                 value: 'o',
-                digest: null,
               },
               __geoMeta: {
                 id: expect.any(String),
-                sourceRange: [399, 420],
+                sourceRange: [399, 420, 0],
               },
             },
             {
@@ -330,7 +326,7 @@ const sk2 = startSketchOn('XY')
               tag: null,
               __geoMeta: {
                 id: expect.any(String),
-                sourceRange: [426, 445],
+                sourceRange: [426, 445, 0],
               },
             },
           ],
@@ -338,7 +334,7 @@ const sk2 = startSketchOn('XY')
         height: 2,
         startCapId: expect.any(String),
         endCapId: expect.any(String),
-        __meta: [{ sourceRange: [342, 367] }],
+        __meta: [{ sourceRange: [342, 367, 0] }],
       },
     ])
   })

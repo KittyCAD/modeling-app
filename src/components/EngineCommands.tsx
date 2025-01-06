@@ -1,5 +1,6 @@
 import { CommandLog } from 'lang/std/engineConnection'
 import { engineCommandManager } from 'lib/singletons'
+import { reportRejection } from 'lib/trap'
 import { useState, useEffect } from 'react'
 
 export function useEngineCommands(): [CommandLog[], () => void] {
@@ -63,7 +64,10 @@ export const EngineCommands = () => {
           )
         })}
       </div>
-      <button data-testid="clear-commands" onClick={clearEngineCommands}>
+      <button
+        data-testid="clear-commands"
+        onClick={() => clearEngineCommands()}
+      >
         Clear
       </button>
       <br />
@@ -77,9 +81,11 @@ export const EngineCommands = () => {
       />
       <button
         data-testid="custom-cmd-send-button"
-        onClick={() =>
-          engineCommandManager.sendSceneCommand(JSON.parse(customCmd))
-        }
+        onClick={() => {
+          engineCommandManager
+            .sendSceneCommand(JSON.parse(customCmd))
+            .catch(reportRejection)
+        }}
       >
         Send custom command
       </button>

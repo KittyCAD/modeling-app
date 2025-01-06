@@ -1,22 +1,21 @@
 import { toolTips } from 'lang/langHelpers'
-import { BinaryPart, Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
+import { getNodeFromPath } from '../../lang/queryAst'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
   transformSecondarySketchLinesTagFirst,
   getTransformInfos,
   PathToNodeMap,
-  TransformInfo,
+  isExprBinaryPart,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import { GetInfoModal, createInfoModal } from '../SetHorVertDistanceModal'
 import { createLiteral, createVariableDeclaration } from '../../lang/modifyAst'
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 const getModalInfo = createInfoModal(GetInfoModal)
 
@@ -32,11 +31,8 @@ export function horzVertDistanceInfo({
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -45,10 +41,10 @@ export function horzVertDistanceInfo({
   if (hasErr) return nodesWErrs[0]
   const nodes = _nodes as Expr[]
 
-  const _varDecs = paths.map((pathToNode) => {
+  const _varDecs = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<VariableDeclarator>(
       kclManager.ast,
-      pathToNode,
+      codeRef.pathToNode,
       'VariableDeclarator'
     )
     if (err(tmp)) return tmp
@@ -75,7 +71,7 @@ export function horzVertDistanceInfo({
   const theTransforms = getTransformInfos(
     {
       ...selectionRanges,
-      codeBasedSelections: selectionRanges.codeBasedSelections.slice(1),
+      graphSelections: selectionRanges.graphSelections.slice(1),
     },
     kclManager.ast,
     constraint
@@ -102,7 +98,7 @@ export async function applyConstraintHorzVertDistance({
   pathToNodeMap: PathToNodeMap
 }> {
   const info = horzVertDistanceInfo({
-    selectionRanges,
+    selectionRanges: selectionRanges,
     constraint,
   })
   if (err(info)) return Promise.reject(info)
@@ -139,9 +135,11 @@ export async function applyConstraintHorzVertDistance({
       pathToNodeMap,
     }
   } else {
+    if (!isExprBinaryPart(valueNode))
+      return Promise.reject('Invalid valueNode, is not a BinaryPart')
     let finalValue = isAlign
       ? createLiteral(0)
-      : removeDoubleNegatives(valueNode as BinaryPart, sign, variableName)
+      : removeDoubleNegatives(valueNode, sign, variableName)
     // transform again but forcing certain values
     const transformed = transformSecondarySketchLinesTagFirst({
       ast: kclManager.ast,
@@ -182,7 +180,7 @@ export function applyConstraintHorzVertAlign({
   constraint: 'setHorzDistance' | 'setVertDistance'
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {

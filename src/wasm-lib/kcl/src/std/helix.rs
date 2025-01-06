@@ -2,13 +2,14 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExtrudeGroup, KclValue},
+    execution::{ExecState, KclValue, Solid},
     std::Args,
 };
 
@@ -26,50 +27,52 @@ pub struct HelixData {
     #[serde(default)]
     pub ccw: bool,
     /// Length of the helix. If this argument is not provided, the height of
-    /// the extrude group is used.
+    /// the solid is used.
     pub length: Option<f64>,
 }
 
 /// Create a helix on a cylinder.
-pub async fn helix(args: Args) -> Result<KclValue, KclError> {
-    let (data, extrude_group): (HelixData, Box<ExtrudeGroup>) = args.get_data_and_extrude_group()?;
+pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (data, solid): (HelixData, Box<Solid>) = args.get_data_and_solid()?;
 
-    let extrude_group = inner_helix(data, extrude_group, args).await?;
-    Ok(KclValue::ExtrudeGroup(extrude_group))
+    let solid = inner_helix(data, solid, exec_state, args).await?;
+    Ok(KclValue::Solid(solid))
 }
 
 /// Create a helix on a cylinder.
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
-///   |> circle([5, 5], 10, %)
+/// part001 = startSketchOn('XY')
+///   |> circle({ center: [5, 5], radius: 10 }, %)
 ///   |> extrude(10, %)
 ///   |> helix({
-///     angleStart: 0,
-///     ccw: true,
-///     revolutions: 16,
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 16,
 ///  }, %)
 /// ```
 #[stdlib {
     name = "helix",
+    feature_tree_operation = true,
 }]
 async fn inner_helix(
     data: HelixData,
-    extrude_group: Box<ExtrudeGroup>,
+    solid: Box<Solid>,
+    exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
-    let id = uuid::Uuid::new_v4();
+) -> Result<Box<Solid>, KclError> {
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
-        ModelingCmd::EntityMakeHelix {
-            cylinder_id: extrude_group.id,
+        ModelingCmd::from(mcmd::EntityMakeHelix {
+            cylinder_id: solid.id,
             is_clockwise: !data.ccw,
-            length: data.length.unwrap_or(extrude_group.height),
+            length: LengthUnit(data.length.unwrap_or(solid.height)),
             revolutions: data.revolutions,
-            start_angle: kittycad::types::Angle::from_degrees(data.angle_start),
-        },
+            start_angle: Angle::from_degrees(data.angle_start),
+        }),
     )
     .await?;
 
-    Ok(extrude_group)
+    Ok(solid)
 }

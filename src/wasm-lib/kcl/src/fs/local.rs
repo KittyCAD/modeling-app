@@ -5,6 +5,7 @@ use anyhow::Result;
 use crate::{
     errors::{KclError, KclErrorDetails},
     fs::FileSystem,
+    SourceRange,
 };
 
 #[derive(Debug, Clone)]
@@ -27,9 +28,22 @@ impl FileSystem for FileManager {
     async fn read<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<Vec<u8>, KclError> {
         tokio::fs::read(&path).await.map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to read file `{}`: {}", path.as_ref().display(), e),
+                source_ranges: vec![source_range],
+            })
+        })
+    }
+
+    async fn read_to_string<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
+        &self,
+        path: P,
+        source_range: SourceRange,
+    ) -> Result<String, KclError> {
+        tokio::fs::read_to_string(&path).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to read file `{}`: {}", path.as_ref().display(), e),
                 source_ranges: vec![source_range],
@@ -40,7 +54,7 @@ impl FileSystem for FileManager {
     async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<bool, crate::errors::KclError> {
         tokio::fs::metadata(&path).await.map(|_| true).or_else(|e| {
             if e.kind() == std::io::ErrorKind::NotFound {
@@ -57,7 +71,7 @@ impl FileSystem for FileManager {
     async fn get_all_files<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<Vec<std::path::PathBuf>, crate::errors::KclError> {
         let mut files = vec![];
         let mut stack = vec![path.as_ref().to_path_buf()];

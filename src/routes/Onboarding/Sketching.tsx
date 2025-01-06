@@ -2,10 +2,8 @@ import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEffect } from 'react'
 import { codeManager, kclManager } from 'lib/singletons'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function Sketching() {
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.FUTURE_WORK)
 
@@ -16,6 +14,7 @@ export default function Sketching() {
       await kclManager.executeCode(true)
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     clearEditor()
   }, [])
 
@@ -23,8 +22,7 @@ export default function Sketching() {
     <div className="fixed grid justify-center items-end inset-0 z-50 pointer-events-none">
       <div
         className={
-          'max-w-full xl:max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
+          'pointer-events-auto max-w-full xl:max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <h1 className="text-2xl font-bold">Sketching</h1>

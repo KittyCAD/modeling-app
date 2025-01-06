@@ -86,10 +86,39 @@ fn test_args_with_lifetime() {
 }
 
 #[test]
+fn test_args_with_exec_state() {
+    let (item, mut errors) = do_stdlib(
+        quote! {
+            name = "someFunction",
+        },
+        quote! {
+            /// Docs
+            /// ```
+            /// someFunction()
+            /// ```
+            fn inner_some_function<'a>(
+                exec_state: &mut ExecState,
+                args: &Args,
+            ) -> i32 {
+                3
+            }
+        },
+    )
+    .unwrap();
+    if let Some(e) = errors.pop() {
+        panic!("{e}");
+    }
+    expectorate::assert_contents("tests/test_args_with_exec_state.gen", &get_text_fmt(&item).unwrap());
+}
+
+#[test]
 fn test_stdlib_line_to() {
     let (item, errors) = do_stdlib(
         quote! {
             name = "lineTo",
+            arg_docs = {
+                sketch = "the sketch you're adding the line to"
+            }
         },
         quote! {
             /// This is some function.
@@ -106,9 +135,9 @@ fn test_stdlib_line_to() {
             /// ```
             fn inner_line_to(
                 data: LineToData,
-                sketch_group: SketchGroup,
+                sketch: Sketch,
                 args: &Args,
-            ) -> Result<SketchGroup, KclError> {
+            ) -> Result<Sketch, KclError> {
                 Ok(())
             }
         },
@@ -303,7 +332,7 @@ fn test_stdlib_option_input_format() {
 }
 
 #[test]
-fn test_stdlib_return_vec_sketch_group() {
+fn test_stdlib_return_vec_sketch() {
     let (item, errors) = do_stdlib(
         quote! {
             name = "import",
@@ -318,7 +347,7 @@ fn test_stdlib_return_vec_sketch_group() {
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
-            ) -> Result<Vec<SketchGroup>> {
+            ) -> Result<Vec<Sketch>> {
                 args
             }
         },
@@ -326,11 +355,11 @@ fn test_stdlib_return_vec_sketch_group() {
     .unwrap();
 
     assert!(errors.is_empty());
-    expectorate::assert_contents("tests/return_vec_sketch_group.gen", &get_text_fmt(&item).unwrap());
+    expectorate::assert_contents("tests/return_vec_sketch.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
-fn test_stdlib_return_vec_box_sketch_group() {
+fn test_stdlib_return_vec_box_sketch() {
     let (item, errors) = do_stdlib(
         quote! {
             name = "import",
@@ -345,7 +374,7 @@ fn test_stdlib_return_vec_box_sketch_group() {
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
-            ) -> Result<Vec<Box<SketchGroup>>> {
+            ) -> Result<Vec<Box<Sketch>>> {
                 args
             }
         },
@@ -353,7 +382,7 @@ fn test_stdlib_return_vec_box_sketch_group() {
     .unwrap();
 
     assert!(errors.is_empty());
-    expectorate::assert_contents("tests/return_vec_box_sketch_group.gen", &get_text_fmt(&item).unwrap());
+    expectorate::assert_contents("tests/return_vec_box_sketch.gen", &get_text_fmt(&item).unwrap());
 }
 
 #[test]
@@ -378,7 +407,7 @@ fn test_stdlib_doc_comment_with_code() {
             fn inner_my_func(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
-            ) -> Result<Vec<Box<SketchGroup>>> {
+            ) -> Result<Vec<Box<Sketch>>> {
                 args
             }
         },
@@ -409,7 +438,7 @@ fn test_stdlib_fail_non_camel_case() {
             fn inner_import_thing(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
-            ) -> Result<Vec<Box<SketchGroup>>> {
+            ) -> Result<Vec<Box<Sketch>>> {
                 args
             }
         },
@@ -433,7 +462,7 @@ fn test_stdlib_fail_no_code_block() {
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
-            ) -> Result<Vec<Box<SketchGroup>>> {
+            ) -> Result<Vec<Box<Sketch>>> {
                 args
             }
         },
@@ -467,7 +496,7 @@ fn test_stdlib_fail_name_not_in_code_block() {
             fn inner_import(
                 /// The args to do shit to.
                 args: Option<kittycad::types::InputFormat>
-            ) -> Result<Vec<Box<SketchGroup>>> {
+            ) -> Result<Vec<Box<Sketch>>> {
                 args
             }
         },

@@ -7,6 +7,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     fs::FileSystem,
     wasm::JsFuture,
+    SourceRange,
 };
 
 #[wasm_bindgen(module = "/../../lang/std/fileSystemManager.ts")]
@@ -43,7 +44,7 @@ impl FileSystem for FileManager {
     async fn read<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<Vec<u8>, KclError> {
         let promise = self
             .manager
@@ -78,10 +79,26 @@ impl FileSystem for FileManager {
         Ok(bytes)
     }
 
+    async fn read_to_string<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
+        &self,
+        path: P,
+        source_range: SourceRange,
+    ) -> Result<String, KclError> {
+        let bytes = self.read(path, source_range).await?;
+        let string = String::from_utf8(bytes).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: format!("Failed to convert bytes to string: {:?}", e),
+                source_ranges: vec![source_range],
+            })
+        })?;
+
+        Ok(string)
+    }
+
     async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<bool, crate::errors::KclError> {
         let promise = self
             .manager
@@ -123,7 +140,7 @@ impl FileSystem for FileManager {
     async fn get_all_files<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
         &self,
         path: P,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<Vec<std::path::PathBuf>, crate::errors::KclError> {
         let promise = self
             .manager

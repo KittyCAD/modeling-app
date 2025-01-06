@@ -18,12 +18,16 @@ window.tearDown = engineCommandManager.tearDown
 export const kclManager = new KclManager(engineCommandManager)
 engineCommandManager.kclManager = kclManager
 
-engineCommandManager.getAstCb = () => kclManager.ast
-
 export const sceneInfra = new SceneInfra(engineCommandManager)
 engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
 export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
+
+declare global {
+  interface Window {
+    editorManager: EditorManager
+  }
+}
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager()
@@ -49,6 +53,7 @@ if (typeof window !== 'undefined') {
         type: 'zoom_to_fit',
         object_ids: [], // leave empty to zoom to all objects
         padding: 0.2, // padding around the objects
+        animated: false, // don't animate the zoom for now
       },
     })
 }

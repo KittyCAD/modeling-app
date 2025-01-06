@@ -5,18 +5,22 @@ import { Themes, getSystemTheme } from '../lib/theme'
 import { PATHS } from 'lib/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { APP_NAME } from 'lib/constants'
-import { CSSProperties, useCallback } from 'react'
+import { CSSProperties, useCallback, useState } from 'react'
 import { Logo } from 'components/Logo'
 import { CustomIcon } from 'components/CustomIcon'
 import { Link } from 'react-router-dom'
 import { APP_VERSION } from './Settings'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { toSync } from 'lib/utils'
+import { reportRejection } from 'lib/trap'
+import toast from 'react-hot-toast'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
 const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
 
 const SignIn = () => {
+  const [userCode, setUserCode] = useState('')
   const {
     auth: { send },
     settings: {
@@ -49,12 +53,24 @@ const SignIn = () => {
 
   const signInDesktop = async () => {
     // We want to invoke our command to login via device auth.
-    try {
-      const token: string = await window.electron.login(VITE_KC_API_BASE_URL)
-      send({ type: 'Log in', token })
-    } catch (error) {
-      console.error('Error with login button', error)
+    const userCodeToDisplay = await window.electron
+      .startDeviceFlow(VITE_KC_API_BASE_URL)
+      .catch(reportError)
+    if (!userCodeToDisplay) {
+      console.error('No user code received while trying to log in')
+      toast.error('Error while trying to log in')
+      return
     }
+    setUserCode(userCodeToDisplay)
+
+    // Now that we have the user code, we can kick off the final login step.
+    const token = await window.electron.loginWithDeviceFlow().catch(reportError)
+    if (!token) {
+      console.error('No token received while trying to log in')
+      toast.error('Error while trying to log in')
+      return
+    }
+    send({ type: 'Log in', token })
   }
 
   return (
@@ -103,17 +119,40 @@ const SignIn = () => {
               .
             </p>
             {isDesktop() ? (
-              <button
-                onClick={signInDesktop}
-                className={
-                  'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
-                  '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
-                }
-                data-testid="sign-in-button"
-              >
-                Sign in to get started
-                <CustomIcon name="arrowRight" className="w-6 h-6" />
-              </button>
+              <div className="flex flex-col gap-2">
+                {!userCode ? (
+                  <button
+                    onClick={toSync(signInDesktop, reportRejection)}
+                    className={
+                      'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                      '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                    }
+                    data-testid="sign-in-button"
+                  >
+                    Sign in to get started
+                    <CustomIcon name="arrowRight" className="w-6 h-6" />
+                  </button>
+                ) : (
+                  <>
+                    <p className="text-xs">
+                      You should see the following code in your browser
+                    </p>
+                    <p className="text-lg font-bold inline-flex gap-1">
+                      {userCode.split('').map((char, i) => (
+                        <span
+                          key={i}
+                          className={
+                            'text-xl font-bold p-1 ' +
+                            (char === '-' ? '' : 'border-2 border-solid')
+                          }
+                        >
+                          {char}
+                        </span>
+                      ))}
+                    </p>
+                  </>
+                )}
+              </div>
             ) : (
               <Link
                 onClick={openExternalBrowserIfDesktop(signInUrl)}

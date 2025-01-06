@@ -3,7 +3,7 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
-import { createAndOpenNewProject } from 'lib/desktopFS'
+import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
 import { isDesktop } from 'lib/isDesktop'
 import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { codeManager, kclManager } from 'lib/singletons'
@@ -13,6 +13,8 @@ import { IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { useFileContext } from 'hooks/useFileContext'
 import { useLspContext } from 'components/LspProvider'
+import { reportRejection } from 'lib/trap'
+import { toSync } from 'lib/utils'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -61,7 +63,7 @@ function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
       fileContext.project.path || null,
       false
     )
-    await createAndOpenNewProject({ onProjectOpen, navigate })
+    await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
     props.setShouldShowWarning(false)
   }
 
@@ -80,7 +82,7 @@ function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
       <OnboardingButtons
         className="mt-6"
         dismiss={dismiss}
-        next={onAccept}
+        next={toSync(onAccept, reportRejection)}
         nextText="Make a new project"
       />
     </>
@@ -102,14 +104,14 @@ function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
       <OnboardingButtons
         className="mt-6"
         dismiss={dismiss}
-        next={async () => {
+        next={toSync(async () => {
           // We do want to update both the state and editor here.
           codeManager.updateCodeStateEditor(bracket)
           await codeManager.writeToFile()
 
           await kclManager.executeCode(true)
           props.setShouldShowWarning(false)
-        }}
+        }, reportRejection)}
         nextText="Overwrite code and continue"
       />
     </>

@@ -1,5 +1,5 @@
 use criterion::{criterion_group, criterion_main, BenchmarkId, Criterion};
-use kcl_lib::{settings::types::UnitLength::Mm, test_server};
+use kcl_lib::{test_server, UnitLength::Mm};
 use tokio::runtime::Runtime;
 
 pub fn bench_execute(c: &mut Criterion) {
@@ -8,6 +8,7 @@ pub fn bench_execute(c: &mut Criterion) {
         ("cube", CUBE_PROGRAM),
         ("server_rack_lite", SERVER_RACK_LITE_PROGRAM),
         ("server_rack_heavy", SERVER_RACK_HEAVY_PROGRAM),
+        ("lsystem", LSYSTEM_PROGRAM),
     ] {
         let mut group = c.benchmark_group("executor");
         // Configure Criterion.rs to detect smaller differences and increase sample size to improve
@@ -17,7 +18,7 @@ pub fn bench_execute(c: &mut Criterion) {
             let rt = Runtime::new().unwrap();
             // Spawn a future onto the runtime
             b.iter(|| {
-                rt.block_on(test_server::execute_and_snapshot(s, Mm)).unwrap();
+                rt.block_on(test_server::execute_and_snapshot(s, Mm, None)).unwrap();
             });
         });
         group.finish();
@@ -37,7 +38,7 @@ pub fn bench_lego(c: &mut Criterion) {
             let code = LEGO_PROGRAM.replace("{{N}}", &size.to_string());
             // Spawn a future onto the runtime
             b.iter(|| {
-                rt.block_on(test_server::execute_and_snapshot(&code, Mm)).unwrap();
+                rt.block_on(test_server::execute_and_snapshot(&code, Mm, None)).unwrap();
             });
         });
     }
@@ -52,3 +53,4 @@ const CUBE_PROGRAM: &str = include_str!("../../tests/executor/inputs/cube.kcl");
 const SERVER_RACK_HEAVY_PROGRAM: &str = include_str!("../../tests/executor/inputs/server-rack-heavy.kcl");
 const SERVER_RACK_LITE_PROGRAM: &str = include_str!("../../tests/executor/inputs/server-rack-lite.kcl");
 const LEGO_PROGRAM: &str = include_str!("../../tests/executor/inputs/slow_lego.kcl.tmpl");
+const LSYSTEM_PROGRAM: &str = include_str!("../../tests/executor/inputs/lsystem.kcl");

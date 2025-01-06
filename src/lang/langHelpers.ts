@@ -2,13 +2,15 @@ import {
   Program,
   _executor,
   ProgramMemory,
-  programMemoryInit,
   kclLint,
+  emptyExecState,
+  ExecState,
 } from 'lang/wasm'
 import { enginelessExecutor } from 'lib/testHelpers'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type ToolTip =
   | 'lineTo'
@@ -24,11 +26,9 @@ export type ToolTip =
   | 'yLineTo'
   | 'angledLineThatIntersects'
   | 'tangentialArcTo'
+  | 'circle'
 
-export const toolTips = [
-  'sketch_line',
-  'move',
-  // original tooltips
+export const toolTips: Array<ToolTip> = [
   'line',
   'lineTo',
   'angledLine',
@@ -42,39 +42,36 @@ export const toolTips = [
   'yLineTo',
   'angledLineThatIntersects',
   'tangentialArcTo',
-] as any as ToolTip[]
+]
 
 export async function executeAst({
   ast,
   engineCommandManager,
-  useFakeExecutor = false,
+  // If you set programMemoryOverride we assume you mean mock mode. Since that
+  // is the only way to go about it.
   programMemoryOverride,
 }: {
-  ast: Program
+  ast: Node<Program>
   engineCommandManager: EngineCommandManager
-  useFakeExecutor?: boolean
   programMemoryOverride?: ProgramMemory
   isInterrupted?: boolean
 }): Promise<{
   logs: string[]
   errors: KCLError[]
-  programMemory: ProgramMemory
+  execState: ExecState
   isInterrupted: boolean
 }> {
   try {
-    if (!useFakeExecutor) {
-      engineCommandManager.endSession()
-      engineCommandManager.startNewSession()
-    }
-    const programMemory = await (useFakeExecutor
-      ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
-      : _executor(ast, programMemoryInit(), engineCommandManager, false))
+    const execState = await (programMemoryOverride
+      ? enginelessExecutor(ast, programMemoryOverride)
+      : _executor(ast, engineCommandManager))
 
     await engineCommandManager.waitForAllCommands()
+
     return {
       logs: [],
       errors: [],
-      programMemory,
+      execState,
       isInterrupted: false,
     }
   } catch (e: any) {
@@ -90,7 +87,7 @@ export async function executeAst({
       return {
         errors: [e],
         logs: [],
-        programMemory: ProgramMemory.empty(),
+        execState: emptyExecState(),
         isInterrupted,
       }
     } else {
@@ -98,7 +95,7 @@ export async function executeAst({
       return {
         logs: [e],
         errors: [],
-        programMemory: ProgramMemory.empty(),
+        execState: emptyExecState(),
         isInterrupted,
       }
     }

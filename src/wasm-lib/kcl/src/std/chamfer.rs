@@ -2,14 +2,15 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kittycad::types::ModelingCmd;
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
+use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{ChamferSurface, EdgeCut, ExtrudeGroup, ExtrudeSurface, GeoMeta, KclValue},
+    execution::{ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
+    parsing::ast::types::TagNode,
     std::{fillet::EdgeReference, Args},
 };
 
@@ -27,12 +28,11 @@ pub struct ChamferData {
 }
 
 /// Create chamfers on tagged paths.
-pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
-    let (data, extrude_group, tag): (ChamferData, Box<ExtrudeGroup>, Option<TagDeclarator>) =
-        args.get_data_and_extrude_group_and_tag()?;
+pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (data, solid, tag): (ChamferData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
 
-    let extrude_group = inner_chamfer(data, extrude_group, tag, args).await?;
-    Ok(KclValue::ExtrudeGroup(extrude_group))
+    let solid = inner_chamfer(data, solid, tag, exec_state, args).await?;
+    Ok(KclValue::Solid(solid))
 }
 
 /// Cut a straight transitional edge along a tagged path.
@@ -42,22 +42,23 @@ pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
 /// a sharp, straight transitional edge.
 ///
 /// ```no_run
-/// const width = 20
-/// const length = 10
-/// const thickness = 1
-/// const chamferLength = 2
+/// // Chamfer a mounting plate.
+/// width = 20
+/// length = 10
+/// thickness = 1
+/// chamferLength = 2
 ///
-/// const mountingPlateSketch = startSketchOn("XY")
+/// mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
 ///   |> lineTo([width/2, -length/2], %, $edge1)
 ///   |> lineTo([width/2, length/2], %, $edge2)
 ///   |> lineTo([-width/2, length/2], %, $edge3)
 ///   |> close(%, $edge4)
 ///
-/// const mountingPlate = extrude(thickness, mountingPlateSketch)
+/// mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> chamfer({
-///     length: chamferLength,
-///     tags: [
+///     length = chamferLength,
+///     tags = [
 ///       getNextAdjacentEdge(edge1),
 ///       getNextAdjacentEdge(edge2),
 ///       getNextAdjacentEdge(edge3),
@@ -65,15 +66,47 @@ pub async fn chamfer(args: Args) -> Result<KclValue, KclError> {
 ///     ],
 ///   }, %)
 /// ```
+///
+/// ```no_run
+/// // Sketch on the face of a chamfer.
+/// fn cube(pos, scale) {
+/// sg = startSketchOn('XY')
+///     |> startProfileAt(pos, %)
+///     |> line([0, scale], %)
+///     |> line([scale, 0], %)
+///     |> line([0, -scale], %)
+///
+///     return sg
+/// }
+///
+/// part001 = cube([0,0], 20)
+///     |> close(%, $line1)
+///     |> extrude(20, %)
+///     |> chamfer({
+///         length = 10,
+///         tags = [getOppositeEdge(line1)]
+///     }, %, $chamfer1) // We tag the chamfer to reference it later.
+///
+/// sketch001 = startSketchOn(part001, chamfer1)
+///     |> startProfileAt([10, 10], %)
+///     |> line([2, 0], %)
+///     |> line([0, 2], %)
+///     |> line([-2, 0], %)
+///     |> lineTo([profileStartX(%), profileStartY(%)], %)
+///     |> close(%)
+///     |> extrude(10, %)
+/// ```
 #[stdlib {
     name = "chamfer",
+    feature_tree_operation = true,
 }]
 async fn inner_chamfer(
     data: ChamferData,
-    extrude_group: Box<ExtrudeGroup>,
-    tag: Option<TagDeclarator>,
+    solid: Box<Solid>,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<ExtrudeGroup>, KclError> {
+) -> Result<Box<Solid>, KclError> {
     // Check if tags contains any duplicate values.
     let mut tags = data.tags.clone();
     tags.sort();
@@ -94,28 +127,31 @@ async fn inner_chamfer(
         }));
     }
 
-    let mut extrude_group = extrude_group.clone();
-    let mut edge_cuts = Vec::new();
+    let mut solid = solid.clone();
     for edge_tag in data.tags {
         let edge_id = match edge_tag {
             EdgeReference::Uuid(uuid) => uuid,
-            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(&edge_tag)?.id,
+            EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
         };
 
-        let id = uuid::Uuid::new_v4();
+        let id = exec_state.global.id_generator.next_uuid();
         args.batch_end_cmd(
             id,
-            ModelingCmd::Solid3DFilletEdge {
+            ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
-                object_id: extrude_group.id,
-                radius: data.length,
-                tolerance: DEFAULT_TOLERANCE, // We can let the user set this in the future.
-                cut_type: Some(kittycad::types::CutType::Chamfer),
-            },
+                object_id: solid.id,
+                radius: LengthUnit(data.length),
+                tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
+                cut_type: CutType::Chamfer,
+                // We pass in the command id as the face id.
+                // So the resulting face of the fillet will be the same.
+                // This is because that's how most other endpoints work.
+                face_id: Some(id),
+            }),
         )
         .await?;
 
-        edge_cuts.push(EdgeCut::Chamfer {
+        solid.edge_cuts.push(EdgeCut::Chamfer {
             id,
             edge_id,
             length: data.length,
@@ -123,8 +159,8 @@ async fn inner_chamfer(
         });
 
         if let Some(ref tag) = tag {
-            extrude_group.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
-                face_id: edge_id,
+            solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+                face_id: id,
                 tag: Some(tag.clone()),
                 geo_meta: GeoMeta {
                     id,
@@ -134,7 +170,5 @@ async fn inner_chamfer(
         }
     }
 
-    extrude_group.edge_cuts = edge_cuts;
-
-    Ok(extrude_group)
+    Ok(solid)
 }

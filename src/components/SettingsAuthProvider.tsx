@@ -1,30 +1,28 @@
-import { useMachine } from '@xstate/react'
+import { trap } from 'lib/trap'
+import { useMachine, useSelector } from '@xstate/react'
 import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
+import { PATHS, BROWSER_PATH } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
-import React, { createContext, useEffect } from 'react'
+import React, { createContext, useEffect, useState } from 'react'
 import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import {
-  getThemeColorForEngine,
+  darkModeMatcher,
   getOppositeTheme,
   setThemeClass,
   Themes,
 } from 'lib/theme'
 import decamelize from 'decamelize'
-import {
-  AnyStateMachine,
-  ContextFrom,
-  InterpreterFrom,
-  Prop,
-  StateFrom,
-} from 'xstate'
-import { isDesktop } from 'lib/isDesktop'
+import { Actor, AnyStateMachine, ContextFrom, Prop, StateFrom } from 'xstate'
 import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
-import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
-import { uuidv4 } from 'lib/utils'
+import {
+  kclManager,
+  sceneInfra,
+  engineCommandManager,
+  sceneEntitiesManager,
+} from 'lib/singletons'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
 import {
@@ -34,12 +32,21 @@ import {
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { BaseUnit } from 'lib/settings/settingsTypes'
-import { saveSettings } from 'lib/settings/settingsUtils'
+import {
+  saveSettings,
+  loadAndValidateSettings,
+} from 'lib/settings/settingsUtils'
+import { reportRejection } from 'lib/trap'
+import { getAppSettingsFilePath } from 'lib/desktop'
+import { isDesktop } from 'lib/isDesktop'
+import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
+import { codeManager } from 'lib/singletons'
+import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
   context: ContextFrom<T>
-  send: Prop<InterpreterFrom<T>, 'send'>
+  send: Prop<Actor<T>, 'send'>
 }
 
 type SettingsAuthContextType = {
@@ -47,11 +54,15 @@ type SettingsAuthContextType = {
   settings: MachineContext<typeof settingsMachine>
 }
 
-// a little hacky for sure, open to changing it
-// this implies that we should only even have one instance of this provider mounted at any one time
-// but I think that's a safe assumption
-let settingsStateRef: (typeof settingsMachine)['context'] | undefined
-export const getSettingsState = () => settingsStateRef
+/**
+ * This variable is used to store the last snapshot of the settings context
+ * for use outside of React, such as in `wasm.ts`. It is updated every time
+ * the settings machine changes with `useSelector`.
+ * TODO: when we decouple XState from React, we can just subscribe to the actor directly from `wasm.ts`
+ */
+export let lastSettingsContextSnapshot:
+  | ContextFrom<typeof settingsMachine>
+  | undefined
 
 export const SettingsAuthContext = createContext({} as SettingsAuthContextType)
 
@@ -99,62 +110,35 @@ export const SettingsAuthProviderBase = ({
   const location = useLocation()
   const navigate = useNavigate()
   const { commandBarSend } = useCommandsContext()
+  const [settingsPath, setSettingsPath] = useState<string | undefined>(
+    undefined
+  )
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
-    settingsMachine,
-    {
-      context: loadedSettings,
+    settingsMachine.provide({
       actions: {
         //TODO: batch all these and if that's difficult to do from tsx,
         // make it easy to do
 
-        setClientSideSceneUnits: (context, event) => {
+        setClientSideSceneUnits: ({ context, event }) => {
           const newBaseUnit =
             event.type === 'set.modeling.defaultUnit'
               ? (event.data.value as BaseUnit)
               : context.modeling.defaultUnit.current
           sceneInfra.baseUnit = newBaseUnit
         },
-        setEngineTheme: (context) => {
-          engineCommandManager.sendSceneCommand({
-            cmd_id: uuidv4(),
-            type: 'modeling_cmd_req',
-            cmd: {
-              type: 'set_background_color',
-              color: getThemeColorForEngine(context.app.theme.current),
-            },
-          })
-
-          const opposingTheme = getOppositeTheme(context.app.theme.current)
-          engineCommandManager.sendSceneCommand({
-            cmd_id: uuidv4(),
-            type: 'modeling_cmd_req',
-            cmd: {
-              type: 'set_default_system_properties',
-              color: getThemeColorForEngine(opposingTheme),
-            },
-          })
+        setEngineTheme: ({ context }) => {
+          engineCommandManager
+            .setTheme(context.app.theme.current)
+            .catch(reportRejection)
         },
-        setEngineScaleGridVisibility: (context) => {
-          engineCommandManager.setScaleGridVisibility(
-            context.modeling.showScaleGrid.current
-          )
-        },
-        setClientTheme: (context) => {
+        setClientTheme: ({ context }) => {
           const opposingTheme = getOppositeTheme(context.app.theme.current)
           sceneInfra.theme = opposingTheme
+          sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
         },
-        setEngineEdges: (context) => {
-          engineCommandManager.sendSceneCommand({
-            cmd_id: uuidv4(),
-            type: 'modeling_cmd_req',
-            cmd: {
-              type: 'edge_lines_visible' as any, // TODO update kittycad.ts to get this new command type
-              hidden: !context.modeling.highlightEdges.current,
-            },
-          })
-        },
-        toastSuccess: (_, event) => {
+        toastSuccess: ({ event }) => {
+          if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
             string
@@ -176,23 +160,34 @@ export const SettingsAuthProviderBase = ({
             id: `${event.type}.success`,
           })
         },
-        'Execute AST': (context, event) => {
+        'Execute AST': ({ context, event }) => {
           try {
+            const relevantSetting = (s: typeof settings) => {
+              return (
+                s.modeling?.defaultUnit?.current !==
+                  context.modeling.defaultUnit.current ||
+                s.modeling.showScaleGrid.current !==
+                  context.modeling.showScaleGrid.current ||
+                s.modeling?.highlightEdges.current !==
+                  context.modeling.highlightEdges.current
+              )
+            }
+
             const allSettingsIncludesUnitChange =
               event.type === 'Set all settings' &&
-              event.settings?.modeling?.defaultUnit?.current !==
-                context.modeling.defaultUnit.current
+              relevantSetting(event.settings)
             const resetSettingsIncludesUnitChange =
-              event.type === 'Reset settings' &&
-              context.modeling.defaultUnit.current !==
-                settings?.modeling?.defaultUnit?.default
+              event.type === 'Reset settings' && relevantSetting(settings)
 
             if (
               event.type === 'set.modeling.defaultUnit' ||
+              event.type === 'set.modeling.showScaleGrid' ||
+              event.type === 'set.modeling.highlightEdges' ||
               allSettingsIncludesUnitChange ||
               resetSettingsIncludesUnitChange
             ) {
               // Unit changes requires a re-exec of code
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
               kclManager.executeCode(true)
             } else {
               // For any future logging we'd like to do
@@ -204,14 +199,57 @@ export const SettingsAuthProviderBase = ({
             console.error('Error executing AST after settings change', e)
           }
         },
+        async persistSettings({ context, event }) {
+          // Without this, when a user changes the file, it'd
+          // create a detection loop with the file-system watcher.
+          if (event.doNotPersist) return
+
+          codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+          return saveSettings(context, loadedProject?.project?.path)
+        },
       },
-      services: {
-        'Persist settings': (context) =>
-          saveSettings(context, loadedProject?.project?.path),
-      },
-    }
+    }),
+    { input: loadedSettings }
   )
-  settingsStateRef = settingsState.context
+  // Any time the actor changes, update the settings state for external use
+  useSelector(settingsActor, (s) => {
+    lastSettingsContextSnapshot = s.context
+  })
+
+  useEffect(() => {
+    if (!isDesktop()) return
+    getAppSettingsFilePath().then(setSettingsPath).catch(trap)
+  }, [])
+
+  useFileSystemWatcher(
+    async (eventType: string) => {
+      // If there is a projectPath but it no longer exists it means
+      // it was exterally removed. If we let the code past this condition
+      // execute it will recreate the directory due to code in
+      // loadAndValidateSettings trying to recreate files. I do not
+      // wish to change the behavior in case anything else uses it.
+      // Go home.
+      if (loadedProject?.project?.path) {
+        if (!window.electron.exists(loadedProject?.project?.path)) {
+          navigate(PATHS.HOME)
+          return
+        }
+      }
+
+      // Only reload if there are changes. Ignore everything else.
+      if (eventType !== 'change') return
+
+      const data = await loadAndValidateSettings(loadedProject?.project?.path)
+      settingsSend({
+        type: 'Set all settings',
+        settings: data.settings,
+        doNotPersist: true,
+      })
+    },
+    [settingsPath, loadedProject?.project?.path].filter(
+      (x: string | undefined) => x !== undefined
+    )
+  )
 
   // Add settings commands to the command bar
   // They're treated slightly differently than other commands
@@ -251,20 +289,57 @@ export const SettingsAuthProviderBase = ({
     settingsWithCommandConfigs,
   ])
 
+  // Due to the route provider, i've moved this to the SettingsAuthProvider instead of CommandBarProvider
+  // This will register the commands to route to Telemetry, Home, and Settings.
+  useEffect(() => {
+    const filePath =
+      PATHS.FILE +
+      '/' +
+      encodeURIComponent(loadedProject?.file?.path || BROWSER_PATH)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+    commandBarSend({
+      type: 'Remove commands',
+      data: {
+        commands: [
+          RouteTelemetryCommand,
+          RouteHomeCommand,
+          RouteSettingsCommand,
+        ],
+      },
+    })
+    if (location.pathname === PATHS.HOME) {
+      commandBarSend({
+        type: 'Add commands',
+        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+      })
+    } else if (location.pathname.includes(PATHS.FILE)) {
+      commandBarSend({
+        type: 'Add commands',
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteSettingsCommand,
+            RouteHomeCommand,
+          ],
+        },
+      })
+    }
+  }, [location])
+
   // Listen for changes to the system theme and update the app theme accordingly
   // This is only done if the theme setting is set to 'system'.
   // It can't be done in XState (in an invoked callback, for example)
   // because there doesn't seem to be a good way to listen to
   // events outside of the machine that also depend on the machine's context
   useEffect(() => {
-    const matcher = window.matchMedia('(prefers-color-scheme: dark)')
     const listener = (e: MediaQueryListEvent) => {
       if (settingsState.context.app.theme.current !== 'system') return
       setThemeClass(e.matches ? Themes.Dark : Themes.Light)
     }
 
-    matcher.addEventListener('change', listener)
-    return () => matcher.removeEventListener('change', listener)
+    darkModeMatcher?.addEventListener('change', listener)
+    return () => darkModeMatcher?.removeEventListener('change', listener)
   }, [settingsState.context])
 
   /**
@@ -292,19 +367,22 @@ export const SettingsAuthProviderBase = ({
   }, [settingsState.context.textEditor.blinkingCursor.current])
 
   // Auth machine setup
-  const [authState, authSend, authActor] = useMachine(authMachine, {
-    actions: {
-      goToSignInPage: () => {
-        navigate(PATHS.SIGN_IN)
-        logout()
+  const [authState, authSend, authActor] = useMachine(
+    authMachine.provide({
+      actions: {
+        goToSignInPage: () => {
+          navigate(PATHS.SIGN_IN)
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          logout()
+        },
+        goToIndexPage: () => {
+          if (location.pathname.includes(PATHS.SIGN_IN)) {
+            navigate(PATHS.INDEX)
+          }
+        },
       },
-      goToIndexPage: () => {
-        if (location.pathname.includes(PATHS.SIGN_IN)) {
-          navigate(PATHS.INDEX)
-        }
-      },
-    },
-  })
+    })
+  )
 
   useStateMachineCommands({
     machineId: 'auth',
@@ -336,13 +414,11 @@ export const SettingsAuthProviderBase = ({
 
 export default SettingsAuthProvider
 
-export function logout() {
+export async function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  return (
-    !isDesktop() &&
-    fetch(withBaseUrl('/logout'), {
-      method: 'POST',
-      credentials: 'include',
-    })
-  )
+  if (isDesktop()) return Promise.resolve(null)
+  return fetch(withBaseUrl('/logout'), {
+    method: 'POST',
+    credentials: 'include',
+  })
 }

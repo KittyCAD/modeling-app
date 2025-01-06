@@ -1,4 +1,0 @@
-const part001 = startSketchOn('XY')
-     |> circle([5, 5], 10, %)
-     |> extrude(10, %)
-     |> helix({revolutions: 16, angle_start: 0, ccw: true}, %)

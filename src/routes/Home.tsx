@@ -1,58 +1,48 @@
-import { FormEvent, useEffect, useRef } from 'react'
-import {
-  getNextProjectIndex,
-  interpolateProjectNameWithIndex,
-  doesProjectNameNeedInterpolated,
-} from 'lib/desktopFS'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { ActionButton } from 'components/ActionButton'
-import { toast } from 'react-hot-toast'
 import { AppHeader } from 'components/AppHeader'
 import ProjectCard from 'components/ProjectCard/ProjectCard'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import { type HomeLoaderData } from 'lib/types'
+import { toast } from 'react-hot-toast'
 import Loading from 'components/Loading'
-import { useMachine } from '@xstate/react'
-import { homeMachine } from '../machines/homeMachine'
-import { ContextFrom, EventFrom } from 'xstate'
 import { PATHS } from 'lib/paths'
 import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
 } from '../lib/sorting'
-import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { useCommandsContext } from 'hooks/useCommandsContext'
-import { homeCommandBarConfig } from 'lib/commandBarConfigs/homeCommandConfig'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isDesktop } from 'lib/isDesktop'
 import { kclManager } from 'lib/singletons'
-import { useLspContext } from 'components/LspProvider'
 import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
-import {
-  createNewProjectDirectory,
-  listProjects,
-  renameProjectDirectory,
-} from 'lib/desktop'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
+import { markOnce } from 'lib/performance'
+import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
+import { useProjectsLoader } from 'hooks/useProjectsLoader'
+import { useProjectsContext } from 'hooks/useProjectsContext'
+import { useCommandsContext } from 'hooks/useCommandsContext'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
-  const { projects: loadedProjects } = useLoaderData() as HomeLoaderData
-  useRefreshSettings(PATHS.HOME + 'SETTINGS')
+  const { state, send } = useProjectsContext()
   const { commandBarSend } = useCommandsContext()
+  const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
+  const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
+
+  useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const navigate = useNavigate()
   const {
     settings: { context: settings },
   } = useSettingsAuthContext()
-  const { onProjectOpen } = useLspContext()
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
+    markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
   }, [])
 
@@ -68,109 +58,20 @@ const Home = () => {
   )
   const ref = useRef<HTMLDivElement>(null)
 
-  const [state, send, actor] = useMachine(homeMachine, {
-    context: {
-      projects: loadedProjects,
-      defaultProjectName: settings.projects.defaultProjectName.current,
-      defaultDirectory: settings.app.projectDirectory.current,
+  // Re-read projects listing if the projectDir has any updates.
+  useFileSystemWatcher(
+    async () => {
+      setProjectsLoaderTrigger(projectsLoaderTrigger + 1)
     },
-    actions: {
-      navigateToProject: (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine>
-      ) => {
-        if (event.data && 'name' in event.data) {
-          let projectPath =
-            context.defaultDirectory +
-            window.electron.path.sep +
-            event.data.name
-          onProjectOpen(
-            {
-              name: event.data.name,
-              path: projectPath,
-            },
-            null
-          )
-          commandBarSend({ type: 'Close' })
-          navigate(`${PATHS.FILE}/${encodeURIComponent(projectPath)}`)
-        }
-      },
-      toastSuccess: (_, event) => toast.success((event.data || '') + ''),
-      toastError: (_, event) => toast.error((event.data || '') + ''),
-    },
-    services: {
-      readProjects: async (context: ContextFrom<typeof homeMachine>) =>
-        listProjects(),
-      createProject: async (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine, 'Create project'>
-      ) => {
-        let name = (
-          event.data && 'name' in event.data
-            ? event.data.name
-            : settings.projects.defaultProjectName.current
-        ).trim()
+    projectsDir ? [projectsDir] : []
+  )
 
-        if (doesProjectNameNeedInterpolated(name)) {
-          const nextIndex = getNextProjectIndex(name, projects)
-          name = interpolateProjectNameWithIndex(name, nextIndex)
-        }
-
-        await createNewProjectDirectory(name)
-
-        return `Successfully created "${name}"`
-      },
-      renameProject: async (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine, 'Rename project'>
-      ) => {
-        const { oldName, newName } = event.data
-        let name = newName ? newName : context.defaultProjectName
-        if (doesProjectNameNeedInterpolated(name)) {
-          const nextIndex = await getNextProjectIndex(name, projects)
-          name = interpolateProjectNameWithIndex(name, nextIndex)
-        }
-
-        await renameProjectDirectory(
-          window.electron.path.join(context.defaultDirectory, oldName),
-          name
-        )
-        return `Successfully renamed "${oldName}" to "${name}"`
-      },
-      deleteProject: async (
-        context: ContextFrom<typeof homeMachine>,
-        event: EventFrom<typeof homeMachine, 'Delete project'>
-      ) => {
-        await window.electron.rm(
-          window.electron.path.join(context.defaultDirectory, event.data.name),
-          {
-            recursive: true,
-          }
-        )
-        return `Successfully deleted "${event.data.name}"`
-      },
-    },
-    guards: {
-      'Has at least 1 project': (_, event: EventFrom<typeof homeMachine>) => {
-        if (event.type !== 'done.invoke.read-projects') return false
-        return event?.data?.length ? event.data?.length >= 1 : false
-      },
-    },
-  })
-  const { projects } = state.context
+  const projects = state?.context.projects ?? []
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
 
   const isSortByModified = sort?.includes('modified') || !sort || sort === null
-
-  useStateMachineCommands({
-    machineId: 'home',
-    send,
-    state,
-    commandBarConfig: homeCommandBarConfig,
-    actor,
-  })
 
   // Update the default project name and directory in the home machine
   // when the settings change
@@ -196,15 +97,24 @@ const Home = () => {
       new FormData(e.target as HTMLFormElement)
     )
 
+    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+      toast.error('Project names cannot start with a dot (.)')
+      return
+    }
+
     if (newProjectName !== project.name) {
-      send('Rename project', {
-        data: { oldName: project.name, newName: newProjectName },
+      send({
+        type: 'Rename project',
+        data: { oldName: project.name, newName: newProjectName as string },
       })
     }
   }
 
   async function handleDeleteProject(project: Project) {
-    send('Delete project', { data: { name: project.name || '' } })
+    send({
+      type: 'Delete project',
+      data: { name: project.name || '' },
+    })
   }
 
   return (
@@ -217,7 +127,18 @@ const Home = () => {
               <h1 className="text-3xl font-bold">Your Projects</h1>
               <ActionButton
                 Element="button"
-                onClick={() => send('Create project')}
+                onClick={() =>
+                  commandBarSend({
+                    type: 'Find and select command',
+                    data: {
+                      groupId: 'projects',
+                      name: 'Create project',
+                      argDefaultValues: {
+                        name: settings.projects.defaultProjectName.current,
+                      },
+                    },
+                  })
+                }
                 className="group !bg-primary !text-chalkboard-10 !border-primary hover:shadow-inner hover:hue-rotate-15"
                 iconStart={{
                   icon: 'plus',
@@ -235,6 +156,7 @@ const Home = () => {
               <small>Sort by</small>
               <ActionButton
                 Element="button"
+                data-testid="home-sort-by-name"
                 className={
                   'text-xs border-primary/10 ' +
                   (!sort.includes('name')
@@ -256,6 +178,7 @@ const Home = () => {
               </ActionButton>
               <ActionButton
                 Element="button"
+                data-testid="home-sort-by-modified"
                 className={
                   'text-xs border-primary/10 ' +
                   (!isSortByModified
@@ -293,7 +216,7 @@ const Home = () => {
           data-testid="home-section"
           className="flex-1 overflow-y-auto pr-2 pb-24"
         >
-          {state.matches('Reading projects') ? (
+          {state?.matches('Reading projects') ? (
             <Loading>Loading your Projects...</Loading>
           ) : (
             <>

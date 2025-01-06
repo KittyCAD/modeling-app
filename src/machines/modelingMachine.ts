@@ -1,12 +1,20 @@
 import {
   PathToNode,
+  ProgramMemory,
   VariableDeclaration,
   VariableDeclarator,
   parse,
   recast,
+  resultIsOk,
 } from 'lang/wasm'
-import { Axis, Selection, Selections, updateSelections } from 'lib/selections'
-import { assign, createMachine } from 'xstate'
+import {
+  Axis,
+  DefaultPlaneSelection,
+  Selections,
+  Selection,
+  updateSelections,
+} from 'lib/selections'
+import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import {
   isNodeSafeToReplacePath,
@@ -18,6 +26,7 @@ import {
   sceneEntitiesManager,
   engineCommandManager,
   editorManager,
+  codeManager,
 } from 'lib/singletons'
 import {
   horzVertInfo,
@@ -33,8 +42,18 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { deleteFromSelection, extrudeSketch } from 'lang/modifyAst'
-import { applyFilletToSelection } from 'lang/modifyAst/addFillet'
+import { revolveSketch } from 'lang/modifyAst/addRevolve'
+import {
+  addOffsetPlane,
+  deleteFromSelection,
+  extrudeSketch,
+  loftSketches,
+} from 'lang/modifyAst'
+import {
+  applyEdgeTreatmentToSelection,
+  EdgeTreatmentType,
+  FilletParameters,
+} from 'lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '../lang/queryAst'
 import {
   applyConstraintEqualAngle,
@@ -49,15 +68,20 @@ import {
   absDistanceInfo,
   applyConstraintAxisAlign,
 } from 'components/Toolbar/SetAbsDistance'
-import { Models } from '@kittycad/lib/dist/types/src'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
-import { err, trap } from 'lib/trap'
+import { err, reportRejection, trap } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
 import { executeAst } from 'lang/langHelpers'
 import toast from 'react-hot-toast'
+import { ToolbarModeName } from 'lib/toolbar'
+import { quaternionFromUpNForward } from 'clientSideScene/helpers'
+import { Vector3 } from 'three'
+import { MachineManager } from 'components/MachineManagerProvider'
+import { addShell } from 'lang/modifyAst/addShell'
+import { KclCommandValue } from 'lib/commandTypes'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -65,10 +89,15 @@ export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
       selection?: Selection
+      scrollIntoView?: boolean
     }
   | {
-      selectionType: 'otherSelection'
+      selectionType: 'axisSelection'
       selection: Axis
+    }
+  | {
+      selectionType: 'defaultPlaneSelection'
+      selection: DefaultPlaneSelection
     }
   | {
       selectionType: 'completeSelection'
@@ -116,6 +145,50 @@ export interface SegmentOverlays {
   [pathToNodeString: string]: SegmentOverlay
 }
 
+export interface EdgeCutInfo {
+  type: 'edgeCut'
+  tagName: string
+  subType: 'base' | 'opposite' | 'adjacent'
+}
+
+export interface CapInfo {
+  type: 'cap'
+  subType: 'start' | 'end'
+}
+
+export type ExtrudeFacePlane = {
+  type: 'extrudeFace'
+  position: [number, number, number]
+  sketchPathToNode: PathToNode
+  extrudePathToNode: PathToNode
+  faceInfo:
+    | {
+        type: 'wall'
+      }
+    | CapInfo
+    | EdgeCutInfo
+  faceId: string
+  zAxis: [number, number, number]
+  yAxis: [number, number, number]
+}
+
+export type DefaultPlane = {
+  type: 'defaultPlane'
+  plane: DefaultPlaneStr
+  planeId: string
+  zAxis: [number, number, number]
+  yAxis: [number, number, number]
+}
+
+export type OffsetPlane = {
+  type: 'offsetPlane'
+  position: [number, number, number]
+  planeId: string
+  pathToNode: PathToNode
+  zAxis: [number, number, number]
+  yAxis: [number, number, number]
+}
+
 export type SegmentOverlayPayload =
   | {
       type: 'set-one'
@@ -134,13 +207,17 @@ export type SegmentOverlayPayload =
 
 export interface Store {
   videoElement?: HTMLVideoElement
-  buttonDownInStream: number | undefined
-  didDragInStream: boolean
-  streamDimensions: { streamWidth: number; streamHeight: number }
   openPanes: SidebarType[]
 }
 
-export type SketchTool = 'line' | 'tangentialArc' | 'rectangle' | 'none'
+export type SketchTool =
+  | 'line'
+  | 'tangentialArc'
+  | 'rectangle'
+  | 'center rectangle'
+  | 'circle'
+  | 'circle3Points'
+  | 'none'
 
 export type ModelingMachineEvent =
   | {
@@ -152,24 +229,7 @@ export type ModelingMachineEvent =
   | { type: 'Sketch On Face' }
   | {
       type: 'Select default plane'
-      data: {
-        zAxis: [number, number, number]
-        yAxis: [number, number, number]
-      } & (
-        | {
-            type: 'defaultPlane'
-            plane: DefaultPlaneStr
-            planeId: string
-          }
-        | {
-            type: 'extrudeFace'
-            position: [number, number, number]
-            sketchPathToNode: PathToNode
-            extrudePathToNode: PathToNode
-            cap: 'start' | 'end' | 'none'
-            faceId: string
-          }
-      )
+      data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
     }
   | {
       type: 'Set selection'
@@ -180,7 +240,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Sketch no face' }
   | { type: 'Toggle gui mode' }
-  | { type: 'Cancel' }
+  | { type: 'Cancel'; cleanup?: () => void }
   | { type: 'CancelSketch' }
   | { type: 'Add start point' }
   | { type: 'Make segment horizontal' }
@@ -195,7 +255,10 @@ export type ModelingMachineEvent =
   | { type: 'Constrain vertically align' }
   | { type: 'Constrain snap to X' }
   | { type: 'Constrain snap to Y' }
-  | { type: 'Constrain length' }
+  | {
+      type: 'Constrain length'
+      data: ModelingCommandSchema['Constrain length']
+    }
   | { type: 'Constrain equal length' }
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
@@ -203,21 +266,39 @@ export type ModelingMachineEvent =
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
+  | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
+  | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
+  | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
+  | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
       type: 'Add rectangle origin'
       data: [x: number, y: number]
     }
   | {
-      type: 'done.invoke.animate-to-face' | 'done.invoke.animate-to-sketch'
-      data: SketchDetails
+      type: 'Add center rectangle origin'
+      data: [x: number, y: number]
     }
+  | {
+      type: 'Add circle origin'
+      data: [x: number, y: number]
+    }
+  | {
+      type: 'xstate.done.actor.animate-to-face'
+      output: SketchDetails
+    }
+  | { type: 'xstate.done.actor.animate-to-sketch'; output: SketchDetails }
+  | { type: `xstate.done.actor.do-constrain${string}`; output: SetSelections }
   | { type: 'Set mouse state'; data: MouseState }
   | { type: 'Set context'; data: Partial<Store> }
   | {
       type: 'Set Segment Overlays'
       data: SegmentOverlayPayload
+    }
+  | {
+      type: 'Center camera on selection'
     }
   | {
       type: 'Delete segment'
@@ -227,11 +308,8 @@ export type ModelingMachineEvent =
       type: 'code edit during sketch'
     }
   | {
-      type: 'Convert to variable'
-      data: {
-        pathToNode: PathToNode
-        variableName: string
-      }
+      type: 'Constrain with named value'
+      data: ModelingCommandSchema['Constrain with named value']
     }
   | {
       type: 'change tool'
@@ -240,6 +318,9 @@ export type ModelingMachineEvent =
       }
     }
   | { type: 'Finish rectangle' }
+  | { type: 'Finish center rectangle' }
+  | { type: 'Finish circle' }
+  | { type: 'circle3PointsFinished'; cleanup?: () => void }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
 
@@ -261,800 +342,254 @@ export const getPersistedContext = (): Partial<PersistedModelingContext> => {
   return c
 }
 
-export const modelingMachineDefaultContext = {
-  tool: null as Models['SceneToolType_type'] | null,
-  selection: [] as string[],
+export interface ModelingMachineContext {
+  currentMode: ToolbarModeName
+  currentTool: SketchTool
+  machineManager: MachineManager
+  selection: string[]
+  selectionRanges: Selections
+  sketchDetails: SketchDetails | null
+  sketchPlaneId: string
+  sketchEnginePathId: string
+  moveDescs: MoveDesc[]
+  mouseState: MouseState
+  segmentOverlays: SegmentOverlays
+  segmentHoverMap: { [pathToNodeString: string]: number }
+  store: Store
+}
+export const modelingMachineDefaultContext: ModelingMachineContext = {
+  currentMode: 'modeling',
+  currentTool: 'none',
+  machineManager: {
+    machines: [],
+    machineApiIp: null,
+    currentMachine: null,
+    setCurrentMachine: () => {},
+    noMachinesReason: () => undefined,
+  },
+  selection: [],
   selectionRanges: {
     otherSelections: [],
-    codeBasedSelections: [],
-  } as Selections,
+    graphSelections: [],
+  },
   sketchDetails: {
     sketchPathToNode: [],
     zAxis: [0, 0, 1],
     yAxis: [0, 1, 0],
     origin: [0, 0, 0],
-  } as null | SketchDetails,
-  sketchPlaneId: '' as string,
-  sketchEnginePathId: '' as string,
-  moveDescs: [] as MoveDesc[],
-  mouseState: { type: 'idle' } as MouseState,
-  segmentOverlays: {} as SegmentOverlays,
-  segmentHoverMap: {} as { [pathToNodeString: string]: number },
+  },
+  sketchPlaneId: '',
+  sketchEnginePathId: '',
+  moveDescs: [],
+  mouseState: { type: 'idle' },
+  segmentOverlays: {},
+  segmentHoverMap: {},
   store: {
-    buttonDownInStream: undefined,
-    didDragInStream: false,
-    streamDimensions: { streamWidth: 1280, streamHeight: 720 },
     openPanes: getPersistedContext().openPanes || ['code'],
-  } as Store,
+  },
 }
 
-export const modelingMachine = createMachine(
-  {
-    /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANhoBWAHQAOAMwB2KQEY5AFgCcGqWqkAaEAE9Ew0RLEqa64TIBMKmTUXCAvk71oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEEpYSkJOUUaOWsxeylrWzk9QwQClQkrVOsZNWExFItnVxB3LDxCXwCAW1QAVyDA9hJ2MAjeGI4ueNBE5KkaCWspZfMM+XE1YsQZMQWxNQtxao0ZeRc3dDavTv9ybhG+djGoibjeRJothBpzlsvPDp+fy+KBdMC4AIAeQAbmAAE6YEj6WDPZisSbcd6IT4GbG-VoAiTYCCYMAEACiEPhgQA1n5yAALVHRdFvBJCazCOQSRSctQyKS5RRqFTWL6nNTSfnSsS5FRiZT4-7tIkksmUkZw2n0pmKSJo2JTLFJWwLFSOBy7WQ0eZFXEIczWCRqaxyOq81KKAWOJUeFXE0kUx5w3oYZmvI3spJiOQyZ1mZQyeUyRSC4RfXmndKOKRyWUpmqKX1XKCqwMAMWwmFJT3o41ZkZmQnzEjsgoVXPE2TtJS9KmEPNjuZsKbkDmLhID6r4LDhtf1LMNmKjgjEdXSrtENuEihUcjUigz-cUEhqeaUwmsqavE-9aoIyBIdPDDeXTYdTtSIusalj5qy+xfFyaSxvUKh7rKdgqFIt74GWZIACLBCMgTBKEUwvku0z8EIO7lNoCZjqm5qKGIGYxuUNSXj+iiOLR+6waWU4EAAKmAjyCOwqCCEQACCCGYRi2GzAqTpmCkspqLKf7pvayj9hU8gFPs+TCOaciMfBEgMsSYAAAqIrgcAELxc7YAAZiQoT+FAcIkEwDL+CwTC9IiIwQIJbLvoI-aSuIia-loQUyLJJS-nGlrQbmXq0VIKiaVOEiwAyqAAO4GWQxmmZwlnWbZ9mOWAXRMJwkCeY2OFJHu3IKDGYicsB4F5hmvJOqmB5ejQNBWAe1iad4dLsIyxBkJQmADTq5VvpVmZxrYSacmuHq2C1BwSN1-Y7DG+40DI-WDcNSE1mAqGguC871lhxpyHmzo-vVcW-jashfPK3IaOY+a7Gp3X7TqBB3Bg-iQBw-gQL0cLtNqQ1MnWLyvsJiBei6ph7oFWhqWYPaINK61rsstRZLRIp-TDEgTTDACS96PnSp1ghC-iwmZ5AkJgU2IwgXoCqeqaqY40G1EeBSLPKj3zMsSx7c0BIqhTjLkwdDLU4GtMnUEZ2MylkMAF73GzHPGl6V7pOB9Q7PylQqBmNhmge9X7ETXVFjLypwfLDKKzqKtkkQ3CwOwdl4P42vYHrEJs2D2AB6NoxwwaQlG-YJ7KPkywpjGyxfKakjOzYe47KRbqkwrHs+8Q-uByQwfM5wrOYFHMcUHHC4RtNiQxQOz3WrywpytnSxOnuXU0AcuQpiXntl-efu4AHQe4P4vEAELeP4AAahtRtzYl-vy5pXjuZH2j+VjOjQnIWPY1gODBrt+u7Ste1TM+VwvS+r-4ACaW-vjvp4KF3KPWoDtrb2nsL+CoaxzxxQUCkSez9GTl1nvPaui8yBQFJL-GaNQ9jCltBsCw+Rs4dkWBYR0u0ljgXivfEsiCp5K2QW-NB-hST4HYLDVuCMk5xVMJaXMO4UxxRkNnS8NVSK2AKDfZYpEEHT0DCgquwcmDwhUbgCA2ByCuRIFqDRTdKDYI7q6SQVh6oHEltkbQ2d8hxmMDGAoI91B9VoYSD29CmFzyUYvUO4chjVn0P4Nm2AoC4EMUjCBzoRSbVUsY4+vYHai0cNkLqIUbTSwuA-Usbj5G+2YTXeEdc2aYACUEkJYSuY2AHPjQU+5fycjsBmKw5RchrgKFJA4I45GMNfp49+sBcD2X8FxDe5SvQmBqIFVQ+xMjEJPv5Qcu5zFKAPBpFxcsn45Irr0lh-TBnDJ-vHRcidt6pMWK1WoV59yxhESfUiA51Dyl2MKHYo8unex6ag4OYAACOvRI5sKgBw0ZSYFh1AAkoFI5yMyxklPIHc81Km7jeS-BReTF5MB0UU6ghy26cy9KoHkl59hckyLuL0GYpJVNlHFBwak+zIqQR8rx-g4RFVQLCW4aL2Aohxdw7e91TbCL3GC4xGZZCSguaoYeB4UwuwyXQ7J3TAwACUwCCHYiEXoIxRk7jSNoc0dQNCiF-BmcQZpZDgUpcIE4zj5WuI2UqskgMTogwCODSG+BoaMmBSjHcHUFBjjsMKU1u11pulMWufkso5V-EyfQ9xPTa5DNQEzHR2ASAACMsG8quicjQ0gsiqRFMKKwYpwGH1PGuPCN99g0LtesnUCbAyMgwSdLiqB2Y5uOe+HIF9pA-lHjkA44Uy29gkWGrcbTZBWDvvWx+jbeKpWrgEHx+sG56KGM3fweBzKoAIBAbgYAiS4GhKgOkEgYDsEEKuiOmBBA7tQOU6oCpTA2MltI-scTECSJAtoNSUrcgODrbGhVT9F3LpDqgXWa7G6bsoNu3Au6CDwjhFBiQTA3K7rhF0C9fhr1QbDmu+9iHH1dq8pVZ9Tpe0Cm0JyUimwT64OdCkUU-YljzBjAg8DoNa6aMjhu2OCGkMHqMse0957L2CF4-XYju6n0W0WLGOBcV5iXgHijfImQ3TmBdIqNZ86ybcYCNJ-j0c4MnQfchuEqG4Tocw1BnDkmTN3offJ-Yzp1JwrXGOEUA8X20V3A1NSpx0kgftQupdoMV5r3XkJvdImj14HE0eyTmbYCCD4LJ0jXDc09pCnGLQ+5bRJktdnX8J5tymjHCkbIXHIsBGixvOLVmbN2eGFhxzeG0sZay-JtSphrUpBvhkdSZWcinnITdAUWR+SrLnVksD9WP5ry-s1hLYmz0pa6xm9L+hetkYqokaoZ91CJnApkea2MED2DdK2JqqhBTDtzHViDjXVuWZQ2hjD7WHO4avd1vbrmDvt2-SFcojgQpFz3FeG04pEzrVItBOoroDVzbCw2wzS2MGkjW4ejbEmuv4FJPtnL3aKNg9bPIWi8hzCzJKDkdcAibBmBTL1YDssDMKyM4EonFmSMta+-Z7Df3BDY7VUD0n5GjshUkDSzIxgHBukPCfeqXd9g1HlItEbL3QYAo4bj0TSXNsi71wyEnl0yfS8vAN2Q2Q6i7GyKIkU61R5kqsDdTj+mFsRYg6b5rn3bPffYB1k34JAVm4lxbqXoOz7HdOMYdQSZdyiJfaIWQ+KFT5F2jrgIKi4RqI0VoxEuizOCcs+to3BOr154L5o7RcJBACebub+GuXyeZHWiKewKZdrRqu1LSiygB25mkjnpyqjwSF-r7Bsv-OA9teD79yTNfJ91+L430vzfI+t8t6Djvo87C7UyFtZQ2cFADlHMPvMnv5vxoADJ4DbagDtAMGStuTR2p9ogqlixuqmUtXwLoaQquuwtQogro44Xu9+j+H+mAEglMuAHABAT6UszoUqICeYvIL09o1qCwxEbopwXotutq6OnOnsD+RksB8BiB7AyBeoUeh236NEaBWB-Y4ESkoUiA+4A4v41qEOV4AoCgCCFBT+HaEgAAcimnpKgHgNyiZBABAIMDornjIRCF-mtNfDUCONoFJEBNkK2EfNtNkPsAxFAW4iIVQZIf4NIbIbACNM3J2pLowVzBjIStOl2PYroPaBkGaKKIrvUFoDaAgggUgaMt1LYofFng0OfhmJIq2H2LsPHhAsETQXQU4SDlzMAutJyOnLREsGOJwRUl1OkLKoGhfLkIKAgixK2hCOmg3DouQMmq-u-u2o4QwRkesBfvKOINasNqIFdueBUMPAQTNjaGIAgr0OoimjHHOB7JCLgPunjpXkerxN4CxIIJMQeoIDMewHMaEsDnipDq+jdFeGLPsL5t4f5pjNBJnGjOzm7N7mTKqqEGLrAc0fgKIW0TvtHtdpkHgeJCjryOfldhdpKLqvkHmGMWuAgs8Zupgp8RIEZlDEEHcOopynCEZHCAQJWIgclCyiEHCdmukZzAtJ+EKI0P5AqGAiULmE6PnN+DuJkHuPcXGm4rCa8a0YifVlDARlAHgPIYoayi8bzv4LyXgOUiCieHmD+I8tajdl+ggD4WGkcMsicJeDCQSRyc-nATidHAyJAP4OybzsgQcUbGOAsPdJbCpI4JyIAWfAeBjKPBtC6AguQKSGQIEG5GSKMseKbKROsBfDYDkC1CbFJM8uYFuJDmPqiUmsMtCGmpmoGBXiesbpJjGQUpxNxPGZDImeLiRvJiLLYP+gUH6vYIUUGWkIFnYF5o4C6WYYthBumXOMmqmjmVmmSPPkHiHmmdwLXJmVJgme2S3gnD8dUPIBUGMkRA4F1OWSFCBJYqKIycsiyaBj7qDKiZ8ovKyj0ByhuV4nIcmclhIFsXuQvIINueymqqeWghdN8c4dUCbGYv+D+LICmIUamFmBkECbRPUDaBkNGWipBtBresUosYbimeeieWivhsBX4sUvJtBCUT+PICsIPNSeEh3mpBoDNh2LuOMfWWuQENefkizEUvoGBYlhBUelBdsngFJgUnxv4m5vcoPK6FoCjuhVzLTqeKkGsLsLfKcABbRd4gRr4mRYEjgCEhRfjtRdxMRbgDBYRiBXtqUvscScaGOWCQqLsLTvKJxaRMoFKI0NeDcUIQRZjo2YBc5sUhJcEgsYecbjRZufRaRf4qLpJWpe0ZzA+SeI7FWUoAqI0l6BNg6VJM+kmEJZuYEAMkwC2evNJcsceXJdBbskwP2XwAhTVBkHwWqYFtnOQutFUNavbC8jGhzo8VzktvJdFXsiml-AlVRUlYIPJdsTFf2foG5rYoWk4sIt3tnF6JIDkbRFyL+bRJFcyj8n8g3Kbg1UeU5V4uqr8mzIIKbvJjUIVVkD+JMrKNCuNqPJjK6B0p0uZZVZZcJU5JitWFgLNY5clcJYIBinZFdV8SOfeTsF3KKErrtAnrGBSnuDyLIFeLWXchFSdZ7EQG-h8f4CxNqSaepVGICQjqcA8jGBdjcr2K7iUaoHUujLUAghDe-jDS-lQPQXeRkTROUOgTfKxsKMGXJJjUpuoJYnAnjWDRIATVDUTZgMgdYPDe+CmOoDyNtF1PNMaujUjAzTTjjSzSueFmTBzTANDbDVQDIHzZVCFDdBUFJIKP+FRDsKageFjUzT+CzU0Lfh7P4LgCmrlGSL4KSNZBgJZK5LnoZC3F5caIIDfEPMhSWu2MsoUVyHGOGnUl1O+moJpGQNgF0MMFDMMt9kZDdeepHdHSMP2TbeUjGF1RcsKvtVnDgTuIsA7ssJCrGCQeVRIMnTHZ6sMuxGZsiUrInUepXanVxNsUrBnYZZeJSscMoFMuKOIDxTKh2NkDaU0M0FbRgPAFEOVe7SuKkGkJtPUAoOoBYAxr2JyPEaPCpG6LmEAQlGqLPd5D9AYTsLmI9KvV8OKjyNBPlqkKjmXQ8VpDpBgBlEZFPa9RkauCjIvWfSveoKauNksKRBfE9AGg-XGolMlGlK-XAIfZVIIDsE6AoB9LtNaLUgA4NQFSA2OGA5PHAx3JaBUJEdIv0SkP1XGNaVJMAmpOqWzTkvg0jN0ZTkmNtHUKVnJDfBFLmOICvb+DfWPjen4jPlug+gw1zPbKYG6FJBkJbBrtnOYCeDRLyCjW+WPs5sI-BqI2TXii6JKJaS6IrhaKOkwfUGgSPBREOjfqQRVZ7Nzo1rFlox-To+YGcgeN1SbWVi446DuCAzDqFuXW4nY5-O9iRmI88mCWpM+YKN1C6P3QSsoEQamA9qBGPq8Y40cj8cKKKOkArleLvTUIKCQoZVI1yNoNOlUGPn7uk7ikbLNqYDUGYIfoGfUKIvKFjUoH3LKJAebQ2aDCvuomvjoho3zrumEx0s6PnCkMsObHTfTjtBUHUKkEmEIp9MITAa0WI1eLsGQrI7+OFFdvUINaoAIVvd6GbdY9AZQZySEewJs-gjs-lns0pl8ERDyL3F+MAysms1c9qRIFbdhmzJs40xOacABIyQeC8x3uBDfMoAEeYt8wiVYTYRCO-Rk-efxfEb1HUHFJkDtd4RkIsHyDTpULoykRwGE-LukEoI6AqC6N-qtAsBtBGjdB0lUTUZwJHA0cmmI0pOUBYDpVNuaWQzgetcYJeIyTGJSuHWzZsdMUMLMUrPMWE7GAOCSmwcNWOMYwgLKJIKsA9oDdaLLRjgrEafCbATy91CeNFGYDkF7d1F8DGAOJw6JESlBPhT042qazjpyUiZ6iidwIoXcBifCDy5kJKNa6KPVBfPa-aB09ICkLKqIGuInhqcKWaz69yZ6mKdhDU1GALSeKYueDE-KZC4y2OA9MKGqeA6uU8ZqSKZybqclAaV62AKG0mKYPVD+bKJyNIoAd1NILgTYNkBCXUK6e6YvLAF6WE+BKCsg3mNkAasrhjfoQcE0vvFNu6xc4E1Vb2QUi2dmemu2WM6GpbHYJ6JIhfOKG0osBoDdNkIfJjONe-BebuVyqi7m3-FoBViOBfJuLkAUGKqGShYHZ9AIU+ywoI2RWE1++tD+wUG6P+-pS+dIAQRoAeNahU2zdztVdZSUE40bDB5QtfH+-nEeP226LtC6NkGWc9lhzu+dZB-4rZSEtB4bURyhXUsBORP28NVQ-+922jgE700RVZQxfXDZapax9+2OXOzkY0g4PU8m7GDOYHeB8HKlXFce3GJbDkPivMAzvlTYDexBENvYPKGpxOzFS2V-FpxM0Snp+UYUQIdyK6LUtBLWYJXR2dVFZNf8mHhwlJ7BzJ4VpyAoNCv23CsoITO5xYBZxdU9aSJgMe1RvMIQWfSy1q88rq6PCpj0YBuc0J42grSdFzZs3bqjEvRkAm5lwZUbdLQTAV4-RbVbf4DbWI57TzLKL0cXccw4K9OuNMrULUCFpE0a3BM3bHSmvHa29o0bPafkNBAQZnX+kBPVMxmCss9tNW4SBN9XSmrXQHPXTqGI8YIpjkKcK6EAzdF4SUG+ULVfGInRKsi4EAA */
-    id: 'Modeling',
-
-    tsTypes: {} as import('./modelingMachine.typegen').Typegen0,
-    predictableActionArguments: true,
-    preserveActionOrder: true,
-
-    context: modelingMachineDefaultContext,
-
-    schema: {
-      events: {} as ModelingMachineEvent,
-    },
-
-    states: {
-      idle: {
-        on: {
-          'Enter sketch': [
-            {
-              target: 'animating to existing sketch',
-              cond: 'Selection is on face',
-            },
-            'Sketch no face',
-          ],
-
-          Extrude: {
-            target: 'idle',
-            cond: 'has valid extrude selection',
-            actions: ['AST extrude'],
-            internal: true,
-          },
-
-          Fillet: {
-            target: 'idle',
-            cond: 'has valid fillet selection', // TODO: fix selections
-            actions: ['AST fillet'],
-            internal: true,
-          },
-
-          Export: {
-            target: 'idle',
-            internal: true,
-            cond: 'Has exportable geometry',
-            actions: 'Engine export',
-          },
-
-          Make: {
-            target: 'idle',
-            internal: true,
-            cond: 'Has exportable geometry',
-            actions: 'Make',
-          },
-
-          'Delete selection': {
-            target: 'idle',
-            cond: 'has valid selection for deletion',
-            actions: ['AST delete selection'],
-            internal: true,
-          },
-
-          'Text-to-CAD': {
-            target: 'idle',
-            internal: true,
-            actions: ['Submit to Text-to-CAD API'],
-          },
-        },
-
-        entry: 'reset client scene mouse handlers',
-
-        states: {
-          hidePlanes: {
-            on: {
-              'Artifact graph populated': 'showPlanes',
-            },
-
-            entry: 'hide default planes',
-          },
-
-          showPlanes: {
-            on: {
-              'Artifact graph emptied': 'hidePlanes',
-            },
-
-            entry: ['show default planes', 'reset camera position'],
-          },
-        },
-
-        initial: 'hidePlanes',
-      },
-
-      Sketch: {
-        states: {
-          SketchIdle: {
-            on: {
-              'Make segment vertical': {
-                cond: 'Can make selection vertical',
-                target: 'Await constrain vertically',
-              },
-
-              'Make segment horizontal': {
-                cond: 'Can make selection horizontal',
-                target: 'Await constrain horizontally',
-              },
-
-              'Constrain horizontal distance': {
-                target: 'Await horizontal distance info',
-                cond: 'Can constrain horizontal distance',
-              },
-
-              'Constrain vertical distance': {
-                target: 'Await vertical distance info',
-                cond: 'Can constrain vertical distance',
-              },
-
-              'Constrain ABS X': {
-                target: 'Await ABS X info',
-                cond: 'Can constrain ABS X',
-              },
-
-              'Constrain ABS Y': {
-                target: 'Await ABS Y info',
-                cond: 'Can constrain ABS Y',
-              },
-
-              'Constrain angle': {
-                target: 'Await angle info',
-                cond: 'Can constrain angle',
-              },
-
-              'Constrain length': {
-                target: 'Await length info',
-                cond: 'Can constrain length',
-              },
-
-              'Constrain perpendicular distance': {
-                target: 'Await perpendicular distance info',
-                cond: 'Can constrain perpendicular distance',
-              },
-
-              'Constrain horizontally align': {
-                cond: 'Can constrain horizontally align',
-                target: 'Await constrain horizontally align',
-              },
-
-              'Constrain vertically align': {
-                cond: 'Can constrain vertically align',
-                target: 'Await constrain vertically align',
-              },
-
-              'Constrain snap to X': {
-                cond: 'Can constrain snap to X',
-                target: 'Await constrain snap to X',
-              },
-
-              'Constrain snap to Y': {
-                cond: 'Can constrain snap to Y',
-                target: 'Await constrain snap to Y',
-              },
-
-              'Constrain equal length': {
-                cond: 'Can constrain equal length',
-                target: 'Await constrain equal length',
-              },
-
-              'Constrain parallel': {
-                target: 'Await constrain parallel',
-                cond: 'Can canstrain parallel',
-              },
-
-              'Constrain remove constraints': {
-                cond: 'Can constrain remove constraints',
-                target: 'Await constrain remove constraints',
-              },
-
-              'Re-execute': {
-                target: 'SketchIdle',
-                internal: true,
-                actions: ['set sketchMetadata from pathToNode'],
-              },
-
-              'code edit during sketch': 'clean slate',
-
-              'Convert to variable': {
-                target: 'Await convert to variable',
-                cond: 'Can convert to variable',
-              },
-
-              'change tool': {
-                target: 'Change Tool',
-              },
-            },
-
-            entry: 'setup client side sketch segments',
-          },
-
-          'Await horizontal distance info': {
-            invoke: {
-              src: 'Get horizontal info',
-              id: 'get-horizontal-info',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-              onError: 'SketchIdle',
-            },
-          },
-
-          'Await vertical distance info': {
-            invoke: {
-              src: 'Get vertical info',
-              id: 'get-vertical-info',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-              onError: 'SketchIdle',
-            },
-          },
-
-          'Await ABS X info': {
-            invoke: {
-              src: 'Get ABS X info',
-              id: 'get-abs-x-info',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-              onError: 'SketchIdle',
-            },
-          },
-
-          'Await ABS Y info': {
-            invoke: {
-              src: 'Get ABS Y info',
-              id: 'get-abs-y-info',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-              onError: 'SketchIdle',
-            },
-          },
-
-          'Await angle info': {
-            invoke: {
-              src: 'Get angle info',
-              id: 'get-angle-info',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-              onError: 'SketchIdle',
-            },
-          },
-
-          'Await length info': {
-            invoke: {
-              src: 'Get length info',
-              id: 'get-length-info',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-              onError: 'SketchIdle',
-            },
-          },
-
-          'Await perpendicular distance info': {
-            invoke: {
-              src: 'Get perpendicular distance info',
-              id: 'get-perpendicular-distance-info',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-              onError: 'SketchIdle',
-            },
-          },
-
-          'Line tool': {
-            exit: [],
-
-            states: {
-              Init: {
-                always: [
-                  {
-                    target: 'normal',
-                    cond: 'has made first point',
-                    actions: 'set up draft line',
-                  },
-                  'No Points',
-                ],
-              },
-
-              normal: {},
-
-              'No Points': {
-                entry: 'setup noPoints onClick listener',
-
-                on: {
-                  'Add start point': {
-                    target: 'normal',
-                    actions: 'set up draft line without teardown',
-                  },
-
-                  Cancel: '#Modeling.Sketch.undo startSketchOn',
-                },
-              },
-            },
-
-            initial: 'Init',
-
-            on: {
-              'change tool': {
-                target: 'Change Tool',
-              },
-            },
-          },
-
-          Init: {
-            always: [
-              {
-                target: 'SketchIdle',
-                cond: 'is editing existing sketch',
-              },
-              'Line tool',
-            ],
-          },
-
-          'Tangential arc to': {
-            entry: 'set up draft arc',
-
-            on: {
-              'change tool': {
-                target: 'Change Tool',
-              },
-            },
-          },
-
-          'undo startSketchOn': {
-            invoke: {
-              src: 'AST-undo-startSketchOn',
-              id: 'AST-undo-startSketchOn',
-              onDone: '#Modeling.idle',
-            },
-          },
-
-          'Rectangle tool': {
-            entry: ['listen for rectangle origin'],
-
-            states: {
-              'Awaiting second corner': {
-                on: {
-                  'Finish rectangle': 'Finished Rectangle',
-                },
-              },
-
-              'Awaiting origin': {
-                on: {
-                  'Add rectangle origin': {
-                    target: 'Awaiting second corner',
-                    actions: 'set up draft rectangle',
-                  },
-                },
-              },
-
-              'Finished Rectangle': {
-                always: '#Modeling.Sketch.SketchIdle',
-              },
-            },
-
-            initial: 'Awaiting origin',
-
-            on: {
-              'change tool': {
-                target: 'Change Tool',
-              },
-            },
-          },
-
-          'clean slate': {
-            always: 'SketchIdle',
-          },
-
-          'Await convert to variable': {
-            invoke: {
-              src: 'Get convert to variable info',
-              id: 'get-convert-to-variable-info',
-              onError: 'SketchIdle',
-              onDone: {
-                target: 'SketchIdle',
-                actions: ['Set selection'],
-              },
-            },
-          },
-
-          'Await constrain remove constraints': {
-            invoke: {
-              src: 'do-constrain-remove-constraint',
-              id: 'do-constrain-remove-constraint',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-            },
-          },
-
-          'Await constrain horizontally': {
-            invoke: {
-              src: 'do-constrain-horizontally',
-              id: 'do-constrain-horizontally',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-            },
-          },
-
-          'Await constrain vertically': {
-            invoke: {
-              src: 'do-constrain-vertically',
-              id: 'do-constrain-vertically',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-            },
-          },
-
-          'Await constrain horizontally align': {
-            invoke: {
-              src: 'do-constrain-horizontally-align',
-              id: 'do-constrain-horizontally-align',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-            },
-          },
-
-          'Await constrain vertically align': {
-            invoke: {
-              src: 'do-constrain-vertically-align',
-              id: 'do-constrain-vertically-align',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-            },
-          },
-
-          'Await constrain snap to X': {
-            invoke: {
-              src: 'do-constrain-snap-to-x',
-              id: 'do-constrain-snap-to-x',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-            },
-          },
-
-          'Await constrain snap to Y': {
-            invoke: {
-              src: 'do-constrain-snap-to-y',
-              id: 'do-constrain-snap-to-y',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-            },
-          },
-
-          'Await constrain equal length': {
-            invoke: {
-              src: 'do-constrain-equal-length',
-              id: 'do-constrain-equal-length',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-            },
-          },
-
-          'Await constrain parallel': {
-            invoke: {
-              src: 'do-constrain-parallel',
-              id: 'do-constrain-parallel',
-              onDone: {
-                target: 'SketchIdle',
-                actions: 'Set selection',
-              },
-            },
-          },
-
-          'Change Tool': {
-            always: [
-              {
-                target: 'SketchIdle',
-                cond: 'next is none',
-              },
-              {
-                target: 'Line tool',
-                cond: 'next is line',
-              },
-              {
-                target: 'Rectangle tool',
-                cond: 'next is rectangle',
-              },
-              {
-                target: 'Tangential arc to',
-                cond: 'next is tangential arc',
-              },
-            ],
-          },
-        },
-
-        initial: 'Init',
-
-        on: {
-          CancelSketch: '.SketchIdle',
-
-          'Delete segment': {
-            internal: true,
-            actions: ['Delete segment', 'Set sketchDetails'],
-          },
-          'code edit during sketch': '.clean slate',
-        },
-
-        exit: [
-          'sketch exit execute',
-          'tear down client sketch',
-          'remove sketch grid',
-          'engineToClient cam sync direction',
-          'Reset Segment Overlays',
-          'enable copilot',
-        ],
-
-        entry: [
-          'add axis n grid',
-          'conditionally equip line tool',
-          'clientToEngine cam sync direction',
-        ],
-      },
-
-      'Sketch no face': {
-        entry: [
-          'disable copilot',
-          'show default planes',
-          'set selection filter to faces only',
-        ],
-
-        exit: ['hide default planes', 'set selection filter to defaults'],
-        on: {
-          'Select default plane': {
-            target: 'animating to plane',
-            actions: ['reset sketch metadata'],
-          },
-        },
-      },
-
-      'animating to plane': {
-        invoke: {
-          src: 'animate-to-face',
-          id: 'animate-to-face',
-          onDone: {
-            target: 'Sketch',
-            actions: 'set new sketch metadata',
-          },
-        },
-      },
-
-      'animating to existing sketch': {
-        invoke: [
-          {
-            src: 'animate-to-sketch',
-            id: 'animate-to-sketch',
-            onDone: {
-              target: 'Sketch',
-              actions: ['disable copilot', 'set new sketch metadata'],
-            },
-          },
-        ],
-      },
-    },
-
-    initial: 'idle',
-
-    on: {
-      Cancel: {
-        target: 'idle',
-        // TODO what if we're existing extrude equipped, should these actions still be fired?
-        // maybe cancel needs to have a guard for if else logic?
-        actions: ['reset sketch metadata', 'enable copilot'],
-      },
-
-      'Set selection': {
-        internal: true,
-        actions: 'Set selection',
-      },
-
-      'Set mouse state': {
-        internal: true,
-        actions: 'Set mouse state',
-      },
-      'Set context': {
-        internal: true,
-        actions: 'Set context',
-      },
-      'Set Segment Overlays': {
-        internal: true,
-        actions: 'Set Segment Overlays',
-      },
-    },
+export const modelingMachine = setup({
+  types: {
+    context: {} as ModelingMachineContext,
+    events: {} as ModelingMachineEvent,
+    input: {} as ModelingMachineContext,
   },
-  {
-    guards: {
-      'has made first point': ({ sketchDetails }) => {
-        if (!sketchDetails?.sketchPathToNode) return false
-        const variableDeclaration = getNodeFromPath<VariableDeclarator>(
-          kclManager.ast,
-          sketchDetails.sketchPathToNode,
-          'VariableDeclarator'
-        )
-        if (err(variableDeclaration)) return false
-        if (variableDeclaration.node.type !== 'VariableDeclarator') return false
-        const pipeExpression = variableDeclaration.node.init
-        if (pipeExpression.type !== 'PipeExpression') return false
-        const hasStartSketchOn = pipeExpression.body.some(
-          (item) =>
-            item.type === 'CallExpression' &&
-            item.callee.name === 'startSketchOn'
-        )
-        return hasStartSketchOn && pipeExpression.body.length > 1
-      },
-      'is editing existing sketch': ({ sketchDetails }) =>
-        isEditingExistingSketch({ sketchDetails }),
-      'Can make selection horizontal': ({ selectionRanges }) => {
-        const info = horzVertInfo(selectionRanges, 'horizontal')
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can make selection vertical': ({ selectionRanges }) => {
-        const info = horzVertInfo(selectionRanges, 'vertical')
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain horizontal distance': ({ selectionRanges }) => {
-        const info = horzVertDistanceInfo({
-          selectionRanges,
-          constraint: 'setHorzDistance',
-        })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain vertical distance': ({ selectionRanges }) => {
-        const info = horzVertDistanceInfo({
-          selectionRanges,
-          constraint: 'setVertDistance',
-        })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain ABS X': ({ selectionRanges }) => {
-        const info = absDistanceInfo({ selectionRanges, constraint: 'xAbs' })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain ABS Y': ({ selectionRanges }) => {
-        const info = absDistanceInfo({ selectionRanges, constraint: 'yAbs' })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain angle': ({ selectionRanges }) => {
-        const angleBetween = angleBetweenInfo({ selectionRanges })
-        if (trap(angleBetween)) return false
-        const angleLength = angleLengthInfo({
-          selectionRanges,
-          angleOrLength: 'setAngle',
-        })
-        if (trap(angleLength)) return false
-        return angleBetween.enabled || angleLength.enabled
-      },
-      'Can constrain length': ({ selectionRanges }) => {
-        const angleLength = angleLengthInfo({ selectionRanges })
-        if (trap(angleLength)) return false
-        return angleLength.enabled
-      },
-      'Can constrain perpendicular distance': ({ selectionRanges }) => {
-        const info = intersectInfo({ selectionRanges })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain horizontally align': ({ selectionRanges }) => {
-        const info = horzVertDistanceInfo({
-          selectionRanges,
-          constraint: 'setHorzDistance',
-        })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain vertically align': ({ selectionRanges }) => {
-        const info = horzVertDistanceInfo({
-          selectionRanges,
-          constraint: 'setHorzDistance',
-        })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain snap to X': ({ selectionRanges }) => {
-        const info = absDistanceInfo({
-          selectionRanges,
-          constraint: 'snapToXAxis',
-        })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain snap to Y': ({ selectionRanges }) => {
-        const info = absDistanceInfo({
-          selectionRanges,
-          constraint: 'snapToYAxis',
-        })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can constrain equal length': ({ selectionRanges }) => {
-        const info = setEqualLengthInfo({ selectionRanges })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can canstrain parallel': ({ selectionRanges }) => {
-        const info = equalAngleInfo({ selectionRanges })
-        if (err(info)) return false
-        return info.enabled
-      },
-      'Can constrain remove constraints': ({ selectionRanges }, { data }) => {
-        const info = removeConstrainingValuesInfo({
-          selectionRanges,
-          pathToNodes: data && [data],
-        })
-        if (trap(info)) return false
-        return info.enabled
-      },
-      'Can convert to variable': (_, { data }) => {
-        if (!data) return false
-        const ast = parse(recast(kclManager.ast))
-        if (err(ast)) return false
-        const isSafeRetVal = isNodeSafeToReplacePath(ast, data.pathToNode)
-        if (err(isSafeRetVal)) return false
-        return isSafeRetVal.isSafe
-      },
-      'next is tangential arc': ({ sketchDetails }, _, { state }) =>
-        (state?.event as any).data.tool === 'tangentialArc' &&
-        isEditingExistingSketch({ sketchDetails }),
-      'next is rectangle': ({ sketchDetails }, _, { state }) => {
-        if ((state?.event as any).data.tool !== 'rectangle') return false
-        return canRectangleTool({ sketchDetails })
-      },
-      'next is line': (_, __, { state }) =>
-        (state?.event as any).data.tool === 'line',
-      'next is none': (_, __, { state }) =>
-        (state?.event as any).data.tool === 'none',
+  guards: {
+    'Selection is on face': () => false,
+    'Has exportable geometry': () => false,
+    'has valid selection for deletion': () => false,
+    'has made first point': ({ context }) => {
+      if (!context.sketchDetails?.sketchPathToNode) return false
+      const variableDeclaration = getNodeFromPath<VariableDeclarator>(
+        kclManager.ast,
+        context.sketchDetails.sketchPathToNode,
+        'VariableDeclarator'
+      )
+      if (err(variableDeclaration)) return false
+      if (variableDeclaration.node.type !== 'VariableDeclarator') return false
+      const pipeExpression = variableDeclaration.node.init
+      if (pipeExpression.type !== 'PipeExpression') return false
+      const hasStartSketchOn = pipeExpression.body.some(
+        (item) =>
+          item.type === 'CallExpression' && item.callee.name === 'startSketchOn'
+      )
+      return hasStartSketchOn && pipeExpression.body.length > 1
     },
-    // end guards
-    actions: {
-      'set sketchMetadata from pathToNode': assign(({ sketchDetails }) => {
+    'is editing existing sketch': ({ context: { sketchDetails } }) =>
+      isEditingExistingSketch({ sketchDetails }),
+    'Can make selection horizontal': ({ context: { selectionRanges } }) => {
+      const info = horzVertInfo(selectionRanges, 'horizontal')
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can make selection vertical': ({ context: { selectionRanges } }) => {
+      const info = horzVertInfo(selectionRanges, 'vertical')
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain horizontal distance': ({ context: { selectionRanges } }) => {
+      const info = horzVertDistanceInfo({
+        selectionRanges: selectionRanges,
+        constraint: 'setHorzDistance',
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain vertical distance': ({ context: { selectionRanges } }) => {
+      const info = horzVertDistanceInfo({
+        selectionRanges: selectionRanges,
+        constraint: 'setVertDistance',
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain ABS X': ({ context: { selectionRanges } }) => {
+      const info = absDistanceInfo({
+        selectionRanges,
+        constraint: 'xAbs',
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain ABS Y': ({ context: { selectionRanges } }) => {
+      const info = absDistanceInfo({
+        selectionRanges,
+        constraint: 'yAbs',
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain angle': ({ context: { selectionRanges } }) => {
+      const angleBetween = angleBetweenInfo({
+        selectionRanges,
+      })
+      if (trap(angleBetween)) return false
+      const angleLength = angleLengthInfo({
+        selectionRanges,
+        angleOrLength: 'setAngle',
+      })
+      if (trap(angleLength)) return false
+      return angleBetween.enabled || angleLength.enabled
+    },
+    'Can constrain length': ({ context: { selectionRanges } }) => {
+      const angleLength = angleLengthInfo({
+        selectionRanges,
+      })
+      if (trap(angleLength)) return false
+      return angleLength.enabled
+    },
+    'Can constrain perpendicular distance': ({
+      context: { selectionRanges },
+    }) => {
+      const info = intersectInfo({ selectionRanges })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain horizontally align': ({ context: { selectionRanges } }) => {
+      const info = horzVertDistanceInfo({
+        selectionRanges: selectionRanges,
+        constraint: 'setHorzDistance',
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain vertically align': ({ context: { selectionRanges } }) => {
+      const info = horzVertDistanceInfo({
+        selectionRanges: selectionRanges,
+        constraint: 'setHorzDistance',
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain snap to X': ({ context: { selectionRanges } }) => {
+      const info = absDistanceInfo({
+        selectionRanges,
+        constraint: 'snapToXAxis',
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain snap to Y': ({ context: { selectionRanges } }) => {
+      const info = absDistanceInfo({
+        selectionRanges,
+        constraint: 'snapToYAxis',
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can constrain equal length': ({ context: { selectionRanges } }) => {
+      const info = setEqualLengthInfo({
+        selectionRanges,
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can canstrain parallel': ({ context: { selectionRanges } }) => {
+      const info = equalAngleInfo({
+        selectionRanges,
+      })
+      if (err(info)) return false
+      return info.enabled
+    },
+    'Can constrain remove constraints': ({
+      context: { selectionRanges },
+      event,
+    }) => {
+      if (event.type !== 'Constrain remove constraints') return false
+      const info = removeConstrainingValuesInfo({
+        selectionRanges,
+        pathToNodes: event.data && [event.data],
+      })
+      if (trap(info)) return false
+      return info.enabled
+    },
+    'Can convert to named value': ({ event }) => {
+      if (event.type !== 'Constrain with named value') return false
+      if (!event.data) return false
+      const ast = parse(recast(kclManager.ast))
+      if (err(ast) || !ast.program || ast.errors.length > 0) return false
+      const isSafeRetVal = isNodeSafeToReplacePath(
+        ast.program,
+
+        event.data.currentValue.pathToNode
+      )
+      if (err(isSafeRetVal)) return false
+      return isSafeRetVal.isSafe
+    },
+    'next is tangential arc': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'tangentialArc' &&
+      isEditingExistingSketch({ sketchDetails }),
+
+    'next is rectangle': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'rectangle' &&
+      canRectangleOrCircleTool({ sketchDetails }),
+    'next is center rectangle': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'center rectangle' &&
+      canRectangleOrCircleTool({ sketchDetails }),
+    'next is circle': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'circle' && canRectangleOrCircleTool({ sketchDetails }),
+    'next is circle 3 point': ({ context: { sketchDetails, currentTool } }) =>
+      currentTool === 'circle3Points' &&
+      canRectangleOrCircleTool({ sketchDetails }),
+    'next is line': ({ context }) => context.currentTool === 'line',
+    'next is none': ({ context }) => context.currentTool === 'none',
+  },
+  // end guards
+  actions: {
+    'assign tool in context': assign({
+      currentTool: ({ event }) =>
+        'data' in event && event.data && 'tool' in event.data
+          ? event.data.tool
+          : 'none',
+    }),
+    'reset selections': assign({
+      selectionRanges: { graphSelections: [], otherSelections: [] },
+    }),
+    'enter sketching mode': assign({ currentMode: 'sketching' }),
+    'enter modeling mode': assign({ currentMode: 'modeling' }),
+    'set sketchMetadata from pathToNode': assign(
+      ({ context: { sketchDetails } }) => {
         if (!sketchDetails?.sketchPathToNode || !sketchDetails) return {}
         return {
           sketchDetails: {
@@ -1062,28 +597,43 @@ export const modelingMachine = createMachine(
             sketchPathToNode: sketchDetails.sketchPathToNode,
           },
         }
-      }),
-      'hide default planes': () => kclManager.hidePlanes(),
-      'reset sketch metadata': assign({
-        sketchDetails: null,
-        sketchEnginePathId: '',
-        sketchPlaneId: '',
-      }),
-      'reset camera position': () =>
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_look_at',
-            center: { x: 0, y: 0, z: 0 },
-            vantage: { x: 0, y: -1250, z: 580 },
-            up: { x: 0, y: 0, z: 1 },
-          },
-        }),
-      'set new sketch metadata': assign((_, { data }) => ({
-        sketchDetails: data,
-      })),
-      'AST extrude': async ({ store }, event) => {
+      }
+    ),
+    'hide default planes': () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      kclManager.hidePlanes()
+    },
+    'reset sketch metadata': assign({
+      sketchDetails: null,
+      sketchEnginePathId: '',
+      sketchPlaneId: '',
+    }),
+    'reset camera position': () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          center: { x: 0, y: 0, z: 0 },
+          vantage: { x: 0, y: -1250, z: 580 },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+    },
+    'set new sketch metadata': assign(({ event }) => {
+      if (
+        event.type !== 'xstate.done.actor.animate-to-sketch' &&
+        event.type !== 'xstate.done.actor.animate-to-face'
+      )
+        return {}
+      return {
+        sketchDetails: event.output,
+      }
+    }),
+    'AST extrude': ({ context: { store }, event }) => {
+      if (event.type !== 'Extrude') return
+      ;(async () => {
         if (!event.data) return
         const { selection, distance } = event.data
         let ast = kclManager.ast
@@ -1102,7 +652,7 @@ export const modelingMachine = createMachine(
         }
         const pathToNode = getNodePathFromSourceRange(
           ast,
-          selection.codeBasedSelections[0].range
+          selection.graphSelections[0]?.codeRef.range
         )
         const extrudeSketchRes = extrudeSketch(
           ast,
@@ -1115,152 +665,351 @@ export const modelingMachine = createMachine(
         if (trap(extrudeSketchRes)) return
         const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
-        store.videoElement?.pause()
         const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: pathToExtrudeArg,
+          focusPath: [pathToExtrudeArg],
           zoomToFit: true,
           zoomOnRangeAndType: {
-            range: selection.codeBasedSelections[0].range,
+            range: selection.graphSelections[0]?.codeRef.range,
             type: 'path',
           },
         })
-        if (!engineCommandManager.engineConnection?.idleMode) {
-          store.videoElement?.play().catch((e) => {
-            console.warn('Video playing was prevented', e)
-          })
-        }
+
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
         if (updatedAst?.selections) {
           editorManager.selectRange(updatedAst?.selections)
         }
-      },
-      'AST delete selection': async ({ selectionRanges }) => {
+      })().catch(reportRejection)
+    },
+    'AST revolve': ({ context: { store }, event }) => {
+      if (event.type !== 'Revolve') return
+      ;(async () => {
+        if (!event.data) return
+        const { selection, angle, axis } = event.data
+        let ast = kclManager.ast
+        if (
+          'variableName' in angle &&
+          angle.variableName &&
+          angle.insertIndex !== undefined
+        ) {
+          const newBody = [...ast.body]
+          newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
+          ast.body = newBody
+        }
+
+        // This is the selection of the sketch that will be revolved
+        const pathToNode = getNodePathFromSourceRange(
+          ast,
+          selection.graphSelections[0]?.codeRef.range
+        )
+
+        const revolveSketchRes = revolveSketch(
+          ast,
+          pathToNode,
+          false,
+          'variableName' in angle
+            ? angle.variableIdentifierAst
+            : angle.valueAst,
+          axis
+        )
+        if (trap(revolveSketchRes)) return
+        const { modifiedAst, pathToRevolveArg } = revolveSketchRes
+
+        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+          focusPath: [pathToRevolveArg],
+          zoomToFit: true,
+          zoomOnRangeAndType: {
+            range: selection.graphSelections[0]?.codeRef.range,
+            type: 'path',
+          },
+        })
+
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
+        if (updatedAst?.selections) {
+          editorManager.selectRange(updatedAst?.selections)
+        }
+      })().catch(reportRejection)
+    },
+    'AST delete selection': ({ context: { selectionRanges } }) => {
+      ;(async () => {
+        const errorMessage =
+          'Unable to delete selection. Please edit manually in code pane.'
         let ast = kclManager.ast
 
         const modifiedAst = await deleteFromSelection(
           ast,
-          selectionRanges.codeBasedSelections[0],
+          selectionRanges.graphSelections[0],
           kclManager.programMemory,
           getFaceDetails
         )
-        if (err(modifiedAst)) return
+        if (err(modifiedAst)) {
+          toast.error(errorMessage)
+          return
+        }
 
         const testExecute = await executeAst({
           ast: modifiedAst,
-          useFakeExecutor: true,
           engineCommandManager,
+          // We make sure to send an empty program memory to denote we mean mock mode.
+          programMemoryOverride: ProgramMemory.empty(),
         })
         if (testExecute.errors.length) {
-          toast.error('Unable to delete part')
+          toast.error(errorMessage)
           return
         }
 
         await kclManager.updateAst(modifiedAst, true)
-      },
-      'AST fillet': async (_, event) => {
-        if (!event.data) return
+        await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
+      })().catch(reportRejection)
+    },
+    'AST fillet': ({ event }) => {
+      if (event.type !== 'Fillet') return
+      if (!event.data) return
 
-        // Extract inputs
-        const { selection, radius } = event.data
+      // Extract inputs
+      const ast = kclManager.ast
+      const { selection, radius } = event.data
+      const parameters: FilletParameters = {
+        type: EdgeTreatmentType.Fillet,
+        radius,
+      }
 
-        // Apply fillet to selection
-        const applyFilletToSelectionResult = applyFilletToSelection(
-          selection,
-          radius
-        )
-        if (err(applyFilletToSelectionResult))
-          return applyFilletToSelectionResult
-      },
-      'conditionally equip line tool': (_, { type }) => {
-        if (type === 'done.invoke.animate-to-face') {
-          sceneInfra.modelingSend({
-            type: 'change tool',
-            data: { tool: 'line' },
-          })
+      // Apply fillet to selection
+      const applyEdgeTreatmentToSelectionResult = applyEdgeTreatmentToSelection(
+        ast,
+        selection,
+        parameters
+      )
+      if (err(applyEdgeTreatmentToSelectionResult))
+        return applyEdgeTreatmentToSelectionResult
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+    },
+    'set selection filter to curves only': () => {
+      ;(async () => {
+        await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'set_selection_filter',
+            filter: ['curve'],
+          },
+        })
+      })().catch(reportRejection)
+    },
+    'setup client side sketch segments': ({
+      context: { sketchDetails, selectionRanges },
+    }) => {
+      if (!sketchDetails) return
+      ;(async () => {
+        if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
+          await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
         }
-      },
-      'setup client side sketch segments': ({
-        sketchDetails,
-        selectionRanges,
-      }) => {
-        if (!sketchDetails) return
-        ;(async () => {
-          if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
-            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-          }
-          sceneInfra.resetMouseListeners()
-          await sceneEntitiesManager.setupSketch({
-            sketchPathToNode: sketchDetails?.sketchPathToNode || [],
-            forward: sketchDetails.zAxis,
-            up: sketchDetails.yAxis,
-            position: sketchDetails.origin,
-            maybeModdedAst: kclManager.ast,
-            selectionRanges,
-          })
-          sceneInfra.resetMouseListeners()
-          sceneEntitiesManager.setupSketchIdleCallbacks({
-            pathToNode: sketchDetails?.sketchPathToNode || [],
-            forward: sketchDetails.zAxis,
-            up: sketchDetails.yAxis,
-            position: sketchDetails.origin,
-          })
-        })()
-      },
-      'tear down client sketch': () => {
-        if (sceneEntitiesManager.activeSegments) {
-          sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-        }
-      },
-      'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
-      'set up draft line': ({ sketchDetails }) => {
-        if (!sketchDetails) return
-        sceneEntitiesManager.setUpDraftSegment(
+        sceneInfra.resetMouseListeners()
+        await sceneEntitiesManager.setupSketch({
+          sketchPathToNode: sketchDetails?.sketchPathToNode || [],
+          forward: sketchDetails.zAxis,
+          up: sketchDetails.yAxis,
+          position: sketchDetails.origin,
+          maybeModdedAst: kclManager.ast,
+          selectionRanges,
+        })
+        sceneInfra.resetMouseListeners()
+        sceneEntitiesManager.setupSketchIdleCallbacks({
+          pathToNode: sketchDetails?.sketchPathToNode || [],
+          forward: sketchDetails.zAxis,
+          up: sketchDetails.yAxis,
+          position: sketchDetails.origin,
+        })
+      })().catch(reportRejection)
+    },
+    'tear down client sketch': () => {
+      if (sceneEntitiesManager.activeSegments) {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+      }
+    },
+    'remove sketch grid': () => sceneEntitiesManager.removeSketchGrid(),
+    'set up draft line': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
+        .setupDraftSegment(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin,
           'line'
         )
-      },
-      'set up draft arc': ({ sketchDetails }) => {
-        if (!sketchDetails) return
-        sceneEntitiesManager.setUpDraftSegment(
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
+    },
+    'set up draft arc': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
+        .setupDraftSegment(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin,
           'tangentialArcTo'
         )
-      },
-      'listen for rectangle origin': ({ sketchDetails }) => {
-        if (!sketchDetails) return
-        sceneEntitiesManager.setupNoPointsListener({
-          sketchDetails,
-          afterClick: (args) => {
-            const twoD = args.intersectionPoint?.twoD
-            if (twoD) {
-              sceneInfra.modelingSend({
-                type: 'Add rectangle origin',
-                data: [twoD.x, twoD.y],
-              })
-            } else {
-              console.error('No intersection point found')
-            }
-          },
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
         })
-      },
-      'set up draft rectangle': ({ sketchDetails }, { data }) => {
-        if (!sketchDetails || !data) return
-        sceneEntitiesManager.setupDraftRectangle(
+    },
+    'listen for rectangle origin': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+      sceneEntitiesManager.setupNoPointsListener({
+        sketchDetails,
+        afterClick: (args) => {
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            sceneInfra.modelingSend({
+              type: 'Add rectangle origin',
+              data: [twoD.x, twoD.y],
+            })
+          } else {
+            console.error('No intersection point found')
+          }
+        },
+      })
+    },
+
+    'listen for center rectangle origin': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+      // setupNoPointsListener has the code for startProfileAt onClick
+      sceneEntitiesManager.setupNoPointsListener({
+        sketchDetails,
+        afterClick: (args) => {
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            sceneInfra.modelingSend({
+              type: 'Add center rectangle origin',
+              data: [twoD.x, twoD.y],
+            })
+          } else {
+            console.error('No intersection point found')
+          }
+        },
+      })
+    },
+
+    'listen for circle origin': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+      const quaternion = quaternionFromUpNForward(
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.zAxis)
+      )
+
+      // Position the click raycast plane
+      if (sceneEntitiesManager.intersectionPlane) {
+        sceneEntitiesManager.intersectionPlane.setRotationFromQuaternion(
+          quaternion
+        )
+        sceneEntitiesManager.intersectionPlane.position.copy(
+          new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
+        )
+      }
+      sceneInfra.setCallbacks({
+        onClick: (args) => {
+          if (!args) return
+          if (args.mouseEvent.which !== 1) return
+          const { intersectionPoint } = args
+          if (!intersectionPoint?.twoD || !sketchDetails?.sketchPathToNode)
+            return
+          const twoD = args.intersectionPoint?.twoD
+          if (twoD) {
+            sceneInfra.modelingSend({
+              type: 'Add circle origin',
+              data: [twoD.x, twoD.y],
+            })
+          } else {
+            console.error('No intersection point found')
+          }
+        },
+      })
+    },
+    'set up draft rectangle': ({ context: { sketchDetails }, event }) => {
+      if (event.type !== 'Add rectangle origin') return
+      if (!sketchDetails || !event.data) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
+        .setupDraftRectangle(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin,
-          data
+          event.data
         )
-      },
-      'set up draft line without teardown': ({ sketchDetails }) => {
-        if (!sketchDetails) return
-        sceneEntitiesManager.setUpDraftSegment(
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
+    },
+    'set up draft center rectangle': ({
+      context: { sketchDetails },
+      event,
+    }) => {
+      if (event.type !== 'Add center rectangle origin') return
+      if (!sketchDetails || !event.data) return
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager.setupDraftCenterRectangle(
+        sketchDetails.sketchPathToNode,
+        sketchDetails.zAxis,
+        sketchDetails.yAxis,
+        sketchDetails.origin,
+        event.data
+      )
+    },
+    'set up draft circle': ({ context: { sketchDetails }, event }) => {
+      if (event.type !== 'Add circle origin') return
+      if (!sketchDetails || !event.data) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
+        .setupDraftCircle(
+          sketchDetails.sketchPathToNode,
+          sketchDetails.zAxis,
+          sketchDetails.yAxis,
+          sketchDetails.origin,
+          event.data
+        )
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+        })
+    },
+    entryDraftCircle3Point: ({ context: { sketchDetails }, event }) => {
+      if (event.type !== 'change tool') return
+      if (event.data?.tool !== 'circle3Points') return
+      if (!sketchDetails) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager.entryDraftCircle3Point(
+        sketchDetails.sketchPathToNode,
+        new Vector3(...sketchDetails.zAxis),
+        new Vector3(...sketchDetails.yAxis),
+        new Vector3(...sketchDetails.origin)
+      )
+    },
+    exitDraftCircle3Point: ({ event }) => {
+      if (event.type !== 'circle3PointsFinished' && event.type !== 'Cancel')
+        return
+      if (!event.cleanup) return
+      event.cleanup()
+    },
+    'set up draft line without teardown': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager
+        .setupDraftSegment(
           sketchDetails.sketchPathToNode,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
@@ -1268,81 +1017,112 @@ export const modelingMachine = createMachine(
           'line',
           false
         )
-      },
-      'show default planes': () => kclManager.showPlanes(),
-      'setup noPoints onClick listener': ({ sketchDetails }) => {
-        if (!sketchDetails) return
-
-        sceneEntitiesManager.setupNoPointsListener({
-          sketchDetails,
-          afterClick: () => sceneInfra.modelingSend('Add start point'),
+        .then(() => {
+          return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
         })
-      },
-      'add axis n grid': ({ sketchDetails }) => {
-        if (!sketchDetails) return
-        if (localStorage.getItem('disableAxis')) return
-        sceneEntitiesManager.createSketchAxis(
-          sketchDetails.sketchPathToNode || [],
-          sketchDetails.zAxis,
-          sketchDetails.yAxis,
-          sketchDetails.origin
-        )
-      },
-      'reset client scene mouse handlers': () => {
-        // when not in sketch mode we don't need any mouse listeners
-        // (note the orbit controls are always active though)
-        sceneInfra.resetMouseListeners()
-      },
-      'clientToEngine cam sync direction': () => {
-        sceneInfra.camControls.syncDirection = 'clientToEngine'
-      },
-      'engineToClient cam sync direction': () => {
-        sceneInfra.camControls.syncDirection = 'engineToClient'
-      },
-      'set selection filter to faces only': () =>
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_selection_filter',
-            filter: ['face', 'object'],
-          },
-        }),
-      'set selection filter to defaults': () =>
-        kclManager.defaultSelectionFilter(),
-      'Delete segment': ({ sketchDetails }, { data: pathToNode }) =>
-        deleteSegment({ pathToNode, sketchDetails }),
-      'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
-      'Set context': assign({
-        store: ({ store }, { data }) => {
-          if (data.streamDimensions) {
-            sceneInfra._streamDimensions = data.streamDimensions
-          }
-
-          const result = {
-            ...store,
-            ...data,
-          }
-          const persistedContext: Partial<PersistedModelingContext> = {}
-          for (const key of PersistedValues) {
-            persistedContext[key] = result[key]
-          }
-          if (typeof window !== 'undefined') {
-            window.localStorage.setItem(
-              PERSIST_MODELING_CONTEXT,
-              JSON.stringify(persistedContext)
-            )
-          }
-          return result
-        },
-      }),
     },
-    // end actions
-    services: {
-      'do-constrain-remove-constraint': async (
-        { selectionRanges, sketchDetails },
-        { data }
-      ) => {
+    'show default planes': () => {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      kclManager.showPlanes()
+    },
+    'setup noPoints onClick listener': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+      sceneEntitiesManager.setupNoPointsListener({
+        sketchDetails,
+        afterClick: () => sceneInfra.modelingSend({ type: 'Add start point' }),
+      })
+    },
+    'add axis n grid': ({ context: { sketchDetails } }) => {
+      if (!sketchDetails) return
+      if (localStorage.getItem('disableAxis')) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      sceneEntitiesManager.createSketchAxis(
+        sketchDetails.sketchPathToNode || [],
+        sketchDetails.zAxis,
+        sketchDetails.yAxis,
+        sketchDetails.origin
+      )
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+    },
+    'reset client scene mouse handlers': () => {
+      // when not in sketch mode we don't need any mouse listeners
+      // (note the orbit controls are always active though)
+      sceneInfra.resetMouseListeners()
+    },
+    'clientToEngine cam sync direction': () => {
+      sceneInfra.camControls.syncDirection = 'clientToEngine'
+    },
+    'engineToClient cam sync direction': () => {
+      sceneInfra.camControls.syncDirection = 'engineToClient'
+    },
+    /** TODO: this action is hiding unawaited asynchronous code */
+    'set selection filter to faces only': () => {
+      kclManager.setSelectionFilter(['face', 'object'])
+    },
+    /** TODO: this action is hiding unawaited asynchronous code */
+    'set selection filter to defaults': () =>
+      kclManager.defaultSelectionFilter(),
+    'Delete segment': ({ context: { sketchDetails }, event }) => {
+      if (event.type !== 'Delete segment') return
+      if (!sketchDetails || !event.data) return
+
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      deleteSegment({
+        pathToNode: event.data,
+        sketchDetails,
+      }).then(() => {
+        return codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+      })
+    },
+    'Reset Segment Overlays': () => sceneEntitiesManager.resetOverlays(),
+    'Set context': assign({
+      store: ({ context: { store }, event }) => {
+        if (event.type !== 'Set context') return store
+        if (!event.data) return store
+
+        const result = {
+          ...store,
+          ...event.data,
+        }
+        const persistedContext: Partial<PersistedModelingContext> = {}
+        for (const key of PersistedValues) {
+          persistedContext[key] = result[key]
+        }
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(
+            PERSIST_MODELING_CONTEXT,
+            JSON.stringify(persistedContext)
+          )
+        }
+        return result
+      },
+    }),
+    Make: () => {},
+    'enable copilot': () => {},
+    'disable copilot': () => {},
+    'Set selection': () => {},
+    'Set mouse state': () => {},
+    'Set Segment Overlays': () => {},
+    'Center camera on selection': () => {},
+    'Engine export': () => {},
+    'Submit to Text-to-CAD API': () => {},
+    'Set sketchDetails': () => {},
+    'sketch exit execute': () => {},
+  },
+  // end actions
+  actors: {
+    'do-constrain-remove-constraint': fromPromise(
+      async ({
+        input: { selectionRanges, sketchDetails, data },
+      }: {
+        input: Pick<
+          ModelingMachineContext,
+          'selectionRanges' | 'sketchDetails'
+        > & { data?: PathToNode }
+      }) => {
         const constraint = applyRemoveConstrainingValues({
           selectionRanges,
           pathToNodes: data && [data],
@@ -1359,6 +1139,9 @@ export const modelingMachine = createMachine(
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1367,10 +1150,13 @@ export const modelingMachine = createMachine(
             updatedAst.newAst
           ),
         }
-      },
-      'do-constrain-horizontally': async ({
-        selectionRanges,
-        sketchDetails,
+      }
+    ),
+    'do-constrain-horizontally': fromPromise(
+      async ({
+        input: { selectionRanges, sketchDetails },
+      }: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
@@ -1390,6 +1176,7 @@ export const modelingMachine = createMachine(
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1398,8 +1185,14 @@ export const modelingMachine = createMachine(
             updatedAst.newAst
           ),
         }
-      },
-      'do-constrain-vertically': async ({ selectionRanges, sketchDetails }) => {
+      }
+    ),
+    'do-constrain-vertically': fromPromise(
+      async ({
+        input: { selectionRanges, sketchDetails },
+      }: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+      }) => {
         const constraint = applyConstraintHorzVert(
           selectionRanges,
           'vertical',
@@ -1418,6 +1211,7 @@ export const modelingMachine = createMachine(
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         return {
           selectionType: 'completeSelection',
           selection: updateSelections(
@@ -1426,13 +1220,16 @@ export const modelingMachine = createMachine(
             updatedAst.newAst
           ),
         }
-      },
-      'do-constrain-horizontally-align': async ({
-        selectionRanges,
-        sketchDetails,
+      }
+    ),
+    'do-constrain-horizontally-align': fromPromise(
+      async ({
+        input: { selectionRanges, sketchDetails },
+      }: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges,
+          selectionRanges: selectionRanges,
           constraint: 'setVertDistance',
         })
         if (trap(constraint)) return
@@ -1447,6 +1244,7 @@ export const modelingMachine = createMachine(
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1456,13 +1254,16 @@ export const modelingMachine = createMachine(
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
-      'do-constrain-vertically-align': async ({
-        selectionRanges,
-        sketchDetails,
+      }
+    ),
+    'do-constrain-vertically-align': fromPromise(
+      async ({
+        input: { selectionRanges, sketchDetails },
+      }: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintHorzVertAlign({
-          selectionRanges,
+          selectionRanges: selectionRanges,
           constraint: 'setHorzDistance',
         })
         if (trap(constraint)) return
@@ -1477,6 +1278,7 @@ export const modelingMachine = createMachine(
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1486,8 +1288,14 @@ export const modelingMachine = createMachine(
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
-      'do-constrain-snap-to-x': async ({ selectionRanges, sketchDetails }) => {
+      }
+    ),
+    'do-constrain-snap-to-x': fromPromise(
+      async ({
+        input: { selectionRanges, sketchDetails },
+      }: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+      }) => {
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToXAxis',
@@ -1504,6 +1312,7 @@ export const modelingMachine = createMachine(
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1513,8 +1322,14 @@ export const modelingMachine = createMachine(
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
-      'do-constrain-snap-to-y': async ({ selectionRanges, sketchDetails }) => {
+      }
+    ),
+    'do-constrain-snap-to-y': fromPromise(
+      async ({
+        input: { selectionRanges, sketchDetails },
+      }: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+      }) => {
         const constraint = applyConstraintAxisAlign({
           selectionRanges,
           constraint: 'snapToYAxis',
@@ -1531,6 +1346,7 @@ export const modelingMachine = createMachine(
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1540,8 +1356,14 @@ export const modelingMachine = createMachine(
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
-      'do-constrain-parallel': async ({ selectionRanges, sketchDetails }) => {
+      }
+    ),
+    'do-constrain-parallel': fromPromise(
+      async ({
+        input: { selectionRanges, sketchDetails },
+      }: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+      }) => {
         const constraint = applyConstraintEqualAngle({
           selectionRanges,
         })
@@ -1553,15 +1375,20 @@ export const modelingMachine = createMachine(
           return
         }
 
+        const recastAst = parse(recast(modifiedAst))
+        if (err(recastAst) || !resultIsOk(recastAst)) return
+
         const updatedAst = await sceneEntitiesManager.updateAstAndRejigSketch(
           sketchDetails?.sketchPathToNode || [],
-          parse(recast(modifiedAst)),
+          recastAst.program,
           sketchDetails.zAxis,
           sketchDetails.yAxis,
           sketchDetails.origin
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1571,10 +1398,13 @@ export const modelingMachine = createMachine(
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
-      },
-      'do-constrain-equal-length': async ({
-        selectionRanges,
-        sketchDetails,
+      }
+    ),
+    'do-constrain-equal-length': fromPromise(
+      async ({
+        input: { selectionRanges, sketchDetails },
+      }: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
       }) => {
         const constraint = applyConstraintEqualLength({
           selectionRanges,
@@ -1591,6 +1421,7 @@ export const modelingMachine = createMachine(
         )
         if (trap(updatedAst, { suppress: true })) return
         if (!updatedAst) return
+        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
         const updatedSelectionRanges = updateSelections(
           pathToNodeMap,
           selectionRanges,
@@ -1600,11 +1431,1175 @@ export const modelingMachine = createMachine(
           selectionType: 'completeSelection',
           selection: updatedSelectionRanges,
         }
+      }
+    ),
+    'Get vertical info': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+      }) => {
+        return {} as SetSelections
+      }
+    ),
+    'Get ABS X info': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+      }) => {
+        return {} as SetSelections
+      }
+    ),
+    'Get ABS Y info': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+      }) => {
+        return {} as SetSelections
+      }
+    ),
+    'Get angle info': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+      }) => {
+        return {} as SetSelections
+      }
+    ),
+    'Get perpendicular distance info': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
+      }) => {
+        return {} as SetSelections
+      }
+    ),
+    'AST-undo-startSketchOn': fromPromise(
+      async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
+        return undefined
+      }
+    ),
+    'animate-to-face': fromPromise(
+      async (_: { input?: ExtrudeFacePlane | DefaultPlane | OffsetPlane }) => {
+        return {} as
+          | undefined
+          | {
+              sketchPathToNode: PathToNode
+              zAxis: [number, number, number]
+              yAxis: [number, number, number]
+              origin: [number, number, number]
+            }
+      }
+    ),
+    'animate-to-sketch': fromPromise(
+      async (_: { input: Pick<ModelingMachineContext, 'selectionRanges'> }) => {
+        return {} as {
+          sketchPathToNode: PathToNode
+          zAxis: [number, number, number]
+          yAxis: [number, number, number]
+          origin: [number, number, number]
+        }
+      }
+    ),
+    'Get horizontal info': fromPromise(
+      async (_: {
+        input: Pick<ModelingMachineContext, 'sketchDetails' | 'selectionRanges'>
+      }) => {
+        return {} as SetSelections
+      }
+    ),
+    astConstrainLength: fromPromise(
+      async (_: {
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'selectionRanges'
+        > & {
+          lengthValue?: KclCommandValue
+        }
+      }) => {
+        return {} as SetSelections
+      }
+    ),
+    'Apply named value constraint': fromPromise(
+      async (_: {
+        input: Pick<
+          ModelingMachineContext,
+          'sketchDetails' | 'selectionRanges'
+        > & {
+          data?: ModelingCommandSchema['Constrain with named value']
+        }
+      }) => {
+        return {} as SetSelections
+      }
+    ),
+    offsetPlaneAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Offset plane'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { plane: selection, distance } = input
+
+        // Extract the default plane from selection
+        const plane = selection.otherSelections[0]
+        if (!(plane && plane instanceof Object && 'name' in plane))
+          return trap('No plane selected')
+
+        // Insert the distance variable if it exists
+        if (
+          'variableName' in distance &&
+          distance.variableName &&
+          distance.insertIndex !== undefined
+        ) {
+          const newBody = [...ast.body]
+          newBody.splice(
+            distance.insertIndex,
+            0,
+            distance.variableDeclarationAst
+          )
+          ast.body = newBody
+        }
+
+        // Get the default plane name from the selection
+
+        const offsetPlaneResult = addOffsetPlane({
+          node: ast,
+          defaultPlane: plane.name,
+          offset:
+            'variableName' in distance
+              ? distance.variableIdentifierAst
+              : distance.valueAst,
+        })
+
+        const updateAstResult = await kclManager.updateAst(
+          offsetPlaneResult.modifiedAst,
+          true,
+          {
+            focusPath: [offsetPlaneResult.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
+    loftAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Loft'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection } = input
+        const declarators = selection.graphSelections.flatMap((s) => {
+          const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
+          const nodeFromPath = getNodeFromPath<VariableDeclarator>(
+            ast,
+            path,
+            'VariableDeclarator'
+          )
+          return err(nodeFromPath) ? [] : nodeFromPath.node
+        })
+
+        // TODO: add better validation on selection
+        if (!(declarators && declarators.length > 1)) {
+          trap('Not enough sketches selected')
+        }
+
+        // Perform the loft
+        const loftSketchesRes = loftSketches(ast, declarators)
+        const updateAstResult = await kclManager.updateAst(
+          loftSketchesRes.modifiedAst,
+          true,
+          {
+            focusPath: [loftSketchesRes.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
+    shellAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Shell'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection, thickness } = input
+
+        // Insert the thickness variable if it exists
+        if (
+          'variableName' in thickness &&
+          thickness.variableName &&
+          thickness.insertIndex !== undefined
+        ) {
+          const newBody = [...ast.body]
+          newBody.splice(
+            thickness.insertIndex,
+            0,
+            thickness.variableDeclarationAst
+          )
+          ast.body = newBody
+        }
+
+        // Perform the shell op
+        const shellResult = addShell({
+          node: ast,
+          selection,
+          artifactGraph: engineCommandManager.artifactGraph,
+          thickness:
+            'variableName' in thickness
+              ? thickness.variableIdentifierAst
+              : thickness.valueAst,
+        })
+        if (err(shellResult)) {
+          return err(shellResult)
+        }
+
+        const updateAstResult = await kclManager.updateAst(
+          shellResult.modifiedAst,
+          true,
+          {
+            focusPath: [shellResult.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
+    'submit-prompt-edit': fromPromise(
+      async ({ input }: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {
+        console.log('doing thing', input)
+      }
+    ),
+  },
+  // end services
+}).createMachine({
+  /** @xstate-layout N4IgpgJg5mDOIC5QFkD2EwBsCWA7KAxAMICGuAxlgNoAMAuoqAA6qzYAu2qujIAHogC0ANhoBWAHQAOAMwB2KQEY5AFgCcGqWqkAaEAE9Ew0RLEqa64TIBMKmTUXCAvk71oMOfAQDKYdgAJYLDByTm5aBiQQFjYwniiBBEE1OWEJazVbYRVrRWsxZV0DRC0JGhpZCrkFNRo1ZRc3dCw8Ql8AgFtUAFcgwPYSdjAI3hiOLnjQRMEpKRp02alzOUV5cTU9QwQZMXmxWvMxaxkNGXlGkHcWr3b-cm4hvnYRqLG43mmpKwkVI9m1I4qYSZTZGWwSeyKRTqOTlOTWCwXK6eNp+fy+KAdMC4AIAeQAbmAAE6YEj6WAvZiscbcD5CTJpE5yE71WRiMTA0EIdSSZTsqRHDliWaKJHNFHEbFDIl3EhYokkfzcQLBUITSnRanvKJbQQc6zSKz1GjCOS7FSzPSJGRfRQSRRaOqwxQ0M1qMUeVoSbAQTBgAgAURxxMCAGs-OQABYat4TOlJfJ29QyYQuh22TJiLnwtQSBQKKTVL4qPJiD3XKDe33+oPSsMR6OKSJU2JxhJCazghTWYRSXIpWbCI5c4x29kFRy-OTaerllFVv2Bp5E7oYGNattTIRieF54Q937lNQls5cvlSCEcuqzGid11l1yXcVen2LgBKYHxqEwhPXrdp7ZJDuY7WH2cwWioCgyGeAoXrsag7AhSw2DIc4vtWBAADKoAAZs89CjBuAFbggoFyPaWi5KmUImq6XJ6r8EgMksyg7LI2hofgC7+t4kZYJgf40pM-CIGRFGZI4UIuqIcj0fsMhMT2LHMsKJxSJxlavv6ABi2CYH6+HNpq-7CdMO4KceN7GMy5SdmeKjmHm+SujIeQ2scGncUuLBEoZhEmfGeqqBCijmT2xwIbeZ5DheCJaNOCI2BooqPsi6GLsgJDhoJ2okUFki-BaKRHKI7LQcUCChUCEimkC9jZGI8iqJ5WkEAAIsEQwqn6arhARrxEaZ27MtILqusYrkOhYZ4AheOQIakCJ1BkqGpc+XGtQAKmATyCOwqCCEQACCbU5ZuIlAcFNRKCcDkyDkZ73fMWiZsKHIOSWLUYbiOE4UEARMKSuDDP1LZCYFO6SDQ9g7nYWg2NkXIIvu0iyOYFQCoo9SrU0nobRhAAKRKoB0TDsHtB2QBwZ3ERdYkOhJ1HSXRFUiCWim9iWKnsepa145p1YSJGPpgATQNwAQR2+dgOEkKE-hQAqTCRv4LBMN0pJDBANNDUkpU1RarqQRYfbwmeJoqBCvYKNCjWprYX1+hIsCRqgADuYtkBLUucLL8uKyQyv+GApOcJAOsQ9oeaw9Y1R5KaUUVXkDo1RYAKZD21Qpp53jhuwUbEGQlCYLnDYR4BAKW8YXOFqFtcbEnnYKfuLlWEcPaNTnecFx1BlgCqmJSuXJG22U2SFrHtR3uVurHJIoH7NDaimvCZFdw2BD3BgwcQBw-gQN0RKtPW+fRqDxng4BUkWdbrniNJKhcikBr2xo0NKBauTr6fEil6fACSGFMrhgHliHE-hCTS3ICQAS59Yy00SC6fYeYTg7lkFjXYO57LsmkA4AE4h0G1F5rjCsv9u6RjIQ2QBGUsr9yCIPcBrsj4AC8HgwOHhdF0dh7RDjOLDPsQJHpmDKJBfcxgP5iO-lGShACMJEG4LAdgCo8D+CYdgVhOIYH72wIoouIMjLwN1i6Tspg37mGNkyLMFVbA2lMDHdkdQjjQykRQv+UZqH+nkbgRRyjcAQOJJwaBmBtG6IoPo-yl8R7Q3IvBYUnZUgchnqJVyaRbypmvLHU0OMnz8xkdItxkYPHEAUUokgKijoACFvD+AABocMQeICyx5bDsmsisJGGhyK-ELOIcaNpXQuLyYUuRJTfH+EqdUgAmvUxASCFLTn+K5CcOwuSuVcukWOoihz1AKNktKXEClDKKV4nxZS-FkCgH6GZlUpJMUOPsXIKYdyyWsWYXMqRemgVdAiOQgyCnHNGWc-wfp8DsDPgYwa8YaKSAzmcFIK8kJI1HOkFY90MgAlsCoP55CAXeNKSopgxJCW4F3uQDWJAZS71CZQa5nSyhXjsNEuFj9rECnIp2dMsdVACgfCQ+chz-kjLxWMtRGiBj6X0P4GB2AoC4GuS6dZJYjihW0BjKxWxQrCjzCkaoXLpywl+XzUhAqcVCtOSoyBgSYGYEldK2V8qLDkRnOk0KDpmQNw1eIso9R4TyDOLdQ1fKvQmqoWa-FfjYC4EDv4fatSHVKGkAiRqy9VgrAUEjColt4RukcPqYhOTjXkKOWGsZkbo2xumXAyFV8Kh2isPYC08h8hgSRljeYvShx1FNLXQNBb+VFsFYuE54bg4AEduhaJBVAMFDqUaulddDZYNgWUat1UxGwnYCgmnhc4I1-aGzFqHYCglFLrXUCrQFGtAJTCyHuoOSC8EZq1HtFCY8dQbSWCxXu4NA7TVHuFUCokIdUCEjuMenEFIL2RM4Q4cijhWTAixlYF5GrCwKQKLMQqaMkLYtDe+MAggdohG6EMeVT0fhpwdKFV0JphDmyWGUVBux7qrFabh2Ri4t79ypgEA+R98AnyjPKqElsl49NvOaPI5sUw1RsMyKwdg027qDQc39eHPHgf8G7DgKso1YggBAmB3RwkDUvSPUQls7bqGhDZjQ1guRmHmMvD9y950IRSipysIaOP+ijBc-u+1vzXM7OCDMSxIK-FUmeB0kgrC5Ght8+EVhBlHTdmUgIoq2HBKpQMMJ-g8A4VQAQCA3AwDelwF+cMEgYDk0y5ozAggCuoGCy5Mo0NoTRLMByJGQIDQ7Ai32JD2QUtpb3nV8VITcuUHy7gQrBBiTEyJBIQGgxCtEg6NVvwghxswMa7N5rUHcp01a6aETWM5ipCWD18EZh8j5HMCkpYI30v+KgVonLeiZtzZK8DcrlWys1cEJa7AQS9uFZa3MGqx4zBjUzqFJGCMIRxzjmyacvK+0-oPall7wOgmTc+01+bRJFvLc1mtjbgPce7aaxDu0KZbBaCUKsLGSNQJV1NEcVQNpgQ7me3vCZtSvtFZ+2VvA-3NvkxIAAI1gIIPgYODsQrM8dgUIU0OgUdG9VZ5Qq45BY42xdvb9leaLdj-nVTBeE4W6gJbK32Dk4l4IaXsv5c08O+dRIcUYW1FTDkHsaT1WiVmoacQNt2ShWG9+1TWPRsBAF5MoXxXSt-dQFVwHzvBD6AVxDy29QGdDnHo1VZNE2tVESfdX3fO48W4T1b4nNvSerZtxTrbGes9u6V9Bz3FRJDCjsKaWo6ZoarORqYFYwobLKGnHs9aJuY8vYuX6RPIuU9p9b-gP02f3cINEj36QaCYqVwyEULY+QNA-GXeFE0sd0fG6GRIM3ARF-9zryTu3Dv08b4Ix3iJR3u+FnSFEFgjNGQ3ECRnZFzFTDeUaiPHuhSyYEBklSnTBTAwAzwHYCT1+zF1TzKyOm8E2kEHuDQNwEEGQPBV-w9131kCYi0DyENmXiUED1ImzVMCHFsFsGTgwXgMQOBWxGnRViIPNRxCJzfzJ2bwf3wMIPA1IL4JnW311jiirh3AxjmFQUUCRVV0nBLF+B7AdBn1yUOUf1ViJWxFJXJUpR0Smxf320wNFwqxwMd0JSJGJTMNJCJEEA+zCS307z-133WQKEwUFCUFTCSVIi+HIjQxOEnFOFjir2MOcNMJB3MPxzy1fwb3f3EMBycJcKSLcI8MsL0W8IoJ31Ina1MGo3ZGbUklCNAixmkGZCiOyBiKN1n3v0wjwAC1QG-E3kjH8xjS6NgR8MoNIjkyYmMH3AQnMEyGXifjnT7HSTsDqlAkGXaOBn6O-AkH-lwA4AIBa3EAhAxQtBzGZBP0QF9TzHMGLAxixg4ijznx-lWM6I2K2J2KoCbGKIUIcAUhOESgH0ZzsgqkqFMDOFg0cTNGcTuLaI6PWMwAkAADlUB-ACZUB0DYBJYIADNdFfJVYUScRgsSw7RfVbZbpzQ6MKpYRUllAYozBgQLMVjoTAtYSESkTcT2A0TSAwlBiPioVUwYlaC8gbIzgzRsxuFNAoRZA4sDVBkXiMDrkFAoYchFjbATQRQzwb8xiAQJxpJx9pTtjZT3jTMu8SgEQfhREdhM4LRHp7oFhs0oRUhB9BlNp-McRsAtEKVyB+iei+jGTrk0VyIEk5hagzQ1hQiEp0h2tqgKh4kPMMdo8f5ugSVESsT2AClcRcBbDV9cDJCEyStBBkzUy5V5CoUUwxxCx4RbYBQNAV0ziCgeEsM0FIJjxBkPxQhn8YSvT8AniuTDTfCwjcgx92Q0cslnNzZvhlB1BQJJzWQWiDCi0WzctLkuyH9Y9j4ggiCDN7giRgYiQCBdJtiXZ-AgNWyv9fToRRMTiOQ3RUh1CKpahJARQLAzgBRPpITDl5y2zGTlz0tj4bcZU8B0SDMjyFyl9fyoA8BTzjh7R5MdUIplARTm4ex9x4p5pZhmyQhgKly9ydE+IDN3yv9diiyr4chCTHBexCxOczZbyUgfhwTUxewe9fhBkiApQQw8LFz2y-NOyYSOFdRVgFIvhaT9wH1hQyTEhIsmIMUqhzBjgHImKWKZQ2Kl9PzH9j5Nztzdy8BsK7h5LDz0Ln9fTIQDjcghRdVaMzwCgs0W5UhIRshljXyi1mLgwFK9Kv8YSvzxgBNQL-yjoMTtKnLdLjz2KvLCyhiSikp5454Uk7Nqh7JjA9wfkrAHBbL8079DlHK6xFLMLNKXZIB-B0rWKXLFyCLQqFDsg61QI31VBoZ8gzwDVcF51mNMllNYz7jpFyA-QyBAhNZ-RhNqDHBOxaCOR3NTibkcFdhVDG07BtBmrUqHLuBgcBNY09Ncr8QjN-QV9sCqsSBFFh1fE4S5RIAAA1NalrbhayTsByXNaSkfVMKHAUe6ZNRqawJi+agJY+Jag6gzVazAYzEQ9IsQ9bCQba9gXas5fa-TY6n6kzMGXspNXMRdP3fIDkTVVZaSiEDIR87ndMOIwQkdIDLoUDXG3xNkjMzasrXMoms5QQfGkDAjSm9A06g0fBfqnQ48KTJOcIwA5kFYBCTFW4zze-Iw+mvxHbCVUm+wqrCm6Q0Wm1FrWEe0O2Wod+SiR6BycM0QKoM-aoHGzTKnMWjaiW8mg6YWoHN6oJWWwikiH5CIoqOYR1HYFZJOS6xSC0aETZGknW4g1RX8sVa1W1HAWVcW8XKW4g7bH2rLG1J3AOkK7kwCZGO0b5fIfcKImEcy2shyAvM-DOW8T2oQ17K1CVKVaOoOhwkOoQ02t7CVKOmVGOns4YhEbhBwCoY8KwaiFIaKaqL4I4KeAcZeW-Voww2PVAvOstJgfo2pEuyW426Q0eimOXFrYEe0TID6aEPsWwDNaoGqGxCk+KVYXOkdUe8eyZSeo2qQ0O2e-aTPOWqGUCUQaEG0Y8VtXsRNYi4M44FSfesZMAcdSdWQyME+iQMu8NQjH+hrMghe+YV2z+PilMByWqrVNgsqd6YESCT+oFJgU9fSLAABoB3xQQDBhULB7smG+u10LpNuZnPPLBJOVVFBdzLIB5Gagehy3orizaAY4q2Oq23rC-EsJKu09mjVUsdIBCfYC7TdDyeyg9IgVhmAfwdh7ot4kq+MHsGTXNU0fIAsROIR-IERxCcRu7fQwtaR2R-uBRzAXY6wZRuOnpMfJYI4NSfsaLXRlaMRxOjDJi0x+RjhqgGQaxkiOFXMKEYwa-N6ZkZx+eUR1VVeBxzxvo8x3YlQfxumVQiEX4eqWEWoBCMkoRvsaOVFHmtBZqKRn+GR+JnxsQZJz3VJh6jJuod9HJ2ZZUjZE0ayrGDdJh2c6R7AIkdqrsjsuRn0y2i6cSjQJxQsaS+6aspIKjQ0QS2wM0ESpinpvptylSzyo+MC9MnyjclZkCzZ8C4Z60PfcPLnD6R0FDXfKON1CY2OUKKCZZ3ppSgY9yzgATN8EgXeXoDS-cgQvZ6Gi+Xs+wBCdIRq1YTRpgu8b3DINg50VjR51Zz8rCnKgzIgf5zhuukopOu0H1MZyCPQk0Wq10eq8faq1ITp4x0+fwXAREv2HiVUXjMAWWDWAGcWa5QQDBOxEI5eIEZVaZxCrmnYccXIWObOSEsgbADoQYd6xElbYGABiVqVoYOeul65C0NIY0XFtmgEGo00Pcbm0sO+SPAWxV6Vxa2V8WP623AGjbU15Vy+1Vo5pp+ebIIsd+DIURVZaihTYi7QO5nsTyO1mV4OPgSw1c8hBV7YpVgjS+2AchNVr4JiF0WaNMDkWkkcOdQ4PICTL5fu3JI6BAm1H836f6VWS1g28XXCP6PwT2YGI6RRdweVHBCqoV3mnYbIflnQsofVO81pl8gWgtxA4t6t1lr2K1xve3cQqt-6WtsAet9gRtp1m5RkLW34dJNBGo+CUxVQd1FMDnTyQdotgTTAXCDAithwk9vCedxdqpjsTegcNkEVoSyFk0e82DYwY8acDQCl+cQ9-QY+S9jA63a1pvQGwD699AdlrlJiAsc0+OFpVtcEUQBqD6L95eA9wt-9gTHK-SABnDzACD7WJdwQcKNreJf1591taggk2zRs79jDod7DviXD4Didh3fDwjqDudW8WOCjhD6xdg9IOuD1uj9DyEv94+ImEmMmOenjPD7oKXDoDgfB4mUOQjXePyTF3WDl3cB+DIZGBJaEBHBwMoJNeDUTn9r0CTgTKTtTy+uT1jjIwG2ABTpT8mJgVTmTnjdl5QA0PTzIVpocIz6xRCRNJxVDjQMTx8GljAeAKIY3Lhi6QQWEKGBCRxo8AheiHMdIGEewYy6oC0R2MARL6YIccid9dL+p4ULkWg+0CqkLEqEUIroWEWWduLkhkokQOob1OFPsDL6rpOV9eo5iYEWok4Zrl2d2NrkroQc0vMF6B7SoL982Fxxg28FIV0CeFxGb7kYlsZuKKqmS6ZwQGECSrGdQZSZCdjdxasHbgR-fHIOoALghRpyqY4NIbIJZDkFiF0FK5h+fMbcO+rFI6bJrO71uiSyMyYgRD1USRY6QSCTdHm7tSzuM6RIwvWkH6wwrcH3YPMRwVQLmKk9ugTzIUwXQ19+DPvOIgXGpIXcH26o0SszpHcGY6xFICyCfGiauAvGnmvenrTnk26nvFmk4btS57YF0f0zZeYicsVgWwehfVysHwXq+auCiFeB7dGEapGunTRuYGKdrbgm1Xg0FAQ8DdgXHi8VzGFrDdJpFacPRvPHML4c4Ep9Hoe7IxIslNwrHgXjroxfcSQB2iKCwCwB6VlULXIBQR7luIx-dB4hkgYu72uWTBwaoxY00EcFOFByM1piTPNyl6RR4tymUu7+oSAyEDPivCX5kdneYhg6HWS93ihEvz8ml9bGBHbzsOKxddYcfO217rnCSpnCUuTAZFviQNvl55k5E1E7vjlaQNSfMG0cfGriweb+wdyfpNjSfsv1XkiMCcM4yoEE4iXvISCqylMc0juePzHH+J0zsl0t03p-onbqZgqMrzQeoVMEarJDZd7u02OBIZBkOZJMgMF8gFk7u3Sb1Byn3CooRMDmWYGMRcwyR2mMZWagekyowlu+UEERp2BbrcoqoI4brhFjhzAhXIf3Lpj-GwHKUVy2HEINwA3I25ty3fdBPgI9a1RGC0zexqaQ4LHA7ar6NCoFWeYbF1mUAJUAc2EiGIVGrvelEFx45RFa+Z1RChVVUDH4qBRfChLQJebIscK-gTKmwJwTPxwiBqY4MPlvKOQcguyHYGkiiJyV-KOg78N320BwYe8V+aiKET4ovwu0eQbQOmH2AOCMqhVUQbCXEFgYtyxId-tDF5DuCW4ng8ytCHip9IkqOQTQQn2kT5VnKIgpcuEOCrRCdg9oOIfHVWAd1cw92PPPYFgzpD7+mQnSk4NhJ6DcqWQgwSEOK4H8LoW-WIQKA8FQgvBeAndtymPyopBkfTTqrAG6p3d+q3qZ+PmDLLTRBuJoH4M+wcB3gUgX6BXnNQqxvVzW1LT6oZihrg9dGOwFYP8ATgZAJeCMA0DyjLLftbwM5LQa82Hp41gMhNC3u10BbDFJIBodJuIDuhnYmCMWAqAhAYIiZMMaDFRDLS2AB8eSeQH4DATMB2ARM9mJOGcB+E2Bdg26PihgP+4-whautM2n7XB5wjfhiIyaBHw1QOR5gKSZMDCCREQiRaQPcVCbztTSDq05mEkTASVoYYYqScZNDVBsi7IsRhfDIRQnxFe09aLI6OsSJ+FcjygPI1INFEKF1BxyF2ZjAyMCBRox6saGpEcOD7KEYhCMc0hmiHD74e8IIqqjULR5iih6wtTUeWkRKTI9Rl4WEIaNUbDhrEygZ6E9E1J54xOmwgHgEDtHf0J0wSMgjKPhHAt5Rbqc-u6nXQDVokPqDIBqIIZnpMARw+ZE3SWDQwnyhYGaM-T7qWRKg8MOJmw2T4dDPcDkJ1OMRWhTEYW0WVXK42iYSM7+1oiQGiyeZdlcBm9fvNzQBC+djA+Y0TDsFzT9jryz1Sfh2MRYvM8hUgtgbo17HyAxxiFDNNc0LC3Nx8DzScf8zWb0CJBHzL5h8JkE2MFxKYPsQUCSyvcm4L8cCLC3T47AEWoQiQE0NRb-N5xBUM8UuIvEriQuerViJCCUhNEXE1LWlnLHaEwjAIJHI4DVCHBHE-cS8UIicH4q8Ik0-YOzCKK9BBtdhcrcCZ8JKIAFk6+4e+r2Hpy6tgRPxdQH3VUCo9KwWEiQbGh2hhtsO5CHbo72nCRZxENgFiK917BpA7wbkZYH0IY5HsJB07NEDhJ24kd1AczdiLmnGixwespo0qOLxWjaBWxlYazhIMA6SSyuPXSrneRGr6N98E+L9qIEyTCSsOEg-DjpJ3B6S-W-XQyQoHmCap+sqYAEMlnE6YdJOnncmPZw042TyuaXeyVV0Mkpp4RjaOgsC15guAgAA */
+  id: 'Modeling',
+
+  context: ({ input }) => ({
+    ...modelingMachineDefaultContext,
+    ...input,
+  }),
+
+  states: {
+    idle: {
+      on: {
+        'Enter sketch': [
+          {
+            target: 'animating to existing sketch',
+            guard: 'Selection is on face',
+          },
+          'Sketch no face',
+        ],
+
+        Extrude: {
+          target: 'idle',
+          actions: ['AST extrude'],
+          reenter: false,
+        },
+
+        Revolve: {
+          target: 'idle',
+          actions: ['AST revolve'],
+          reenter: false,
+        },
+
+        Loft: {
+          target: 'Applying loft',
+          reenter: true,
+        },
+
+        Shell: {
+          target: 'Applying shell',
+          reenter: true,
+        },
+
+        Fillet: {
+          target: 'idle',
+          actions: ['AST fillet'],
+          reenter: false,
+        },
+
+        Export: {
+          target: 'idle',
+          reenter: false,
+          guard: 'Has exportable geometry',
+          actions: 'Engine export',
+        },
+
+        Make: {
+          target: 'idle',
+          reenter: false,
+          guard: 'Has exportable geometry',
+          actions: 'Make',
+        },
+
+        'Delete selection': {
+          target: 'idle',
+          guard: 'has valid selection for deletion',
+          actions: ['AST delete selection'],
+          reenter: false,
+        },
+
+        'Text-to-CAD': {
+          target: 'idle',
+          reenter: false,
+          actions: ['Submit to Text-to-CAD API'],
+        },
+
+        'Offset plane': {
+          target: 'Applying offset plane',
+          reenter: true,
+        },
+
+        'Prompt-to-edit': 'Applying Prompt-to-edit',
+      },
+
+      entry: 'reset client scene mouse handlers',
+
+      states: {
+        hidePlanes: {
+          on: {
+            'Artifact graph populated': 'showPlanes',
+          },
+
+          entry: 'hide default planes',
+        },
+
+        showPlanes: {
+          on: {
+            'Artifact graph emptied': 'hidePlanes',
+          },
+
+          entry: [
+            'show default planes',
+            'reset camera position',
+            'set selection filter to curves only',
+          ],
+          description: `We want to disable selections and hover highlights here, because users can't do anything with that information until they actually add something to the scene. The planes are just for orientation here.`,
+          exit: 'set selection filter to defaults',
+        },
+      },
+
+      initial: 'hidePlanes',
+    },
+
+    Sketch: {
+      states: {
+        SketchIdle: {
+          on: {
+            'Make segment vertical': {
+              guard: 'Can make selection vertical',
+              target: 'Await constrain vertically',
+            },
+
+            'Make segment horizontal': {
+              guard: 'Can make selection horizontal',
+              target: 'Await constrain horizontally',
+            },
+
+            'Constrain horizontal distance': {
+              target: 'Await horizontal distance info',
+              guard: 'Can constrain horizontal distance',
+            },
+
+            'Constrain vertical distance': {
+              target: 'Await vertical distance info',
+              guard: 'Can constrain vertical distance',
+            },
+
+            'Constrain ABS X': {
+              target: 'Await ABS X info',
+              guard: 'Can constrain ABS X',
+            },
+
+            'Constrain ABS Y': {
+              target: 'Await ABS Y info',
+              guard: 'Can constrain ABS Y',
+            },
+
+            'Constrain angle': {
+              target: 'Await angle info',
+              guard: 'Can constrain angle',
+            },
+
+            'Constrain length': {
+              target: 'Apply length constraint',
+              guard: 'Can constrain length',
+            },
+
+            'Constrain perpendicular distance': {
+              target: 'Await perpendicular distance info',
+              guard: 'Can constrain perpendicular distance',
+            },
+
+            'Constrain horizontally align': {
+              guard: 'Can constrain horizontally align',
+              target: 'Await constrain horizontally align',
+            },
+
+            'Constrain vertically align': {
+              guard: 'Can constrain vertically align',
+              target: 'Await constrain vertically align',
+            },
+
+            'Constrain snap to X': {
+              guard: 'Can constrain snap to X',
+              target: 'Await constrain snap to X',
+            },
+
+            'Constrain snap to Y': {
+              guard: 'Can constrain snap to Y',
+              target: 'Await constrain snap to Y',
+            },
+
+            'Constrain equal length': {
+              guard: 'Can constrain equal length',
+              target: 'Await constrain equal length',
+            },
+
+            'Constrain parallel': {
+              target: 'Await constrain parallel',
+              guard: 'Can canstrain parallel',
+            },
+
+            'Constrain remove constraints': {
+              guard: 'Can constrain remove constraints',
+              target: 'Await constrain remove constraints',
+            },
+
+            'Re-execute': {
+              target: 'SketchIdle',
+              reenter: false,
+              actions: ['set sketchMetadata from pathToNode'],
+            },
+
+            'code edit during sketch': 'clean slate',
+
+            'Constrain with named value': {
+              target: 'Converting to named value',
+              guard: 'Can convert to named value',
+            },
+
+            'change tool': {
+              target: 'Change Tool',
+            },
+          },
+
+          entry: ['setup client side sketch segments'],
+        },
+
+        'Await horizontal distance info': {
+          invoke: {
+            src: 'Get horizontal info',
+            id: 'get-horizontal-info',
+            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+              selectionRanges,
+              sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+            onError: 'SketchIdle',
+          },
+        },
+
+        'Await vertical distance info': {
+          invoke: {
+            src: 'Get vertical info',
+            id: 'get-vertical-info',
+            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+              selectionRanges,
+              sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+            onError: 'SketchIdle',
+          },
+        },
+
+        'Await ABS X info': {
+          invoke: {
+            src: 'Get ABS X info',
+            id: 'get-abs-x-info',
+            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+              selectionRanges,
+              sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+            onError: 'SketchIdle',
+          },
+        },
+
+        'Await ABS Y info': {
+          invoke: {
+            src: 'Get ABS Y info',
+            id: 'get-abs-y-info',
+            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+              selectionRanges,
+              sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+            onError: 'SketchIdle',
+          },
+        },
+
+        'Await angle info': {
+          invoke: {
+            src: 'Get angle info',
+            id: 'get-angle-info',
+            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+              selectionRanges,
+              sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+            onError: 'SketchIdle',
+          },
+        },
+
+        'Apply length constraint': {
+          invoke: {
+            src: 'astConstrainLength',
+            id: 'AST-constrain-length',
+            input: ({ context: { selectionRanges, sketchDetails }, event }) => {
+              const data =
+                event.type === 'Constrain length' ? event.data : undefined
+              return {
+                selectionRanges,
+                sketchDetails,
+                lengthValue: data?.length,
+              }
+            },
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+            onError: 'SketchIdle',
+          },
+        },
+
+        'Await perpendicular distance info': {
+          invoke: {
+            src: 'Get perpendicular distance info',
+            id: 'get-perpendicular-distance-info',
+            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+              selectionRanges,
+              sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+            onError: 'SketchIdle',
+          },
+        },
+
+        'Line tool': {
+          exit: [],
+
+          states: {
+            Init: {
+              always: [
+                {
+                  target: 'normal',
+                  guard: 'has made first point',
+                  actions: 'set up draft line',
+                },
+                'No Points',
+              ],
+            },
+
+            normal: {},
+
+            'No Points': {
+              entry: 'setup noPoints onClick listener',
+
+              on: {
+                'Add start point': {
+                  target: 'normal',
+                  actions: 'set up draft line without teardown',
+                },
+
+                Cancel: '#Modeling.Sketch.undo startSketchOn',
+              },
+            },
+          },
+
+          initial: 'Init',
+
+          on: {
+            'change tool': {
+              target: 'Change Tool',
+            },
+          },
+        },
+
+        Init: {
+          always: [
+            {
+              target: 'SketchIdle',
+              guard: 'is editing existing sketch',
+            },
+            'Line tool',
+          ],
+        },
+
+        'Tangential arc to': {
+          entry: 'set up draft arc',
+
+          on: {
+            'change tool': {
+              target: 'Change Tool',
+            },
+          },
+        },
+
+        'undo startSketchOn': {
+          invoke: {
+            src: 'AST-undo-startSketchOn',
+            id: 'AST-undo-startSketchOn',
+            input: ({ context: { sketchDetails } }) => ({ sketchDetails }),
+            onDone: {
+              target: '#Modeling.idle',
+              actions: 'enter modeling mode',
+            },
+          },
+        },
+
+        'Rectangle tool': {
+          entry: ['listen for rectangle origin'],
+
+          states: {
+            'Awaiting second corner': {
+              on: {
+                'Finish rectangle': 'Finished Rectangle',
+              },
+            },
+
+            'Awaiting origin': {
+              on: {
+                'Add rectangle origin': {
+                  target: 'Awaiting second corner',
+                  actions: 'set up draft rectangle',
+                },
+              },
+            },
+
+            'Finished Rectangle': {
+              always: '#Modeling.Sketch.SketchIdle',
+            },
+          },
+
+          initial: 'Awaiting origin',
+
+          on: {
+            'change tool': {
+              target: 'Change Tool',
+            },
+          },
+        },
+
+        'Center Rectangle tool': {
+          entry: ['listen for center rectangle origin'],
+
+          states: {
+            'Awaiting corner': {
+              on: {
+                'Finish center rectangle': 'Finished Center Rectangle',
+              },
+            },
+
+            'Awaiting origin': {
+              on: {
+                'Add center rectangle origin': {
+                  target: 'Awaiting corner',
+                  // TODO
+                  actions: 'set up draft center rectangle',
+                },
+              },
+            },
+
+            'Finished Center Rectangle': {
+              always: '#Modeling.Sketch.SketchIdle',
+            },
+          },
+
+          initial: 'Awaiting origin',
+
+          on: {
+            'change tool': {
+              target: 'Change Tool',
+            },
+          },
+        },
+
+        'clean slate': {
+          always: 'SketchIdle',
+        },
+
+        'Converting to named value': {
+          invoke: {
+            src: 'Apply named value constraint',
+            id: 'astConstrainNamedValue',
+            input: ({ context: { selectionRanges, sketchDetails }, event }) => {
+              if (event.type !== 'Constrain with named value') {
+                return {
+                  selectionRanges,
+                  sketchDetails,
+                  data: undefined,
+                }
+              }
+              return {
+                selectionRanges,
+                sketchDetails,
+                data: event.data,
+              }
+            },
+            onError: 'SketchIdle',
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Await constrain remove constraints': {
+          invoke: {
+            src: 'do-constrain-remove-constraint',
+            id: 'do-constrain-remove-constraint',
+            input: ({ context: { selectionRanges, sketchDetails }, event }) => {
+              return {
+                selectionRanges,
+                sketchDetails,
+                data:
+                  event.type === 'Constrain remove constraints'
+                    ? event.data
+                    : undefined,
+              }
+            },
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Await constrain horizontally': {
+          invoke: {
+            src: 'do-constrain-horizontally',
+            id: 'do-constrain-horizontally',
+            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+              selectionRanges,
+              sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Await constrain vertically': {
+          invoke: {
+            src: 'do-constrain-vertically',
+            id: 'do-constrain-vertically',
+            input: ({ context: { selectionRanges, sketchDetails } }) => ({
+              selectionRanges,
+              sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Await constrain horizontally align': {
+          invoke: {
+            src: 'do-constrain-horizontally-align',
+            id: 'do-constrain-horizontally-align',
+            input: ({ context }) => ({
+              selectionRanges: context.selectionRanges,
+              sketchDetails: context.sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Await constrain vertically align': {
+          invoke: {
+            src: 'do-constrain-vertically-align',
+            id: 'do-constrain-vertically-align',
+            input: ({ context }) => ({
+              selectionRanges: context.selectionRanges,
+              sketchDetails: context.sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Await constrain snap to X': {
+          invoke: {
+            src: 'do-constrain-snap-to-x',
+            id: 'do-constrain-snap-to-x',
+            input: ({ context }) => ({
+              selectionRanges: context.selectionRanges,
+              sketchDetails: context.sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Await constrain snap to Y': {
+          invoke: {
+            src: 'do-constrain-snap-to-y',
+            id: 'do-constrain-snap-to-y',
+            input: ({ context }) => ({
+              selectionRanges: context.selectionRanges,
+              sketchDetails: context.sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Await constrain equal length': {
+          invoke: {
+            src: 'do-constrain-equal-length',
+            id: 'do-constrain-equal-length',
+            input: ({ context }) => ({
+              selectionRanges: context.selectionRanges,
+              sketchDetails: context.sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Await constrain parallel': {
+          invoke: {
+            src: 'do-constrain-parallel',
+            id: 'do-constrain-parallel',
+            input: ({ context }) => ({
+              selectionRanges: context.selectionRanges,
+              sketchDetails: context.sketchDetails,
+            }),
+            onDone: {
+              target: 'SketchIdle',
+              actions: 'Set selection',
+            },
+          },
+        },
+
+        'Change Tool': {
+          always: [
+            {
+              target: 'SketchIdle',
+              guard: 'next is none',
+            },
+            {
+              target: 'Line tool',
+              guard: 'next is line',
+            },
+            {
+              target: 'Rectangle tool',
+              guard: 'next is rectangle',
+            },
+            {
+              target: 'Tangential arc to',
+              guard: 'next is tangential arc',
+            },
+            {
+              target: 'Circle tool',
+              guard: 'next is circle',
+            },
+            {
+              target: 'Center Rectangle tool',
+              guard: 'next is center rectangle',
+            },
+            {
+              target: 'circle3PointToolSelect',
+              guard: 'next is circle 3 point',
+            },
+          ],
+
+          entry: ['assign tool in context', 'reset selections'],
+        },
+        'Circle tool': {
+          on: {
+            'change tool': 'Change Tool',
+          },
+
+          states: {
+            'Awaiting origin': {
+              on: {
+                'Add circle origin': {
+                  target: 'Awaiting Radius',
+                  actions: 'set up draft circle',
+                },
+              },
+            },
+
+            'Awaiting Radius': {
+              on: {
+                'Finish circle': 'Finished Circle',
+              },
+            },
+
+            'Finished Circle': {
+              always: '#Modeling.Sketch.SketchIdle',
+            },
+          },
+
+          initial: 'Awaiting origin',
+          entry: 'listen for circle origin',
+        },
+        circle3PointToolSelect: {
+          on: {
+            'change tool': 'Change Tool',
+          },
+
+          states: {
+            circle3PointsAwaiting: {
+              on: {
+                circle3PointsFinished: {
+                  target: '#Modeling.Sketch.SketchIdle',
+                },
+              },
+            },
+          },
+
+          initial: 'circle3PointsAwaiting',
+          entry: 'entryDraftCircle3Point',
+          exit: 'exitDraftCircle3Point',
+        },
+      },
+
+      initial: 'Init',
+
+      on: {
+        CancelSketch: '.SketchIdle',
+
+        'Delete segment': {
+          reenter: false,
+          actions: ['Delete segment', 'Set sketchDetails'],
+        },
+        'code edit during sketch': '.clean slate',
+      },
+
+      exit: [
+        'sketch exit execute',
+        'tear down client sketch',
+        'remove sketch grid',
+        'engineToClient cam sync direction',
+        'Reset Segment Overlays',
+        'enable copilot',
+      ],
+
+      entry: ['add axis n grid', 'clientToEngine cam sync direction'],
+    },
+
+    'Sketch no face': {
+      entry: [
+        'disable copilot',
+        'show default planes',
+        'set selection filter to faces only',
+        'enter sketching mode',
+      ],
+
+      exit: ['hide default planes', 'set selection filter to defaults'],
+      on: {
+        'Select default plane': {
+          target: 'animating to plane',
+          actions: ['reset sketch metadata'],
+        },
       },
     },
-    // end services
-  }
-)
+
+    'animating to plane': {
+      invoke: {
+        src: 'animate-to-face',
+        id: 'animate-to-face',
+
+        input: ({ event }) => {
+          if (event.type !== 'Select default plane') return undefined
+          return event.data
+        },
+
+        onDone: {
+          target: 'Sketch',
+          actions: 'set new sketch metadata',
+        },
+
+        onError: 'Sketch no face',
+      },
+    },
+
+    'animating to existing sketch': {
+      invoke: {
+        src: 'animate-to-sketch',
+        id: 'animate-to-sketch',
+        input: ({ context }) => ({
+          selectionRanges: context.selectionRanges,
+          sketchDetails: context.sketchDetails,
+        }),
+        onDone: {
+          target: 'Sketch',
+          actions: [
+            'disable copilot',
+            'set new sketch metadata',
+            'enter sketching mode',
+          ],
+        },
+      },
+    },
+
+    'Applying offset plane': {
+      invoke: {
+        src: 'offsetPlaneAstMod',
+        id: 'offsetPlaneAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Offset plane') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying loft': {
+      invoke: {
+        src: 'loftAstMod',
+        id: 'loftAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Loft') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying shell': {
+      invoke: {
+        src: 'shellAstMod',
+        id: 'shellAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Shell') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying Prompt-to-edit': {
+      invoke: {
+        src: 'submit-prompt-edit',
+        id: 'submit-prompt-edit',
+
+        input: ({ event }) => {
+          if (event.type !== 'Prompt-to-edit' || !event.data) {
+            return {
+              prompt: '',
+              selection: { graphSelections: [], otherSelections: [] },
+            }
+          }
+          return event.data
+        },
+
+        onDone: 'idle',
+        onError: 'idle',
+      },
+    },
+  },
+
+  initial: 'idle',
+
+  on: {
+    Cancel: {
+      target: '.idle',
+      // TODO what if we're existing extrude equipped, should these actions still be fired?
+      // maybe cancel needs to have a guard for if else logic?
+      actions: [
+        'reset sketch metadata',
+        'enable copilot',
+        'enter modeling mode',
+      ],
+    },
+
+    'Set selection': {
+      reenter: false,
+      actions: 'Set selection',
+    },
+
+    'Set mouse state': {
+      reenter: false,
+      actions: 'Set mouse state',
+    },
+    'Set context': {
+      reenter: false,
+      actions: 'Set context',
+    },
+    'Set Segment Overlays': {
+      reenter: false,
+      actions: 'Set Segment Overlays',
+    },
+    'Center camera on selection': {
+      reenter: false,
+      actions: 'Center camera on selection',
+    },
+  },
+})
 
 export function isEditingExistingSketch({
   sketchDetails,
@@ -1627,10 +2622,33 @@ export function isEditingExistingSketch({
     (item) =>
       item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
   )
-  return hasStartProfileAt && pipeExpression.body.length > 2
+  const hasCircle = pipeExpression.body.some(
+    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+  )
+  return (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle
+}
+export function pipeHasCircle({
+  sketchDetails,
+}: {
+  sketchDetails: SketchDetails | null
+}): boolean {
+  if (!sketchDetails?.sketchPathToNode) return false
+  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
+    kclManager.ast,
+    sketchDetails.sketchPathToNode,
+    'VariableDeclarator'
+  )
+  if (err(variableDeclaration)) return false
+  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
+  const pipeExpression = variableDeclaration.node.init
+  if (pipeExpression.type !== 'PipeExpression') return false
+  const hasCircle = pipeExpression.body.some(
+    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+  )
+  return hasCircle
 }
 
-export function canRectangleTool({
+export function canRectangleOrCircleTool({
   sketchDetails,
 }: {
   sketchDetails: SketchDetails | null
@@ -1643,5 +2661,27 @@ export function canRectangleTool({
   // This should not be returning false, and it should be caught
   // but we need to simulate old behavior to move on.
   if (err(node)) return false
-  return node.node?.declarations?.[0]?.init.type !== 'PipeExpression'
+  return node.node?.declaration.init.type !== 'PipeExpression'
+}
+
+/** If the sketch contains `close` or `circle` stdlib functions it must be closed */
+export function isClosedSketch({
+  sketchDetails,
+}: {
+  sketchDetails: SketchDetails | null
+}): boolean {
+  const node = getNodeFromPath<VariableDeclaration>(
+    kclManager.ast,
+    sketchDetails?.sketchPathToNode || [],
+    'VariableDeclaration'
+  )
+  // This should not be returning false, and it should be caught
+  // but we need to simulate old behavior to move on.
+  if (err(node)) return false
+  if (node.node?.declaration?.init?.type !== 'PipeExpression') return false
+  return node.node.declaration.init.body.some(
+    (node) =>
+      node.type === 'CallExpression' &&
+      (node.callee.name === 'close' || node.callee.name === 'circle')
+  )
 }

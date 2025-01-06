@@ -1,13 +1,17 @@
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import reportWebVitals from './reportWebVitals'
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { Router } from './Router'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
+import { ToastUpdate } from 'components/ToastUpdate'
+import { markOnce } from 'lib/performance'
+import { AUTO_UPDATER_TOAST_ID } from 'lib/constants'
 
+markOnce('code/willAuth')
 // uncomment for xstate inspector
 // import { DEV } from 'env'
 // import { inspect } from '@xstate/inspect'
@@ -52,4 +56,35 @@ root.render(
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals()
 
-isDesktop()
+if (isDesktop()) {
+  // Listen for update download progress to begin
+  // to show a loading toast.
+  window.electron.onUpdateDownloadStart(() => {
+    const message = `Downloading app update...`
+    console.log(message)
+    toast.loading(message, { id: AUTO_UPDATER_TOAST_ID })
+  })
+  // Listen for update download errors to show
+  // an error toast and clear the loading toast.
+  window.electron.onUpdateError(({ error }) => {
+    console.error(error)
+    toast.error('An error occurred while downloading the update.', {
+      id: AUTO_UPDATER_TOAST_ID,
+    })
+  })
+  window.electron.onUpdateDownloaded(({ version, releaseNotes }) => {
+    const message = `A new update (${version}) was downloaded and will be available next time you open the app.`
+    console.log(message)
+    toast.custom(
+      ToastUpdate({
+        version,
+        releaseNotes,
+        onRestart: () => {
+          window.electron.appRestart()
+        },
+        onDismiss: () => {},
+      }),
+      { duration: 30000, id: AUTO_UPDATER_TOAST_ID }
+    )
+  })
+}

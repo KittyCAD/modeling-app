@@ -1,16 +1,14 @@
 import { toolTips } from 'lang/langHelpers'
+import { Program, Expr } from '../../lang/wasm'
 import { Selections } from 'lib/selections'
-import { BinaryPart, Program, Expr } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   getTransformInfos,
   transformAstSketchLines,
   PathToNodeMap,
-  TransformInfo,
+  isExprBinaryPart,
 } from '../../lang/std/sketchcombos'
+import { TransformInfo } from 'lang/std/stdTypes'
 import {
   SetAngleLengthModal,
   createSetAngleLengthModal,
@@ -22,6 +20,7 @@ import {
 import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -45,13 +44,10 @@ export function absDistanceInfo({
       : constraint === 'snapToYAxis'
       ? 'xAbs'
       : 'yAbs'
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-  const _nodes = paths.map((pathToNode) => {
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(
       kclManager.ast,
-      pathToNode,
+      codeRef.pathToNode,
       'CallExpression'
     )
     if (err(tmp)) return tmp
@@ -82,7 +78,7 @@ export function absDistanceInfo({
   const enabled =
     isAllTooltips &&
     transforms.every(Boolean) &&
-    selectionRanges.codeBasedSelections.length === 1 &&
+    selectionRanges.graphSelections.length === 1 &&
     (enableX || enableY)
 
   return { enabled, transforms }
@@ -107,7 +103,7 @@ export async function applyConstraintAbsDistance({
 
   const transform1 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: selectionRanges,
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -121,15 +117,13 @@ export async function applyConstraintAbsDistance({
       value: forceVal,
       valueName: constraint === 'yAbs' ? 'yDis' : 'xDis',
     })
-  let finalValue = removeDoubleNegatives(
-    valueNode as BinaryPart,
-    sign,
-    variableName
-  )
+  if (!isExprBinaryPart(valueNode))
+    return Promise.reject('Invalid valueNode, is not a BinaryPart')
+  let finalValue = removeDoubleNegatives(valueNode, sign, variableName)
 
   const transform2 = transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: selectionRanges,
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',
@@ -162,7 +156,7 @@ export function applyConstraintAxisAlign({
   constraint: 'snapToYAxis' | 'snapToXAxis'
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {
@@ -177,7 +171,7 @@ export function applyConstraintAxisAlign({
 
   return transformAstSketchLines({
     ast: structuredClone(kclManager.ast),
-    selectionRanges: selectionRanges,
+    selectionRanges,
     transformInfos,
     programMemory: kclManager.programMemory,
     referenceSegName: '',

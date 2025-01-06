@@ -4,18 +4,22 @@ import {
   ArrayExpression,
   BinaryExpression,
   CallExpression,
+  Expr,
   ExpressionStatement,
+  ObjectExpression,
+  ObjectProperty,
   PathToNode,
   PipeExpression,
   Program,
   ProgramMemory,
   ReturnStatement,
+  sketchFromKclValue,
+  sketchFromKclValueOptional,
   SourceRange,
+  sourceRangeFromRust,
   SyntaxType,
-  Expr,
   VariableDeclaration,
   VariableDeclarator,
-  sketchGroupFromKclValue,
 } from './wasm'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
@@ -25,7 +29,10 @@ import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from './std/sketchcombos'
-import { err } from 'lib/trap'
+import { err, Reason } from 'lib/trap'
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -118,8 +125,14 @@ export function getNodeFromPathCurry(
 }
 
 function moreNodePathFromSourceRange(
-  node: Expr | ExpressionStatement | VariableDeclaration | ReturnStatement,
-  sourceRange: Selection['range'],
+  node: Node<
+    | Expr
+    | ImportStatement
+    | ExpressionStatement
+    | VariableDeclaration
+    | ReturnStatement
+  >,
+  sourceRange: SourceRange,
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange
@@ -161,6 +174,30 @@ function moreNodePathFromSourceRange(
     }
     return path
   }
+
+  if (_node.type === 'CallExpressionKw' && isInRange) {
+    const { callee, arguments: args } = _node
+    if (
+      callee.type === 'Identifier' &&
+      callee.start <= start &&
+      callee.end >= end
+    ) {
+      path.push(['callee', 'CallExpressionKw'])
+      return path
+    }
+    if (args.length > 0) {
+      for (let argIndex = 0; argIndex < args.length; argIndex++) {
+        const arg = args[argIndex].arg
+        if (arg.start <= start && arg.end >= end) {
+          path.push(['arguments', 'CallExpressionKw'])
+          path.push([argIndex, 'index'])
+          return moreNodePathFromSourceRange(arg, sourceRange, path)
+        }
+      }
+    }
+    return path
+  }
+
   if (_node.type === 'BinaryExpression' && isInRange) {
     const { left, right } = _node
     if (left.start <= start && left.end >= end) {
@@ -222,34 +259,26 @@ function moreNodePathFromSourceRange(
     return moreNodePathFromSourceRange(expression, sourceRange, path)
   }
   if (_node.type === 'VariableDeclaration' && isInRange) {
-    const declarations = _node.declarations
+    const declaration = _node.declaration
 
-    for (let decIndex = 0; decIndex < declarations.length; decIndex++) {
-      const declaration = declarations[decIndex]
-      if (declaration.start <= start && declaration.end >= end) {
-        path.push(['declarations', 'VariableDeclaration'])
-        path.push([decIndex, 'index'])
-        const init = declaration.init
-        if (init.start <= start && init.end >= end) {
-          path.push(['init', ''])
-          return moreNodePathFromSourceRange(init, sourceRange, path)
-        }
+    if (declaration.start <= start && declaration.end >= end) {
+      path.push(['declaration', 'VariableDeclaration'])
+      const init = declaration.init
+      if (init.start <= start && init.end >= end) {
+        path.push(['init', ''])
+        return moreNodePathFromSourceRange(init, sourceRange, path)
       }
     }
   }
   if (_node.type === 'VariableDeclaration' && isInRange) {
-    const declarations = _node.declarations
+    const declaration = _node.declaration
 
-    for (let decIndex = 0; decIndex < declarations.length; decIndex++) {
-      const declaration = declarations[decIndex]
-      if (declaration.start <= start && declaration.end >= end) {
-        const init = declaration.init
-        if (init.start <= start && init.end >= end) {
-          path.push(['declarations', 'VariableDeclaration'])
-          path.push([decIndex, 'index'])
-          path.push(['init', ''])
-          return moreNodePathFromSourceRange(init, sourceRange, path)
-        }
+    if (declaration.start <= start && declaration.end >= end) {
+      const init = declaration.init
+      if (init.start <= start && init.end >= end) {
+        path.push(['declaration', 'VariableDeclaration'])
+        path.push(['init', ''])
+        return moreNodePathFromSourceRange(init, sourceRange, path)
       }
     }
     return path
@@ -307,6 +336,70 @@ function moreNodePathFromSourceRange(
   }
 
   if (_node.type === 'PipeSubstitution' && isInRange) return path
+
+  if (_node.type === 'IfExpression' && isInRange) {
+    const { cond, then_val, else_ifs, final_else } = _node
+    if (cond.start <= start && cond.end >= end) {
+      path.push(['cond', 'IfExpression'])
+      return moreNodePathFromSourceRange(cond, sourceRange, path)
+    }
+    if (then_val.start <= start && then_val.end >= end) {
+      path.push(['then_val', 'IfExpression'])
+      path.push(['body', 'IfExpression'])
+      return getNodePathFromSourceRange(then_val, sourceRange, path)
+    }
+    for (let i = 0; i < else_ifs.length; i++) {
+      const else_if = else_ifs[i]
+      if (else_if.start <= start && else_if.end >= end) {
+        path.push(['else_ifs', 'IfExpression'])
+        path.push([i, 'index'])
+        const { cond, then_val } = else_if
+        if (cond.start <= start && cond.end >= end) {
+          path.push(['cond', 'IfExpression'])
+          return moreNodePathFromSourceRange(cond, sourceRange, path)
+        }
+        path.push(['then_val', 'IfExpression'])
+        path.push(['body', 'IfExpression'])
+        return getNodePathFromSourceRange(then_val, sourceRange, path)
+      }
+    }
+    if (final_else.start <= start && final_else.end >= end) {
+      path.push(['final_else', 'IfExpression'])
+      path.push(['body', 'IfExpression'])
+      return getNodePathFromSourceRange(final_else, sourceRange, path)
+    }
+    return path
+  }
+
+  if (_node.type === 'ImportStatement' && isInRange) {
+    if (_node.selector && _node.selector.type === 'List') {
+      path.push(['selector', 'ImportStatement'])
+      const { items } = _node.selector
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        if (item.start <= start && item.end >= end) {
+          path.push(['items', 'ImportSelector'])
+          path.push([i, 'index'])
+          if (item.name.start <= start && item.name.end >= end) {
+            path.push(['name', 'ImportItem'])
+            return path
+          }
+          if (
+            item.alias &&
+            item.alias.start <= start &&
+            item.alias.end >= end
+          ) {
+            path.push(['alias', 'ImportItem'])
+            return path
+          }
+          return path
+        }
+      }
+      return path
+    }
+    return path
+  }
+
   console.error('not implemented: ' + node.type)
 
   return path
@@ -314,7 +407,7 @@ function moreNodePathFromSourceRange(
 
 export function getNodePathFromSourceRange(
   node: Program,
-  sourceRange: Selection['range'],
+  sourceRange: SourceRange,
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange || []
@@ -336,15 +429,16 @@ export function getNodePathFromSourceRange(
   return path
 }
 
-type KCLNode =
+type KCLNode = Node<
   | Expr
   | ExpressionStatement
   | VariableDeclaration
   | VariableDeclarator
   | ReturnStatement
+>
 
 export function traverse(
-  node: KCLNode | Program,
+  node: KCLNode | Node<Program>,
   option: {
     enter?: (node: KCLNode, pathToNode: PathToNode) => void
     leave?: (node: KCLNode) => void
@@ -357,13 +451,10 @@ export function traverse(
     traverse(node, option, pathToNode)
 
   if (_node.type === 'VariableDeclaration') {
-    _node.declarations.forEach((declaration, index) =>
-      _traverse(declaration, [
-        ...pathToNode,
-        ['declarations', 'VariableDeclaration'],
-        [index, 'index'],
-      ])
-    )
+    _traverse(_node.declaration, [
+      ...pathToNode,
+      ['declaration', 'VariableDeclaration'],
+    ])
   } else if (_node.type === 'VariableDeclarator') {
     _traverse(_node.init, [...pathToNode, ['init', '']])
   } else if (_node.type === 'PipeExpression') {
@@ -473,7 +564,7 @@ export function findAllPreviousVariablesPath(
   const variables: PrevVariable<any>[] = []
   bodyItems?.forEach?.((item) => {
     if (item.type !== 'VariableDeclaration' || item.end > startRange) return
-    const varName = item.declarations[0].id.name
+    const varName = item.declaration.id.name
     const varValue = programMemory?.get(varName)
     if (!varValue || typeof varValue?.value !== type) return
     variables.push({
@@ -492,7 +583,7 @@ export function findAllPreviousVariablesPath(
 export function findAllPreviousVariables(
   ast: Program,
   programMemory: ProgramMemory,
-  sourceRange: Selection['range'],
+  sourceRange: SourceRange,
   type: 'number' | 'string' = 'number'
 ): {
   variables: PrevVariable<typeof type extends 'number' ? number : string>[]
@@ -504,9 +595,9 @@ export function findAllPreviousVariables(
 }
 
 type ReplacerFn = (
-  _ast: Program,
+  _ast: Node<Program>,
   varName: string
-) => { modifiedAst: Program; pathToReplaced: PathToNode } | Error
+) => { modifiedAst: Node<Program>; pathToReplaced: PathToNode } | Error
 
 export function isNodeSafeToReplacePath(
   ast: Program,
@@ -575,12 +666,12 @@ export function isNodeSafeToReplacePath(
 }
 
 export function isNodeSafeToReplace(
-  ast: Program,
-  sourceRange: [number, number]
+  ast: Node<Program>,
+  sourceRange: SourceRange
 ):
   | {
       isSafe: boolean
-      value: Expr
+      value: Node<Expr>
       replacer: ReplacerFn
     }
   | Error {
@@ -637,19 +728,26 @@ export function isValueZero(val?: Expr): boolean {
 
 export function isLinesParallelAndConstrained(
   ast: Program,
+  artifactGraph: ArtifactGraph,
   programMemory: ProgramMemory,
   primaryLine: Selection,
   secondaryLine: Selection
 ):
   | {
       isParallelAndConstrained: boolean
-      sourceRange: SourceRange
+      selection: Selection | null
     }
   | Error {
   try {
     const EPSILON = 0.005
-    const primaryPath = getNodePathFromSourceRange(ast, primaryLine.range)
-    const secondaryPath = getNodePathFromSourceRange(ast, secondaryLine.range)
+    const primaryPath = getNodePathFromSourceRange(
+      ast,
+      primaryLine?.codeRef?.range
+    )
+    const secondaryPath = getNodePathFromSourceRange(
+      ast,
+      secondaryLine?.codeRef?.range
+    )
     const _secondaryNode = getNodeFromPath<CallExpression>(
       ast,
       secondaryPath,
@@ -660,17 +758,20 @@ export function isLinesParallelAndConstrained(
     const _varDec = getNodeFromPath(ast, primaryPath, 'VariableDeclaration')
     if (err(_varDec)) return _varDec
     const varDec = _varDec.node
-    const varName = (varDec as VariableDeclaration)?.declarations[0]?.id?.name
-    const sg = sketchGroupFromKclValue(programMemory?.get(varName), varName)
+    const varName = (varDec as VariableDeclaration)?.declaration.id?.name
+    const sg = sketchFromKclValue(programMemory?.get(varName), varName)
     if (err(sg)) return sg
     const _primarySegment = getSketchSegmentFromSourceRange(
       sg,
-      primaryLine.range
+      primaryLine?.codeRef?.range
     )
     if (err(_primarySegment)) return _primarySegment
     const primarySegment = _primarySegment.segment
 
-    const _segment = getSketchSegmentFromSourceRange(sg, secondaryLine.range)
+    const _segment = getSketchSegmentFromSourceRange(
+      sg,
+      secondaryLine?.codeRef?.range
+    )
     if (err(_segment)) return _segment
     const { segment: secondarySegment, index: secondaryIndex } = _segment
     const primaryAngle = getAngle(primarySegment.from, primarySegment.to)
@@ -683,7 +784,7 @@ export function isLinesParallelAndConstrained(
       Math.abs(primaryAngle - secondaryAngle) < EPSILON ||
       Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
-    // is secordary line fully constrain, or has constrain type of 'angle'
+    // is secondary line fully constrain, or has constrain type of 'angle'
     const secondaryFirstArg = getFirstArg(secondaryNode)
     if (err(secondaryFirstArg)) return secondaryFirstArg
 
@@ -693,14 +794,14 @@ export function isLinesParallelAndConstrained(
     )
 
     const constraintLevelMeta = getConstraintLevelFromSourceRange(
-      secondaryLine.range,
+      secondaryLine?.codeRef.range,
       ast
     )
     if (err(constraintLevelMeta)) {
       console.error(constraintLevelMeta)
       return {
         isParallelAndConstrained: false,
-        sourceRange: [0, 0],
+        selection: null,
       }
     }
     const constraintLevel = constraintLevelMeta.level
@@ -709,7 +810,7 @@ export function isLinesParallelAndConstrained(
       constraintType === 'angle' || constraintLevel === 'full'
 
     // get the previous segment
-    const prevSegment = sg.value[secondaryIndex - 1]
+    const prevSegment = sg.paths[secondaryIndex - 1]
     const prevSourceRange = prevSegment.__geoMeta.sourceRange
 
     const isParallelAndConstrained =
@@ -717,45 +818,20 @@ export function isLinesParallelAndConstrained(
 
     return {
       isParallelAndConstrained,
-      sourceRange: prevSourceRange,
+      selection: {
+        codeRef: codeRefFromRange(sourceRangeFromRust(prevSourceRange), ast),
+        artifact: artifactGraph.get(prevSegment.__geoMeta.id),
+      },
     }
   } catch (e) {
     return {
       isParallelAndConstrained: false,
-      sourceRange: [0, 0],
+      selection: null,
     }
   }
 }
 
-export function doesPipeHaveCallExp({
-  ast,
-  selection,
-  calleeName,
-}: {
-  calleeName: string
-  ast: Program
-  selection: Selection
-}): boolean {
-  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
-  const pipeExpressionMeta = getNodeFromPath<PipeExpression>(
-    ast,
-    pathToNode,
-    'PipeExpression'
-  )
-  if (err(pipeExpressionMeta)) {
-    console.error(pipeExpressionMeta)
-    return false
-  }
-  const pipeExpression = pipeExpressionMeta.node
-  if (pipeExpression.type !== 'PipeExpression') return false
-  return pipeExpression.body.some(
-    (expression) =>
-      expression.type === 'CallExpression' &&
-      expression.callee.name === calleeName
-  )
-}
-
-export function hasExtrudeSketchGroup({
+export function hasExtrudeSketch({
   ast,
   selection,
   programMemory,
@@ -764,10 +840,9 @@ export function hasExtrudeSketchGroup({
   selection: Selection
   programMemory: ProgramMemory
 }): boolean {
-  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
   const varDecMeta = getNodeFromPath<VariableDeclaration>(
     ast,
-    pathToNode,
+    selection?.codeRef?.pathToNode,
     'VariableDeclaration'
   )
   if (err(varDecMeta)) {
@@ -776,11 +851,19 @@ export function hasExtrudeSketchGroup({
   }
   const varDec = varDecMeta.node
   if (varDec.type !== 'VariableDeclaration') return false
-  const varName = varDec.declarations[0].id.name
+  const varName = varDec.declaration.id.name
   const varValue = programMemory?.get(varName)
   return (
-    varValue?.type === 'ExtrudeGroup' ||
-    !err(sketchGroupFromKclValue(varValue, varName))
+    varValue?.type === 'Solid' ||
+    !(sketchFromKclValueOptional(varValue, varName) instanceof Reason)
+  )
+}
+
+export function artifactIsPlaneWithPaths(selectionRanges: Selections) {
+  return (
+    selectionRanges.graphSelections.length &&
+    selectionRanges.graphSelections[0].artifact?.type === 'plane' &&
+    selectionRanges.graphSelections[0].artifact.pathIds.length
   )
 }
 
@@ -788,9 +871,9 @@ export function isSingleCursorInPipe(
   selectionRanges: Selections,
   ast: Program
 ) {
-  if (selectionRanges.codeBasedSelections.length !== 1) return false
-  const selection = selectionRanges.codeBasedSelections[0]
-  const pathToNode = getNodePathFromSourceRange(ast, selection.range)
+  if (selectionRanges.graphSelections.length !== 1) return false
+  const selection = selectionRanges.graphSelections[0]
+  const pathToNode = getNodePathFromSourceRange(ast, selection?.codeRef?.range)
   const nodeTypes = pathToNode.map(([, type]) => type)
   if (nodeTypes.includes('FunctionExpression')) return false
   if (!nodeTypes.includes('VariableDeclaration')) return false
@@ -830,7 +913,7 @@ export function findUsesOfTagInPipe(
       ? String(thirdParam.value)
       : thirdParam.name
 
-  const varDec = getNodeFromPath<VariableDeclaration>(
+  const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     ast,
     pathToNode,
     'VariableDeclaration'
@@ -853,45 +936,65 @@ export function findUsesOfTagInPipe(
         return
       const tagArgValue =
         tagArg.type === 'TagDeclarator' ? String(tagArg.value) : tagArg.name
-      if (tagArgValue === tag) dependentRanges.push([node.start, node.end])
+      if (tagArgValue === tag)
+        dependentRanges.push([node.start, node.end, true])
     },
   })
   return dependentRanges
 }
 
 export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
-  const path = getNodePathFromSourceRange(ast, selection.range)
-  const _node = getNodeFromPath<PipeExpression>(ast, path, 'PipeExpression')
+  const _node = getNodeFromPath<Node<PipeExpression>>(
+    ast,
+    selection.codeRef.pathToNode,
+    'PipeExpression'
+  )
   if (err(_node)) return false
   const { node: pipeExpression } = _node
   if (pipeExpression.type !== 'PipeExpression') return false
   const _varDec = getNodeFromPath<VariableDeclarator>(
     ast,
-    path,
+    selection.codeRef.pathToNode,
     'VariableDeclarator'
   )
   if (err(_varDec)) return false
   const varDec = _varDec.node
   if (varDec.type !== 'VariableDeclarator') return false
   let extruded = false
-  traverse(ast as any, {
+  // option 1: extrude or revolve is called in the sketch pipe
+  traverse(pipeExpression, {
     enter(node) {
       if (
         node.type === 'CallExpression' &&
-        node.callee.type === 'Identifier' &&
-        node.callee.name === 'extrude' &&
-        node.arguments?.[1]?.type === 'Identifier' &&
-        node.arguments[1].name === varDec.id.name
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve')
       ) {
         extruded = true
       }
     },
   })
+  // option 2: extrude or revolve is called in the separate pipe
+  if (!extruded) {
+    traverse(ast as any, {
+      enter(node) {
+        if (
+          node.type === 'CallExpression' &&
+          node.callee.type === 'Identifier' &&
+          (node.callee.name === 'extrude' ||
+            node.callee.name === 'revolve' ||
+            node.callee.name === 'loft') &&
+          node.arguments?.[1]?.type === 'Identifier' &&
+          node.arguments[1].name === varDec.id.name
+        ) {
+          extruded = true
+        }
+      },
+    })
+  }
   return extruded
 }
 
 /** File must contain at least one sketch that has not been extruded already */
-export function hasExtrudableGeometry(ast: Program) {
+export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
   const theMap: any = {}
   traverse(ast as any, {
     enter(node) {
@@ -902,6 +1005,7 @@ export function hasExtrudableGeometry(ast: Program) {
         let hasStartProfileAt = false
         let hasStartSketchOn = false
         let hasClose = false
+        let hasCircle = false
         for (const pipe of node.init.body) {
           if (
             pipe.type === 'CallExpression' &&
@@ -918,13 +1022,20 @@ export function hasExtrudableGeometry(ast: Program) {
           if (pipe.type === 'CallExpression' && pipe.callee.name === 'close') {
             hasClose = true
           }
+          if (pipe.type === 'CallExpression' && pipe.callee.name === 'circle') {
+            hasCircle = true
+          }
         }
-        if (hasStartProfileAt && hasStartSketchOn && hasClose) {
+        if (
+          (hasStartProfileAt || hasCircle) &&
+          hasStartSketchOn &&
+          (hasClose || hasCircle)
+        ) {
           theMap[node.id.name] = true
         }
       } else if (
         node.type === 'CallExpression' &&
-        node.callee.name === 'extrude' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
         node.arguments[1]?.type === 'Identifier' &&
         theMap?.[node?.arguments?.[1]?.name]
       ) {
@@ -932,5 +1043,43 @@ export function hasExtrudableGeometry(ast: Program) {
       }
     },
   })
+  return Object.keys(theMap).length >= count
+}
+
+export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
+  const theMap: any = {}
+  traverse(ast as any, {
+    enter(node) {
+      if (
+        node.type === 'VariableDeclarator' &&
+        node.init?.type === 'PipeExpression'
+      ) {
+        for (const pipe of node.init.body) {
+          if (
+            pipe.type === 'CallExpression' &&
+            pipe.callee.name === 'extrude'
+          ) {
+            theMap[node.id.name] = true
+            break
+          }
+        }
+      } else if (
+        node.type === 'CallExpression' &&
+        node.callee.name === 'extrude' &&
+        node.arguments[1]?.type === 'Identifier'
+      ) {
+        theMap[node.moduleId] = true
+      }
+    },
+  })
   return Object.keys(theMap).length > 0
+}
+
+export function getObjExprProperty(
+  node: ObjectExpression,
+  propName: string
+): { expr: ObjectProperty['value']; index: number } | null {
+  const index = node.properties.findIndex(({ key }) => key.name === propName)
+  if (index === -1) return null
+  return { expr: node.properties[index].value, index }
 }

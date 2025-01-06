@@ -6,7 +6,7 @@ import {
 import { VITE_KC_API_BASE_URL } from 'env'
 import toast from 'react-hot-toast'
 import { FILE_EXT } from './constants'
-import { ContextFrom, EventData, EventFrom } from 'xstate'
+import { ContextFrom, EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { NavigateFunction } from 'react-router-dom'
 import crossPlatformFetch from './crossPlatformFetch'
@@ -14,8 +14,10 @@ import { isDesktop } from 'lib/isDesktop'
 import { Themes } from './theme'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { getNextFileName } from './desktopFS'
+import { reportRejection } from './trap'
+import { toSync } from './utils'
 
-export async function submitTextToCadPrompt(
+async function submitTextToCadPrompt(
   prompt: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
@@ -43,7 +45,7 @@ export async function submitTextToCadPrompt(
   return data
 }
 
-export async function getTextToCadResult(
+async function getTextToCadResult(
   id: string,
   token?: string
 ): Promise<Models['TextToCad_type'] | Error> {
@@ -63,12 +65,12 @@ interface TextToKclProps {
   trimmedPrompt: string
   fileMachineSend: (
     type: EventFrom<typeof fileMachine>,
-    data?: EventData
+    data?: unknown
   ) => unknown
   navigate: NavigateFunction
   commandBarSend: (
     type: EventFrom<typeof commandBarMachine>,
-    data?: EventData
+    data?: unknown
   ) => unknown
   context: ContextFrom<typeof fileMachine>
   token?: string
@@ -128,37 +130,42 @@ export async function submitAndAwaitTextToKcl({
   // Check the status of the text-to-cad API job
   // until it is completed
   const textToCadComplete = new Promise<Models['TextToCad_type']>(
-    async (resolve, reject) => {
-      const value = await textToCadQueued
-      if (value instanceof Error) {
-        reject(value)
-      }
-
-      const MAX_CHECK_TIMEOUT = 3 * 60_000
-      const CHECK_INTERVAL = 3000
-
-      let timeElapsed = 0
-      const interval = setInterval(async () => {
-        timeElapsed += CHECK_INTERVAL
-        if (timeElapsed >= MAX_CHECK_TIMEOUT) {
-          clearInterval(interval)
-          reject(new Error('Text-to-CAD API timed out'))
+    (resolve, reject) => {
+      ;(async () => {
+        const value = await textToCadQueued
+        if (value instanceof Error) {
+          reject(value)
         }
 
-        const check = await getTextToCadResult(value.id, token)
-        if (check instanceof Error) {
-          clearInterval(interval)
-          reject(check)
-        }
+        const MAX_CHECK_TIMEOUT = 3 * 60_000
+        const CHECK_INTERVAL = 3000
 
-        if (check instanceof Error || check.status === 'failed') {
-          clearInterval(interval)
-          reject(check)
-        } else if (check.status === 'completed') {
-          clearInterval(interval)
-          resolve(check)
-        }
-      }, CHECK_INTERVAL)
+        let timeElapsed = 0
+        const interval = setInterval(
+          toSync(async () => {
+            timeElapsed += CHECK_INTERVAL
+            if (timeElapsed >= MAX_CHECK_TIMEOUT) {
+              clearInterval(interval)
+              reject(new Error('Text-to-CAD API timed out'))
+            }
+
+            const check = await getTextToCadResult(value.id, token)
+            if (check instanceof Error) {
+              clearInterval(interval)
+              reject(check)
+            }
+
+            if (check instanceof Error || check.status === 'failed') {
+              clearInterval(interval)
+              reject(check)
+            } else if (check.status === 'completed') {
+              clearInterval(interval)
+              resolve(check)
+            }
+          }, reportRejection),
+          CHECK_INTERVAL
+        )
+      })().catch(reportRejection)
     }
   )
 
@@ -242,7 +249,7 @@ export async function submitAndAwaitTextToKcl({
 
 export async function sendTelemetry(
   id: string,
-  feedback: Models['AiFeedback_type'],
+  feedback: Models['MlFeedback_type'],
   token?: string
 ): Promise<void> {
   const url =

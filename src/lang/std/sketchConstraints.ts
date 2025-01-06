@@ -4,7 +4,7 @@ import {
   Program,
   VariableDeclarator,
   CallExpression,
-  SketchGroup,
+  Sketch,
   SourceRange,
   Path,
   PathToNode,
@@ -13,17 +13,17 @@ import {
 import { err } from 'lib/trap'
 
 export function getSketchSegmentFromPathToNode(
-  sketchGroup: SketchGroup,
+  sketch: Sketch,
   ast: Program,
   pathToNode: PathToNode
 ):
   | {
-      segment: SketchGroup['value'][number]
+      segment: Sketch['paths'][number]
       index: number
     }
   | Error {
   // TODO: once pathTodNode is stored on program memory as part of execution,
-  // we can check if the pathToNode matches the pathToNode of the sketchGroup.
+  // we can check if the pathToNode matches the pathToNode of the sketch.
   // For now we fall back to the sourceRange
   const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
   if (err(nodeMeta)) return nodeMeta
@@ -31,37 +31,38 @@ export function getSketchSegmentFromPathToNode(
   const node = nodeMeta.node
   if (!node || typeof node.start !== 'number' || !node.end)
     return new Error('no node found')
-  const sourceRange: SourceRange = [node.start, node.end]
-  return getSketchSegmentFromSourceRange(sketchGroup, sourceRange)
+  const sourceRange: SourceRange = [node.start, node.end, true]
+  return getSketchSegmentFromSourceRange(sketch, sourceRange)
 }
 export function getSketchSegmentFromSourceRange(
-  sketchGroup: SketchGroup,
+  sketch: Sketch,
   [rangeStart, rangeEnd]: SourceRange
 ):
   | {
-      segment: SketchGroup['value'][number]
+      segment: Sketch['paths'][number]
       index: number
     }
   | Error {
-  const startSourceRange = sketchGroup.start?.__geoMeta.sourceRange
+  const lineIndex = sketch.paths.findIndex(
+    ({ __geoMeta: { sourceRange } }: Path) =>
+      sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
+  )
+  const line = sketch.paths[lineIndex]
+  if (line) {
+    return {
+      segment: line,
+      index: lineIndex,
+    }
+  }
+  const startSourceRange = sketch.start?.__geoMeta.sourceRange
   if (
     startSourceRange &&
     startSourceRange[0] <= rangeStart &&
     startSourceRange[1] >= rangeEnd &&
-    sketchGroup.start
+    sketch.start
   )
-    return { segment: { ...sketchGroup.start, type: 'Base' }, index: -1 }
-
-  const lineIndex = sketchGroup.value.findIndex(
-    ({ __geoMeta: { sourceRange } }: Path) =>
-      sourceRange[0] <= rangeStart && sourceRange[1] >= rangeEnd
-  )
-  const line = sketchGroup.value[lineIndex]
-  if (!line) return new Error('could not find matching line')
-  return {
-    segment: line,
-    index: lineIndex,
-  }
+    return { segment: { ...sketch.start, type: 'Base' }, index: -1 }
+  return new Error('could not find matching segment')
 }
 
 export function isSketchVariablesLinked(
@@ -102,7 +103,7 @@ export function isSketchVariablesLinked(
     !toolTips.includes(firstCallExp?.callee?.name as ToolTip)
   )
     return false
-  // convention for sketch fns is that the second argument is the sketch group
+  // convention for sketch fns is that the second argument is the sketch
   const secondArg = firstCallExp?.arguments[1]
   if (!secondArg || secondArg?.type !== 'Identifier') return false
   if (secondArg.name === primaryVarDec?.id?.name) return true
@@ -110,12 +111,10 @@ export function isSketchVariablesLinked(
   let nextVarDec: VariableDeclarator | undefined
   for (const node of ast.body) {
     if (node.type !== 'VariableDeclaration') continue
-    const found = node.declarations.find(
-      ({ id }) => id?.name === secondArg.name
-    )
-    if (!found) continue
-    nextVarDec = found
-    break
+    if (node.declaration.id.name === secondArg.name) {
+      nextVarDec = node.declaration
+      break
+    }
   }
   if (!nextVarDec) return false
   return isSketchVariablesLinked(nextVarDec, primaryVarDec, ast)

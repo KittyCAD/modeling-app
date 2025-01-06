@@ -7,10 +7,8 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { SettingsSection } from 'components/Settings/SettingsSection'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 export default function Units() {
-  const { context } = useModelingContext()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.STREAMING)
   const {
@@ -28,8 +26,7 @@ export default function Units() {
     <div className="fixed inset-0 z-50 grid items-end justify-start px-4 pointer-events-none">
       <div
         className={
-          'max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded' +
-          (context.store?.buttonDownInStream ? '' : ' pointer-events-auto')
+          'pointer-events-auto max-w-2xl border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg flex flex-col justify-center bg-chalkboard-10 dark:bg-chalkboard-90 p-8 rounded'
         }
       >
         <SettingsSection

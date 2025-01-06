@@ -50,14 +50,6 @@ body.dark {
   @apply text-chalkboard-10;
 }
 
-@media (prefers-color-scheme: dark) {
-  body,
-  .body-bg,
-  .dark .body-bg {
-    @apply bg-chalkboard-100;
-  }
-}
-
 select {
   @apply bg-chalkboard-20;
 }
@@ -93,7 +85,8 @@ textarea,
 }
 
 button {
-  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs focus-visible:ring-primary;
+  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs;
+  @apply focus-visible:outline-chalkboard-100;
 }
 
 button:hover {
@@ -101,7 +94,7 @@ button:hover {
 }
 
 .dark button {
-  @apply border-chalkboard-70 focus-visible:ring-primary/50;
+  @apply border-chalkboard-70 focus-visible:outline-chalkboard-10;
 }
 
 .dark button:hover {
@@ -275,7 +268,8 @@ code {
 }
 
 .segment-length-label-text {
-  transform: translate(var(--x, 0), var(--y, 0));
+  transform: translate(var(--x, 0), var(--y, 0)) rotate(var(--degree, 0));
+  @apply font-mono body-bg px-2 pt-0.5 rounded-sm border border-chalkboard-110 dark:border-chalkboard-10;
 }
 
 @layer components {
@@ -283,7 +277,7 @@ code {
     @apply font-mono text-xs inline-block px-0.5 py-[2px] rounded;
 
     /* This is the only place in our code where layout is impacted by theme.
-     * We may not want that later, if hotkeys are possibly visible 
+     * We may not want that later, if hotkeys are possibly visible
      * while switching theme, but more padding feels better in dark mode.
      */
     @apply dark:px-1;
@@ -300,9 +294,45 @@ code {
     which lets you use them with @apply in your CSS, and get 
     autocomplete in classNames in your JSX.
   */
+  .parsed-markdown ul,
+  .parsed-markdown ol {
+    @apply list-outside pl-4 lg:pl-8 my-2;
+  }
+
+  .parsed-markdown ul li {
+    @apply list-disc;
+  }
+
+  .parsed-markdown li p {
+    @apply inline;
+  }
+
+  .parsed-markdown code {
+    @apply px-1 py-0.5 rounded-sm;
+    @apply bg-chalkboard-20 text-chalkboard-80;
+    @apply dark:bg-chalkboard-80 dark:text-chalkboard-30;
+  }
+
+  button.reset {
+    @apply bg-transparent border-transparent m-0 p-0 rounded-none text-base;
+  }
+
+  button.reset:hover {
+    @apply bg-transparent border-transparent;
+  }
+
+  /* Add an outline that matches the app foreground (or text) color */
+  .outline-appForeground {
+    @apply outline-chalkboard-100 dark:outline-chalkboard-10;
+  }
 }
 
 #code-mirror-override .cm-scroller,
 #code-mirror-override .cm-editor {
   height: 100% !important;
+}
+
+/* Can't use #code-mirror-override here as we're outside of this div */
+.body-bg .cm-diagnosticAction {
+  @apply bg-primary;
 }

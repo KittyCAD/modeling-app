@@ -1,0 +1,11 @@
+{{~ #if $ref ~}}
+{{pretty_ref $ref}}{{else if anyOf ~}}
+**anyOf:** {{#each anyOf}}{{> propertyType this}}{{#unless @last}} **OR** {{/unless}}{{/each}}{{else if oneOf ~}}
+**oneOf:** {{#each oneOf}}{{> propertyType this}}{{#unless @last}} **OR** {{/unless}}{{/each}}{{else if allOf ~}}
+**allOf:** {{#each allOf}}{{> propertyType this}}{{#unless @last}} **OR** {{/unless}}{{/each}}{{else if enum ~}}
+enum: {{pretty_enum enum}}{{else if items ~}}
+{{~ >array ~}}{{else ~}}
+`{{type}}{{~ #if format }}{{#if neq format "double" }} ({{format}}){{~/if ~}}
+{{~ /if ~}}`
+{{~ #if maximum }} (**maximum:** {{maximum}}){{~/if~}}{{~ #if minimum }} (**minimum:** {{minimum}}){{~/if~}}
+{{~ /if ~}}

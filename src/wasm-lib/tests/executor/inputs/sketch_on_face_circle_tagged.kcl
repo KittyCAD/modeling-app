@@ -12,5 +12,5 @@ const part001 = cube([0,0], 20)
     |> extrude(20, %)
 
 const part002 = startSketchOn(part001, "end")
-  |> circle([0, 0], 5, %, $myCircle) 
+  |> circle({ center: [0, 0], radius: 5 }, %, $myCircle) 
   |> extrude(5, %)

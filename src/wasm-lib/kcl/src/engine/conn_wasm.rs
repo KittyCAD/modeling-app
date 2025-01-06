@@ -1,17 +1,18 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use anyhow::Result;
-use kittycad::types::WebSocketRequest;
+use indexmap::IndexMap;
+use kcmc::websocket::{WebSocketRequest, WebSocketResponse};
+use kittycad_modeling_cmds as kcmc;
 use wasm_bindgen::prelude::*;
 
 use crate::{
+    engine::ExecutionKind,
     errors::{KclError, KclErrorDetails},
-    executor::DefaultPlanes,
+    execution::{DefaultPlanes, IdGenerator},
+    SourceRange,
 };
 
 #[wasm_bindgen(module = "/../../lang/std/engineConnection.ts")]
@@ -41,8 +42,9 @@ extern "C" {
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
-    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
+    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -54,22 +56,39 @@ impl EngineConnection {
         Ok(EngineConnection {
             manager: Arc::new(manager),
             batch: Arc::new(Mutex::new(Vec::new())),
-            batch_end: Arc::new(Mutex::new(HashMap::new())),
+            batch_end: Arc::new(Mutex::new(IndexMap::new())),
+            execution_kind: Default::default(),
         })
     }
 }
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<HashMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
     }
 
-    async fn default_planes(&self, source_range: crate::executor::SourceRange) -> Result<DefaultPlanes, KclError> {
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
+    }
+
+    async fn default_planes(
+        &self,
+        _id_generator: &mut IdGenerator,
+        source_range: SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
         // Get the default planes.
         let promise = self.manager.get_default_planes().map_err(|e| {
             KclError::Engine(KclErrorDetails {
@@ -107,7 +126,11 @@ impl crate::engine::EngineManager for EngineConnection {
         Ok(default_planes)
     }
 
-    async fn clear_scene_post_hook(&self, source_range: crate::executor::SourceRange) -> Result<(), KclError> {
+    async fn clear_scene_post_hook(
+        &self,
+        _id_generator: &mut IdGenerator,
+        source_range: SourceRange,
+    ) -> Result<(), KclError> {
         self.manager.clear_default_planes().map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: e.to_string().into(),
@@ -136,10 +159,10 @@ impl crate::engine::EngineManager for EngineConnection {
     async fn inner_send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
-        cmd: kittycad::types::WebSocketRequest,
-        id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
-    ) -> Result<kittycad::types::WebSocketResponse, KclError> {
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: std::collections::HashMap<uuid::Uuid, SourceRange>,
+    ) -> Result<WebSocketResponse, KclError> {
         let source_range_str = serde_json::to_string(&source_range).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to serialize source range: {:?}", e),
@@ -184,7 +207,7 @@ impl crate::engine::EngineManager for EngineConnection {
             })
         })?;
 
-        let ws_result: kittycad::types::WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
+        let ws_result: WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
             KclError::Engine(KclErrorDetails {
                 message: format!("Failed to deserialize response from engine: {:?}", e),
                 source_ranges: vec![source_range],

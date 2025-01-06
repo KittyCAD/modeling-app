@@ -1,24 +1,29 @@
 import { useSelector } from '@xstate/react'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { useKclContext } from 'lang/KclProvider'
+import { Artifact } from 'lang/std/artifactGraph'
 import { CommandArgument } from 'lib/commandTypes'
 import {
-  Selection,
   canSubmitSelectionArg,
-  getSelectionType,
+  getSelectionCountByType,
   getSelectionTypeDisplayText,
 } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
+import { reportRejection } from 'lib/trap'
+import { toSync } from 'lib/utils'
 import { modelingMachine } from 'machines/modelingMachine'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { StateFrom } from 'xstate'
 
-const semanticEntityNames: { [key: string]: Array<Selection['type']> } = {
-  face: ['extrude-wall', 'start-cap', 'end-cap'],
-  edge: ['edge', 'line', 'arc'],
-  point: ['point', 'line-end', 'line-mid'],
+const semanticEntityNames: {
+  [key: string]: Array<Artifact['type'] | 'defaultPlane'>
+} = {
+  face: ['wall', 'cap', 'solid2D'],
+  edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
+  point: [],
+  plane: ['defaultPlane'],
 }
 
-function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
+function getSemanticSelectionType(selectionType: Array<Artifact['type']>) {
   const semanticSelectionType = new Set()
   selectionType.forEach((type) => {
     Object.entries(semanticEntityNames).forEach(([entity, entityTypes]) => {
@@ -31,8 +36,8 @@ function getSemanticSelectionType(selectionType: Array<Selection['type']>) {
   return Array.from(semanticSelectionType)
 }
 
-const selectionSelector = (snapshot: StateFrom<typeof modelingMachine>) =>
-  snapshot.context.selectionRanges
+const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
+  snapshot?.context.selectionRanges
 
 function CommandBarSelectionInput({
   arg,
@@ -43,49 +48,61 @@ function CommandBarSelectionInput({
   stepBack: () => void
   onSubmit: (data: unknown) => void
 }) {
-  const { code } = useKclContext()
   const inputRef = useRef<HTMLInputElement>(null)
   const { commandBarState, commandBarSend } = useCommandsContext()
   const [hasSubmitted, setHasSubmitted] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
-  const initSelectionsByType = useCallback(() => {
-    const selectionRangeEnd = selection.codeBasedSelections[0]?.range[1]
-    return !selectionRangeEnd || selectionRangeEnd === code.length
-      ? 'none'
-      : getSelectionType(selection)
-  }, [selection, code])
-  const selectionsByType = initSelectionsByType()
-  const [canSubmitSelection, setCanSubmitSelection] = useState<boolean>(
-    canSubmitSelectionArg(selectionsByType, arg)
+  const selectionsByType = useMemo(() => {
+    return getSelectionCountByType(selection)
+  }, [selection])
+  const canSubmitSelection = useMemo<boolean>(
+    () => canSubmitSelectionArg(selectionsByType, arg),
+    [selectionsByType]
   )
 
   useEffect(() => {
     inputRef.current?.focus()
   }, [selection, inputRef])
 
+  // Show the default planes if the selection type is 'plane'
+  useEffect(() => {
+    if (arg.selectionTypes.includes('plane') && !canSubmitSelection) {
+      toSync(() => {
+        return Promise.all([
+          kclManager.showPlanes(),
+          kclManager.setSelectionFilter(['plane', 'object']),
+        ])
+      }, reportRejection)()
+    }
+
+    return () => {
+      toSync(() => {
+        const promises = [
+          new Promise(() => kclManager.defaultSelectionFilter(selection)),
+        ]
+        if (!kclManager._isAstEmpty(kclManager.ast)) {
+          promises.push(kclManager.hidePlanes())
+        }
+        return Promise.all(promises)
+      }, reportRejection)()
+    }
+  }, [])
+
   // Fast-forward through this arg if it's marked as skippable
   // and we have a valid selection already
   useEffect(() => {
-    console.log('selection input effect', {
-      selectionsByType,
-      canSubmitSelection,
-      arg,
-    })
-    setCanSubmitSelection(canSubmitSelectionArg(selectionsByType, arg))
     const argValue = commandBarState.context.argumentsToSubmit[arg.name]
     if (canSubmitSelection && arg.skip && argValue === undefined) {
-      handleSubmit({
-        preventDefault: () => {},
-      } as React.FormEvent<HTMLFormElement>)
+      handleSubmit()
     }
-  }, [selectionsByType, arg])
+  }, [canSubmitSelection])
 
   function handleChange() {
     inputRef.current?.focus()
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
+    e?.preventDefault()
 
     if (!canSubmitSelection) {
       setHasSubmitted(true)
@@ -99,7 +116,7 @@ function CommandBarSelectionInput({
     <form id="arg-form" onSubmit={handleSubmit}>
       <label
         className={
-          'relative flex items-center mx-4 my-4 ' +
+          'relative flex flex-col mx-4 my-4 ' +
           (!hasSubmitted || canSubmitSelection || 'text-destroy-50')
         }
       >
@@ -108,13 +125,22 @@ function CommandBarSelectionInput({
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
             }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}
+        {arg.warningMessage && (
+          <p className="text-warn-80 bg-warn-10 px-2 py-1 rounded-sm mt-3 mr-2 -mb-2 w-full text-sm cursor-default">
+            {arg.warningMessage}
+          </p>
+        )}
+        <span data-testid="cmd-bar-arg-name" className="sr-only">
+          {arg.name}
+        </span>
         <input
           id="selection"
           name="selection"
           ref={inputRef}
           required
+          data-testid="cmd-bar-arg-value"
           placeholder="Select an entity with your mouse"
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-default"
           onKeyDown={(event) => {
             if (event.key === 'Backspace') {
               stepBack()

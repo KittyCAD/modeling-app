@@ -10,7 +10,7 @@ import {
 } from 'lib/settings/settingsTypes'
 import { settingsMachine } from 'machines/settingsMachine'
 import { PathValue } from 'lib/types'
-import { AnyStateMachine, ContextFrom, InterpreterFrom } from 'xstate'
+import { Actor, AnyStateMachine, ContextFrom } from 'xstate'
 import { getPropertyByPath } from 'lib/objectPropertyByPath'
 import { buildCommandArgument } from 'lib/createMachineCommand'
 import decamelize from 'decamelize'
@@ -28,7 +28,7 @@ export const settingsWithCommandConfigs = (
   ) as SettingsPaths[]
 
 const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
-  actor: InterpreterFrom<T>,
+  actor: Actor<T>,
   isProjectAvailable: boolean,
   hideOnLevel?: SettingsLevel
 ): CommandArgument<SettingsLevel, T> => ({
@@ -55,7 +55,7 @@ interface CreateSettingsArgs {
   type: SettingsPaths
   send: Function
   context: ContextFrom<typeof settingsMachine>
-  actor: InterpreterFrom<typeof settingsMachine>
+  actor: Actor<typeof settingsMachine>
   isProjectAvailable: boolean
 }
 
@@ -132,7 +132,7 @@ export function createSettingsCommand({
       if (data !== undefined && data !== null) {
         send({ type: `set.${type}`, data })
       } else {
-        send(type)
+        send({ type })
       }
     },
     args: {

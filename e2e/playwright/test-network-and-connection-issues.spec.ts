@@ -1,29 +1,16 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './zoo-test'
 
-import { commonPoints, getUtils, setup, tearDown } from './test-utils'
-
-test.beforeEach(async ({ context, page }) => {
-  await setup(context, page)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
+import { commonPoints, getUtils } from './test-utils'
 
 test.describe('Test network and connection issues', () => {
   test('simulate network down and network little widget', async ({
     page,
-    browserName,
+    homePage,
   }) => {
-    // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari until `window.tearDown` is working there'
-    )
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
 
     const networkToggle = page.getByTestId('network-toggle')
 
@@ -62,7 +49,7 @@ test.describe('Test network and connection issues', () => {
     })
 
     // Expect the network to be down
-    await expect(networkToggle).toContainText('Offline')
+    await expect(networkToggle).toContainText('Problem')
 
     // Click the network widget
     await networkWidget.click()
@@ -93,26 +80,19 @@ test.describe('Test network and connection issues', () => {
 
   test('Engine disconnect & reconnect in sketch mode', async ({
     page,
-    browserName,
+    homePage,
   }) => {
     // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
-    test.skip(
-      browserName === 'webkit',
-      'Skip on Safari until `window.tearDown` is working there'
-    )
     const networkToggle = page.getByTestId('network-toggle')
 
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
+
     await u.openDebugPanel()
-
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled({ timeout: 15000 })
-
     // click on "Start Sketch" button
     await u.clearCommandLogs()
     await page.getByRole('button', { name: 'Start Sketch' }).click()
@@ -122,7 +102,7 @@ test.describe('Test network and connection issues', () => {
     await page.mouse.click(700, 200)
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `const sketch001 = startSketchOn('XZ')`
+      `sketch001 = startSketchOn('XZ')`
     )
     await u.closeDebugPanel()
 
@@ -131,17 +111,17 @@ test.describe('Test network and connection issues', () => {
     const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)`)
+      .toHaveText(`sketch001 = startSketchOn('XZ')
+  |> startProfileAt(${commonPoints.startAt}, %)`)
     await page.waitForTimeout(100)
 
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
     await page.waitForTimeout(100)
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`const sketch001 = startSketchOn('XZ')
-    |> startProfileAt(${commonPoints.startAt}, %)
-    |> line([${commonPoints.num1}, 0], %)`)
+      .toHaveText(`sketch001 = startSketchOn('XZ')
+  |> startProfileAt(${commonPoints.startAt}, %)
+  |> xLine(${commonPoints.num1}, %)`)
 
     // Expect the network to be up
     await expect(networkToggle).toContainText('Connected')
@@ -156,7 +136,7 @@ test.describe('Test network and connection issues', () => {
     })
 
     // Expect the network to be down
-    await expect(networkToggle).toContainText('Offline')
+    await expect(networkToggle).toContainText('Problem')
 
     // Ensure we are not in sketch mode
     await expect(
@@ -205,9 +185,9 @@ test.describe('Test network and connection issues', () => {
     // Ensure we can continue sketching
     await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
     await expect.poll(u.normalisedEditorCode)
-      .toBe(`const sketch001 = startSketchOn('XZ')
+      .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
-  |> line([12.34, 0], %)
+  |> xLine(12.34, %)
   |> line([-12.34, 12.34], %)
 
 `)
@@ -215,11 +195,11 @@ test.describe('Test network and connection issues', () => {
     await page.mouse.click(startXPx, 500 - PUR * 20)
 
     await expect.poll(u.normalisedEditorCode)
-      .toBe(`const sketch001 = startSketchOn('XZ')
+      .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
-  |> line([12.34, 0], %)
+  |> xLine(12.34, %)
   |> line([-12.34, 12.34], %)
-  |> line([-12.34, 0], %)
+  |> xLine(-12.34, %)
 
 `)
 

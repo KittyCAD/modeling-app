@@ -1,6 +1,6 @@
 import { processMemory } from './MemoryPane'
 import { enginelessExecutor } from '../../../lib/testHelpers'
-import { initPromise, parse, ProgramMemory } from '../../../lang/wasm'
+import { assertParse, initPromise, ProgramMemory } from '../../../lang/wasm'
 
 beforeAll(async () => {
   await initPromise
@@ -28,12 +28,16 @@ describe('processMemory', () => {
     |> lineTo([0.98, 5.16], %)
     |> lineTo([2.15, 4.32], %)
     // |> rx(90, %)`
-    const ast = parse(code)
-    const programMemory = await enginelessExecutor(ast, ProgramMemory.empty())
-    const output = processMemory(programMemory)
+    const ast = assertParse(code)
+    const execState = await enginelessExecutor(ast, ProgramMemory.empty())
+    const output = processMemory(execState.memory)
     expect(output.myVar).toEqual(5)
     expect(output.otherVar).toEqual(3)
     expect(output).toEqual({
+      HALF_TURN: 180,
+      QUARTER_TURN: 90,
+      THREE_QUARTER_TURN: 270,
+      ZERO: 0,
       myVar: 5,
       myFn: '__function(a)__',
       otherVar: 3,
@@ -43,14 +47,14 @@ describe('processMemory', () => {
           tag: null,
           id: expect.any(String),
           faceId: expect.any(String),
-          sourceRange: [170, 194],
+          sourceRange: [170, 194, 0],
         },
         {
           type: 'extrudePlane',
           tag: null,
           id: expect.any(String),
           faceId: expect.any(String),
-          sourceRange: [202, 230],
+          sourceRange: [202, 230, 0],
         },
       ],
       theSketch: [

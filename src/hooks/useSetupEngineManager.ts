@@ -2,7 +2,7 @@ import { useLayoutEffect, useEffect, useRef } from 'react'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
-import { makeDefaultPlanes, modifyGrid } from 'lang/wasm'
+import { makeDefaultPlanes } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { useAppState, useAppStream } from 'AppState'
@@ -22,6 +22,7 @@ export function useSetupEngineManager(
     highlightEdges: true,
     enableSSAO: true,
     showScaleGrid: false,
+    cameraProjection: 'perspective',
   } as SettingsViaQueryString,
   token?: string
 ) {
@@ -54,18 +55,6 @@ export function useSetupEngineManager(
       settings,
       makeDefaultPlanes: () => {
         return makeDefaultPlanes(kclManager.engineCommandManager)
-      },
-      modifyGrid: (hidden: boolean) => {
-        return modifyGrid(kclManager.engineCommandManager, hidden)
-      },
-    })
-    modelingSend({
-      type: 'Set context',
-      data: {
-        streamDimensions: {
-          streamWidth: quadWidth,
-          streamHeight: quadHeight,
-        },
       },
     })
     hasSetNonZeroDimensions.current = true
@@ -111,24 +100,10 @@ export function useSetupEngineManager(
         streamRef?.current?.offsetWidth ?? 0,
         streamRef?.current?.offsetHeight ?? 0
       )
-      if (
-        modelingContext.store.streamDimensions.streamWidth !== width ||
-        modelingContext.store.streamDimensions.streamHeight !== height
-      ) {
-        engineCommandManager.handleResize({
-          streamWidth: width,
-          streamHeight: height,
-        })
-        modelingSend({
-          type: 'Set context',
-          data: {
-            streamDimensions: {
-              streamWidth: width,
-              streamHeight: height,
-            },
-          },
-        })
-      }
+      engineCommandManager.handleResize({
+        streamWidth: width,
+        streamHeight: height,
+      })
     }, 500)
 
     const onOnline = () => {

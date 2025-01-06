@@ -1,42 +1,116 @@
 export const bracket = `// Shelf Bracket
-// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
+// This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.
 
-// Define our bracket feet lengths
-const shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
-const wallMountL = 6 // the length of the bracket
 
-// Define constants required to calculate the thickness needed to support 300 lbs
-const sigmaAllow = 35000 // psi
-const width = 6 // inch
-const p = 300 // Force on shelf - lbs
-const shelfLength = 12 // inches
-const moment = shelfLength * p / 2 // Moment experienced at fixed end of bracket
-const factorOfSafety = 2 // Factor of safety of 2 to be conservative
+// Define constants
+sigmaAllow = 35000 // psi (6061-T6 aluminum)
+width = 6 // inch
+p = 300 // Force on shelf - lbs
+factorOfSafety = 1.2 // FOS of 1.2
+shelfMountL = 5 // inches
+wallMountL = 2 // inches
+shelfDepth = 12 // Shelf is 12 inches in depth from the wall
+moment = shelfDepth * p // assume the force is applied at the end of the shelf to be conservative (lb-in)
 
-// Calculate the thickness off the bending stress and factor of safety
-const thickness = sqrt(6 * moment * factorOfSafety / (width * sigmaAllow))
 
-// 0.25 inch fillet radius
-const filletR = 0.25
+filletRadius = .375 // inches
+extFilletRadius = .25 // inches
+mountingHoleDiameter = 0.5 // inches
 
-// Sketch the bracket and extrude with fillets
-const bracket = startSketchOn('XY')
+
+// Calculate required thickness of bracket
+thickness = sqrt(moment * factorOfSafety * 6 / (sigmaAllow * width)) // this is the calculation of two brackets holding up the shelf (inches)
+
+
+// Sketch the bracket body and fillet the inner and outer edges of the bend
+bracketLeg1Sketch = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([0, wallMountL], %, $outerEdge)
-  |> line([-shelfMountL, 0], %)
-  |> line([0, -thickness], %)
-  |> line([shelfMountL - thickness, 0], %, $innerEdge)
-  |> line([0, -wallMountL + thickness], %)
+  |> line([shelfMountL - filletRadius, 0], %, $fillet1)
+  |> line([0, width], %, $fillet2)
+  |> line([-shelfMountL + filletRadius, 0], %)
   |> close(%)
-  |> extrude(width, %)
+  |> hole(circle({
+       center = [1, 1],
+       radius = mountingHoleDiameter / 2
+     }, %), %)
+  |> hole(circle({
+       center = [shelfMountL - 1.5, width - 1],
+       radius = mountingHoleDiameter / 2
+     }, %), %)
+  |> hole(circle({
+       center = [1, width - 1],
+       radius = mountingHoleDiameter / 2
+     }, %), %)
+  |> hole(circle({
+       center = [shelfMountL - 1.5, 1],
+       radius = mountingHoleDiameter / 2
+     }, %), %)
+
+// Extrude the leg 2 bracket sketch
+bracketLeg1Extrude = extrude(thickness, bracketLeg1Sketch)
   |> fillet({
-       radius: filletR,
-       tags: [getNextAdjacentEdge(innerEdge)]
+       radius = extFilletRadius,
+       tags = [
+         getNextAdjacentEdge(fillet1),
+         getNextAdjacentEdge(fillet2)
+       ]
      }, %)
+
+// Sketch the fillet arc
+filletSketch = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([0, thickness], %)
+  |> arc({
+       angleEnd = 180,
+       angleStart = 90,
+       radius = filletRadius + thickness
+     }, %)
+  |> line([thickness, 0], %)
+  |> arc({
+       angleEnd = 90,
+       angleStart = 180,
+       radius = filletRadius
+     }, %)
+
+// Sketch the bend
+filletExtrude = extrude(-width, filletSketch)
+
+// Create a custom plane for the leg that sits on the wall
+customPlane = {
+  plane = {
+    origin = { x = -filletRadius, y = 0, z = 0 },
+    xAxis = { x = 0, y = 1, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+    zAxis = { x = 1, y = 0, z = 0 }
+  }
+}
+
+// Create a sketch for the second leg
+bracketLeg2Sketch = startSketchOn(customPlane)
+  |> startProfileAt([0, -filletRadius], %)
+  |> line([width, 0], %)
+  |> line([0, -wallMountL], %, $fillet3)
+  |> line([-width, 0], %, $fillet4)
+  |> close(%)
+  |> hole(circle({
+       center = [1, -1.5],
+       radius = mountingHoleDiameter / 2
+     }, %), %)
+  |> hole(circle({
+       center = [5, -1.5],
+       radius = mountingHoleDiameter / 2
+     }, %), %)
+
+// Extrude the second leg
+bracketLeg2Extrude = extrude(-thickness, bracketLeg2Sketch)
   |> fillet({
-       radius: filletR + thickness,
-       tags: [getNextAdjacentEdge(outerEdge)]
-     }, %)`
+       radius = extFilletRadius,
+       tags = [
+         getNextAdjacentEdge(fillet3),
+         getNextAdjacentEdge(fillet4)
+       ]
+     }, %)
+`
 
 /**
  * @throws Error if the search text is not found in the example code.
@@ -61,8 +135,8 @@ function findLineInExampleCode({
 }
 
 export const bracketWidthConstantLine = findLineInExampleCode({
-  searchText: 'const width',
+  searchText: 'width =',
 })
 export const bracketThicknessCalculationLine = findLineInExampleCode({
-  searchText: 'const thickness',
+  searchText: 'thickness =',
 })

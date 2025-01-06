@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom'
 import { ErrorPage } from './components/ErrorPage'
 import { Settings } from './routes/Settings'
+import { Telemetry } from './routes/Telemetry'
 import Onboarding, { onboardingRoutes } from './routes/Onboarding'
 import SignIn from './routes/SignIn'
 import { Auth } from './Auth'
@@ -21,12 +22,14 @@ import { WasmErrBanner } from 'components/WasmErrBanner'
 import { CommandBar } from 'components/CommandBar/CommandBar'
 import ModelingMachineProvider from 'components/ModelingMachineProvider'
 import FileMachineProvider from 'components/FileMachineProvider'
+import { MachineManagerProvider } from 'components/MachineManagerProvider'
 import { PATHS } from 'lib/paths'
 import {
   fileLoader,
   homeLoader,
   onboardingRedirectLoader,
   settingsLoader,
+  telemetryLoader,
 } from 'lib/routeLoaders'
 import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
@@ -41,6 +44,9 @@ import toast from 'react-hot-toast'
 import { coreDump } from 'lang/wasm'
 import { useMemo } from 'react'
 import { AppStateProvider } from 'AppState'
+import { reportRejection } from 'lib/trap'
+import { RouteProvider } from 'components/RouteProvider'
+import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -48,19 +54,26 @@ const router = createRouter([
   {
     loader: settingsLoader,
     id: PATHS.INDEX,
+    // TODO: Re-evaluate if this is true
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
       <CommandBarProvider>
-        <SettingsAuthProvider>
-          <LspProvider>
-            <KclContextProvider>
-              <AppStateProvider>
-                <Outlet />
-              </AppStateProvider>
-            </KclContextProvider>
-          </LspProvider>
-        </SettingsAuthProvider>
+        <RouteProvider>
+          <SettingsAuthProvider>
+            <LspProvider>
+              <ProjectsContextProvider>
+                <KclContextProvider>
+                  <AppStateProvider>
+                    <MachineManagerProvider>
+                      <Outlet />
+                    </MachineManagerProvider>
+                  </AppStateProvider>
+                </KclContextProvider>
+              </ProjectsContextProvider>
+            </LspProvider>
+          </SettingsAuthProvider>
+        </RouteProvider>
       </CommandBarProvider>
     ),
     errorElement: <ErrorPage />,
@@ -116,6 +129,16 @@ const router = createRouter([
               },
             ],
           },
+          {
+            id: PATHS.FILE + 'TELEMETRY',
+            loader: telemetryLoader,
+            children: [
+              {
+                path: makeUrlPathRelative(PATHS.TELEMETRY),
+                element: <Telemetry />,
+              },
+            ],
+          },
         ],
       },
       {
@@ -140,6 +163,11 @@ const router = createRouter([
             path: makeUrlPathRelative(PATHS.SETTINGS),
             loader: settingsLoader,
             element: <Settings />,
+          },
+          {
+            path: makeUrlPathRelative(PATHS.TELEMETRY),
+            loader: telemetryLoader,
+            element: <Telemetry />,
           },
         ],
       },
@@ -173,21 +201,23 @@ function CoreDump() {
     []
   )
   useHotkeyWrapper(['mod + shift + .'], () => {
-    toast.promise(
-      coreDump(coreDumpManager, true),
-      {
-        loading: 'Starting core dump...',
-        success: 'Core dump completed successfully',
-        error: 'Error while exporting core dump',
-      },
-      {
-        success: {
-          // Note: this extended duration is especially important for Playwright e2e testing
-          // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-          duration: 6000,
+    toast
+      .promise(
+        coreDump(coreDumpManager, true),
+        {
+          loading: 'Starting core dump...',
+          success: 'Core dump completed successfully',
+          error: 'Error while exporting core dump',
         },
-      }
-    )
+        {
+          success: {
+            // Note: this extended duration is especially important for Playwright e2e testing
+            // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
+            duration: 6000,
+          },
+        }
+      )
+      .catch(reportRejection)
   })
   return null
 }

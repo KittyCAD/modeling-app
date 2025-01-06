@@ -1,10 +1,10 @@
 import { TEST } from 'env'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { lineHighlightField } from 'editor/highlightextension'
-import { roundOff } from 'lib/utils'
+import { onMouseDragMakeANewNumber, onMouseDragRegex } from 'lib/utils'
 import {
   lineNumbers,
   rectangularSelection,
@@ -36,13 +36,21 @@ import interact from '@replit/codemirror-interact'
 import { kclManager, editorManager, codeManager } from 'lib/singletons'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useLspContext } from 'components/LspProvider'
-import { Prec, EditorState, Extension } from '@codemirror/state'
+import { Prec, EditorState, Extension, Transaction } from '@codemirror/state'
 import {
   closeBrackets,
   closeBracketsKeymap,
   completionKeymap,
 } from '@codemirror/autocomplete'
 import CodeEditor from './CodeEditor'
+import { codeManagerHistoryCompartment } from 'lang/codeManager'
+import {
+  editorIsMountedSelector,
+  kclEditorActor,
+  selectionEventSelector,
+} from 'machines/kclEditorMachine'
+import { useSelector } from '@xstate/react'
+import { modelingMachineEvent } from 'editor/manager'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -58,6 +66,8 @@ export const KclEditorPane = () => {
   const {
     settings: { context },
   } = useSettingsAuthContext()
+  const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
+  const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const theme =
     context.app.theme.current === Themes.System
       ? getSystemTheme()
@@ -75,6 +85,25 @@ export const KclEditorPane = () => {
     editorManager.redo()
   })
 
+  // When this component unmounts, we need to tell the machine that the editor
+  useEffect(() => {
+    return () => {
+      kclEditorActor.send({ type: 'setKclEditorMounted', data: false })
+      kclEditorActor.send({ type: 'setLastSelectionEvent', data: undefined })
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!editorIsMounted || !lastSelectionEvent || !editorManager.editorView) {
+      return
+    }
+    editorManager.editorView.dispatch({
+      selection: lastSelectionEvent.codeMirrorSelection,
+      annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
+      scrollIntoView: lastSelectionEvent.scrollIntoView,
+    })
+  }, [editorIsMounted, lastSelectionEvent])
+
   const textWrapping = context.textEditor.textWrapping
   const cursorBlinking = context.textEditor.blinkingCursor
   // DO NOT ADD THE CODEMIRROR HOTKEYS HERE TO THE DEPENDENCY ARRAY
@@ -89,7 +118,7 @@ export const KclEditorPane = () => {
         cursorBlinkRate: cursorBlinking.current ? 1200 : 0,
       }),
       lineHighlightField,
-      history(),
+      codeManagerHistoryCompartment.of(history()),
       closeBrackets(),
       codeFolding(),
       keymap.of([
@@ -121,7 +150,6 @@ export const KclEditorPane = () => {
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),
-        history(),
         foldGutter(),
         EditorState.allowMultipleSelections.of(true),
         indentOnInput(),
@@ -129,7 +157,9 @@ export const KclEditorPane = () => {
         closeBrackets(),
         highlightActiveLine(),
         highlightSelectionMatches(),
-        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        syntaxHighlighting(defaultHighlightStyle, {
+          fallback: true,
+        }),
         rectangularSelection(),
         dropCursor(),
         interact({
@@ -137,29 +167,12 @@ export const KclEditorPane = () => {
             // a rule for a number dragger
             {
               // the regexp matching the value
-              regexp: /-?\b\d+\.?\d*\b/g,
+              regexp: onMouseDragRegex,
               // set cursor to "ew-resize" on hover
               cursor: 'ew-resize',
               // change number value based on mouse X movement on drag
               onDrag: (text, setText, e) => {
-                const multiplier =
-                  e.shiftKey && e.metaKey
-                    ? 0.01
-                    : e.metaKey
-                    ? 0.1
-                    : e.shiftKey
-                    ? 10
-                    : 1
-
-                const delta = e.movementX * multiplier
-
-                const newVal = roundOff(
-                  Number(text) + delta,
-                  multiplier === 0.01 ? 2 : multiplier === 0.1 ? 1 : 0
-                )
-
-                if (isNaN(newVal)) return
-                setText(newVal.toString())
+                onMouseDragMakeANewNumber(text, setText, e)
               },
             },
           ],
@@ -174,27 +187,32 @@ export const KclEditorPane = () => {
   const initialCode = useRef(codeManager.code)
 
   return (
-    <div
-      id="code-mirror-override"
-      className={'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')}
-    >
-      <CodeEditor
-        initialDocValue={initialCode.current}
-        extensions={editorExtensions}
-        theme={theme}
-        onCreateEditor={(_editorView) => {
-          if (_editorView === null) return
+    <div className="relative">
+      <div
+        id="code-mirror-override"
+        className={
+          'absolute inset-0 ' + (cursorBlinking.current ? 'blink' : '')
+        }
+      >
+        <CodeEditor
+          initialDocValue={initialCode.current}
+          extensions={editorExtensions}
+          theme={theme}
+          onCreateEditor={(_editorView) => {
+            if (_editorView === null) return
 
-          editorManager.setEditorView(_editorView)
+            editorManager.setEditorView(_editorView)
+            kclEditorActor.send({ type: 'setKclEditorMounted', data: true })
 
-          // On first load of this component, ensure we show the current errors
-          // in the editor.
-          // Make sure we don't add them twice.
-          if (diagnosticCount(_editorView.state) === 0) {
-            kclManager.setDiagnosticsForCurrentErrors()
-          }
-        }}
-      />
+            // On first load of this component, ensure we show the current errors
+            // in the editor.
+            // Make sure we don't add them twice.
+            if (diagnosticCount(_editorView.state) === 0) {
+              kclManager.setDiagnosticsForCurrentErrors()
+            }
+          }}
+        />
+      </div>
     </div>
   )
 }

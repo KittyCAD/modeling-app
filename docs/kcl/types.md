@@ -13,13 +13,15 @@ arrays can hold objects and vice versa.
 
 `true` or `false` work when defining values.
 
-## Variable declaration
+## Constant declaration
 
-Variables are defined with the `let` keyword like so:
+Constants are defined with a name and a value, like so:
 
 ```
-let myBool = false
+myBool = false
 ```
+
+Currently you cannot redeclare a constant.
 
 ## Array
 
@@ -27,7 +29,7 @@ An array is defined with `[]` braces. What is inside the brackets can
 be of any type. For example, the following is completely valid:
 
 ```
-let myArray = ["thing", 2, false]
+myArray = ["thing", 2, false]
 ```
 
 If you want to get a value from an array you can use the index like so:
@@ -39,7 +41,7 @@ If you want to get a value from an array you can use the index like so:
 An object is defined with `{}` braces. Here is an example object:
 
 ```
-let myObj = {a: 0, b: "thing"}
+myObj = { a = 0, b = "thing" }
 ```
 
 We support two different ways of getting properties from objects, you can call
@@ -52,7 +54,7 @@ We also have support for defining your own functions. Functions can take in any
 type of argument. Below is an example of the syntax:
 
 ```
-fn myFn = (x) => {
+fn myFn(x) {
   return x
 }
 ```
@@ -65,13 +67,13 @@ As you can see above `myFn` just returns whatever it is given.
 You can also do math! Let's show an example below:
 
 ```
-let myMathExpression = 3 + 1 * 2 / 3 - 7
+myMathExpression = 3 + 1 * 2 / 3 - 7
 ```
 
 You can nest expressions in parenthesis as well:
 
 ```
-let myMathExpression = 3 + (1 * 2 / (3 - 7))
+myMathExpression = 3 + (1 * 2 / (3 - 7))
 ```
 
 ## Tags
@@ -88,12 +90,12 @@ startSketchOn('XZ')
   |> startProfileAt(origin, %)
   |> angledLine([0, 191.26], %, $rectangleSegmentA001)
   |> angledLine([
-       segAng(rectangleSegmentA001, %) - 90,
+       segAng(rectangleSegmentA001) - 90,
        196.99
      ], %, $rectangleSegmentB001)
   |> angledLine([
-       segAng(rectangleSegmentA001, %),
-       -segLen(rectangleSegmentA001, %)
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
@@ -116,20 +118,20 @@ use the tag `rectangleSegmentA001` in any function or expression in the file.
 However if the code was written like this:
 
 ```
-fn rect = (origin) => {
+fn rect(origin) {
   return startSketchOn('XZ')
-  |> startProfileAt(origin, %)
-  |> angledLine([0, 191.26], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001, %) - 90,
-       196.99
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001, %),
-       -segLen(rectangleSegmentA001, %)
-     ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+    |> startProfileAt(origin, %)
+    |> angledLine([0, 191.26], %, $rectangleSegmentA001)
+    |> angledLine([
+         segAng(rectangleSegmentA001) - 90,
+         196.99
+       ], %, $rectangleSegmentB001)
+    |> angledLine([
+         segAng(rectangleSegmentA001),
+         -segLen(rectangleSegmentA001)
+       ], %, $rectangleSegmentC001)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
 }
 
 rect([0, 0])
@@ -144,28 +146,31 @@ Tags are accessible through the sketch group they are declared in.
 For example the following code works.
 
 ```
-fn rect = (origin) => {
+fn rect(origin) {
   return startSketchOn('XZ')
-  |> startProfileAt(origin, %)
-  |> angledLine([0, 191.26], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001, %) - 90,
-       196.99
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001, %),
-       -segLen(rectangleSegmentA001, %)
-     ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+    |> startProfileAt(origin, %)
+    |> angledLine([0, 191.26], %, $rectangleSegmentA001)
+    |> angledLine([
+         segAng(rectangleSegmentA001) - 90,
+         196.99
+       ], %, $rectangleSegmentB001)
+    |> angledLine([
+         segAng(rectangleSegmentA001),
+         -segLen(rectangleSegmentA001)
+       ], %, $rectangleSegmentC001)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)
 }
 
 rect([0, 0])
-const myRect = rect([20, 0])
+myRect = rect([20, 0])
 
-myRect 
+myRect
   |> extrude(10, %)
-  |> fillet({radius: 0.5, tags: [myRect.tags.rectangleSegmentA001]}, %)
+  |> fillet({
+       radius = 0.5,
+       tags = [myRect.tags.rectangleSegmentA001]
+     }, %)
 ```
 
 See how we use the tag `rectangleSegmentA001` in the `fillet` function outside

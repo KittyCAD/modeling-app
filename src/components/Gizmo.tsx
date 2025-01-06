@@ -1,6 +1,6 @@
 import { SceneInfra } from 'clientSideScene/sceneInfra'
 import { sceneInfra } from 'lib/singletons'
-import { MutableRefObject, useEffect, useMemo, useRef } from 'react'
+import { MutableRefObject, useEffect, useRef } from 'react'
 import {
   WebGLRenderer,
   Scene,
@@ -19,14 +19,14 @@ import {
   Intersection,
   Object3D,
 } from 'three'
-import {
-  ContextMenu,
-  ContextMenuDivider,
-  ContextMenuItem,
-  ContextMenuItemRefresh,
-} from './ContextMenu'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from './CustomIcon'
+import { reportRejection } from 'lib/trap'
+import {
+  useViewControlMenuItems,
+  ViewControlContextMenu,
+} from './ViewControlMenu'
+import { AxisNames } from 'lib/constants'
 
 const CANVAS_SIZE = 80
 const FRUSTUM_SIZE = 0.5
@@ -38,53 +38,14 @@ enum AxisColors {
   Z = '#6689ef',
   Gray = '#c6c7c2',
 }
-enum AxisNames {
-  X = 'x',
-  Y = 'y',
-  Z = 'z',
-  NEG_X = '-x',
-  NEG_Y = '-y',
-  NEG_Z = '-z',
-}
-const axisNamesSemantic: Record<AxisNames, string> = {
-  [AxisNames.X]: 'Right',
-  [AxisNames.Y]: 'Back',
-  [AxisNames.Z]: 'Top',
-  [AxisNames.NEG_X]: 'Left',
-  [AxisNames.NEG_Y]: 'Front',
-  [AxisNames.NEG_Z]: 'Bottom',
-}
 
 export default function Gizmo() {
+  const menuItems = useViewControlMenuItems()
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const raycasterIntersect = useRef<Intersection<Object3D> | null>(null)
   const cameraPassiveUpdateTimer = useRef(0)
   const raycasterPassiveUpdateTimer = useRef(0)
-  const menuItems = useMemo(
-    () => [
-      ...Object.entries(axisNamesSemantic).map(([axisName, axisSemantic]) => (
-        <ContextMenuItem
-          key={axisName}
-          onClick={() => {
-            sceneInfra.camControls.updateCameraToAxis(axisName as AxisNames)
-          }}
-        >
-          {axisSemantic} view
-        </ContextMenuItem>
-      )),
-      <ContextMenuItem
-        onClick={() => {
-          sceneInfra.camControls.resetCameraPosition()
-        }}
-      >
-        Reset view
-      </ContextMenuItem>,
-      <ContextMenuDivider />,
-      <ContextMenuItemRefresh />,
-    ],
-    [axisNamesSemantic]
-  )
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -148,7 +109,7 @@ export default function Gizmo() {
         className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm"
       >
         <canvas ref={canvasRef} />
-        <ContextMenu menuTargetElement={wrapperRef} items={menuItems} />
+        <ViewControlContextMenu menuTargetElement={wrapperRef} />
       </div>
       <GizmoDropdown items={menuItems} />
     </div>
@@ -299,7 +260,7 @@ const initializeMouseEvents = (
   const handleClick = () => {
     if (raycasterIntersect.current) {
       const axisName = raycasterIntersect.current.object.name as AxisNames
-      sceneInfra.camControls.updateCameraToAxis(axisName)
+      sceneInfra.camControls.updateCameraToAxis(axisName).catch(reportRejection)
     }
   }
 

@@ -9,7 +9,6 @@ use serde::{Deserialize, Serialize};
 use validator::{Validate, ValidateRange};
 
 const DEFAULT_THEME_COLOR: f64 = 264.5;
-pub const DEFAULT_PROJECT_KCL_FILE: &str = "main.kcl";
 const DEFAULT_PROJECT_NAME_TEMPLATE: &str = "project-$nnn";
 
 /// High level configuration.
@@ -254,6 +253,9 @@ pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
     #[serde(default, alias = "defaultUnit", skip_serializing_if = "is_default")]
     pub base_unit: UnitLength,
+    /// The projection mode the camera should use while modeling.
+    #[serde(default, alias = "cameraProjection", skip_serializing_if = "is_default")]
+    pub camera_projection: CameraProjectionType,
     /// The controls for how to navigate the 3D view.
     #[serde(default, alias = "mouseControls", skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
@@ -345,6 +347,32 @@ impl From<UnitLength> for kittycad::types::UnitLength {
     }
 }
 
+impl From<kittycad_modeling_cmds::units::UnitLength> for UnitLength {
+    fn from(unit: kittycad_modeling_cmds::units::UnitLength) -> Self {
+        match unit {
+            kittycad_modeling_cmds::units::UnitLength::Centimeters => UnitLength::Cm,
+            kittycad_modeling_cmds::units::UnitLength::Feet => UnitLength::Ft,
+            kittycad_modeling_cmds::units::UnitLength::Inches => UnitLength::In,
+            kittycad_modeling_cmds::units::UnitLength::Meters => UnitLength::M,
+            kittycad_modeling_cmds::units::UnitLength::Millimeters => UnitLength::Mm,
+            kittycad_modeling_cmds::units::UnitLength::Yards => UnitLength::Yd,
+        }
+    }
+}
+
+impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
+    fn from(unit: UnitLength) -> Self {
+        match unit {
+            UnitLength::Cm => kittycad_modeling_cmds::units::UnitLength::Centimeters,
+            UnitLength::Ft => kittycad_modeling_cmds::units::UnitLength::Feet,
+            UnitLength::In => kittycad_modeling_cmds::units::UnitLength::Inches,
+            UnitLength::M => kittycad_modeling_cmds::units::UnitLength::Meters,
+            UnitLength::Mm => kittycad_modeling_cmds::units::UnitLength::Millimeters,
+            UnitLength::Yd => kittycad_modeling_cmds::units::UnitLength::Yards,
+        }
+    }
+}
+
 /// The types of controls for how to navigate the 3D view.
 #[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
 #[ts(export)]
@@ -352,9 +380,9 @@ impl From<UnitLength> for kittycad::types::UnitLength {
 #[display(style = "snake_case")]
 pub enum MouseControlType {
     #[default]
-    #[display("kittycad")]
-    #[serde(rename = "kittycad", alias = "KittyCAD")]
-    KittyCad,
+    #[display("zoo")]
+    #[serde(rename = "zoo", alias = "Zoo", alias = "KittyCAD")]
+    Zoo,
     #[display("onshape")]
     #[serde(rename = "onshape", alias = "OnShape")]
     OnShape,
@@ -369,6 +397,19 @@ pub enum MouseControlType {
     #[display("autocad")]
     #[serde(rename = "autocad", alias = "AutoCAD")]
     AutoCad,
+}
+
+/// The types of camera projection for the 3D view.
+#[derive(Debug, Default, Eq, PartialEq, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Display, FromStr)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+#[display(style = "snake_case")]
+pub enum CameraProjectionType {
+    /// Perspective projection https://en.wikipedia.org/wiki/3D_projection#Perspective_projection
+    Perspective,
+    /// Orthographic projection https://en.wikipedia.org/wiki/3D_projection#Orthographic_projection
+    #[default]
+    Orthographic,
 }
 
 /// Settings that affect the behavior of the KCL text editor.
@@ -436,6 +477,10 @@ pub struct CommandBarSettings {
 #[serde(rename_all = "snake_case")]
 #[display(style = "snake_case")]
 pub enum OnboardingStatus {
+    /// The unset state.
+    #[serde(rename = "")]
+    #[display("")]
+    Unset,
     /// The user has completed onboarding.
     Completed,
     /// The user has not completed onboarding.
@@ -496,8 +541,8 @@ mod tests {
     use validator::Validate;
 
     use super::{
-        AppColor, AppSettings, AppTheme, AppearanceSettings, CommandBarSettings, Configuration, ModelingSettings,
-        OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
+        AppColor, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
+        ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
     };
 
     #[test]
@@ -512,6 +557,7 @@ enableSSAO = false
 
 [settings.modeling]
 defaultUnit = "in"
+cameraProjection = "orthographic"
 mouseControls = "KittyCAD"
 showDebugPanel = true
 
@@ -543,6 +589,7 @@ textWrapping = true
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
+                        camera_projection: CameraProjectionType::Orthographic,
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -603,6 +650,7 @@ includeSettings = false
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
+                        camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -668,6 +716,7 @@ defaultProjectName = "projects-$nnn"
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
+                        camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
@@ -745,6 +794,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
+                        camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: true.into(),
                         show_debug_panel: false,
