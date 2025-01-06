@@ -89,7 +89,12 @@ impl StdLibFnArg {
         get_autocomplete_string_from_schema(&self.schema.schema.clone().into())
     }
 
-    pub fn get_autocomplete_snippet(&self, index: usize) -> Result<Option<(usize, String)>> {
+    pub fn get_autocomplete_snippet(&self, index: usize, in_keyword_fn: bool) -> Result<Option<(usize, String)>> {
+        let label = if in_keyword_fn && self.label_required {
+            &self.name
+        } else {
+            ""
+        };
         if self.type_ == "Sketch"
             || self.type_ == "SketchSet"
             || self.type_ == "Solid"
@@ -97,18 +102,21 @@ impl StdLibFnArg {
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
         {
-            return Ok(Some((index, format!("${{{}:{}}}", index, "%"))));
+            return Ok(Some((index, format!("{label}${{{}:{}}}", index, "%"))));
         } else if (self.type_ == "TagDeclarator" || self.type_ == "TagNode") && self.required {
-            return Ok(Some((index, format!("${{{}:{}}}", index, "$myTag"))));
+            return Ok(Some((index, format!("{label}${{{}:{}}}", index, "$myTag"))));
         } else if self.type_ == "TagIdentifier" && self.required {
             // TODO: actually use the ast to populate this.
-            return Ok(Some((index, format!("${{{}:{}}}", index, "myTag"))));
+            return Ok(Some((index, format!("{label}${{{}:{}}}", index, "myTag"))));
         } else if self.type_ == "[KclValue]" && self.required {
-            return Ok(Some((index, format!("${{{}:{}}}", index, "[0..9]"))));
+            return Ok(Some((index, format!("{label}${{{}:{}}}", index, "[0..9]"))));
         } else if self.type_ == "KclValue" && self.required {
-            return Ok(Some((index, format!("${{{}:{}}}", index, "3"))));
+            return Ok(Some((index, format!("{label}${{{}:{}}}", index, "3"))));
         }
-        get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
+        eprintln!("{}", self.name);
+        let res = get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
+            .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))));
+        dbg!(res)
     }
 
     pub fn description(&self) -> Option<String> {
@@ -253,10 +261,11 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
         } else if self.name() == "hole" {
             return Ok("hole(${0:holeSketch}, ${1:%})${}".to_string());
         }
+        let is_keyword_fn = self.keyword_arguments();
         let mut args = Vec::new();
         let mut index = 0;
         for arg in self.args(true).iter() {
-            if let Some((i, arg_str)) = arg.get_autocomplete_snippet(index)? {
+            if let Some((i, arg_str)) = arg.get_autocomplete_snippet(index, is_keyword_fn)? {
                 index = i + 1;
                 args.push(arg_str);
             }
@@ -484,6 +493,7 @@ fn get_autocomplete_snippet_from_schema(
 
             if let Some(serde_json::Value::Bool(nullable)) = o.extensions.get("nullable") {
                 if *nullable {
+                    eprintln!("ADAM: Nullable, so early return");
                     return Ok(None);
                 }
             }
