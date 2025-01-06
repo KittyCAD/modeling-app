@@ -580,9 +580,16 @@ export function addOffsetPlane({
     ])
   )
 
-  const insertAt = insertIndex ?? modifiedAst.body.length - 1
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length - 1
+      : 0
 
-  modifiedAst.body.splice(insertAt, 0, newPlane)
+  modifiedAst.body.length
+    ? modifiedAst.body.splice(insertAt, 0, newPlane)
+    : modifiedAst.body.push(newPlane)
   const pathToNode: PathToNode = [
     ['body', ''],
     [insertAt, 'index'],

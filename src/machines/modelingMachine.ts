@@ -1581,11 +1581,14 @@ export const modelingMachine = setup({
         const ast = kclManager.ast
         const { plane: selection, distance, nodeToEdit } = input
 
+        let insertIndex: number | undefined = undefined
+
         // If this is an edit flow, first we're going to remove the old extrusion
         if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
           const newBody = [...ast.body]
           newBody.splice(nodeToEdit[1][0], 1)
           ast.body = newBody
+          insertIndex = nodeToEdit[1][0]
         }
 
         // Extract the default plane from selection
@@ -1617,6 +1620,7 @@ export const modelingMachine = setup({
             'variableName' in distance
               ? distance.variableIdentifierAst
               : distance.valueAst,
+          insertIndex,
         })
 
         const updateAstResult = await kclManager.updateAst(

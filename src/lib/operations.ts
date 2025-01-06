@@ -8,6 +8,8 @@ import { sourceRangeFromRust } from 'lang/wasm'
 import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { stringToKclExpression } from './kclHelpers'
 import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
+import { isDefaultPlaneStr } from './planes'
+import { Selections } from './selections'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -131,43 +133,80 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   artifact,
 }) => {
   const baseCommand = {
-    name: 'Offset Plane',
+    name: 'Offset plane',
     groupId: 'modeling',
   }
-  return baseCommand
-  // TODO: Implement and uncomment
-  // if (!artifact || artifact.type !== 'plane' || item.type !== 'StdLibCall' || !item.labeledArgs?.['distance']) {
-  //   return baseCommand
-  // }
+  if (
+    item.type !== 'StdLibCall' ||
+    !item.labeledArgs ||
+    !('std_plane' in item.labeledArgs) ||
+    !item.labeledArgs.std_plane ||
+    !('offset' in item.labeledArgs) ||
+    !item.labeledArgs.offset
+  ) {
+    return baseCommand
+  }
+  // TODO: Implement conversion to arbitrary plane selection
+  // once the Offset Plane command supports it.
+  const planeName = codeManager.code
+    .slice(
+      item.labeledArgs.std_plane.sourceRange[0],
+      item.labeledArgs.std_plane.sourceRange[1]
+    )
+    .replaceAll(`'`, ``)
 
-  // // Convert the distance argument from a string to a KCL expression
-  // const distanceResult = await stringToKclExpression({
-  //   value: codeManager.code.slice(
-  //     item.labeledArgs?.['distance'].sourceRange[0],
-  //     item.labeledArgs?.['distance'].sourceRange[1]
-  //   ),
-  //   programMemory: kclManager.programMemory.clone(),
-  // })
-  // if (err(distanceResult) || 'errors' in distanceResult) {
-  //   return baseCommand
-  // }
+  if (!isDefaultPlaneStr(planeName)) {
+    // TODO: error handling
+    return baseCommand
+  }
+  const planeId = engineCommandManager.getDefaultPlaneId(planeName)
+  if (err(planeId)) {
+    // TODO: error handling
+    return baseCommand
+  }
 
-  // // Assemble the default argument values for the Offset Plane command,
-  // // with `nodeToEdit` set, which will let the Offset Plane actor know
-  // // to edit the node that corresponds to the StdLibCall.
-  // const argDefaultValues: ModelingCommandSchema['Offset plane'] = {
-  //   distance: distanceResult,
-  //   plane: {
-  //     graphSelections: [],
-  //     otherSelections: [
-  //       { name: artifact.}
-  //     ],
-  //   },
-  //   nodeToEdit: getNodePathFromSourceRange(
-  //     kclManager.ast,
-  //     sourceRangeFromRust(item.sourceRange)
-  //   ),
-  // }
+  const plane: Selections = {
+    graphSelections: [],
+    otherSelections: [
+      {
+        name: planeName,
+        id: planeId,
+      },
+    ],
+  }
+
+  console.log('prepareToEditOffsetPlane', { item, artifact, planeName, plane })
+
+  // Convert the distance argument from a string to a KCL expression
+  const distanceResult = await stringToKclExpression({
+    value: codeManager.code.slice(
+      item.labeledArgs.offset.sourceRange[0],
+      item.labeledArgs.offset.sourceRange[1]
+    ),
+    programMemory: kclManager.programMemory.clone(),
+  })
+
+  console.log('distanceResult', distanceResult)
+  if (err(distanceResult) || 'errors' in distanceResult) {
+    return baseCommand
+  }
+
+  // Assemble the default argument values for the Offset Plane command,
+  // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // to edit the node that corresponds to the StdLibCall.
+  const argDefaultValues: ModelingCommandSchema['Offset plane'] = {
+    distance: distanceResult,
+    plane,
+    nodeToEdit: getNodePathFromSourceRange(
+      kclManager.ast,
+      sourceRangeFromRust(item.sourceRange)
+    ),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
 }
 
 /**
@@ -210,7 +249,7 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
   offsetPlane: {
     label: 'Offset Plane',
     icon: 'plane',
-    // prepareToEdit: () => ({ type: 'Offset plane', data: { distance: 1 } }),
+    prepareToEdit: prepareToEditOffsetPlane,
   },
   patternCircular2d: {
     label: 'Circular Pattern',
@@ -375,6 +414,7 @@ export async function enterEditFlow({
         item,
         artifact,
       })
+      console.log('eventPayload', eventPayload)
       return {
         type: 'Find and select command',
         data: eventPayload,
