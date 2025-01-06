@@ -470,6 +470,8 @@ export function ToastPromptToEditCadSuccess({
             onClick={() => {
               sendTelemetry(modelId, 'accepted', token).catch(reportRejection)
               toast.dismiss(toastId)
+              // Write new content to disk since they have accepted.
+              codeManager.writeToFile()
             }}
           >
             Accept
