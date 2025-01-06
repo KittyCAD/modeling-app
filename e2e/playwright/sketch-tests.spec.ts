@@ -1385,7 +1385,6 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
 
     const [arcClick, arcHover] = scene.makeMouseHelpers(617, 132)
     await test.step('Ensure we can hover the arc', async () => {
-      await page.mouse.move(617, 132)
       await arcHover()
 
       // Check that the code is highlighted
@@ -1408,7 +1407,6 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
     })
 
     await test.step('Ensure we can click the arc', async () => {
-      await page.mouse.click(617, 132)
       await arcClick()
       // Check that the code is highlighted
       await editor.expectState({
