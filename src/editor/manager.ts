@@ -132,6 +132,12 @@ export default class EditorManager {
   private selectionsWithSafeEnds(
     selection: Array<Selection['codeRef']['range']>
   ): Array<[number, number]> {
+    if (!this._editorView) {
+      return selection.map((s): [number, number] => {
+        return [s[0], s[1]]
+      })
+    }
+
     return selection.map((s): [number, number] => {
       const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
       return [s[0], safeEnd]
@@ -163,11 +169,9 @@ export default class EditorManager {
   }
 
   setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
-    this._highlightRange = range.map((s): [number, number] => {
-      return [s[0], s[1]]
-    })
-
     const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range)
+
+    this._highlightRange = selectionsWithSafeEnds
 
     if (this._editorView) {
       this._editorView.dispatch({
@@ -219,6 +223,7 @@ export default class EditorManager {
    * Scroll to the first selection in the editor.
    */
   scrollToSelection() {
+    console.log('scrollToSelection')
     if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
 
     const firstSelection = this._selectionRanges.graphSelections[0]
@@ -318,6 +323,7 @@ export default class EditorManager {
         .range[1]
     const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
+    console.log('codeBasedSelections', codeBasedSelections)
 
     if (!this._editorView) {
       return
