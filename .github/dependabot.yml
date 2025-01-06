@@ -26,3 +26,7 @@ updates:
     reviewers:
       - adamchalmers
       - jessfraz
+    groups:
+      serde-dependencies:
+        patterns:
+          - "serde*"
