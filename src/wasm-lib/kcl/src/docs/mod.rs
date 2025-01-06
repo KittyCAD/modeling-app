@@ -60,6 +60,7 @@ pub struct StdLibFnArg {
     /// If the argument is required.
     pub required: bool,
     /// Include this in completion snippets?
+    #[serde(default, skip_serializing_if = "is_false")]
     pub include_in_snippet: bool,
     /// Additional information that could be used instead of the type's description.
     /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
@@ -79,6 +80,10 @@ pub struct StdLibFnArg {
 
 fn its_true() -> bool {
     true
+}
+
+fn is_false(b: &bool) -> bool {
+    !b
 }
 
 impl StdLibFnArg {
@@ -115,7 +120,7 @@ impl StdLibFnArg {
         } else if self.type_ == "KclValue" && self.required {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, "3"))));
         }
-        self.get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
+        self.get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index, in_keyword_fn)
             .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))))
     }
 
@@ -132,6 +137,7 @@ impl StdLibFnArg {
         &self,
         schema: &schemars::schema::Schema,
         index: usize,
+        in_keyword_fn: bool,
     ) -> Result<Option<(usize, String)>> {
         match schema {
             schemars::schema::Schema::Object(o) => {
@@ -146,7 +152,7 @@ impl StdLibFnArg {
                 }
 
                 if let Some(serde_json::Value::Bool(nullable)) = o.extensions.get("nullable") {
-                    if *nullable && !self.include_in_snippet {
+                    if (!in_keyword_fn && *nullable) || (in_keyword_fn && !self.include_in_snippet) {
                         return Ok(None);
                     }
                 }
@@ -160,7 +166,12 @@ impl StdLibFnArg {
                         return Ok(Some((index, format!(r#"${{{}:"tag_or_edge_fn"}}"#, index))));
                     } else if format == "double" {
                         return Ok(Some((index, format!(r#"${{{}:3.14}}"#, index))));
-                    } else if format == "uint" || format == "int64" || format == "uint32" || format == "uint64" {
+                    } else if format == "uint"
+                        || format == "int64"
+                        || format == "uint32"
+                        || format == "uint64"
+                        || format == "uint8"
+                    {
                         return Ok(Some((index, format!(r#"${{{}:10}}"#, index))));
                     } else {
                         anyhow::bail!("unknown format: {}", format);
@@ -189,7 +200,7 @@ impl StdLibFnArg {
                             continue;
                         }
 
-                        if let Some((new_index, snippet)) = self.get_autocomplete_snippet_from_schema(prop, i)? {
+                        if let Some((new_index, snippet)) = self.get_autocomplete_snippet_from_schema(prop, i, false)? {
                             fn_docs.push_str(&format!("\t{} = {},\n", prop_name, snippet));
                             i = new_index + 1;
                         }
@@ -211,7 +222,11 @@ impl StdLibFnArg {
                                         "[{}]",
                                         (0..val)
                                             .map(|v| self
-                                                .get_autocomplete_snippet_from_schema(items, index + (v as usize))
+                                                .get_autocomplete_snippet_from_schema(
+                                                    items,
+                                                    index + (v as usize),
+                                                    in_keyword_fn
+                                                )
                                                 .unwrap()
                                                 .unwrap()
                                                 .1)
@@ -225,7 +240,7 @@ impl StdLibFnArg {
                                     index,
                                     format!(
                                         "[{}]",
-                                        self.get_autocomplete_snippet_from_schema(items, index)?
+                                        self.get_autocomplete_snippet_from_schema(items, index, in_keyword_fn)?
                                             .ok_or_else(|| anyhow::anyhow!("expected snippet"))?
                                             .1
                                     ),
@@ -237,7 +252,7 @@ impl StdLibFnArg {
                             index,
                             format!(
                                 "[{}]",
-                                self.get_autocomplete_snippet_from_schema(items, index)?
+                                self.get_autocomplete_snippet_from_schema(items, index, in_keyword_fn)?
                                     .ok_or_else(|| anyhow::anyhow!("expected snippet"))?
                                     .1
                             ),
@@ -280,7 +295,7 @@ impl StdLibFnArg {
                             return Ok(Some((index, parsed_enum_values[0].to_string())));
                         } else if let Some(item) = items.iter().next() {
                             if let Some((new_index, snippet)) =
-                                self.get_autocomplete_snippet_from_schema(item, index)?
+                                self.get_autocomplete_snippet_from_schema(item, index, in_keyword_fn)?
                             {
                                 i = new_index + 1;
                                 fn_docs.push_str(&snippet);
@@ -289,7 +304,7 @@ impl StdLibFnArg {
                     } else if let Some(items) = &subschemas.any_of {
                         if let Some(item) = items.iter().next() {
                             if let Some((new_index, snippet)) =
-                                self.get_autocomplete_snippet_from_schema(item, index)?
+                                self.get_autocomplete_snippet_from_schema(item, index, in_keyword_fn)?
                             {
                                 i = new_index + 1;
                                 fn_docs.push_str(&snippet);
@@ -451,11 +466,11 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
         } else if self.name() == "hole" {
             return Ok("hole(${0:holeSketch}, ${1:%})${}".to_string());
         }
-        let is_keyword_fn = self.keyword_arguments();
+        let in_keyword_fn = self.keyword_arguments();
         let mut args = Vec::new();
         let mut index = 0;
         for arg in self.args(true).iter() {
-            if let Some((i, arg_str)) = arg.get_autocomplete_snippet(index, is_keyword_fn)? {
+            if let Some((i, arg_str)) = arg.get_autocomplete_snippet(index, in_keyword_fn)? {
                 index = i + 1;
                 args.push(arg_str);
             }
@@ -691,6 +706,7 @@ fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) -> Res
                     return Ok(Primitive::Uuid.to_string());
                 } else if format == "double"
                     || format == "uint"
+                    || format == "uint8"
                     || format == "int64"
                     || format == "uint32"
                     || format == "uint64"
@@ -898,7 +914,7 @@ mod tests {
     fn get_autocomplete_snippet_extrude() {
         let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
         let snippet = extrude_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"extrude(${0:3.14}, ${1:%})${}"#);
+        assert_eq!(snippet, r#"extrude(${0:%}, length: ${1:3.14})${}"#);
     }
 
     #[test]

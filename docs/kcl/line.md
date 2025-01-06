@@ -18,7 +18,7 @@ line(sketch: Sketch, end_absolute?: [number], end?: [number], tag?: TagDeclarato
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `end_absolute` | `[number]` | Which absolute point should this line go to? Incompatible with `to`. | No |
+| `end_absolute` | `[number]` | Which absolute point should this line go to? Incompatible with `end`. | No |
 | `end` | `[number]` | How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`. | No |
 | `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 

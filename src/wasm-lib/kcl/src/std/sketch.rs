@@ -92,7 +92,7 @@ pub enum StartOrEnd {
     End,
 }
 
-pub const NEW_TAG_KW: &'static str = "tag";
+pub const NEW_TAG_KW: &str = "tag";
 
 /// Draw a line to a point.
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -1461,7 +1461,7 @@ pub(crate) fn inner_profile_start(sketch: Sketch) -> Result<[f64; 2], KclError> 
 /// Close the current sketch.
 pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch = args.get_unlabeled_kw_arg("sketch")?;
-    let tag = args.get_kw_arg_opt("tag");
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW);
     let new_sketch = inner_close(sketch, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
