@@ -55,6 +55,11 @@ impl Configuration {
             }
         }
 
+        if settings.settings.modeling.show_debug_panel && !settings.settings.app.show_debug_panel {
+            settings.settings.app.show_debug_panel = settings.settings.modeling.show_debug_panel;
+            settings.settings.modeling.show_debug_panel = Default::default();
+        }
+
         settings.validate()?;
 
         Ok(settings)
@@ -121,6 +126,10 @@ pub struct AppSettings {
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, alias = "streamIdleMode", skip_serializing_if = "is_default")]
     stream_idle_mode: bool,
+    /// Whether to show the debug panel, which lets you see various states
+    /// of the app to aid in development.
+    #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
+    pub show_debug_panel: bool,
 }
 
 // TODO: When we remove backwards compatibility with the old settings file, we can remove this.
@@ -264,6 +273,7 @@ pub struct ModelingSettings {
     pub highlight_edges: DefaultTrue,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
+    /// Remove this when we remove backwards compatibility with the old settings file.
     #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
@@ -586,13 +596,14 @@ textWrapping = true
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
+                        show_debug_panel: true,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
                         camera_projection: CameraProjectionType::Orthographic,
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
-                        show_debug_panel: true,
+                        show_debug_panel: Default::default(),
                         enable_ssao: false.into(),
                         show_scale_grid: false,
                     },
@@ -647,13 +658,14 @@ includeSettings = false
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
+                        show_debug_panel: true,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
                         camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
-                        show_debug_panel: true,
+                        show_debug_panel: Default::default(),
                         enable_ssao: true.into(),
                         show_scale_grid: false,
                     },
@@ -713,13 +725,14 @@ defaultProjectName = "projects-$nnn"
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
+                        show_debug_panel: true,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
                         camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
-                        show_debug_panel: true,
+                        show_debug_panel: false,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
                     },
@@ -744,6 +757,7 @@ defaultProjectName = "projects-$nnn"
             serialized,
             r#"[settings.app]
 onboarding_status = "dismissed"
+show_debug_panel = true
 
 [settings.app.appearance]
 theme = "dark"
@@ -751,7 +765,6 @@ color = 138.0
 
 [settings.modeling]
 base_unit = "yd"
-show_debug_panel = true
 
 [settings.text_editor]
 text_wrapping = false
@@ -791,13 +804,14 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
+                        show_debug_panel: Default::default(),
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,
                         camera_projection: Default::default(),
                         mouse_controls: Default::default(),
                         highlight_edges: true.into(),
-                        show_debug_panel: false,
+                        show_debug_panel: Default::default(),
                         enable_ssao: true.into(),
                         show_scale_grid: false,
                     },

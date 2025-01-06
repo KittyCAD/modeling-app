@@ -12,6 +12,7 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
+use super::{ast::types::LabelledExpression, token::NumericSuffix};
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
@@ -32,8 +33,6 @@ use crate::{
     unparser::ExprContext,
     SourceRange,
 };
-
-use super::{ast::types::LabelledExpression, token::NumericSuffix};
 
 thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.

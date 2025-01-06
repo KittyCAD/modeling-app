@@ -31,6 +31,9 @@ mod exec_ast;
 mod function_param;
 mod kcl_value;
 
+// Re-exports.
+pub use cad_op::Operation;
+
 use crate::{
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
@@ -46,9 +49,6 @@ use crate::{
     walk::Node as WalkNode,
     ExecError, Program,
 };
-
-// Re-exports.
-pub use cad_op::Operation;
 
 /// State for executing a program.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

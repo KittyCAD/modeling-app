@@ -43,6 +43,7 @@ export function configurationToSettingsPayload(
       onboarding_status: configuration?.settings?.app?.onboarding_status,
       dismiss_web_banner: configuration?.settings?.app?.dismiss_web_banner,
       stream_idle_mode: configuration?.settings?.app?.stream_idle_mode,
+      show_debug_panel: configuration?.settings?.app?.show_debug_panel,
     },
     modeling: {
       base_unit: configuration?.settings?.modeling?.base_unit,
@@ -51,7 +52,6 @@ export function configurationToSettingsPayload(
         configuration?.settings?.modeling?.mouse_controls
       ),
       highlight_edges: configuration?.settings?.modeling?.highlight_edges,
-      show_debug_panel: configuration?.settings?.modeling?.show_debug_panel,
       show_scale_grid: configuration?.settings?.modeling?.show_scale_grid,
       enable_ssao: configuration?.settings?.modeling?.enable_ssao,
     },
@@ -84,14 +84,11 @@ export function projectConfigurationToSettingsPayload(
       onboarding_status: configuration?.settings?.app?.onboarding_status,
       dismiss_web_banner: configuration?.settings?.app?.dismiss_web_banner,
       stream_idle_mode: configuration?.settings?.app?.stream_idle_mode,
+      show_debug_panel: configuration?.settings?.app?.show_debug_panel,
     },
     modeling: {
       base_unit: configuration?.settings?.modeling?.base_unit,
-      mouse_controls: mouseControlsToCameraSystem(
-        configuration?.settings?.modeling?.mouse_controls
-      ),
       highlight_edges: configuration?.settings?.modeling?.highlight_edges,
-      show_debug_panel: configuration?.settings?.modeling?.show_debug_panel,
       enable_ssao: configuration?.settings?.modeling?.enable_ssao,
     },
     text_editor: {
