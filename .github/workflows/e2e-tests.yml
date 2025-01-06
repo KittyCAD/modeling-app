@@ -130,7 +130,7 @@ jobs:
       if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
       shell: bash
       run: |
-        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot }}
+        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=1/1
       env:
         CI: true
         NODE_ENV: development
