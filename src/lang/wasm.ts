@@ -35,7 +35,7 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-import { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
+import { ExecOutcome as RustExecOutcome } from 'wasm-lib/kcl/bindings/ExecOutcome'
 import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
@@ -260,10 +260,10 @@ export function emptyExecState(): ExecState {
   }
 }
 
-function execStateFromRaw(raw: RawExecState): ExecState {
+function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
-    memory: ProgramMemory.fromRaw(raw.modLocal.memory),
-    operations: raw.modLocal.operations,
+    memory: ProgramMemory.fromRaw(execOutcome.memory),
+    operations: execOutcome.operations,
   }
 }
 
@@ -535,14 +535,14 @@ export const _executor = async (
         jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
       }
     }
-    const execState: RawExecState = await execute(
+    const execOutcome: RustExecOutcome = await execute(
       JSON.stringify(node),
       JSON.stringify(programMemoryOverride?.toRaw() || null),
       JSON.stringify({ settings: jsAppSettings }),
       engineCommandManager,
       fileSystemManager
     )
-    return execStateFromRaw(execState)
+    return execStateFromRust(execOutcome)
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
