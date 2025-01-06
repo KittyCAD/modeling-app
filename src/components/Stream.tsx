@@ -41,7 +41,7 @@ export const Stream = () => {
   const [streamState, setStreamState] = useState(StreamState.Unset)
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
-  const IDLE = settings.context.app.streamIdleMode.current
+  const IDLE = settings.context.app.stream_idle_mode.current
 
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
@@ -342,7 +342,7 @@ export const Stream = () => {
         id="video-stream"
       />
       <ClientSideScene
-        cameraControls={settings.context.modeling.mouseControls.current}
+        cameraControls={settings.context.modeling.mouse_controls.current}
       />
       {(streamState === StreamState.Paused ||
         streamState === StreamState.Resuming) && (

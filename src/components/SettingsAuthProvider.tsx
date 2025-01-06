@@ -122,18 +122,20 @@ export const SettingsAuthProviderBase = ({
 
         setClientSideSceneUnits: ({ context, event }) => {
           const newBaseUnit =
-            event.type === 'set.modeling.defaultUnit'
+            event.type === 'set.modeling.base_unit'
               ? (event.data.value as BaseUnit)
-              : context.modeling.defaultUnit.current
+              : context.modeling.base_unit.current
           sceneInfra.baseUnit = newBaseUnit
         },
         setEngineTheme: ({ context }) => {
           engineCommandManager
-            .setTheme(context.app.theme.current)
+            .setTheme(context.app.appearance.theme.current)
             .catch(reportRejection)
         },
         setClientTheme: ({ context }) => {
-          const opposingTheme = getOppositeTheme(context.app.theme.current)
+          const opposingTheme = getOppositeTheme(
+            context.app.appearance.theme.current
+          )
           sceneInfra.theme = opposingTheme
           sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
         },
@@ -164,12 +166,12 @@ export const SettingsAuthProviderBase = ({
           try {
             const relevantSetting = (s: typeof settings) => {
               return (
-                s.modeling?.defaultUnit?.current !==
-                  context.modeling.defaultUnit.current ||
-                s.modeling.showScaleGrid.current !==
-                  context.modeling.showScaleGrid.current ||
-                s.modeling?.highlightEdges.current !==
-                  context.modeling.highlightEdges.current
+                s.modeling?.base_unit.current !==
+                  context.modeling.base_unit.current ||
+                s.modeling.show_scale_grid.current !==
+                  context.modeling.show_scale_grid.current ||
+                s.modeling?.highlight_edges.current !==
+                  context.modeling.highlight_edges.current
               )
             }
 
@@ -180,9 +182,9 @@ export const SettingsAuthProviderBase = ({
               event.type === 'Reset settings' && relevantSetting(settings)
 
             if (
-              event.type === 'set.modeling.defaultUnit' ||
-              event.type === 'set.modeling.showScaleGrid' ||
-              event.type === 'set.modeling.highlightEdges' ||
+              event.type === 'set.modeling.base_unit' ||
+              event.type === 'set.modeling.show_scale_grid' ||
+              event.type === 'set.modeling.highlight_edges' ||
               allSettingsIncludesUnitChange ||
               resetSettingsIncludesUnitChange
             ) {
@@ -258,7 +260,7 @@ export const SettingsAuthProviderBase = ({
   useEffect(() => {
     // If the user wants to hide the settings commands
     //from the command bar don't add them.
-    if (settingsState.context.commandBar.includeSettings.current === false)
+    if (settingsState.context.command_bar.include_settings.current === false)
       return
 
     const commands = settingsWithCommandConfigs(settingsState.context)
@@ -334,7 +336,8 @@ export const SettingsAuthProviderBase = ({
   // events outside of the machine that also depend on the machine's context
   useEffect(() => {
     const listener = (e: MediaQueryListEvent) => {
-      if (settingsState.context.app.theme.current !== 'system') return
+      if (settingsState.context.app.appearance.theme.current !== 'system')
+        return
       setThemeClass(e.matches ? Themes.Dark : Themes.Light)
     }
 
@@ -349,9 +352,9 @@ export const SettingsAuthProviderBase = ({
   useEffect(() => {
     document.documentElement.style.setProperty(
       `--primary-hue`,
-      settingsState.context.app.themeColor.current
+      settingsState.context.app.appearance.color.current
     )
-  }, [settingsState.context.app.themeColor.current])
+  }, [settingsState.context.app.appearance.color.current])
 
   /**
    * Update the --cursor-color CSS variable
@@ -360,11 +363,11 @@ export const SettingsAuthProviderBase = ({
   useEffect(() => {
     document.documentElement.style.setProperty(
       `--cursor-color`,
-      settingsState.context.textEditor.blinkingCursor.current
+      settingsState.context.text_editor.blinking_cursor.current
         ? 'auto'
         : 'transparent'
     )
-  }, [settingsState.context.textEditor.blinkingCursor.current])
+  }, [settingsState.context.text_editor.blinking_cursor.current])
 
   // Auth machine setup
   const [authState, authSend, authActor] = useMachine(

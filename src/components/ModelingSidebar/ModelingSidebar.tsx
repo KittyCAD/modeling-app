@@ -40,14 +40,14 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
   const { settings } = useSettingsAuthContext()
-  const onboardingStatus = settings.context.app.onboardingStatus
+  const onboardingStatus = settings.context.app.onboarding_status
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
     onboardingStatus.current === onboardingPaths.CAMERA ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
-  const showDebugPanel = settings.context.modeling.showDebugPanel
+  const showDebugPanel = settings.context.modeling.show_debug_panel
 
   const paneCallbackProps = useMemo(
     () => ({

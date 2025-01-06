@@ -54,7 +54,7 @@ export function App() {
   )
 
   const {
-    app: { onboardingStatus },
+    app: { onboarding_status },
   } = settings.context
 
   useHotkeys('backspace', (e) => {
@@ -69,7 +69,7 @@ export function App() {
   )
 
   const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
-    (p) => p === onboardingStatus.current
+    (p) => p === onboarding_status.current
   )
     ? 'opacity-20'
     : ''

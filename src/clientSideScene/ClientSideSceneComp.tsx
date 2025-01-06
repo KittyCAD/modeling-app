@@ -77,7 +77,7 @@ export const ClientSideScene = ({
 }: {
   cameraControls: ReturnType<
     typeof useSettingsAuthContext
-  >['settings']['context']['modeling']['mouseControls']['current']
+  >['settings']['context']['modeling']['mouse_controls']['current']
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()

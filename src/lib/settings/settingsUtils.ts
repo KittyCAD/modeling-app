@@ -34,36 +34,38 @@ export function configurationToSettingsPayload(
 ): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
-      theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
-      themeColor: configuration?.settings?.app?.appearance?.color
-        ? configuration?.settings?.app?.appearance?.color.toString()
-        : undefined,
-      onboardingStatus: configuration?.settings?.app?.onboarding_status,
-      dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
-      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
-      projectDirectory: configuration?.settings?.project?.directory,
-      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      appearance: {
+        theme: appThemeToTheme(configuration?.settings?.app?.appearance?.theme),
+        color: configuration?.settings?.app?.appearance?.color
+          ? configuration?.settings?.app?.appearance?.color.toString()
+          : undefined,
+      },
+      onboarding_status: configuration?.settings?.app?.onboarding_status,
+      dismiss_web_banner: configuration?.settings?.app?.dismiss_web_banner,
+      stream_idle_mode: configuration?.settings?.app?.stream_idle_mode,
     },
     modeling: {
-      defaultUnit: configuration?.settings?.modeling?.base_unit,
-      cameraProjection: configuration?.settings?.modeling?.camera_projection,
-      mouseControls: mouseControlsToCameraSystem(
+      base_unit: configuration?.settings?.modeling?.base_unit,
+      camera_projection: configuration?.settings?.modeling?.camera_projection,
+      mouse_controls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),
-      highlightEdges: configuration?.settings?.modeling?.highlight_edges,
-      showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
-      showScaleGrid: configuration?.settings?.modeling?.show_scale_grid,
+      highlight_edges: configuration?.settings?.modeling?.highlight_edges,
+      show_debug_panel: configuration?.settings?.modeling?.show_debug_panel,
+      show_scale_grid: configuration?.settings?.modeling?.show_scale_grid,
+      enable_ssao: configuration?.settings?.modeling?.enable_ssao,
     },
-    textEditor: {
-      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
-      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
+    text_editor: {
+      text_wrapping: configuration?.settings?.text_editor?.text_wrapping,
+      blinking_cursor: configuration?.settings?.text_editor?.blinking_cursor,
     },
-    projects: {
-      defaultProjectName:
+    project: {
+      default_project_name:
         configuration?.settings?.project?.default_project_name,
+      directory: configuration?.settings?.project?.directory,
     },
-    commandBar: {
-      includeSettings: configuration?.settings?.command_bar?.include_settings,
+    command_bar: {
+      include_settings: configuration?.settings?.command_bar?.include_settings,
     },
   }
 }
@@ -73,29 +75,31 @@ export function projectConfigurationToSettingsPayload(
 ): DeepPartial<SaveSettingsPayload> {
   return {
     app: {
-      // do not read in `theme`, because it is blocked on the project level
-      themeColor: configuration?.settings?.app?.appearance?.color
-        ? configuration?.settings?.app?.appearance?.color.toString()
-        : undefined,
-      onboardingStatus: configuration?.settings?.app?.onboarding_status,
-      dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
-      streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
-      enableSSAO: configuration?.settings?.modeling?.enable_ssao,
+      appearance: {
+        // do not read in `theme`, because it is blocked on the project level
+        color: configuration?.settings?.app?.appearance?.color
+          ? configuration?.settings?.app?.appearance?.color.toString()
+          : undefined,
+      },
+      onboarding_status: configuration?.settings?.app?.onboarding_status,
+      dismiss_web_banner: configuration?.settings?.app?.dismiss_web_banner,
+      stream_idle_mode: configuration?.settings?.app?.stream_idle_mode,
     },
     modeling: {
-      defaultUnit: configuration?.settings?.modeling?.base_unit,
-      mouseControls: mouseControlsToCameraSystem(
+      base_unit: configuration?.settings?.modeling?.base_unit,
+      mouse_controls: mouseControlsToCameraSystem(
         configuration?.settings?.modeling?.mouse_controls
       ),
-      highlightEdges: configuration?.settings?.modeling?.highlight_edges,
-      showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
+      highlight_edges: configuration?.settings?.modeling?.highlight_edges,
+      show_debug_panel: configuration?.settings?.modeling?.show_debug_panel,
+      enable_ssao: configuration?.settings?.modeling?.enable_ssao,
     },
-    textEditor: {
-      textWrapping: configuration?.settings?.text_editor?.text_wrapping,
-      blinkingCursor: configuration?.settings?.text_editor?.blinking_cursor,
+    text_editor: {
+      text_wrapping: configuration?.settings?.text_editor?.text_wrapping,
+      blinking_cursor: configuration?.settings?.text_editor?.blinking_cursor,
     },
-    commandBar: {
-      includeSettings: configuration?.settings?.command_bar?.include_settings,
+    command_bar: {
+      include_settings: configuration?.settings?.command_bar?.include_settings,
     },
   }
 }
@@ -181,7 +185,7 @@ export async function loadAndValidateSettings(
 
   // Because getting the default directory is async, we need to set it after
   if (onDesktop) {
-    settings.app.projectDirectory.default = await getInitialDefaultDir()
+    settings.project.directory.default = await getInitialDefaultDir()
   }
 
   settingsNext = setSettingsAtLevel(

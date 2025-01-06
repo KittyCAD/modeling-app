@@ -1,78 +1,83 @@
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
+import { DeepPartial } from 'lib/types'
 import { onboardingPaths } from 'routes/Onboarding/paths'
+import { Settings } from 'wasm-lib/kcl/bindings/Settings'
 
 export const IS_PLAYWRIGHT_KEY = 'playwright'
 
 export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS = {
   app: {
-    theme: Themes.Dark,
-    onboardingStatus: 'dismissed',
-    projectDirectory: '',
-    enableSSAO: false,
+    onboarding_status: 'dismissed',
+    appearance: {
+      theme: Themes.Dark,
+    },
   },
   modeling: {
-    defaultUnit: 'in',
-    mouseControls: 'Zoo',
-    cameraProjection: 'perspective',
-    showDebugPanel: true,
+    base_unit: 'in',
+    mouse_controls: 'zoo',
+    camera_projection: 'perspective',
+    show_debug_panel: true,
+    enable_ssao: false,
   },
-  projects: {
-    defaultProjectName: 'project-$nnn',
+  project: {
+    default_project_name: 'project-$nnn',
+    directory: '',
   },
-  textEditor: {
-    textWrapping: true,
+  text_editor: {
+    text_wrapping: true,
   },
-} satisfies Partial<SaveSettingsPayload>
+} satisfies DeepPartial<Settings>
 
 export const TEST_SETTINGS_ONBOARDING_USER_MENU = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboardingStatus: onboardingPaths.USER_MENU },
-} satisfies Partial<SaveSettingsPayload>
+  app: { ...TEST_SETTINGS.app, onboarding_status: onboardingPaths.USER_MENU },
+} satisfies DeepPartial<Settings>
 
 export const TEST_SETTINGS_ONBOARDING_EXPORT = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboardingStatus: onboardingPaths.EXPORT },
-} satisfies Partial<SaveSettingsPayload>
+  app: { ...TEST_SETTINGS.app, onboarding_status: onboardingPaths.EXPORT },
+} satisfies DeepPartial<Settings>
 
 export const TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING = {
   ...TEST_SETTINGS,
   app: {
     ...TEST_SETTINGS.app,
-    onboardingStatus: onboardingPaths.PARAMETRIC_MODELING,
+    onboarding_status: onboardingPaths.PARAMETRIC_MODELING,
   },
-} satisfies Partial<SaveSettingsPayload>
+} satisfies DeepPartial<Settings>
 
 export const TEST_SETTINGS_ONBOARDING_START = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboardingStatus: '' },
-} satisfies Partial<SaveSettingsPayload>
+  app: { ...TEST_SETTINGS.app, onboarding_status: '' },
+} satisfies DeepPartial<Settings>
 
 export const TEST_SETTINGS_DEFAULT_THEME = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, theme: Themes.System },
-} satisfies Partial<SaveSettingsPayload>
+  app: { ...TEST_SETTINGS.app, appearance: { theme: Themes.System } },
+} satisfies DeepPartial<Settings>
 
 export const TEST_SETTINGS_CORRUPTED = {
   app: {
-    theme: Themes.Dark,
-    onboardingStatus: 'dismissed',
-    projectDirectory: 123 as any,
+    onboarding_status: 'dismissed',
+    appearance: {
+      theme: Themes.Dark,
+    },
   },
   modeling: {
-    defaultUnit: 'invalid' as any,
-    mouseControls: `() => alert('hack the planet')` as any,
-    cameraProjection: 'perspective',
-    showDebugPanel: true,
+    base_unit: 'invalid' as any,
+    mouse_controls: `() => alert('hack the planet')` as any,
+    camera_projection: 'perspective',
+    show_debug_panel: true,
   },
-  projects: {
-    defaultProjectName: false as any,
+  project: {
+    default_project_name: false as any,
+    directory: 123 as any,
   },
-  textEditor: {
-    textWrapping: true,
+  text_editor: {
+    text_wrapping: true,
   },
-} satisfies Partial<SaveSettingsPayload>
+} satisfies DeepPartial<Settings>
 
 export const TEST_CODE_GIZMO = `part001 = startSketchOn('XZ')
 |> startProfileAt([20, 0], %)

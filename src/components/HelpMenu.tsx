@@ -107,7 +107,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
           as="button"
           onClick={() => {
             settings.send({
-              type: 'set.app.onboardingStatus',
+              type: 'set.app.onboarding_status',
               data: {
                 value: '',
                 level: 'user',

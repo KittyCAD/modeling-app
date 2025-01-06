@@ -11,7 +11,9 @@ export default function OnboardingParametricModeling() {
     settings: {
       context: {
         app: {
-          theme: { current: theme },
+          appearance: {
+            theme: { current: theme },
+          },
         },
       },
     },

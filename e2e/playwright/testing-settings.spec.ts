@@ -31,13 +31,13 @@ test.describe('Testing settings', () => {
         )
       ) as { settings: SaveSettingsPayload }
 
-      expect(storedSettings.settings?.app?.theme).toBe('dark')
+      expect(storedSettings.settings?.app?.appearance?.theme).toBe('dark')
 
       // Check that the invalid settings were changed to good defaults
-      expect(storedSettings.settings?.modeling?.defaultUnit).toBe('in')
-      expect(storedSettings.settings?.modeling?.mouseControls).toBe('Zoo')
-      expect(storedSettings.settings?.app?.projectDirectory).toBe('')
-      expect(storedSettings.settings?.projects?.defaultProjectName).toBe(
+      expect(storedSettings.settings?.modeling?.base_unit).toBe('in')
+      expect(storedSettings.settings?.modeling?.mouse_controls).toBe('Zoo')
+      expect(storedSettings.settings?.project?.directory).toBe('')
+      expect(storedSettings.settings?.project?.default_project_name).toBe(
         'project-$nnn'
       )
     }
@@ -374,7 +374,9 @@ test.describe('Testing settings', () => {
       tag: '@electron',
       appSettings: {
         app: {
-          themeColor: '259',
+          appearance: {
+            color: 259,
+          },
         },
       },
     },
@@ -400,9 +402,11 @@ test.describe('Testing settings', () => {
       tag: '@electron',
       appSettings: {
         app: {
-          // Doesn't matter what you set it to. It will
-          // default to 264.5
-          themeColor: '0',
+          appearance: {
+            // Doesn't matter what you set it to. It will
+            // default to 264.5
+            color: 0,
+          },
         },
       },
     },
@@ -832,7 +836,7 @@ test.describe('Testing settings', () => {
       // but "show debug panel" set to false
       appSettings: {
         ...TEST_SETTINGS,
-        modeling: { ...TEST_SETTINGS.modeling, showDebugPanel: false },
+        modeling: { ...TEST_SETTINGS.modeling, show_debug_panel: false },
       },
     },
     async ({ context, page, homePage }) => {

@@ -69,9 +69,9 @@ export const KclEditorPane = () => {
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const theme =
-    context.app.theme.current === Themes.System
+    context.app.appearance.theme.current === Themes.System
       ? getSystemTheme()
-      : context.app.theme.current
+      : context.app.appearance.theme.current
   const { copilotLSP, kclLSP } = useLspContext()
 
   // Since these already exist in the editor, we don't need to define them
@@ -104,8 +104,8 @@ export const KclEditorPane = () => {
     })
   }, [editorIsMounted, lastSelectionEvent])
 
-  const textWrapping = context.textEditor.textWrapping
-  const cursorBlinking = context.textEditor.blinkingCursor
+  const textWrapping = context.text_editor.text_wrapping
+  const cursorBlinking = context.text_editor.blinking_cursor
   // DO NOT ADD THE CODEMIRROR HOTKEYS HERE TO THE DEPENDENCY ARRAY
   // It reloads the editor every time we do _anything_ in the editor
   // I have no idea why.

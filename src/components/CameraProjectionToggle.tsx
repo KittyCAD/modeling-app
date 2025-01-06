@@ -5,28 +5,28 @@ import { useEffect, useState } from 'react'
 export function CameraProjectionToggle() {
   const { settings } = useSettingsAuthContext()
   const isCameraProjectionPerspective =
-    settings.context.modeling.cameraProjection.current === 'perspective'
+    settings.context.modeling.camera_projection.current === 'perspective'
   const [checked, setChecked] = useState(isCameraProjectionPerspective)
 
   useEffect(() => {
     setChecked(
-      settings.context.modeling.cameraProjection.current === 'perspective'
+      settings.context.modeling.camera_projection.current === 'perspective'
     )
-  }, [settings.context.modeling.cameraProjection.current])
+  }, [settings.context.modeling.camera_projection.current])
 
   return (
     <Switch
       checked={checked}
       onChange={(newValue) => {
         settings.send({
-          type: 'set.modeling.cameraProjection',
+          type: 'set.modeling.camera_projection',
           data: {
             level: 'user',
             value: newValue ? 'perspective' : 'orthographic',
           },
         })
       }}
-      className={`pointer-events-auto p-0 text-xs text-chalkboard-60 dark:text-chalkboard-40 bg-chalkboard-10/70 hover:bg-chalkboard-10 dark:bg-chalkboard-100/80 dark:hover:bg-chalkboard-100 backdrop-blur-sm 
+      className={`pointer-events-auto p-0 text-xs text-chalkboard-60 dark:text-chalkboard-40 bg-chalkboard-10/70 hover:bg-chalkboard-10 dark:bg-chalkboard-100/80 dark:hover:bg-chalkboard-100 backdrop-blur-sm
         border border-primary/10 hover:border-primary/50 focus-visible:border-primary/50 rounded-full`}
     >
       <span className="sr-only">Camera projection: </span>

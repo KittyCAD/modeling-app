@@ -128,61 +128,56 @@ export function createSettings() {
       /**
        * The overall appearance of the app: light, dark, or system
        */
-      theme: new Setting<Themes>({
-        hideOnLevel: 'project',
-        defaultValue: Themes.System,
-        description: 'The overall appearance of the app',
-        validate: (v) => isEnumMember(v, Themes),
-        commandConfig: {
-          inputType: 'options',
-          defaultValueFromContext: (context) => context.app.theme.current,
-          options: (cmdContext, settingsContext) =>
-            Object.values(Themes).map((v) => ({
-              name: v,
-              value: v,
-              isCurrent:
-                v ===
-                settingsContext.app.theme[
-                  cmdContext.argumentsToSubmit.level as SettingsLevel
-                ],
-            })),
-        },
-      }),
-      themeColor: new Setting<string>({
-        defaultValue: '264.5',
-        description: 'The hue of the primary theme color for the app',
-        validate: (v) => Number(v) >= 0 && Number(v) < 360,
-        Component: ({ value, updateValue }) => (
-          <div className="flex item-center gap-4 px-2 m-0 py-0">
-            <div
-              className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
-              style={{
-                backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
-              }}
-            />
-            <input
-              type="range"
-              onChange={(e) => updateValue(e.currentTarget.value)}
-              value={value}
-              min={0}
-              max={259}
-              step={1}
-              className="block flex-1"
-            />
-          </div>
-        ),
-      }),
-      enableSSAO: new Setting<boolean>({
-        defaultValue: true,
-        description:
-          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
-        validate: (v) => typeof v === 'boolean',
-        hideOnPlatform: 'both', //for now
-      }),
+      appearance: {
+        theme: new Setting<Themes>({
+          hideOnLevel: 'project',
+          defaultValue: Themes.System,
+          description: 'The overall appearance of the app',
+          validate: (v) => isEnumMember(v, Themes),
+          commandConfig: {
+            inputType: 'options',
+            defaultValueFromContext: (context) => context.app.theme.current,
+            options: (cmdContext, settingsContext) =>
+              Object.values(Themes).map((v) => ({
+                name: v,
+                value: v,
+                isCurrent:
+                  v ===
+                  settingsContext.app.theme[
+                    cmdContext.argumentsToSubmit.level as SettingsLevel
+                  ],
+              })),
+          },
+        }),
+        color: new Setting<string>({
+          defaultValue: '264.5',
+          description: 'The hue of the primary theme color for the app',
+          validate: (v) => Number(v) >= 0 && Number(v) < 360,
+          Component: ({ value, updateValue }) => (
+            <div className="flex item-center gap-4 px-2 m-0 py-0">
+              <div
+                className="w-4 h-4 rounded-full bg-primary border border-solid border-chalkboard-100 dark:border-chalkboard-30"
+                style={{
+                  backgroundColor: `oklch(var(--primary-lightness) var(--primary-chroma) ${value})`,
+                }}
+              />
+              <input
+                type="range"
+                onChange={(e) => updateValue(e.currentTarget.value)}
+                value={value}
+                min={0}
+                max={259}
+                step={1}
+                className="block flex-1"
+              />
+            </div>
+          ),
+        }),
+      },
       /**
        * Stream resource saving behavior toggle
        */
-      streamIdleMode: new Setting<boolean>({
+      stream_idle_mode: new Setting<boolean>({
         defaultValue: false,
         description: 'Toggle stream idling, saving bandwidth and battery',
         validate: (v) => typeof v === 'boolean',
@@ -190,7 +185,7 @@ export function createSettings() {
           inputType: 'boolean',
         },
       }),
-      onboardingStatus: new Setting<OnboardingStatus>({
+      onboarding_status: new Setting<OnboardingStatus>({
         defaultValue: '',
         // TODO: this could be better but we don't have a TS side real enum
         // for this yet
@@ -198,61 +193,12 @@ export function createSettings() {
         hideOnPlatform: 'both',
       }),
       /** Permanently dismiss the banner warning to download the desktop app. */
-      dismissWebBanner: new Setting<boolean>({
+      dismiss_web_banner: new Setting<boolean>({
         defaultValue: false,
         description:
           'Permanently dismiss the banner warning to download the desktop app.',
         validate: (v) => typeof v === 'boolean',
         hideOnPlatform: 'desktop',
-      }),
-      projectDirectory: new Setting<string>({
-        defaultValue: '',
-        description: 'The directory to save and load projects from',
-        hideOnLevel: 'project',
-        hideOnPlatform: 'web',
-        validate: (v) =>
-          typeof v === 'string' && (v.length > 0 || !isDesktop()),
-        Component: ({ value, updateValue }) => {
-          const inputRef = useRef<HTMLInputElement>(null)
-          return (
-            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
-              <input
-                className="flex-grow text-xs px-2 bg-transparent"
-                value={value}
-                disabled
-                data-testid="project-directory-input"
-                ref={inputRef}
-              />
-              <button
-                onClick={toSync(async () => {
-                  // In desktop end-to-end tests we can't control the file picker,
-                  // so we seed the new directory value in the element's dataset
-                  const inputRefVal = inputRef.current?.dataset.testValue
-                  if (
-                    inputRef.current &&
-                    inputRefVal &&
-                    !Array.isArray(inputRefVal)
-                  ) {
-                    updateValue(inputRefVal)
-                  } else {
-                    const newPath = await window.electron.open({
-                      properties: ['openDirectory', 'createDirectory'],
-                      defaultPath: value,
-                      title: 'Choose a new project directory',
-                    })
-                    if (newPath.canceled) return
-                    updateValue(newPath.filePaths[0])
-                  }
-                }, reportRejection)}
-                className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
-                data-testid="project-directory-button"
-              >
-                <CustomIcon name="folder" className="w-5 h-5" />
-                <Tooltip position="top-right">Choose a folder</Tooltip>
-              </button>
-            </div>
-          )
-        },
       }),
     },
     /**
@@ -262,7 +208,7 @@ export function createSettings() {
       /**
        * The default unit to use in modeling dimensions
        */
-      defaultUnit: new Setting<BaseUnit>({
+      base_unit: new Setting<BaseUnit>({
         defaultValue: 'mm',
         description: 'The default unit to use in modeling dimensions',
         validate: (v) => baseUnitsUnion.includes(v as BaseUnit),
@@ -285,7 +231,7 @@ export function createSettings() {
       /**
        * The controls for how to navigate the 3D view
        */
-      mouseControls: new Setting<CameraSystem>({
+      mouse_controls: new Setting<CameraSystem>({
         defaultValue: 'Zoo',
         description: 'The controls for how to navigate the 3D view',
         validate: (v) => cameraSystems.includes(v as CameraSystem),
@@ -345,7 +291,7 @@ export function createSettings() {
       /**
        * Projection method applied to the 3D view, perspective or orthographic
        */
-      cameraProjection: new Setting<CameraProjectionType>({
+      camera_projection: new Setting<CameraProjectionType>({
         defaultValue: 'orthographic',
         hideOnLevel: 'project',
         description:
@@ -372,10 +318,17 @@ export function createSettings() {
             })),
         },
       }),
+      enable_ssao: new Setting<boolean>({
+        defaultValue: true,
+        description:
+          'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled',
+        validate: (v) => typeof v === 'boolean',
+        hideOnPlatform: 'both', //for now
+      }),
       /**
        * Whether to highlight edges of 3D objects
        */
-      highlightEdges: new Setting<boolean>({
+      highlight_edges: new Setting<boolean>({
         defaultValue: true,
         description: 'Whether to highlight edges of 3D objects',
         validate: (v) => typeof v === 'boolean',
@@ -387,7 +340,7 @@ export function createSettings() {
       /**
        * Whether to show a scale grid in the 3D modeling view
        */
-      showScaleGrid: new Setting<boolean>({
+      show_scale_grid: new Setting<boolean>({
         defaultValue: false,
         description: 'Whether to show a scale grid in the 3D modeling view',
         validate: (v) => typeof v === 'boolean',
@@ -400,7 +353,7 @@ export function createSettings() {
        * Whether to show the debug panel, which lets you see
        * various states of the app to aid in development
        */
-      showDebugPanel: new Setting<boolean>({
+      show_debug_panel: new Setting<boolean>({
         defaultValue: false,
         description: 'Whether to show the debug panel, a development tool',
         validate: (v) => typeof v === 'boolean',
@@ -438,11 +391,11 @@ export function createSettings() {
     /**
      * Settings that affect the behavior of the KCL text editor.
      */
-    textEditor: {
+    text_editor: {
       /**
        * Whether to wrap text in the editor or overflow with scroll
        */
-      textWrapping: new Setting<boolean>({
+      text_wrapping: new Setting<boolean>({
         defaultValue: true,
         description:
           'Whether to wrap text in the editor or overflow with scroll',
@@ -454,7 +407,7 @@ export function createSettings() {
       /**
        * Whether to make the cursor blink in the editor
        */
-      blinkingCursor: new Setting<boolean>({
+      blinking_cursor: new Setting<boolean>({
         defaultValue: true,
         description: 'Whether to make the cursor blink in the editor',
         validate: (v) => typeof v === 'boolean',
@@ -466,11 +419,60 @@ export function createSettings() {
     /**
      * Settings that affect the behavior of project management.
      */
-    projects: {
+    project: {
+      directory: new Setting<string>({
+        defaultValue: '',
+        description: 'The directory to save and load projects from',
+        hideOnLevel: 'project',
+        hideOnPlatform: 'web',
+        validate: (v) =>
+          typeof v === 'string' && (v.length > 0 || !isDesktop()),
+        Component: ({ value, updateValue }) => {
+          const inputRef = useRef<HTMLInputElement>(null)
+          return (
+            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
+              <input
+                className="flex-grow text-xs px-2 bg-transparent"
+                value={value}
+                disabled
+                data-testid="project-directory-input"
+                ref={inputRef}
+              />
+              <button
+                onClick={toSync(async () => {
+                  // In desktop end-to-end tests we can't control the file picker,
+                  // so we seed the new directory value in the element's dataset
+                  const inputRefVal = inputRef.current?.dataset.testValue
+                  if (
+                    inputRef.current &&
+                    inputRefVal &&
+                    !Array.isArray(inputRefVal)
+                  ) {
+                    updateValue(inputRefVal)
+                  } else {
+                    const newPath = await window.electron.open({
+                      properties: ['openDirectory', 'createDirectory'],
+                      defaultPath: value,
+                      title: 'Choose a new project directory',
+                    })
+                    if (newPath.canceled) return
+                    updateValue(newPath.filePaths[0])
+                  }
+                }, reportRejection)}
+                className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
+                data-testid="project-directory-button"
+              >
+                <CustomIcon name="folder" className="w-5 h-5" />
+                <Tooltip position="top-right">Choose a folder</Tooltip>
+              </button>
+            </div>
+          )
+        },
+      }),
       /**
        * The default project name to use when creating a new project
        */
-      defaultProjectName: new Setting<string>({
+      default_project_name: new Setting<string>({
         defaultValue: DEFAULT_PROJECT_NAME,
         description:
           'The default project name to use when creating a new project',
@@ -504,11 +506,11 @@ export function createSettings() {
     /**
      * Settings that affect the behavior of the command bar.
      */
-    commandBar: {
+    command_bar: {
       /**
        * Whether to include settings in the command bar
        */
-      includeSettings: new Setting<boolean>({
+      include_settings: new Setting<boolean>({
         defaultValue: true,
         description: 'Whether to include settings in the command bar',
         validate: (v) => typeof v === 'boolean',

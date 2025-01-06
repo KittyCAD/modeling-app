@@ -61,7 +61,7 @@ export const AllSettingsFields = forwardRef(
 
     function restartOnboarding() {
       send({
-        type: `set.app.onboardingStatus`,
+        type: `set.app.onboarding_status`,
         data: { level: 'user', value: '' },
       })
     }
@@ -73,7 +73,7 @@ export const AllSettingsFields = forwardRef(
     useEffect(() => {
       async function navigateToOnboardingStart() {
         if (
-          state.context.app.onboardingStatus.user === '' &&
+          state.context.app.onboarding_status.user === '' &&
           state.matches('idle')
         ) {
           if (isFileSettings) {

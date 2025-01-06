@@ -111,12 +111,15 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme, enableSSAO },
+        app: {
+          appearance: { theme },
+        },
         modeling: {
-          defaultUnit,
-          cameraProjection,
-          highlightEdges,
-          showScaleGrid,
+          base_unit,
+          camera_projection,
+          highlight_edges,
+          show_scale_grid,
+          enable_ssao,
         },
       },
     },
@@ -172,7 +175,7 @@ export const ModelingMachineProvider = ({
 
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-          if (cameraProjection.current === 'perspective') {
+          if (camera_projection.current === 'perspective') {
             await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
           }
 
@@ -508,7 +511,7 @@ export const ModelingMachineProvider = ({
             format.type === 'stl' ||
             format.type === 'ply'
           ) {
-            format.units = defaultUnit.current
+            format.units = base_unit.current
           }
 
           if (format.type === 'ply' || format.type === 'stl') {
@@ -533,7 +536,7 @@ export const ModelingMachineProvider = ({
             token,
             settings: {
               theme: theme.current,
-              highlightEdges: highlightEdges.current,
+              highlightEdges: highlight_edges.current,
             },
           }).catch(reportRejection)
         },
@@ -1134,10 +1137,10 @@ export const ModelingMachineProvider = ({
     {
       pool: pool,
       theme: theme.current,
-      highlightEdges: highlightEdges.current,
-      enableSSAO: enableSSAO.current,
-      showScaleGrid: showScaleGrid.current,
-      cameraProjection: cameraProjection.current,
+      highlightEdges: highlight_edges.current,
+      enableSSAO: enable_ssao.current,
+      showScaleGrid: show_scale_grid.current,
+      cameraProjection: camera_projection.current,
     },
     token
   )

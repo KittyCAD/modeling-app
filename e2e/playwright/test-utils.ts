@@ -23,11 +23,13 @@ import {
   IS_PLAYWRIGHT_KEY,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { isErrorWhitelisted } from './lib/console-error-whitelist'
 import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+import { Configuration } from 'lang/wasm'
+import { DeepPartial } from 'lib/types'
+import { Settings } from 'wasm-lib/kcl/bindings/Settings'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -884,19 +886,23 @@ export async function setup(
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({
+      settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
           app: {
-            ...TEST_SETTINGS.projects,
-            projectDirectory: TEST_SETTINGS.app.projectDirectory,
-            onboardingStatus: 'dismissed',
-            theme: 'dark',
+            ...TEST_SETTINGS.app,
+            onboarding_status: 'dismissed',
+            appearance: {
+              theme: 'dark',
+            },
           },
-        } as Partial<SaveSettingsPayload>,
+          project: {
+            directory: TEST_SETTINGS.project.directory,
+          },
+        },
       }),
       IS_PLAYWRIGHT_KEY,
-      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.app.projectDirectory,
+      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.project.directory,
       PERSIST_MODELING_CONTEXT,
     }
   )
@@ -931,7 +937,7 @@ export async function setupElectron({
   testInfo: TestInfo
   folderSetupFn?: (projectDirName: string) => Promise<void>
   cleanProjectDir?: boolean
-  appSettings?: Partial<SaveSettingsPayload>
+  appSettings?: DeepPartial<Settings>
 }): Promise<{
   electronApp: ElectronApplication
   context: BrowserContext
@@ -978,7 +984,7 @@ export async function setupElectron({
 
   if (cleanProjectDir) {
     const tempSettingsFilePath = path.join(projectDirName, SETTINGS_FILE_NAME)
-    const settingsOverrides = TOML.stringify(
+    const settingsOverrides = settingsToToml(
       appSettings
         ? {
             settings: {
@@ -986,8 +992,10 @@ export async function setupElectron({
               ...appSettings,
               app: {
                 ...TEST_SETTINGS.app,
-                projectDirectory: projectDirName,
                 ...appSettings.app,
+              },
+              project: {
+                directory: projectDirName,
               },
             },
           }
@@ -996,7 +1004,9 @@ export async function setupElectron({
               ...TEST_SETTINGS,
               app: {
                 ...TEST_SETTINGS.app,
-                projectDirectory: projectDirName,
+              },
+              project: {
+                directory: projectDirName,
               },
             },
           }
@@ -1189,4 +1199,8 @@ export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
       return lines.length
     })
     .toBe(lines)
+}
+
+export function settingsToToml(settings: DeepPartial<Configuration>) {
+  return TOML.stringify(settings)
 }

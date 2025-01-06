@@ -79,13 +79,13 @@ const Home = () => {
     send({
       type: 'assign',
       data: {
-        defaultProjectName: settings.projects.defaultProjectName.current,
-        defaultDirectory: settings.app.projectDirectory.current,
+        defaultProjectName: settings.project.default_project_name.current,
+        defaultDirectory: settings.project.directory.current,
       },
     })
   }, [
-    settings.app.projectDirectory.current,
-    settings.projects.defaultProjectName.current,
+    settings.project.directory.current,
+    settings.project.default_project_name.current,
     send,
   ])
 
@@ -134,7 +134,7 @@ const Home = () => {
                       groupId: 'projects',
                       name: 'Create project',
                       argDefaultValues: {
-                        name: settings.projects.defaultProjectName.current,
+                        name: settings.project.default_project_name.current,
                       },
                     },
                   })
@@ -207,7 +207,7 @@ const Home = () => {
               to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
               className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
             >
-              {settings.app.projectDirectory.current}
+              {settings.project.directory.current}
             </Link>
             .
           </p>

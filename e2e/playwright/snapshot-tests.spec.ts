@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { secrets } from './secrets'
-import { Paths, doExport, getUtils } from './test-utils'
+import { Paths, doExport, getUtils, settingsToToml } from './test-utils'
 import { Models } from '@kittycad/lib'
 import fsp from 'fs/promises'
 import { spawn } from 'child_process'
@@ -12,7 +12,6 @@ import {
   TEST_SETTINGS,
   TEST_SETTINGS_KEY,
 } from './storageStates'
-import * as TOML from '@iarna/toml'
 
 test.beforeEach(async ({ page }) => {
   // reducedMotion kills animations, which speeds up tests and reduces flakiness
@@ -29,7 +28,7 @@ test.beforeEach(async ({ page }) => {
     {
       token: secrets.token,
       settingsKey: TEST_SETTINGS_KEY,
-      settings: TOML.stringify({ settings: TEST_SETTINGS }),
+      settings: settingsToToml({ settings: TEST_SETTINGS }),
       IS_PLAYWRIGHT_KEY: IS_PLAYWRIGHT_KEY,
     }
   )
@@ -704,12 +703,12 @@ test.describe(
         },
         {
           settingsKey: TEST_SETTINGS_KEY,
-          settings: TOML.stringify({
+          settings: settingsToToml({
             settings: {
               ...TEST_SETTINGS,
               modeling: {
                 ...TEST_SETTINGS.modeling,
-                defaultUnit: 'mm',
+                base_unit: 'mm',
               },
             },
           }),
@@ -1062,12 +1061,12 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
       },
       {
         settingsKey: TEST_SETTINGS_KEY,
-        settings: TOML.stringify({
+        settings: settingsToToml({
           settings: {
             ...TEST_SETTINGS,
             modeling: {
               ...TEST_SETTINGS.modeling,
-              showScaleGrid: true,
+              show_scale_grid: true,
             },
           },
         }),

@@ -26,7 +26,9 @@ const SignIn = () => {
     settings: {
       state: {
         context: {
-          app: { theme },
+          app: {
+            appearance: { theme },
+          },
         },
       },
     },
