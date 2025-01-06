@@ -470,8 +470,17 @@ export function ToastPromptToEditCadSuccess({
             onClick={() => {
               sendTelemetry(modelId, 'accepted', token).catch(reportRejection)
               toast.dismiss(toastId)
+
               // Write new content to disk since they have accepted.
-              codeManager.writeToFile()
+              codeManager
+                .writeToFile()
+                .then(() => {
+                  // no-op
+                })
+                .catch((e) => {
+                  console.error('Failed to save prompt-to-edit to disk')
+                  console.error(e)
+                })
             }}
           >
             Accept
