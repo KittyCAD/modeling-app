@@ -46,8 +46,6 @@ export function revolveSketch(
   let generatedAxis
 
   if (axisOrEdge === 'Edge') {
-    console.log('1')
-    // testing code
     const pathToAxisSelection = getNodePathFromSourceRange(
       clonedAst,
       edge.graphSelections[0]?.codeRef.range
@@ -57,31 +55,21 @@ export function revolveSketch(
       pathToAxisSelection,
       'CallExpression'
     )
-    console.log('2')
     if (err(lineNode)) return lineNode
 
-    console.log('3')
-    // TODO Kevin: What if |> close(%)?
-    // TODO Kevin: What if opposite edge
-    // TODO Kevin: What if the edge isn't planar to the sketch?
-    // TODO Kevin: add a tag.
     const tagResult = mutateAstWithTagForSketchSegment(
       clonedAst,
       pathToAxisSelection
     )
 
-    console.log('4')
     // Have the tag whether it is already created or a new one is generated
     if (err(tagResult)) return tagResult
     const { tag } = tagResult
     const axisSelection = edge?.graphSelections[0]?.artifact
     generatedAxis = getEdgeTagCall(tag, axisSelection)
-    console.log('5')
   } else {
     generatedAxis = createLiteral(axis)
-    console.log('6')
   }
-  console.log('7')
 
   /* Original Code */
   const { node: sketchExpression } = sketchNode
@@ -95,7 +83,6 @@ export function revolveSketch(
   if (err(sketchPipeExpressionNode)) return sketchPipeExpressionNode
   const { node: sketchPipeExpression } = sketchPipeExpressionNode
   const isInPipeExpression = sketchPipeExpression.type === 'PipeExpression'
-  console.log('8')
 
   const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
     clonedAst,
@@ -103,16 +90,13 @@ export function revolveSketch(
     'VariableDeclarator'
   )
   if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
-  console.log('9')
   const {
     node: sketchVariableDeclarator,
     shallowPath: sketchPathToDecleration,
   } = sketchVariableDeclaratorNode
-  console.log('10')
 
   if (!generatedAxis) return new Error('Axis selection is missing.')
 
-  console.log('generatexAxis', generatedAxis)
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
