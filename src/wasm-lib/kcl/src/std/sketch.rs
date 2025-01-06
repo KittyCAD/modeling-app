@@ -137,11 +137,11 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     name = "line",
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        sketch = "Which sketch should this path be added to?",
-        end_absolute = "Which absolute point should this line go to? Incompatible with `end`.",
-        end = "How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`.",
-        tag = "Create a new tag which refers to this line",
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?"},
+        end_absolute = { docs = "Which absolute point should this line go to? Incompatible with `end`."},
+        end = { docs = "How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`.", include_in_snippet = true},
+        tag = { docs = "Create a new tag which refers to this line"},
     }
 }]
 async fn inner_line(
@@ -1493,9 +1493,9 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     name = "close",
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        sketch = "The sketch you want to close",
-        tag = "Create a new tag which refers to this line",
+    args = {
+        sketch = { docs = "The sketch you want to close"},
+        tag = { docs = "Create a new tag which refers to this line"},
     }
 }]
 pub(crate) async fn inner_close(

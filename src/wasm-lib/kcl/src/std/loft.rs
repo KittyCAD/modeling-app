@@ -114,12 +114,12 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        sketches = "Which sketches to loft. Must include at least 2 sketches.",
-        v_degree = "Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction. This defaults to 2, if not specified.",
-        bez_approximate_rational = "Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary.",
-        base_curve_index = "This can be set to override the automatically determined topological base curve, which is usually the first section encountered.",
-        tolerance = "Tolerance for the loft operation.",
+    args = {
+        sketches = {docs = "Which sketches to loft. Must include at least 2 sketches."},
+        v_degree = {docs = "Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction. This defaults to 2, if not specified."},
+        bez_approximate_rational = {docs = "Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary."},
+        base_curve_index = {docs = "This can be set to override the automatically determined topological base curve, which is usually the first section encountered."},
+        tolerance = {docs = "Tolerance for the loft operation."},
     }
 }]
 async fn inner_loft(

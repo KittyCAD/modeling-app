@@ -80,9 +80,9 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     feature_tree_operation = true,
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        sketch_set = "Which sketches should be extruded",
-        length = "How far to extrude the given sketches",
+    args = {
+        sketch_set = { docs = "Which sketches should be extruded"},
+        length = { docs = "How far to extrude the given sketches"},
     }
 }]
 async fn inner_extrude(

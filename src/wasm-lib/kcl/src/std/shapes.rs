@@ -173,12 +173,12 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     name = "circleThreePoint",
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        p1 = "1st point to derive the circle.",
-        p2 = "2nd point to derive the circle.",
-        p3 = "3rd point to derive the circle.",
-        sketch_surface_or_group = "Plane or surface to sketch on.",
-        tag = "Identifier for the circle to reference elsewhere.",
+    args = {
+        p1 = {docs = "1st point to derive the circle."},
+        p2 = {docs = "2nd point to derive the circle."},
+        p3 = {docs = "3rd point to derive the circle."},
+        sketch_surface_or_group = {docs = "Plane or surface to sketch on."},
+        tag = {docs = "Identifier for the circle to reference elsewhere."},
     }
 }]
 async fn inner_circle_three_point(

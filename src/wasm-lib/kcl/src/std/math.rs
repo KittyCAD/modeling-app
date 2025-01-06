@@ -37,9 +37,9 @@ pub async fn rem(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     tags = ["math"],
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        num = "The number which will be divided by `divisor`.",
-        divisor = "The number which will divide `num`.",
+    args = {
+        num = {docs = "The number which will be divided by `divisor`."},
+        divisor = {docs = "The number which will divide `num`."},
     }
 }]
 fn inner_rem(num: f64, divisor: f64) -> f64 {
