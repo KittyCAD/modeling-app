@@ -127,9 +127,10 @@ jobs:
       shell: bash
       run: yarn tron:package
     - name: Run ubuntu/chrome snapshots
+      if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 0 }}
       shell: bash
       run: |
-        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot  --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        PLATFORM=web yarn playwright test --config=playwright.config.ts --retries="3" --update-snapshots --grep=@snapshot }}
       env:
         CI: true
         NODE_ENV: development
@@ -150,6 +151,7 @@ jobs:
       continue-on-error: true
       run: rm -r test-results
     - name: check for changes
+      if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 0 }}
       shell: bash
       id: git-check
       run: |
