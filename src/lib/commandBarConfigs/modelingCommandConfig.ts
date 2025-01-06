@@ -324,7 +324,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
