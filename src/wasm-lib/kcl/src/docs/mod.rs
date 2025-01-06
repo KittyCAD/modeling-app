@@ -114,7 +114,8 @@ impl StdLibFnArg {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, "3"))));
         }
         eprintln!("{}", self.name);
-        let res = get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
+        let res = self
+            .get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
             .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))));
         dbg!(res)
     }
@@ -126,6 +127,197 @@ impl StdLibFnArg {
         }
         // If not, then try to get something meaningful from the schema.
         get_description_string_from_schema(&self.schema.clone())
+    }
+
+    fn get_autocomplete_snippet_from_schema(
+        &self,
+        schema: &schemars::schema::Schema,
+        index: usize,
+    ) -> Result<Option<(usize, String)>> {
+        match schema {
+            schemars::schema::Schema::Object(o) => {
+                // Check if the schema is the same as a Sketch.
+                let mut settings = schemars::gen::SchemaSettings::openapi3();
+                // We set this so we can recurse them later.
+                settings.inline_subschemas = true;
+                let mut generator = schemars::gen::SchemaGenerator::new(settings);
+                let sketch_schema = generator.root_schema_for::<Sketch>().schema;
+                if sketch_schema.object == o.object {
+                    return Ok(Some((index, format!("${{{}:sketch{}}}", index, "000"))));
+                }
+
+                if let Some(serde_json::Value::Bool(nullable)) = o.extensions.get("nullable") {
+                    if *nullable {
+                        eprintln!("ADAM: Nullable, so early return");
+                        return Ok(None);
+                    }
+                }
+                if o.enum_values.is_some() {
+                    let auto_str = get_autocomplete_string_from_schema(schema)?;
+                    return Ok(Some((index, format!("${{{}:{}}}", index, auto_str))));
+                }
+
+                if let Some(format) = &o.format {
+                    if format == "uuid" {
+                        return Ok(Some((index, format!(r#"${{{}:"tag_or_edge_fn"}}"#, index))));
+                    } else if format == "double" {
+                        return Ok(Some((index, format!(r#"${{{}:3.14}}"#, index))));
+                    } else if format == "uint" || format == "int64" || format == "uint32" || format == "uint64" {
+                        return Ok(Some((index, format!(r#"${{{}:10}}"#, index))));
+                    } else {
+                        anyhow::bail!("unknown format: {}", format);
+                    }
+                }
+
+                if let Some(obj_val) = &o.object {
+                    let mut fn_docs = String::new();
+                    fn_docs.push_str("{\n");
+                    // Let's print out the object's properties.
+                    let mut i = index;
+                    for (prop_name, prop) in obj_val.properties.iter() {
+                        if prop_name.starts_with('_') {
+                            continue;
+                        }
+
+                        // Tolerance is a an optional property that we don't want to show in the
+                        // autocomplete, since it is mostly for advanced users.
+                        if prop_name == "tolerance" {
+                            continue;
+                        }
+
+                        if prop_name == "color" {
+                            fn_docs.push_str(&format!("\t{} = ${{{}:\"#ff0000\"}},\n", prop_name, i));
+                            i += 1;
+                            continue;
+                        }
+
+                        if let Some((new_index, snippet)) = self.get_autocomplete_snippet_from_schema(prop, i)? {
+                            fn_docs.push_str(&format!("\t{} = {},\n", prop_name, snippet));
+                            i = new_index + 1;
+                        }
+                    }
+
+                    fn_docs.push('}');
+
+                    return Ok(Some((i - 1, fn_docs)));
+                }
+
+                if let Some(array_val) = &o.array {
+                    if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
+                        // Let's print out the object's properties.
+                        match array_val.max_items {
+                            Some(val) => {
+                                return Ok(Some((
+                                    index + (val as usize) - 1,
+                                    format!(
+                                        "[{}]",
+                                        (0..val)
+                                            .map(|v| self
+                                                .get_autocomplete_snippet_from_schema(items, index + (v as usize))
+                                                .unwrap()
+                                                .unwrap()
+                                                .1)
+                                            .collect::<Vec<_>>()
+                                            .join(", ")
+                                    ),
+                                )));
+                            }
+                            None => {
+                                return Ok(Some((
+                                    index,
+                                    format!(
+                                        "[{}]",
+                                        self.get_autocomplete_snippet_from_schema(items, index)?
+                                            .ok_or_else(|| anyhow::anyhow!("expected snippet"))?
+                                            .1
+                                    ),
+                                )));
+                            }
+                        };
+                    } else if let Some(items) = &array_val.contains {
+                        return Ok(Some((
+                            index,
+                            format!(
+                                "[{}]",
+                                self.get_autocomplete_snippet_from_schema(items, index)?
+                                    .ok_or_else(|| anyhow::anyhow!("expected snippet"))?
+                                    .1
+                            ),
+                        )));
+                    }
+                }
+
+                if let Some(subschemas) = &o.subschemas {
+                    let mut fn_docs = String::new();
+                    let mut i = index;
+                    if let Some(items) = &subschemas.one_of {
+                        let mut had_enum_string = false;
+                        let mut parsed_enum_values: Vec<String> = Vec::new();
+                        for item in items {
+                            if let schemars::schema::Schema::Object(o) = item {
+                                if let Some(enum_values) = &o.enum_values {
+                                    for enum_value in enum_values {
+                                        if let serde_json::value::Value::String(enum_value) = enum_value {
+                                            had_enum_string = true;
+                                            parsed_enum_values.push(format!("\"{}\"", enum_value));
+                                        } else {
+                                            had_enum_string = false;
+                                            break;
+                                        }
+                                    }
+                                    if !had_enum_string {
+                                        break;
+                                    }
+                                } else {
+                                    had_enum_string = false;
+                                    break;
+                                }
+                            } else {
+                                had_enum_string = false;
+                                break;
+                            }
+                        }
+
+                        if had_enum_string && !parsed_enum_values.is_empty() {
+                            return Ok(Some((index, parsed_enum_values[0].to_string())));
+                        } else if let Some(item) = items.iter().next() {
+                            if let Some((new_index, snippet)) =
+                                self.get_autocomplete_snippet_from_schema(item, index)?
+                            {
+                                i = new_index + 1;
+                                fn_docs.push_str(&snippet);
+                            }
+                        }
+                    } else if let Some(items) = &subschemas.any_of {
+                        if let Some(item) = items.iter().next() {
+                            if let Some((new_index, snippet)) =
+                                self.get_autocomplete_snippet_from_schema(item, index)?
+                            {
+                                i = new_index + 1;
+                                fn_docs.push_str(&snippet);
+                            }
+                        }
+                    } else {
+                        anyhow::bail!("unknown subschemas: {:#?}", subschemas);
+                    }
+
+                    return Ok(Some((i - 1, fn_docs)));
+                }
+
+                if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
+                    if schemars::schema::InstanceType::Boolean == **single {
+                        return Ok(Some((index, format!(r#"${{{}:false}}"#, index))));
+                    } else if schemars::schema::InstanceType::String == **single {
+                        return Ok(Some((index, format!(r#"${{{}:"string"}}"#, index))));
+                    } else if schemars::schema::InstanceType::Null == **single {
+                        return Ok(None);
+                    }
+                }
+
+                anyhow::bail!("unknown type: {:#?}", o)
+            }
+            schemars::schema::Schema::Bool(_) => Ok(Some((index, format!(r#"${{{}:false}}"#, index)))),
+        }
     }
 }
 
@@ -472,191 +664,6 @@ pub fn is_primitive(schema: &schemars::schema::Schema) -> Result<Option<Primitiv
             anyhow::bail!("unknown type: {:#?}", o)
         }
         schemars::schema::Schema::Bool(_) => Ok(Some(Primitive::Bool)),
-    }
-}
-
-fn get_autocomplete_snippet_from_schema(
-    schema: &schemars::schema::Schema,
-    index: usize,
-) -> Result<Option<(usize, String)>> {
-    match schema {
-        schemars::schema::Schema::Object(o) => {
-            // Check if the schema is the same as a Sketch.
-            let mut settings = schemars::gen::SchemaSettings::openapi3();
-            // We set this so we can recurse them later.
-            settings.inline_subschemas = true;
-            let mut generator = schemars::gen::SchemaGenerator::new(settings);
-            let sketch_schema = generator.root_schema_for::<Sketch>().schema;
-            if sketch_schema.object == o.object {
-                return Ok(Some((index, format!("${{{}:sketch{}}}", index, "000"))));
-            }
-
-            if let Some(serde_json::Value::Bool(nullable)) = o.extensions.get("nullable") {
-                if *nullable {
-                    eprintln!("ADAM: Nullable, so early return");
-                    return Ok(None);
-                }
-            }
-            if o.enum_values.is_some() {
-                let auto_str = get_autocomplete_string_from_schema(schema)?;
-                return Ok(Some((index, format!("${{{}:{}}}", index, auto_str))));
-            }
-
-            if let Some(format) = &o.format {
-                if format == "uuid" {
-                    return Ok(Some((index, format!(r#"${{{}:"tag_or_edge_fn"}}"#, index))));
-                } else if format == "double" {
-                    return Ok(Some((index, format!(r#"${{{}:3.14}}"#, index))));
-                } else if format == "uint" || format == "int64" || format == "uint32" || format == "uint64" {
-                    return Ok(Some((index, format!(r#"${{{}:10}}"#, index))));
-                } else {
-                    anyhow::bail!("unknown format: {}", format);
-                }
-            }
-
-            if let Some(obj_val) = &o.object {
-                let mut fn_docs = String::new();
-                fn_docs.push_str("{\n");
-                // Let's print out the object's properties.
-                let mut i = index;
-                for (prop_name, prop) in obj_val.properties.iter() {
-                    if prop_name.starts_with('_') {
-                        continue;
-                    }
-
-                    // Tolerance is a an optional property that we don't want to show in the
-                    // autocomplete, since it is mostly for advanced users.
-                    if prop_name == "tolerance" {
-                        continue;
-                    }
-
-                    if prop_name == "color" {
-                        fn_docs.push_str(&format!("\t{} = ${{{}:\"#ff0000\"}},\n", prop_name, i));
-                        i += 1;
-                        continue;
-                    }
-
-                    if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(prop, i)? {
-                        fn_docs.push_str(&format!("\t{} = {},\n", prop_name, snippet));
-                        i = new_index + 1;
-                    }
-                }
-
-                fn_docs.push('}');
-
-                return Ok(Some((i - 1, fn_docs)));
-            }
-
-            if let Some(array_val) = &o.array {
-                if let Some(schemars::schema::SingleOrVec::Single(items)) = &array_val.items {
-                    // Let's print out the object's properties.
-                    match array_val.max_items {
-                        Some(val) => {
-                            return Ok(Some((
-                                index + (val as usize) - 1,
-                                format!(
-                                    "[{}]",
-                                    (0..val)
-                                        .map(|v| get_autocomplete_snippet_from_schema(items, index + (v as usize))
-                                            .unwrap()
-                                            .unwrap()
-                                            .1)
-                                        .collect::<Vec<_>>()
-                                        .join(", ")
-                                ),
-                            )));
-                        }
-                        None => {
-                            return Ok(Some((
-                                index,
-                                format!(
-                                    "[{}]",
-                                    get_autocomplete_snippet_from_schema(items, index)?
-                                        .ok_or_else(|| anyhow::anyhow!("expected snippet"))?
-                                        .1
-                                ),
-                            )));
-                        }
-                    };
-                } else if let Some(items) = &array_val.contains {
-                    return Ok(Some((
-                        index,
-                        format!(
-                            "[{}]",
-                            get_autocomplete_snippet_from_schema(items, index)?
-                                .ok_or_else(|| anyhow::anyhow!("expected snippet"))?
-                                .1
-                        ),
-                    )));
-                }
-            }
-
-            if let Some(subschemas) = &o.subschemas {
-                let mut fn_docs = String::new();
-                let mut i = index;
-                if let Some(items) = &subschemas.one_of {
-                    let mut had_enum_string = false;
-                    let mut parsed_enum_values: Vec<String> = Vec::new();
-                    for item in items {
-                        if let schemars::schema::Schema::Object(o) = item {
-                            if let Some(enum_values) = &o.enum_values {
-                                for enum_value in enum_values {
-                                    if let serde_json::value::Value::String(enum_value) = enum_value {
-                                        had_enum_string = true;
-                                        parsed_enum_values.push(format!("\"{}\"", enum_value));
-                                    } else {
-                                        had_enum_string = false;
-                                        break;
-                                    }
-                                }
-                                if !had_enum_string {
-                                    break;
-                                }
-                            } else {
-                                had_enum_string = false;
-                                break;
-                            }
-                        } else {
-                            had_enum_string = false;
-                            break;
-                        }
-                    }
-
-                    if had_enum_string && !parsed_enum_values.is_empty() {
-                        return Ok(Some((index, parsed_enum_values[0].to_string())));
-                    } else if let Some(item) = items.iter().next() {
-                        if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(item, index)? {
-                            i = new_index + 1;
-                            fn_docs.push_str(&snippet);
-                        }
-                    }
-                } else if let Some(items) = &subschemas.any_of {
-                    if let Some(item) = items.iter().next() {
-                        if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(item, index)? {
-                            i = new_index + 1;
-                            fn_docs.push_str(&snippet);
-                        }
-                    }
-                } else {
-                    anyhow::bail!("unknown subschemas: {:#?}", subschemas);
-                }
-
-                return Ok(Some((i - 1, fn_docs)));
-            }
-
-            if let Some(schemars::schema::SingleOrVec::Single(single)) = &o.instance_type {
-                if schemars::schema::InstanceType::Boolean == **single {
-                    return Ok(Some((index, format!(r#"${{{}:false}}"#, index))));
-                } else if schemars::schema::InstanceType::String == **single {
-                    return Ok(Some((index, format!(r#"${{{}:"string"}}"#, index))));
-                } else if schemars::schema::InstanceType::Null == **single {
-                    return Ok(None);
-                }
-            }
-
-            anyhow::bail!("unknown type: {:#?}", o)
-        }
-        schemars::schema::Schema::Bool(_) => Ok(Some((index, format!(r#"${{{}:false}}"#, index)))),
     }
 }
 
