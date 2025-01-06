@@ -210,6 +210,6 @@ export const sidebarPanes: SidebarPane[] = [
       )
     },
     keybinding: 'Shift + D',
-    hide: ({ settings }) => !settings.modeling.show_debug_panel.current,
+    hide: ({ settings }) => !settings.app.show_debug_panel.current,
   },
 ]

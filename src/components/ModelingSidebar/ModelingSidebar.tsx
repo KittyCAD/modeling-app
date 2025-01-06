@@ -47,7 +47,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
-  const showDebugPanel = settings.context.modeling.show_debug_panel
+  const showDebugPanel = settings.context.app.show_debug_panel
 
   const paneCallbackProps = useMemo(
     () => ({
