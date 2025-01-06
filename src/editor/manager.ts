@@ -129,6 +129,15 @@ export default class EditorManager {
     this._isShiftDown = isShiftDown
   }
 
+  private selectionsWithSafeEnds(
+    selection: Array<Selection['codeRef']['range']>
+  ): Array<[number, number]> {
+    return selection.map((s): [number, number] => {
+      const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
+      return [s[0], safeEnd]
+    })
+  }
+
   set selectionRanges(selectionRanges: Selections) {
     this._selectionRanges = selectionRanges
   }
@@ -158,10 +167,7 @@ export default class EditorManager {
       return [s[0], s[1]]
     })
 
-    const selectionsWithSafeEnds = range.map((s): [number, number] => {
-      const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
-      return [s[0], safeEnd]
-    })
+    const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range)
 
     if (this._editorView) {
       this._editorView.dispatch({
@@ -303,19 +309,15 @@ export default class EditorManager {
     let codeBasedSelections = []
     for (const selection of selections.graphSelections) {
       codeBasedSelections.push(
-        EditorSelection.range(
-          selection.codeRef.range[0],
-          selection.codeRef.range[1]
-        )
+        EditorSelection.cursor(selection.codeRef.range[0])
       )
     }
 
-    codeBasedSelections.push(
-      EditorSelection.cursor(
-        selections.graphSelections[selections.graphSelections.length - 1]
-          .codeRef.range[1]
-      )
-    )
+    const end =
+      selections.graphSelections[selections.graphSelections.length - 1].codeRef
+        .range[1]
+    const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
+    codeBasedSelections.push(EditorSelection.cursor(safeEnd))
 
     if (!this._editorView) {
       return
