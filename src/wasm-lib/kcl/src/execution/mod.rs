@@ -105,6 +105,8 @@ pub struct ExecOutcome {
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
+    /// Output map of UUIDs to artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
 }
 
 impl Default for ExecState {
@@ -145,6 +147,7 @@ impl ExecState {
         ExecOutcome {
             memory: self.mod_local.memory,
             operations: self.mod_local.operations,
+            artifacts: self.global.artifacts,
         }
     }
 
