@@ -42,6 +42,7 @@
     "diff": "^7.0.0",
     "electron-updater": "6.3.0",
     "fuse.js": "^7.0.0",
+    "html2canvas-pro": "^1.5.8",
     "isomorphic-fetch": "^3.0.0",
     "json-rpc-2.0": "^1.6.0",
     "jszip": "^3.10.1",
