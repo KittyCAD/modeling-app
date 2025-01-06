@@ -217,8 +217,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     }
 
     /// Send the modeling cmd and wait for the response.
-    // TODO: This should only borrow `cmd`.
-    // See https://github.com/KittyCAD/modeling-app/issues/2821
     async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
