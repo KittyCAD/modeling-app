@@ -375,6 +375,7 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
   await u.closeKclCodePanel()
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
+    mask: [page.getByTestId('model-state-indicator')],
   })
   await u.openKclCodePanel()
 }

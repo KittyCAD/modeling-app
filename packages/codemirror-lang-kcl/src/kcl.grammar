@@ -57,7 +57,7 @@ expression[@isGroup=Expression] {
 
 UnaryOp { AddOp | BangOp }
 
-ObjectProperty { PropertyName ":" expression }
+ObjectProperty { PropertyName (":" | Equals) expression }
 
 ArgumentList { "(" commaSep<expression> ")" }
 

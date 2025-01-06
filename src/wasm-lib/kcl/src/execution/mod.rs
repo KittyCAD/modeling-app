@@ -44,7 +44,7 @@ use crate::{
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
-    walk::{Node as WalkNode, Visitable},
+    walk::Node as WalkNode,
     ExecError, Program,
 };
 
@@ -2007,9 +2007,8 @@ impl ExecutorContext {
         let mut old_ast = old.ast;
         let mut new_ast = info.new_ast;
 
-        // ensure the trees are hashed. in all likelyhood this happened before
-        // here, in which case it'll noop, but we don't want to compare
-        // None to None here.
+        // The digests should already be computed, but just in case we don't
+        // want to compare against none.
         old_ast.compute_digest();
         new_ast.compute_digest();
 
@@ -2018,61 +2017,83 @@ impl ExecutorContext {
             return None;
         }
 
-        let (clear_scene, program) = self.create_new_program(old_ast, new_ast);
-
-        Some(CacheResult { clear_scene, program })
+        // Check if the changes were only to Non-code areas, like comments or whitespace.
+        Some(self.generate_changed_program(old_ast, new_ast))
     }
 
-    /// INTERNAL
-    fn create_new_program(&self, old_ast: Node<AstProgram>, new_ast: Node<AstProgram>) -> (bool, Node<AstProgram>) {
-        let mut constructed_program = new_ast.clone();
-        constructed_program.inner.body = vec![];
+    /// Force-generate a new CacheResult, even if one shouldn't be made. The
+    /// way in which this gets invoked should always be through
+    /// [Self::get_changed_program]. This is purely to contain the logic on
+    /// how we construct a new [CacheResult].
+    pub fn generate_changed_program(&self, old_ast: Node<AstProgram>, new_ast: Node<AstProgram>) -> CacheResult {
+        let mut generated_program = new_ast.clone();
+        generated_program.body = vec![];
 
-        // if we need to bail at any time we can return (true, new_ast) as our
-        // "error" condition -- don't do anything smart and just rebuild the
-        // whole world.
+        if !old_ast.body.iter().zip(new_ast.body.iter()).all(|(old, new)| {
+            let old_node: WalkNode = old.into();
+            let new_node: WalkNode = new.into();
+            old_node.digest() == new_node.digest()
+        }) {
+            // If any of the nodes are different in the stretch of body that
+            // overlaps, we have to bust cache and rebuild the scene. This
+            // means a single insertion or deletion will result in a cache
+            // bust.
 
-        for (old_element, new_element) in old_ast.body.iter().zip(new_ast.body.iter()) {
-            let old_element_node: WalkNode = (old_element).into();
-            let new_element_node: WalkNode = (new_element).into();
-
-            if old_element_node.digest() == new_element_node.digest() {
-                continue;
-            }
-
-            // abort early beacause we can't mark elements for delete,
-            // here we need to map old_element to the engine id and clear
-            // that, but we have no facilities for that yet.
-
-            return (true, new_ast);
-
-            // // if there's a diff drag it in
-            // constructed_program.inner.body.push(new_element.clone());
-            // and now let's double check nothing depends on us
+            return CacheResult {
+                clear_scene: true,
+                program: new_ast,
+            };
         }
 
+        // otherwise the overlapping section of the ast bodies matches.
+        // Let's see what the rest of the slice looks like.
+
         match new_ast.body.len().cmp(&old_ast.body.len()) {
-            Ordering::Less => {
-                // the new_ast is LESS THAN than the old_ast -- we've REMOVED
-                // nodes to the body.
+            std::cmp::Ordering::Less => {
+                // the new AST is shorter than the old AST -- statements
+                // were removed from the "current" code in the "new" code.
                 //
-                // we should queue up the remaining nodes to delete, but for
-                // now we have to bail.
-                (true, new_ast)
+                // Statements up until now match which means this is a
+                // "pure delete" of the remaining slice, when we get to
+                // supporting that.
+
+                // Cache bust time.
+                CacheResult {
+                    clear_scene: true,
+                    program: new_ast,
+                }
             }
-            Ordering::Greater => {
-                // the new_ast is GREATER than the old_ast -- we've ADDED
-                // nodes to the body.
-                constructed_program
-                    .inner
+            std::cmp::Ordering::Greater => {
+                // the new AST is longer than the old AST, which means
+                // statements were added to the new code we haven't previously
+                // seen.
+                //
+                // Statements up until now are the same, which means this
+                // is a "pure addition" of the remaining slice.
+
+                generated_program
                     .body
                     .extend_from_slice(&new_ast.body[old_ast.body.len()..]);
-                (false, constructed_program)
+
+                CacheResult {
+                    clear_scene: false,
+                    program: generated_program,
+                }
             }
-            Ordering::Equal => {
-                // If we got here, we can use the constructed program as built
-                // above.
-                (false, constructed_program)
+            std::cmp::Ordering::Equal => {
+                // currently unreachable, but lets pretend like the code
+                // above can do something meaningful here for when we get
+                // to diffing and yanking chunks of the program apart.
+
+                // We don't actually want to do anything here; so we're going
+                // to not clear and do nothing. Is this wrong? I don't think
+                // so but i think many things. This def needs to change
+                // when the code above changes.
+
+                CacheResult {
+                    clear_scene: false,
+                    program: generated_program,
+                }
             }
         }
     }
