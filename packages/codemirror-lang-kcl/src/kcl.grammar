@@ -1,0 +1,129 @@
+@precedence {
+  member
+  call
+  exp @left
+  mult @left
+  add @left
+  comp @left
+  logic @left
+  pipe @left
+  range
+}
+
+@top Program {
+  Shebang?
+  statement*
+}
+
+statement[@isGroup=Statement] {
+  ImportStatement { kw<"import"> ImportItems ImportFrom String } |
+  FunctionDeclaration { kw<"export">? kw<"fn"> VariableDefinition Equals ParamList Arrow Body } |
+  VariableDeclaration { kw<"export">? (kw<"var"> | kw<"let"> | kw<"const">)? VariableDefinition Equals expression } |
+  ReturnStatement { kw<"return"> expression } |
+  ExpressionStatement { expression }
+}
+
+ParamList { "(" commaSep<Parameter { VariableDefinition "?"? (":" type)? }> ")" }
+
+Body { "{" statement* "}" }
+
+ImportItems { commaSep1NoTrailingComma<ImportItem> }
+ImportItem { identifier (ImportItemAs identifier)? }
+
+expression[@isGroup=Expression] {
+  String |
+  Number |
+  VariableName |
+  TagDeclarator |
+  kw<"true"> | kw<"false"> | kw<"nil"> |
+  PipeSubstitution |
+  BinaryExpression {
+    expression !add AddOp expression |
+    expression !mult MultOp expression |
+    expression !exp ExpOp expression |
+    expression !comp CompOp expression |
+    expression !logic LogicOp expression
+  } |
+  UnaryExpression { UnaryOp expression } |
+  ParenthesizedExpression { "(" expression ")" } |
+  IfExpression { kw<"if"> expression Body kw<"else"> Body } |
+  CallExpression { expression !call ArgumentList } |
+  ArrayExpression { "[" commaSep<expression | IntegerRange { expression !range ".." expression }> "]" } |
+  ObjectExpression { "{" commaSep<ObjectProperty> "}" } |
+  MemberExpression { expression !member "." PropertyName } |
+  SubscriptExpression { expression !member "[" expression "]" } |
+  PipeExpression { expression (!pipe PipeOperator expression)+ }
+}
+
+UnaryOp { AddOp | BangOp }
+
+ObjectProperty { PropertyName ":" expression }
+
+ArgumentList { "(" commaSep<expression> ")" }
+
+type[@isGroup=Type] {
+  @specialize[@name=PrimitiveType]<
+    identifier,
+    "string" | "number" | "bool" | "sketch" | "sketch_surface" | "solid"
+  > |
+  ArrayType { type !member "[" "]" } |
+  ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }
+}
+
+VariableDefinition { identifier }
+
+VariableName { identifier }
+
+@skip { whitespace | LineComment | BlockComment }
+
+kw<term> { @specialize[@name={term}]<identifier, term> }
+
+commaSep<term> { (term ("," term)*)? ","? }
+
+commaSep1NoTrailingComma<term> { term ("," term)* }
+
+@tokens {
+  String[isolate] { "'" ("\\" _ | !['\\])* "'" | '"' ("\\" _ | !["\\])* '"' }
+
+  Number { "." @digit+ | @digit+ ("." @digit*)? }
+  @precedence { Number, "." }
+
+  AddOp { "+" | "-" }
+  MultOp { "/" | "*" | "\\" }
+  ExpOp { "^" }
+  LogicOp { "|" | "&" }
+  BangOp { "!" }
+  CompOp { "==" | "!=" | "<=" | ">=" | "<" | ">" }
+  Equals { "=" }
+  Arrow { "=>" }
+  PipeOperator { "|>" }
+
+  PipeSubstitution { "%" }
+
+  identifier { (@asciiLetter | "_") (@asciiLetter | @digit | "_")* }
+  PropertyName { identifier }
+  TagDeclarator { "$" identifier }
+
+  whitespace { @whitespace+ }
+
+  LineComment[isolate] { "//" ![\n]* }
+  BlockComment[isolate] { "/*" blockCommentRest }
+  blockCommentRest { @eof | ![*] blockCommentRest | "*" blockCommentStar }
+  blockCommentStar { @eof | "/" | ![/] blockCommentRest | "*" blockCommentStar }
+
+  @precedence { LineComment, BlockComment, MultOp }
+
+  Shebang { "#!" ![\n]* }
+
+  ImportItemAs { "as" }
+  ImportFrom { "from" }
+
+  "(" ")"
+  "{" "}"
+  "[" "]"
+  "," "?" ":" "." ".."
+}
+
+@external propSource kclHighlight from "./highlight"
+
+@detectDelim
