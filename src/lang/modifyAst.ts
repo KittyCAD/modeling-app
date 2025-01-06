@@ -37,7 +37,7 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from './std/sketchcombos'
-import { DefaultPlaneStr } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr } from 'lib/planes'
 import { isOverlap, roundOff } from 'lib/utils'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from 'lib/constants'
 import { SimplifiedArgDetails } from './std/stdTypes'
@@ -561,10 +561,12 @@ export function sketchOnExtrudedFace(
 export function addOffsetPlane({
   node,
   defaultPlane,
+  insertIndex,
   offset,
 }: {
   node: Node<Program>
   defaultPlane: DefaultPlaneStr
+  insertIndex?: number
   offset: Expr
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
@@ -578,10 +580,12 @@ export function addOffsetPlane({
     ])
   )
 
-  modifiedAst.body.push(newPlane)
+  const insertAt = insertIndex ?? modifiedAst.body.length - 1
+
+  modifiedAst.body.splice(insertAt, 0, newPlane)
   const pathToNode: PathToNode = [
     ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
+    [insertAt, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],

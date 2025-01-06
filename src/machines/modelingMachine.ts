@@ -71,7 +71,8 @@ import {
 } from 'components/Toolbar/SetAbsDistance'
 import { ModelingCommandSchema } from 'lib/commandBarConfigs/modelingCommandConfig'
 import { err, reportRejection, trap } from 'lib/trap'
-import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
+import { getFaceDetails } from 'clientSideScene/sceneEntities'
+import { DefaultPlaneStr } from 'lib/planes'
 import { uuidv4 } from 'lib/utils'
 import { Coords2d } from 'lang/std/sketch'
 import { deleteSegment } from 'clientSideScene/ClientSideSceneComp'
@@ -1578,7 +1579,14 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         // Extract inputs
         const ast = kclManager.ast
-        const { plane: selection, distance } = input
+        const { plane: selection, distance, nodeToEdit } = input
+
+        // If this is an edit flow, first we're going to remove the old extrusion
+        if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+          const newBody = [...ast.body]
+          newBody.splice(nodeToEdit[1][0], 1)
+          ast.body = newBody
+        }
 
         // Extract the default plane from selection
         const plane = selection.otherSelections[0]
