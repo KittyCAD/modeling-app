@@ -836,7 +836,7 @@ test.describe('Testing settings', () => {
       // but "show debug panel" set to false
       appSettings: {
         ...TEST_SETTINGS,
-        modeling: { ...TEST_SETTINGS.modeling, show_debug_panel: false },
+        app: { ...TEST_SETTINGS.app, show_debug_panel: false },
       },
     },
     async ({ context, page, homePage }) => {

@@ -12,12 +12,12 @@ export const TEST_SETTINGS = {
     appearance: {
       theme: Themes.Dark,
     },
+    show_debug_panel: true,
   },
   modeling: {
     base_unit: 'in',
     mouse_controls: 'zoo',
     camera_projection: 'perspective',
-    show_debug_panel: true,
     enable_ssao: false,
   },
   project: {
@@ -63,12 +63,12 @@ export const TEST_SETTINGS_CORRUPTED = {
     appearance: {
       theme: Themes.Dark,
     },
+    show_debug_panel: true,
   },
   modeling: {
     base_unit: 'invalid' as any,
     mouse_controls: `() => alert('hack the planet')` as any,
     camera_projection: 'perspective',
-    show_debug_panel: true,
   },
   project: {
     default_project_name: false as any,
