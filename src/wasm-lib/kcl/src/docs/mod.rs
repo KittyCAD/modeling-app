@@ -59,6 +59,8 @@ pub struct StdLibFnArg {
     pub schema: schemars::schema::RootSchema,
     /// If the argument is required.
     pub required: bool,
+    /// Include this in completion snippets?
+    pub include_in_snippet: bool,
     /// Additional information that could be used instead of the type's description.
     /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
     /// how this argument is meant to be used.
@@ -91,7 +93,7 @@ impl StdLibFnArg {
 
     pub fn get_autocomplete_snippet(&self, index: usize, in_keyword_fn: bool) -> Result<Option<(usize, String)>> {
         let label = if in_keyword_fn && self.label_required {
-            &self.name
+            &format!("{}: ", self.name)
         } else {
             ""
         };
@@ -113,11 +115,8 @@ impl StdLibFnArg {
         } else if self.type_ == "KclValue" && self.required {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, "3"))));
         }
-        eprintln!("{}", self.name);
-        let res = self
-            .get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
-            .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))));
-        dbg!(res)
+        self.get_autocomplete_snippet_from_schema(&self.schema.schema.clone().into(), index)
+            .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))))
     }
 
     pub fn description(&self) -> Option<String> {
@@ -147,8 +146,7 @@ impl StdLibFnArg {
                 }
 
                 if let Some(serde_json::Value::Bool(nullable)) = o.extensions.get("nullable") {
-                    if *nullable {
-                        eprintln!("ADAM: Nullable, so early return");
+                    if *nullable && !self.include_in_snippet {
                         return Ok(None);
                     }
                 }
@@ -893,7 +891,7 @@ mod tests {
     fn get_autocomplete_snippet_line() {
         let line_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Line);
         let snippet = line_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"line([${0:3.14}, ${1:3.14}], ${2:%})${}"#);
+        assert_eq!(snippet, r#"line(${0:%}, end: [${1:3.14}, ${2:3.14}])${}"#);
     }
 
     #[test]
