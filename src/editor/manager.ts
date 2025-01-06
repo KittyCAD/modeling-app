@@ -223,7 +223,6 @@ export default class EditorManager {
    * Scroll to the first selection in the editor.
    */
   scrollToSelection() {
-    console.log('scrollToSelection')
     if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
 
     const firstSelection = this._selectionRanges.graphSelections[0]
@@ -323,7 +322,6 @@ export default class EditorManager {
         .range[1]
     const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
-    console.log('codeBasedSelections', codeBasedSelections)
 
     if (!this._editorView) {
       return

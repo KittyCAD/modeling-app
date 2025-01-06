@@ -98,7 +98,6 @@ export const KclEditorPane = () => {
       return
     }
 
-    console.log('dispatching', lastSelectionEvent)
     editorManager.editorView.dispatch({
       selection: lastSelectionEvent.codeMirrorSelection,
       annotations: [modelingMachineEvent, Transaction.addToHistory.of(false)],
