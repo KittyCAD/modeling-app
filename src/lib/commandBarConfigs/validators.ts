@@ -101,7 +101,7 @@ export const revolveAxisValidator = async ({
     return true
   } else {
     // return error message for the toast
-    return 'Unable to revolve with selected axis'
+    return 'Unable to revolve with selected edge'
   }
 }
 
