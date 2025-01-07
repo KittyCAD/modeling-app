@@ -1235,9 +1235,9 @@ async fn kcl_test_member_expression_in_params() {
           y: originStart[1],
           z: originStart[2],
          },
-         x_axis: { x: 0, y: 0, z: -1 },
-         y_axis: { x: 1, y: 0, z: 0 },
-         z_axis: { x: 0, y: 1, z: 0 }
+         xAxis: { x: 0, y: 0, z: -1 },
+         yAxis: { x: 1, y: 0, z: 0 },
+         zAxis: { x: 0, y: 1, z: 0 }
       }
   })
     |> circle({ center: [0, 0], radius: capDia / 2 }, %)

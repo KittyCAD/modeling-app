@@ -8,16 +8,16 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          154,
-          158,
+          152,
+          156,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      140,
-      159,
+      138,
+      157,
       0
     ],
     "type": "StdLibCall",
@@ -27,23 +27,23 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          389,
-          403,
+          387,
+          401,
           0
         ]
       },
       "sketch_set": {
         "sourceRange": [
-          405,
-          406,
+          403,
+          404,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      381,
-      407,
+      379,
+      405,
       0
     ],
     "type": "StdLibCall",
@@ -53,15 +53,15 @@ snapshot_kind: text
     "type": "UserDefinedFunctionCall",
     "name": "circl",
     "functionSourceRange": [
-      417,
-      567,
+      415,
+      565,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      574,
-      588,
+      572,
+      586,
       0
     ]
   },
@@ -69,23 +69,175 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          452,
-          453,
+          450,
+          451,
           0
         ]
       },
       "tag": {
         "sourceRange": [
-          455,
-          459,
+          453,
+          457,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      438,
-      460,
+      436,
+      458,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          614,
+          624,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          626,
+          627,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      606,
+      628,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          641,
+          761,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          763,
+          764,
+          0
+        ]
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [
+      634,
+      765,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "circl",
+    "functionSourceRange": [
+      415,
+      565,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": [
+      771,
+      784,
+      0
+    ]
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          450,
+          451,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          453,
+          457,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      436,
+      458,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          812,
+          822,
+          0
+        ]
+      },
+      "sketch_set": {
+        "sourceRange": [
+          824,
+          825,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      804,
+      826,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          839,
+          959,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          961,
+          962,
+          0
+        ]
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [
+      832,
+      963,
       0
     ],
     "type": "StdLibCall",
