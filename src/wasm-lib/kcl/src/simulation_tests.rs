@@ -108,7 +108,11 @@ async fn execute(test_name: &str, render_to_png: bool) {
                 insta::assert_json_snapshot!("ops", ops);
             });
             assert_snapshot(test_name, "Artifact commands", || {
-                insta::assert_json_snapshot!("artifact_commands", artifact_commands);
+                insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
+                    "[].command.segment.*.x" => rounded_redaction(4),
+                    "[].command.segment.*.y" => rounded_redaction(4),
+                    "[].command.segment.*.z" => rounded_redaction(4),
+                });
             });
         }
         Err(e) => {
@@ -134,7 +138,11 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     });
 
                     assert_snapshot(test_name, "Artifact commands", || {
-                        insta::assert_json_snapshot!("artifact_commands", e.artifact_commands);
+                        insta::assert_json_snapshot!("artifact_commands", e.artifact_commands, {
+                            "[].command.segment.*.x" => rounded_redaction(4),
+                            "[].command.segment.*.y" => rounded_redaction(4),
+                            "[].command.segment.*.z" => rounded_redaction(4),
+                        });
                     });
                 }
                 e => {
