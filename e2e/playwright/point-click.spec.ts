@@ -884,12 +884,10 @@ loft001 = loft([sketch001, sketch002])
     // Check for loft
     await scene.expectPixelColor([89, 89, 89], testPoint, 15)
     await clickOnSketch1()
-    await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toHaveText(`
       |> circle({ center = [0, 0], radius = 30 }, %)
     `)
     await page.keyboard.press('Backspace')
-    await page.waitForTimeout(100)
     // Check for sketch 1
     await scene.expectPixelColor([254, 254, 254], testPoint, 15)
   })
@@ -897,12 +895,10 @@ loft001 = loft([sketch001, sketch002])
   await test.step('Delete sketch002', async () => {
     await page.waitForTimeout(1000)
     await clickOnSketch2()
-    await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toHaveText(`
       |> circle({ center = [0, 0], radius = 20 }, %)
     `)
     await page.keyboard.press('Backspace')
-    await page.waitForTimeout(100)
     // Check for plane001
     await scene.expectPixelColor([228, 228, 228], testPoint, 15)
   })
@@ -910,12 +906,10 @@ loft001 = loft([sketch001, sketch002])
   await test.step('Delete plane001', async () => {
     await page.waitForTimeout(1000)
     await clickOnSketch2()
-    await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toHaveText(`
       plane001 = offsetPlane('XZ', 50)
     `)
     await page.keyboard.press('Backspace')
-    await page.waitForTimeout(100)
     // Check for sketch 1
     await scene.expectPixelColor([254, 254, 254], testPoint, 15)
   })
@@ -1096,5 +1090,13 @@ extrude001 = extrude(40, sketch001)
       highlightedCode: '',
     })
     await scene.expectPixelColor([49, 49, 49], testPoint, 15)
+  })
+
+  await test.step('Delete shell via feature tree selection', async () => {
+    await editor.closePane()
+    const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
+    await operationButton.click({ button: 'left' })
+    await page.keyboard.press('Backspace')
+    await scene.expectPixelColor([99, 99, 99], testPoint, 15)
   })
 })
