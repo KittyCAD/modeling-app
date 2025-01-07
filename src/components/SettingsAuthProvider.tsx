@@ -1,7 +1,7 @@
 import { trap } from 'lib/trap'
-import { useMachine } from '@xstate/react'
+import { useMachine, useSelector } from '@xstate/react'
 import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
-import { PATHS } from 'lib/paths'
+import { PATHS, BROWSER_PATH } from 'lib/paths'
 import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
 import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useState } from 'react'
@@ -23,7 +23,6 @@ import {
   engineCommandManager,
   sceneEntitiesManager,
 } from 'lib/singletons'
-import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { settings } from 'lib/settings/initialSettings'
 import {
@@ -41,6 +40,8 @@ import { reportRejection } from 'lib/trap'
 import { getAppSettingsFilePath } from 'lib/desktop'
 import { isDesktop } from 'lib/isDesktop'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
+import { codeManager } from 'lib/singletons'
+import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -53,11 +54,15 @@ type SettingsAuthContextType = {
   settings: MachineContext<typeof settingsMachine>
 }
 
-// a little hacky for sure, open to changing it
-// this implies that we should only even have one instance of this provider mounted at any one time
-// but I think that's a safe assumption
-let settingsStateRef: ContextFrom<typeof settingsMachine> | undefined
-export const getSettingsState = () => settingsStateRef
+/**
+ * This variable is used to store the last snapshot of the settings context
+ * for use outside of React, such as in `wasm.ts`. It is updated every time
+ * the settings machine changes with `useSelector`.
+ * TODO: when we decouple XState from React, we can just subscribe to the actor directly from `wasm.ts`
+ */
+export let lastSettingsContextSnapshot:
+  | ContextFrom<typeof settingsMachine>
+  | undefined
 
 export const SettingsAuthContext = createContext({} as SettingsAuthContextType)
 
@@ -127,26 +132,10 @@ export const SettingsAuthProviderBase = ({
             .setTheme(context.app.theme.current)
             .catch(reportRejection)
         },
-        setEngineScaleGridVisibility: ({ context }) => {
-          engineCommandManager.setScaleGridVisibility(
-            context.modeling.showScaleGrid.current
-          )
-        },
         setClientTheme: ({ context }) => {
           const opposingTheme = getOppositeTheme(context.app.theme.current)
           sceneInfra.theme = opposingTheme
           sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
-        },
-        setEngineEdges: ({ context }) => {
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          engineCommandManager.sendSceneCommand({
-            cmd_id: uuidv4(),
-            type: 'modeling_cmd_req',
-            cmd: {
-              type: 'edge_lines_visible' as any, // TODO update kittycad.ts to get this new command type
-              hidden: !context.modeling.highlightEdges.current,
-            },
-          })
         },
         toastSuccess: ({ event }) => {
           if (!('data' in event)) return
@@ -173,17 +162,27 @@ export const SettingsAuthProviderBase = ({
         },
         'Execute AST': ({ context, event }) => {
           try {
+            const relevantSetting = (s: typeof settings) => {
+              return (
+                s.modeling?.defaultUnit?.current !==
+                  context.modeling.defaultUnit.current ||
+                s.modeling.showScaleGrid.current !==
+                  context.modeling.showScaleGrid.current ||
+                s.modeling?.highlightEdges.current !==
+                  context.modeling.highlightEdges.current
+              )
+            }
+
             const allSettingsIncludesUnitChange =
               event.type === 'Set all settings' &&
-              event.settings?.modeling?.defaultUnit?.current !==
-                context.modeling.defaultUnit.current
+              relevantSetting(event.settings)
             const resetSettingsIncludesUnitChange =
-              event.type === 'Reset settings' &&
-              context.modeling.defaultUnit.current !==
-                settings?.modeling?.defaultUnit?.default
+              event.type === 'Reset settings' && relevantSetting(settings)
 
             if (
               event.type === 'set.modeling.defaultUnit' ||
+              event.type === 'set.modeling.showScaleGrid' ||
+              event.type === 'set.modeling.highlightEdges' ||
               allSettingsIncludesUnitChange ||
               resetSettingsIncludesUnitChange
             ) {
@@ -200,19 +199,22 @@ export const SettingsAuthProviderBase = ({
             console.error('Error executing AST after settings change', e)
           }
         },
-        persistSettings: ({ context, event }) => {
+        async persistSettings({ context, event }) {
           // Without this, when a user changes the file, it'd
           // create a detection loop with the file-system watcher.
           if (event.doNotPersist) return
 
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          saveSettings(context, loadedProject?.project?.path)
+          codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+          return saveSettings(context, loadedProject?.project?.path)
         },
       },
     }),
     { input: loadedSettings }
   )
-  settingsStateRef = settingsState.context
+  // Any time the actor changes, update the settings state for external use
+  useSelector(settingsActor, (s) => {
+    lastSettingsContextSnapshot = s.context
+  })
 
   useEffect(() => {
     if (!isDesktop()) return
@@ -220,7 +222,7 @@ export const SettingsAuthProviderBase = ({
   }, [])
 
   useFileSystemWatcher(
-    async () => {
+    async (eventType: string) => {
       // If there is a projectPath but it no longer exists it means
       // it was exterally removed. If we let the code past this condition
       // execute it will recreate the directory due to code in
@@ -233,6 +235,9 @@ export const SettingsAuthProviderBase = ({
           return
         }
       }
+
+      // Only reload if there are changes. Ignore everything else.
+      if (eventType !== 'change') return
 
       const data = await loadAndValidateSettings(loadedProject?.project?.path)
       settingsSend({
@@ -283,6 +288,44 @@ export const SettingsAuthProviderBase = ({
     commandBarSend,
     settingsWithCommandConfigs,
   ])
+
+  // Due to the route provider, i've moved this to the SettingsAuthProvider instead of CommandBarProvider
+  // This will register the commands to route to Telemetry, Home, and Settings.
+  useEffect(() => {
+    const filePath =
+      PATHS.FILE +
+      '/' +
+      encodeURIComponent(loadedProject?.file?.path || BROWSER_PATH)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+    commandBarSend({
+      type: 'Remove commands',
+      data: {
+        commands: [
+          RouteTelemetryCommand,
+          RouteHomeCommand,
+          RouteSettingsCommand,
+        ],
+      },
+    })
+    if (location.pathname === PATHS.HOME) {
+      commandBarSend({
+        type: 'Add commands',
+        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+      })
+    } else if (location.pathname.includes(PATHS.FILE)) {
+      commandBarSend({
+        type: 'Add commands',
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteSettingsCommand,
+            RouteHomeCommand,
+          ],
+        },
+      })
+    }
+  }, [location])
 
   // Listen for changes to the system theme and update the app theme accordingly
   // This is only done if the theme setting is set to 'system'.

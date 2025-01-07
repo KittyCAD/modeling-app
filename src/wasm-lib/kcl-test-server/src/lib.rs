@@ -15,7 +15,7 @@ use hyper::{
     service::{make_service_fn, service_fn},
     Body, Error, Response, Server,
 };
-use kcl_lib::{executor::ExecutorContext, settings::types::UnitLength, test_server::RequestBody};
+use kcl_lib::{test_server::RequestBody, ExecState, ExecutorContext, Program, UnitLength};
 use tokio::{
     sync::{mpsc, oneshot},
     task::JoinHandle,
@@ -157,20 +157,18 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
         Err(e) => return bad_request(format!("Invalid request JSON: {e}")),
     };
     let RequestBody { kcl_program, test_name } = body;
-    let parser = match kcl_lib::token::lexer(&kcl_program) {
-        Ok(ts) => kcl_lib::parser::Parser::new(ts),
-        Err(e) => return bad_request(format!("tokenization error: {e}")),
-    };
-    let program = match parser.ast() {
+
+    let program = match Program::parse_no_errs(&kcl_program) {
         Ok(pr) => pr,
         Err(e) => return bad_request(format!("Parse error: {e}")),
     };
+
     eprintln!("Executing {test_name}");
-    let mut id_generator = kcl_lib::executor::IdGenerator::default();
+    let mut exec_state = ExecState::new();
     // This is a shitty source range, I don't know what else to use for it though.
     // There's no actual KCL associated with this reset_scene call.
     if let Err(e) = state
-        .reset_scene(&mut id_generator, kcl_lib::executor::SourceRange::default())
+        .reset_scene(&mut exec_state, kcl_lib::SourceRange::default())
         .await
     {
         return kcl_err(e);
@@ -178,7 +176,7 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
     // Let users know if the test is taking a long time.
     let (done_tx, done_rx) = oneshot::channel::<()>();
     let timer = time_until(done_rx);
-    let snapshot = match state.execute_and_prepare_snapshot(&program, id_generator, None).await {
+    let snapshot = match state.execute_and_prepare_snapshot(&program, &mut exec_state).await {
         Ok(sn) => sn,
         Err(e) => return kcl_err(e),
     };
@@ -205,7 +203,7 @@ fn bad_gateway(msg: String) -> Response<Body> {
     resp
 }
 
-fn kcl_err(err: anyhow::Error) -> Response<Body> {
+fn kcl_err(err: impl std::fmt::Display) -> Response<Body> {
     eprintln!("\tBad KCL");
     bad_gateway(format!("{err}"))
 }

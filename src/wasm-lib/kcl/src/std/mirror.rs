@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, KclValue, Sketch, SketchSet},
+    execution::{ExecState, KclValue, Sketch, SketchSet},
     std::{revolve::AxisOrEdgeReference, Args},
 };
 
@@ -40,7 +40,7 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// ```no_run
 /// // Mirror an un-closed sketch across the Y axis.
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///     |> startProfileAt([0, 10], %)
 ///     |> line([15, 0], %)
 ///     |> line([-7, -3], %)
@@ -50,53 +50,53 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     |> line([-8, -3], %)
 ///     |> line([9, -1], %)
 ///     |> line([-19, -0], %)
-///     |> mirror2d({axis: 'Y'}, %)
+///     |> mirror2d({axis = 'Y'}, %)
 ///
-/// const example = extrude(10, sketch001)
+/// example = extrude(10, sketch001)
 /// ```
 ///
 /// ```no_run
 /// // Mirror a un-closed sketch across the Y axis.
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///     |> startProfileAt([0, 8.5], %)
 ///     |> line([20, -8.5], %)
 ///     |> line([-20, -8.5], %)
-///     |> mirror2d({axis: 'Y'}, %)
+///     |> mirror2d({axis = 'Y'}, %)
 ///
-/// const example = extrude(10, sketch001)
+/// example = extrude(10, sketch001)
 /// ```
 ///
 /// ```no_run
 /// // Mirror a un-closed sketch across an edge.
-/// const helper001 = startSketchOn('XZ')
+/// helper001 = startSketchOn('XZ')
 ///  |> startProfileAt([0, 0], %)
 ///  |> line([0, 10], %, $edge001)
 ///
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///     |> startProfileAt([0, 8.5], %)
 ///     |> line([20, -8.5], %)
 ///     |> line([-20, -8.5], %)
-///     |> mirror2d({axis: edge001}, %)
+///     |> mirror2d({axis = edge001}, %)
 ///
-/// const example = extrude(10, sketch001)
+/// example = extrude(10, sketch001)
 /// ```
 ///
 /// ```no_run
 /// // Mirror an un-closed sketch across a custom axis.
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///     |> startProfileAt([0, 8.5], %)
 ///     |> line([20, -8.5], %)
 ///     |> line([-20, -8.5], %)
 ///     |> mirror2d({
-///   axis: {
-///     custom: {
-///       axis: [0.0, 1.0],
-///       origin: [0.0, 0.0]
+///   axis = {
+///     custom = {
+///       axis = [0.0, 1.0],
+///       origin = [0.0, 0.0]
 ///     }
 ///   }
 /// }, %)
 ///
-/// const example = extrude(10, sketch001)
+/// example = extrude(10, sketch001)
 /// ```
 #[stdlib {
     name = "mirror2d",
@@ -121,7 +121,7 @@ async fn inner_mirror_2d(
             let (axis, origin) = axis.axis_and_origin()?;
 
             args.batch_modeling_cmd(
-                exec_state.id_generator.next_uuid(),
+                exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirror {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     axis,
@@ -134,7 +134,7 @@ async fn inner_mirror_2d(
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
             args.batch_modeling_cmd(
-                exec_state.id_generator.next_uuid(),
+                exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMirrorAcrossEdge {
                     ids: starting_sketches.iter().map(|sketch| sketch.id).collect(),
                     edge_id,

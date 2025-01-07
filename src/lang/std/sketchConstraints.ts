@@ -31,7 +31,7 @@ export function getSketchSegmentFromPathToNode(
   const node = nodeMeta.node
   if (!node || typeof node.start !== 'number' || !node.end)
     return new Error('no node found')
-  const sourceRange: SourceRange = [node.start, node.end]
+  const sourceRange: SourceRange = [node.start, node.end, true]
   return getSketchSegmentFromSourceRange(sketch, sourceRange)
 }
 export function getSketchSegmentFromSourceRange(
@@ -111,12 +111,10 @@ export function isSketchVariablesLinked(
   let nextVarDec: VariableDeclarator | undefined
   for (const node of ast.body) {
     if (node.type !== 'VariableDeclaration') continue
-    const found = node.declarations.find(
-      ({ id }) => id?.name === secondArg.name
-    )
-    if (!found) continue
-    nextVarDec = found
-    break
+    if (node.declaration.id.name === secondArg.name) {
+      nextVarDec = node.declaration
+      break
+    }
   }
   if (!nextVarDec) return false
   return isSketchVariablesLinked(nextVarDec, primaryVarDec, ast)

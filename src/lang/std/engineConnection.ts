@@ -1,4 +1,11 @@
-import { Program, SourceRange } from 'lang/wasm'
+import {
+  defaultRustSourceRange,
+  defaultSourceRange,
+  Program,
+  RustSourceRange,
+  SourceRange,
+  sourceRangeFromRust,
+} from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -28,6 +35,7 @@ import {
 } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
+import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
 
 // TODO(paultag): This ought to be tweakable.
@@ -330,6 +338,7 @@ class EngineConnection extends EventTarget {
     token?: string
     callbackOnEngineLiteConnect?: () => void
   }) {
+    markOnce('code/startInitialEngineConnect')
     super()
 
     this.engineCommandManager = engineCommandManager
@@ -785,6 +794,7 @@ class EngineConnection extends EventTarget {
             this.dispatchEvent(
               new CustomEvent(EngineConnectionEvents.Opened, { detail: this })
             )
+            markOnce('code/endInitialEngineConnect')
           }
           this.unreliableDataChannel?.addEventListener(
             'open',
@@ -1299,8 +1309,8 @@ export enum EngineCommandManagerEvents {
 
 interface PendingMessage {
   command: EngineCommand
-  range: SourceRange
-  idToRangeMap: { [key: string]: SourceRange }
+  range: RustSourceRange
+  idToRangeMap: { [key: string]: RustSourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
@@ -1395,13 +1405,7 @@ export class EngineCommandManager extends EventTarget {
     this._camControlsCameraChange = cb
   }
 
-  private getAst: () => Program = () =>
-    ({ start: 0, end: 0, body: [], nonCodeMeta: {} } as any)
-  set getAstCb(cb: () => Program) {
-    this.getAst = cb
-  }
   private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
-  private modifyGrid: (hidden: boolean) => Promise<void> | null = () => null
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
@@ -1434,7 +1438,6 @@ export class EngineCommandManager extends EventTarget {
     height,
     token,
     makeDefaultPlanes,
-    modifyGrid,
     settings = {
       pool: null,
       theme: Themes.Dark,
@@ -1454,14 +1457,12 @@ export class EngineCommandManager extends EventTarget {
     height: number
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
-    modifyGrid: (hidden: boolean) => Promise<void>
     settings?: SettingsViaQueryString
   }) {
     if (settings) {
       this.settings = settings
     }
     this.makeDefaultPlanes = makeDefaultPlanes
-    this.modifyGrid = modifyGrid
     if (width === 0 || height === 0) {
       return
     }
@@ -1541,21 +1542,15 @@ export class EngineCommandManager extends EventTarget {
           type: 'default_camera_get_settings',
         },
       })
-      // We want modify the grid first because we don't want it to flash.
-      // Ideally these would already be default hidden in engine (TODO do
-      // that) https://github.com/KittyCAD/engine/issues/2282
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.modifyGrid(!this.settings.showScaleGrid)?.then(async () => {
-        await this.initPlanes()
-        setIsStreamReady(true)
+      await this.initPlanes()
+      setIsStreamReady(true)
 
-        // Other parts of the application should use this to react on scene ready.
-        this.dispatchEvent(
-          new CustomEvent(EngineCommandManagerEvents.SceneReady, {
-            detail: this.engineConnection,
-          })
-        )
-      })
+      // Other parts of the application should use this to react on scene ready.
+      this.dispatchEvent(
+        new CustomEvent(EngineCommandManagerEvents.SceneReady, {
+          detail: this.engineConnection,
+        })
+      )
     }
 
     this.engineConnection.addEventListener(
@@ -1628,7 +1623,11 @@ export class EngineCommandManager extends EventTarget {
 
           switch (this.exportInfo.intent) {
             case ExportIntent.Save: {
-              exportSave(event.data, this.pendingExport.toastId).then(() => {
+              exportSave({
+                data: event.data,
+                fileName: this.exportInfo.name,
+                toastId: this.pendingExport.toastId,
+              }).then(() => {
                 this.pendingExport?.resolve(null)
               }, this.pendingExport?.reject)
               break
@@ -1877,17 +1876,6 @@ export class EngineCommandManager extends EventTarget {
     }
     return JSON.stringify(this.defaultPlanes)
   }
-  endSession() {
-    const deleteCmd: EngineCommand = {
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'scene_clear_all',
-      },
-    }
-    this.clearDefaultPlanes()
-    this.engineConnection?.send(deleteCmd)
-  }
   addCommandLog(message: CommandLog) {
     if (this.commandLogs.length > 500) {
       this.commandLogs.shift()
@@ -2012,7 +2000,7 @@ export class EngineCommandManager extends EventTarget {
       {
         command,
         idToRangeMap: {},
-        range: [0, 0],
+        range: defaultRustSourceRange(),
       },
       true // isSceneCommand
     )
@@ -2043,9 +2031,9 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(new Error('rangeStr is undefined'))
     if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    const range: SourceRange = JSON.parse(rangeStr)
+    const range: RustSourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
-    const idToRangeMap: { [key: string]: SourceRange } =
+    const idToRangeMap: { [key: string]: RustSourceRange } =
       JSON.parse(idToRangeStr)
 
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger
@@ -2088,10 +2076,14 @@ export class EngineCommandManager extends EventTarget {
     if (message.command.type === 'modeling_cmd_req') {
       this.orderedCommands.push({
         command: message.command,
-        range: message.range,
+        range: sourceRangeFromRust(message.range),
       })
     } else if (message.command.type === 'modeling_cmd_batch_req') {
       message.command.requests.forEach((req) => {
+        const cmdId = req.cmd_id || ''
+        const range = cmdId
+          ? sourceRangeFromRust(message.idToRangeMap[cmdId])
+          : defaultSourceRange()
         const cmd: EngineCommand = {
           type: 'modeling_cmd_req',
           cmd_id: req.cmd_id,
@@ -2099,7 +2091,7 @@ export class EngineCommandManager extends EventTarget {
         }
         this.orderedCommands.push({
           command: cmd,
-          range: message.idToRangeMap[req.cmd_id || ''],
+          range,
         })
       })
     }
@@ -2118,13 +2110,18 @@ export class EngineCommandManager extends EventTarget {
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
    */
-  async waitForAllCommands() {
-    await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
+  waitForAllCommands() {
+    return Promise.all(
+      Object.values(this.pendingCommands).map((a) => a.promise)
+    )
+  }
+  updateArtifactGraph(ast: Program) {
     this.artifactGraph = createArtifactGraph({
       orderedCommands: this.orderedCommands,
       responseMap: this.responseMap,
-      ast: this.getAst(),
+      ast,
     })
+    // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)
     } else {
@@ -2207,15 +2204,6 @@ export class EngineCommandManager extends EventTarget {
         color: getThemeColorForEngine(opposingTheme),
       },
     }).catch(reportRejection)
-  }
-
-  /**
-   * Set the visibility of the scale grid in the engine scene.
-   * @param visible - whether to show or hide the scale grid
-   */
-  setScaleGridVisibility(visible: boolean) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.modifyGrid(!visible)
   }
 
   // Some "objects" have the same source range, such as sketch_mode_start and start_path.

@@ -1,9 +1,10 @@
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 use anyhow::Result;
 use base64::Engine;
 use convert_case::Casing;
 use handlebars::Renderable;
+use indexmap::IndexMap;
 use itertools::Itertools;
 use serde_json::json;
 
@@ -271,7 +272,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     Ok(hbs)
 }
 
-fn generate_index(combined: &HashMap<String, Box<dyn StdLibFn>>) -> Result<()> {
+fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> {
     let hbs = init_handlebars()?;
 
     let mut functions = Vec::new();
@@ -396,6 +397,9 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
 fn cleanup_static_links(output: &str) -> String {
     let mut cleaned_output = output.to_string();
     // Fix the links to the types.
+    // Gross hack for the stupid alias types.
+    cleaned_output = cleaned_output.replace("TagNode", "TagDeclarator");
+
     let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
     cleaned_output = cleaned_output.replace("`TagDeclarator`", &link);
     let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
@@ -409,7 +413,7 @@ fn cleanup_type_links(output: &str, types: Vec<String>) -> String {
     let mut cleaned_output = output.to_string();
     // Fix the links to the types.
     for type_name in types {
-        if type_name == "TagDeclarator" || type_name == "TagIdentifier" {
+        if type_name == "TagDeclarator" || type_name == "TagIdentifier" || type_name == "TagNode" {
             continue;
         } else {
             let link = format!("(/docs/kcl/types/{})", type_name);
@@ -486,7 +490,7 @@ fn generate_type(
     }
 
     // Skip over TagDeclarator and TagIdentifier since they have custom docs.
-    if name == "TagDeclarator" || name == "TagIdentifier" {
+    if name == "TagDeclarator" || name == "TagIdentifier" || name == "TagNode" {
         return Ok(());
     }
 
@@ -593,27 +597,11 @@ fn clean_function_name(name: &str) -> String {
         fn_name = fn_name.replace("seg_", "segment_");
     } else if fn_name.starts_with("log_") {
         fn_name = fn_name.replace("log_", "log");
+    } else if fn_name.ends_with("tan_2") {
+        fn_name = fn_name.replace("tan_2", "tan2");
     }
 
     fn_name
-}
-
-/// Check if a schema is the same as another schema, but don't check the description.
-fn is_same_schema(sa: &schemars::schema::Schema, sb: &schemars::schema::Schema) -> bool {
-    let schemars::schema::Schema::Object(a) = sa else {
-        return sa == sb;
-    };
-
-    let schemars::schema::Schema::Object(b) = sb else {
-        return sa == sb;
-    };
-
-    let mut a = a.clone();
-    a.metadata = None;
-    let mut b = b.clone();
-    b.metadata = None;
-
-    a == b
 }
 
 /// Recursively create references for types we already know about.
@@ -647,24 +635,6 @@ fn recurse_and_create_references(
             obj.metadata = to.metadata.clone();
         }
         return Ok(schemars::schema::Schema::Object(obj));
-    }
-
-    // Check if this is the type we already know about.
-    for (n, s) in types {
-        if is_same_schema(schema, s) && name != n && !n.starts_with("[") {
-            // Return a reference to the type.
-            let sref = schemars::schema::Schema::new_ref(n.to_string());
-            // Add the existing metadata to the reference.
-            let schemars::schema::Schema::Object(ro) = sref else {
-                return Err(anyhow::anyhow!(
-                    "Failed to get object schema, should have not been a primitive"
-                ));
-            };
-            let mut ro = ro.clone();
-            ro.metadata = o.metadata.clone();
-
-            return Ok(schemars::schema::Schema::Object(ro));
-        }
     }
 
     let mut obj = o.clone();
@@ -787,6 +757,7 @@ fn test_generate_stdlib_json_schema() {
     // If this test fails and you've modified the AST or something else which affects the json repr
     // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
     // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
+    // Alternatively, run `just redo-kcl-stdlib-docs` (make sure to have just installed).
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
 

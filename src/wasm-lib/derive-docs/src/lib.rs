@@ -6,6 +6,8 @@
 mod tests;
 mod unbox;
 
+use std::collections::HashMap;
+
 use convert_case::Casing;
 use inflector::Inflector;
 use once_cell::sync::Lazy;
@@ -23,17 +25,40 @@ use unbox::unbox;
 struct StdlibMetadata {
     /// The name of the function in the API.
     name: String,
+
     /// Tags for the function.
     #[serde(default)]
     tags: Vec<String>,
+
     /// Whether the function is unpublished.
     /// Then docs will not be generated.
     #[serde(default)]
     unpublished: bool,
+
     /// Whether the function is deprecated.
     /// Then specific docs detailing that this is deprecated will be generated.
     #[serde(default)]
     deprecated: bool,
+
+    /// Whether the function is displayed in the feature tree.
+    /// If true, calls to the function will be available for display.
+    /// If false, calls to the function will never be displayed.
+    #[serde(default)]
+    feature_tree_operation: bool,
+
+    /// If true, expects keyword arguments.
+    /// If false, expects positional arguments.
+    #[serde(default)]
+    keywords: bool,
+
+    /// If true, the first argument is unlabeled.
+    /// If false, all arguments require labels.
+    #[serde(default)]
+    unlabeled_first: bool,
+
+    /// Key = argument name, value = argument doc.
+    #[serde(default)]
+    arg_docs: HashMap<String, String>,
 }
 
 #[proc_macro_attribute]
@@ -115,14 +140,10 @@ fn do_stdlib_inner(
     let name = metadata.name;
 
     // Fail if the name is not camel case.
-    let whitelist = [
-        "mirror2d",
-        "patternLinear3d",
-        "patternLinear2d",
-        "patternCircular3d",
-        "patternCircular2d",
-    ];
-    if !name.is_camel_case() && !whitelist.contains(&name.as_str()) {
+    // Remove some known suffix exceptions first.
+    let name_cleaned = name.strip_suffix("2d").unwrap_or(name.as_str());
+    let name_cleaned = name.strip_suffix("3d").unwrap_or(name_cleaned);
+    if !name_cleaned.is_camel_case() {
         errors.push(Error::new_spanned(
             &ast.sig.ident,
             format!("stdlib function names must be in camel case: `{}`", name),
@@ -173,13 +194,11 @@ fn do_stdlib_inner(
         quote! {
             let code_blocks = vec![#(#cb),*];
             code_blocks.iter().map(|cb| {
-                let tokens = crate::token::lexer(cb).unwrap();
-                let parser = crate::parser::Parser::new(tokens);
-                let program = parser.ast().unwrap();
+                let program = crate::Program::parse_no_errs(cb).unwrap();
 
-                let mut options: crate::ast::types::FormatOptions = Default::default();
+                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
-                program.recast(&options, 0)
+                program.ast.recast(&options, 0)
             }).collect::<Vec<String>>()
         }
     } else {
@@ -231,6 +250,18 @@ fn do_stdlib_inner(
         quote! { false }
     };
 
+    let feature_tree_operation = if metadata.feature_tree_operation {
+        quote! { true }
+    } else {
+        quote! { false }
+    };
+
+    let uses_keyword_arguments = if metadata.keywords {
+        quote! { true }
+    } else {
+        quote! { false }
+    };
+
     let docs_crate = get_crate(None);
 
     // When the user attaches this proc macro to a function with the wrong type
@@ -239,7 +270,7 @@ fn do_stdlib_inner(
     // of the various parameters. We do this by calling dummy functions that
     // require a type that satisfies SharedExtractor or ExclusiveExtractor.
     let mut arg_types = Vec::new();
-    for arg in ast.sig.inputs.iter() {
+    for (i, arg) in ast.sig.inputs.iter().enumerate() {
         // Get the name of the argument.
         let arg_name = match arg {
             syn::FnArg::Receiver(pat) => {
@@ -269,7 +300,18 @@ fn do_stdlib_inner(
 
         let ty_string = rust_type_to_openapi_type(&ty_string);
         let required = !ty_ident.to_string().starts_with("Option <");
-
+        let description = if let Some(s) = metadata.arg_docs.get(&arg_name) {
+            quote! { #s }
+        } else if metadata.keywords && ty_string != "Args" && ty_string != "ExecState" {
+            errors.push(Error::new_spanned(
+                &arg,
+                "Argument was not documented in the arg_docs block",
+            ));
+            continue;
+        } else {
+            quote! { String::new() }
+        };
+        let label_required = !(i == 0 && metadata.unlabeled_first);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
                generator.root_schema_for::<#ty_ident>()
@@ -280,6 +322,8 @@ fn do_stdlib_inner(
                     type_: #ty_string.to_string(),
                     schema: #schema,
                     required: #required,
+                    label_required: #label_required,
+                    description: #description.to_string(),
                 }
             });
         }
@@ -340,6 +384,8 @@ fn do_stdlib_inner(
                 type_: #ret_ty_string.to_string(),
                 schema,
                 required: true,
+                label_required: true,
+                description: String::new(),
             })
         }
     } else {
@@ -380,10 +426,10 @@ fn do_stdlib_inner(
         #const_struct
 
         fn #boxed_fn_name_ident(
-            exec_state: &mut crate::executor::ExecState,
+            exec_state: &mut crate::ExecState,
             args: crate::std::Args,
         ) -> std::pin::Pin<
-            Box<dyn std::future::Future<Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>> + Send + '_>,
+            Box<dyn std::future::Future<Output = anyhow::Result<crate::execution::KclValue, crate::errors::KclError>> + Send + '_>,
         > {
             Box::pin(#fn_name_ident(exec_state, args))
         }
@@ -404,6 +450,10 @@ fn do_stdlib_inner(
 
             fn tags(&self) -> Vec<String> {
                 vec![#(#tags),*]
+            }
+
+            fn keyword_arguments(&self) -> bool {
+                #uses_keyword_arguments
             }
 
             fn args(&self, inline_subschemas: bool) -> Vec<#docs_crate::StdLibFnArg> {
@@ -430,6 +480,10 @@ fn do_stdlib_inner(
 
             fn deprecated(&self) -> bool {
                 #deprecated
+            }
+
+            fn feature_tree_operation(&self) -> bool {
+                #feature_tree_operation
             }
 
             fn examples(&self) -> Vec<String> {
@@ -725,6 +779,8 @@ fn rust_type_to_openapi_type(t: &str) -> String {
 
     if t == "f64" {
         return "number".to_string();
+    } else if t == "u32" {
+        return "integer".to_string();
     } else if t == "str" {
         return "string".to_string();
     } else {
@@ -749,28 +805,43 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
 
     quote! {
         #[tokio::test(flavor = "multi_thread")]
-        async fn #test_name_mock() {
-            let tokens = crate::token::lexer(#code_block).unwrap();
-            let parser = crate::parser::Parser::new(tokens);
-            let program = parser.ast().unwrap();
-            let id_generator = crate::executor::IdGenerator::default();
-            let ctx = crate::executor::ExecutorContext {
+        async fn #test_name_mock() -> miette::Result<()> {
+            let program = crate::Program::parse_no_errs(#code_block).unwrap();
+            let ctx = crate::ExecutorContext {
                 engine: std::sync::Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await.unwrap())),
                 fs: std::sync::Arc::new(crate::fs::FileManager::new()),
                 stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
                 settings: Default::default(),
-                context_type: crate::executor::ContextType::Mock,
+                context_type: crate::execution::ContextType::Mock,
             };
 
-            ctx.run(&program, None, id_generator, None).await.unwrap();
+            if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new()).await {
+                    return Err(miette::Report::new(crate::errors::Report {
+                        error: e,
+                        filename: format!("{}{}", #fn_name, #index),
+                        kcl_source: #code_block.to_string(),
+                    }));
+            }
+            Ok(())
         }
 
         #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-        async fn #test_name() {
+        async fn #test_name() -> miette::Result<()> {
             let code = #code_block;
             // Note, `crate` must be kcl_lib
-            let result = crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm).await.unwrap();
+            let result = match crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm, None).await {
+                Err(crate::errors::ExecError::Kcl(e)) => {
+                    return Err(miette::Report::new(crate::errors::Report {
+                        error: e,
+                        filename: format!("{}{}", #fn_name, #index),
+                        kcl_source: #code_block.to_string(),
+                    }));
+                }
+                Err(other_err)=> panic!("{}", other_err),
+                Ok(img) => img,
+            };
             twenty_twenty::assert_image(&format!("tests/outputs/{}.png", #output_test_name_str), &result, 0.99);
+            Ok(())
         }
     }
 }

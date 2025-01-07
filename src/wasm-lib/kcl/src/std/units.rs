@@ -5,7 +5,7 @@ use derive_docs::stdlib;
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, KclValue},
+    execution::{ExecState, KclValue},
     settings::types::UnitLength,
     std::Args,
 };
@@ -14,7 +14,7 @@ use crate::{
 pub async fn mm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_mm(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Millimeters conversion factor for current projects units.
@@ -34,7 +34,7 @@ pub async fn mm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `10 * (1/25.4)`, if the project settings are in inches.
 ///
 /// ```no_run
-/// const totalWidth = 10 * mm()
+/// totalWidth = 10 * mm()
 /// ```
 #[stdlib {
     name = "mm",
@@ -55,7 +55,7 @@ fn inner_mm(args: &Args) -> Result<f64, KclError> {
 pub async fn inch(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_inch(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Inches conversion factor for current projects units.
@@ -75,7 +75,7 @@ pub async fn inch(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// `10 * 25.4`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * inch()
+/// totalWidth = 10 * inch()
 /// ```
 #[stdlib {
     name = "inch",
@@ -96,7 +96,7 @@ fn inner_inch(args: &Args) -> Result<f64, KclError> {
 pub async fn ft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_ft(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Feet conversion factor for current projects units.
@@ -117,7 +117,7 @@ pub async fn ft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `10 * 304.8`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * ft()
+/// totalWidth = 10 * ft()
 /// ```
 #[stdlib {
     name = "ft",
@@ -138,7 +138,7 @@ fn inner_ft(args: &Args) -> Result<f64, KclError> {
 pub async fn m(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_m(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Meters conversion factor for current projects units.
@@ -159,7 +159,7 @@ pub async fn m(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 /// `10 * 1000`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * m()
+/// totalWidth = 10 * m()
 /// ```
 #[stdlib {
     name = "m",
@@ -180,7 +180,7 @@ fn inner_m(args: &Args) -> Result<f64, KclError> {
 pub async fn cm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_cm(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Centimeters conversion factor for current projects units.
@@ -201,7 +201,7 @@ pub async fn cm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `10 * 10`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * cm()
+/// totalWidth = 10 * cm()
 /// ```
 #[stdlib {
     name = "cm",
@@ -222,7 +222,7 @@ fn inner_cm(args: &Args) -> Result<f64, KclError> {
 pub async fn yd(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let result = inner_yd(&args)?;
 
-    args.make_user_val_from_f64(result)
+    Ok(args.make_user_val_from_f64(result))
 }
 
 /// Yards conversion factor for current projects units.
@@ -243,7 +243,7 @@ pub async fn yd(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `10 * 914.4`, if the project settings are in millimeters.
 ///
 /// ```no_run
-/// const totalWidth = 10 * yd()
+/// totalWidth = 10 * yd()
 /// ```
 #[stdlib {
     name = "yd",

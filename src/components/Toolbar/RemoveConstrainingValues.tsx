@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
 import { PathToNode, Program, Expr } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getRemoveConstraintsTransforms,
@@ -13,6 +10,8 @@ import {
 import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { codeRefFromRange } from 'lang/std/artifactGraph'
 
 export function removeConstrainingValuesInfo({
   selectionRanges,
@@ -27,13 +26,8 @@ export function removeConstrainingValuesInfo({
       updatedSelectionRanges: Selections
     }
   | Error {
-  const paths =
-    pathToNodes ||
-    selectionRanges.codeBasedSelections.map(({ range }) =>
-      getNodePathFromSourceRange(kclManager.ast, range)
-    )
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -44,10 +38,12 @@ export function removeConstrainingValuesInfo({
   const updatedSelectionRanges = pathToNodes
     ? {
         otherSelections: [],
-        codeBasedSelections: nodes.map(
+        graphSelections: nodes.map(
           (node): Selection => ({
-            range: [node.start, node.end],
-            type: 'default',
+            codeRef: codeRefFromRange(
+              [node.start, node.end, true],
+              kclManager.ast
+            ),
           })
         ),
       }
@@ -77,7 +73,7 @@ export function applyRemoveConstrainingValues({
   pathToNodes?: Array<PathToNode>
 }):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {

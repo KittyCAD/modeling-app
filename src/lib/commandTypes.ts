@@ -1,12 +1,13 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
 import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
-import { Selection } from './selections'
 import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
-
+import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Artifact } from 'lang/std/artifactGraph'
+import { CommandBarContext } from 'machines/commandBarMachine'
 type Icon = CustomIconName
 const PLATFORMS = ['both', 'web', 'desktop'] as const
 const INPUT_TYPES = [
@@ -24,8 +25,8 @@ export interface KclExpression {
 }
 export interface KclExpressionWithVariable extends KclExpression {
   variableName: string
-  variableDeclarationAst: VariableDeclaration
-  variableIdentifierAst: Identifier
+  variableDeclarationAst: Node<VariableDeclaration>
+  variableIdentifierAst: Node<Identifier>
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
@@ -95,6 +96,7 @@ export type CommandConfig<
   'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
 > & {
   needsReview?: true
+  status?: 'active' | 'development' | 'inactive'
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],
@@ -143,10 +145,32 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Selection['type'][]
+      selectionTypes: Artifact['type'][]
       multiple: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
-  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default values
+  | {
+      inputType: 'kcl'
+      createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: C
+          ) => string)
+    }
   | {
       inputType: 'string'
       defaultValue?:
@@ -217,10 +241,32 @@ export type CommandArgument<
     }
   | {
       inputType: 'selection'
-      selectionTypes: Selection['type'][]
+      selectionTypes: Artifact['type'][]
       multiple: boolean
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
-  | { inputType: 'kcl'; defaultValue?: string } // KCL expression inputs have simple strings as default value
+  | {
+      inputType: 'kcl'
+      createVariableByDefault?: boolean
+      variableName?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+      defaultValue?:
+        | string
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => string)
+    }
   | {
       inputType: 'string'
       defaultValue?:

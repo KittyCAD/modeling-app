@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    executor::{ExecState, KclValue, Solid},
+    execution::{ExecState, KclValue, Solid},
     std::Args,
 };
 
@@ -20,7 +20,7 @@ pub struct HelixData {
     /// Number of revolutions.
     pub revolutions: f64,
     /// Start angle (in degrees).
-    #[serde(rename = "angleStart", alias = "angle_start")]
+    #[serde(rename = "angleStart")]
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     /// The default is `false`.
@@ -42,17 +42,18 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Create a helix on a cylinder.
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
+/// part001 = startSketchOn('XY')
 ///   |> circle({ center: [5, 5], radius: 10 }, %)
 ///   |> extrude(10, %)
 ///   |> helix({
-///     angleStart: 0,
-///     ccw: true,
-///     revolutions: 16,
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 16,
 ///  }, %)
 /// ```
 #[stdlib {
     name = "helix",
+    feature_tree_operation = true,
 }]
 async fn inner_helix(
     data: HelixData,
@@ -60,7 +61,7 @@ async fn inner_helix(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::EntityMakeHelix {

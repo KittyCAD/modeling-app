@@ -68,15 +68,15 @@ case = startSketchOn('-XZ')
 
 thing1 = startSketchOn(case, 'end')
   |> circle({
-       center: [-size / 2, -size / 2],
-       radius: 25
+       center = [-size / 2, -size / 2],
+       radius = 25
      }, %)
   |> extrude(50, %)
 
 thing2 = startSketchOn(case, 'end')
   |> circle({
-       center: [size / 2, -size / 2],
-       radius: 25
+       center = [size / 2, -size / 2],
+       radius = 25
      }, %)
   |> extrude(50, %)
 

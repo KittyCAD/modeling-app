@@ -1,39 +1,31 @@
-import { test, expect } from '@playwright/test'
-import { join } from 'path'
+import { test, expect } from './zoo-test'
+import path from 'path'
 import {
   getUtils,
-  setupElectron,
-  tearDown,
   executorInputPath,
+  getPlaywrightDownloadDir,
 } from './test-utils'
 import fsp from 'fs/promises'
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
 
 test(
   'export works on the first try',
   { tag: '@electron' },
-  async ({ browserName }, testInfo) => {
-    const { electronApp, page } = await setupElectron({
-      testInfo,
-      folderSetupFn: async (dir) => {
-        const bracketDir = join(dir, 'bracket')
-        await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
-        await Promise.all([
-          fsp.copyFile(
-            executorInputPath('router-template-slate.kcl'),
-            join(bracketDir, 'other.kcl')
-          ),
-          fsp.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-            join(bracketDir, 'main.kcl')
-          ),
-        ])
-      },
+  async ({ page, context }, testInfo) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'bracket')
+      await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
+      await Promise.all([
+        fsp.copyFile(
+          executorInputPath('router-template-slate.kcl'),
+          path.join(bracketDir, 'other.kcl')
+        ),
+        fsp.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          path.join(bracketDir, 'main.kcl')
+        ),
+      ])
     })
-    await page.setViewportSize({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
     page.on('console', console.log)
 
@@ -62,6 +54,8 @@ test(
       const errorToastMessage = page.getByText(`Error while exporting`)
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
       const alreadyExportingToastMessage = page.getByText(`Already exporting`)
+      // The open file's name is `main.kcl`, so the export file name should be `main.gltf`
+      const exportFileName = `main.gltf`
 
       // Click the export button
       await exportButton.click()
@@ -91,12 +85,16 @@ test(
       await expect(successToastMessage).toBeVisible()
       await expect(exportingToastMessage).not.toBeVisible()
 
+      const firstFileFullPath = path.resolve(
+        getPlaywrightDownloadDir(page),
+        exportFileName
+      )
       await test.step('Check the export size', async () => {
         await expect
           .poll(
             async () => {
               try {
-                const outputGltf = await fsp.readFile('output.gltf')
+                const outputGltf = await fsp.readFile(firstFileFullPath)
                 return outputGltf.byteLength
               } catch (e) {
                 return 0
@@ -105,9 +103,6 @@ test(
             { timeout: 15_000 }
           )
           .toBeGreaterThan(300_000)
-
-        // clean up output.gltf
-        await fsp.rm('output.gltf')
       })
     })
 
@@ -138,6 +133,8 @@ test(
       const errorToastMessage = page.getByText(`Error while exporting`)
       const engineErrorToastMessage = page.getByText(`Nothing to export`)
       const alreadyExportingToastMessage = page.getByText(`Already exporting`)
+      // The open file's name is `other.kcl`, so the export file name should be `other.gltf`
+      const exportFileName = `other.gltf`
 
       // Click the export button
       await exportButton.click()
@@ -166,12 +163,16 @@ test(
           expect(exportingToastMessage).not.toBeVisible(),
         ]))
 
+      const secondFileFullPath = path.resolve(
+        getPlaywrightDownloadDir(page),
+        exportFileName
+      )
       await test.step('Check the export size', async () => {
         await expect
           .poll(
             async () => {
               try {
-                const outputGltf = await fsp.readFile('output.gltf')
+                const outputGltf = await fsp.readFile(secondFileFullPath)
                 return outputGltf.byteLength
               } catch (e) {
                 return 0
@@ -180,13 +181,7 @@ test(
             { timeout: 15_000 }
           )
           .toBeGreaterThan(100_000)
-
-        // clean up output.gltf
-        await fsp.rm('output.gltf')
       })
-      await electronApp.close()
     })
-
-    await electronApp.close()
   }
 )

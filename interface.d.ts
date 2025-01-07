@@ -7,9 +7,17 @@ import { MachinesListing } from 'components/MachineManagerProvider'
 type EnvFn = (value?: string) => string
 
 export interface IElectronAPI {
+  resizeWindow: (width: number, height: number) => Promise<void>
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
+  takeElectronWindowScreenshot: ({
+    width,
+    height,
+  }: {
+    width: number
+    height: number
+  }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
   /** Require to be called first before {@link loginWithDeviceFlow} */
   startDeviceFlow: (host: string) => Promise<string>
@@ -78,6 +86,8 @@ export interface IElectronAPI {
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
+  getArgvParsed: () => any
+  getAppTestProperty: (propertyName: string) => any
 }
 
 declare global {

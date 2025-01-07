@@ -1,9 +1,8 @@
 //! Functions related to sketching.
 
-use std::collections::HashMap;
-
 use anyhow::Result;
 use derive_docs::stdlib;
+use indexmap::IndexMap;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
@@ -13,16 +12,16 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{
+    execution::{
         BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
-        Solid, TagEngineInfo, TagIdentifier, UserVal,
+        Solid, TagEngineInfo, TagIdentifier,
     },
+    parsing::ast::types::TagNode,
     std::{
         utils::{
-            arc_angles, arc_center_and_end, get_tangent_point_from_previous_arc, get_tangential_arc_to_info,
-            get_x_component, get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
+            arc_angles, arc_center_and_end, calculate_circle_center, get_tangential_arc_to_info, get_x_component,
+            get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
         },
         Args,
     },
@@ -94,23 +93,25 @@ pub enum StartOrEnd {
 
 /// Draw a line to a point.
 pub async fn line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (to, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_line_to(to, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a line from the current origin to some absolute (x, y) point.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([10, 0], %)
 ///   |> lineTo([0, 10], %)
 ///   |> lineTo([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "lineTo",
@@ -118,12 +119,12 @@ pub async fn line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 async fn inner_line_to(
     to: [f64; 2],
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -161,10 +162,12 @@ async fn inner_line_to(
 
 /// Draw a line to a point on the x-axis.
 pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (to, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_x_line_to(to, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a line parallel to the X axis, that ends at the given X.
@@ -172,23 +175,23 @@ pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// then xLineTo(4) draws a line from (1, 1) to (4, 1)
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLineTo(15, %)
 ///   |> angledLine({
-///     angle: 80,
-///     length: 15,
+///     angle = 80,
+///     length = 15,
 ///   }, %)
 ///   |> line([8, -10], %)
 ///   |> xLineTo(40, %)
 ///   |> angledLine({
-///     angle: 135,
-///     length: 30,
+///     angle = 135,
+///     length = 30,
 ///   }, %)
 ///   |> xLineTo(10, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "xLineTo",
@@ -196,7 +199,7 @@ pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 async fn inner_x_line_to(
     to: f64,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -209,10 +212,12 @@ async fn inner_x_line_to(
 
 /// Draw a line to a point on the y-axis.
 pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (to, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_y_line_to(to, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a line parallel to the Y axis, that ends at the given Y.
@@ -220,16 +225,16 @@ pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// then yLineTo(4) draws a line from (1, 1) to (1, 4)
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 50,
-///     length: 45,
+///     angle = 50,
+///     length = 45,
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "yLineTo",
@@ -237,7 +242,7 @@ pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 async fn inner_y_line_to(
     to: f64,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -249,35 +254,37 @@ async fn inner_y_line_to(
 
 /// Draw a line.
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_line(delta, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a line relative to the current origin to a specified (x, y) away
 /// from the current position.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([25, 15], %)
 ///   |> line([5, -6], %)
 ///   |> line([-10, -10], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "line",
@@ -285,14 +292,14 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 async fn inner_line(
     delta: [f64; 2],
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
     let to = [from.x + delta[0], from.y + delta[1]];
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -330,33 +337,35 @@ async fn inner_line(
 
 /// Draw a line on the x-axis.
 pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (length, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_x_line(length, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a line relative to the current origin to a specified distance away
 /// from the current position along the 'x' axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> xLine(15, %)
 ///   |> angledLine({
-///     angle: 80,
-///     length: 15,
+///     angle = 80,
+///     length = 15,
 ///   }, %)
 ///   |> line([8, -10], %)
 ///   |> xLine(10, %)
 ///   |> angledLine({
-///     angle: 120,
-///     length: 30,
+///     angle = 120,
+///     length = 30,
 ///   }, %)
 ///   |> xLine(-15, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "xLine",
@@ -364,7 +373,7 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_x_line(
     length: f64,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -373,28 +382,30 @@ async fn inner_x_line(
 
 /// Draw a line on the y-axis.
 pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch, tag): (f64, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (length, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_y_line(length, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a line relative to the current origin to a specified distance away
 /// from the current position along the 'y' axis.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLine(15, %)
 ///   |> angledLine({
-///     angle: 30,
-///     length: 15,
+///     angle = 30,
+///     length = 15,
 ///   }, %)
 ///   |> line([8, -10], %)
 ///   |> yLine(-5, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "yLine",
@@ -402,7 +413,7 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_y_line(
     length: f64,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -427,28 +438,30 @@ pub enum AngledLineData {
 
 /// Draw an angled line.
 pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a line segment relative to the current origin using the polar
 /// measure of some angle and distance.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> yLineTo(15, %)
 ///   |> angledLine({
-///     angle: 30,
-///     length: 15,
+///     angle = 30,
+///     length = 15,
 ///   }, %)
 ///   |> line([8, -10], %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLine",
@@ -456,7 +469,7 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 async fn inner_angled_line(
     data: AngledLineData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -475,7 +488,7 @@ async fn inner_angled_line(
 
     let to: [f64; 2] = [from.x + delta[0], from.y + delta[1]];
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -512,24 +525,26 @@ async fn inner_angled_line(
 
 /// Draw an angled line of a given x length.
 pub async fn angled_line_of_x_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line_of_x_length(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Create a line segment from the current 2-dimensional sketch origin
 /// along some angle (in degrees) for some relative length in the 'x' dimension.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLineOfXLength({ angle: 45, length: 10 }, %, $edge1)
-///   |> angledLineOfXLength({ angle: -15, length: 20 }, %, $edge2)
+///   |> angledLineOfXLength({ angle = 45, length = 10 }, %, $edge1)
+///   |> angledLineOfXLength({ angle = -15, length = 20 }, %, $edge2)
 ///   |> line([0, -5], %)
 ///   |> close(%, $edge3)
 ///
-/// const extrusion = extrude(10, sketch001)
+/// extrusion = extrude(10, sketch001)
 /// ```
 #[stdlib {
     name = "angledLineOfXLength",
@@ -537,7 +552,7 @@ pub async fn angled_line_of_x_length(exec_state: &mut ExecState, args: Args) -> 
 async fn inner_angled_line_of_x_length(
     data: AngledLineData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -573,17 +588,19 @@ async fn inner_angled_line_of_x_length(
 #[serde(rename_all = "camelCase")]
 pub struct AngledLineToData {
     /// The angle of the line.
-    angle: f64,
+    pub angle: f64,
     /// The point to draw to.
-    to: f64,
+    pub to: f64,
 }
 
 /// Draw an angled line to a given x coordinate.
 pub async fn angled_line_to_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line_to_x(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Create a line segment from the current 2-dimensional sketch origin
@@ -591,14 +608,14 @@ pub async fn angled_line_to_x(exec_state: &mut ExecState, args: Args) -> Result<
 /// in the 'x' dimension.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLineToX({ angle: 30, to: 10 }, %)
+///   |> angledLineToX({ angle = 30, to = 10 }, %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///  
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLineToX",
@@ -606,7 +623,7 @@ pub async fn angled_line_to_x(exec_state: &mut ExecState, args: Args) -> Result<
 async fn inner_angled_line_to_x(
     data: AngledLineToData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -637,27 +654,29 @@ async fn inner_angled_line_to_x(
 
 /// Draw an angled line of a given y length.
 pub async fn angled_line_of_y_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line_of_y_length(data, sketch, tag, exec_state, args).await?;
 
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Create a line segment from the current 2-dimensional sketch origin
 /// along some angle (in degrees) for some relative length in the 'y' dimension.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
-///   |> angledLineOfYLength({ angle: 45, length: 10 }, %)
+///   |> angledLineOfYLength({ angle = 45, length = 10 }, %)
 ///   |> line([0, 10], %)
-///   |> angledLineOfYLength({ angle: 135, length: 10 }, %)
+///   |> angledLineOfYLength({ angle = 135, length = 10 }, %)
 ///   |> line([-10, 0], %)
 ///   |> line([0, -30], %)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLineOfYLength",
@@ -665,7 +684,7 @@ pub async fn angled_line_of_y_length(exec_state: &mut ExecState, args: Args) -> 
 async fn inner_angled_line_of_y_length(
     data: AngledLineData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -697,10 +716,12 @@ async fn inner_angled_line_of_y_length(
 
 /// Draw an angled line to a given y coordinate.
 pub async fn angled_line_to_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (AngledLineToData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_angled_line_to_y(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Create a line segment from the current 2-dimensional sketch origin
@@ -708,14 +729,14 @@ pub async fn angled_line_to_y(exec_state: &mut ExecState, args: Args) -> Result<
 /// in the 'y' dimension.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLineToY({ angle: 60, to: 20 }, %)
+///   |> angledLineToY({ angle = 60, to = 20 }, %)
 ///   |> line([-20, 0], %)
-///   |> angledLineToY({ angle: 70, to: 10 }, %)
+///   |> angledLineToY({ angle = 70, to = 10 }, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLineToY",
@@ -723,7 +744,7 @@ pub async fn angled_line_to_y(exec_state: &mut ExecState, args: Args) -> Result<
 async fn inner_angled_line_to_y(
     data: AngledLineToData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -768,10 +789,12 @@ pub struct AngledLineThatIntersectsData {
 
 /// Draw an angled line that intersects with a given line.
 pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (AngledLineThatIntersectsData, Sketch, Option<TagDeclarator>) =
+    let (data, sketch, tag): (AngledLineThatIntersectsData, Sketch, Option<TagNode>) =
         args.get_data_and_sketch_and_tag()?;
     let new_sketch = inner_angled_line_that_intersects(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw an angled line from the current origin, constructing a line segment
@@ -779,19 +802,19 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 /// segment.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> lineTo([5, 10], %)
 ///   |> lineTo([-10, 10], %, $lineToIntersect)
 ///   |> lineTo([0, 20], %)
 ///   |> angledLineThatIntersects({
-///        angle: 80,
-///        intersectTag: lineToIntersect,
-///        offset: 10
+///        angle = 80,
+///        intersectTag = lineToIntersect,
+///        offset = 10
 ///      }, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "angledLineThatIntersects",
@@ -799,7 +822,7 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
 async fn inner_angled_line_that_intersects(
     data: AngledLineThatIntersectsData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -828,47 +851,50 @@ pub async fn start_sketch_at(exec_state: &mut ExecState, args: Args) -> Result<K
     let data: [f64; 2] = args.get_data()?;
 
     let sketch = inner_start_sketch_at(data, exec_state, args).await?;
-    Ok(KclValue::new_user_val(sketch.meta.clone(), sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
 }
 
 /// Start a new 2-dimensional sketch at a given point on the 'XY' plane.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchAt([0, 0])
+/// exampleSketch = startSketchAt([0, 0])
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchAt([10, 10])
+/// exampleSketch = startSketchAt([10, 10])
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchAt([-10, 23])
+/// exampleSketch = startSketchAt([-10, 23])
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "startSketchAt",
+    deprecated = true,
 }]
 async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args: Args) -> Result<Sketch, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
     let xy_plane = PlaneData::XY;
-    let sketch_surface = inner_start_sketch_on(SketchData::Plane(xy_plane), None, exec_state, &args).await?;
+    let sketch_surface = inner_start_sketch_on(SketchData::PlaneOrientation(xy_plane), None, exec_state, &args).await?;
     let sketch = inner_start_profile_at(data, sketch_surface, None, exec_state, args).await?;
     Ok(sketch)
 }
@@ -879,11 +905,12 @@ async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args:
 #[ts(export)]
 #[serde(rename_all = "camelCase", untagged)]
 pub enum SketchData {
-    Plane(PlaneData),
+    PlaneOrientation(PlaneData),
+    Plane(Box<Plane>),
     Solid(Box<Solid>),
 }
 
-/// Data for a plane.
+/// Orientation data that can be used to construct a plane, not a plane in itself.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
@@ -911,13 +938,13 @@ pub enum PlaneData {
         /// Origin of the plane.
         origin: Box<Point3d>,
         /// What should the plane’s X axis be?
-        #[serde(rename = "xAxis", alias = "x_axis")]
+        #[serde(rename = "xAxis")]
         x_axis: Box<Point3d>,
         /// What should the plane’s Y axis be?
-        #[serde(rename = "yAxis", alias = "y_axis")]
+        #[serde(rename = "yAxis")]
         y_axis: Box<Point3d>,
         /// The z-axis (normal).
-        #[serde(rename = "zAxis", alias = "z_axis")]
+        #[serde(rename = "zAxis")]
         z_axis: Box<Point3d>,
     },
 }
@@ -935,65 +962,65 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XY")
+/// exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 ///
-/// const exampleSketch002 = startSketchOn(example, 'end')
+/// exampleSketch002 = startSketchOn(example, 'end')
 ///   |> startProfileAt([1, 1], %)
 ///   |> line([8, 0], %)
 ///   |> line([0, 8], %)
 ///   |> line([-8, 0], %)
 ///   |> close(%)
 ///
-/// const example002 = extrude(5, exampleSketch002)
+/// example002 = extrude(5, exampleSketch002)
 ///
-/// const exampleSketch003 = startSketchOn(example002, 'end')
+/// exampleSketch003 = startSketchOn(example002, 'end')
 ///   |> startProfileAt([2, 2], %)
 ///   |> line([6, 0], %)
 ///   |> line([0, 6], %)
 ///   |> line([-6, 0], %)
 ///   |> close(%)
 ///
-/// const example003 = extrude(5, exampleSketch003)
+/// example003 = extrude(5, exampleSketch003)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn("XY")
+/// exampleSketch = startSketchOn("XY")
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %, $sketchingFace)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 ///
-/// const exampleSketch002 = startSketchOn(example, sketchingFace)
+/// exampleSketch002 = startSketchOn(example, sketchingFace)
 ///   |> startProfileAt([1, 1], %)
 ///   |> line([8, 0], %)
 ///   |> line([0, 8], %)
 ///   |> line([-8, 0], %)
 ///   |> close(%, $sketchingFace002)
 ///
-/// const example002 = extrude(10, exampleSketch002)
+/// example002 = extrude(10, exampleSketch002)
 ///
-/// const exampleSketch003 = startSketchOn(example002, sketchingFace002)
+/// exampleSketch003 = startSketchOn(example002, sketchingFace002)
 ///   |> startProfileAt([-8, 12], %)
 ///   |> line([0, 6], %)
 ///   |> line([6, 0], %)
 ///   |> line([0, -6], %)
 ///   |> close(%)
 ///
-/// const example003 = extrude(5, exampleSketch003)
+/// example003 = extrude(5, exampleSketch003)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XY')
+/// exampleSketch = startSketchOn('XY')
 ///   |> startProfileAt([4, 12], %)
 ///   |> line([2, 0], %)
 ///   |> line([0, -6], %)
@@ -1004,25 +1031,25 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line([-2, 0], %)
 ///   |> close(%)
 ///
-/// const example = revolve({ axis: 'y', angle: 180 }, exampleSketch)
+/// example = revolve({ axis: 'y', angle: 180 }, exampleSketch)
 ///  
-/// const exampleSketch002 = startSketchOn(example, 'end')
+/// exampleSketch002 = startSketchOn(example, 'end')
 ///   |> startProfileAt([4.5, -5], %)
 ///   |> line([0, 5], %)
 ///   |> line([5, 0], %)
 ///   |> line([0, -5], %)
 ///   |> close(%)
 ///
-/// const example002 = extrude(5, exampleSketch002)
+/// example002 = extrude(5, exampleSketch002)
 /// ```
 ///
 /// ```no_run
-/// const a1 = startSketchOn({
+/// a1 = startSketchOn({
 ///       plane: {
-///         origin: { x: 0, y: 0, z: 0 },
-///         xAxis: { x: 1, y: 0, z: 0 },
-///         yAxis: { x: 0, y: 1, z: 0 },
-///         zAxis: { x: 0, y: 0, z: 1 }
+///         origin = { x = 0, y = 0, z = 0 },
+///         xAxis = { x = 1, y = 0, z = 0 },
+///         yAxis = { x = 0, y = 1, z = 0 },
+///         zAxis = { x = 0, y = 0, z = 1 }
 ///       }
 ///     })
 ///  |> startProfileAt([0, 0], %)
@@ -1035,6 +1062,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "startSketchOn",
+    feature_tree_operation = true,
 }]
 async fn inner_start_sketch_on(
     data: SketchData,
@@ -1043,10 +1071,11 @@ async fn inner_start_sketch_on(
     args: &Args,
 ) -> Result<SketchSurface, KclError> {
     match data {
-        SketchData::Plane(plane_data) => {
-            let plane = start_sketch_on_plane(plane_data, exec_state, args).await?;
+        SketchData::PlaneOrientation(plane_data) => {
+            let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
+        SketchData::Plane(plane) => Ok(SketchSurface::Plane(plane)),
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
                 return Err(KclError::Type(KclErrorDetails {
@@ -1080,97 +1109,106 @@ async fn start_sketch_on_face(
     }))
 }
 
-async fn start_sketch_on_plane(
+async fn make_sketch_plane_from_orientation(
     data: PlaneData,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Plane>, KclError> {
-    let mut plane = Plane::from_plane_data(data.clone(), exec_state);
+    let plane = Plane::from_plane_data(data.clone(), exec_state);
 
-    // Get the default planes.
-    let default_planes = args
-        .ctx
-        .engine
-        .default_planes(&mut exec_state.id_generator, args.source_range)
-        .await?;
-
-    plane.id = match data {
-        PlaneData::XY => default_planes.xy,
-        PlaneData::XZ => default_planes.xz,
-        PlaneData::YZ => default_planes.yz,
-        PlaneData::NegXY => default_planes.neg_xy,
-        PlaneData::NegXZ => default_planes.neg_xz,
-        PlaneData::NegYZ => default_planes.neg_yz,
+    // Create the plane on the fly.
+    let clobber = false;
+    let size = LengthUnit(60.0);
+    let hide = Some(true);
+    match data {
+        PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
+            let x_axis = match data {
+                PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0),
+                PlaneData::NegXZ => Point3d::new(-1.0, 0.0, 0.0),
+                PlaneData::NegYZ => Point3d::new(0.0, -1.0, 0.0),
+                _ => plane.x_axis,
+            };
+            args.batch_modeling_cmd(
+                plane.id,
+                ModelingCmd::from(mcmd::MakePlane {
+                    clobber,
+                    origin: plane.origin.into(),
+                    size,
+                    x_axis: x_axis.into(),
+                    y_axis: plane.y_axis.into(),
+                    hide,
+                }),
+            )
+            .await?;
+        }
         PlaneData::Plane {
             origin,
             x_axis,
             y_axis,
             z_axis: _,
         } => {
-            // Create the custom plane on the fly.
-            let id = exec_state.id_generator.next_uuid();
             args.batch_modeling_cmd(
-                id,
+                plane.id,
                 ModelingCmd::from(mcmd::MakePlane {
-                    clobber: false,
+                    clobber,
                     origin: (*origin).into(),
-                    size: LengthUnit(60.0),
+                    size,
                     x_axis: (*x_axis).into(),
                     y_axis: (*y_axis).into(),
-                    hide: Some(true),
+                    hide,
                 }),
             )
             .await?;
-
-            id
         }
-    };
+    }
 
     Ok(Box::new(plane))
 }
 
 /// Start a new profile at a given point.
 pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<TagDeclarator>) =
+    let (start, sketch_surface, tag): ([f64; 2], SketchSurface, Option<TagNode>) =
         args.get_data_and_sketch_surface()?;
 
     let sketch = inner_start_profile_at(start, sketch_surface, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(sketch.meta.clone(), sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
 }
 
 /// Start a new profile at a given point.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn('-XZ')
 ///   |> startProfileAt([10, 10], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn('-XZ')
 ///   |> startProfileAt([-10, 23], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 /// ```
 #[stdlib {
     name = "startProfileAt",
@@ -1178,20 +1216,35 @@ pub async fn start_profile_at(exec_state: &mut ExecState, args: Args) -> Result<
 pub(crate) async fn inner_start_profile_at(
     to: [f64; 2],
     sketch_surface: SketchSurface,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    if let SketchSurface::Face(face) = &sketch_surface {
-        // Flush the batch for our fillets/chamfers if there are any.
-        // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
+    match &sketch_surface {
+        SketchSurface::Face(face) => {
+            // Flush the batch for our fillets/chamfers if there are any.
+            // If we do not do these for sketch on face, things will fail with face does not exist.
+            args.flush_batch_for_solid_set(exec_state, face.solid.clone().into())
+                .await?;
+        }
+        SketchSurface::Plane(plane) if !plane.is_standard() => {
+            // Hide whatever plane we are sketching on.
+            // This is especially helpful for offset planes, which would be visible otherwise.
+            args.batch_end_cmd(
+                exec_state.next_uuid(),
+                ModelingCmd::from(mcmd::ObjectVisible {
+                    object_id: plane.id,
+                    hidden: true,
+                }),
+            )
             .await?;
+        }
+        _ => {}
     }
 
     // Enter sketch mode on the surface.
     // We call this here so you can reuse the sketch surface for multiple sketches.
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::EnableSketchMode {
@@ -1209,8 +1262,8 @@ pub(crate) async fn inner_start_profile_at(
     )
     .await?;
 
-    let id = exec_state.id_generator.next_uuid();
-    let path_id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
+    let path_id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath {}))
         .await?;
@@ -1249,7 +1302,7 @@ pub(crate) async fn inner_start_profile_at(
                 }),
                 surface: None,
             });
-            HashMap::from([(tag.name.to_string(), tag_identifier)])
+            IndexMap::from([(tag.name.to_string(), tag_identifier)])
         } else {
             Default::default()
         },
@@ -1262,18 +1315,18 @@ pub(crate) async fn inner_start_profile_at(
 pub async fn profile_start_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
     let x = inner_profile_start_x(sketch)?;
-    args.make_user_val_from_f64(x)
+    Ok(args.make_user_val_from_f64(x))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'x'
 /// value.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
 ///  |> angledLine([-26.6, 50], %)
 ///  |> angledLine([90, 50], %)
-///  |> angledLineToX({ angle: 30, to: profileStartX(%) }, %)
+///  |> angledLineToX({ angle = 30, to = profileStartX(%) }, %)
 /// ```
 #[stdlib {
     name = "profileStartX"
@@ -1286,17 +1339,17 @@ pub(crate) fn inner_profile_start_x(sketch: Sketch) -> Result<f64, KclError> {
 pub async fn profile_start_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
     let x = inner_profile_start_y(sketch)?;
-    args.make_user_val_from_f64(x)
+    Ok(args.make_user_val_from_f64(x))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin's 'y'
 /// value.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine({ angle: -60, length: 14 }, %)
-///  |> angledLineToY({ angle: 30, to: profileStartY(%) }, %)
+///  |> angledLine({ angle = -60, length = 14 }, %)
+///  |> angledLineToY({ angle = 30, to = profileStartY(%) }, %)
 /// ```
 #[stdlib {
     name = "profileStartY"
@@ -1309,25 +1362,17 @@ pub(crate) fn inner_profile_start_y(sketch: Sketch) -> Result<f64, KclError> {
 pub async fn profile_start(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_sketch()?;
     let point = inner_profile_start(sketch)?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(point).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert point to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
-        meta: Default::default(),
-    }))
+    Ok(KclValue::from_point2d(point, args.into()))
 }
 
 /// Extract the provided 2-dimensional sketch's profile's origin
 /// value.
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn('XY')
 ///  |> startProfileAt([5, 2], %)
-///  |> angledLine({ angle: 120, length: 50 }, %, $seg01)
-///  |> angledLine({ angle: segAng(seg01) + 120, length: 50 }, %)
+///  |> angledLine({ angle = 120, length = 50 }, %, $seg01)
+///  |> angledLine({ angle = segAng(seg01) + 120, length = 50 }, %)
 ///  |> lineTo(profileStart(%), %)
 ///  |> close(%)
 ///  |> extrude(20, %)
@@ -1341,11 +1386,13 @@ pub(crate) fn inner_profile_start(sketch: Sketch) -> Result<[f64; 2], KclError> 
 
 /// Close the current sketch.
 pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (sketch, tag): (Sketch, Option<TagDeclarator>) = args.get_sketch_and_optional_tag()?;
+    let (sketch, tag): (Sketch, Option<TagNode>) = args.get_sketch_and_optional_tag()?;
 
     let new_sketch = inner_close(sketch, tag, exec_state, args).await?;
 
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Construct a line segment from the current origin back to the profile's
@@ -1361,27 +1408,27 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('-XZ')
+/// exampleSketch = startSketchOn('-XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> line([0, 10], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "close",
 }]
 pub(crate) async fn inner_close(
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
     let to: Point2d = sketch.start.from.into();
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }))
         .await?;
@@ -1390,7 +1437,7 @@ pub(crate) async fn inner_close(
     if let SketchSurface::Plane(_) = sketch.on {
         // We were on a plane, disable the sketch mode.
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
         )
         .await?;
@@ -1426,11 +1473,11 @@ pub enum ArcData {
     /// Angles and radius with an optional tag.
     AnglesAndRadius {
         /// The start angle.
-        #[serde(rename = "angleStart", alias = "angle_start")]
+        #[serde(rename = "angleStart")]
         #[schemars(range(min = -360.0, max = 360.0))]
         angle_start: f64,
         /// The end angle.
-        #[serde(rename = "angleEnd", alias = "angle_end")]
+        #[serde(rename = "angleEnd")]
         #[schemars(range(min = -360.0, max = 360.0))]
         angle_end: f64,
         /// The radius.
@@ -1447,12 +1494,25 @@ pub enum ArcData {
     },
 }
 
+/// Data to draw a three point arc (arcTo).
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ArcToData {
+    /// End point of the arc. A point in 3D space
+    pub end: [f64; 2],
+    /// Interior point of the arc. A point in 3D space
+    pub interior: [f64; 2],
+}
+
 /// Draw an arc.
 pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (ArcData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (ArcData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_arc(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a curved line segment along an imaginary circle.
@@ -1466,16 +1526,16 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// for to construct your shape, you're likely looking for tangentialArc.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
-///        angleStart: 0,
-///        angleEnd: 280,
-///        radius: 16
+///        angleStart = 0,
+///        angleEnd = 280,
+///        radius = 16
 ///      }, %)
 ///   |> close(%)
-// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "arc",
@@ -1483,7 +1543,7 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 pub(crate) async fn inner_arc(
     data: ArcData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -1501,7 +1561,7 @@ pub(crate) async fn inner_arc(
             (center, a_start, a_end, *radius, end)
         }
         ArcData::CenterToRadius { center, to, radius } => {
-            let (angle_start, angle_end) = arc_angles(from, center.into(), to.into(), *radius, args.source_range)?;
+            let (angle_start, angle_end) = arc_angles(from, to.into(), center.into(), *radius, args.source_range)?;
             (center.into(), angle_start, angle_end, *radius, to.into())
         }
     };
@@ -1512,8 +1572,9 @@ pub(crate) async fn inner_arc(
             source_ranges: vec![args.source_range],
         }));
     }
+    let ccw = angle_start < angle_end;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -1542,6 +1603,7 @@ pub(crate) async fn inner_arc(
         },
         center: center.into(),
         radius,
+        ccw,
     };
 
     let mut new_sketch = sketch.clone();
@@ -1552,6 +1614,127 @@ pub(crate) async fn inner_arc(
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
+}
+
+/// Draw a three point arc.
+pub async fn arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let (data, sketch, tag): (ArcToData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
+
+    let new_sketch = inner_arc_to(data, sketch, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
+}
+
+/// Draw a 3 point arc.
+///
+/// The arc is constructed such that the start point is the current position of the sketch and two more points defined as the end and interior point.
+/// The interior point is placed between the start point and end point. The radius of the arc will be controlled by how far the interior point is placed from
+/// the start and end.
+///
+/// ```no_run
+/// exampleSketch = startSketchOn('XZ')
+///   |> startProfileAt([0, 0], %)
+///   |> arcTo({
+///         end = [10,0],
+///         interior = [5,5]
+///      }, %)
+///   |> close(%)
+/// example = extrude(10, exampleSketch)
+/// ```
+#[stdlib {
+    name = "arcTo",
+}]
+pub(crate) async fn inner_arc_to(
+    data: ArcToData,
+    sketch: Sketch,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let from: Point2d = sketch.current_pen_position()?;
+    let id = exec_state.next_uuid();
+
+    // The start point is taken from the path you are extending.
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment: PathSegment::ArcTo {
+                end: kcmc::shared::Point3d {
+                    x: LengthUnit(data.end[0]),
+                    y: LengthUnit(data.end[1]),
+                    z: LengthUnit(0.0),
+                },
+                interior: kcmc::shared::Point3d {
+                    x: LengthUnit(data.interior[0]),
+                    y: LengthUnit(data.interior[1]),
+                    z: LengthUnit(0.0),
+                },
+                relative: false,
+            },
+        }),
+    )
+    .await?;
+
+    let start = [from.x, from.y];
+    let interior = data.interior;
+    let end = data.end;
+
+    // compute the center of the circle since we do not have the value returned from the engine
+    let center = calculate_circle_center(start, interior, end);
+
+    // compute the radius since we do not have the value returned from the engine
+    // Pick any of the 3 points since they all lie along the circle
+    let sum_of_square_differences =
+        (center[0] - start[0] * center[0] - start[0]) + (center[1] - start[1] * center[1] - start[1]);
+    let radius = sum_of_square_differences.sqrt();
+
+    let ccw = is_ccw(start, interior, end);
+
+    let current_path = Path::Arc {
+        base: BasePath {
+            from: from.into(),
+            to: data.end,
+            tag: tag.clone(),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+        center,
+        radius,
+        ccw,
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path);
+    }
+
+    new_sketch.paths.push(current_path);
+
+    Ok(new_sketch)
+}
+
+/// Returns true if the three-point arc is counterclockwise.  The order of
+/// parameters is critical.
+///
+/// |   end
+/// |  /
+/// |  |    / interior
+/// |  /  /
+/// | | /
+/// |/_____________
+/// start
+///
+/// If the slope of the line from start to interior is less than the slope of
+/// the line from start to end, the arc is counterclockwise.
+fn is_ccw(start: [f64; 2], interior: [f64; 2], end: [f64; 2]) -> bool {
+    let t1 = (interior[0] - start[0]) * (end[1] - start[1]);
+    let t2 = (end[0] - start[0]) * (interior[1] - start[1]);
+    // If these terms are equal, the points are collinear.
+    t1 > t2
 }
 
 /// Data to draw a tangential arc.
@@ -1570,10 +1753,12 @@ pub enum TangentialArcData {
 
 /// Draw a tangential arc.
 pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (TangentialArcData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (TangentialArcData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_tangential_arc(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a curved line segment along part of an imaginary circle.
@@ -1584,20 +1769,20 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// degrees along the imaginary circle.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
-///   |> tangentialArc({ radius: 10, offset: -120 }, %)
+///   |> tangentialArc({ radius = 10, offset = -120 }, %)
 ///   |> angledLine({
-///     angle: -60,
-///     length: 10,
+///     angle = -60,
+///     length = 10,
 ///   }, %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "tangentialArc",
@@ -1605,20 +1790,16 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
 async fn inner_tangential_arc(
     data: TangentialArcData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
     // next set of lines is some undocumented voodoo from get_tangential_arc_to_info
     let tangent_info = sketch.get_tangential_info_from_paths(); //this function desperately needs some documentation
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
@@ -1698,18 +1879,22 @@ fn tan_arc_to(sketch: &Sketch, to: &[f64; 2]) -> ModelingCmd {
 
 /// Draw a tangential arc to a specific point.
 pub async fn tangential_arc_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = super::args::FromArgs::from_args(&args, 0)?;
+    let (to, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = super::args::FromArgs::from_args(&args, 0)?;
 
     let new_sketch = inner_tangential_arc_to(to, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a tangential arc to point some distance away..
 pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagDeclarator>) = super::args::FromArgs::from_args(&args, 0)?;
+    let (delta, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = super::args::FromArgs::from_args(&args, 0)?;
 
     let new_sketch = inner_tangential_arc_to_relative(delta, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Starting at the current sketch's origin, draw a curved line segment along
@@ -1717,17 +1902,17 @@ pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) 
 /// coordinates.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
 ///   |> tangentialArcTo([15, 15], %)
 ///   |> line([10, -15], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "tangentialArcTo",
@@ -1735,17 +1920,13 @@ pub async fn tangential_arc_to_relative(exec_state: &mut ExecState, args: Args) 
 async fn inner_tangential_arc_to(
     to: [f64; 2],
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
     let tangent_info = sketch.get_tangential_info_from_paths();
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
     let [to_x, to_y] = to;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
@@ -1755,7 +1936,7 @@ async fn inner_tangential_arc_to(
     });
 
     let delta = [to_x - from.x, to_y - from.y];
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
@@ -1787,17 +1968,17 @@ async fn inner_tangential_arc_to(
 /// distance away.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
-///     angle: 45,
-///     length: 10,
+///     angle = 45,
+///     length = 10,
 ///   }, %)
 ///   |> tangentialArcToRelative([0, -10], %)
 ///   |> line([-10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "tangentialArcToRelative",
@@ -1805,17 +1986,15 @@ async fn inner_tangential_arc_to(
 async fn inner_tangential_arc_to_relative(
     delta: [f64; 2],
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
+    let to = [from.x + delta[0], from.y + delta[1]];
     let tangent_info = sketch.get_tangential_info_from_paths();
-    let tan_previous_point = if tangent_info.is_center {
-        get_tangent_point_from_previous_arc(tangent_info.center_or_tangent_point, tangent_info.ccw, from.into())
-    } else {
-        tangent_info.center_or_tangent_point
-    };
+    let tan_previous_point = tangent_info.tan_previous_point(from.into());
+
     let [dx, dy] = delta;
     let result = get_tangential_arc_to_info(TangentialArcInfoInput {
         arc_start_point: [from.x, from.y],
@@ -1840,13 +2019,13 @@ async fn inner_tangential_arc_to_relative(
         }));
     }
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
         base: BasePath {
             from: from.into(),
-            to: delta,
+            to,
             tag: tag.clone(),
             geo_meta: GeoMeta {
                 id,
@@ -1873,19 +2052,21 @@ async fn inner_tangential_arc_to_relative(
 #[serde(rename_all = "camelCase")]
 pub struct BezierData {
     /// The to point.
-    to: [f64; 2],
+    pub to: [f64; 2],
     /// The first control point.
-    control1: [f64; 2],
+    pub control1: [f64; 2],
     /// The second control point.
-    control2: [f64; 2],
+    pub control2: [f64; 2],
 }
 
 /// Draw a bezier curve.
 pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch, tag): (BezierData, Sketch, Option<TagDeclarator>) = args.get_data_and_sketch_and_tag()?;
+    let (data, sketch, tag): (BezierData, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
 
     let new_sketch = inner_bezier_curve(data, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Draw a smooth, continuous, curved line segment from the current origin to
@@ -1893,18 +2074,18 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 /// shape.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 10], %)
 ///   |> bezierCurve({
-///        to: [10, 10],
-///        control1: [5, 0],
-///        control2: [5, 10]
+///        to = [10, 10],
+///        control1 = [5, 0],
+///        control2 = [5, 10]
 ///      }, %)
 ///   |> lineTo([10, 0], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
     name = "bezierCurve",
@@ -1912,7 +2093,7 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
 async fn inner_bezier_curve(
     data: BezierData,
     sketch: Sketch,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
@@ -1922,7 +2103,7 @@ async fn inner_bezier_curve(
     let delta = data.to;
     let to = [from.x + data.to[0], from.y + data.to[1]];
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -1965,42 +2146,45 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let (hole_sketch, sketch): (SketchSet, Sketch) = args.get_sketches()?;
 
     let new_sketch = inner_hole(hole_sketch, sketch, exec_state, args).await?;
-    Ok(KclValue::new_user_val(new_sketch.meta.clone(), new_sketch))
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
 }
 
 /// Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XY')
+/// exampleSketch = startSketchOn('XY')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([0, 5], %)
 ///   |> line([5, 0], %)
 ///   |> line([0, -5], %)
 ///   |> close(%)
-///   |> hole(circle({ center: [1, 1], radius: .25 }, %), %)
-///   |> hole(circle({ center: [1, 4], radius: .25 }, %), %)
+///   |> hole(circle({ center = [1, 1], radius = .25 }, %), %)
+///   |> hole(circle({ center = [1, 4], radius = .25 }, %), %)
 ///
-/// const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 /// ```
 ///
 /// ```no_run
-/// fn squareHoleSketch = () => {
-///     const squareSketch = startSketchOn('-XZ')
-///       |> startProfileAt([-1, -1], %)
-///       |> line([2, 0], %)
-///       |> line([0, 2], %)
-///       |> line([-2, 0], %)
-///       |> close(%)
-///     return squareSketch
-///   }
+/// fn squareHoleSketch() {
+///   squareSketch = startSketchOn('-XZ')
+///     |> startProfileAt([-1, -1], %)
+///     |> line([2, 0], %)
+///     |> line([0, 2], %)
+///     |> line([-2, 0], %)
+///     |> close(%)
+///   return squareSketch
+/// }
 ///
-///  const exampleSketch = startSketchOn('-XZ')
-///     |> circle({ center: [0, 0], radius: 3 }, %)
+/// exampleSketch = startSketchOn('-XZ')
+///     |> circle({ center = [0, 0], radius = 3 }, %)
 ///     |> hole(squareHoleSketch(), %)
-///  const example = extrude(1, exampleSketch)
+/// example = extrude(1, exampleSketch)
 /// ```
 #[stdlib {
     name = "hole",
+    feature_tree_operation = true,
 }]
 async fn inner_hole(
     hole_sketch: SketchSet,
@@ -2011,7 +2195,7 @@ async fn inner_hole(
     let hole_sketches: Vec<Sketch> = hole_sketch.into();
     for hole_sketch in hole_sketches {
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid2dAddHole {
                 object_id: sketch.id,
                 hole_id: hole_sketch.id,
@@ -2022,7 +2206,7 @@ async fn inner_hole(
         // suggestion (mike)
         // we also hide the source hole since its essentially "consumed" by this operation
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: hole_sketch.id,
                 hidden: true,
@@ -2039,7 +2223,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{executor::TagIdentifier, std::sketch::PlaneData};
+    use crate::{execution::TagIdentifier, std::sketch::PlaneData, std::utils::calculate_circle_center};
 
     #[test]
     fn test_deserialize_plane_data() {
@@ -2109,5 +2293,12 @@ mod tests {
             data,
             crate::std::sketch::FaceTag::StartOrEnd(crate::std::sketch::StartOrEnd::Start)
         );
+    }
+
+    #[test]
+    fn test_circle_center() {
+        let actual = calculate_circle_center([0.0, 0.0], [5.0, 5.0], [10.0, 0.0]);
+        assert_eq!(actual[0], 5.0);
+        assert_eq!(actual[1], 0.0);
     }
 }

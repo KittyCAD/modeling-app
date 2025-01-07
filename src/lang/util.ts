@@ -1,45 +1,13 @@
 import { Selections } from 'lib/selections'
-import { Program, PathToNode } from './wasm'
-import { getNodeFromPath } from './queryAst'
+import {
+  PathToNode,
+  CallExpression,
+  Literal,
+  ArrayExpression,
+  BinaryExpression,
+} from './wasm'
 import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
-import { err } from 'lib/trap'
-
-export function pathMapToSelections(
-  ast: Program,
-  prevSelections: Selections,
-  pathToNodeMap: { [key: number]: PathToNode }
-): Selections {
-  const newSelections: Selections = {
-    ...prevSelections,
-    codeBasedSelections: [],
-  }
-  Object.entries(pathToNodeMap).forEach(([index, path]) => {
-    const nodeMeta = getNodeFromPath<any>(ast, path)
-    if (err(nodeMeta)) return
-    const node = nodeMeta.node as any
-    const selection = prevSelections.codeBasedSelections[Number(index)]
-    if (node) {
-      if (
-        selection.type === 'base-edgeCut' ||
-        selection.type === 'adjacent-edgeCut' ||
-        selection.type === 'opposite-edgeCut'
-      ) {
-        newSelections.codeBasedSelections.push({
-          range: [node.start, node.end],
-          type: selection.type,
-          secondaryRange: selection.secondaryRange,
-        })
-      } else {
-        newSelections.codeBasedSelections.push({
-          range: [node.start, node.end],
-          type: selection.type,
-        })
-      }
-    }
-  })
-  return newSelections
-}
 
 export function updatePathToNodeFromMap(
   oldPath: PathToNode,
@@ -65,11 +33,11 @@ export function isCursorInSketchCommandRange(
     {
       types: ['segment', 'path'],
       predicate: (artifact) => {
-        return selectionRanges.codeBasedSelections.some(
+        return selectionRanges.graphSelections.some(
           (selection) =>
-            Array.isArray(selection?.range) &&
+            Array.isArray(selection?.codeRef?.range) &&
             Array.isArray(artifact?.codeRef?.range) &&
-            isOverlap(selection.range, artifact.codeRef.range)
+            isOverlap(selection?.codeRef?.range, artifact.codeRef.range)
         )
       },
     },
@@ -83,4 +51,20 @@ export function isCursorInSketchCommandRange(
     : [...overlappingEntries].find(
         ([, artifact]) => artifact.type === 'path'
       )?.[0] || false
+}
+
+export function isCallExpression(e: any): e is CallExpression {
+  return e && e.type === 'CallExpression'
+}
+
+export function isArrayExpression(e: any): e is ArrayExpression {
+  return e && e.type === 'ArrayExpression'
+}
+
+export function isLiteral(e: any): e is Literal {
+  return e && e.type === 'Literal'
+}
+
+export function isBinaryExpression(e: any): e is BinaryExpression {
+  return e && e.type === 'BinaryExpression'
 }

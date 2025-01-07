@@ -15,5 +15,5 @@ async fn kcl_to_core_test() {
     )
     .await;
 
-    assert!(result.is_ok());
+    result.unwrap();
 }

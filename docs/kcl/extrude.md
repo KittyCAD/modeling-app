@@ -32,16 +32,16 @@ example = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> line([10, 0], %)
   |> arc({
-       angleStart: 120,
-       angleEnd: 0,
-       radius: 5
+       angleStart = 120,
+       angleEnd = 0,
+       radius = 5
      }, %)
   |> line([5, 0], %)
   |> line([0, 10], %)
   |> bezierCurve({
-       control1: [-10, 0],
-       control2: [2, 10],
-       to: [-5, 10]
+       control1 = [-10, 0],
+       control2 = [2, 10],
+       to = [-5, 10]
      }, %)
   |> line([-5, -2], %)
   |> close(%)
@@ -54,16 +54,16 @@ example = startSketchOn('XZ')
 exampleSketch = startSketchOn('XZ')
   |> startProfileAt([-10, 0], %)
   |> arc({
-       angleStart: 120,
-       angleEnd: -60,
-       radius: 5
+       angleStart = 120,
+       angleEnd = -60,
+       radius = 5
      }, %)
   |> line([10, 0], %)
   |> line([5, 0], %)
   |> bezierCurve({
-       control1: [-3, 0],
-       control2: [2, 10],
-       to: [-5, 10]
+       control1 = [-3, 0],
+       control2 = [2, 10],
+       to = [-5, 10]
      }, %)
   |> line([-4, 10], %)
   |> line([-5, -2], %)

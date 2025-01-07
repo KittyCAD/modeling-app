@@ -10,7 +10,13 @@ import {
 } from '../test-utils'
 
 type mouseParams = {
-  pixelDiff: number
+  pixelDiff?: number
+}
+type mouseDragToParams = mouseParams & {
+  fromPoint: { x: number; y: number }
+}
+type mouseDragFromParams = mouseParams & {
+  toPoint: { x: number; y: number }
 }
 
 type SceneSerialised = {
@@ -19,6 +25,14 @@ type SceneSerialised = {
     target: [number, number, number]
   }
 }
+
+type ClickHandler = (clickParams?: mouseParams) => Promise<void | boolean>
+type MoveHandler = (moveParams?: mouseParams) => Promise<void | boolean>
+type DblClickHandler = (clickParams?: mouseParams) => Promise<void | boolean>
+type DragToHandler = (dragParams: mouseDragToParams) => Promise<void | boolean>
+type DragFromHandler = (
+  dragParams: mouseDragFromParams
+) => Promise<void | boolean>
 
 export class SceneFixture {
   public page: Page
@@ -39,8 +53,9 @@ export class SceneFixture {
 
   expectState = async (expected: SceneSerialised) => {
     return expect
-      .poll(() => this._serialiseScene(), {
-        message: `Expected scene state to match`,
+      .poll(async () => await this._serialiseScene(), {
+        intervals: [1_000, 2_000, 10_000],
+        timeout: 60000,
       })
       .toEqual(expected)
   }
@@ -55,7 +70,7 @@ export class SceneFixture {
     x: number,
     y: number,
     { steps }: { steps: number } = { steps: 20 }
-  ) =>
+  ): [ClickHandler, MoveHandler, DblClickHandler] =>
     [
       (clickParams?: mouseParams) => {
         if (clickParams?.pixelDiff) {
@@ -76,6 +91,57 @@ export class SceneFixture {
           )
         }
         return this.page.mouse.move(x, y, { steps })
+      },
+      (clickParams?: mouseParams) => {
+        if (clickParams?.pixelDiff) {
+          return doAndWaitForImageDiff(
+            this.page,
+            () => this.page.mouse.dblclick(x, y),
+            clickParams.pixelDiff
+          )
+        }
+        return this.page.mouse.dblclick(x, y)
+      },
+    ] as const
+  makeDragHelpers = (
+    x: number,
+    y: number,
+    { steps }: { steps: number } = { steps: 20 }
+  ): [DragToHandler, DragFromHandler] =>
+    [
+      (dragToParams: mouseDragToParams) => {
+        if (dragToParams?.pixelDiff) {
+          return doAndWaitForImageDiff(
+            this.page,
+            () =>
+              this.page.dragAndDrop('#stream', '#stream', {
+                sourcePosition: dragToParams.fromPoint,
+                targetPosition: { x, y },
+              }),
+            dragToParams.pixelDiff
+          )
+        }
+        return this.page.dragAndDrop('#stream', '#stream', {
+          sourcePosition: dragToParams.fromPoint,
+          targetPosition: { x, y },
+        })
+      },
+      (dragFromParams: mouseDragFromParams) => {
+        if (dragFromParams?.pixelDiff) {
+          return doAndWaitForImageDiff(
+            this.page,
+            () =>
+              this.page.dragAndDrop('#stream', '#stream', {
+                sourcePosition: { x, y },
+                targetPosition: dragFromParams.toPoint,
+              }),
+            dragFromParams.pixelDiff
+          )
+        }
+        return this.page.dragAndDrop('#stream', '#stream', {
+          sourcePosition: { x, y },
+          targetPosition: dragFromParams.toPoint,
+        })
       },
     ] as const
 
@@ -122,7 +188,10 @@ export class SceneFixture {
         type: 'default_camera_get_settings',
       },
     })
-    await this.waitForExecutionDone()
+    await this.page
+      .locator(`[data-receive-command-type="default_camera_get_settings"]`)
+      .first()
+      .waitFor()
     const position = await Promise.all([
       this.page.getByTestId('cam-x-position').inputValue().then(Number),
       this.page.getByTestId('cam-y-position').inputValue().then(Number),
@@ -141,7 +210,7 @@ export class SceneFixture {
   }
 
   waitForExecutionDone = async () => {
-    await expect(this.exeIndicator).toBeVisible()
+    await expect(this.exeIndicator).toBeVisible({ timeout: 30000 })
   }
 
   expectPixelColor = async (
@@ -149,23 +218,7 @@ export class SceneFixture {
     coords: { x: number; y: number },
     diff: number
   ) => {
-    let finalValue = colour
-    await expect
-      .poll(async () => {
-        const pixel = (await getPixelRGBs(this.page)(coords, 1))[0]
-        if (!pixel) return null
-        finalValue = pixel
-        return pixel.every(
-          (channel, index) => Math.abs(channel - colour[index]) < diff
-        )
-      })
-      .toBeTruthy()
-      .catch((cause) => {
-        throw new Error(
-          `ExpectPixelColor: expecting ${colour} got ${finalValue}`,
-          { cause }
-        )
-      })
+    await expectPixelColor(this.page, colour, coords, diff)
   }
 
   get gizmo() {
@@ -173,6 +226,7 @@ export class SceneFixture {
   }
 
   async clickGizmoMenuItem(name: string) {
+    await this.gizmo.hover()
     await this.gizmo.click({ button: 'right' })
     const buttonToTest = this.page.getByRole('button', {
       name: name,
@@ -180,4 +234,29 @@ export class SceneFixture {
     await expect(buttonToTest).toBeVisible()
     await buttonToTest.click()
   }
+}
+
+export async function expectPixelColor(
+  page: Page,
+  colour: [number, number, number],
+  coords: { x: number; y: number },
+  diff: number
+) {
+  let finalValue = colour
+  await expect
+    .poll(async () => {
+      const pixel = (await getPixelRGBs(page)(coords, 1))[0]
+      if (!pixel) return null
+      finalValue = pixel
+      return pixel.every(
+        (channel, index) => Math.abs(channel - colour[index]) < diff
+      )
+    })
+    .toBeTruthy()
+    .catch((cause) => {
+      throw new Error(
+        `ExpectPixelColor: expecting ${colour} got ${finalValue}`,
+        { cause }
+      )
+    })
 }

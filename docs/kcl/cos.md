@@ -34,8 +34,8 @@ cos(num: number) -> number
 exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> angledLine({
-       angle: 30,
-       length: 3 / cos(toRadians(30))
+       angle = 30,
+       length = 3 / cos(toRadians(30))
      }, %)
   |> yLineTo(0, %)
   |> close(%)

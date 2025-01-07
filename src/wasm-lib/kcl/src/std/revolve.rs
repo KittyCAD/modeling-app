@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue, Sketch, Solid},
+    execution::{ExecState, KclValue, Sketch, Solid},
     std::{
         extrude::do_post_extrude,
         fillet::{default_tolerance, EdgeReference},
@@ -113,7 +113,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// Revolve occurs around a local sketch axis rather than a global axis.
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
+/// part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, -6], %)
@@ -123,21 +123,21 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> line([0, -5.5], %)
 ///     |> line([-2, 0], %)
 ///     |> close(%)
-///     |> revolve({axis: 'y'}, %) // default angle is 360
+///     |> revolve({axis = 'y'}, %) // default angle is 360
 /// ```
 ///
 /// ```no_run
 /// // A donut shape.
-/// const sketch001 = startSketchOn('XY')
-///     |> circle({ center: [15, 0], radius: 5 }, %)
+/// sketch001 = startSketchOn('XY')
+///     |> circle({ center = [15, 0], radius = 5 }, %)
 ///     |> revolve({
-///         angle: 360,
-///         axis: 'y'
+///         angle = 360,
+///         axis = 'y'
 ///     }, %)
 /// ```
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
+/// part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, -6], %)
@@ -147,11 +147,11 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> line([0, -5.5], %)
 ///     |> line([-2, 0], %)
 ///     |> close(%)
-///     |> revolve({axis: 'y', angle: 180}, %)
+///     |> revolve({axis = 'y', angle = 180}, %)
 /// ```
 ///
 /// ```no_run
-/// const part001 = startSketchOn('XY')
+/// part001 = startSketchOn('XY')
 ///     |> startProfileAt([4, 12], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, -6], %)
@@ -161,8 +161,8 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> line([0, -5.5], %)
 ///     |> line([-2, 0], %)
 ///     |> close(%)
-///     |> revolve({axis: 'y', angle: 180}, %)
-/// const part002 = startSketchOn(part001, 'end')
+///     |> revolve({axis = 'y', angle = 180}, %)
+/// part002 = startSketchOn(part001, 'end')
 ///     |> startProfileAt([4.5, -5], %)
 ///     |> line([0, 5], %)
 ///     |> line([5, 0], %)
@@ -172,7 +172,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// const box = startSketchOn('XY')
+/// box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 20], %)
 ///     |> line([20, 0], %)
@@ -180,16 +180,16 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> close(%)
 ///     |> extrude(20, %)
 ///
-/// const sketch001 = startSketchOn(box, "END")
-///     |> circle({ center: [10,10], radius: 4 }, %)
+/// sketch001 = startSketchOn(box, "END")
+///     |> circle({ center = [10,10], radius = 4 }, %)
 ///     |> revolve({
-///         angle: -90,
-///         axis: 'y'
+///         angle = -90,
+///         axis = 'y'
 ///     }, %)
 /// ```
 ///
 /// ```no_run
-/// const box = startSketchOn('XY')
+/// box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 20], %)
 ///     |> line([20, 0], %)
@@ -197,16 +197,16 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> close(%)
 ///     |> extrude(20, %)
 ///
-/// const sketch001 = startSketchOn(box, "END")
-///     |> circle({ center: [10,10], radius: 4 }, %)
+/// sketch001 = startSketchOn(box, "END")
+///     |> circle({ center = [10,10], radius = 4 }, %)
 ///     |> revolve({
-///         angle: 90,
-///         axis: getOppositeEdge(revolveAxis)
+///         angle = 90,
+///         axis = getOppositeEdge(revolveAxis)
 ///     }, %)
 /// ```
 ///
 /// ```no_run
-/// const box = startSketchOn('XY')
+/// box = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
 ///     |> line([0, 20], %)
 ///     |> line([20, 0], %)
@@ -214,27 +214,27 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> close(%)
 ///     |> extrude(20, %)
 ///
-/// const sketch001 = startSketchOn(box, "END")
-///     |> circle({ center: [10,10], radius: 4 }, %)
+/// sketch001 = startSketchOn(box, "END")
+///     |> circle({ center = [10,10], radius = 4 }, %)
 ///     |> revolve({
-///         angle: 90,
-///         axis: getOppositeEdge(revolveAxis),
+///         angle = 90,
+///         axis = getOppositeEdge(revolveAxis),
 ///         tolerance: 0.0001
 ///     }, %)
 /// ```
 ///
 /// ```no_run
-/// const sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn('XY')
 ///   |> startProfileAt([10, 0], %)
 ///   |> line([5, -5], %)
 ///   |> line([5, 5], %)
 ///   |> lineTo([profileStartX(%), profileStartY(%)], %)
 ///   |> close(%)
 ///
-/// const part001 = revolve({
-///   axis: {
+/// part001 = revolve({
+///   axis = {
 ///     custom: {
-///       axis: [0.0, 1.0],
+///       axis = [0.0, 1.0],
 ///       origin: [0.0, 0.0]
 ///     }
 ///   }
@@ -242,6 +242,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 #[stdlib {
     name = "revolve",
+    feature_tree_operation = true,
 }]
 async fn inner_revolve(
     data: RevolveData,
@@ -263,7 +264,7 @@ async fn inner_revolve(
 
     let angle = Angle::from_degrees(data.angle.unwrap_or(360.0));
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     match data.axis {
         AxisOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;

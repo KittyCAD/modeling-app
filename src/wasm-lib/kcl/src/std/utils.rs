@@ -4,8 +4,14 @@ use kittycad_modeling_cmds::shared::Angle;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{Point2d, SourceRange},
+    execution::Point2d,
+    source_range::SourceRange,
 };
+
+/// Get the distance between two points.
+pub fn distance(a: Point2d, b: Point2d) -> f64 {
+    ((b.x - a.x).powi(2) + (b.y - a.y).powi(2)).sqrt()
+}
 
 /// Get the angle between these points
 pub fn between(a: Point2d, b: Point2d) -> Angle {
@@ -53,20 +59,6 @@ pub fn delta(from_angle: Angle, to_angle: Angle) -> Angle {
     Angle::default()
 }
 
-pub fn clockwise_sign(points: &[Point2d]) -> i32 {
-    let mut sum = 0.0;
-    for i in 0..points.len() {
-        let current_point = points[i];
-        let next_point = points[(i + 1) % points.len()];
-        sum += (next_point.x - current_point.x) * (next_point.y + current_point.y);
-    }
-    if sum >= 0.0 {
-        1
-    } else {
-        -1
-    }
-}
-
 pub fn normalize_rad(angle: f64) -> f64 {
     let draft = angle % (2.0 * PI);
     if draft < 0.0 {
@@ -74,32 +66,6 @@ pub fn normalize_rad(angle: f64) -> f64 {
     } else {
         draft
     }
-}
-
-/// Calculates the distance between two points.
-///
-/// # Examples
-///
-/// ```
-/// use kcl_lib::executor::Point2d;
-///
-/// assert_eq!(
-///     kcl_lib::std::utils::distance_between_points(Point2d::ZERO, Point2d { x: 0.0, y: 5.0 }),
-///     5.0
-/// );
-/// assert_eq!(
-///     kcl_lib::std::utils::distance_between_points(Point2d::ZERO, Point2d { x: 3.0, y: 4.0 }),
-///     5.0
-/// );
-/// ```
-#[allow(dead_code)]
-pub fn distance_between_points(point_a: Point2d, point_b: Point2d) -> f64 {
-    let x1 = point_a.x;
-    let y1 = point_a.y;
-    let x2 = point_b.x;
-    let y2 = point_b.y;
-
-    ((y2 - y1).powi(2) + (x2 - x1).powi(2)).sqrt()
 }
 
 pub fn calculate_intersection_of_two_lines(line1: &[Point2d; 2], line2_angle: f64, line2_point: Point2d) -> Point2d {
@@ -268,13 +234,49 @@ pub fn is_on_circumference(center: Point2d, point: Point2d, radius: f64) -> bool
     (distance_squared - radius.powi(2)).abs() < 1e-9
 }
 
+// Calculate the center of 3 points
+// To calculate the center of the 3 point circle 2 perpendicular lines are created
+// These perpendicular lines will intersect at the center of the circle.
+pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
+    // y2 - y1
+    let y_2_1 = p2[1] - p1[1];
+    // y3 - y2
+    let y_3_2 = p3[1] - p2[1];
+    // x2 - x1
+    let x_2_1 = p2[0] - p1[0];
+    // x3 - x2
+    let x_3_2 = p3[0] - p2[0];
+
+    // Slope of two perpendicular lines
+    let slope_a = y_2_1 / x_2_1;
+    let slope_b = y_3_2 / x_3_2;
+
+    // Values for line intersection
+    // y1 - y3
+    let y_1_3 = p1[1] - p3[1];
+    // x1 + x2
+    let x_1_2 = p1[0] + p2[0];
+    // x2 + x3
+    let x_2_3 = p2[0] + p3[0];
+    // y1 + y2
+    let y_1_2 = p1[1] + p2[1];
+
+    // Solve for the intersection of these two lines
+    let numerator = (slope_a * slope_b * y_1_3) + (slope_b * x_1_2) - (slope_a * x_2_3);
+    let x = numerator / (2.0 * (slope_b - slope_a));
+
+    let y = ((-1.0 / slope_a) * (x - (x_1_2 / 2.0))) + (y_1_2 / 2.0);
+
+    [x, y]
+}
+
 #[cfg(test)]
 mod tests {
     // Here you can bring your functions into scope
     use pretty_assertions::assert_eq;
 
     use super::{get_x_component, get_y_component, Angle};
-    use crate::executor::SourceRange;
+    use crate::SourceRange;
 
     static EACH_QUAD: [(i32, [i32; 2]); 12] = [
         (-315, [1, 1]),
@@ -394,7 +396,7 @@ mod tests {
             super::Point2d { x: -1.0, y: 1.0 },
             super::Point2d { x: -1.0, y: 0.0 },
             1.0,
-            SourceRange(Default::default()),
+            SourceRange::default(),
         )
         .unwrap();
         assert_eq!(angle_start.to_degrees().round(), 0.0);
@@ -405,7 +407,7 @@ mod tests {
             super::Point2d { x: -2.0, y: 0.0 },
             super::Point2d { x: -1.0, y: 0.0 },
             1.0,
-            SourceRange(Default::default()),
+            SourceRange::default(),
         )
         .unwrap();
         assert_eq!(angle_start.to_degrees().round(), 0.0);
@@ -416,7 +418,7 @@ mod tests {
             super::Point2d { x: -20.0, y: 0.0 },
             super::Point2d { x: -10.0, y: 0.0 },
             10.0,
-            SourceRange(Default::default()),
+            SourceRange::default(),
         )
         .unwrap();
         assert_eq!(angle_start.to_degrees().round(), 0.0);
@@ -427,7 +429,7 @@ mod tests {
             super::Point2d { x: 5.0, y: 5.0 },
             super::Point2d { x: 10.0, y: -10.0 },
             10.0,
-            SourceRange(Default::default()),
+            SourceRange::default(),
         );
 
         if let Err(err) = result {
@@ -563,6 +565,7 @@ pub struct TangentialArcInfoInput {
 }
 
 /// Structure to hold the output data from calculating tangential arc information.
+#[allow(dead_code)]
 pub struct TangentialArcInfoOutput {
     /// The center point of the arc.
     pub center: Coords2d,

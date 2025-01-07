@@ -99,7 +99,7 @@ yarn tron:start
 
 This will start the application and hot-reload on changes.
 
-Devtools can be opened with the usual Cmd/Ctrl-Shift-I.
+Devtools can be opened with the usual Cmd-Opt-I (Mac) or Ctrl-Shift-I (Linux and Windows).
 
 To build, run `yarn tron:package`.
 
@@ -110,7 +110,7 @@ Which commands from setup are one off vs need to be run every time?
 The following will need to be run when checking out a new commit and guarantees the build is not stale:
 ```bash
 yarn install
-yarn build:wasm-dev # or yarn build:wasm for slower but more production-like build
+yarn build:wasm
 yarn start # or yarn build:local && yarn serve for slower but more production-like build
 ```
 
@@ -128,45 +128,37 @@ Before you submit a contribution PR to this repo, please ensure that:
 
 ## Release a new version
 
-#### 1. Bump the versions by running `./make-release.sh`
+#### 1. Create a 'Cut release $VERSION' issue
 
-The `./make-release.sh` script has git commands to pull main but to be sure you can run the following git commands to have a fresh `main` locally.
+It will be used to document changelog discussions and release testing.
+
+https://github.com/KittyCAD/modeling-app/issues/new
+
+#### 2. Push a new tag
+
+Create a new tag and push it to the repo. The `semantic-release.sh` script will automatically bump the minor part, which we use the most. For instance going from `v0.27.0` to `v0.28.0`.
 
 ```
-git branch -D main
-git checkout main
-git pull origin
-./make-release.sh
-# Copy within the back ticks and paste the stdout of the change log
-git push --set-upstream origin <branch name created from ./make-release.sh>
+VERSION=$(./scripts/semantic-release.sh)
+git tag $VERSION
+git push origin --tags
 ```
 
-That will create the branch with the updated json files for you:
-- run `./make-release.sh` or `./make-release.sh patch` for a patch update;
-- run `./make-release.sh minor` for minor; or
-- run `./make-release.sh major` for major.
+This will trigger the `build-apps` workflow, set the version, build & sign the apps, and generate release files as well as updater-test artifacts.
 
-After it runs you should just need the push the branch and open a PR.
+The workflow should be listed right away [in this list](https://github.com/KittyCAD/modeling-app/actions/workflows/build-apps.yml?query=event%3Apush)).
 
-#### 2. Create a Cut Release PR
-
-When you open the PR copy the change log from the output of the `./make-release.sh` script into the description of the PR.
-
-**Important:** Pull request title needs to be prefixed with `Cut release v` to build in release mode and a few other things to test in the best context possible, the intent would be for instance to have `Cut release v1.2.3` for the `v1.2.3` release candidate.
-
-The PR may then serve as a place to discuss the human-readable changelog and extra QA. The `make-release.sh` tool suggests a changelog for you too to be used as PR description, just make sure to delete lines that are not user facing.
-
-#### 3. Manually test artifacts from the Cut Release PR
+#### 3. Manually test artifacts
 
 ##### Release builds
 
-The release builds can be found under the `out-{platform}` zip, at the very bottom of the `build-publish-apps` summary page for each commit on this branch.
+The release builds can be found under the `out-{arch}-{platform}` zip files, at the very bottom of the `build-apps` summary page for the workflow (triggered by the tag in 2.).
 
-Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the Cut Release PR.
+Manually test against this [list](https://github.com/KittyCAD/modeling-app/issues/3588) across Windows, MacOS, Linux and posting results as comments in the issue.
 
 ##### Updater-test builds
 
-The other `build-publish-apps` output in Cut Release PRs is `updater-test-{platform}`. As we don't have a way to test this fully automatically, we have a semi-automated process. For macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version. 
+The other `build-apps` output in the release `build-apps` workflow (triggered by 2.) is `updater-test-{arch}-{platform}`. It's a semi-automated process: for macOS, Windows, and Linux, download the corresponding updater-test artifact file, install the app, run it, expect an updater prompt to a dummy v0.255.255, install it and check that the app comes back at that version. 
 
 The only difference with these builds is that they point to a different update location on the release bucket, with this dummy v0.255.255 always available. This helps ensuring that the version we release will be able to update to the next one available.
 
@@ -182,18 +174,17 @@ If the prompt doesn't show up, start the app in command line to grab the electro
 ./Zoo Modeling App-{version}-{arch}-linux.AppImage
 ```
 
-#### 4. Merge the Cut Release PR
+#### 4. Publish the release
 
-This will kick the `create-release` action, that creates a _Draft_ release out of this Cut Release PR merge after less than a minute, with the new version as title and Cut Release PR as description.
+Head over to https://github.com/KittyCAD/modeling-app/releases/new, pick the newly created tag and type it in the _Release title_ field as well.
 
+Hit _Generate release notes_ as a starting point to discuss the changelog in the issue. Once done, make sure _Set as the latest release_ is checked, and hit _Publish release_. 
 
-#### 5. Publish the release
+A new `publish-apps-release` will kick in and you should be able to find it [here](https://github.com/KittyCAD/modeling-app/actions?query=event%3Arelease). On success, the files will be uploaded to the public bucket as well as to the GitHub release, and the announcement on Discord will be sent. 
 
-Head over to https://github.com/KittyCAD/modeling-app/releases, the draft release corresponding to the merged Cut Release PR should show up at the top as _Draft_. Click on it, verify the content, and hit _Publish_.
+#### 5. Close the issue
 
-#### 6. Profit
-
-A new Action kicks in at https://github.com/KittyCAD/modeling-app/actions, which can be found under `release` event filter.
+If everything is well and the release is out to the public, the issue tracking the release shall be closed.
 
 
 ## Fuzzing the parser
@@ -346,13 +337,47 @@ For individual testing:
 yarn test abstractSyntaxTree -t "unexpected closed curly brace" --silent=false
 ```
 
-Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro/) tests, in interactive mode by default.
+Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testing Library E2E](https://testing-library.com/docs/react-testing-library/intro) tests, in interactive mode by default.
 
 ### Rust tests
 
-```bash
+**Dependencies**
+
+- `KITTYCAD_API_TOKEN`
+- `cargo-nextest`
+- `just`
+
+#### Setting KITTYCAD_API_TOKEN
+Use the production zoo.dev token, set this environment variable before running the tests
+
+#### Installing cargonextest
+
+```
 cd src/wasm-lib
-KITTYCAD_API_TOKEN=XXX cargo test -- --test-threads=1
+cargo search cargo-nextest
+cargo install cargo-nextest
+```
+
+#### just
+install [`just`](https://github.com/casey/just?tab=readme-ov-file#pre-built-binaries)
+
+#### Running the tests
+
+```bash
+# With just
+# Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
+# Make sure you installed cargo-nextest
+# Make sure you installed just
+cd src/wasm-lib
+just test
+```
+
+```bash
+# Without just
+# Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
+# Make sure you installed cargo-nextest
+cd src/wasm-lib
+export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
 ```
 
 Where `XXX` is an API token from the production engine (NOT the dev environment).
@@ -396,23 +421,6 @@ yarn test:unit:local
 > Gotcha: Our unit tests have integration tests in them. You need to run a localhost server to run the unit tests.
 
 #### E2E Tests
-
-**Playwright Browser**
-
-These E2E tests run in a browser (without electron).
-There are tests that are skipped if they are ran in a windows OS or Linux OS. We can use playwright tags to implement test skipping.
-
-Breaking down the command `yarn test:playwright:browser:chrome:windows`
-- The application is `playwright`
-- The runtime is a `browser`
-- The specific `browser` is `chrome`
-- The test should run in a `windows` environment. It will skip tests that are broken or flaky in the windows OS.
-
-```
-yarn test:playwright:browser:chrome
-yarn test:playwright:browser:chrome:windows
-yarn test:playwright:browser:chrome:ubuntu
-```
 
 **Playwright Electron**
 
@@ -459,3 +467,9 @@ PS: for the debug panel, the following JSON is useful for snapping the camera
 ## KCL
 
 For how to contribute to KCL, [see our KCL README](https://github.com/KittyCAD/modeling-app/tree/main/src/wasm-lib/kcl).
+
+### Logging
+
+To display logging (to the terminal or console) set `ZOO_LOG=1`. This will log some warnings and simple performance metrics. To view these in test runs, use `-- --nocapture`.
+
+To enable memory metrics, build with `--features dhat-heap`.

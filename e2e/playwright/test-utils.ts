@@ -1,22 +1,21 @@
 import {
   expect,
-  Page,
-  Download,
   BrowserContext,
   TestInfo,
   _electron as electron,
+  ElectronApplication,
   Locator,
-  test,
 } from '@playwright/test'
+import { test, Page } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
-import { join } from 'path'
+import path from 'path'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { Protocol } from 'playwright-core/types/protocol'
 import type { Models } from '@kittycad/lib'
-import { APP_NAME, COOKIE_NAME } from 'lib/constants'
+import { COOKIE_NAME } from 'lib/constants'
 import { secrets } from './secrets'
 import {
   TEST_SETTINGS_KEY,
@@ -29,6 +28,10 @@ import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { isErrorWhitelisted } from './lib/console-error-whitelist'
 import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
+
+const toNormalizedCode = (text: string) => {
+  return text.replace(/\s+/g, '')
+}
 
 type TestColor = [number, number, number]
 export const TEST_COLORS = {
@@ -45,7 +48,9 @@ export const commonPoints = {
   startAt: '[7.19, -9.7]',
   num1: 7.25,
   num2: 14.44,
-}
+  /** The Y-value of a common lineTo move we perform in tests */
+  num3: -2.44,
+} as const
 
 /** A semi-reliable color to check the default XZ plane on
  * in dark mode in the default camera position
@@ -96,11 +101,16 @@ async function removeCurrentCode(page: Page) {
 }
 
 export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
-  await page.getByTestId('custom-cmd-input').fill(JSON.stringify(cmd))
+  const json = JSON.stringify(cmd)
+  await page.getByTestId('custom-cmd-input').fill(json)
+  await expect(page.getByTestId('custom-cmd-input')).toHaveValue(json)
+  await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
   await page.getByTestId('custom-cmd-send-button').click()
 }
 
 async function clearCommandLogs(page: Page) {
+  await page.getByTestId('custom-cmd-input').fill('')
+  await page.getByTestId('clear-commands').scrollIntoViewIfNeeded()
   await page.getByTestId('clear-commands').click()
 }
 
@@ -118,19 +128,49 @@ async function waitForDefaultPlanesToBeVisible(page: Page) {
   )
 }
 
-async function openPane(page: Page, testId: string) {
-  const locator = page.getByTestId(testId)
-  await expect(locator).toBeVisible()
-  const isOpen = (await locator?.getAttribute('aria-pressed')) === 'true'
+export async function checkIfPaneIsOpen(page: Page, testId: string) {
+  const paneButtonLocator = page.getByTestId(testId)
+  await expect(paneButtonLocator).toBeVisible()
+  return (await paneButtonLocator?.getAttribute('aria-pressed')) === 'true'
+}
+
+export async function openPane(page: Page, testId: string) {
+  const paneButtonLocator = page.getByTestId(testId)
+  await expect(paneButtonLocator).toBeVisible()
+  const isOpen = await checkIfPaneIsOpen(page, testId)
 
   if (!isOpen) {
-    await locator.click()
-    await expect(locator).toHaveAttribute('aria-pressed', 'true')
+    await paneButtonLocator.click()
   }
+  await expect(paneButtonLocator).toHaveAttribute('aria-pressed', 'true')
+}
+
+export async function closePane(page: Page, testId: string) {
+  const paneButtonLocator = page.getByTestId(testId)
+  await expect(paneButtonLocator).toBeVisible()
+  const isOpen = await checkIfPaneIsOpen(page, testId)
+
+  if (isOpen) {
+    await paneButtonLocator.click()
+  }
+  await expect(paneButtonLocator).toHaveAttribute('aria-pressed', 'false')
 }
 
 async function openKclCodePanel(page: Page) {
   await openPane(page, 'code-pane-button')
+
+  // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
+  await page.evaluate(() => {
+    // editorManager is available on the window object.
+    //@ts-ignore this is in an entirely different context that tsc can't see.
+    editorManager._editorView.dispatch({
+      selection: {
+        //@ts-ignore this is in an entirely different context that tsc can't see.
+        anchor: editorManager._editorView.docView.length,
+      },
+      scrollIntoView: true,
+    })
+  })
 }
 
 async function closeKclCodePanel(page: Page) {
@@ -146,6 +186,9 @@ async function closeKclCodePanel(page: Page) {
 
 async function openDebugPanel(page: Page) {
   await openPane(page, 'debug-pane-button')
+
+  // The debug pane needs time to load everything.
+  await page.waitForTimeout(3000)
 }
 
 export async function closeDebugPanel(page: Page) {
@@ -286,7 +329,7 @@ export const getMovementUtils = (opts: any) => {
     return [last.x, last.y]
   }
 
-  return { toSU, click00r }
+  return { toSU, toU, click00r }
 }
 
 async function waitForAuthAndLsp(page: Page) {
@@ -393,6 +436,10 @@ export async function getUtils(page: Page, test_?: typeof test) {
         .boundingBox({ timeout: 5_000 })
         .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
+    crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
+      const code = await page.locator('.cm-content').innerText()
+      return code.replaceAll(' ', '').replaceAll('\n', '')
+    },
     normalisedEditorCode: async () => {
       const code = await page.locator('.cm-content').innerText()
       return normaliseKclNumbers(code)
@@ -463,27 +510,18 @@ export async function getUtils(page: Page, test_?: typeof test) {
       )
     },
 
-    toNormalizedCode: (text: string) => {
-      return text.replace(/\s+/g, '')
+    toNormalizedCode(text: string) {
+      return toNormalizedCode(text)
     },
 
-    createAndSelectProject: async (hasText: string) => {
-      return test_?.step(
-        `Create and select project with text "${hasText}"`,
-        async () => {
-          // Without this, we get unreliable project creation. It's probably
-          // due to a race between the FS being read and clicking doing something.
-          await page.waitForTimeout(100)
-          await page.getByTestId('home-new-file').click()
-          const projectLinksPost = page.getByTestId('project-link')
-          await projectLinksPost.filter({ hasText }).click()
-        }
-      )
-    },
-
-    editorTextMatches: async (code: string) => {
+    async editorTextMatches(code: string) {
       const editor = page.locator(editorSelector)
-      return expect(editor).toHaveText(code, { useInnerText: true })
+      return expect
+        .poll(async () => {
+          const text = await editor.textContent()
+          return toNormalizedCode(text ?? '')
+        })
+        .toContain(toNormalizedCode(code))
     },
 
     pasteCodeInEditor: async (code: string) => {
@@ -509,7 +547,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
           page.getByRole('button', { name: 'Start Sketch' })
         ).not.toBeDisabled()
         await page.getByTestId('create-file-button').click()
-        await page.getByTestId('file-rename-field').fill(name)
+        await page.getByTestId('tree-input-field').fill(name)
         await page.keyboard.press('Enter')
       })
     },
@@ -520,6 +558,9 @@ export async function getUtils(page: Page, test_?: typeof test) {
           .locator('[data-testid="file-pane-scroll-container"] button')
           .filter({ hasText: name })
           .click()
+        await expect(page.getByTestId('project-sidebar-toggle')).toContainText(
+          name
+        )
       })
     },
 
@@ -666,6 +707,34 @@ export const makeTemplate: (
   }
 }
 
+const PLAYWRIGHT_DOWNLOAD_DIR = 'downloads-during-playwright'
+
+export const getPlaywrightDownloadDir = (page: Page) => {
+  return path.resolve(page.dir, PLAYWRIGHT_DOWNLOAD_DIR)
+}
+
+const moveDownloadedFileTo = async (page: Page, toLocation: string) => {
+  await fsp.mkdir(path.dirname(toLocation), { recursive: true })
+
+  const downloadDir = getPlaywrightDownloadDir(page)
+
+  // Expect there to be at least one file
+  await expect
+    .poll(async () => {
+      const files = await fsp.readdir(downloadDir)
+      return files.length
+    })
+    .toBeGreaterThan(0)
+
+  // Go through the downloads dir and move files to new location
+  const files = await fsp.readdir(downloadDir)
+
+  // Assumption: only ever one file here.
+  for (let file of files) {
+    await fsp.rename(path.resolve(downloadDir, file), toLocation)
+  }
+}
+
 export interface Paths {
   modelPath: string
   imagePath: string
@@ -678,7 +747,8 @@ export const doExport = async (
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
   if (exportFrom === 'dropdown') {
-    await page.getByRole('button', { name: APP_NAME }).click()
+    await page.getByTestId('project-sidebar-toggle').click()
+
     const exportMenuButton = page.getByRole('button', {
       name: 'Export current part',
     })
@@ -719,25 +789,12 @@ export const doExport = async (
   }
   await expect(page.getByText('Confirm Export')).toBeVisible()
 
-  const getPromiseAndResolve = () => {
-    let resolve: any = () => {}
-    const promise = new Promise<Download>((r) => {
-      resolve = r
-    })
-    return [promise, resolve]
-  }
-
-  const [downloadPromise1, downloadResolve1] = getPromiseAndResolve()
-  let downloadCnt = 0
-
-  if (exportFrom === 'dropdown')
-    page.on('download', async (download) => {
-      if (downloadCnt === 0) {
-        downloadResolve1(download)
-      }
-      downloadCnt++
-    })
   await page.getByRole('button', { name: 'Submit command' }).click()
+
+  // This usually happens immediately after. If we're too slow we don't
+  // catch it.
+  await expect(page.getByText('Exported successfully')).toBeVisible()
+
   if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
     return {
       modelPath: '',
@@ -747,14 +804,11 @@ export const doExport = async (
   }
 
   // Handle download
-  const download = await downloadPromise1
   const downloadLocationer = (extra = '', isImage = false) =>
     `./e2e/playwright/export-snapshots/${output.type}-${
       'storage' in output ? output.storage : ''
     }${extra}.${isImage ? 'png' : output.type}`
   const downloadLocation = downloadLocationer()
-
-  await download.saveAs(downloadLocation)
 
   if (output.type === 'step') {
     // stable timestamps for step files
@@ -764,6 +818,12 @@ export const doExport = async (
       '1970-01-01T00:00:00.0+00:00'
     )
     await fsp.writeFile(downloadLocation, newFileContents)
+  } else {
+    // By default all files are downloaded to the same place in playwright
+    // (declared in src/lib/exportSave)
+    // To remain consistent with our old web tests, we want to move some downloads
+    // (images) to another directory.
+    await moveDownloadedFileTo(page, downloadLocation)
   }
 
   return {
@@ -790,6 +850,8 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
   // It seems it's best to give the browser about 3s to close things
   // It's not super reliable but we have no real other choice for now
   await page.waitForTimeout(3000)
+
+  await testInfo.tronApp?.close()
 }
 
 // settingsOverrides may need to be augmented to take more generic items,
@@ -800,12 +862,24 @@ export async function setup(
   testInfo?: TestInfo
 ) {
   await context.addInitScript(
-    async ({ token, settingsKey, settings, IS_PLAYWRIGHT_KEY }) => {
+    async ({
+      token,
+      settingsKey,
+      settings,
+      IS_PLAYWRIGHT_KEY,
+      PLAYWRIGHT_TEST_DIR,
+      PERSIST_MODELING_CONTEXT,
+    }) => {
       localStorage.clear()
       localStorage.setItem('TOKEN_PERSIST_KEY', token)
       localStorage.setItem('persistCode', ``)
+      localStorage.setItem(
+        PERSIST_MODELING_CONTEXT,
+        JSON.stringify({ openPanes: ['code'] })
+      )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
+      localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
     },
     {
       token: secrets.token,
@@ -822,6 +896,8 @@ export async function setup(
         } as Partial<SaveSettingsPayload>,
       }),
       IS_PLAYWRIGHT_KEY,
+      PLAYWRIGHT_TEST_DIR: TEST_SETTINGS.app.projectDirectory,
+      PERSIST_MODELING_CONTEXT,
     }
   )
 
@@ -840,12 +916,15 @@ export async function setup(
   await page.emulateMedia({ reducedMotion: 'reduce' })
 
   // Trigger a navigation, since loading file:// doesn't.
-  await page.reload()
+  // await page.reload()
 }
+
+let electronApp: ElectronApplication | undefined = undefined
+let context: BrowserContext | undefined = undefined
+let page: Page | undefined = undefined
 
 export async function setupElectron({
   testInfo,
-  folderSetupFn,
   cleanProjectDir = true,
   appSettings,
 }: {
@@ -853,7 +932,12 @@ export async function setupElectron({
   folderSetupFn?: (projectDirName: string) => Promise<void>
   cleanProjectDir?: boolean
   appSettings?: Partial<SaveSettingsPayload>
-}) {
+}): Promise<{
+  electronApp: ElectronApplication
+  context: BrowserContext
+  page: Page
+  dir: string
+}> {
   // create or otherwise clear the folder
   const projectDirName = testInfo.outputPath('electron-test-projects-dir')
   try {
@@ -868,7 +952,7 @@ export async function setupElectron({
     await fsp.mkdir(projectDirName)
   }
 
-  const electronApp = await electron.launch({
+  const options = {
     args: ['.', '--no-sandbox'],
     env: {
       ...process.env,
@@ -878,14 +962,22 @@ export async function setupElectron({
     ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
       ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
       : {}),
-  })
-  const context = electronApp.context()
-  const page = await electronApp.firstWindow()
-  context.on('console', console.log)
-  page.on('console', console.log)
+  }
+
+  // Do this once and then reuse window on subsequent calls.
+  if (!electronApp) {
+    electronApp = await electron.launch(options)
+  }
+
+  if (!context || !page) {
+    context = electronApp.context()
+    page = await electronApp.firstWindow()
+    context.on('console', console.log)
+    page.on('console', console.log)
+  }
 
   if (cleanProjectDir) {
-    const tempSettingsFilePath = join(projectDirName, SETTINGS_FILE_NAME)
+    const tempSettingsFilePath = path.join(projectDirName, SETTINGS_FILE_NAME)
     const settingsOverrides = TOML.stringify(
       appSettings
         ? {
@@ -912,11 +1004,7 @@ export async function setupElectron({
     await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
   }
 
-  await folderSetupFn?.(projectDirName)
-
-  await setup(context, page)
-
-  return { electronApp, page, dir: projectDirName }
+  return { electronApp, page, context, dir: projectDirName }
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
@@ -980,34 +1068,29 @@ export async function isOutOfViewInScrollContainer(
   return isOutOfView
 }
 
-export async function createProjectAndRenameIt({
+export async function createProject({
   name,
   page,
+  returnHome = false,
 }: {
   name: string
   page: Page
+  returnHome?: boolean
 }) {
-  await page.getByRole('button', { name: 'New project' }).click()
-  await expect(page.getByText('Successfully created')).toBeVisible()
-  await expect(page.getByText('Successfully created')).not.toBeVisible()
+  await test.step(`Create project and navigate to it`, async () => {
+    await page.getByRole('button', { name: 'New project' }).click()
+    await page.getByRole('textbox', { name: 'Name' }).fill(name)
+    await page.getByRole('button', { name: 'Continue' }).click()
 
-  await expect(page.getByText(`project-000`)).toBeVisible()
-  await page.getByText(`project-000`).hover()
-  await page.getByText(`project-000`).focus()
-
-  await page.getByLabel('sketch').first().click()
-
-  await page.waitForTimeout(100)
-
-  // type the name passed in
-  await page.keyboard.press('Backspace')
-  await page.keyboard.type(name)
-
-  await page.getByLabel('checkmark').last().click()
+    if (returnHome) {
+      await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+      await page.getByTestId('app-logo').click()
+    }
+  })
 }
 
 export function executorInputPath(fileName: string): string {
-  return join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
+  return path.join('src', 'wasm-lib', 'tests', 'executor', 'inputs', fileName)
 }
 
 export async function doAndWaitForImageDiff(
@@ -1097,4 +1180,13 @@ export function getPixelRGBs(page: Page) {
       ]
     })
   }
+}
+
+export async function pollEditorLinesSelectedLength(page: Page, lines: number) {
+  return expect
+    .poll(async () => {
+      const lines = await page.locator('.cm-activeLine').all()
+      return lines.length
+    })
+    .toBe(lines)
 }

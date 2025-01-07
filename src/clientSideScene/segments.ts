@@ -45,6 +45,7 @@ import {
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
   ARROWHEAD,
+  DRAFT_POINT,
   SceneInfra,
   SEGMENT_LENGTH_LABEL,
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
@@ -55,6 +56,8 @@ import { normaliseAngle, roundOff } from 'lib/utils'
 import { SegmentOverlayPayload } from 'machines/modelingMachine'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
+import { editorManager, sceneInfra } from 'lib/singletons'
+import { Selections } from 'lib/selections'
 
 interface CreateSegmentArgs {
   input: SegmentInputs
@@ -68,6 +71,7 @@ interface CreateSegmentArgs {
   theme: Themes
   isSelected?: boolean
   sceneInfra: SceneInfra
+  selection?: Selections
 }
 
 interface UpdateSegmentArgs {
@@ -117,6 +121,7 @@ class StraightSegment implements SegmentUtils {
     isSelected = false,
     sceneInfra,
     prevSegment,
+    selection,
   }) => {
     if (input.type !== 'straight-segment')
       return new Error('Invalid segment type')
@@ -155,6 +160,7 @@ class StraightSegment implements SegmentUtils {
       isSelected,
       callExpName,
       baseColor,
+      selection,
     }
 
     // All segment types get an extra segment handle,
@@ -686,19 +692,20 @@ class CircleSegment implements SegmentUtils {
 
 export function createProfileStartHandle({
   from,
-  id,
-  pathToNode,
+  isDraft = false,
   scale = 1,
   theme,
   isSelected,
+  ...rest
 }: {
   from: Coords2d
-  id: string
-  pathToNode: PathToNode
   scale?: number
   theme: Themes
   isSelected?: boolean
-}) {
+} & (
+  | { isDraft: true }
+  | { isDraft: false; id: string; pathToNode: PathToNode }
+)) {
   const group = new Group()
 
   const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
@@ -711,13 +718,12 @@ export function createProfileStartHandle({
 
   group.userData = {
     type: PROFILE_START,
-    id,
     from,
-    pathToNode,
     isSelected,
     baseColor,
+    ...rest,
   }
-  group.name = PROFILE_START
+  group.name = isDraft ? DRAFT_POINT : PROFILE_START
   group.position.set(from[0], from[1], 0)
   group.scale.set(scale, scale, scale)
   return group
@@ -822,8 +828,37 @@ function createLengthIndicator({
   lengthIndicatorText.innerText = roundOff(length).toString()
   const lengthIndicatorWrapper = document.createElement('div')
 
+  // Double click workflow
+  lengthIndicatorWrapper.ondblclick = () => {
+    const selection = lengthIndicatorGroup.parent?.userData.selection
+    if (!selection) {
+      console.error('Unable to dimension segment when clicking the label.')
+      return
+    }
+    sceneInfra.modelingSend({
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: selection.graphSelections[0],
+      },
+    })
+
+    // Command Bar
+    editorManager.commandBarSend({
+      type: 'Find and select command',
+      data: {
+        name: 'Constrain length',
+        groupId: 'modeling',
+        argDefaultValues: {
+          selection,
+        },
+      },
+    })
+  }
+
   // Style the elements
   lengthIndicatorWrapper.style.position = 'absolute'
+  lengthIndicatorWrapper.style.pointerEvents = 'auto'
   lengthIndicatorWrapper.appendChild(lengthIndicatorText)
   const cssObject = new CSS2DObject(lengthIndicatorWrapper)
   cssObject.name = SEGMENT_LENGTH_LABEL_TEXT

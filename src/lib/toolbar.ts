@@ -39,6 +39,9 @@ export type ToolbarItem = {
   description: string
   links: { label: string; url: string }[]
   isActive?: (state: StateFrom<typeof modelingMachine>) => boolean
+  disabledReason?:
+    | string
+    | ((state: StateFrom<typeof modelingMachine>) => string | undefined)
 }
 
 export type ToolbarItemResolved = Omit<
@@ -68,7 +71,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        disabled: (state) => !state.matches('idle'),
         title: ({ sketchPathId }) =>
           `${sketchPathId ? 'Edit' : 'Start'} Sketch`,
         showTitle: true,
@@ -86,7 +88,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
-        disabled: (state) => !state.can({ type: 'Extrude' }),
         icon: 'extrude',
         status: 'available',
         title: 'Extrude',
@@ -101,9 +102,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
-        // TODO: disabled
-        // Who's state is this?
-        disabled: (state) => !state.can({ type: 'Revolve' }),
         icon: 'revolve',
         status: DEV ? 'available' : 'kcl-only',
         title: 'Revolve',
@@ -136,9 +134,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'loft',
-        onClick: () => console.error('Loft not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Loft', groupId: 'modeling' },
+          }),
         icon: 'loft',
-        status: 'kcl-only',
+        status: 'available',
         title: 'Loft',
         hotkey: 'L',
         description:
@@ -147,10 +149,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           {
             label: 'KCL docs',
             url: 'https://zoo.dev/docs/kcl/loft',
-          },
-          {
-            label: 'GitHub discussion',
-            url: 'https://github.com/KittyCAD/modeling-app/discussions/613',
           },
         ],
       },
@@ -164,7 +162,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'fillet3d',
         status: DEV ? 'available' : 'kcl-only',
-        disabled: (state) => !state.can({ type: 'Fillet' }),
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
@@ -182,9 +179,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'shell',
-        onClick: () => console.error('Shell not yet implemented'),
+        onClick: ({ commandBarSend }) => {
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Shell', groupId: 'modeling' },
+          })
+        },
         icon: 'shell',
-        status: 'kcl-only',
+        status: 'available',
         title: 'Shell',
         description: 'Hollow out a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/shell' }],
@@ -249,10 +251,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'plane-offset',
-          onClick: () =>
-            console.error('Plane through normal not yet implemented'),
+          onClick: ({ commandBarSend }) => {
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Offset plane', groupId: 'modeling' },
+            })
+          },
+          hotkey: 'O',
           icon: 'plane',
-          status: 'unavailable',
+          status: 'available',
           title: 'Offset plane',
           description: 'Create a plane parallel to an existing plane.',
           links: [],
@@ -264,6 +271,35 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'unavailable',
           title: '3-point plane',
           description: 'Create a plane from three points.',
+          links: [],
+        },
+      ],
+      'break',
+      [
+        {
+          id: 'text-to-cad',
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Text-to-CAD', groupId: 'modeling' },
+            }),
+          icon: 'sparkles',
+          status: 'available',
+          title: 'Text-to-CAD',
+          description: 'Generate geometry from a text prompt.',
+          links: [],
+        },
+        {
+          id: 'prompt-to-edit',
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Prompt-to-edit', groupId: 'modeling' },
+            }),
+          icon: 'sparkles',
+          status: 'available',
+          title: 'Prompt-to-Edit',
+          description: 'Edit geometry based on a text prompt.',
           links: [],
         },
       ],
@@ -349,6 +385,11 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             (!isEditingExistingSketch(state.context) &&
               !state.matches({ Sketch: 'Tangential arc to' })) ||
             pipeHasCircle(state.context),
+          disabledReason: (state) =>
+            !isEditingExistingSketch(state.context) &&
+            !state.matches({ Sketch: 'Tangential arc to' })
+              ? "Cannot start a tangential arc because there's no previous line to be tangential to.  Try drawing a line first or selecting an existing sketch to edit."
+              : undefined,
           title: 'Tangential Arc',
           hotkey: (state) =>
             state.matches({ Sketch: 'Tangential arc to' }) ? ['Esc', 'A'] : 'A',
@@ -399,8 +440,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Center circle',
           disabled: (state) =>
-            !canRectangleOrCircleTool(state.context) &&
-            !state.matches({ Sketch: 'Circle tool' }),
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'Circle tool' })),
           isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
@@ -415,10 +457,19 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'circle-three-points',
-          onClick: () =>
-            console.error('Three-point circle not yet implemented'),
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({
+                  Sketch: 'circle3PointToolSelect',
+                })
+                  ? 'circle3Points'
+                  : 'none',
+              },
+            }),
           icon: 'circle',
-          status: 'unavailable',
+          status: 'available',
           title: 'Three-point circle',
           showTitle: false,
           description: 'Draw a circle defined by three points',
@@ -440,8 +491,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'rectangle',
           status: 'available',
           disabled: (state) =>
-            !canRectangleOrCircleTool(state.context) &&
-            !state.matches({ Sketch: 'Rectangle tool' }),
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'Rectangle tool' })),
           title: 'Corner rectangle',
           hotkey: (state) =>
             state.matches({ Sketch: 'Rectangle tool' }) ? ['Esc', 'R'] : 'R',
@@ -451,13 +503,33 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'center-rectangle',
-          onClick: () => console.error('Center rectangle not yet implemented'),
-          icon: 'rectangle',
-          status: 'unavailable',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({
+                  Sketch: 'Center Rectangle tool',
+                })
+                  ? 'center rectangle'
+                  : 'none',
+              },
+            }),
+          icon: 'arc',
+          status: 'available',
+          disabled: (state) =>
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'Center Rectangle tool' })),
           title: 'Center rectangle',
-          showTitle: false,
+          hotkey: (state) =>
+            state.matches({ Sketch: 'Center Rectangle tool' })
+              ? ['Esc', 'C']
+              : 'C',
           description: 'Start drawing a rectangle from its center',
           links: [],
+          isActive: (state) => {
+            return state.matches({ Sketch: 'Center Rectangle tool' })
+          },
         },
       ],
       {
@@ -494,13 +566,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'constraint-length',
-          disabled: (state) =>
-            !(
-              state.matches({ Sketch: 'SketchIdle' }) &&
-              state.can({ type: 'Constrain length' })
-            ),
-          onClick: ({ modelingSend }) =>
-            modelingSend({ type: 'Constrain length' }),
+          disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: {
+                name: 'Constrain length',
+                groupId: 'modeling',
+              },
+            }),
           icon: 'dimension',
           status: 'available',
           title: 'Length',

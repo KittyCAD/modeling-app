@@ -5,7 +5,6 @@ import {
   INDEX_IDENTIFIER,
   MAX_PADDING,
   ONBOARDING_PROJECT_NAME,
-  PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { bracket } from './exampleKcl'
 import { PATHS } from './paths'
@@ -14,7 +13,6 @@ import {
   listProjects,
   readAppSettingsFile,
 } from './desktop'
-import { engineCommandManager } from './singletons'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -22,34 +20,18 @@ export const isHidden = (fileOrDir: FileEntry) =>
 export const isDir = (fileOrDir: FileEntry) =>
   'children' in fileOrDir && fileOrDir.children !== undefined
 
-// Deeply sort the files and directories in a project like VS Code does:
-// The main.kcl file is always first, then files, then directories
+// Shallow sort the files and directories
 // Files and directories are sorted alphabetically
-export function sortProject(project: FileEntry[]): FileEntry[] {
-  const sortedProject = project.sort((a, b) => {
-    if (a.name === PROJECT_ENTRYPOINT) {
-      return -1
-    } else if (b.name === PROJECT_ENTRYPOINT) {
+export function sortFilesAndDirectories(files: FileEntry[]): FileEntry[] {
+  return files.sort((a, b) => {
+    if (a.children === null && b.children !== null) {
       return 1
-    } else if (a.children === null && b.children !== null) {
-      return -1
     } else if (a.children !== null && b.children === null) {
-      return 1
+      return -1
     } else if (a.name && b.name) {
       return a.name.localeCompare(b.name)
     } else {
       return 0
-    }
-  })
-
-  return sortedProject.map((fileOrDir: FileEntry) => {
-    if ('children' in fileOrDir && fileOrDir.children !== null) {
-      return {
-        ...fileOrDir,
-        children: sortProject(fileOrDir.children || []),
-      }
-    } else {
-      return fileOrDir
     }
   })
 }
@@ -120,7 +102,7 @@ export async function getSettingsFolderPaths(projectPath?: string) {
   }
 }
 
-export async function createAndOpenNewProject({
+export async function createAndOpenNewTutorialProject({
   onProjectOpen,
   navigate,
 }: {
@@ -133,9 +115,6 @@ export async function createAndOpenNewProject({
   ) => void
   navigate: (path: string) => void
 }) {
-  // Clear the scene and end the session.
-  engineCommandManager.endSession()
-
   // Create a new project with the onboarding project name
   const configuration = await readAppSettingsFile()
   const projects = await listProjects(configuration)
@@ -144,6 +123,22 @@ export async function createAndOpenNewProject({
     ONBOARDING_PROJECT_NAME,
     nextIndex
   )
+
+  // Delete the tutorial project if it already exists.
+  if (isDesktop()) {
+    if (configuration.settings?.project?.directory === undefined) {
+      return Promise.reject(new Error('configuration settings are undefined'))
+    }
+
+    const fullPath = window.electron.join(
+      configuration.settings.project.directory,
+      name
+    )
+    if (window.electron.exists(fullPath)) {
+      await window.electron.rm(fullPath)
+    }
+  }
+
   const newProject = await createNewProjectDirectory(
     name,
     bracket,

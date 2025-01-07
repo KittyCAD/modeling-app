@@ -1,12 +1,9 @@
 #[cfg(test)]
 mod test_examples_someFn {
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_mock_example_someFn0() {
-        let tokens = crate::token::lexer("someFn()").unwrap();
-        let parser = crate::parser::Parser::new(tokens);
-        let program = parser.ast().unwrap();
-        let id_generator = crate::executor::IdGenerator::default();
-        let ctx = crate::executor::ExecutorContext {
+    async fn test_mock_example_someFn0() -> miette::Result<()> {
+        let program = crate::Program::parse_no_errs("someFn()").unwrap();
+        let ctx = crate::ExecutorContext {
             engine: std::sync::Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
                     .await
@@ -15,23 +12,45 @@ mod test_examples_someFn {
             fs: std::sync::Arc::new(crate::fs::FileManager::new()),
             stdlib: std::sync::Arc::new(crate::std::StdLib::new()),
             settings: Default::default(),
-            context_type: crate::executor::ContextType::Mock,
+            context_type: crate::execution::ContextType::Mock,
         };
-        ctx.run(&program, None, id_generator, None).await.unwrap();
+        if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new()).await {
+            return Err(miette::Report::new(crate::errors::Report {
+                error: e,
+                filename: format!("{}{}", "someFn", 0usize),
+                kcl_source: "someFn()".to_string(),
+            }));
+        }
+
+        Ok(())
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn kcl_test_example_someFn0() {
+    async fn kcl_test_example_someFn0() -> miette::Result<()> {
         let code = "someFn()";
-        let result =
-            crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm)
-                .await
-                .unwrap();
+        let result = match crate::test_server::execute_and_snapshot(
+            code,
+            crate::settings::types::UnitLength::Mm,
+            None,
+        )
+        .await
+        {
+            Err(crate::errors::ExecError::Kcl(e)) => {
+                return Err(miette::Report::new(crate::errors::Report {
+                    error: e,
+                    filename: format!("{}{}", "someFn", 0usize),
+                    kcl_source: "someFn()".to_string(),
+                }));
+            }
+            Err(other_err) => panic!("{}", other_err),
+            Ok(img) => img,
+        };
         twenty_twenty::assert_image(
             &format!("tests/outputs/{}.png", "serial_test_example_someFn0"),
             &result,
             0.99,
         );
+        Ok(())
     }
 }
 
@@ -45,12 +64,12 @@ pub(crate) struct SomeFn {}
 #[doc = "Std lib function: someFn\nDocs"]
 pub(crate) const SomeFn: SomeFn = SomeFn {};
 fn boxed_someFn(
-    exec_state: &mut crate::executor::ExecState,
+    exec_state: &mut crate::ExecState,
     args: crate::std::Args,
 ) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
-                Output = anyhow::Result<crate::executor::KclValue, crate::errors::KclError>,
+                Output = anyhow::Result<crate::execution::KclValue, crate::errors::KclError>,
             > + Send
             + '_,
     >,
@@ -75,6 +94,10 @@ impl crate::docs::StdLibFn for SomeFn {
         vec![]
     }
 
+    fn keyword_arguments(&self) -> bool {
+        false
+    }
+
     fn args(&self, inline_subschemas: bool) -> Vec<crate::docs::StdLibFnArg> {
         let mut settings = schemars::gen::SchemaSettings::openapi3();
         settings.inline_subschemas = inline_subschemas;
@@ -84,6 +107,8 @@ impl crate::docs::StdLibFn for SomeFn {
             type_: "Foo".to_string(),
             schema: generator.root_schema_for::<Foo>(),
             required: true,
+            label_required: true,
+            description: String::new().to_string(),
         }]
     }
 
@@ -97,6 +122,8 @@ impl crate::docs::StdLibFn for SomeFn {
             type_: "i32".to_string(),
             schema,
             required: true,
+            label_required: true,
+            description: String::new(),
         })
     }
 
@@ -108,17 +135,19 @@ impl crate::docs::StdLibFn for SomeFn {
         false
     }
 
+    fn feature_tree_operation(&self) -> bool {
+        false
+    }
+
     fn examples(&self) -> Vec<String> {
         let code_blocks = vec!["someFn()"];
         code_blocks
             .iter()
             .map(|cb| {
-                let tokens = crate::token::lexer(cb).unwrap();
-                let parser = crate::parser::Parser::new(tokens);
-                let program = parser.ast().unwrap();
-                let mut options: crate::ast::types::FormatOptions = Default::default();
+                let program = crate::Program::parse_no_errs(cb).unwrap();
+                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
-                program.recast(&options, 0)
+                program.ast.recast(&options, 0)
             })
             .collect::<Vec<String>>()
     }

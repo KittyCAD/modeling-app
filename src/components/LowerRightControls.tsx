@@ -1,4 +1,4 @@
-import { APP_VERSION } from 'routes/Settings'
+import { APP_VERSION, getReleaseUrl } from 'routes/Settings'
 import { CustomIcon } from 'components/CustomIcon'
 import Tooltip from 'components/Tooltip'
 import { PATHS } from 'lib/paths'
@@ -72,10 +72,8 @@ export function LowerRightControls({
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
         <a
-          onClick={openExternalBrowserIfDesktop(
-            `https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`
-          )}
-          href={`https://github.com/KittyCAD/modeling-app/releases/tag/v${APP_VERSION}`}
+          onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
+          href={getReleaseUrl()}
           target="_blank"
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
@@ -96,6 +94,23 @@ export function LowerRightControls({
             Report a bug
           </Tooltip>
         </a>
+        <Link
+          to={
+            location.pathname.includes(PATHS.FILE)
+              ? filePath + PATHS.TELEMETRY + '?tab=project'
+              : PATHS.HOME + PATHS.TELEMETRY
+          }
+          data-testid="telemetry-link"
+        >
+          <CustomIcon
+            name="stopwatch"
+            className={`w-5 h-5 ${linkOverrideClassName}`}
+          />
+          <span className="sr-only">Telemetry</span>
+          <Tooltip position="top" contentClassName="text-xs">
+            Telemetry
+          </Tooltip>
+        </Link>
         <Link
           to={
             location.pathname.includes(PATHS.FILE)

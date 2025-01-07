@@ -15,6 +15,7 @@ import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
 import { createSettings } from './settings/initialSettings'
 import { normalizeLineEndings } from 'lib/codeEditor'
+import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -44,17 +45,24 @@ export const settingsLoader: LoaderFunction = async ({
   return settings
 }
 
+export const telemetryLoader: LoaderFunction = async ({
+  params,
+}): Promise<null> => {
+  return null
+}
+
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
   const { settings } = await loadAndValidateSettings()
-  const onboardingStatus = settings.app.onboardingStatus.current || ''
+  const onboardingStatus: OnboardingStatus =
+    settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(
     PATHS.ONBOARDING.INDEX
   )
-  // '' is the initial state, 'done' and 'dismissed' are the final states
+  // '' is the initial state, 'completed' and 'dismissed' are the final states
   const hasValidOnboardingStatus =
     onboardingStatus.length === 0 ||
-    !(onboardingStatus === 'done' || onboardingStatus === 'dismissed')
+    !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed')
   const shouldRedirectToOnboarding =
     notEnRouteToOnboarding && hasValidOnboardingStatus
 
@@ -79,12 +87,13 @@ export const fileLoader: LoaderFunction = async (
   )
   const isBrowserProject = params.id === decodeURIComponent(BROWSER_PATH)
 
+  let code = ''
+
   if (!isBrowserProject && projectPathData) {
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
 
     const urlObj = new URL(routerData.request.url)
-    let code = ''
 
     if (!urlObj.pathname.endsWith('/settings')) {
       const fallbackFile = isDesktop()
@@ -114,11 +123,19 @@ export const fileLoader: LoaderFunction = async (
       })
       code = normalizeLineEndings(code)
 
+      // If persistCode in localStorage is present, it'll persist that code
+      // through *anything*. INTENDED FOR TESTS.
+      if (window.electron.process.env.IS_PLAYWRIGHT) {
+        code = codeManager.localStoragePersistCode() || code
+      }
+
       // Update both the state and the editor's code.
       // We explicitly do not write to the file here since we are loading from
       // the file system and not the editor.
       codeManager.updateCurrentFilePath(currentFilePath)
-      codeManager.updateCodeStateEditor(code)
+      // We pass true on the end here to clear the code editor history.
+      // This way undo and redo are not super weird when opening new files.
+      codeManager.updateCodeStateEditor(code, true)
     }
 
     // Set the file system manager to the project path
@@ -139,12 +156,6 @@ export const fileLoader: LoaderFunction = async (
       ? await getProjectInfo(projectPath)
       : null
 
-    console.log('maybeProjectInfo', {
-      maybeProjectInfo,
-      defaultProjectData,
-      projectPathData,
-    })
-
     const projectData: IndexLoaderData = {
       code,
       project: maybeProjectInfo ?? defaultProjectData,
@@ -161,7 +172,7 @@ export const fileLoader: LoaderFunction = async (
   }
 
   return {
-    code: '',
+    code,
     project: {
       name: BROWSER_PROJECT_NAME,
       path: '/' + BROWSER_PROJECT_NAME,

@@ -19,6 +19,12 @@ path = ".."
 [workspace]
 members = ["."]
 
+[workspace.lints.clippy]
+assertions_on_result_states = "warn"
+dbg_macro = "warn"
+iter_over_hash_type = "warn"
+lossy_float_literal = "warn"
+
 [profile.release]
 debug = 1
 

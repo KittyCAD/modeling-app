@@ -5,15 +5,16 @@ import {
   CommandArgumentWithName,
   KclCommandValue,
 } from 'lib/commandTypes'
-import { Selections } from 'lib/selections'
+import { Selections__old } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 import { MachineManager } from 'components/MachineManagerProvider'
+import toast from 'react-hot-toast'
 
 export type CommandBarContext = {
   commands: Command[]
   selectedCommand?: Command
   currentArgument?: CommandArgument<unknown> & { name: string }
-  selectionRanges: Selections
+  selectionRanges: Selections__old
   argumentsToSubmit: { [x: string]: unknown }
   machineManager: MachineManager
 }
@@ -247,14 +248,69 @@ export const commandBarMachine = setup({
     'All arguments are skippable': () => false,
   },
   actors: {
-    'Validate argument': fromPromise(({ input }) => {
-      return new Promise((resolve, reject) => {
-        // TODO: figure out if we should validate argument data here or in the form itself,
-        // and if we should support people configuring a argument's validation function
+    'Validate argument': fromPromise(
+      ({
+        input,
+      }: {
+        input: {
+          context: CommandBarContext | undefined
+          event: CommandBarMachineEvent | undefined
+        }
+      }) => {
+        return new Promise((resolve, reject) => {
+          if (!input || input?.event?.type !== 'Submit argument') {
+            toast.error(`Unable to validate, wrong event type.`)
+            return reject(`Unable to validate, wrong event type`)
+          }
 
-        resolve(input)
-      })
-    }),
+          const context = input?.context
+
+          if (!context) {
+            toast.error(`Unable to validate, wrong argument.`)
+            return reject(`Unable to validate, wrong argument`)
+          }
+
+          const data = input.event.data
+          const argName = context.currentArgument?.name
+          const args = context?.selectedCommand?.args
+          const argConfig = args && argName ? args[argName] : undefined
+          // Only do a validation check if the argument, selectedCommand, and the validation function are defined
+          if (
+            context.currentArgument &&
+            context.selectedCommand &&
+            argConfig?.inputType === 'selection' &&
+            argConfig?.validation
+          ) {
+            argConfig
+              .validation({ context, data })
+              .then((result) => {
+                if (typeof result === 'boolean' && result === true) {
+                  return resolve(data)
+                } else {
+                  // validation failed
+                  if (typeof result === 'string') {
+                    // The result of the validation is the error message
+                    toast.error(result)
+                    return reject(
+                      `unable to validate ${argName}, Message: ${result}`
+                    )
+                  } else {
+                    // Default message if there is not a custom one sent
+                    toast.error(`Unable to validate ${argName}`)
+                    return reject(`unable to validate ${argName}}`)
+                  }
+                }
+              })
+              .catch(() => {
+                return reject(`unable to validate ${argName}}`)
+              })
+          } else {
+            // Missing several requirements for validate argument, just bypass
+            return resolve(data)
+          }
+        })
+      }
+    ),
     'Validate all arguments': fromPromise(
       ({ input }: { input: CommandBarContext }) => {
         return new Promise((resolve, reject) => {
@@ -449,9 +505,10 @@ export const commandBarMachine = setup({
           invoke: {
             src: 'Validate argument',
             id: 'validateSingleArgument',
-            input: ({ event }) => {
-              if (event.type !== 'Submit argument') return {}
-              return event.data
+            input: ({ event, context }) => {
+              if (event.type !== 'Submit argument')
+                return { event: undefined, context: undefined }
+              return { event, context }
             },
             onDone: {
               target: '#Command Bar.Checking Arguments',

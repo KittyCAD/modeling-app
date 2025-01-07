@@ -1,6 +1,11 @@
 import type { Page, Locator } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { sansWhitespace } from '../test-utils'
+import {
+  closePane,
+  checkIfPaneIsOpen,
+  openPane,
+  sansWhitespace,
+} from '../test-utils'
 
 interface EditorState {
   activeLines: Array<string>
@@ -11,10 +16,11 @@ interface EditorState {
 export class EditorFixture {
   public page: Page
 
+  private paneButtonTestId = 'code-pane-button'
   private diagnosticsTooltip!: Locator
   private diagnosticsGutterIcon!: Locator
   private codeContent!: Locator
-  private activeLine!: Locator
+  public activeLine!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -23,7 +29,7 @@ export class EditorFixture {
   reConstruct = (page: Page) => {
     this.page = page
 
-    this.codeContent = page.locator('.cm-content')
+    this.codeContent = page.locator('.cm-content[data-language="kcl"]')
     this.diagnosticsTooltip = page.locator('.cm-tooltip-lint')
     this.diagnosticsGutterIcon = page.locator('.cm-lint-marker-error')
     this.activeLine = this.page.locator('.cm-activeLine')
@@ -31,19 +37,32 @@ export class EditorFixture {
 
   private _expectEditorToContain =
     (not = false) =>
-    (
+    async (
       code: string,
       {
         shouldNormalise = false,
         timeout = 5_000,
       }: { shouldNormalise?: boolean; timeout?: number } = {}
     ) => {
-      if (!shouldNormalise) {
-        const expectStart = expect(this.codeContent)
-        if (not) {
-          return expectStart.not.toContainText(code, { timeout })
+      const wasPaneOpen = await this.checkIfPaneIsOpen()
+      if (!wasPaneOpen) {
+        await this.openPane()
+      }
+      const resetPane = async () => {
+        if (!wasPaneOpen) {
+          await this.closePane()
         }
-        return expectStart.toContainText(code, { timeout })
+      }
+      if (!shouldNormalise) {
+        const expectStart = expect.poll(() => this.codeContent.textContent())
+        if (not) {
+          const result = await expectStart.not.toContain(code)
+          await resetPane()
+          return result
+        }
+        const result = await expectStart.toContain(code)
+        await resetPane()
+        return result
       }
       const normalisedCode = code.replaceAll(/\s+/g, '').trim()
       const expectStart = expect.poll(
@@ -56,9 +75,13 @@ export class EditorFixture {
         }
       )
       if (not) {
-        return expectStart.not.toContain(normalisedCode)
+        const result = await expectStart.not.toContain(normalisedCode)
+        await resetPane()
+        return result
       }
-      return expectStart.toContain(normalisedCode)
+      const result = await expectStart.toContain(normalisedCode)
+      await resetPane()
+      return result
     }
   expectEditor = {
     toContain: this._expectEditorToContain(),
@@ -114,5 +137,38 @@ export class EditorFixture {
     if (!lines) return
     code = code.replace(findCode, replaceCode)
     await this.codeContent.fill(code)
+  }
+  checkIfPaneIsOpen() {
+    return checkIfPaneIsOpen(this.page, this.paneButtonTestId)
+  }
+  closePane() {
+    return closePane(this.page, this.paneButtonTestId)
+  }
+  openPane() {
+    return openPane(this.page, this.paneButtonTestId)
+  }
+  scrollToText(text: string, placeCursor?: boolean) {
+    return this.page.evaluate(
+      (args: { text: string; placeCursor?: boolean }) => {
+        // error TS2339: Property 'docView' does not exist on type 'EditorView'.
+        // Except it does so :shrug:
+        // @ts-ignore
+        let index = window.editorManager._editorView?.docView.view.state.doc
+          .toString()
+          .indexOf(args.text)
+        window.editorManager._editorView?.focus()
+        window.editorManager._editorView?.dispatch({
+          selection: window.EditorSelection.create([
+            window.EditorSelection.cursor(index),
+          ]),
+          effects: [
+            window.EditorView.scrollIntoView(
+              window.EditorSelection.range(index, index + 1)
+            ),
+          ],
+        })
+      },
+      { text, placeCursor }
+    )
   }
 }

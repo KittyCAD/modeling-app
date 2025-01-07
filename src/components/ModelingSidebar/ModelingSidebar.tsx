@@ -11,7 +11,6 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
 import Tooltip from 'components/Tooltip'
 import { ActionIcon } from 'components/ActionIcon'
-import styles from './ModelingSidebar.module.css'
 import { ModelingPane } from './ModelingPane'
 import { isDesktop } from 'lib/isDesktop'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -20,6 +19,8 @@ import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
+import { onboardingPaths } from 'routes/Onboarding/paths'
+import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -42,7 +43,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const onboardingStatus = settings.context.app.onboardingStatus
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
-    onboardingStatus.current === 'camera' ||
+    onboardingStatus.current === onboardingPaths.CAMERA ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
@@ -54,13 +55,14 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       settings: settings.context,
       platform: getPlatformString(),
     }),
-    [kclContext.errors, settings.context]
+    [kclContext.diagnostics, settings.context]
   )
 
   const sidebarActions: SidebarAction[] = [
     {
       id: 'export',
       title: 'Export part',
+      sidebarName: 'Export part',
       icon: 'floppyDiskArrow',
       keybinding: 'Ctrl + Shift + E',
       action: () =>
@@ -72,6 +74,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
     {
       id: 'make',
       title: 'Make part',
+      sidebarName: 'Make part',
       icon: 'printer3d',
       keybinding: 'Ctrl + Shift + M',
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
@@ -181,7 +184,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         bottomRight: 'hidden',
       }}
     >
-      <div id="app-sidebar" className={styles.grid + ' flex-1'}>
+      <div id="app-sidebar" className="flex flex-row h-full">
         <ul
           className={
             (context.store?.openPanes.length === 0 ? 'rounded-r ' : '') +
@@ -219,7 +222,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
                     key={action.id}
                     paneConfig={{
                       id: action.id,
-                      title: action.title,
+                      sidebarName: action.sidebarName,
                       icon: action.icon,
                       keybinding: action.keybinding,
                       iconClassName: action.iconClassName,
@@ -236,10 +239,8 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
         <ul
           id="pane-section"
           className={
-            'ml-[-1px] col-start-2 col-span-1 flex flex-col gap-2 ' +
-            (context.store?.openPanes.length >= 1
-              ? `row-start-1 row-end-3`
-              : `hidden`)
+            'ml-[-1px] col-start-2 col-span-1 flex flex-col items-stretch gap-2 ' +
+            (context.store?.openPanes.length >= 1 ? `w-full` : `hidden`)
           }
         >
           {filteredPanes
@@ -248,13 +249,15 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
               <ModelingPane
                 key={pane.id}
                 icon={pane.icon}
+                title={pane.sidebarName}
+                onClose={() => {}}
                 id={`${pane.id}-pane`}
-                title={pane.title}
-                Menu={pane.Menu}
-                onClose={() => togglePane(pane.id)}
               >
                 {pane.Content instanceof Function ? (
-                  <pane.Content />
+                  <pane.Content
+                    id={pane.id}
+                    onClose={() => togglePane(pane.id)}
+                  />
                 ) : (
                   pane.Content
                 )}
@@ -270,7 +273,7 @@ interface ModelingPaneButtonProps
   extends React.HTMLAttributes<HTMLButtonElement> {
   paneConfig: {
     id: string
-    title: string
+    sidebarName: string
     icon: CustomIconName | IconDefinition
     keybinding: string
     iconClassName?: string
@@ -299,8 +302,8 @@ function ModelingPaneButton({
       <button
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
-        name={paneConfig.title}
-        data-testid={paneConfig.id + '-pane-button'}
+        name={paneConfig.sidebarName}
+        data-testid={paneConfig.id + SIDEBAR_BUTTON_SUFFIX}
         disabled={disabledText !== undefined}
         aria-disabled={disabledText !== undefined}
         {...props}
@@ -315,7 +318,7 @@ function ModelingPaneButton({
           }
         />
         <span className="sr-only">
-          {paneConfig.title}
+          {paneConfig.sidebarName}
           {paneIsOpen !== undefined ? ` pane` : ''}
         </span>
         <Tooltip
@@ -324,7 +327,7 @@ function ModelingPaneButton({
           hoverOnly
         >
           <span className="flex-1">
-            {paneConfig.title}
+            {paneConfig.sidebarName}
             {disabledText !== undefined ? ` (${disabledText})` : ''}
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
