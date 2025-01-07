@@ -1,9 +1,4 @@
-import {
-  ActionFunction,
-  LoaderFunction,
-  redirect,
-  useLocation,
-} from 'react-router-dom'
+import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
 import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
 import { getProjectMetaByRouteId, PATHS } from './paths'
 import { isDesktop } from './isDesktop'
