@@ -1776,7 +1776,7 @@ export const modelingMachine = setup({
         'Delete selection': {
           target: 'Applying selection delete',
           guard: 'has valid selection for deletion',
-          reenter: true,
+          reenter: false,
         },
 
         'Text-to-CAD': {
@@ -2568,7 +2568,6 @@ export const modelingMachine = setup({
         input: ({ event, context }) => {
           console.log('event', event)
           if (event.type !== 'Delete selection') return undefined
-          // TODO: there has to be a better way to pass `context` right?
           if (!context.selectionRanges) return undefined
           return { selection: context.selectionRanges }
         },
