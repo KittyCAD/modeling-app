@@ -49,7 +49,6 @@ import {
   handleSelectionBatch,
   Selections,
   updateSelections,
-  computeEditorSelectionForCompleteSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -389,8 +388,9 @@ export const ModelingMachineProvider = ({
             }
 
             if (setSelections.selectionType === 'completeSelection') {
-              const codeMirrorSelection =
-                computeEditorSelectionForCompleteSelection(setSelections)
+              const codeMirrorSelection = editorManager.createEditorSelection(
+                setSelections.selection
+              )
               kclEditorActor.send({
                 type: 'setLastSelectionEvent',
                 data: {
