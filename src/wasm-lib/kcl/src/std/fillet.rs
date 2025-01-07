@@ -12,7 +12,6 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    batch_end_cmd,
     errors::{KclError, KclErrorDetails},
     execution::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier},
     parsing::ast::types::TagNode,
@@ -145,9 +144,7 @@ async fn inner_fillet(
         let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
 
         let id = exec_state.next_uuid();
-        batch_end_cmd!(
-            exec_state,
-            args,
+        args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
@@ -159,8 +156,9 @@ async fn inner_fillet(
                 // So the resulting face of the fillet will be the same.
                 // This is because that's how most other endpoints work.
                 face_id: Some(id),
-            })
-        );
+            }),
+        )
+        .await?;
 
         solid.edge_cuts.push(EdgeCut::Fillet {
             id,
@@ -234,7 +232,7 @@ async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState,
     let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
-    let (a_cmd, resp) = args
+    let resp = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
@@ -244,7 +242,6 @@ async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState,
             }),
         )
         .await?;
-    exec_state.add_artifact_command(a_cmd);
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetOppositeEdge(opposite_edge),
     } = &resp
@@ -312,7 +309,7 @@ async fn inner_get_next_adjacent_edge(
     let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
-    let (a_cmd, resp) = args
+    let resp = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
@@ -322,7 +319,6 @@ async fn inner_get_next_adjacent_edge(
             }),
         )
         .await?;
-    exec_state.add_artifact_command(a_cmd);
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(adjacent_edge),
     } = &resp
@@ -398,7 +394,7 @@ async fn inner_get_previous_adjacent_edge(
     let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
-    let (a_cmd, resp) = args
+    let resp = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dGetPrevAdjacentEdge {
@@ -408,7 +404,6 @@ async fn inner_get_previous_adjacent_edge(
             }),
         )
         .await?;
-    exec_state.add_artifact_command(a_cmd);
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetPrevAdjacentEdge(adjacent_edge),
     } = &resp

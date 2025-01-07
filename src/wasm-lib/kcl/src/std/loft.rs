@@ -8,7 +8,6 @@ use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
 use crate::{
-    batch_cmd,
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, KclValue, Sketch, Solid},
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
@@ -144,9 +143,7 @@ async fn inner_loft(
     }
 
     let id = exec_state.next_uuid();
-    batch_cmd!(
-        exec_state,
-        args,
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::Loft {
             section_ids: sketches.iter().map(|group| group.id).collect(),
@@ -154,8 +151,9 @@ async fn inner_loft(
             bez_approximate_rational,
             tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
             v_degree,
-        })
-    );
+        }),
+    )
+    .await?;
 
     // Using the first sketch as the base curve, idk we might want to change this later.
     do_post_extrude(sketches[0].clone(), 0.0, exec_state, args).await

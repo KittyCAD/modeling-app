@@ -384,7 +384,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
 ) -> Result<Vec<T>, KclError> {
     let id = exec_state.next_uuid();
 
-    let (a_cmd, resp) = args
+    let resp = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityLinearPatternTransform {
@@ -394,7 +394,6 @@ async fn send_pattern_transform<T: GeometryTrait>(
             }),
         )
         .await?;
-    exec_state.add_artifact_command(a_cmd);
 
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
@@ -1051,7 +1050,7 @@ async fn pattern_circular(
     };
 
     let center = data.center();
-    let (a_cmd, resp) = args
+    let resp = args
         .send_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::EntityCircularPattern {
@@ -1068,7 +1067,6 @@ async fn pattern_circular(
             }),
         )
         .await?;
-    exec_state.add_artifact_command(a_cmd);
 
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),

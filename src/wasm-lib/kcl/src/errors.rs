@@ -25,12 +25,17 @@ pub enum ExecError {
 pub struct ExecErrorWithState {
     pub error: ExecError,
     pub exec_state: crate::ExecState,
+    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 impl ExecErrorWithState {
     #[cfg_attr(target_arch = "wasm32", expect(dead_code))]
-    pub fn new(error: ExecError, exec_state: crate::ExecState) -> Self {
-        Self { error, exec_state }
+    pub fn new(error: ExecError, exec_state: crate::ExecState, artifact_commands: Vec<ArtifactCommand>) -> Self {
+        Self {
+            error,
+            exec_state,
+            artifact_commands,
+        }
     }
 }
 
@@ -39,6 +44,7 @@ impl From<ExecError> for ExecErrorWithState {
         Self {
             error,
             exec_state: Default::default(),
+            artifact_commands: Vec::default(),
         }
     }
 }
@@ -48,6 +54,7 @@ impl From<KclError> for ExecErrorWithState {
         Self {
             error: error.into(),
             exec_state: Default::default(),
+            artifact_commands: Vec::default(),
         }
     }
 }
@@ -57,6 +64,7 @@ impl From<ConnectionError> for ExecErrorWithState {
         Self {
             error: error.into(),
             exec_state: Default::default(),
+            artifact_commands: Vec::default(),
         }
     }
 }

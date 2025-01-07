@@ -8,7 +8,6 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    batch_cmd,
     errors::KclError,
     execution::{ExecState, KclValue, Solid},
     std::Args,
@@ -63,9 +62,7 @@ async fn inner_helix(
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
     let id = exec_state.next_uuid();
-    batch_cmd!(
-        exec_state,
-        args,
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::EntityMakeHelix {
             cylinder_id: solid.id,
@@ -73,8 +70,9 @@ async fn inner_helix(
             length: LengthUnit(data.length.unwrap_or(solid.height)),
             revolutions: data.revolutions,
             start_angle: Angle::from_degrees(data.angle_start),
-        })
-    );
+        }),
+    )
+    .await?;
 
     Ok(solid)
 }

@@ -6,7 +6,7 @@ use std::{
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
-    exec::{DefaultPlanes, IdGenerator},
+    exec::{ArtifactCommand, DefaultPlanes, IdGenerator},
     ExecutionKind, KclError,
 };
 use kittycad_modeling_cmds::{
@@ -369,6 +369,10 @@ impl kcl_lib::EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
+    fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
+        Vec::new()
+    }
+
     fn execution_kind(&self) -> ExecutionKind {
         let guard = self.execution_kind.lock().unwrap();
         *guard
@@ -416,7 +420,7 @@ impl kcl_lib::EngineManager for EngineConnection {
         id: uuid::Uuid,
         _source_range: kcl_lib::SourceRange,
         cmd: WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, kcl_lib::SourceRange>,
+        _id_to_source_range: HashMap<uuid::Uuid, kcl_lib::SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
             WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {

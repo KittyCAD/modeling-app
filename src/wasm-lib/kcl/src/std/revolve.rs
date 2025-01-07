@@ -8,7 +8,6 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    batch_cmd,
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, KclValue, Sketch, Solid},
     std::{
@@ -269,9 +268,7 @@ async fn inner_revolve(
     match data.axis {
         AxisOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
-            batch_cmd!(
-                exec_state,
-                args,
+            args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::Revolve {
                     angle,
@@ -280,22 +277,22 @@ async fn inner_revolve(
                     origin,
                     tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
                     axis_is_2d: true,
-                })
-            );
+                }),
+            )
+            .await?;
         }
         AxisOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
-            batch_cmd!(
-                exec_state,
-                args,
+            args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::RevolveAboutEdge {
                     angle,
                     target: sketch.id.into(),
                     edge_id,
                     tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
-                })
-            );
+                }),
+            )
+            .await?;
         }
     }
 

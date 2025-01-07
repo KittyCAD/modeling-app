@@ -27,7 +27,7 @@ pub async fn execute_and_snapshot(
     let program = Program::parse_no_errs(code)?;
     do_execute_and_snapshot(&ctx, program)
         .await
-        .map(|(_state, snap)| snap)
+        .map(|(_state, _, snap)| snap)
         .map_err(|err| err.error)
 }
 
@@ -39,14 +39,16 @@ pub async fn execute_and_snapshot_ast(
     project_directory: Option<PathBuf>,
 ) -> Result<(ProgramMemory, Vec<Operation>, Vec<ArtifactCommand>, image::DynamicImage), ExecErrorWithState> {
     let ctx = new_context(units, true, project_directory).await?;
-    do_execute_and_snapshot(&ctx, ast).await.map(|(state, snap)| {
-        (
-            state.mod_local.memory,
-            state.mod_local.operations,
-            state.global.artifact_commands,
-            snap,
-        )
-    })
+    do_execute_and_snapshot(&ctx, ast)
+        .await
+        .map(|(state, artifact_commands, snap)| {
+            (
+                state.mod_local.memory,
+                state.mod_local.operations,
+                artifact_commands,
+                snap,
+            )
+        })
 }
 
 pub async fn execute_and_snapshot_no_auth(
@@ -58,19 +60,19 @@ pub async fn execute_and_snapshot_no_auth(
     let program = Program::parse_no_errs(code)?;
     do_execute_and_snapshot(&ctx, program)
         .await
-        .map(|(_state, snap)| snap)
+        .map(|(_state, _, snap)| snap)
         .map_err(|err| err.error)
 }
 
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
-) -> Result<(crate::execution::ExecState, image::DynamicImage), ExecErrorWithState> {
+) -> Result<(crate::execution::ExecState, Vec<ArtifactCommand>, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = Default::default();
     let snapshot_png_bytes = ctx
         .execute_and_prepare_snapshot(&program, &mut exec_state)
         .await
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), ctx.take_artifact_commands()))?
         .contents
         .0;
 
@@ -79,8 +81,8 @@ async fn do_execute_and_snapshot(
         .with_guessed_format()
         .map_err(|e| ExecError::BadPng(e.to_string()))
         .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?;
-    Ok((exec_state, img))
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), ctx.take_artifact_commands()))?;
+    Ok((exec_state, ctx.take_artifact_commands(), img))
 }
 
 pub async fn new_context(

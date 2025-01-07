@@ -32,7 +32,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator, Point3d},
+    execution::{ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -66,6 +66,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     /// Get the batch of end commands to be sent to the engine.
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
+
+    /// Take the artifact commands generated up to this point and clear them.
+    fn take_artifact_commands(&self) -> Vec<ArtifactCommand>;
 
     /// Get the current execution kind.
     fn execution_kind(&self) -> ExecutionKind;

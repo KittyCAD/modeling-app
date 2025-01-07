@@ -71,9 +71,6 @@ pub struct GlobalState {
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// Output map of UUIDs to artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
-    /// Output commands to allow building the artifact graph by the caller.
-    /// This corresponds to OrderedCommands on the TS side.
-    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
@@ -147,14 +144,14 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub fn to_wasm_outcome(self) -> ExecOutcome {
+    pub fn to_wasm_outcome(self, artifact_commands: Vec<ArtifactCommand>) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
             memory: self.mod_local.memory,
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
-            artifact_commands: self.global.artifact_commands,
+            artifact_commands,
         }
     }
 
@@ -173,10 +170,6 @@ impl ExecState {
     pub fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id;
         self.global.artifacts.insert(id, artifact);
-    }
-
-    pub fn add_artifact_command(&mut self, cmd: ArtifactCommand) {
-        self.global.artifact_commands.push(cmd);
     }
 
     async fn add_module(
@@ -217,7 +210,6 @@ impl GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
-            artifact_commands: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.
@@ -1962,6 +1954,10 @@ impl ExecutorContext {
         )
         .await?;
         Ok(ctx)
+    }
+
+    pub fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
+        self.engine.take_artifact_commands()
     }
 
     pub fn is_mock(&self) -> bool {

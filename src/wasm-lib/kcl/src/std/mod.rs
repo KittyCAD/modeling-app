@@ -305,27 +305,3 @@ pub struct FnAsArg<'a> {
     pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub memory: Box<ProgramMemory>,
 }
-
-/// Add a modeling command to the batch but don't fire it right away.  Save its
-/// [`crate::execution::ArtifactCommand`] in [`ExecState`].
-///
-/// See [`crate::engine::EngineManager::batch_modeling_cmd`].
-#[macro_export]
-macro_rules! batch_cmd {
-    ($exec_state: expr, $args: expr, $cmd_id: expr, $cmd: expr) => {{
-        let artifact_cmd = $args.batch_modeling_cmd($cmd_id, $cmd).await?;
-        $exec_state.add_artifact_command(artifact_cmd);
-    }};
-}
-
-/// Add a command to the batch that needs to be executed at the very end.  Save
-/// its [`crate::execution::ArtifactCommand`] in [`ExecState`].
-///
-/// See [`crate::engine::EngineManager::batch_end_cmd`].
-#[macro_export]
-macro_rules! batch_end_cmd {
-    ($exec_state: expr, $args: expr, $cmd_id: expr, $cmd: expr) => {{
-        let artifact_cmd = $args.batch_end_cmd($cmd_id, $cmd).await?;
-        $exec_state.add_artifact_command(artifact_cmd);
-    }};
-}

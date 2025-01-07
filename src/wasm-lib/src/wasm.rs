@@ -113,7 +113,7 @@ pub async fn execute(
         let error = KclErrorWithOutputs::new(
             err,
             exec_state.mod_local.operations.clone(),
-            exec_state.global.artifact_commands.clone(),
+            ctx.take_artifact_commands(),
         );
 
         // Throw the error.
@@ -133,11 +133,13 @@ pub async fn execute(
         drop(current_cache);
     }
 
+    let artifact_commands = ctx.take_artifact_commands();
+
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     // DO NOT USE serde_wasm_bindgen::to_value(&exec_state).map_err(|e| e.to_string())
     // it will break the frontend.
-    JsValue::from_serde(&exec_state.to_wasm_outcome()).map_err(|e| e.to_string())
+    JsValue::from_serde(&exec_state.to_wasm_outcome(artifact_commands)).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute

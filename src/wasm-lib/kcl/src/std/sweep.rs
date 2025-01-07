@@ -8,7 +8,6 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    batch_cmd,
     errors::KclError,
     execution::{ExecState, KclValue, Sketch, Solid},
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
@@ -89,17 +88,16 @@ async fn inner_sweep(
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
     let id = exec_state.next_uuid();
-    batch_cmd!(
-        exec_state,
-        args,
+    args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::Sweep {
             target: sketch.id.into(),
             trajectory: data.path.id.into(),
             sectional: data.sectional.unwrap_or(false),
             tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
-        })
-    );
+        }),
+    )
+    .await?;
 
     do_post_extrude(sketch, 0.0, exec_state, args).await
 }

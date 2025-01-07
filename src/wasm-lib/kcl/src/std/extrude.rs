@@ -12,7 +12,6 @@ use kittycad_modeling_cmds as kcmc;
 use uuid::Uuid;
 
 use crate::{
-    batch_cmd,
     errors::{KclError, KclErrorDetails},
     execution::{
         ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet,
@@ -93,9 +92,7 @@ async fn inner_extrude(
     for sketch in &sketches {
         // Before we extrude, we need to enable the sketch mode.
         // We do this here in case extrude is called out of order.
-        batch_cmd!(
-            exec_state,
-            args,
+        args.batch_modeling_cmd(
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
@@ -108,27 +105,26 @@ async fn inner_extrude(
                 } else {
                     None
                 },
-            })
-        );
+            }),
+        )
+        .await?;
 
-        batch_cmd!(
-            exec_state,
-            args,
+        args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Extrude {
                 target: sketch.id.into(),
                 distance: LengthUnit(length),
                 faces: Default::default(),
-            })
-        );
+            }),
+        )
+        .await?;
 
         // Disable the sketch mode.
-        batch_cmd!(
-            exec_state,
-            args,
+        args.batch_modeling_cmd(
             exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default())
-        );
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+        )
+        .await?;
         solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
     }
 
@@ -143,12 +139,11 @@ pub(crate) async fn do_post_extrude(
 ) -> Result<Box<Solid>, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
-    batch_cmd!(
-        exec_state,
-        args,
+    args.batch_modeling_cmd(
         exec_state.next_uuid(),
-        ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id })
-    );
+        ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
+    )
+    .await?;
 
     // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
     // So, let's just use the first one.
@@ -166,7 +161,7 @@ pub(crate) async fn do_post_extrude(
         sketch.id = face.solid.sketch.id;
     }
 
-    let (a_cmd, solid3d_info) = args
+    let solid3d_info = args
         .send_modeling_cmd(
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
@@ -175,7 +170,6 @@ pub(crate) async fn do_post_extrude(
             }),
         )
         .await?;
-    exec_state.add_artifact_command(a_cmd);
 
     let face_infos = if let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(data),
@@ -201,27 +195,25 @@ pub(crate) async fn do_post_extrude(
         // So, there's no need to await them.
         // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
         // uses this to build the artifact graph, which the UI needs.
-        batch_cmd!(
-            exec_state,
-            args,
+        args.batch_modeling_cmd(
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: curve_id,
                 object_id: sketch.id,
                 face_id,
-            })
-        );
+            }),
+        )
+        .await?;
 
-        batch_cmd!(
-            exec_state,
-            args,
+        args.batch_modeling_cmd(
             exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
                 edge_id: curve_id,
                 object_id: sketch.id,
                 face_id,
-            })
-        );
+            }),
+        )
+        .await?;
     }
 
     let Faces {

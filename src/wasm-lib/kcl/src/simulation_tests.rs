@@ -134,7 +134,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     });
 
                     assert_snapshot(test_name, "Artifact commands", || {
-                        insta::assert_json_snapshot!("artifact_commands", e.exec_state.global.artifact_commands);
+                        insta::assert_json_snapshot!("artifact_commands", e.artifact_commands);
                     });
                 }
                 e => {

@@ -8,7 +8,6 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    batch_end_cmd,
     errors::{KclError, KclErrorDetails},
     execution::{ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
     parsing::ast::types::TagNode,
@@ -136,9 +135,7 @@ async fn inner_chamfer(
         };
 
         let id = exec_state.global.id_generator.next_uuid();
-        batch_end_cmd!(
-            exec_state,
-            args,
+        args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
@@ -150,8 +147,9 @@ async fn inner_chamfer(
                 // So the resulting face of the fillet will be the same.
                 // This is because that's how most other endpoints work.
                 face_id: Some(id),
-            })
-        );
+            }),
+        )
+        .await?;
 
         solid.edge_cuts.push(EdgeCut::Chamfer {
             id,
