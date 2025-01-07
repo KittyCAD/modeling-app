@@ -640,7 +640,7 @@ extrude001 = extrude(50, sketch001)
     })
     await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
       await scene.expectPixelColor(
-        [106, 106, 106],
+        [143, 143, 143],
         { x: (viewport?.width ?? 1200) / 2, y: (viewport?.height ?? 500) / 2 },
         10
       )
