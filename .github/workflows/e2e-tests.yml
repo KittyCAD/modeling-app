@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pierremtb/e2e-snapshots-linux-only-test-bot-update ]
   pull_request:
     branches: [ main ]
 

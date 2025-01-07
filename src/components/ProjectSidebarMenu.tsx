@@ -60,7 +60,7 @@ function AppLogoLink({
 }) {
   const { onProjectClose } = useLspContext()
   const wrapperClassName =
-    "relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-2.5 before:z-[-1] before:bg-primary before:rounded-b-sm"
+    "relative h-full grid place-content-center group p-1.5 before:block before:content-[''] before:absolute before:inset-0 before:bottom-1.5 before:z-[-1] before:bg-primary before:rounded-b-sm"
   const logoClassName = 'w-auto h-4 text-chalkboard-10'
 
   return isDesktop() ? (
