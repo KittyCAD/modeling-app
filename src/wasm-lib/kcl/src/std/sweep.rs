@@ -19,7 +19,7 @@ use crate::{
 #[serde(untagged)]
 pub enum SweepPath {
     Sketch(Sketch),
-    Helix(Helix),
+    Helix(Box<Helix>),
 }
 
 /// Data for a sweep.

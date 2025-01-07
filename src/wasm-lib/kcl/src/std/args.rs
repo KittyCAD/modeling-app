@@ -1606,7 +1606,9 @@ impl<'a> FromKclValue<'a> for SweepPath {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = Sketch::from_kcl_val;
         let case2 = Helix::from_kcl_val;
-        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Helix))
+        case1(arg)
+            .map(Self::Sketch)
+            .or_else(|| case2(arg).map(|arg0: Helix| Self::Helix(Box::new(arg0))))
     }
 }
 impl<'a> FromKclValue<'a> for String {
