@@ -1,4 +1,9 @@
-import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
+import {
+  ActionFunction,
+  LoaderFunction,
+  redirect,
+  useLocation,
+} from 'react-router-dom'
 import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
 import { getProjectMetaByRouteId, PATHS } from './paths'
 import { isDesktop } from './isDesktop'
@@ -10,7 +15,7 @@ import {
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
 import makeUrlPathRelative from './makeUrlPathRelative'
-import { codeManager, sceneEntitiesManager } from 'lib/singletons'
+import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
 import { createSettings } from './settings/initialSettings'
@@ -188,32 +193,11 @@ export const fileLoader: LoaderFunction = async (
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
-export const homeLoader: LoaderFunction = async (): Promise<
-  HomeLoaderData | Response
-> => {
-  // Redirecting from the file to the home page requires the file page to be cleaned up
-  // We do not need this on every route loader since you can load the settings within the file loader
-  // and you wouldn't want to clean up the page.
-  // The DOM elements in the file loader still exist in the page when it is redirected. If they are not cleaned up
-  // you can load old state. We should purge the DOM elements.
-  fileLoaderPageCleanup()
-    .then(() => {
-      // NO OP
-      // Do not await this promise since it would block the redirect.
-    })
-    .catch((e) => {
-      console.error(e)
-      console.error('failed to cleanup file page from home redirect')
-    })
-
+export const homeLoader: LoaderFunction = async (
+  routerData
+): Promise<HomeLoaderData | Response> => {
   if (!isDesktop()) {
     return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
   return {}
-}
-
-async function fileLoaderPageCleanup() {
-  // Always try to tear down a sketch since this is safe to call multiple times
-  // If you route away to a completely different page we need to gracefully clean up the previous page's DOM.
-  await sceneEntitiesManager.tearDownSketch()
 }
