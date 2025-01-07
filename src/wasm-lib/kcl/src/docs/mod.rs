@@ -98,7 +98,7 @@ impl StdLibFnArg {
 
     pub fn get_autocomplete_snippet(&self, index: usize, in_keyword_fn: bool) -> Result<Option<(usize, String)>> {
         let label = if in_keyword_fn && self.label_required {
-            &format!("{}: ", self.name)
+            &format!("{} = ", self.name)
         } else {
             ""
         };
@@ -907,14 +907,14 @@ mod tests {
     fn get_autocomplete_snippet_line() {
         let line_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Line);
         let snippet = line_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"line(${0:%}, end: [${1:3.14}, ${2:3.14}])${}"#);
+        assert_eq!(snippet, r#"line(${0:%}, end = [${1:3.14}, ${2:3.14}])${}"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_extrude() {
         let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
         let snippet = extrude_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"extrude(${0:%}, length: ${1:3.14})${}"#);
+        assert_eq!(snippet, r#"extrude(${0:%}, length = ${1:3.14})${}"#);
     }
 
     #[test]
