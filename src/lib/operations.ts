@@ -106,32 +106,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
     }
   }
 
-const prepareToEditRevolve: PrepareToEditCallback =
-  async function prepareToEditRevolve({ item, artifact }) {
-    const baseCommand = {
-      name: 'Revolve',
-      groupId: 'modeling',
-    }
-    return baseCommand
-  }
-
-const prepareToEditLoft: PrepareToEditCallback =
-  async function prepareToEditLoft({ item, artifact }) {
-    const baseCommand = {
-      name: 'Loft',
-      groupId: 'modeling',
-    }
-    console.log('prepareToEditLoft', { item, artifact })
-    if (!artifact || !('pathId' in artifact) || item.type !== 'StdLibCall') {
-      return baseCommand
-    }
-    return baseCommand
-  }
-
-const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
-  item,
-  artifact,
-}) => {
+const prepareToEditOffsetPlane: PrepareToEditCallback = async ({ item }) => {
   const baseCommand = {
     name: 'Offset plane',
     groupId: 'modeling',
@@ -175,8 +150,6 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     ],
   }
 
-  console.log('prepareToEditOffsetPlane', { item, artifact, planeName, plane })
-
   // Convert the distance argument from a string to a KCL expression
   const distanceResult = await stringToKclExpression({
     value: codeManager.code.slice(
@@ -186,7 +159,6 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     programMemory: kclManager.programMemory.clone(),
   })
 
-  console.log('distanceResult', distanceResult)
   if (err(distanceResult) || 'errors' in distanceResult) {
     return baseCommand
   }
@@ -213,7 +185,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
  * A map of standard library calls to their corresponding information
  * for use in the feature tree UI.
  */
-const stdLibMap: Record<string, StdLibCallInfo> = {
+export const stdLibMap: Record<string, StdLibCallInfo> = {
   chamfer: {
     label: 'Chamfer',
     icon: 'chamfer3d',
@@ -227,7 +199,6 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
   fillet: {
     label: 'Fillet',
     icon: 'fillet3d',
-    // prepareToEdit: 'Fillet',
   },
   hole: {
     label: 'Hole',
@@ -244,7 +215,6 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
   loft: {
     label: 'Loft',
     icon: 'loft',
-    prepareToEdit: prepareToEditLoft,
   },
   offsetPlane: {
     label: 'Offset Plane',
@@ -270,7 +240,6 @@ const stdLibMap: Record<string, StdLibCallInfo> = {
   revolve: {
     label: 'Revolve',
     icon: 'revolve',
-    prepareToEdit: prepareToEditRevolve,
   },
   shell: {
     label: 'Shell',

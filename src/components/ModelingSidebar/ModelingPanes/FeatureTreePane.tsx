@@ -11,6 +11,7 @@ import {
   filterOperations,
   getOperationIcon,
   getOperationLabel,
+  stdLibMap,
 } from 'lib/operations'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
@@ -62,6 +63,8 @@ export const FeatureTreePane = () => {
                 engineCommandManager.artifactGraph
               )
             : null
+
+          console.log('artifact', artifact, engineCommandManager.artifactGraph)
           if (!artifact || !('codeRef' in artifact)) {
             modelingSend({
               type: 'Set selection',
@@ -366,6 +369,14 @@ const OperationItem = (props: {
               }}
             >
               View function definition
+            </ContextMenuItem>,
+          ]
+        : []),
+      ...(props.item.type === 'StdLibCall' &&
+      stdLibMap[props.item.name]?.prepareToEdit
+        ? [
+            <ContextMenuItem onClick={enterEditFlow}>
+              Edit {name}
             </ContextMenuItem>,
           ]
         : []),
