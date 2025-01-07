@@ -677,12 +677,6 @@ export class KclManager {
   _isAstEmpty(ast: Node<Program>) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
   }
-
-  // An AST is empty if there are 0 lines of code in the editor or if all of the code is commented out
-  // This code will not tell you which scenario only if the AST evaluates to empty
-  _isAstEmpty(ast: Program) {
-    return ast.start === 0 && ast.end === 0 && ast.body.length === 0
-  }
 }
 
 const defaultSelectionFilter: EntityType_type[] = [
