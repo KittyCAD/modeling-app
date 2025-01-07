@@ -156,13 +156,13 @@ test.describe('Text-to-CAD tests', () => {
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const textToCadCommand = page.getByText('Text-to-CAD')
+    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
     await expect(textToCadCommand.first()).toBeVisible()
     // Click the Text-to-CAD command
     await textToCadCommand.first().click()
 
     // Enter the prompt.
-    const prompt = page.getByText('Prompt')
+    const prompt = page.getByRole('textbox', { name: 'Prompt' })
     await expect(prompt.first()).toBeVisible()
 
     // Type the prompt.
@@ -224,13 +224,13 @@ test.describe('Text-to-CAD tests', () => {
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const textToCadCommand = page.getByText('Text-to-CAD')
+    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
     await expect(textToCadCommand.first()).toBeVisible()
     // Click the Text-to-CAD command
     await textToCadCommand.first().click()
 
     // Enter the prompt.
-    const prompt = page.getByText('Prompt')
+    const prompt = page.getByRole('textbox', { name: 'Prompt' })
     await expect(prompt.first()).toBeVisible()
 
     const badPrompt = 'akjsndladf lajbhflauweyfaaaljhr472iouafyvsssssss'
@@ -314,13 +314,13 @@ test.describe('Text-to-CAD tests', () => {
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const textToCadCommand = page.getByText('Text-to-CAD')
+    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
     await expect(textToCadCommand.first()).toBeVisible()
     // Click the Text-to-CAD command
     await textToCadCommand.first().click()
 
     // Enter the prompt.
-    const prompt = page.getByText('Prompt')
+    const prompt = page.getByRole('textbox', { name: 'Prompt' })
     await expect(prompt.first()).toBeVisible()
 
     const badPrompt = 'akjsndladflajbhflauweyf15;'
@@ -392,13 +392,13 @@ test.describe('Text-to-CAD tests', () => {
     const cmdSearchBar = page.getByPlaceholder('Search commands')
     await expect(cmdSearchBar).toBeVisible()
 
-    const textToCadCommand = page.getByText('Text-to-CAD')
+    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
     await expect(textToCadCommand.first()).toBeVisible()
     // Click the Text-to-CAD command
     await textToCadCommand.first().click()
 
     // Enter the prompt.
-    const prompt = page.getByText('Prompt')
+    const prompt = page.getByRole('textbox', { name: 'Prompt' })
     await expect(prompt.first()).toBeVisible()
 
     // Type the prompt.
