@@ -8,12 +8,12 @@ use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExecutorContext, ExtrudeSurface, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
+        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
         SketchSurface, Solid, SolidSet, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
-    std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
+    std::{shapes::SketchOrSurface, sketch::FaceTag, sweep::SweepPath, FnAsArg},
     ModuleId,
 };
 
@@ -1591,6 +1591,22 @@ impl<'a> FromKclValue<'a> for Sketch {
             return None;
         };
         Some(value.as_ref().to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Helix {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Helix(value) = arg else {
+            return None;
+        };
+        Some(value.as_ref().to_owned())
+    }
+}
+impl<'a> FromKclValue<'a> for SweepPath {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = Sketch::from_kcl_val;
+        let case2 = Helix::from_kcl_val;
+        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Helix))
     }
 }
 impl<'a> FromKclValue<'a> for String {
