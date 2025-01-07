@@ -10,8 +10,7 @@ import { EngineCommand } from 'lang/std/artifactGraph'
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
-import { err, reportRejection } from 'lib/trap'
-import { toSync } from './utils'
+import { err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
