@@ -40,9 +40,6 @@ export type ModelingCommandSchema = {
   Loft: {
     selection: Selections
   }
-  'Delete selection': {
-    selection: Selections
-  }
   Shell: {
     selection: Selections
     thickness: KclCommandValue
