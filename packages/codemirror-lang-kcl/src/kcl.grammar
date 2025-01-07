@@ -85,7 +85,7 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
 @tokens {
   String[isolate] { "'" ("\\" _ | !['\\])* "'" | '"' ("\\" _ | !["\\])* '"' }
 
-  Number { "." @digit+ | @digit+ ("." @digit*)? }
+  Number { "." @digit+ | @digit+ ("." @digit+)? }
   @precedence { Number, "." }
 
   AddOp { "+" | "-" }
