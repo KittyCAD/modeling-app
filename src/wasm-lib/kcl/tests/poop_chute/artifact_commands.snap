@@ -405,7 +405,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 2.0,
-          "y": 0.9374999999999999,
+          "y": 0.9375,
           "z": 0.0
         },
         "relative": false
@@ -468,7 +468,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 1.875,
-          "y": 0.9374999999999999,
+          "y": 0.9375,
           "z": 0.0
         },
         "relative": false
@@ -531,7 +531,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 0.125,
-          "y": 0.9375000000000002,
+          "y": 0.9375,
           "z": 0.0
         },
         "relative": false
@@ -594,7 +594,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.9374999999999999,
+          "y": 0.9375,
           "z": 0.0
         },
         "relative": false
@@ -614,7 +614,7 @@ snapshot_kind: text
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.9374999999999997,
+          "x": 0.9375,
           "y": 0.0,
           "z": 0.0
         },
@@ -1174,7 +1174,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 2.0,
-          "y": 0.9374999999999999,
+          "y": 0.9375,
           "z": 0.0
         },
         "relative": false
@@ -1237,7 +1237,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 1.875,
-          "y": 0.9374999999999999,
+          "y": 0.9375,
           "z": 0.0
         },
         "relative": false
@@ -1300,7 +1300,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 0.125,
-          "y": 0.9375000000000002,
+          "y": 0.9375,
           "z": 0.0
         },
         "relative": false
@@ -1363,7 +1363,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.9374999999999999,
+          "y": 0.9375,
           "z": 0.0
         },
         "relative": false
@@ -1383,7 +1383,7 @@ snapshot_kind: text
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.9374999999999997,
+          "x": 0.9375,
           "y": 0.0,
           "z": 0.0
         },

@@ -1307,7 +1307,7 @@ snapshot_kind: text
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.839996,
+          "x": 0.84,
           "y": -20.58,
           "z": 0.0
         },
@@ -1328,7 +1328,7 @@ snapshot_kind: text
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.839996,
+          "x": 0.84,
           "y": -24.36,
           "z": 0.0
         },
@@ -2273,7 +2273,7 @@ snapshot_kind: text
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.839996,
+          "x": 0.84,
           "y": -6.72,
           "z": 0.0
         },
@@ -2294,7 +2294,7 @@ snapshot_kind: text
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.839996,
+          "x": 0.84,
           "y": -8.4,
           "z": 0.0
         },
@@ -2420,7 +2420,7 @@ snapshot_kind: text
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.839996,
+          "x": 0.84,
           "y": -7.56,
           "z": 0.0
         },
@@ -2441,7 +2441,7 @@ snapshot_kind: text
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.839996,
+          "x": 0.84,
           "y": -19.32,
           "z": 0.0
         },
@@ -2505,7 +2505,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 3.36,
-          "y": -9.24001,
+          "y": -9.24,
           "z": 0.0
         },
         "relative": false
@@ -2526,7 +2526,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 17.64,
-          "y": -9.24001,
+          "y": -9.24,
           "z": 0.0
         },
         "relative": false
@@ -2715,7 +2715,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 2.52,
-          "y": -10.080000000000002,
+          "y": -10.08,
           "z": 0.0
         },
         "relative": false
@@ -3660,7 +3660,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 5.88,
-          "y": -0.83999599,
+          "y": -0.84,
           "z": 0.0
         },
         "relative": false
@@ -3681,7 +3681,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 6.72,
-          "y": -0.83999599,
+          "y": -0.84,
           "z": 0.0
         },
         "relative": false
@@ -4038,7 +4038,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 14.28,
-          "y": -0.83999599,
+          "y": -0.84,
           "z": 0.0
         },
         "relative": false
@@ -4059,7 +4059,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 15.12,
-          "y": -0.83999599,
+          "y": -0.84,
           "z": 0.0
         },
         "relative": false
@@ -4458,7 +4458,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 15.12,
-          "y": -0.83999999,
+          "y": -0.84,
           "z": 0.0
         },
         "relative": false
@@ -4479,7 +4479,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 14.28,
-          "y": -0.83999999,
+          "y": -0.84,
           "z": 0.0
         },
         "relative": false
@@ -4962,7 +4962,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 6.72,
-          "y": -0.83999999,
+          "y": -0.84,
           "z": 0.0
         },
         "relative": false
@@ -4983,7 +4983,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 5.88,
-          "y": -0.83999999,
+          "y": -0.84,
           "z": 0.0
         },
         "relative": false

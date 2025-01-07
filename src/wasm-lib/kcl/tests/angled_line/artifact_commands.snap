@@ -446,8 +446,8 @@ snapshot_kind: text
       "segment": {
         "type": "line",
         "end": {
-          "x": 3.761813572028026,
-          "y": -11.763131328405109,
+          "x": 3.7618,
+          "y": -11.7631,
           "z": 0.0
         },
         "relative": true

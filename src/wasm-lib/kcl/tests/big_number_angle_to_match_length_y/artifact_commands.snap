@@ -405,7 +405,7 @@ snapshot_kind: text
         "type": "line",
         "end": {
           "x": 3.0,
-          "y": 3.395420094075632,
+          "y": 3.3954,
           "z": 0.0
         },
         "relative": false
