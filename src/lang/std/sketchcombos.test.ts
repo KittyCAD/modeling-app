@@ -575,21 +575,21 @@ async function helperThing(
 
 describe('testing getConstraintLevelFromSourceRange', () => {
   it('should divide up lines into free, partial and fully contrained', () => {
-    const code = `const baseLength = 3
-const baseThick = 1
-const armThick = 0.5
-const totalHeight = 4
-const armAngle = 60
-const totalLength = 9.74
-const yDatum = 0
+    const code = `baseLength = 3
+baseThick = 1
+armThick = 0.5
+totalHeight = 4
+armAngle = 60
+totalLength = 9.74
+yDatum = 0
 
-const baseThickHalf = baseThick / 2
-const halfHeight = totalHeight / 2
-const halfArmAngle = armAngle / 2
+baseThickHalf = baseThick / 2
+halfHeight = totalHeight / 2
+halfArmAngle = armAngle / 2
 
 part001 = startSketchOn('XY')
   |> startProfileAt([-0.01, -0.05], %)
-  |> line([0.01, 0.94 + 0], %) // partial
+  |> line(end = [0.01, 0.94 + 0]) // partial
   |> xLine(3.03, %) // partial
   |> angledLine({
   angle: halfArmAngle,
@@ -599,9 +599,9 @@ part001 = startSketchOn('XY')
   |> yLine(-1, %) // partial
   |> xLine(-4.2 + 0, %) // full
   |> angledLine([segAng(seg01bing) + 180, 1.79], %) // partial
-  |> line([1.44, -0.74], %) // free
+  |> line(end = [1.44, -0.74]) // free
   |> xLine(3.36, %) // partial
-  |> line([-1.49, 1.06], %) // free
+  |> line(end = [1.49, 1.06]) // free
   |> xLine(-3.43 + 0, %) // full
   |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full`
     const ast = assertParse(code)

@@ -11,6 +11,7 @@ import { Selections } from 'lib/selections'
 import { cleanErrs, err } from 'lib/trap'
 import {
   CallExpression,
+  CallExpressionKw,
   Program,
   Expr,
   BinaryPart,
@@ -32,7 +33,9 @@ import {
   createBinaryExpression,
   createBinaryExpressionWithUnary,
   createCallExpression,
+  createCallExpressionStdLibKw,
   createIdentifier,
+  createLabeledArg,
   createLiteral,
   createObjectExpression,
   createPipeSubstitution,
@@ -43,6 +46,7 @@ import {
   createFirstArg,
   getConstraintInfo,
   getFirstArg,
+  getArgForEnd,
   replaceSketchLine,
 } from './sketch'
 import {
@@ -113,6 +117,29 @@ function createCallWrapper(
   tag?: Expr,
   valueUsedInTransform?: number
 ): CreatedSketchExprResult {
+  if (Array.isArray(val)) {
+    if (tooltip === 'line') {
+      return {
+        callExp: createCallExpressionStdLibKw(
+          'line',
+          createPipeSubstitution(),
+          [createLabeledArg('end', createArrayExpression(val))]
+        ),
+        valueUsedInTransform,
+      }
+    }
+    if (tooltip === 'lineTo') {
+      return {
+        callExp: createCallExpressionStdLibKw(
+          'line',
+          createPipeSubstitution(),
+          [createLabeledArg('endAbsolute', createArrayExpression(val))]
+        ),
+        valueUsedInTransform,
+      }
+    }
+  }
+
   const args =
     tooltip === 'circle'
       ? []
@@ -1845,19 +1872,41 @@ export function getConstraintLevelFromSourceRange(
   ast: Program | Error
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast
-  const nodeMeta = getNodeFromPath<Node<CallExpression>>(
-    ast,
-    getNodePathFromSourceRange(ast, cursorRange),
-    'CallExpression'
-  )
-  if (err(nodeMeta)) return nodeMeta
+  let partsOfCallNode = (() => {
+    const nodeMeta = getNodeFromPath<Node<CallExpression>>(
+      ast,
+      getNodePathFromSourceRange(ast, cursorRange),
+      'CallExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
 
-  const { node: sketchFnExp } = nodeMeta
-  const name = sketchFnExp?.callee?.name as ToolTip
-  const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
+    const { node: sketchFnExp } = nodeMeta
+    const name = sketchFnExp?.callee?.name as ToolTip
+    const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
+    const firstArg = getFirstArg(sketchFnExp)
+    return { name, range, firstArg }
+  })()
+  const partsOfCallKwNode = () => {
+    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
+      ast,
+      getNodePathFromSourceRange(ast, cursorRange),
+      'CallExpressionKw'
+    )
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: sketchFnExp } = nodeMeta
+    const name = sketchFnExp?.callee?.name as ToolTip
+    const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
+    const firstArg = getArgForEnd(sketchFnExp)
+    return { name, range, firstArg }
+  }
+  if (err(partsOfCallNode)) {
+    partsOfCallNode = partsOfCallKwNode()
+  }
+  if (err(partsOfCallNode)) return partsOfCallNode
+  const { name, range, firstArg } = partsOfCallNode
   if (!toolTips.includes(name)) return { level: 'free', range: range }
 
-  const firstArg = getFirstArg(sketchFnExp)
   if (err(firstArg)) return firstArg
 
   // check if the function is fully constrained

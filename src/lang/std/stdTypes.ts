@@ -166,6 +166,7 @@ export type SimplifiedArgDetails =
   | Omit<ObjectPropertyInput<null>, 'expr' | 'argType'>
   | Omit<ArrayOrObjItemInput<null>, 'expr' | 'argType'>
   | Omit<ArrayInObject<null>, 'expr' | 'argType'>
+
 /**
  * Represents the result of creating a sketch expression (line, tangentialArcTo, angledLine, circle, etc.).
  *

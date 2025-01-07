@@ -7,6 +7,7 @@ import {
   Program,
   PipeExpression,
   CallExpression,
+  CallExpressionKw,
   VariableDeclarator,
   Expr,
   VariableDeclaration,
@@ -44,7 +45,9 @@ import {
   createLiteral,
   createTagDeclarator,
   createCallExpression,
+  createCallExpressionStdLibKw,
   createArrayExpression,
+  createLabeledArg,
   createPipeSubstitution,
   createObjectExpression,
   mutateArrExp,
@@ -57,6 +60,9 @@ import { perpendicularDistance } from 'sketch-helpers'
 import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { EdgeCutInfo } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+
+const ARG_END = 'end'
+const ARG_END_ABSOLUTE = 'endAbsolute'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -90,8 +96,6 @@ export function createFirstArg(
         'angledLineOfYLength',
         'angledLineToX',
         'angledLineToY',
-        'line',
-        'lineTo',
       ].includes(sketchFn)
     )
       return createArrayExpression(val)
@@ -415,10 +419,11 @@ export const line: SketchLineHelper = {
       !replaceExistingCallback &&
       pipe.type === 'PipeExpression'
     ) {
-      const callExp = createCallExpression('line', [
-        createArrayExpression([newXVal, newYVal]),
+      const callExp = createCallExpressionStdLibKw(
+        'line',
         createPipeSubstitution(),
-      ])
+        [createLabeledArg(ARG_END, createArrayExpression([newXVal, newYVal]))]
+      )
       const pathToNodeIndex = pathToNode.findIndex(
         (x) => x[1] === 'PipeExpression'
       )
@@ -463,10 +468,11 @@ export const line: SketchLineHelper = {
       }
     }
 
-    const callExp = createCallExpression('line', [
-      createArrayExpression([newXVal, newYVal]),
+    const callExp = createCallExpressionStdLibKw(
+      'line',
       createPipeSubstitution(),
-    ])
+      [createLabeledArg(ARG_END, createArrayExpression([newXVal, newYVal]))]
+    )
     if (pipe.type === 'PipeExpression') {
       pipe.body = [...pipe.body, callExp]
       return {
@@ -2349,12 +2355,21 @@ function getFirstArgValuesForXYFns(callExpression: CallExpression):
   | Error {
   // used for lineTo, line
   const firstArg = callExpression.arguments[0]
-  if (firstArg.type === 'ArrayExpression') {
-    return { val: [firstArg.elements[0], firstArg.elements[1]] }
+  return getValuesForXYFns(firstArg)
+}
+
+function getValuesForXYFns(arg: Expr):
+  | {
+      val: [Expr, Expr]
+      tag?: Expr
+    }
+  | Error {
+  if (arg.type === 'ArrayExpression') {
+    return { val: [arg.elements[0], arg.elements[1]] }
   }
-  if (firstArg.type === 'ObjectExpression') {
-    const to = firstArg.properties.find((p) => p.key.name === 'to')?.value
-    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
+  if (arg.type === 'ObjectExpression') {
+    const to = arg.properties.find((p) => p.key.name === 'to')?.value
+    const tag = arg.properties.find((p) => p.key.name === 'tag')?.value
     if (to?.type === 'ArrayExpression') {
       const [x, y] = to.elements
       return { val: [x, y], tag }
@@ -2471,6 +2486,33 @@ const getAngledLineThatIntersects = (
   return new Error('expected ArrayExpression or ObjectExpression')
 }
 
+/**
+Get the argument corresponding to 'end' or 'endAbsolute' or wherever the line actually ends.
+*/
+export function getArgForEnd(lineCall: CallExpressionKw):
+  | {
+      val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
+      tag?: Expr
+    }
+  | Error {
+  const name = lineCall?.callee?.name
+  let arg
+  if (name == 'line') {
+    arg = lineCall.arguments.find((labeledArg) => {
+      return (
+        labeledArg.label.name === ARG_END ||
+        labeledArg.label.name === ARG_END_ABSOLUTE
+      )
+    })
+  } else {
+    return new Error('cannot find end of line function: ' + name)
+  }
+  if (arg == undefined) {
+    return new Error('no end of the line was found')
+  }
+  return getValuesForXYFns(arg.arg)
+}
+
 export function getFirstArg(callExp: CallExpression):
   | {
       val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
@@ -2478,9 +2520,6 @@ export function getFirstArg(callExp: CallExpression):
     }
   | Error {
   const name = callExp?.callee?.name
-  if (['lineTo', 'line'].includes(name)) {
-    return getFirstArgValuesForXYFns(callExp)
-  }
   if (
     [
       'angledLine',
