@@ -895,6 +895,7 @@ loft001 = loft([sketch001, sketch002])
   })
 
   await test.step('Delete sketch002', async () => {
+    await page.waitForTimeout(1000)
     await clickOnSketch2()
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toHaveText(`
@@ -907,6 +908,7 @@ loft001 = loft([sketch001, sketch002])
   })
 
   await test.step('Delete plane001', async () => {
+    await page.waitForTimeout(1000)
     await clickOnSketch2()
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toHaveText(`
