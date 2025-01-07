@@ -103,14 +103,14 @@ describe('testing getXComponent', () => {
 })
 
 describe('testing changeSketchArguments', () => {
-  const lineToChange = 'lineTo([-1.59, -1.54], %)'
-  const lineAfterChange = 'lineTo([2, 3], %)'
+  const lineToChange = 'line(endAbsolute = [-1.59, -1.54])'
+  const lineAfterChange = 'line(endAbsolute = [2, 3])'
   test('changeSketchArguments', async () => {
     // Enable rotations #152
     const genCode = (line: string) => `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   |> ${line}
-  |> lineTo([0.46, -5.82], %)
+  |> line(endAbsolute = [0.46, -5.82])
 // |> rx(45, %)
 `
     const code = genCode(lineToChange)
@@ -141,15 +141,15 @@ describe('testing changeSketchArguments', () => {
 })
 
 describe('testing addNewSketchLn', () => {
-  const lineToChange = 'lineTo([-1.59, -1.54], %)'
+  const lineToChange = 'line(endAbsolute = [-1.59, -1.54])'
   test('addNewSketchLn', async () => {
     // Enable rotations #152
     const code = `
 mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
-  |> lineTo([-1.59, -1.54], %)
-  |> lineTo([0.46, -5.82], %)`
+  |> line(endAbsolute = [-1.59, -1.54])
+  |> line(endAbsolute = [0.46, -5.82])`
     const ast = assertParse(code)
 
     const execState = await enginelessExecutor(ast)
@@ -177,9 +177,9 @@ mySketch001 = startSketchOn('XY')
     let expectedCode = `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
-  |> lineTo([-1.59, -1.54], %)
-  |> lineTo([0.46, -5.82], %)
-  |> lineTo([2, 3], %)
+  |> line(endAbsolute = [-1.59, -1.54])
+  |> line(endAbsolute = [0.46, -5.82])
+  |> line(endAbsolute = [2, 3])
 `
 
     const { modifiedAst } = newSketchLnRetVal
@@ -200,9 +200,9 @@ mySketch001 = startSketchOn('XY')
     expectedCode = `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
-  |> lineTo([-1.59, -1.54], %)
-  |> lineTo([0.46, -5.82], %)
-  |> close(%)
+  |> line(endAbsolute = [-1.59, -1.54])
+  |> line(endAbsolute = [0.46, -5.82])
+  |> close()
 `
     expect(recast(modifiedAst2)).toBe(expectedCode)
   })
@@ -210,13 +210,13 @@ mySketch001 = startSketchOn('XY')
 
 describe('testing addTagForSketchOnFace', () => {
   it('needs to be in it', async () => {
-    const originalLine = 'lineTo([-1.59, -1.54], %)'
+    const originalLine = 'line(endAbsolute = [-1.59, -1.54])'
     // Enable rotations #152
     const genCode = (line: string) => `mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
   // |> rx(45, %)
   |> ${line}
-  |> lineTo([0.46, -5.82], %)
+  |> line(endAbsolute = [0.46, -5.82])
 `
     const code = genCode(originalLine)
     const ast = assertParse(code)
@@ -240,7 +240,7 @@ describe('testing addTagForSketchOnFace', () => {
     if (err(sketchOnFaceRetVal)) return sketchOnFaceRetVal
 
     const { modifiedAst } = sketchOnFaceRetVal
-    const expectedCode = genCode('lineTo([-1.59, -1.54], %, $seg01)')
+    const expectedCode = genCode('line(endAbsolute = [-1.59, -1.54], tag = $seg01)')
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
   const chamferTestCases = [
@@ -284,9 +284,9 @@ describe('testing addTagForSketchOnFace', () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
-  |> close(%)
-extrude001 = extrude(100, sketch001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(sketch001, length = 100)
 ${insertCode}
 `
       const code = genCode(originalChamfer)
@@ -326,12 +326,12 @@ describe('testing getConstraintInfo', () => {
   describe('object notation', () => {
     const code = `const part001 = startSketchOn('-XZ')
   |> startProfileAt([0,0], %)
-  |> line([3, 4], %)
+  |> line(end = [3, 4])
   |> angledLine({
     angle = 3.14,
     length = 3.14,
   }, %)
-  |> lineTo([6.14, 3.14], %)
+  |> line(endAbsolute = [6.14, 3.14])
   |> xLineTo(8, %)
   |> yLineTo(5, %)
   |> yLine(3.14, %, $a)
@@ -700,9 +700,9 @@ describe('testing getConstraintInfo', () => {
   describe('array notation', () => {
     const code = `const part001 = startSketchOn('-XZ')
     |> startProfileAt([0, 0], %)
-    |> line([3, 4], %)
+    |> line(end = [3, 4])
     |> angledLine([3.14, 3.14], %)
-    |> lineTo([6.14, 3.14], %)
+    |> line(endAbsolute = [6.14, 3.14])
     |> xLineTo(8, %)
     |> yLineTo(5, %)
     |> yLine(3.14, %, $a)
@@ -854,9 +854,9 @@ describe('testing getConstraintInfo', () => {
   describe('constrained', () => {
     const code = `const part001 = startSketchOn('-XZ')
     |> startProfileAt([0, 0], %)
-    |> line([3 + 0, 4 + 0], %)
+    |> line(end = [3 + 0, 4 + 0])
     |> angledLine({ angle = 3.14 + 0, length = 3.14 + 0 }, %)
-    |> lineTo([6.14 + 0, 3.14 + 0], %)
+    |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
     |> xLineTo(8 + 0, %)
     |> yLineTo(5 + 0, %)
     |> yLine(3.14 + 0, %, $a)

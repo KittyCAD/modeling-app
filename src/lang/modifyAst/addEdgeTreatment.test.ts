@@ -152,14 +152,14 @@ describe('Testing getPathToExtrudeForSegmentSelection', () => {
   it('should return the correct paths for a valid selection and extrusion', async () => {
     const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)`
-    const selectedSegmentSnippet = `line([20, 0], %)`
-    const expectedExtrudeSnippet = `extrude001 = extrude(-15, sketch001)`
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)`
+    const selectedSegmentSnippet = `line(end = [20, 0])`
+    const expectedExtrudeSnippet = `extrude001 = extrude(sketch001, length = -15)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
       selectedSegmentSnippet,
@@ -169,14 +169,14 @@ extrude001 = extrude(-15, sketch001)`
   it('should return the correct paths when extrusion occurs within the sketch pipe', async () => {
     const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(15, %)`
-    const selectedSegmentSnippet = `line([20, 0], %)`
-    const expectedExtrudeSnippet = `extrude(15, %)`
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 15)`
+    const selectedSegmentSnippet = `line(end = [20, 0])`
+    const expectedExtrudeSnippet = `extrude(length = 15)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
       selectedSegmentSnippet,
@@ -186,30 +186,30 @@ extrude001 = extrude(-15, sketch001)`
   it('should return the correct paths for a valid selection and extrusion in case of several extrusions and sketches', async () => {
     const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-30, 30], %)
-  |> line([15, 0], %)
-  |> line([0, -15], %)
-  |> line([-15, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [15, 0])
+  |> line(end = [0, -15])
+  |> line(end = [-15, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch002 = startSketchOn('XY')
   |> startProfileAt([30, 30], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch003 = startSketchOn('XY')
   |> startProfileAt([30, -30], %)
-  |> line([25, 0], %)
-  |> line([0, -25], %)
-  |> line([-25, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
-extrude002 = extrude(-15, sketch002)
-extrude003 = extrude(-15, sketch003)`
-    const selectedSegmentSnippet = `line([20, 0], %)`
-    const expectedExtrudeSnippet = `extrude002 = extrude(-15, sketch002)`
+  |> line(end = [25, 0])
+  |> line(end = [0, -25])
+  |> line(end = [-25, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
+extrude002 = extrude(sketch002, length = -15)
+extrude003 = extrude(sketch003, length = -15)`
+    const selectedSegmentSnippet = `line(end = [20, 0])`
+    const expectedExtrudeSnippet = `extrude002 = extrude(sketch002, length = -15)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
       selectedSegmentSnippet,
@@ -219,28 +219,28 @@ extrude003 = extrude(-15, sketch003)`
   it('should not return any path for missing extrusion', async () => {
     const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-30, 30], %)
-  |> line([15, 0], %)
-  |> line([0, -15], %)
-  |> line([-15, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [15, 0])
+  |> line(end = [0, -15])
+  |> line(end = [-15, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch002 = startSketchOn('XY')
   |> startProfileAt([30, 30], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch003 = startSketchOn('XY')
   |> startProfileAt([30, -30], %)
-  |> line([25, 0], %)
-  |> line([0, -25], %)
-  |> line([-25, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
-extrude003 = extrude(-15, sketch003)`
-    const selectedSegmentSnippet = `line([20, 0], %)`
+  |> line(end = [25, 0])
+  |> line(end = [0, -25])
+  |> line(end = [-25, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
+extrude003 = extrude(sketch003, length = -15)`
+    const selectedSegmentSnippet = `line(end = [20, 0])`
     const expectedExtrudeSnippet = ``
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
@@ -334,21 +334,21 @@ Object.values(EdgeTreatmentType).forEach(
       it(`should add a ${edgeTreatmentType} to a specific segment`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)`
-        const segmentSnippets = ['line([0, -20], %)']
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)`
+        const segmentSnippets = ['line(end = [0, -20])']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %, $seg01)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0])
+  |> line(end = [0, -20], tag = $seg01)
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
@@ -361,21 +361,21 @@ extrude001 = extrude(-15, sketch001)
       it(`should add a ${edgeTreatmentType} to the sketch pipe`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(-15, %)`
-        const segmentSnippets = ['line([0, -20], %)']
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = -15)`
+        const segmentSnippets = ['line(end = [0, -20])']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %, $seg01)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(-15, %)
+  |> line(end = [20, 0])
+  |> line(end = [0, -20], tag = $seg01)
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = -15)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
@@ -388,21 +388,21 @@ extrude001 = extrude(-15, sketch001)
       it(`should add a ${edgeTreatmentType} to an already tagged segment`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %, $seg01)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)`
-        const segmentSnippets = ['line([0, -20], %, $seg01)']
+  |> line(end = [20, 0])
+  |> line(end = [0, -20], tag = $seg01)
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)`
+        const segmentSnippets = ['line(end = [0, -20], tag = $seg01)']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %, $seg01)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0])
+  |> line(end = [0, -20], tag = $seg01)
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
@@ -415,21 +415,21 @@ extrude001 = extrude(-15, sketch001)
       it(`should add a ${edgeTreatmentType} with existing tag on other segment`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %, $seg01)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)`
-        const segmentSnippets = ['line([-20, 0], %)']
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)`
+        const segmentSnippets = ['line(end = [-20, 0])']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %, $seg01)
-  |> line([0, -20], %)
-  |> line([-20, 0], %, $seg02)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg02] }, %)`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
@@ -442,22 +442,22 @@ extrude001 = extrude(-15, sketch001)
       it(`should add a ${edgeTreatmentType} with existing fillet on other segment`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %, $seg01)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
   |> fillet({ radius = 5, tags = [seg01] }, %)`
-        const segmentSnippets = ['line([-20, 0], %)']
+        const segmentSnippets = ['line(end = [-20, 0])']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %, $seg01)
-  |> line([0, -20], %)
-  |> line([-20, 0], %, $seg02)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
   |> fillet({ radius = 5, tags = [seg01] }, %)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg02] }, %)`
 
@@ -471,22 +471,22 @@ extrude001 = extrude(-15, sketch001)
       it(`should add a ${edgeTreatmentType} with existing chamfer on other segment`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %, $seg01)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
   |> chamfer({ length = 5, tags = [seg01] }, %)`
-        const segmentSnippets = ['line([-20, 0], %)']
+        const segmentSnippets = ['line(end = [-20, 0])']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %, $seg01)
-  |> line([0, -20], %)
-  |> line([-20, 0], %, $seg02)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
   |> chamfer({ length = 5, tags = [seg01] }, %)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg02] }, %)`
 
@@ -500,21 +500,21 @@ extrude001 = extrude(-15, sketch001)
       it(`should add a ${edgeTreatmentType} to two segments of a single extrusion`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)`
-        const segmentSnippets = ['line([20, 0], %)', 'line([-20, 0], %)']
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)`
+        const segmentSnippets = ['line(end = [20, 0], %)', 'line([-20, 0])']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %, $seg01)
-  |> line([0, -20], %)
-  |> line([-20, 0], %, $seg02)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01, seg02] }, %)`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
@@ -527,42 +527,42 @@ extrude001 = extrude(-15, sketch001)
       it(`should add ${edgeTreatmentType}s to two bodies`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
 sketch002 = startSketchOn('XY')
   |> startProfileAt([30, 10], %)
-  |> line([15, 0], %)
-  |> line([0, -15], %)
-  |> line([-15, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude002 = extrude(-25, sketch002)` // <--- body 2
+  |> line(end = [15, 0])
+  |> line(end = [0, -15])
+  |> line(end = [-15, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(sketch002, length = -25)` // <--- body 2
         const segmentSnippets = [
-          'line([20, 0], %)',
-          'line([-20, 0], %)',
-          'line([0, -15], %)',
+          'line(end = [20, 0])',
+          'line(end = [-20, 0])',
+          'line(end = [0, -15])',
         ]
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %, $seg01)
-  |> line([0, -20], %)
-  |> line([-20, 0], %, $seg02)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
+  |> line(end = [20, 0], tag = $seg01)
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01, seg02] }, %)
 sketch002 = startSketchOn('XY')
   |> startProfileAt([30, 10], %)
-  |> line([15, 0], %)
-  |> line([0, -15], %, $seg03)
-  |> line([-15, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude002 = extrude(-25, sketch002)
+  |> line(end = [15, 0])
+  |> line(end = [0, -15], tag = $seg03)
+  |> line(end = [-15, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude002 = extrude(sketch002, length = -25)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg03] }, %)` // <-- able to add a new one
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
@@ -579,11 +579,11 @@ extrude002 = extrude(-25, sketch002)
 describe('Testing isTagUsedInEdgeTreatment', () => {
   const code = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([7.72, 4.13], %)
-  |> line([7.11, 3.48], %, $seg01)
-  |> line([-3.29, -13.85], %)
-  |> line([-6.37, 3.88], %, $seg02)
-  |> close(%)
-extrude001 = extrude(-5, sketch001)
+  |> line(end = [7.11, 3.48], tag = $seg01)
+  |> line(end = [-3.29, -13.85])
+  |> line(end = [-6.37, 3.88], tag = $seg02)
+  |> close()
+extrude001 = extrude(sketch001, length = -5)
   |> fillet({
        radius = 1.11,
        tags = [
@@ -595,7 +595,7 @@ extrude001 = extrude(-5, sketch001)
 `
   it('should correctly identify getOppositeEdge and baseEdge edges', () => {
     const ast = assertParse(code)
-    const lineOfInterest = `line([7.11, 3.48], %, $seg01)`
+    const lineOfInterest = `line(end = [7.11, 3.48], tag = $seg01)`
     const range = topLevelRange(
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length
@@ -613,7 +613,7 @@ extrude001 = extrude(-5, sketch001)
   })
   it('should correctly identify getPreviousAdjacentEdge edges', () => {
     const ast = assertParse(code)
-    const lineOfInterest = `line([-6.37, 3.88], %, $seg02)`
+    const lineOfInterest = `line(end = [-6.37, 3.88], tag = $seg02)`
     const range = topLevelRange(
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length
@@ -631,7 +631,7 @@ extrude001 = extrude(-5, sketch001)
   })
   it('should correctly identify no edges', () => {
     const ast = assertParse(code)
-    const lineOfInterest = `line([-3.29, -13.85], %)`
+    const lineOfInterest = `line(end = [-3.29, -13.85])`
     const range = topLevelRange(
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length
@@ -685,28 +685,28 @@ describe('Testing button states', () => {
   const codeWithBody: string = `
     sketch001 = startSketchOn('XY')
       |> startProfileAt([-20, -5], %)
-      |> line([0, 10], %)
-      |> line([10, 0], %)
-      |> line([0, -10], %)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
-      |> close(%)
-    extrude001 = extrude(-10, sketch001)
+      |> line(end = [0, 10])
+      |> line(end = [10, 0])
+      |> line(end = [0, -10])
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    extrude001 = extrude(sketch001, length = -10)
   `
   const codeWithoutBodies: string = `
     sketch001 = startSketchOn('XY')
       |> startProfileAt([-20, -5], %)
-      |> line([0, 10], %)
-      |> line([10, 0], %)
-      |> line([0, -10], %)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
-      |> close(%)
+      |> line(end = [0, 10])
+      |> line(end = [10, 0])
+      |> line(end = [0, -10])
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
   `
   // body is missing
   it('should return false when body is missing and nothing is selected', async () => {
     await runButtonStateTest(codeWithoutBodies, '', false)
   })
   it('should return false when body is missing and segment is selected', async () => {
-    await runButtonStateTest(codeWithoutBodies, `line([10, 0], %)`, false)
+    await runButtonStateTest(codeWithoutBodies, `line(end = [10, 0])`, false)
   })
 
   // body exists
@@ -714,9 +714,9 @@ describe('Testing button states', () => {
     await runButtonStateTest(codeWithBody, '', true)
   })
   it('should return true when body exists and segment is selected', async () => {
-    await runButtonStateTest(codeWithBody, `line([10, 0], %)`, true)
+    await runButtonStateTest(codeWithBody, `line(end = [10, 0])`, true)
   })
   it('should return false when body exists and not a segment is selected', async () => {
-    await runButtonStateTest(codeWithBody, `close(%)`, false)
+    await runButtonStateTest(codeWithBody, `close()`, false)
   })
 })

@@ -11,8 +11,8 @@ describe('testing artifacts', () => {
     const code = `
 const mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([-1.59, -1.54], %)
-  |> lineTo([0.46, -5.82], %)
+  |> line(endAbsolute = [-1.59, -1.54])
+  |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45, %)`
     const execState = await enginelessExecutor(assertParse(code))
     // @ts-ignore
@@ -66,10 +66,10 @@ const mySketch001 = startSketchOn('XY')
     const code = `
 const mySketch001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([-1.59, -1.54], %)
-  |> lineTo([0.46, -5.82], %)
+  |> line(endAbsolute = [-1.59, -1.54])
+  |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45, %)
-  |> extrude(2, %)`
+  |> extrude(length = 2)`
     const execState = await enginelessExecutor(assertParse(code))
     // @ts-ignore
     const sketch001 = execState.memory.get('mySketch001')
@@ -142,21 +142,21 @@ const mySketch001 = startSketchOn('XY')
     const code = `
 const sk1 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([-2.5, 0], %)
-  |> lineTo([0, 10], %, $p)
-  |> lineTo([2.5, 0], %)
+  |> line(endAbsolute = [-2.5, 0])
+  |> line(endAbsolute = [0, 10], tag = $p)
+  |> line(endAbsolute = [2.5, 0])
   // |> rx(45, %)
   // |> translate([1,0,1], %)
   // |> ry(5, %)
-const theExtrude = extrude(2, sk1)
+const theExtrude = extrude(sk1, length = 2)
 // const theTransf = getExtrudeWallTransform('p', theExtrude)
 const sk2 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([-2.5, 0], %)
-  |> lineTo([0, 3], %, $o)
-  |> lineTo([2.5, 0], %)
+  |> line(endAbsolute = [-2.5, 0])
+  |> line(endAbsolute = [0, 3], tag = $o)
+  |> line(endAbsolute = [2.5, 0])
   // |> transform(theTransf, %)
-  |> extrude(2, %)
+  |> extrude(length = 2)
 
 `
     const execState = await enginelessExecutor(assertParse(code))

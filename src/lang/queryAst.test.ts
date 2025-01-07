@@ -77,7 +77,7 @@ variableBelowShouldNotBeIncluded = 3
 describe('testing argIsNotIdentifier', () => {
   const code = `part001 = startSketchOn('XY')
 |> startProfileAt([-1.2, 4.83], %)
-|> line([2.8, 0], %)
+|> line(end = [2.8, 0])
 |> angledLine([100 + 100, 3.09], %)
 |> angledLine([abc, 3.09], %)
 |> angledLine([def('yo'), 3.09], %)
@@ -150,7 +150,7 @@ yo2 = hmm([identifierGuy + 5])`
     expect(result.isSafe).toBe(false)
     expect(result.value?.type).toBe('CallExpression')
     expect(code.slice(result.value.start, result.value.end)).toBe(
-      'line([2.8, 0], %)'
+      'line(end = [2.8, 0])'
     )
   })
   it("find a safe BinaryExpression that's assigned to a variable", () => {
@@ -237,10 +237,10 @@ yo2 = hmm([identifierGuy + 5])`
 describe('testing getNodePathFromSourceRange', () => {
   const code = `part001 = startSketchOn('XY')
   |> startProfileAt([0.39, -0.05], %)
-  |> line([0.94, 2.61], %)
-  |> line([-0.21, -1.4], %)`
+  |> line(end = [0.94, 2.61])
+  |> line(end = [-0.21, -1.4])`
   it('finds the second line when cursor is put at the end', () => {
-    const searchLn = `line([0.94, 2.61], %)`
+    const searchLn = `line(end = [0.94, 2.61])`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length
     const ast = assertParse(code)
 
@@ -258,7 +258,7 @@ describe('testing getNodePathFromSourceRange', () => {
     ])
   })
   it('finds the last line when cursor is put at the end', () => {
-    const searchLn = `line([-0.21, -1.4], %)`
+    const searchLn = `line(end = [-0.21, -1.4])`
     const sourceIndex = code.indexOf(searchLn) + searchLn.length
     const ast = assertParse(code)
 
@@ -380,9 +380,9 @@ describe('testing hasExtrudeSketch', () => {
   it('find sketch', async () => {
     const exampleCode = `length001 = 2
 part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, $seg01)
+  |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine([-35, length001], %)
-  |> line([-3.22, -7.36], %)
+  |> line(end = [-3.22, -7.36])
   |> angledLine([-175, segLen(seg01)], %)`
     const ast = assertParse(exampleCode)
 
@@ -399,11 +399,11 @@ part001 = startSketchAt([-1.41, 3.46])
   it('find solid', async () => {
     const exampleCode = `length001 = 2
 part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, $seg01)
+  |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine([-35, length001], %)
-  |> line([-3.22, -7.36], %)
+  |> line(end = [-3.22, -7.36])
   |> angledLine([-175, segLen(seg01)], %)
-  |> extrude(1, %)`
+  |> extrude(length = 1)`
     const ast = assertParse(exampleCode)
 
     const execState = await enginelessExecutor(ast)
@@ -435,10 +435,10 @@ part001 = startSketchAt([-1.41, 3.46])
 describe('Testing findUsesOfTagInPipe', () => {
   const exampleCode = `part001 = startSketchOn('-XZ')
 |> startProfileAt([68.12, 156.65], %)
-|> line([306.21, 198.82], %)
-|> line([306.21, 198.85], %, $seg01)
+|> line(end = [306.21, 198.82])
+|> line(end = [306.21, 198.85], tag = $seg01)
 |> angledLine([-65, segLen(seg01)], %)
-|> line([306.21, 198.87], %)
+|> line(end = [306.21, 198.87])
 |> angledLine([65, segLen(seg01)], %)`
   it('finds the current segment', async () => {
     const ast = assertParse(exampleCode)
@@ -459,7 +459,7 @@ describe('Testing findUsesOfTagInPipe', () => {
   it('find no tag if line has no tag', () => {
     const ast = assertParse(exampleCode)
 
-    const lineOfInterest = `line([306.21, 198.82], %)`
+    const lineOfInterest = `line(end = [306.21, 198.82])`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const pathToNode = getNodePathFromSourceRange(
@@ -474,39 +474,39 @@ describe('Testing findUsesOfTagInPipe', () => {
 describe('Testing hasSketchPipeBeenExtruded', () => {
   const exampleCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
-  |> line([2.48, 2.44], %)
-  |> line([2.66, 1.17], %)
-  |> line([3.75, 0.46], %)
-  |> line([4.99, -0.46], %, $seg01)
-  |> line([3.3, -2.12], %)
-  |> line([2.16, -3.33], %)
-  |> line([0.85, -3.08], %)
-  |> line([-0.18, -3.36], %)
-  |> line([-3.86, -2.73], %)
-  |> line([-17.67, 0.85], %)
-  |> close(%)
-extrude001 = extrude(10, sketch001)
+  |> line(end = [2.48, 2.44])
+  |> line(end = [2.66, 1.17])
+  |> line(end = [3.75, 0.46])
+  |> line(end = [4.99, -0.46], tag = $seg01)
+  |> line(end = [3.3, -2.12])
+  |> line(end = [2.16, -3.33])
+  |> line(end = [0.85, -3.08])
+  |> line(end = [-0.18, -3.36])
+  |> line(end = [-3.86, -2.73])
+  |> line(end = [-17.67, 0.85])
+  |> close()
+extrude001 = extrude(sketch001, length = 10)
 sketch002 = startSketchOn(extrude001, seg01)
   |> startProfileAt([-12.94, 6.6], %)
-  |> line([2.45, -0.2], %)
-  |> line([-2, -1.25], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [2.45, -0.2])
+  |> line(end = [-2, -1.25])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 sketch003 = startSketchOn(extrude001, 'END')
   |> startProfileAt([8.14, 2.8], %)
-  |> line([-1.24, 4.39], %)
-  |> line([3.79, 1.91], %)
-  |> line([1.77, -2.95], %)
-  |> line([3.12, 1.74], %)
-  |> line([1.91, -4.09], %)
-  |> line([-5.6, -2.75], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-  |> extrude(3.14, %)
+  |> line(end = [-1.24, 4.39])
+  |> line(end = [3.79, 1.91])
+  |> line(end = [1.77, -2.95])
+  |> line(end = [3.12, 1.74])
+  |> line(end = [1.91, -4.09])
+  |> line(end = [-5.6, -2.75])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 3.14)
 `
   it('identifies sketch001 pipe as extruded (extrusion after pipe)', async () => {
     const ast = assertParse(exampleCode)
-    const lineOfInterest = `line([4.99, -0.46], %, $seg01)`
+    const lineOfInterest = `line(end = [4.99, -0.46], tag = $seg01)`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
@@ -522,7 +522,7 @@ sketch003 = startSketchOn(extrude001, 'END')
   })
   it('identifies sketch002 pipe as not extruded', async () => {
     const ast = assertParse(exampleCode)
-    const lineOfInterest = `line([2.45, -0.2], %)`
+    const lineOfInterest = `line(end = [2.45, -0.2])`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
@@ -538,7 +538,7 @@ sketch003 = startSketchOn(extrude001, 'END')
   })
   it('identifies sketch003 pipe as extruded (extrusion within pipe)', async () => {
     const ast = assertParse(exampleCode)
-    const lineOfInterest = `|> line([3.12, 1.74], %)`
+    const lineOfInterest = `|> line(end = [3.12, 1.74])`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
@@ -558,17 +558,17 @@ describe('Testing doesSceneHaveSweepableSketch', () => {
   it('finds sketch001 pipe to be extruded', async () => {
     const exampleCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
-  |> line([2.48, 2.44], %)
-  |> line([-3.86, -2.73], %)
-  |> line([-17.67, 0.85], %)
-  |> close(%)
-extrude001 = extrude(10, sketch001)
+  |> line(end = [2.48, 2.44])
+  |> line(end = [-3.86, -2.73])
+  |> line(end = [-17.67, 0.85])
+  |> close()
+extrude001 = extrude(sketch001, length = 10)
 sketch002 = startSketchOn(extrude001, $seg01)
   |> startProfileAt([-12.94, 6.6], %)
-  |> line([2.45, -0.2], %)
-  |> line([-2, -1.25], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(end = [2.45, -0.2])
+  |> line(end = [-2, -1.25])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 `
     const ast = assertParse(exampleCode)
     const extrudable = doesSceneHaveSweepableSketch(ast)
@@ -588,11 +588,11 @@ sketch002 = startSketchOn(plane001)
   it('find sketch002 NOT pipe to be extruded', async () => {
     const exampleCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
-  |> line([2.48, 2.44], %)
-  |> line([-3.86, -2.73], %)
-  |> line([-17.67, 0.85], %)
-  |> close(%)
-extrude001 = extrude(10, sketch001)
+  |> line(end = [2.48, 2.44])
+  |> line(end = [-3.86, -2.73])
+  |> line(end = [-17.67, 0.85])
+  |> close()
+extrude001 = extrude(sketch001, length = 10)
 `
     const ast = assertParse(exampleCode)
     const extrudable = doesSceneHaveSweepableSketch(ast)
@@ -604,7 +604,7 @@ describe('Testing doesSceneHaveExtrudedSketch', () => {
   it('finds extruded sketch as variable', async () => {
     const exampleCode = `sketch001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 1 }, %)
-extrude001 = extrude(1, sketch001)
+extrude001 = extrude(sketch001, length = 1)
 `
     const ast = assertParse(exampleCode)
     if (err(ast)) throw ast
@@ -614,7 +614,7 @@ extrude001 = extrude(1, sketch001)
   it('finds extruded sketch in pipe', async () => {
     const exampleCode = `extrude001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 1 }, %)
-  |> extrude(1, %)
+  |> extrude(length = 1)
 `
     const ast = assertParse(exampleCode)
     if (err(ast)) throw ast
@@ -643,10 +643,10 @@ describe('Testing traverse and pathToNode', () => {
     const code = `myVar = 5
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
-  |> line([2.48, 2.44], %)
-  |> line([-3.86, -2.73], %)
-  |> line([-17.67, 0.85], %)
-  |> close(%)
+  |> line(end = [2.48, 2.44])
+  |> line(end = [-3.86, -2.73])
+  |> line(end = [-17.67, 0.85])
+  |> close()
 bing = { yo: 55 }
 myNestedVar = [
   {

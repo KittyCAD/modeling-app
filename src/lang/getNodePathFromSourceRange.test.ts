@@ -18,11 +18,11 @@ describe('testing getNodePathFromSourceRange', () => {
     const code = `
 const myVar = 5
 const sk3 = startSketchAt([0, 0])
-  |> lineTo([1, 2], %)
-  |> lineTo([3, 4], %, $yo)
-  |> close(%)
+  |> line(endAbsolute = [1, 2])
+  |> line(endAbsolute = [3, 4], tag = $yo)
+  |> close()
 `
-    const subStr = 'lineTo([3, 4], %, $yo)'
+    const subStr = 'line(endAbsolute = [3, 4], tag = $yo)'
     const lineToSubstringIndex = code.indexOf(subStr)
     const sourceRange = topLevelRange(
       lineToSubstringIndex,
@@ -41,9 +41,9 @@ const sk3 = startSketchAt([0, 0])
   it('gets path right for function definition params', () => {
     const code = `fn cube = (pos, scale) => {
   const sg = startSketchAt(pos)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }
@@ -73,9 +73,9 @@ const b1 = cube([0,0], 10)`
   it('gets path right for deep within function definition body', () => {
     const code = `fn cube = (pos, scale) => {
   const sg = startSketchAt(pos)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
 
   return sg
 }

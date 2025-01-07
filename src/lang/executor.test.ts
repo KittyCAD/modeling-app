@@ -53,10 +53,10 @@ const newVar = myVar + 1`
   it('sketch declaration', async () => {
     let code = `const mySketch = startSketchOn('XY')
   |> startProfileAt([0,0], %)
-  |> lineTo([0,2], %, $myPath)
-  |> lineTo([2,3], %)
-  |> lineTo([5,-1], %, $rightPath)
-  // |> close(%)
+  |> line(endAbsolute = [0,2], tag = $myPath)
+  |> line(endAbsolute = [2,3])
+  |> line(endAbsolute = [5,-1], tag = $rightPath)
+  // |> close()
 `
     const mem = await exe(code)
     // geo is three js buffer geometry and is very bloated to have in tests
@@ -124,9 +124,9 @@ const newVar = myVar + 1`
   // it('rotated sketch', async () => {
   //   const code = [
   //     'const mySk1 = startSketchAt([0,0])',
-  //     '  |> lineTo([1,1], %)',
-  //     '  |> lineTo([0, 1], %, "myPath")',
-  //     '  |> lineTo([1, 1], %)',
+  //     '  |> line(endAbsolute = [1,1])',
+  //     '  |> line(endAbsolute = [0, 1], tag = "myPath")',
+  //     '  |> line(endAbsolute = [1, 1])',
   //     'const rotated = rx(90, mySk1)',
   //   ].join('\n')
   //   const mem = await exe(code)
@@ -151,9 +151,9 @@ const newVar = myVar + 1`
     const code = [
       "const mySk1 = startSketchOn('XY')",
       '  |> startProfileAt([0,0], %)',
-      '  |> lineTo([1,1], %)',
-      '  |> lineTo([0, 1], %, $myPath)',
-      '  |> lineTo([1,1], %)',
+      '  |> line(endAbsolute = [1,1])',
+      '  |> line(endAbsolute = [0, 1], tag = $myPath)',
+      '  |> line(endAbsolute = [1,1])',
       // '  |> rx(90, %)',
     ].join('\n')
     const mem = await exe(code)
@@ -421,7 +421,7 @@ describe('testing math operators', () => {
     const code = [
       "const part001 = startSketchOn('XY')",
       '  |> startProfileAt([0, 0], %)',
-      '|> line([-2.21, -legLen(5, min(3, 999))], %)',
+      '|> line(end = [-2.21, -legLen(5, min(3, 999))])',
     ].join('\n')
     const mem = await exe(code)
     const sketch = sketchFromKclValue(mem.get('part001'), 'part001')
@@ -434,7 +434,7 @@ describe('testing math operators', () => {
       `const myVar = 3`,
       `const part001 = startSketchOn('XY')`,
       `  |> startProfileAt([0, 0], %)`,
-      `  |> line([3, 4], %, $seg01)`,
+      `  |> line(end = [3, 4], tag = $seg01)`,
       `  |> line([`,
       `  min(segLen(seg01), myVar),`,
       `  -legLen(segLen(seg01), myVar)`,
@@ -476,11 +476,11 @@ describe('Testing Errors', () => {
     const code = `const myVar = 5
 const theExtrude = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([-2.4, 5], %)
-  |> line(myVarZ, %)
-  |> line([5,5], %)
-  |> close(%)
-  |> extrude(4, %)`
+  |> line(end = [-2.4, 5])
+  |> line(end = myVarZ)
+  |> line(end = [5,5])
+  |> close()
+  |> extrude(length = 4)`
     await expect(exe(code)).rejects.toEqual(
       new KCLError(
         'undefined_value',
