@@ -218,20 +218,6 @@ export const Stream = () => {
     }
   }, [IDLE, streamState])
 
-  /**
-   * Play the vid
-   */
-  useEffect(() => {
-    if (!kclManager.isExecuting) {
-      setTimeout(() => {
-        // execute in the next event loop
-        videoRef.current?.play().catch((e) => {
-          console.warn('Video playing was prevented', e, videoRef.current)
-        })
-      })
-    }
-  }, [kclManager.isExecuting])
-
   useEffect(() => {
     if (
       typeof window === 'undefined' ||
@@ -243,9 +229,15 @@ export const Stream = () => {
 
     // The browser complains if we try to load a new stream without pausing first.
     // Do not immediately play the stream!
+    // we instead use a setTimeout to play the stream in the next event loop
     try {
       videoRef.current.srcObject = mediaStream
       videoRef.current.pause()
+      setTimeout(() => {
+        videoRef.current?.play().catch((e) => {
+          console.warn('Video playing was prevented', e, videoRef.current)
+        })
+      })
     } catch (e) {
       console.warn('Attempted to pause stream while play was still loading', e)
     }
