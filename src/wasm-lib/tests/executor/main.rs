@@ -285,7 +285,7 @@ async fn optional_params() {
     fn other_circle = (pos, radius, tag?) => {
       sg = startSketchOn('XY')
         |> startProfileAt(pos, %)
-        |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
+        |> arc({angle_end: 360, angleStart: 0, radius: radius}, %)
         |> close(%)
         |> extrude(2, %)
 
@@ -1160,8 +1160,8 @@ async fn kcl_test_plumbus_fillets() {
   sg = startSketchOn(ext, face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
   |> arc({
-       angle_end: 360,
-       angle_start: 0,
+       angleEnd: 360,
+       angleStart: 0,
        radius: radius
      }, %, $arc1)
   |> close(%)
@@ -1732,8 +1732,8 @@ async fn kcl_test_arc_error_same_start_end() {
     let code = r#"startSketchOn('XY')
   |> startProfileAt([10, 0], %)
   |> arc({
-       angle_start: 180,
-       angle_end: 180,
+       angleStart: 180,
+       angleEnd: 180,
        radius: 1.5
      }, %)
   |> close(%)
