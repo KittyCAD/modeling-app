@@ -20,10 +20,10 @@ quote = "1"
 regex = "1.11"
 serde = { version = "1.0.214", features = ["derive"] }
 serde_tokenstream = "0.2"
-syn = { version = "2.0.87", features = ["full"] }
+syn = { version = "2.0.95", features = ["full"] }
 
 [dev-dependencies]
-anyhow = "1.0.93"
+anyhow = "1.0.95"
 expectorate = "1.1.0"
 pretty_assertions = "1.4.1"
 rustfmt-wrapper = "0.2.1"
