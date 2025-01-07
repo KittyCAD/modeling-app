@@ -77,7 +77,6 @@ members = [
 http = "1"
 kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }
 kittycad-modeling-cmds = { version = "0.2.86", features = [
-  "derive-jsonschema-on-enums",
   "ts-rs",
   "websocket",
 ] }

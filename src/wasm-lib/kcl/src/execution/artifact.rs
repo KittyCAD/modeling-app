@@ -10,7 +10,7 @@ use crate::SourceRange;
 /// created.
 ///
 /// This aspires to replace `OrderedCommand` in TS.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactCommand {
