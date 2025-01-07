@@ -1108,10 +1108,31 @@ impl<'a> FromKclValue<'a> for super::helix::HelixData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, revolutions);
+        let_field_of!(obj, length);
+        let_field_of!(obj, ccw?);
+        let_field_of!(obj, radius);
+        let_field_of!(obj, axis);
+        let ccw = ccw.unwrap_or_default();
+        let angle_start = obj.get("angleStart")?.as_f64()?;
+        Some(Self {
+            revolutions,
+            angle_start,
+            ccw,
+            length,
+            radius,
+            axis,
+        })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::helix::HelixRevolutionsData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, revolutions);
         let_field_of!(obj, length?);
         let_field_of!(obj, ccw?);
         let ccw = ccw.unwrap_or_default();
-        let angle_start = obj.get("angleStart").or_else(|| obj.get("angle_start"))?.as_f64()?;
+        let angle_start = obj.get("angleStart")?.as_f64()?;
         Some(Self {
             revolutions,
             angle_start,
@@ -1159,8 +1180,8 @@ impl<'a> FromKclValue<'a> for super::sketch::ArcData {
         let obj = arg.as_object()?;
         let_field_of!(obj, radius);
         let case1 = || {
-            let angle_start = obj.get("angleStart").or_else(|| obj.get("angle_start"))?.as_f64()?;
-            let angle_end = obj.get("angleEnd").or_else(|| obj.get("angle_end"))?.as_f64()?;
+            let angle_start = obj.get("angleStart")?.as_f64()?;
+            let angle_end = obj.get("angleEnd")?.as_f64()?;
             Some(Self::AnglesAndRadius {
                 angle_start,
                 angle_end,
@@ -1256,21 +1277,9 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         let obj = arg.as_object()?;
         let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
-        let x_axis = plane
-            .get("xAxis")
-            .or_else(|| plane.get("x_axis"))
-            .and_then(FromKclValue::from_kcl_val)
-            .map(Box::new)?;
-        let y_axis = plane
-            .get("yAxis")
-            .or_else(|| plane.get("y_axis"))
-            .and_then(FromKclValue::from_kcl_val)
-            .map(Box::new)?;
-        let z_axis = plane
-            .get("zAxis")
-            .or_else(|| plane.get("z_axis"))
-            .and_then(FromKclValue::from_kcl_val)
-            .map(Box::new)?;
+        let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
+        let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
+        let z_axis = plane.get("zAxis").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
         Some(Self::Plane {
             origin,
             x_axis,

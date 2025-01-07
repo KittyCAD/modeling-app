@@ -114,6 +114,7 @@ lazy_static! {
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
+        Box::new(crate::std::helix::HelixRevolutions),
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),

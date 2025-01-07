@@ -702,6 +702,23 @@ pub struct ImportedGeometry {
     pub meta: Vec<Metadata>,
 }
 
+/// A helix.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Helix {
+    /// The id of the helix.
+    pub id: uuid::Uuid,
+    /// Number of revolutions.
+    pub revolutions: f64,
+    /// Start angle (in degrees).
+    pub angle_start: f64,
+    /// Is the helix rotation counter clockwise?
+    pub ccw: bool,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
 /// A plane.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
