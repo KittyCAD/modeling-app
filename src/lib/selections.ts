@@ -11,7 +11,7 @@ import {
   Expr,
   defaultSourceRange,
 } from 'lang/wasm'
-import { ModelingMachineEvent } from 'machines/modelingMachine'
+import { ModelingMachineEvent, SetSelections } from 'machines/modelingMachine'
 import { isNonNullable, uuidv4 } from 'lib/utils'
 import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
@@ -295,6 +295,33 @@ export function getEventForSegmentSelection(
   }
 }
 
+export function computeEditorSelectionForCompleteSelection(
+  setSelections: SetSelections
+): EditorSelection {
+  if (
+    setSelections.selectionType === 'completeSelection' &&
+    setSelections.selection.graphSelections?.length > 0
+  ) {
+    const ranges: ReturnType<typeof EditorSelection.cursor>[] = []
+    setSelections.selection.graphSelections.forEach(({ codeRef }) => {
+      if (codeRef.range?.[1]) {
+        const safeEnd = Math.min(codeRef.range[1], codeManager.code.length)
+        ranges.push(EditorSelection.cursor(safeEnd))
+      }
+    })
+    const editorSelection = EditorSelection.create(
+      ranges,
+      setSelections.selection.graphSelections.length - 1
+    )
+    return editorSelection
+  }
+
+  return EditorSelection.create(
+    [EditorSelection.cursor(codeManager.code.length)],
+    0
+  )
+}
+
 export function handleSelectionBatch({
   selections,
 }: {
@@ -327,16 +354,16 @@ export function handleSelectionBatch({
       ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
-  if (ranges.length)
-    return {
-      engineEvents,
-      codeMirrorSelection: EditorSelection.create(
-        ranges,
-        selections.graphSelections.length - 1
-      ),
-      updateSceneObjectColors: () =>
-        updateSceneObjectColors(selections.graphSelections),
-    }
+  if (ranges.length) console.log('ranges!', ranges)
+  return {
+    engineEvents,
+    codeMirrorSelection: EditorSelection.create(
+      ranges,
+      selections.graphSelections.length - 1
+    ),
+    updateSceneObjectColors: () =>
+      updateSceneObjectColors(selections.graphSelections),
+  }
 
   return {
     codeMirrorSelection: EditorSelection.create(

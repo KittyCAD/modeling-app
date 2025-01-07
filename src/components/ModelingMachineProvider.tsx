@@ -49,6 +49,7 @@ import {
   handleSelectionBatch,
   Selections,
   updateSelections,
+  computeEditorSelectionForCompleteSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -91,6 +92,7 @@ import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
+import { EditorSelection, SelectionRange } from '@codemirror/state'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -340,6 +342,7 @@ export const ModelingMachineProvider = ({
                 selections,
               })
               if (codeMirrorSelection) {
+                console.log('codeMirrorSelection', codeMirrorSelection)
                 kclEditorActor.send({
                   type: 'setLastSelectionEvent',
                   data: {
@@ -387,7 +390,15 @@ export const ModelingMachineProvider = ({
             }
 
             if (setSelections.selectionType === 'completeSelection') {
-              editorManager.selectRange(setSelections.selection)
+              const codeMirrorSelection =
+                computeEditorSelectionForCompleteSelection(setSelections)
+              kclEditorActor.send({
+                type: 'setLastSelectionEvent',
+                data: {
+                  codeMirrorSelection,
+                  scrollIntoView: false,
+                },
+              })
               if (!sketchDetails)
                 return {
                   selectionRanges: setSelections.selection,
