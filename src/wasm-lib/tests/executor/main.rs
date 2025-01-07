@@ -285,7 +285,7 @@ async fn optional_params() {
     fn other_circle = (pos, radius, tag?) => {
       sg = startSketchOn('XY')
         |> startProfileAt(pos, %)
-        |> arc({angle_end: 360, angleStart: 0, radius: radius}, %)
+        |> arc({angleEnd: 360, angleStart: 0, radius: radius}, %)
         |> close(%)
         |> extrude(2, %)
 
