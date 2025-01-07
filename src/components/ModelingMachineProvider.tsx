@@ -340,7 +340,6 @@ export const ModelingMachineProvider = ({
                 selections,
               })
               if (codeMirrorSelection) {
-                console.log('codeMirrorSelection', codeMirrorSelection)
                 kclEditorActor.send({
                   type: 'setLastSelectionEvent',
                   data: {
