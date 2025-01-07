@@ -274,6 +274,35 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           links: [],
         },
       ],
+      'break',
+      [
+        {
+          id: 'text-to-cad',
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Text-to-CAD', groupId: 'modeling' },
+            }),
+          icon: 'sparkles',
+          status: 'available',
+          title: 'Text-to-CAD',
+          description: 'Generate geometry from a text prompt.',
+          links: [],
+        },
+        {
+          id: 'prompt-to-edit',
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Prompt-to-edit', groupId: 'modeling' },
+            }),
+          icon: 'sparkles',
+          status: 'available',
+          title: 'Prompt-to-Edit',
+          description: 'Edit geometry based on a text prompt.',
+          links: [],
+        },
+      ],
     ],
   },
   sketching: {
