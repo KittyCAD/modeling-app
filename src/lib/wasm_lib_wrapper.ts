@@ -35,7 +35,7 @@ let data: ModuleType
 // Imports the .js file again which will clear the old import
 // This allows us to reinitialize the wasm instance
 export async function reloadModule() {
-  data = await import(`../wasm-lib/pkg/wasm_lib?version=${Date.now()}`)
+  data = await import(`../wasm-lib/pkg/wasm_lib`)
 }
 
 export function getModule(): ModuleType {
