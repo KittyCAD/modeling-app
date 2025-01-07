@@ -632,9 +632,10 @@ where
         let Some(val) = T::from_kcl_val(&arg.value) else {
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
-                    "Argument at index {i} was supposed to be type {} but found {}",
+                    "Argument at index {i} was supposed to be type {} but found {}, {:?}",
                     type_name::<T>(),
-                    arg.value.human_friendly_type()
+                    arg.value.human_friendly_type(),
+                    arg.value
                 ),
                 source_ranges: arg.source_ranges(),
             }));
