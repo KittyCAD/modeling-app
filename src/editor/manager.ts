@@ -40,6 +40,7 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 export default class EditorManager {
   private _copilotEnabled: boolean = true
 
+  private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
   private _selectionRanges: Selections = {
     otherSelections: [],
@@ -115,6 +116,10 @@ export default class EditorManager {
         e.value.update = performanceTrackingUpdate
       }
     })
+  }
+
+  get isAllTextSelected() {
+    return this._isAllTextSelected
   }
 
   get editorView(): EditorView | null {
@@ -361,6 +366,16 @@ export default class EditorManager {
     if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
       return
     }
+
+    this._isAllTextSelected = viewUpdate.state.selection.ranges.some(
+      (selection) => {
+        return (
+          // The user will need to select the empty new lines as well to be considered all of the text.
+          // CTRL+A is the best way to select all the text
+          selection.from === 0 && selection.to === viewUpdate.state.doc.length
+        )
+      }
+    )
 
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
