@@ -4509,11 +4509,6 @@ end-of-stream@^1.1.0:
   dependencies:
     once "^1.4.0"
 
-entities@^4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/entities/-/entities-4.5.0.tgz#5d268ea5e7113ec74c4d033b79ea5a35a488fb48"
-  integrity sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==
-
 env-paths@^2.2.0:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/env-paths/-/env-paths-2.2.1.tgz#420399d416ce1fbe9bc0a07c62fa68d67fd0f8f2"
@@ -5705,12 +5700,11 @@ graphemer@^1.4.0:
   resolved "https://registry.yarnpkg.com/graphemer/-/graphemer-1.4.0.tgz#fb2f1d55e0e3a1849aeffc90c4fa0dd53a0e66c6"
   integrity sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==
 
-happy-dom@^15.11.7:
-  version "15.11.7"
-  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-15.11.7.tgz#db9854f11e5dd3fd4ab20cbbcfdf7bd9e17cd971"
-  integrity sha512-KyrFvnl+J9US63TEzwoiJOQzZBJY7KgBushJA8X61DMbNsH+2ONkDuLDnCnwUiPTF42tLoEmrPyoqbenVA5zrg==
+happy-dom@^16.3.0:
+  version "16.3.0"
+  resolved "https://registry.yarnpkg.com/happy-dom/-/happy-dom-16.3.0.tgz#e138b5692cdff8e1e25d02b7730d320b4a151f65"
+  integrity sha512-Q71RaIhyS21vhW17Tpa5W36yqQXIlE1TZ0A0Gguts8PShUSQE/7fBgxYGxgm3+5y0gF6afdlAVHLQqgrIcfRzg==
   dependencies:
-    entities "^4.5.0"
     webidl-conversions "^7.0.0"
     whatwg-mimetype "^3.0.0"
 
