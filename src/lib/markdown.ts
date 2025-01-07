@@ -29,6 +29,7 @@ export class SafeRenderer extends Renderer {
       }
 
       if (
+        // eslint-disable-next-line no-script-url
         prot.indexOf('javascript:') === 0 ||
         prot.indexOf('vbscript:') === 0 ||
         prot.indexOf('data:') === 0
