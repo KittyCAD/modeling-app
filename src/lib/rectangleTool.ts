@@ -2,7 +2,9 @@ import {
   createArrayExpression,
   createBinaryExpression,
   createCallExpressionStdLib,
+  createCallExpressionStdLibKw,
   createIdentifier,
+  createLabeledArg,
   createLiteral,
   createPipeSubstitution,
   createTagDeclarator,
@@ -62,12 +64,14 @@ export const getRectangleCallExpressions = (
     createPipeSubstitution(),
     createTagDeclarator(tags[2]),
   ]),
-  createCallExpressionStdLib('lineTo', [
-    createArrayExpression([
-      createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
-      createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),
-    ]),
-    createPipeSubstitution(),
+  createCallExpressionStdLibKw('line', createPipeSubstitution(), [
+    createLabeledArg(
+      'endAbsolute',
+      createArrayExpression([
+        createCallExpressionStdLib('profileStartX', [createPipeSubstitution()]),
+        createCallExpressionStdLib('profileStartY', [createPipeSubstitution()]),
+      ])
+    ),
   ]), // close the rectangle
   createCallExpressionStdLib('close', [createPipeSubstitution()]),
 ]

@@ -3,6 +3,8 @@ import { Selection } from 'lib/selections'
 import {
   Program,
   CallExpression,
+  LabeledArg,
+  CallExpressionKw,
   PipeExpression,
   VariableDeclaration,
   VariableDeclarator,
@@ -132,10 +134,11 @@ export function addSketchTo(
     createLiteral('default'),
     createPipeSubstitution(),
   ])
-  const initialLineTo = createCallExpressionStdLib('line', [
-    createLiteral('default'),
+  const initialLineTo = createCallExpressionStdLibKw(
+    'line',
     createPipeSubstitution(),
-  ])
+    [createLabeledArg('end', createLiteral('default'))]
+  )
 
   const pipeBody = [startSketchOn, startProfileAt, initialLineTo]
 
@@ -286,11 +289,11 @@ export function extrudeSketch(
   if (err(_node3)) return _node3
   const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
 
-  const extrudeCall = createCallExpressionStdLib('extrude', [
-    distance,
-    shouldPipe
-      ? createPipeSubstitution()
-      : createIdentifier(variableDeclarator.id.name),
+  const sketchToExtrude = shouldPipe
+    ? createPipeSubstitution()
+    : createIdentifier(variableDeclarator.id.name)
+  const extrudeCall = createCallExpressionStdLibKw('extrude', sketchToExtrude, [
+    createLabeledArg('length', distance),
   ])
 
   if (shouldPipe) {
@@ -806,6 +809,29 @@ export function createCallExpressionStdLib(
 
       name,
     },
+    arguments: args,
+  }
+}
+
+export function createCallExpressionStdLibKw(
+  name: string,
+  unlabeled: CallExpressionKw['unlabeled'],
+  args: CallExpressionKw['arguments']
+): Node<CallExpressionKw> {
+  return {
+    type: 'CallExpressionKw',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    callee: {
+      type: 'Identifier',
+      start: 0,
+      end: 0,
+      moduleId: 0,
+
+      name,
+    },
+    unlabeled,
     arguments: args,
   }
 }
@@ -1373,4 +1399,8 @@ export async function deleteFromSelection(
 
 const nonCodeMetaEmpty = () => {
   return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
+}
+
+export const createLabeledArg = (name: string, arg: Expr): LabeledArg => {
+  return { label: createIdentifier(name), arg, type: 'LabeledArg' }
 }
