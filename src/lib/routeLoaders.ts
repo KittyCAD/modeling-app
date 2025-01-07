@@ -196,11 +196,15 @@ export const homeLoader: LoaderFunction = async (): Promise<
   // and you wouldn't want to clean up the page.
   // The DOM elements in the file loader still exist in the page when it is redirected. If they are not cleaned up
   // you can load old state. We should purge the DOM elements.
-  try {
-    await fileLoaderPageCleanup()
-  } catch (e) {
-    console.error('failed to tear down sketch on page redirect')
-  }
+  fileLoaderPageCleanup()
+    .then(() => {
+      // NO OP
+      // Do not await this promise since it would block the redirect.
+    })
+    .catch((e) => {
+      console.error(e)
+      console.error('failed to cleanup file page from home redirect')
+    })
 
   if (!isDesktop()) {
     return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
