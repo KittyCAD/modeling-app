@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Artifact commands big_number_angle_to_match_length_x.kcl
+description: Artifact commands circle_three_point.kcl
 snapshot_kind: text
 ---
 [
@@ -296,8 +296,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      10,
-      29,
+      12,
+      31,
       0
     ],
     "command": {
@@ -325,8 +325,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      35,
-      60,
+      37,
+      98,
       0
     ],
     "command": {
@@ -345,8 +345,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      35,
-      60,
+      37,
+      98,
       0
     ],
     "command": {
@@ -356,16 +356,16 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      35,
-      60,
+      37,
+      98,
       0
     ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": 30.00594901040716,
+        "y": 19.749999999999996,
         "z": 0.0
       }
     }
@@ -373,40 +373,27 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      66,
-      92,
-      0
-    ],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 1.0,
-          "y": 3.82,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
+      37,
       98,
-      154,
       0
     ],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
-        "type": "line",
+        "type": "arc",
+        "center": {
+          "x": 24.749999999999996,
+          "y": 19.749999999999996
+        },
+        "radius": 5.255949010407163,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
         "end": {
-          "x": 3.0,
-          "y": 0.41523862803866995,
-          "z": 0.0
+          "unit": "degrees",
+          "value": 360.0
         },
         "relative": false
       }
@@ -415,8 +402,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      160,
-      168,
+      37,
+      98,
       0
     ],
     "command": {
@@ -427,19 +414,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      160,
-      168,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      174,
-      188,
+      109,
+      131,
       0
     ],
     "command": {
@@ -458,8 +434,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      174,
-      188,
+      109,
+      131,
       0
     ],
     "command": {
@@ -472,8 +448,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      174,
-      188,
+      109,
+      131,
       0
     ],
     "command": {
@@ -483,8 +459,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      174,
-      188,
+      109,
+      131,
       0
     ],
     "command": {
@@ -495,8 +471,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      174,
-      188,
+      109,
+      131,
       0
     ],
     "command": {
@@ -508,8 +484,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      174,
-      188,
+      109,
+      131,
       0
     ],
     "command": {
@@ -522,64 +498,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      174,
-      188,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      174,
-      188,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      174,
-      188,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      174,
-      188,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      174,
-      188,
+      109,
+      131,
       0
     ],
     "command": {
