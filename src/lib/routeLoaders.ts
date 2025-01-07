@@ -188,9 +188,9 @@ export const fileLoader: LoaderFunction = async (
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
-export const homeLoader: LoaderFunction = async (
-  routerData
-): Promise<HomeLoaderData | Response> => {
+export const homeLoader: LoaderFunction = async (): Promise<
+  HomeLoaderData | Response
+> => {
   if (!isDesktop()) {
     return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
