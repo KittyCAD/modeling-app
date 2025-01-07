@@ -92,7 +92,6 @@ import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
-import { EditorSelection, SelectionRange } from '@codemirror/state'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

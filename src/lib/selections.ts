@@ -354,16 +354,16 @@ export function handleSelectionBatch({
       ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
-  if (ranges.length) console.log('ranges!', ranges)
-  return {
-    engineEvents,
-    codeMirrorSelection: EditorSelection.create(
-      ranges,
-      selections.graphSelections.length - 1
-    ),
-    updateSceneObjectColors: () =>
-      updateSceneObjectColors(selections.graphSelections),
-  }
+  if (ranges.length)
+    return {
+      engineEvents,
+      codeMirrorSelection: EditorSelection.create(
+        ranges,
+        selections.graphSelections.length - 1
+      ),
+      updateSceneObjectColors: () =>
+        updateSceneObjectColors(selections.graphSelections),
+    }
 
   return {
     codeMirrorSelection: EditorSelection.create(
