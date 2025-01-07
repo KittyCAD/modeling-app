@@ -91,15 +91,14 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around a helix path.
 ///
 /// // Create a helix around the Y axis.
-/// helixPath = startSketchOn('XY')
-///   |> helix({
+/// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
 ///     revolutions = 16,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Y',
-///  }, %)
+///  })
 ///
 ///
 /// // Create a spring by sweeping around the helix path.

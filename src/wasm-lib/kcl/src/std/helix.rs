@@ -46,15 +46,14 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// ```no_run
 /// // Create a helix around the Y axis.
-/// helixPath = startSketchOn('XY')
-///   |> helix({
+/// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
 ///     revolutions = 16,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Y',
-///  }, %)
+///  })
 ///
 ///
 /// // Create a spring by sweeping around the helix path.
@@ -69,15 +68,14 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///  |> startProfileAt([0, 0], %)
 ///  |> line([0, 10], %, $edge001)
 ///
-/// helixPath = startSketchOn('XY')
-///   |> helix({
+/// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
 ///     revolutions = 16,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = edge001,
-///  }, %)
+///  })
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
