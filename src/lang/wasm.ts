@@ -527,6 +527,7 @@ export const executor = async (
       engineCommandManager,
       fileSystemManager
     )
+    await engineCommandManager.waitForAllCommands()
     return execStateFromRust(execOutcome)
   } catch (e: any) {
     console.log(e)
