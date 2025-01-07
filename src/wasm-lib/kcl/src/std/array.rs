@@ -270,6 +270,11 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 #[stdlib {
     name = "pop",
+    keywords = true,
+    unlabeled_first = true,
+    arg_docs = {
+        array = "The array to pop from.  Must not be empty.",
+    }
 }]
 async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {
     if array.is_empty() {
@@ -290,7 +295,7 @@ async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclErr
 
 pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // Extract the array from the arguments
-    let val: KclValue = FromArgs::from_args(&args, 0)?;
+    let val = args.get_unlabeled_kw_arg("array")?;
 
     let meta = vec![args.source_range];
     let KclValue::Array { value: array, meta: _ } = val else {
