@@ -32,7 +32,7 @@ import {
   isNodeSafeToReplace,
   traverse,
 } from './queryAst'
-import { addTagForSketchOnFace, getConstraintInfo } from './std/sketch'
+import { addTagForSketchOnFace, ARG_TAG, getConstraintInfo } from './std/sketch'
 import {
   PathToNodeMap,
   isLiteralArrayOrStatic,
@@ -48,6 +48,7 @@ import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { KclExpressionWithVariable } from 'lib/commandTypes'
+import { findKwArg } from './util'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -199,6 +200,26 @@ export function findUniqueName(
 
   // recursive case: name is not unique and does not end in digits
   return findUniqueName(searchStr, name, pad, index + 1)
+}
+
+/**
+Set the keyword argument to the given value.
+Returns true if it overwrote an existing argument.
+Returns false if no argument with the label existed before.
+*/
+export function mutateKwArg(
+  label: string,
+  node: CallExpressionKw,
+  val: Expr
+): boolean {
+  node.arguments.forEach((arg, i) => {
+    if (arg.label.name === label) {
+      node.arguments[i].arg = val
+      return true
+    }
+  })
+  node.arguments.push(createLabeledArg(label, val))
+  return false
 }
 
 export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
@@ -987,20 +1008,46 @@ export function giveSketchFnCallTag(
     }
   | Error {
   const path = getNodePathFromSourceRange(ast, range)
-  const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
-  if (err(_node1)) return _node1
-  const { node: primaryCallExp } = _node1
+  const maybeTag = (() => {
+    const kwCallNode = getNodeFromPath<CallExpressionKw>(
+      ast,
+      path,
+      'CallExpressionKw'
+    )
+    if (!err(kwCallNode)) {
+      const { node: primaryCallExp } = kwCallNode
+      const existingTag = findKwArg(ARG_TAG, primaryCallExp)
+      const tagDeclarator =
+      existingTag ||
+      (createTagDeclarator(
+        tag || findUniqueName(ast, 'seg', 2)
+      ) as TagDeclarator)
+      const isTagExisting = !!existingTag
+      kwCallNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
+      return { tagDeclarator, isTagExisting }
+    }
 
-  // Tag is always 3rd expression now, using arg index feels brittle
-  // but we can come up with a better way to identify tag later.
-  const thirdArg = primaryCallExp.arguments?.[2]
-  const tagDeclarator =
-    thirdArg ||
-    (createTagDeclarator(tag || findUniqueName(ast, 'seg', 2)) as TagDeclarator)
-  const isTagExisting = !!thirdArg
-  if (!isTagExisting) {
-    primaryCallExp.arguments[2] = tagDeclarator
-  }
+    const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
+    if (err(_node1)) return _node1
+    const { node: primaryCallExp } = _node1
+
+    // Tag is always 3rd expression now, using arg index feels brittle
+    // but we can come up with a better way to identify tag later.
+    const thirdArg = primaryCallExp.arguments?.[2]
+    const tagDeclarator =
+      thirdArg ||
+      (createTagDeclarator(
+        tag || findUniqueName(ast, 'seg', 2)
+      ) as TagDeclarator)
+    const isTagExisting = !!thirdArg
+    if (!isTagExisting) {
+      primaryCallExp.arguments[2] = tagDeclarator
+    }
+    return { tagDeclarator, isTagExisting }
+  })()
+
+  if (err(maybeTag)) return maybeTag
+  const { tagDeclarator, isTagExisting } = maybeTag
   if ('value' in tagDeclarator) {
     // Now TypeScript knows tagDeclarator has a value property
     return {

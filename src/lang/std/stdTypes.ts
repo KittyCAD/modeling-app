@@ -9,6 +9,7 @@ import {
   CallExpression,
   Literal,
   BinaryPart,
+  CallExpressionKw,
 } from '../wasm'
 import { LineInputsType } from './sketchcombos'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
@@ -237,6 +238,34 @@ export interface SketchLineHelper {
     | Error
   getConstraintInfo: (
     callExp: Node<CallExpression>,
+    code: string,
+    pathToNode: PathToNode
+  ) => ConstrainInfo[]
+}
+
+export interface SketchLineHelperKw {
+  add: (a: addCall) =>
+    | {
+        modifiedAst: Node<Program>
+        pathToNode: PathToNode
+        valueUsedInTransform?: number
+      }
+    | Error
+  updateArgs: (a: updateArgs) =>
+    | {
+        modifiedAst: Node<Program>
+        pathToNode: PathToNode
+      }
+    | Error
+  getTag: (a: CallExpressionKw) => string | Error
+  addTag: (a: AddTagInfo) =>
+    | {
+        modifiedAst: Node<Program>
+        tag: string
+      }
+    | Error
+  getConstraintInfo: (
+    callExp: Node<CallExpressionKw>,
     code: string,
     pathToNode: PathToNode
   ) => ConstrainInfo[]

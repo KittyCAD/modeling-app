@@ -1,5 +1,6 @@
 import { getNodeFromPath } from 'lang/queryAst'
 import { ToolTip, toolTips } from 'lang/langHelpers'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 import {
   Program,
   VariableDeclarator,
@@ -10,6 +11,7 @@ import {
   PathToNode,
   Expr,
   topLevelRange,
+  LabeledArg,
 } from '../wasm'
 import { err } from 'lib/trap'
 
@@ -23,13 +25,27 @@ export function getSketchSegmentFromPathToNode(
       index: number
     }
   | Error {
-  // TODO: once pathTodNode is stored on program memory as part of execution,
+  // TODO: once pathToNode is stored on program memory as part of execution,
   // we can check if the pathToNode matches the pathToNode of the sketch.
   // For now we fall back to the sourceRange
-  const nodeMeta = getNodeFromPath<Expr>(ast, pathToNode)
+  const nodeMeta = getNodeFromPath<Node<Expr> | Node<LabeledArg>>(
+    ast,
+    pathToNode
+  )
   if (err(nodeMeta)) return nodeMeta
 
-  const node = nodeMeta.node
+  const _node = nodeMeta.node
+  const node = (() => {
+    switch (_node.type) {
+      // LabeledArg wraps the expression being assigned to a parameter.
+      // So, undo the wrapper. Used for keyword arguments.
+      case 'LabeledArg':
+        return _node.arg
+      // Other nodes aren't wrapped, we can return them directly.
+      default:
+        return _node
+    }
+  })()
   if (!node || typeof node.start !== 'number' || !node.end)
     return new Error('no node found')
   const sourceRange = topLevelRange(node.start, node.end)

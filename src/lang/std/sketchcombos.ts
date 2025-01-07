@@ -22,6 +22,7 @@ import {
   Literal,
   SourceRange,
   LiteralValue,
+  recast,
 } from '../wasm'
 import {
   getNodeFromPath,
@@ -48,6 +49,8 @@ import {
   getFirstArg,
   getArgForEnd,
   replaceSketchLine,
+  ARG_TAG,
+  getConstraintInfoKw,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
@@ -55,6 +58,7 @@ import {
 } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { findKwArg } from 'lang/util'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -1475,11 +1479,77 @@ function getTransformMapPath(
   return false
 }
 
+function getTransformMapPathKw(
+  sketchFnExp: CallExpressionKw,
+  constraintType: ConstraintType
+):
+  | {
+      toolTip: ToolTip
+      lineInputType: LineInputsType | 'free'
+      constraintType: ConstraintType
+    }
+  | false {
+  const name = sketchFnExp.callee.name as ToolTip
+  if (!toolTips.includes(name)) {
+    return false
+  }
+
+  // check if the function is locked down and so can't be transformed
+  const argForEnd = getArgForEnd(sketchFnExp)
+  if (err(argForEnd)) {
+    console.error(argForEnd)
+    return false
+  }
+
+  if (isNotLiteralArrayOrStatic(argForEnd.val)) {
+    return false
+  }
+
+  // check if the function has no constraints
+  if (isLiteralArrayOrStatic(argForEnd.val)) {
+    const info = transformMap?.[name]?.free?.[constraintType]
+    if (info)
+      return {
+        toolTip: name,
+        lineInputType: 'free',
+        constraintType,
+      }
+    // if (info) return info
+  }
+
+  // check what constraints the function has
+  const lineInputType = getConstraintType(argForEnd.val, name)
+  if (lineInputType) {
+    const info = transformMap?.[name]?.[lineInputType]?.[constraintType]
+    if (info)
+      return {
+        toolTip: name,
+        lineInputType,
+        constraintType,
+      }
+    // if (info) return info
+  }
+
+  return false
+}
+
 export function getTransformInfo(
   sketchFnExp: CallExpression,
   constraintType: ConstraintType
 ): TransformInfo | false {
   const path = getTransformMapPath(sketchFnExp, constraintType)
+  if (!path) return false
+  const { toolTip, lineInputType, constraintType: _constraintType } = path
+  const info = transformMap?.[toolTip]?.[lineInputType]?.[_constraintType]
+  if (!info) return false
+  return info
+}
+
+export function getTransformInfoKw(
+  sketchFnExp: CallExpressionKw,
+  constraintType: ConstraintType
+): TransformInfo | false {
+  const path = getTransformMapPathKw(sketchFnExp, constraintType)
   if (!path) return false
   const { toolTip, lineInputType, constraintType: _constraintType } = path
   const info = transformMap?.[toolTip]?.[lineInputType]?.[_constraintType]
@@ -1527,7 +1597,10 @@ export function getTransformInfos(
   constraintType: ConstraintType
 ): TransformInfo[] {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(ast, codeRef.pathToNode, 'CallExpression')
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode, [
+      'CallExpression',
+      'CallExpressionKw',
+    ])
   )
 
   try {
@@ -1538,8 +1611,13 @@ export function getTransformInfos(
       }
 
       const node = nodeMeta.node
-      if (node?.type === 'CallExpression')
-        return getTransformInfo(node, constraintType)
+      if (node?.type === 'CallExpression') {
+      return getTransformInfo(node, constraintType)
+      }
+
+      if (node?.type === 'CallExpressionKw') {
+        return getTransformInfoKw(node, constraintType)
+      }
 
       return false
     }) as TransformInfo[]
@@ -1691,17 +1769,39 @@ export function transformAstSketchLines({
 
     const getNode = getNodeFromPathCurry(node, _pathToNode)
 
+    // Find `call` which could either be a positional-arg or keyword-arg call.
     const callExp = getNode<Node<CallExpression>>('CallExpression')
-    if (err(callExp)) return callExp
+    const callExpKw = getNode<Node<CallExpressionKw>>('CallExpressionKw')
+    const call =
+      !err(callExp) && callExp.node.type === 'CallExpression'
+        ? callExp
+        : callExpKw
+    if (err(call)) return call
+
     const varDec = getNode<VariableDeclarator>('VariableDeclarator')
     if (err(varDec)) return varDec
 
-    const callBackTag = callExp.node.arguments[2]
-    const _referencedSegmentNameVal =
-      callExp.node.arguments[0]?.type === 'ObjectExpression' &&
-      callExp.node.arguments[0].properties?.find(
-        (prop) => prop.key.name === 'intersectTag'
-      )?.value
+    const callBackTag = (() => {
+      switch (call.node.type) {
+        case 'CallExpression':
+          return call.node.arguments[2]
+        case 'CallExpressionKw':
+          return findKwArg(ARG_TAG, call.node)
+      }
+    })()
+    const _referencedSegmentNameVal = (() => {
+      switch (call.node.type) {
+        case 'CallExpressionKw':
+          return findKwArg('intersectTag', call.node)
+        case 'CallExpression':
+          return (
+            call.node.arguments[0]?.type === 'ObjectExpression' &&
+            call.node.arguments[0].properties?.find(
+              (prop) => prop.key.name === 'intersectTag'
+            )?.value
+          )
+      }
+    })()
     const _referencedSegmentName =
       referenceSegName ||
       (_referencedSegmentNameVal &&
@@ -1710,7 +1810,15 @@ export function transformAstSketchLines({
       ''
     const inputs: InputArgs = []
 
-    getConstraintInfo(callExp.node, '', _pathToNode).forEach((a) => {
+    const constraints = (() => {
+      switch (call.node.type) {
+        case 'CallExpression':
+          return getConstraintInfo(call.node, '', _pathToNode)
+        case 'CallExpressionKw':
+          return getConstraintInfoKw(call.node, '', _pathToNode)
+      }
+    })()
+    constraints.forEach((a) => {
       if (
         a.type === 'tangentialWithPrevious' ||
         a.type === 'horizontal' ||
@@ -1786,7 +1894,7 @@ export function transformAstSketchLines({
       programMemory,
       pathToNode: _pathToNode,
       referencedSegment,
-      fnName: transformTo || (callExp.node.callee.name as ToolTip),
+      fnName: transformTo || (call.node.callee.name as ToolTip),
       segmentInput:
         seg.type === 'Circle'
           ? {

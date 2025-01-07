@@ -6,6 +6,8 @@ import {
   ArrayExpression,
   BinaryExpression,
   ArtifactGraph,
+  CallExpressionKw,
+  Expr,
 } from './wasm'
 import { filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
@@ -68,4 +70,28 @@ export function isLiteral(e: any): e is Literal {
 
 export function isBinaryExpression(e: any): e is BinaryExpression {
   return e && e.type === 'BinaryExpression'
+}
+
+/**
+Search the keyword arguments from a call for an argument with this label.
+*/
+export function findKwArg(
+  label: string,
+  call: CallExpressionKw
+): Expr | undefined {
+  return call.arguments.find((arg) => {
+    return arg.label.name === label
+  })?.arg
+}
+
+/**
+Search the keyword arguments from a call for an argument with one of these labels.
+*/
+export function findKwArgAny(
+  labels: string[],
+  call: CallExpressionKw
+): Expr | undefined {
+  return call.arguments.find((arg) => {
+    return labels.includes(arg.label.name)
+  })?.arg
 }
