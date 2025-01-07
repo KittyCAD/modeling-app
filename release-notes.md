@@ -1,6 +1,5 @@
 Updater-test dummy notes:
 
-### Dummy
 - item 1
 - item 2
 
