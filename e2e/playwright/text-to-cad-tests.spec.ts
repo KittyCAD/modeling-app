@@ -604,7 +604,7 @@ async function sendPromptFromCommandBar(page: Page, promptStr: string) {
     await page.waitForTimeout(1000)
 
     // Enter the prompt.
-    const prompt = page.getByText('Prompt')
+    const prompt = page.getByRole('textbox', { name: 'Prompt' })
     await expect(prompt.first()).toBeVisible()
 
     // Type the prompt.
