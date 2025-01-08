@@ -1,4 +1,5 @@
-import init, {
+import {
+  init,
   parse_wasm,
   recast_wasm,
   execute,
@@ -16,7 +17,9 @@ import init, {
   default_project_settings,
   base64_decode,
   clear_scene_and_bust_cache,
-} from '../wasm-lib/pkg/wasm_lib'
+  reloadModule,
+} from 'lib/wasm_lib_wrapper'
+
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
@@ -35,7 +38,7 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-import { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
+import { ExecOutcome as RustExecOutcome } from 'wasm-lib/kcl/bindings/ExecOutcome'
 import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
@@ -144,6 +147,7 @@ export const wasmUrl = () => {
 // Initialise the wasm module.
 const initialise = async () => {
   try {
+    await reloadModule()
     const fullUrl = wasmUrl()
     const input = await fetch(fullUrl)
     const buffer = await input.arrayBuffer()
@@ -260,10 +264,10 @@ export function emptyExecState(): ExecState {
   }
 }
 
-function execStateFromRaw(raw: RawExecState): ExecState {
+function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
-    memory: ProgramMemory.fromRaw(raw.modLocal.memory),
-    operations: raw.modLocal.operations,
+    memory: ProgramMemory.fromRaw(execOutcome.memory),
+    operations: execOutcome.operations,
   }
 }
 
@@ -506,22 +510,6 @@ export const executor = async (
     return Promise.reject(programMemoryOverride)
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  engineCommandManager.startNewSession()
-  const _programMemory = await _executor(
-    node,
-    engineCommandManager,
-    programMemoryOverride
-  )
-  await engineCommandManager.waitForAllCommands()
-
-  return _programMemory
-}
-
-export const _executor = async (
-  node: Node<Program>,
-  engineCommandManager: EngineCommandManager,
-  programMemoryOverride: ProgramMemory | Error | null = null
-): Promise<ExecState> => {
   if (programMemoryOverride !== null && err(programMemoryOverride))
     return Promise.reject(programMemoryOverride)
 
@@ -535,14 +523,14 @@ export const _executor = async (
         jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
       }
     }
-    const execState: RawExecState = await execute(
+    const execOutcome: RustExecOutcome = await execute(
       JSON.stringify(node),
       JSON.stringify(programMemoryOverride?.toRaw() || null),
       JSON.stringify({ settings: jsAppSettings }),
       engineCommandManager,
       fileSystemManager
     )
-    return execStateFromRaw(execState)
+    return execStateFromRust(execOutcome)
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
