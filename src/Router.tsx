@@ -47,7 +47,6 @@ import { AppStateProvider } from 'AppState'
 import { reportRejection } from 'lib/trap'
 import { RouteProvider } from 'components/RouteProvider'
 import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
-import { ProtocolHandler } from 'components/ProtocolHandler'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -59,7 +58,6 @@ const router = createRouter([
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
-      <ProtocolHandler>
         <CommandBarProvider>
           <RouteProvider>
             <SettingsAuthProvider>
@@ -77,7 +75,6 @@ const router = createRouter([
             </SettingsAuthProvider>
           </RouteProvider>
         </CommandBarProvider>
-      </ProtocolHandler>
     ),
     errorElement: <ErrorPage />,
     children: [

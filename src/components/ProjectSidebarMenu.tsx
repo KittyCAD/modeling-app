@@ -18,6 +18,8 @@ import Tooltip from './Tooltip'
 import { createFileLink } from 'lib/createFileLink'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import toast from 'react-hot-toast'
+import { DEV, VITE_KC_PROD_TOKEN } from 'env'
+import { err } from 'lib/trap'
 
 const ProjectSidebarMenu = ({
   project,
@@ -189,21 +191,41 @@ function ProjectMenuPopover({
           Element: 'button',
           children: 'Share link to file',
           onClick: async () => {
-            if (!auth.context.token) {
+            /**
+             * We don't have a dev shortlink API service,
+             * so we need to hit the prod API even in local dev.
+             * This override allows us to shim in an environment variable
+             * for the prod token.
+             */
+            const token = DEV ? VITE_KC_PROD_TOKEN : auth.context.token
+            if (DEV && !VITE_KC_PROD_TOKEN) {
+              toast.error(
+                'You need to set a prod token in your environment to share a file in development.',
+                {
+                  duration: 5000,
+                }
+              )
+              return
+            } else if (!token) {
               toast.error('You need to be signed in to share a file.', {
                 duration: 5000,
               })
               return
             }
-            const shareUrl = await createFileLink(auth.context.token, {
+            const shareUrl = await createFileLink(token, {
               code: codeManager.code,
-              name: file?.name || '',
+              name: project?.name || '',
               units: settings.context.modeling.defaultUnit.current,
             })
 
-            console.log(shareUrl)
+            if (err(shareUrl)) {
+              toast.error(shareUrl.message, {
+                duration: 5000,
+              })
+              return
+            }
 
-            await globalThis.navigator.clipboard.writeText(shareUrl)
+            await globalThis.navigator.clipboard.writeText(shareUrl.url)
             toast.success(
               'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!',
               {

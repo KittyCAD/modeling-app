@@ -67,7 +67,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 registerStartupListeners()
 
-const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
+const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   let newWindow
 
   if (reuse) {
@@ -92,33 +92,47 @@ const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
     })
   }
 
+  const pathIsCustomProtocolLink = pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
+
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
+    const filteredPath = pathToOpen ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, '')) : ''
+    const fullHashBasedUrl = `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/${filteredPath}`
+    newWindow.loadURL(fullHashBasedUrl).catch(reportRejection)
   } else {
-    console.log('Loading from file', filePath)
-    getProjectPathAtStartup(filePath)
-      .then(async (projectPath) => {
-        const startIndex = path.join(
-          __dirname,
-          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-        )
-
-        if (projectPath === null) {
-          await newWindow.loadFile(startIndex)
-          return
-        }
-
-        console.log('Loading file', projectPath)
-
-        const fullUrl = `/file/${encodeURIComponent(projectPath)}`
-        console.log('Full URL', fullUrl)
-
-        await newWindow.loadFile(startIndex, {
-          hash: fullUrl,
+    if (pathIsCustomProtocolLink && pathToOpen) {
+      // We're trying to open a custom protocol link
+      const filteredPath = pathToOpen ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, '')) : ''
+      const startIndex = path.join(
+        __dirname,
+        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+      )
+      newWindow.loadFile(startIndex, {
+        hash: filteredPath,
+      }).catch(reportRejection)
+    } else {
+      // otherwise we're trying to open a local file from the command line
+      getProjectPathAtStartup(pathToOpen)
+        .then(async (projectPath) => {
+          const startIndex = path.join(
+            __dirname,
+            `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+          )
+  
+          if (projectPath === null) {
+            await newWindow.loadFile(startIndex)
+            return
+          }
+  
+          const fullUrl = `/file/${encodeURIComponent(projectPath)}`
+          console.log('Full URL', fullUrl)
+  
+          await newWindow.loadFile(startIndex, {
+            hash: fullUrl,
+          })
         })
-      })
-      .catch(reportRejection)
+        .catch(reportRejection)
+    }
   }
 
   // Open the DevTools.
@@ -466,12 +480,6 @@ function registerStartupListeners() {
     url: string
   ) {
     event.preventDefault()
-
-    console.log('open-url', url)
-    fs.writeFileSync(
-      '/Users/frankjohnson/open-url.txt',
-      `at ${new Date().toLocaleTimeString()} opened url: ${url}`
-    )
 
     // If we have a mainWindow, lets open another window.
     if (mainWindow) {

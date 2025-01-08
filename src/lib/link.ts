@@ -1,1 +1,1 @@
-export const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
+export const ZOO_STUDIO_PROTOCOL = 'zoo-studio:'
