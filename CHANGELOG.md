@@ -19,6 +19,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [v0.35.0] - 2025-01-07
+
+##### Added
+* Toolbar button for Text-to-CAD
+* Prompt-to-edit and its toolbar button 
+* 3-point circle sketch tool and KCL stdlib function
+* First draft of a feature tree pane
+* KCL: support for non-integer fractional numbers in KCL rem() arguments
+* Enable enter for autocompletions in the command palette KCL input
+* Add parsing keyword function calls inside pipelines 
+
+##### Changed
+* Breaking: Remove backwards compatibility for snake case in KCL objects
+
+##### Fixed
+* Don't error on failure to fetch privacy settings to fix LSP in dev mode by @TomPridham (thank you!)
+* Match package license to LICENSE file by @mattmundell (thank you!)
+* CodeMirror KCL: Support `=` in record init and new function syntax by @mattmundell (thank you!)
+* Remove the old Loft GitHub issue link in the toolbar
+* Use app foreground color for focus outline button color so there's no hue collision
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.34.0...v0.35.0
+
 ## [v0.34.0] - 2024-12-19
 
 ##### Added
@@ -62,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * KCL stdlib: Add atan2 function 
 * KCL: Keyword fn args like "x = 1" not like "x: 1"
 * make pipe have a hole 
-* Color picker in the code pane 
+*Color picker in the code pane 
 * KCL: sweep function
 * Add a right-click menu to the stream
 
