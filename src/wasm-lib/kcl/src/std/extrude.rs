@@ -13,7 +13,9 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet},
+    execution::{
+        ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid, SolidSet,
+    },
     std::Args,
 };
 
@@ -31,20 +33,20 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// cut into an existing solid.
 ///
 /// ```no_run
-/// const example = startSketchOn('XZ')
+/// example = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
-///     angleStart: 120,
-///     angleEnd: 0,
-///     radius: 5,
+///     angleStart = 120,
+///     angleEnd = 0,
+///     radius = 5,
 ///   }, %)
 ///   |> line([5, 0], %)
 ///   |> line([0, 10], %)
 ///   |> bezierCurve({
-///     control1: [-10, 0],
-///     control2: [2, 10],
-///     to: [-5, 10],
+///     control1 = [-10, 0],
+///     control2 = [2, 10],
+///     to = [-5, 10],
 ///   }, %)
 ///   |> line([-5, -2], %)
 ///   |> close(%)
@@ -52,28 +54,29 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
 ///   |> arc({
-///     angleStart: 120,
-///     angleEnd: -60,
-///     radius: 5,
+///     angleStart = 120,
+///     angleEnd = -60,
+///     radius = 5,
 ///   }, %)
 ///   |> line([10, 0], %)
 ///   |> line([5, 0], %)
 ///   |> bezierCurve({
-///     control1: [-3, 0],
-///     control2: [2, 10],
-///     to: [-5, 10],
+///     control1 = [-3, 0],
+///     control2 = [2, 10],
+///     to = [-5, 10],
 ///   }, %)
 ///   |> line([-4, 10], %)
 ///   |> line([-5, -2], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
-    name = "extrude"
+    name = "extrude",
+    feature_tree_operation = true,
 }]
 async fn inner_extrude(
     length: f64,
@@ -81,7 +84,7 @@ async fn inner_extrude(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidSet, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     // Extrude the element(s).
     let sketches: Vec<Sketch> = sketch_set.into();
@@ -90,7 +93,7 @@ async fn inner_extrude(
         // Before we extrude, we need to enable the sketch mode.
         // We do this here in case extrude is called out of order.
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: false,
@@ -111,13 +114,14 @@ async fn inner_extrude(
             ModelingCmd::from(mcmd::Extrude {
                 target: sketch.id.into(),
                 distance: LengthUnit(length),
+                faces: Default::default(),
             }),
         )
         .await?;
 
         // Disable the sketch mode.
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
         )
         .await?;
@@ -136,26 +140,16 @@ pub(crate) async fn do_post_extrude(
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.batch_modeling_cmd(
-        exec_state.id_generator.next_uuid(),
+        exec_state.next_uuid(),
         ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
     )
     .await?;
 
-    if sketch.value.is_empty() {
+    // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
+    // So, let's just use the first one.
+    let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
         return Err(KclError::Type(KclErrorDetails {
             message: "Expected a non-empty sketch".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
-    let edge_id = sketch.value.iter().find_map(|segment| match segment {
-        Path::ToPoint { base } | Path::Circle { base, .. } => Some(base.geo_meta.id),
-        _ => None,
-    });
-
-    let Some(edge_id) = edge_id else {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Expected a Path::ToPoint variant".to_string(),
             source_ranges: vec![args.source_range],
         }));
     };
@@ -169,9 +163,9 @@ pub(crate) async fn do_post_extrude(
 
     let solid3d_info = args
         .send_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
-                edge_id,
+                edge_id: any_edge_id,
                 object_id: sketch.id,
             }),
         )
@@ -202,7 +196,7 @@ pub(crate) async fn do_post_extrude(
         // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
         // uses this to build the artifact graph, which the UI needs.
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: curve_id,
                 object_id: sketch.id,
@@ -212,7 +206,7 @@ pub(crate) async fn do_post_extrude(
         .await?;
 
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
                 edge_id: curve_id,
                 object_id: sketch.id,
@@ -229,29 +223,32 @@ pub(crate) async fn do_post_extrude(
     } = analyze_faces(exec_state, &args, face_infos);
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let new_value = sketch
-        .value
+        .paths
         .iter()
         .flat_map(|path| {
             if let Some(Some(actual_face_id)) = face_id_map.get(&path.get_base().geo_meta.id) {
                 match path {
-                    Path::TangentialArc { .. } | Path::TangentialArcTo { .. } | Path::Circle { .. } => {
-                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::executor::ExtrudeArc {
+                    Path::Arc { .. }
+                    | Path::TangentialArc { .. }
+                    | Path::TangentialArcTo { .. }
+                    | Path::Circle { .. } => {
+                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
                             geo_meta: GeoMeta {
                                 id: path.get_base().geo_meta.id,
-                                metadata: path.get_base().geo_meta.metadata.clone(),
+                                metadata: path.get_base().geo_meta.metadata,
                             },
                         });
                         Some(extrude_surface)
                     }
                     Path::Base { .. } | Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } => {
-                        let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                        let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                             face_id: *actual_face_id,
                             tag: path.get_base().tag.clone(),
                             geo_meta: GeoMeta {
                                 id: path.get_base().geo_meta.id,
-                                metadata: path.get_base().geo_meta.metadata.clone(),
+                                metadata: path.get_base().geo_meta.metadata,
                             },
                         });
                         Some(extrude_surface)
@@ -260,13 +257,13 @@ pub(crate) async fn do_post_extrude(
             } else if args.ctx.is_mock() {
                 // Only pre-populate the extrude surface if we are in mock mode.
 
-                let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::executor::ExtrudePlane {
+                let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                     // pushing this values with a fake face_id to make extrudes mock-execute safe
-                    face_id: exec_state.id_generator.next_uuid(),
+                    face_id: exec_state.next_uuid(),
                     tag: path.get_base().tag.clone(),
                     geo_meta: GeoMeta {
                         id: path.get_base().geo_meta.id,
-                        metadata: path.get_base().geo_meta.metadata.clone(),
+                        metadata: path.get_base().geo_meta.metadata,
                     },
                 });
                 Some(extrude_surface)
@@ -308,13 +305,17 @@ fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<Extrus
     };
     if args.ctx.is_mock() {
         // Create fake IDs for start and end caps, to make extrudes mock-execute safe
-        faces.start_cap_id = Some(exec_state.id_generator.next_uuid());
-        faces.end_cap_id = Some(exec_state.id_generator.next_uuid());
+        faces.start_cap_id = Some(exec_state.next_uuid());
+        faces.end_cap_id = Some(exec_state.next_uuid());
     }
     for face_info in face_infos {
         match face_info.cap {
             ExtrusionFaceCapType::Bottom => faces.start_cap_id = face_info.face_id,
             ExtrusionFaceCapType::Top => faces.end_cap_id = face_info.face_id,
+            ExtrusionFaceCapType::Both => {
+                faces.end_cap_id = face_info.face_id;
+                faces.start_cap_id = face_info.face_id;
+            }
             ExtrusionFaceCapType::None => {
                 if let Some(curve_id) = face_info.curve_id {
                     faces.sides.insert(curve_id, face_info.face_id);

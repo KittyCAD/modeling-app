@@ -1,49 +1,22 @@
 use anyhow::Result;
 use kcl_lib::{
-    ast::{modify::modify_ast_for_sketch, types::Program},
-    executor::{ExecutorContext, IdGenerator, KclValue, PlaneType, Sketch, SourceRange},
+    exec::{KclValue, PlaneType},
+    modify_ast_for_sketch, ExecState, ExecutorContext, ModuleId, Program, SourceRange,
 };
 use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, shared::Point3d, ModelingCmd};
 use pretty_assertions::assert_eq;
 
 /// Setup the engine and parse code for an ast.
-async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid::Uuid)> {
-    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
-    let http_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60));
-    let ws_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60))
-        .tcp_keepalive(std::time::Duration::from_secs(600))
-        .http1_only();
-
-    let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-    // Create the client.
-    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-    // Set a local engine address if it's set.
-    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-        client.set_base_url(addr);
-    }
-
-    let tokens = kcl_lib::token::lexer(code)?;
-    let parser = kcl_lib::parser::Parser::new(tokens);
-    let program = parser.ast()?;
-    let ctx = kcl_lib::executor::ExecutorContext::new(&client, Default::default()).await?;
-    let exec_state = ctx.run(&program, None, IdGenerator::default()).await?;
+async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, ModuleId, uuid::Uuid)> {
+    let program = Program::parse_no_errs(code)?;
+    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
+    let mut exec_state = ExecState::default();
+    ctx.run(program.clone().into(), &mut exec_state).await?;
 
     // We need to get the sketch ID.
     // Get the sketch ID from memory.
-    let KclValue::UserVal(user_val) = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
-        anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory);
-    };
-    let Some((sketch, _meta)) = user_val.get::<Sketch>() else {
-        anyhow::bail!("part001 was not a Sketch");
+    let KclValue::Sketch { value: sketch } = exec_state.memory().get(name, SourceRange::default()).unwrap() else {
+        anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory());
     };
     let sketch_id = sketch.id;
 
@@ -80,7 +53,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, uuid
         )
         .await?;
 
-    Ok((ctx, program, sketch_id))
+    Ok((ctx, program, ModuleId::default(), sketch_id))
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -96,9 +69,9 @@ async fn kcl_test_modify_sketch_part001() {
         name
     );
 
-    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, module_id, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, module_id, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 
@@ -121,9 +94,9 @@ async fn kcl_test_modify_sketch_part002() {
         name
     );
 
-    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, module_id, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, module_id, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 
@@ -148,9 +121,9 @@ async fn kcl_test_modify_close_sketch() {
         name
     );
 
-    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, module_id, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, module_id, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 
@@ -174,9 +147,9 @@ async fn kcl_test_modify_line_to_close_sketch() {
         name
     );
 
-    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, module_id, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, module_id, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 
@@ -211,14 +184,14 @@ const {} = startSketchOn("XY")
         name
     );
 
-    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, module_id, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let result = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id).await;
+    let result = modify_ast_for_sketch(&ctx.engine, &mut new_program, module_id, name, PlaneType::XY, sketch_id).await;
 
     assert!(result.is_err());
     assert_eq!(
         result.unwrap_err().to_string(),
-        r#"engine: KclErrorDetails { source_ranges: [SourceRange([188, 193])], message: "Sketch part002 is constrained `partial` and cannot be modified" }"#
+        r#"engine: KclErrorDetails { source_ranges: [SourceRange([188, 193, 0])], message: "Sketch part002 is constrained `partial` and cannot be modified" }"#
     );
 }
 
@@ -236,9 +209,9 @@ async fn kcl_test_modify_line_should_close_sketch() {
         name
     );
 
-    let (ctx, program, sketch_id) = setup(&code, name).await.unwrap();
+    let (ctx, program, module_id, sketch_id) = setup(&code, name).await.unwrap();
     let mut new_program = program.clone();
-    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, name, PlaneType::XY, sketch_id)
+    let new_code = modify_ast_for_sketch(&ctx.engine, &mut new_program, module_id, name, PlaneType::XY, sketch_id)
         .await
         .unwrap();
 

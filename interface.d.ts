@@ -2,14 +2,22 @@ import fs from 'node:fs/promises'
 import fsSync from 'node:fs'
 import path from 'path'
 import { dialog, shell } from 'electron'
-import { MachinesListing } from 'lib/machineManager'
+import { MachinesListing } from 'components/MachineManagerProvider'
 
 type EnvFn = (value?: string) => string
 
 export interface IElectronAPI {
+  resizeWindow: (width: number, height: number) => Promise<void>
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
+  takeElectronWindowScreenshot: ({
+    width,
+    height,
+  }: {
+    width: number
+    height: number
+  }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
   /** Require to be called first before {@link loginWithDeviceFlow} */
   startDeviceFlow: (host: string) => Promise<string>
@@ -20,10 +28,11 @@ export interface IElectronAPI {
   version: typeof process.env.version
   watchFileOn: (
     path: string,
+    key: string,
     callback: (eventType: string, path: string) => void
   ) => void
-  watchFileOff: (path: string) => void
-  readFile: (path: string) => ReturnType<fs.readFile>
+  readFile: typeof fs.readFile
+  watchFileOff: (path: string, key: string) => void
   writeFile: (
     path: string,
     data: string | Uint8Array
@@ -67,7 +76,7 @@ export interface IElectronAPI {
     }
   }
   kittycad: (access: string, args: any) => any
-  listMachines: () => Promise<MachinesListing>
+  listMachines: (machineApiIp: string) => Promise<MachinesListing>
   getMachineApiIp: () => Promise<string | null>
   onUpdateDownloadStart: (
     callback: (value: { version: string }) => void
@@ -77,10 +86,13 @@ export interface IElectronAPI {
   ) => Electron.IpcRenderer
   onUpdateError: (callback: (value: { error: Error }) => void) => Electron
   appRestart: () => void
+  getArgvParsed: () => any
+  getAppTestProperty: (propertyName: string) => any
 }
 
 declare global {
   interface Window {
     electron: IElectronAPI
+    openExternalLink: (e: React.MouseEvent<HTMLAnchorElement>) => void
   }
 }

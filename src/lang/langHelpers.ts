@@ -1,8 +1,7 @@
 import {
   Program,
-  _executor,
+  executor,
   ProgramMemory,
-  programMemoryInit,
   kclLint,
   emptyExecState,
   ExecState,
@@ -11,7 +10,7 @@ import { enginelessExecutor } from 'lib/testHelpers'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
-import { IdGenerator } from 'wasm-lib/kcl/bindings/IdGenerator'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type ToolTip =
   | 'lineTo'
@@ -48,15 +47,13 @@ export const toolTips: Array<ToolTip> = [
 export async function executeAst({
   ast,
   engineCommandManager,
-  useFakeExecutor = false,
+  // If you set programMemoryOverride we assume you mean mock mode. Since that
+  // is the only way to go about it.
   programMemoryOverride,
-  idGenerator,
 }: {
-  ast: Program
+  ast: Node<Program>
   engineCommandManager: EngineCommandManager
-  useFakeExecutor?: boolean
   programMemoryOverride?: ProgramMemory
-  idGenerator?: IdGenerator
   isInterrupted?: boolean
 }): Promise<{
   logs: string[]
@@ -65,22 +62,12 @@ export async function executeAst({
   isInterrupted: boolean
 }> {
   try {
-    if (!useFakeExecutor) {
-      engineCommandManager.endSession()
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      engineCommandManager.startNewSession()
-    }
-    const execState = await (useFakeExecutor
-      ? enginelessExecutor(ast, programMemoryOverride || programMemoryInit())
-      : _executor(
-          ast,
-          programMemoryInit(),
-          idGenerator,
-          engineCommandManager,
-          false
-        ))
+    const execState = await (programMemoryOverride
+      ? enginelessExecutor(ast, programMemoryOverride)
+      : executor(ast, engineCommandManager))
 
     await engineCommandManager.waitForAllCommands()
+
     return {
       logs: [],
       errors: [],

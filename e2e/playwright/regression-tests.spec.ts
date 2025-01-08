@@ -1,46 +1,37 @@
-import { test, expect, Page } from '@playwright/test'
-import { join } from 'path'
+import { test, expect, Page } from './zoo-test'
+import path from 'path'
 import * as fsp from 'fs/promises'
-import {
-  getUtils,
-  setup,
-  setupElectron,
-  tearDown,
-  executorInputPath,
-} from './test-utils'
+import { getUtils, executorInputPath } from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
-
 test.describe('Regression tests', () => {
   // bugs we found that don't fit neatly into other categories
-  test('bad model has inline error #3251', async ({ page }) => {
+  test('bad model has inline error #3251', async ({
+    context,
+    page,
+    homePage,
+  }) => {
     // because the model has `line([0,0]..` it is valid code, but the model is invalid
     // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
     // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
     const u = await getUtils(page)
-    await page.addInitScript(async () => {
+    await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch2 = startSketchOn("XY")
-sketch001 = startSketchAt([-0, -0])
-  |> line([0, 0], %)
-  |> line([-4.84, -5.29], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`
+  sketch001 = startSketchAt([-0, -0])
+    |> line([0, 0], %)
+    |> line([-4.84, -5.29], %)
+    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> close(%)`
       )
     })
 
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
@@ -56,6 +47,7 @@ sketch001 = startSketchAt([-0, -0])
   })
   test('user should not have to press down twice in cmdbar', async ({
     page,
+    homePage,
   }) => {
     // because the model has `line([0,0]..` it is valid code, but the model is invalid
     // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
@@ -64,26 +56,38 @@ sketch001 = startSketchAt([-0, -0])
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch2 = startSketchOn("XY")
-sketch001 = startSketchAt([-0, -0])
-  |> line([0, 0], %)
-  |> line([-4.84, -5.29], %)
+        `sketch001 = startSketchOn('XY')
+  |> startProfileAt([82.33, 238.21], %)
+  |> angledLine([0, 288.63], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       197.97
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`
+  |> close(%)
+extrude001 = extrude(50, sketch001)
+`
       )
     })
 
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await page.goto('/')
+    await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
     await test.step('Check arrow down works', async () => {
+      await page.getByTestId('command-bar-open-button').hover()
       await page.getByTestId('command-bar-open-button').click()
 
-      await page
-        .getByRole('option', { name: 'floppy disk arrow Export' })
-        .click()
+      const floppy = page.getByRole('option', {
+        name: 'floppy disk arrow Export',
+      })
+
+      await floppy.click()
 
       // press arrow down key twice
       await page.keyboard.press('ArrowDown')
@@ -115,21 +119,22 @@ sketch001 = startSketchAt([-0, -0])
       )
     })
   })
-  test('executes on load', async ({ page }) => {
+  test('executes on load', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('-XZ')
-    |> startProfileAt([-6.95, 4.98], %)
-    |> line([25.1, 0.41], %)
-    |> line([0.73, -14.93], %)
-    |> line([-23.44, 0.52], %)`
+  |> startProfileAt([-6.95, 4.98], %)
+  |> line([25.1, 0.41], %)
+  |> line([0.73, -14.93], %)
+  |> line([-23.44, 0.52], %)`
       )
     })
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
     // expand variables section
     const variablesTabButton = page.getByTestId('variables-pane-button')
@@ -148,14 +153,15 @@ sketch001 = startSketchAt([-0, -0])
     ).toBeVisible()
   })
 
-  test('re-executes', async ({ page }) => {
+  test('re-executes', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem('persistCode', `myVar = 5`)
     })
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
     const variablesTabButton = page.getByTestId('variables-pane-button')
     await variablesTabButton.click()
@@ -174,32 +180,33 @@ sketch001 = startSketchAt([-0, -0])
       page.locator('.pretty-json-container >> text=myVar:67')
     ).toBeVisible()
   })
-  test('ProgramMemory can be serialised', async ({ page }) => {
+  test('ProgramMemory can be serialised', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `part = startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([0, 1], %)
-    |> line([1, 0], %)
-    |> line([0, -1], %)
-    |> close(%)
-    |> extrude(1, %)
-    |> patternLinear3d({
-          axis: [1, 0, 1],
-          repetitions: 3,
-          distance: 6
-        }, %)`
+  |> startProfileAt([0, 0], %)
+  |> line([0, 1], %)
+  |> line([1, 0], %)
+  |> line([0, -1], %)
+  |> close(%)
+  |> extrude(1, %)
+  |> patternLinear3d({
+        axis: [1, 0, 1],
+        repetitions: 3,
+        distance: 6
+      }, %)`
       )
     })
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
     const messages: string[] = []
 
     // Listen for all console events and push the message text to an array
     page.on('console', (message) => messages.push(message.text()))
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
     // wait for execution done
     await u.openDebugPanel()
@@ -212,19 +219,26 @@ sketch001 = startSketchAt([-0, -0])
       })
     })
   })
-  test('ensure the Zoo logo is not a link in browser app', async ({ page }) => {
+
+  // Not relevant to us anymore, or at least for the time being.
+  test.skip('ensure the Zoo logo is not a link in browser app', async ({
+    page,
+    homePage,
+  }) => {
     const u = await getUtils(page)
-    await page.setViewportSize({ width: 1000, height: 500 })
-    await u.waitForAuthSkipAppStart()
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
     const zooLogo = page.locator('[data-testid="app-logo"]')
     // Make sure it's not a link
     await expect(zooLogo).not.toHaveAttribute('href')
   })
+
   test(
     'Position _ Is Out Of Range... regression test',
     { tag: ['@skipWin'] },
-    async ({ page }) => {
+    async ({ context, page, homePage }) => {
       // SKip on windows, its being weird.
       test.skip(
         process.platform === 'win32',
@@ -233,25 +247,26 @@ sketch001 = startSketchAt([-0, -0])
 
       const u = await getUtils(page)
       // const PUR = 400 / 37.5 //pixeltoUnitRatio
-      await page.setViewportSize({ width: 1200, height: 500 })
-      await page.addInitScript(async () => {
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await context.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
           `exampleSketch = startSketchOn("XZ")
-    |> startProfileAt([0, 0], %)
-    |> angledLine({ angle: 50, length: 45 }, %)
-    |> yLineTo(0, %)
-    |> close(%)
-    |>
-
-  example = extrude(5, exampleSketch)
-  shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
+      |> startProfileAt([0, 0], %)
+      |> angledLine({ angle: 50, length: 45 }, %)
+      |> yLineTo(0, %)
+      |> close(%)
+      |>
+  
+    example = extrude(5, exampleSketch)
+    shell({ faces: ['end'], thickness: 0.25 }, exampleSketch)`
         )
       })
 
       await expect(async () => {
-        await page.goto('/')
+        await homePage.goToModelingScene()
         await u.waitForPageLoad()
+
         // error in guter
         await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
           timeout: 1_000,
@@ -293,12 +308,12 @@ sketch001 = startSketchAt([-0, -0])
 
       await expect(page.locator('.cm-content'))
         .toContainText(`exampleSketch = startSketchOn("XZ")
-    |> startProfileAt([0, 0], %)
-    |> angledLine({ angle: 50, length: 45 }, %)
-    |> yLineTo(0, %)
-    |> close(%)
-
-    thing: "blah"`)
+      |> startProfileAt([0, 0], %)
+      |> angledLine({ angle: 50, length: 45 }, %)
+      |> yLineTo(0, %)
+      |> close(%)
+  
+      thing: "blah"`)
 
       await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
     }
@@ -306,6 +321,7 @@ sketch001 = startSketchAt([-0, -0])
 
   test('when engine fails export we handle the failure and alert the user', async ({
     page,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(
@@ -316,9 +332,10 @@ sketch001 = startSketchAt([-0, -0])
       { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
     )
 
-    await page.setViewportSize({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await u.waitForAuthSkipAppStart()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
     // wait for execution done
     await u.openDebugPanel()
@@ -374,7 +391,6 @@ sketch001 = startSketchAt([-0, -0])
 
     // wait for execution done
     await u.openDebugPanel()
-    await u.clearCommandLogs()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
@@ -408,7 +424,7 @@ sketch001 = startSketchAt([-0, -0])
   test(
     'ensure you can not export while an export is already going',
     { tag: ['@skipLinux', '@skipWin'] },
-    async ({ page }) => {
+    async ({ page, homePage }) => {
       // This is being weird on ubuntu and windows.
       test.skip(
         // eslint-disable-next-line jest/valid-title
@@ -428,9 +444,10 @@ sketch001 = startSketchAt([-0, -0])
           }
         )
 
-        await page.setViewportSize({ width: 1000, height: 500 })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
 
-        await u.waitForAuthSkipAppStart()
+        await homePage.goToModelingScene()
+        await u.waitForPageLoad()
 
         // wait for execution done
         await u.openDebugPanel()
@@ -500,20 +517,17 @@ sketch001 = startSketchAt([-0, -0])
   test(
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
-    async ({ browserName: _ }, testInfo) => {
-      const { electronApp, page } = await setupElectron({
-        testInfo,
-        folderSetupFn: async (dir) => {
-          const bracketDir = join(dir, 'bracket')
-          await fsp.mkdir(bracketDir, { recursive: true })
-          await fsp.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
-            join(bracketDir, 'main.kcl')
-          )
-        },
+    async ({ context, page }, testInfo) => {
+      await context.folderSetupFn(async (dir) => {
+        const bracketDir = path.join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          path.join(bracketDir, 'main.kcl')
+        )
       })
 
-      await page.setViewportSize({ width: 1200, height: 500 })
+      await page.setBodyDimensions({ width: 1200, height: 500 })
       const u = await getUtils(page)
 
       // Locators
@@ -539,14 +553,15 @@ sketch001 = startSketchAt([-0, -0])
         await u.waitForPageLoad()
         await expect(networkHealthIndicator).toContainText('Connected')
       })
-
-      await electronApp.close()
     }
   )
 
   test(`View gizmo stays visible even when zoomed out all the way`, async ({
     page,
+    homePage,
   }) => {
+    // TODO: fix this test on windows after the electron migration
+    test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
 
     // Constants and locators
@@ -561,8 +576,9 @@ sketch001 = startSketchAt([-0, -0])
       await page.addInitScript(async () => {
         localStorage.setItem('persistCode', '')
       })
-      await page.setViewportSize({ width: 1200, height: 500 })
-      await u.waitForAuthSkipAppStart()
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
       await u.closeKclCodePanel()
     })
 
@@ -572,7 +588,7 @@ sketch001 = startSketchAt([-0, -0])
           timeout: 5000,
           message: 'Plane color is visible',
         })
-        .toBeLessThan(15)
+        .toBeLessThanOrEqual(15)
 
       let maxZoomOuts = 10
       let middlePixelIsBackgroundColor =
@@ -590,12 +606,44 @@ sketch001 = startSketchAt([-0, -0])
       }
 
       expect(middlePixelIsBackgroundColor, {
-        message: 'We no longer the default planes',
+        message: 'We should not see the default planes',
       }).toBeTruthy()
     })
 
     await test.step(`Check that the gizmo is still visible`, async () => {
       await expect(gizmo).toBeVisible()
+    })
+  })
+
+  test(`Refreshing the app doesn't cause the stream to pause on long-executing files`, async ({
+    context,
+    homePage,
+    scene,
+    toolbar,
+    viewport,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const legoDir = path.join(dir, 'lego')
+      await fsp.mkdir(legoDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('lego.kcl'),
+        path.join(legoDir, 'main.kcl')
+      )
+    })
+
+    await test.step(`Test setup`, async () => {
+      await homePage.openProject('lego')
+      await toolbar.closePane('code')
+    })
+    await test.step(`Waiting for the loading spinner to disappear`, async () => {
+      await scene.loadingIndicator.waitFor({ state: 'detached' })
+    })
+    await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
+      await scene.expectPixelColor(
+        [143, 143, 143],
+        { x: (viewport?.width ?? 1200) / 2, y: (viewport?.height ?? 500) / 2 },
+        15
+      )
     })
   })
 })

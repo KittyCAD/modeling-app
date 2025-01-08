@@ -4,14 +4,14 @@ import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
 import { isDesktop } from '../lib/isDesktop'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Fragment, useMemo } from 'react'
+import { Fragment, useMemo, useContext } from 'react'
 import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
-import { codeManager, engineCommandManager } from 'lib/singletons'
-import { machineManager } from 'lib/machineManager'
+import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
+import { MachineManagerContext } from 'components/MachineManagerProvider'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
@@ -71,8 +71,7 @@ function AppLogoLink({
       data-testid="app-logo"
       onClick={() => {
         onProjectClose(file || null, project?.path || null, false)
-        // Clear the scene and end the session.
-        engineCommandManager.endSession()
+        kclManager.switchedFiles = true
       }}
       to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
@@ -100,6 +99,8 @@ function ProjectMenuPopover({
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { settings, auth } = useSettingsAuthContext()
+  const machineManager = useContext(MachineManagerContext)
+
   const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
@@ -110,7 +111,7 @@ function ProjectMenuPopover({
         (c) => c.name === obj.name && c.groupId === obj.groupId
       )
     )
-  const machineCount = machineManager.machineCount()
+  const machineCount = machineManager.machines.length
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
@@ -188,6 +189,12 @@ function ProjectMenuPopover({
           Element: 'button',
           children: 'Share link to file',
           onClick: async () => {
+            if (!auth.context.token) {
+              toast.error('You need to be signed in to share a file.', {
+                duration: 5000,
+              })
+              return
+            }
             const shareUrl = await createFileLink(auth.context.token, {
               code: codeManager.code,
               name: file?.name || '',
@@ -213,8 +220,7 @@ function ProjectMenuPopover({
           className: !isDesktop() ? 'hidden' : '',
           onClick: () => {
             onProjectClose(file || null, project?.path || null, true)
-            // Clear the scene and end the session.
-            engineCommandManager.endSession()
+            kclManager.switchedFiles = true
           },
         },
       ].filter(
@@ -235,7 +241,7 @@ function ProjectMenuPopover({
   return (
     <Popover className="relative">
       <Popover.Button
-        className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary dark:hover:bg-chalkboard-90"
+        className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
         <div className="flex flex-col items-start py-0.5">

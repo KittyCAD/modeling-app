@@ -61,6 +61,31 @@ export const ProjectsContextProvider = ({
 }: {
   children: React.ReactNode
 }) => {
+  return isDesktop() ? (
+    <ProjectsContextDesktop>{children}</ProjectsContextDesktop>
+  ) : (
+    <ProjectsContextWeb>{children}</ProjectsContextWeb>
+  )
+}
+
+const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <ProjectsMachineContext.Provider
+      value={{
+        state: undefined,
+        send: () => {},
+      }}
+    >
+      {children}
+    </ProjectsMachineContext.Provider>
+  )
+}
+
+const ProjectsContextDesktop = ({
+  children,
+}: {
+  children: React.ReactNode
+}) => {
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -147,12 +172,17 @@ export const ProjectsContextProvider = ({
               decodeURIComponent(location.pathname).includes(
                 event.output.oldName
               )
+
             if (isInRenamedProject) {
-              const newPathName = location.pathname.replace(
-                encodeURIComponent(event.output.oldName),
-                encodeURIComponent(event.output.newName)
-              )
-              navigate(newPathName)
+              // TODO: In future, we can navigate to the new project path
+              // directly, but we need to coordinate with
+              // @lf94's useFileSystemWatcher in SettingsAuthProvider.tsx:224
+              // Because it's beating us to the punch and updating the route
+              // const newPathName = location.pathname.replace(
+              //   encodeURIComponent(event.output.oldName),
+              //   encodeURIComponent(event.output.newName)
+              // )
+              // navigate(newPathName)
               return
             }
           }
@@ -201,10 +231,7 @@ export const ProjectsContextProvider = ({
           ),
       },
       actors: {
-        readProjects: fromPromise(async () => {
-          if (!isDesktop()) return [] as Project[]
-          return listProjects()
-        }),
+        readProjects: fromPromise(() => listProjects()),
         createProject: fromPromise(async ({ input }) => {
           let name = (
             input && 'name' in input && input.name
@@ -237,6 +264,8 @@ export const ProjectsContextProvider = ({
             const nextIndex = getNextProjectIndex(name, projects)
             name = interpolateProjectNameWithIndex(name, nextIndex)
           }
+
+          console.log('from Project')
 
           await renameProjectDirectory(
             window.electron.path.join(defaultDirectory, oldName),

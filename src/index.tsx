@@ -8,7 +8,12 @@ import ModalContainer from 'react-modal-promise'
 import { isDesktop } from 'lib/isDesktop'
 import { AppStreamProvider } from 'AppState'
 import { ToastUpdate } from 'components/ToastUpdate'
+import { markOnce } from 'lib/performance'
 import { AUTO_UPDATER_TOAST_ID } from 'lib/constants'
+import { initializeWindowExceptionHandler } from 'lib/exceptions'
+
+markOnce('code/willAuth')
+initializeWindowExceptionHandler()
 
 // uncomment for xstate inspector
 // import { DEV } from 'env'

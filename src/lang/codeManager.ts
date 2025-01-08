@@ -6,18 +6,26 @@ import { isDesktop } from 'lib/isDesktop'
 import toast from 'react-hot-toast'
 import { editorManager } from 'lib/singletons'
 import { Annotation, Transaction } from '@codemirror/state'
-import { KeyBinding } from '@codemirror/view'
+import { EditorView, KeyBinding } from '@codemirror/view'
+import { recast, Program } from 'lang/wasm'
+import { err } from 'lib/trap'
+import { Compartment } from '@codemirror/state'
+import { history } from '@codemirror/commands'
 
 const PERSIST_CODE_KEY = 'persistCode'
 
 const codeManagerUpdateAnnotation = Annotation.define<boolean>()
 export const codeManagerUpdateEvent = codeManagerUpdateAnnotation.of(true)
+export const codeManagerHistoryCompartment = new Compartment()
 
 export default class CodeManager {
   private _code: string = bracket
   #updateState: (arg: string) => void = () => {}
   private _currentFilePath: string | null = null
   private _hotkeys: { [key: string]: () => void } = {}
+  private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
+
+  public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
 
   constructor() {
     if (isDesktop()) {
@@ -37,7 +45,7 @@ export default class CodeManager {
     } else if (storedCode === null) {
       this.code = bracket
     } else {
-      this.code = storedCode
+      this.code = storedCode || ''
     }
   }
 
@@ -47,6 +55,10 @@ export default class CodeManager {
 
   get code(): string {
     return this._code
+  }
+
+  localStoragePersistCode(): string {
+    return safeLSGetItem(PERSIST_CODE_KEY) || ''
   }
 
   registerCallBacks({ setCode }: { setCode: (arg: string) => void }) {
@@ -85,9 +97,12 @@ export default class CodeManager {
   /**
    * Update the code in the editor.
    */
-  updateCodeEditor(code: string): void {
+  updateCodeEditor(code: string, clearHistory?: boolean): void {
     this.code = code
     if (editorManager.editorView) {
+      if (clearHistory) {
+        clearCodeMirrorHistory(editorManager.editorView)
+      }
       editorManager.editorView.dispatch({
         changes: {
           from: 0,
@@ -96,7 +111,7 @@ export default class CodeManager {
         },
         annotations: [
           codeManagerUpdateEvent,
-          Transaction.addToHistory.of(true),
+          Transaction.addToHistory.of(!clearHistory),
         ],
       })
     }
@@ -105,40 +120,74 @@ export default class CodeManager {
   /**
    * Update the code, state, and the code the code mirror editor sees.
    */
-  updateCodeStateEditor(code: string): void {
+  updateCodeStateEditor(code: string, clearHistory?: boolean): void {
     if (this._code !== code) {
       this.code = code
       this.#updateState(code)
-      this.updateCodeEditor(code)
+      this.updateCodeEditor(code, clearHistory)
     }
   }
 
   async writeToFile() {
     if (isDesktop()) {
-      setTimeout(() => {
-        // Wait one event loop to give a chance for params to be set
-        // Save the file to disk
-        this._currentFilePath &&
+      // Only write our buffer contents to file once per second. Any faster
+      // and file-system watchers which read, will receive empty data during
+      // writes.
+
+      clearTimeout(this.timeoutWriter)
+      this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+
+      return new Promise((resolve, reject) => {
+        this.timeoutWriter = setTimeout(() => {
+          if (!this._currentFilePath)
+            return reject(new Error('currentFilePath not set'))
+
+          // Wait one event loop to give a chance for params to be set
+          // Save the file to disk
           window.electron
             .writeFile(this._currentFilePath, this.code ?? '')
+            .then(resolve)
             .catch((err: Error) => {
               // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
               console.error('error saving file', err)
               toast.error('Error saving file, please check file permissions')
+              reject(err)
             })
+        }, 1000)
       })
     } else {
       safeLSSetItem(PERSIST_CODE_KEY, this.code)
     }
   }
+
+  async updateEditorWithAstAndWriteToFile(ast: Program) {
+    const newCode = recast(ast)
+    if (err(newCode)) return
+    this.updateCodeStateEditor(newCode)
+    await this.writeToFile()
+  }
 }
 
 function safeLSGetItem(key: string) {
-  if (typeof window === 'undefined') return null
+  if (typeof window === 'undefined') return
   return localStorage?.getItem(key)
 }
 
 function safeLSSetItem(key: string, value: string) {
   if (typeof window === 'undefined') return
   localStorage?.setItem(key, value)
+}
+
+function clearCodeMirrorHistory(view: EditorView) {
+  // Clear history
+  view.dispatch({
+    effects: [codeManagerHistoryCompartment.reconfigure([])],
+    annotations: [codeManagerUpdateEvent],
+  })
+
+  // Add history back
+  view.dispatch({
+    effects: [codeManagerHistoryCompartment.reconfigure([history()])],
+    annotations: [codeManagerUpdateEvent],
+  })
 }

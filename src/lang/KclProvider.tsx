@@ -1,16 +1,18 @@
-import { KCLError } from './errors'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { type IndexLoaderData } from 'lib/types'
 import { useLoaderData } from 'react-router-dom'
 import { codeManager, kclManager } from 'lib/singletons'
+import { Diagnostic } from '@codemirror/lint'
+import { KCLError } from './errors'
 
 const KclContext = createContext({
   code: codeManager?.code || '',
   programMemory: kclManager?.programMemory,
   ast: kclManager?.ast,
   isExecuting: kclManager?.isExecuting,
-  errors: kclManager?.kclErrors,
+  diagnostics: kclManager?.diagnostics,
   logs: kclManager?.logs,
+  errors: kclManager?.errors,
   wasmInitFailed: kclManager?.wasmInitFailed,
 })
 
@@ -32,6 +34,7 @@ export function KclContextProvider({
   const [programMemory, setProgramMemory] = useState(kclManager.programMemory)
   const [ast, setAst] = useState(kclManager.ast)
   const [isExecuting, setIsExecuting] = useState(false)
+  const [diagnostics, setDiagnostics] = useState<Diagnostic[]>([])
   const [errors, setErrors] = useState<KCLError[]>([])
   const [logs, setLogs] = useState<string[]>([])
   const [wasmInitFailed, setWasmInitFailed] = useState(false)
@@ -44,7 +47,8 @@ export function KclContextProvider({
       setProgramMemory,
       setAst,
       setLogs,
-      setKclErrors: setErrors,
+      setErrors,
+      setDiagnostics,
       setIsExecuting,
       setWasmInitFailed,
     })
@@ -57,8 +61,9 @@ export function KclContextProvider({
         programMemory,
         ast,
         isExecuting,
-        errors,
+        diagnostics,
         logs,
+        errors,
         wasmInitFailed,
       }}
     >

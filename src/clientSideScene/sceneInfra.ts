@@ -22,7 +22,7 @@ import {
 import { Coords2d, compareVec2Epsilon2 } from 'lang/std/sketch'
 import { useModelingContext } from 'hooks/useModelingContext'
 import * as TWEEN from '@tweenjs/tween.js'
-import { Axis } from 'lib/selections'
+import { Axis, NonCodeSelection } from 'lib/selections'
 import { type BaseUnit } from 'lib/settings/settingsTypes'
 import { CameraControls } from './CameraControls'
 import { EngineCommandManager } from 'lang/std/engineConnection'
@@ -30,6 +30,7 @@ import { MouseState, SegmentOverlayPayload } from 'machines/modelingMachine'
 import { getAngle, throttle } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
+import { orthoScale, perspScale } from './helpers'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -49,17 +50,30 @@ export const RAYCASTABLE_PLANE = 'raycastable-plane'
 
 export const X_AXIS = 'xAxis'
 export const Y_AXIS = 'yAxis'
+/** If a segment angle is less than this many degrees off a meanginful angle it'll snap to it */
+export const ANGLE_SNAP_THRESHOLD_DEGREES = 3
+/** the THREEjs representation of the group surrounding a "snapped" point that is not yet placed */
+export const DRAFT_POINT_GROUP = 'draft-point-group'
+/** the THREEjs representation of a "snapped" point that is not yet placed */
+export const DRAFT_POINT = 'draft-point'
 export const AXIS_GROUP = 'axisGroup'
 export const SKETCH_GROUP_SEGMENTS = 'sketch-group-segments'
 export const ARROWHEAD = 'arrowhead'
 export const SEGMENT_LENGTH_LABEL = 'segment-length-label'
 export const SEGMENT_LENGTH_LABEL_TEXT = 'segment-length-label-text'
 export const SEGMENT_LENGTH_LABEL_OFFSET_PX = 30
+export const CIRCLE_3_POINT_DRAFT_POINT = 'circle-3-point-draft-point'
+export const CIRCLE_3_POINT_DRAFT_CIRCLE = 'circle-3-point-draft-circle'
 
 export interface OnMouseEnterLeaveArgs {
   selected: Object3D<Object3DEventMap>
   dragSelected?: Object3D<Object3DEventMap>
   mouseEvent: MouseEvent
+  /** The intersection of the mouse with the THREEjs raycast plane */
+  intersectionPoint?: {
+    twoD?: Vector2
+    threeD?: Vector3
+  }
 }
 
 interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
@@ -213,11 +227,10 @@ export class SceneInfra {
     to: Coords2d
     angle?: number
   }): SegmentOverlayPayload | null {
-    if (group.userData.pathToNode && arrowGroup) {
+    if (!group.userData.draft && group.userData.pathToNode && arrowGroup) {
       const vector = new Vector3(0, 0, 0)
 
       // Get the position of the object3D in world space
-      // console.log('arrowGroup', arrowGroup)
       arrowGroup.getWorldPosition(vector)
 
       // Project that position to screen space
@@ -335,7 +348,6 @@ export class SceneInfra {
     requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
-      // console.log('animation frame', this.cameraControls.camera)
       this.camControls.update()
       this.renderer.render(this.scene, this.camControls.camera)
       this.labelRenderer.render(this.scene, this.camControls.camera)
@@ -348,29 +360,43 @@ export class SceneInfra {
     window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
   }
+  getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
+    const orthoFactor = orthoScale(this.camControls.camera)
+    const factor =
+      (this.camControls.camera instanceof OrthographicCamera
+        ? orthoFactor
+        : perspScale(this.camControls.camera, meshOrGroup)) /
+      this._baseUnitMultiplier
+    return factor
+  }
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
     intersection: Intersection<Object3D<Object3DEventMap>>
   } | null => {
+    // Get the orientations from the camera and mouse position
     this.planeRaycaster.setFromCamera(
       this.currentMouseVector,
       this.camControls.camera
     )
+
+    // Get the intersection of the ray with the default planes
     const planeIntersects = this.planeRaycaster.intersectObjects(
       this.scene.children,
       true
     )
-    const recastablePlaneIntersect = planeIntersects.find(
+    if (!planeIntersects.length) return null
+
+    // Find the intersection with the raycastable (or sketch) plane
+    const raycastablePlaneIntersection = planeIntersects.find(
       (intersect) => intersect.object.name === RAYCASTABLE_PLANE
     )
-    if (!planeIntersects.length) return null
-    if (!recastablePlaneIntersect) return { intersection: planeIntersects[0] }
-    const planePosition = planeIntersects[0].object.position
-    const inversePlaneQuaternion = planeIntersects[0].object.quaternion
-      .clone()
-      .invert()
-    const intersectPoint = planeIntersects[0].point
+    if (!raycastablePlaneIntersection)
+      return { intersection: planeIntersects[0] }
+    const planePosition = raycastablePlaneIntersection.object.position
+    const inversePlaneQuaternion =
+      raycastablePlaneIntersection.object.quaternion.clone().invert()
+    const intersectPoint = raycastablePlaneIntersection.point
     let transformedPoint = intersectPoint.clone()
     if (transformedPoint) {
       transformedPoint.applyQuaternion(inversePlaneQuaternion)
@@ -408,7 +434,6 @@ export class SceneInfra {
       if (!this.selected.hasBeenDragged && hasBeenDragged) {
         this.selected.hasBeenDragged = true
         // this is where we could fire a onDragStart event
-        // console.log('onDragStart', this.selected)
       }
       if (
         hasBeenDragged &&
@@ -447,18 +472,26 @@ export class SceneInfra {
 
     if (intersects[0]) {
       const firstIntersectObject = intersects[0].object
+      const planeIntersectPoint = this.getPlaneIntersectPoint()
+      const intersectionPoint = {
+        twoD: planeIntersectPoint?.twoD,
+        threeD: planeIntersectPoint?.threeD,
+      }
+
       if (this.hoveredObject !== firstIntersectObject) {
         const hoveredObj = this.hoveredObject
         this.hoveredObject = null
         await this.onMouseLeave({
           selected: hoveredObj,
           mouseEvent: mouseEvent,
+          intersectionPoint,
         })
         this.hoveredObject = firstIntersectObject
         await this.onMouseEnter({
           selected: this.hoveredObject,
           dragSelected: this.selected?.object,
           mouseEvent: mouseEvent,
+          intersectionPoint,
         })
         if (!this.selected)
           this.updateMouseState({
@@ -620,7 +653,7 @@ export class SceneInfra {
       await this.onClickCallback({ mouseEvent, intersects })
     }
   }
-  updateOtherSelectionColors = (otherSelections: Axis[]) => {
+  updateOtherSelectionColors = (otherSelections: NonCodeSelection[]) => {
     const axisGroup = this.scene.children.find(
       ({ userData }) => userData?.type === AXIS_GROUP
     )

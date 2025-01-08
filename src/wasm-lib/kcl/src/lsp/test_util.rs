@@ -3,44 +3,16 @@ use std::sync::{Arc, RwLock};
 use anyhow::Result;
 use tower_lsp::LanguageServer;
 
-fn new_zoo_client() -> kittycad::Client {
-    let user_agent = concat!(env!("CARGO_PKG_NAME"), ".rs/", env!("CARGO_PKG_VERSION"),);
-    let http_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60));
-    let ws_client = reqwest::Client::builder()
-        .user_agent(user_agent)
-        // For file conversions we need this to be long.
-        .timeout(std::time::Duration::from_secs(600))
-        .connect_timeout(std::time::Duration::from_secs(60))
-        .connection_verbose(true)
-        .tcp_keepalive(std::time::Duration::from_secs(600))
-        .http1_only();
-
-    let token = std::env::var("KITTYCAD_API_TOKEN").expect("KITTYCAD_API_TOKEN not set");
-
-    // Create the client.
-    let mut client = kittycad::Client::new_from_reqwest(token, http_client, ws_client);
-    // Set a local engine address if it's set.
-    if let Ok(addr) = std::env::var("LOCAL_ENGINE_ADDR") {
-        client.set_base_url(addr);
-    }
-
-    client
-}
-
 // Create a fake kcl lsp server for testing.
 pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let stdlib = crate::std::StdLib::new();
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib)?;
     let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib)?;
 
-    let zoo_client = new_zoo_client();
+    let zoo_client = crate::execution::new_zoo_client(None, None)?;
 
     let executor_ctx = if execute {
-        Some(crate::executor::ExecutorContext::new(&zoo_client, Default::default()).await?)
+        Some(crate::execution::ExecutorContext::new(&zoo_client, Default::default()).await?)
     } else {
         None
     };
@@ -65,6 +37,7 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
         can_send_telemetry: true,
         executor_ctx: Arc::new(tokio::sync::RwLock::new(executor_ctx)),
         can_execute: Arc::new(tokio::sync::RwLock::new(can_execute)),
+        last_successful_ast_state: Default::default(),
         is_initialized: Default::default(),
     })
     .custom_method("kcl/updateUnits", crate::lsp::kcl::Backend::update_units)

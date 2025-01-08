@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { Program, ProgramMemory, Expr } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getTransformInfos,
@@ -13,6 +10,7 @@ import {
 import { TransformInfo } from 'lang/std/stdTypes'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export function horzVertInfo(
   selectionRanges: Selections,
@@ -23,11 +21,8 @@ export function horzVertInfo(
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-  const _nodes = paths.map((pathToNode) => {
-    const tmp = getNodeFromPath<Expr>(kclManager.ast, pathToNode)
+  const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
+    const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode)
     if (err(tmp)) return tmp
     return tmp.node
   })
@@ -55,11 +50,11 @@ export function horzVertInfo(
 export function applyConstraintHorzVert(
   selectionRanges: Selections,
   horOrVert: 'vertical' | 'horizontal',
-  ast: Program,
+  ast: Node<Program>,
   programMemory: ProgramMemory
 ):
   | {
-      modifiedAst: Program
+      modifiedAst: Node<Program>
       pathToNodeMap: PathToNodeMap
     }
   | Error {

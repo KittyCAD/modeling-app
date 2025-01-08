@@ -1,5 +1,5 @@
 use iai::black_box;
-use kcl_lib::lsp::test_util::kcl_lsp_server;
+use kcl_lib::kcl_lsp_server;
 use tower_lsp::LanguageServer;
 
 async fn kcl_lsp_semantic_tokens(code: &str) {

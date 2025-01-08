@@ -17,9 +17,17 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
       }
 
       if (window.electron.process.env.IS_PLAYWRIGHT) {
-        // skip file picker, save to default location
+        // Skip file picker, save to the test dir downloads directory
+        const testSettingsPath = await window.electron.getAppTestProperty(
+          'TEST_SETTINGS_FILE_KEY'
+        )
+        const downloadDir = window.electron.join(
+          testSettingsPath,
+          'downloads-during-playwright'
+        )
+        await window.electron.mkdir(downloadDir, { recursive: true })
         await window.electron.writeFile(
-          file.name,
+          window.electron.join(downloadDir, file.name),
           new Uint8Array(file.contents)
         )
         toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
@@ -68,7 +76,16 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
 }
 
 // Saves files locally from an export call.
-export async function exportSave(data: ArrayBuffer, toastId: string) {
+// We override the file's name with one passed in from the client side.
+export async function exportSave({
+  data,
+  fileName,
+  toastId,
+}: {
+  data: ArrayBuffer
+  fileName: string
+  toastId: string
+}) {
   // This converts the ArrayBuffer to a Rust equivalent Vec<u8>.
   let uintArray = new Uint8Array(data)
 
@@ -80,9 +97,10 @@ export async function exportSave(data: ArrayBuffer, toastId: string) {
       zip.file(file.name, new Uint8Array(file.contents), { binary: true })
     }
     return zip.generateAsync({ type: 'array' }).then((contents) => {
-      return save_({ name: 'output.zip', contents }, toastId)
+      return save_({ name: `${fileName || 'output'}.zip`, contents }, toastId)
     })
   } else {
+    files[0].name = fileName || files[0].name
     return save_(files[0], toastId)
   }
 }

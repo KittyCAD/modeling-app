@@ -17,6 +17,10 @@ import {
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
+import { useCommandsContext } from 'hooks/useCommandsContext'
+import { err, reportRejection } from 'lib/trap'
+import { getArtifactOfTypes } from 'lang/std/artifactGraph'
+import { ViewControlContextMenu } from './ViewControlMenu'
 
 enum StreamState {
   Playing = 'playing',
@@ -27,9 +31,11 @@ enum StreamState {
 
 export const Stream = () => {
   const [isLoading, setIsLoading] = useState(true)
+  const videoWrapperRef = useRef<HTMLDivElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send } = useModelingContext()
+  const { commandBarState } = useCommandsContext()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
@@ -212,20 +218,6 @@ export const Stream = () => {
     }
   }, [IDLE, streamState])
 
-  /**
-   * Play the vid
-   */
-  useEffect(() => {
-    if (!kclManager.isExecuting) {
-      setTimeout(() => {
-        // execute in the next event loop
-        videoRef.current?.play().catch((e) => {
-          console.warn('Video playing was prevented', e, videoRef.current)
-        })
-      })
-    }
-  }, [kclManager.isExecuting])
-
   useEffect(() => {
     if (
       typeof window === 'undefined' ||
@@ -237,9 +229,15 @@ export const Stream = () => {
 
     // The browser complains if we try to load a new stream without pausing first.
     // Do not immediately play the stream!
+    // we instead use a setTimeout to play the stream in the next event loop
     try {
       videoRef.current.srcObject = mediaStream
       videoRef.current.pause()
+      setTimeout(() => {
+        videoRef.current?.play().catch((e) => {
+          console.warn('Video playing was prevented', e, videoRef.current)
+        })
+      })
     } catch (e) {
       console.warn('Attempted to pause stream while play was still loading', e)
     }
@@ -254,11 +252,23 @@ export const Stream = () => {
     setIsLoading(false)
   }, [mediaStream])
 
-  const handleMouseUp: MouseEventHandler<HTMLDivElement> = (e) => {
+  const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
+    // If we've got no stream or connection, don't do anything
     if (!isNetworkOkay) return
     if (!videoRef.current) return
+    // If we're in sketch mode, don't send a engine-side select event
     if (state.matches('Sketch')) return
-    if (state.matches({ idle: 'showPlanes' })) return
+    // Only respect default plane selection if we're on a selection command argument
+    if (
+      state.matches({ idle: 'showPlanes' }) &&
+      !(
+        commandBarState.matches('Gathering arguments') &&
+        commandBarState.context.currentArgument?.inputType === 'selection'
+      )
+    )
+      return
+    // If we're mousing up from a camera drag, don't send a select event
+    if (sceneInfra.camControls.wasDragging === true) return
 
     if (btnName(e.nativeEvent).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -266,12 +276,50 @@ export const Stream = () => {
     }
   }
 
+  /**
+   * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
+   * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
+   */
+  const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> = (
+    e
+  ) => {
+    if (
+      !isNetworkOkay ||
+      !videoRef.current ||
+      state.matches('Sketch') ||
+      state.matches({ idle: 'showPlanes' }) ||
+      sceneInfra.camControls.wasDragging === true ||
+      !btnName(e.nativeEvent).left
+    ) {
+      return
+    }
+
+    sendSelectEventToEngine(e, videoRef.current)
+      .then(({ entity_id }) => {
+        if (!entity_id) {
+          // No entity selected. This is benign
+          return
+        }
+        const path = getArtifactOfTypes(
+          { key: entity_id, types: ['path', 'solid2D', 'segment'] },
+          engineCommandManager.artifactGraph
+        )
+        if (err(path)) {
+          return path
+        }
+        sceneInfra.modelingSend({ type: 'Enter sketch' })
+      })
+      .catch(reportRejection)
+  }
+
   return (
     <div
+      ref={videoWrapperRef}
       className="absolute inset-0 z-0"
       id="stream"
       data-testid="stream"
-      onClick={handleMouseUp}
+      onClick={handleClick}
+      onDoubleClick={enterSketchModeIfSelectingSketch}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
@@ -331,6 +379,14 @@ export const Stream = () => {
           </Loading>
         </div>
       )}
+      <ViewControlContextMenu
+        event="mouseup"
+        guard={(e) =>
+          sceneInfra.camControls.wasDragging === false &&
+          btnName(e).right === true
+        }
+        menuTargetElement={videoWrapperRef}
+      />
     </div>
   )
 }

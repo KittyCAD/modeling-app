@@ -29,6 +29,9 @@ import {
   Expr,
   parse,
   recast,
+  defaultSourceRange,
+  resultIsOk,
+  ProgramMemory,
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
@@ -44,6 +47,7 @@ import {
 import { ActionButton } from 'components/ActionButton'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -170,8 +174,13 @@ export const ClientSideScene = ({
 const Overlays = () => {
   const { context } = useModelingContext()
   if (context.mouseState.type === 'isDragging') return null
+  // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
+  // over the length labels on the line segments
   return (
-    <div className="absolute inset-0 pointer-events-none">
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: '99999999' }}
+    >
       {Object.entries(context.segmentOverlays)
         .filter((a) => a[1].visible)
         .map(([pathToNodeString, overlay], index) => {
@@ -201,12 +210,20 @@ const Overlay = ({
   let xAlignment = overlay.angle < 0 ? '0%' : '-100%'
   let yAlignment = overlay.angle < -90 || overlay.angle >= 90 ? '0%' : '-100%'
 
-  const _node1 = getNodeFromPath<CallExpression>(
+  // It's possible for the pathToNode to request a newer AST node
+  // than what's available in the AST at the moment of query.
+  // It eventually settles on being updated.
+  const _node1 = getNodeFromPath<Node<CallExpression>>(
     kclManager.ast,
     overlay.pathToNode,
     'CallExpression'
   )
-  if (err(_node1)) return
+
+  // For that reason, to prevent console noise, we do not use err here.
+  if (_node1 instanceof Error) {
+    console.warn('ast older than pathToNode, not fatal, eventually settles', '')
+    return
+  }
   const callExpression = _node1.node
 
   const constraints = getConstraintInfo(
@@ -381,7 +398,7 @@ export async function deleteSegment({
   pathToNode: PathToNode
   sketchDetails: SketchDetails | null
 }) {
-  let modifiedAst: Program | Error = kclManager.ast
+  let modifiedAst: Node<Program> | Error = kclManager.ast
   const dependentRanges = findUsesOfTagInPipe(modifiedAst, pathToNode)
 
   const shouldContinueSegDelete = dependentRanges.length
@@ -403,14 +420,15 @@ export async function deleteSegment({
   if (err(modifiedAst)) return Promise.reject(modifiedAst)
 
   const newCode = recast(modifiedAst)
-  modifiedAst = parse(newCode)
-  if (err(modifiedAst)) return Promise.reject(modifiedAst)
+  const pResult = parse(newCode)
+  if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+  modifiedAst = pResult.program
 
   const testExecute = await executeAst({
     ast: modifiedAst,
-    idGenerator: kclManager.execState.idGenerator,
-    useFakeExecutor: true,
     engineCommandManager: engineCommandManager,
+    // We make sure to send an empty program memory to denote we mean mock mode.
+    programMemoryOverride: ProgramMemory.empty(),
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')
@@ -492,7 +510,8 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { context, send } = useModelingContext()
+  const { commandBarSend } = useCommandsContext()
+  const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
       varName: string
@@ -581,7 +600,9 @@ const ConstraintSymbol = ({
   if (err(_node)) return
   const node = _node.node
 
-  const range: SourceRange = node ? [node.start, node.end] : [0, 0]
+  const range: SourceRange = node
+    ? [node.start, node.end, true]
+    : defaultSourceRange()
 
   if (_type === 'intersectionTag') return null
 
@@ -603,25 +624,34 @@ const ConstraintSymbol = ({
           editorManager.setHighlightRange([range])
         }}
         onMouseLeave={() => {
-          editorManager.setHighlightRange([[0, 0]])
+          editorManager.setHighlightRange([defaultSourceRange()])
         }}
         // disabled={isConstrained || !convertToVarEnabled}
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={toSync(async () => {
           if (!isConstrained) {
-            send({
-              type: 'Convert to variable',
+            commandBarSend({
+              type: 'Find and select command',
               data: {
-                pathToNode,
-                variableName: varName,
+                name: 'Constrain with named value',
+                groupId: 'modeling',
+                argDefaultValues: {
+                  currentValue: {
+                    pathToNode,
+                    variableName: varName,
+                    valueText: value,
+                  },
+                },
               },
             })
           } else if (isConstrained) {
             try {
-              const parsed = parse(recast(kclManager.ast))
-              if (trap(parsed)) return Promise.reject(parsed)
+              const pResult = parse(recast(kclManager.ast))
+              if (trap(pResult) || !resultIsOk(pResult))
+                return Promise.reject(pResult)
+
               const _node1 = getNodeFromPath<CallExpression>(
-                parsed,
+                pResult.program!,
                 pathToNode,
                 'CallExpression',
                 true
@@ -636,10 +666,16 @@ const ConstraintSymbol = ({
                 kclManager.ast,
                 kclManager.programMemory
               )
+
               if (!transform) return
               const { modifiedAst } = transform
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              kclManager.updateAst(modifiedAst, true)
+
+              await kclManager.updateAst(modifiedAst, true)
+
+              // Code editor will be updated in the modelingMachine.
+              const newCode = recast(modifiedAst)
+              if (err(newCode)) return
+              await codeManager.updateCodeEditor(newCode)
             } catch (e) {
               console.log('error', e)
             }

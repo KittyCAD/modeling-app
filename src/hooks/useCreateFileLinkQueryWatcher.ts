@@ -23,7 +23,9 @@ export type CreateFileSchemaMethodOptional = Omit<
  * command if it is present, loading the command's default values from the other
  * URL parameters.
  */
-export function useCreateFileLinkQuery(callback: (args: CreateFileSchemaMethodOptional) => void) {
+export function useCreateFileLinkQuery(
+  callback: (args: CreateFileSchemaMethodOptional) => void
+) {
   const [searchParams] = useSearchParams()
   const { settings } = useSettingsAuthContext()
 

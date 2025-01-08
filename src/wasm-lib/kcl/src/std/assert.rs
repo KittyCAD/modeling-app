@@ -5,7 +5,7 @@ use derive_docs::stdlib;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    executor::{ExecState, KclValue},
+    execution::{ExecState, KclValue},
     std::Args,
 };
 
@@ -24,14 +24,14 @@ async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError
 pub async fn assert(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, description): (bool, String) = args.get_data()?;
     inner_assert(data, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_user_val_from_f64(0.0)) // TODO: Add a new Void enum for fns that don't return anything.
 }
 
 /// Check a value at runtime, and raise an error if the argument provided
 /// is false.
 ///
 /// ```no_run
-/// const myVar = true
+/// myVar = true
 /// assert(myVar, "should always be true")
 /// ```
 #[stdlib {
@@ -44,7 +44,7 @@ async fn inner_assert(data: bool, message: &str, args: &Args) -> Result<(), KclE
 pub async fn assert_lt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_lt(left, right, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_user_val_from_f64(0.0)) // TODO: Add a new Void enum for fns that don't return anything.
 }
 
 /// Check that a numerical value is less than to another at runtime,
@@ -63,22 +63,27 @@ async fn inner_assert_lt(left: f64, right: f64, message: &str, args: &Args) -> R
 pub async fn assert_gt(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_gt(left, right, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_user_val_from_f64(0.0)) // TODO: Add a new Void enum for fns that don't return anything.
 }
 
 /// Check that a numerical value equals another at runtime,
 /// otherwise raise an error.
 ///
 /// ```no_run
-/// let n = 1.0285
-/// let o = 1.0286
+/// n = 1.0285
+/// o = 1.0286
 /// assertEqual(n, o, 0.01, "n is within the given tolerance for o")
 /// ```
 #[stdlib {
     name = "assertEqual",
 }]
 async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, args: &Args) -> Result<(), KclError> {
-    if (right - left).abs() < epsilon {
+    if epsilon <= 0.0 {
+        Err(KclError::Type(KclErrorDetails {
+            message: "assertEqual epsilon must be greater than zero".to_owned(),
+            source_ranges: vec![args.source_range],
+        }))
+    } else if (right - left).abs() < epsilon {
         Ok(())
     } else {
         Err(KclError::Type(KclErrorDetails {
@@ -91,7 +96,7 @@ async fn inner_assert_equal(left: f64, right: f64, epsilon: f64, message: &str, 
 pub async fn assert_equal(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, epsilon, description): (f64, f64, f64, String) = args.get_data()?;
     inner_assert_equal(left, right, epsilon, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_user_val_from_f64(0.0)) // TODO: Add a new Void enum for fns that don't return anything.
 }
 
 /// Check that a numerical value is greater than another at runtime,
@@ -110,7 +115,7 @@ async fn inner_assert_gt(left: f64, right: f64, message: &str, args: &Args) -> R
 pub async fn assert_lte(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_lte(left, right, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_user_val_from_f64(0.0)) // TODO: Add a new Void enum for fns that don't return anything.
 }
 
 /// Check that a numerical value is less than or equal to another at runtime,
@@ -130,7 +135,7 @@ async fn inner_assert_lte(left: f64, right: f64, message: &str, args: &Args) -> 
 pub async fn assert_gte(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (left, right, description): (f64, f64, String) = args.get_data()?;
     inner_assert_gte(left, right, &description, &args).await?;
-    args.make_null_user_val()
+    Ok(args.make_user_val_from_f64(0.0)) // TODO: Add a new Void enum for fns that don't return anything.
 }
 
 /// Check that a numerical value is greater than or equal to another at runtime,

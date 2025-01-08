@@ -178,6 +178,7 @@ export async function loadAndValidateSettings(
   if (err(appSettingsPayload)) return Promise.reject(appSettingsPayload)
 
   let settingsNext = createSettings()
+
   // Because getting the default directory is async, we need to set it after
   if (onDesktop) {
     settings.app.projectDirectory.default = await getInitialDefaultDir()
@@ -283,6 +284,27 @@ export function getChangedSettingsAtLevel(
   })
 
   return changedSettings
+}
+
+export function getAllCurrentSettings(
+  allSettings: typeof settings
+): SaveSettingsPayload {
+  const currentSettings = {} as SaveSettingsPayload
+  Object.entries(allSettings).forEach(([category, settingsCategory]) => {
+    const categoryKey = category as keyof typeof settings
+    Object.entries(settingsCategory).forEach(
+      ([setting, settingValue]: [string, Setting]) => {
+        const settingKey =
+          setting as keyof (typeof settings)[typeof categoryKey]
+        currentSettings[categoryKey] = {
+          ...currentSettings[categoryKey],
+          [settingKey]: settingValue.current,
+        }
+      }
+    )
+  })
+
+  return currentSettings
 }
 
 export function setSettingsAtLevel(

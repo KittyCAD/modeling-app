@@ -1,4 +1,5 @@
 //! Core dump related structures and functions.
+#![allow(dead_code)]
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod local;
@@ -161,6 +162,9 @@ impl CoreDumpInfo {
             r#"[Add a title above and insert a description of the issue here]
 
 ![Screenshot]({screenshot_url})
+
+> _Note: If you are capturing from a browser there is limited support for screenshots, only captures the modeling scene.
+  If you are on MacOS native screenshots may be disabled by default. To enable native screenshots add Zoo Modeling App to System Settings -> Screen & SystemAudio Recording for native screenshots._
 
 <details>
 <summary><b>Core Dump</b></summary>

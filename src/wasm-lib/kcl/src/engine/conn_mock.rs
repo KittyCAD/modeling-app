@@ -17,15 +17,18 @@ use kcmc::{
 };
 use kittycad_modeling_cmds::{self as kcmc};
 
+use super::ExecutionKind;
 use crate::{
     errors::KclError,
-    executor::{DefaultPlanes, IdGenerator},
+    execution::{DefaultPlanes, IdGenerator},
+    SourceRange,
 };
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
+    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 impl EngineConnection {
@@ -33,24 +36,37 @@ impl EngineConnection {
         Ok(EngineConnection {
             batch: Arc::new(Mutex::new(Vec::new())),
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
+            execution_kind: Default::default(),
         })
     }
 }
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
     }
 
     async fn default_planes(
         &self,
         _id_generator: &mut IdGenerator,
-        _source_range: crate::executor::SourceRange,
+        _source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
         Ok(DefaultPlanes::default())
     }
@@ -58,7 +74,7 @@ impl crate::engine::EngineManager for EngineConnection {
     async fn clear_scene_post_hook(
         &self,
         _id_generator: &mut IdGenerator,
-        _source_range: crate::executor::SourceRange,
+        _source_range: SourceRange,
     ) -> Result<(), KclError> {
         Ok(())
     }
@@ -66,9 +82,9 @@ impl crate::engine::EngineManager for EngineConnection {
     async fn inner_send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        _source_range: crate::executor::SourceRange,
+        _source_range: SourceRange,
         cmd: WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
             WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {

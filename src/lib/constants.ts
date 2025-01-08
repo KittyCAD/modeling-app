@@ -52,8 +52,11 @@ export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
 export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
+  LOFT: 'loft',
+  SHELL: 'shell',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
+  PLANE: 'plane',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
@@ -70,6 +73,8 @@ export const SETTINGS_FILE_NAME = 'settings.toml'
 export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const COOKIE_NAME = '__Secure-next-auth.session-token'
+export const TELEMETRY_FILE_NAME = 'boot.txt'
+export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 
 /** localStorage key to determine if we're in Playwright tests */
 export const PLAYWRIGHT_KEY = 'playwright'
@@ -93,6 +98,7 @@ export const MAKE_TOAST_MESSAGES = {
   NO_MACHINE_API_IP: 'No machine api ip available',
   NO_CURRENT_MACHINE: 'No current machine available',
   NO_MACHINE_ID: 'No machine id available',
+  NO_NAME: 'No name provided',
   ERROR_STARTING_PRINT: 'Error while starting print',
   SUCCESS: 'Started print successfully',
 }
@@ -109,3 +115,30 @@ export const CREATE_FILE_URL_PARAM = 'create-file'
 
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
+
+/** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
+export const KCL_AXIS_X = 'X'
+export const KCL_AXIS_Y = 'Y'
+export const KCL_AXIS_NEG_X = '-X'
+export const KCL_AXIS_NEG_Y = '-Y'
+export const KCL_DEFAULT_AXIS = 'X'
+
+export enum AxisNames {
+  X = 'x',
+  Y = 'y',
+  Z = 'z',
+  NEG_X = '-x',
+  NEG_Y = '-y',
+  NEG_Z = '-z',
+}
+/** Semantic names of views from AxisNames */
+export const VIEW_NAMES_SEMANTIC = {
+  [AxisNames.X]: 'Right',
+  [AxisNames.Y]: 'Back',
+  [AxisNames.Z]: 'Top',
+  [AxisNames.NEG_X]: 'Left',
+  [AxisNames.NEG_Y]: 'Front',
+  [AxisNames.NEG_Z]: 'Bottom',
+} as const
+/** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
+export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'

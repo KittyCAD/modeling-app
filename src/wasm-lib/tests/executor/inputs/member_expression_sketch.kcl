@@ -1,5 +1,5 @@
-fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
+fn square = (pos, scale) => {
+  sg = startSketchOn('XY')
     |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -9,9 +9,9 @@ fn cube = (pos, scale) => {
   return sg
 }
 
-const b1 = cube([0,0], 10)
-const b2 = cube([3,3], 4)
+sq = square([0,0], 10)
+cb = square([3,3], 4)
     |> extrude(10, %)
 
-const pt1 = b1.value[0]
-const pt2 = b2.value[0]
+// pt1 = sq.paths[0]
+// pt2 = cb.value[0]

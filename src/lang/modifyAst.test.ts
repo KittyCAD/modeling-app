@@ -1,4 +1,4 @@
-import { parse, recast, initPromise, Identifier } from './wasm'
+import { assertParse, recast, initPromise, Identifier } from './wasm'
 import {
   createLiteral,
   createIdentifier,
@@ -21,6 +21,8 @@ import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
 import { SimplifiedArgDetails } from './std/stdTypes'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { Artifact, codeRefFromRange } from './std/artifactGraph'
 
 beforeAll(async () => {
   await initPromise
@@ -80,11 +82,11 @@ describe('Testing createVariableDeclaration', () => {
   it('should create a variable declaration', () => {
     const result = createVariableDeclaration('myVar', createLiteral(5))
     expect(result.type).toBe('VariableDeclaration')
-    expect(result.declarations[0].type).toBe('VariableDeclarator')
-    expect(result.declarations[0].id.type).toBe('Identifier')
-    expect(result.declarations[0].id.name).toBe('myVar')
-    expect(result.declarations[0].init.type).toBe('Literal')
-    expect((result.declarations[0].init as any).value).toBe(5)
+    expect(result.declaration.type).toBe('VariableDeclarator')
+    expect(result.declaration.id.type).toBe('Identifier')
+    expect(result.declaration.id.name).toBe('myVar')
+    expect(result.declaration.init.type).toBe('Literal')
+    expect((result.declaration.init as any).value).toBe(5)
   })
 })
 describe('Testing createPipeExpression', () => {
@@ -100,16 +102,16 @@ describe('Testing findUniqueName', () => {
   it('should find a unique name', () => {
     const result = findUniqueName(
       JSON.stringify([
-        { type: 'Identifier', name: 'yo01', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo02', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo03', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo04', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo05', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo06', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo07', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo08', start: 0, end: 0, digest: null },
-        { type: 'Identifier', name: 'yo09', start: 0, end: 0, digest: null },
-      ] satisfies Identifier[]),
+        { type: 'Identifier', name: 'yo01', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo02', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo03', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo04', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo05', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo06', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo07', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo08', start: 0, end: 0, moduleId: 0 },
+        { type: 'Identifier', name: 'yo09', start: 0, end: 0, moduleId: 0 },
+      ] satisfies Node<Identifier>[]),
       'yo',
       2
     )
@@ -121,10 +123,11 @@ describe('Testing addSketchTo', () => {
     const result = addSketchTo(
       {
         body: [],
+        shebang: null,
         start: 0,
         end: 0,
-        nonCodeMeta: { nonCodeNodes: {}, start: [], digest: null },
-        digest: null,
+        moduleId: 0,
+        nonCodeMeta: { nonCodeNodes: {}, startNodes: [] },
       },
       'yz'
     )
@@ -143,10 +146,13 @@ function giveSketchFnCallTagTestHelper(
   // giveSketchFnCallTag inputs and outputs an ast, which is very verbose for testing
   // this wrapper changes the input and output to code
   // making it more of an integration test, but easier to read the test intention is the goal
-  const ast = parse(code)
-  if (err(ast)) throw ast
+  const ast = assertParse(code)
   const start = code.indexOf(searchStr)
-  const range: [number, number] = [start, start + searchStr.length]
+  const range: [number, number, boolean] = [
+    start,
+    start + searchStr.length,
+    true,
+  ]
   const sketchRes = giveSketchFnCallTag(ast, range)
   if (err(sketchRes)) throw sketchRes
   const { modifiedAst, tag, isTagExisting } = sketchRes
@@ -218,14 +224,13 @@ part001 = startSketchOn('XY')
 |> angledLine([jkl(yo) + 2, 3.09], %)
 yo2 = hmm([identifierGuy + 5])`
   it('should move a binary expression into a new variable', async () => {
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('100 + 100') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex],
+      [startIndex, startIndex, true],
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -233,14 +238,13 @@ yo2 = hmm([identifierGuy + 5])`
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a value into a new variable', async () => {
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('2.8') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex],
+      [startIndex, startIndex, true],
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -248,14 +252,13 @@ yo2 = hmm([identifierGuy + 5])`
     expect(newCode).toContain(`line([newVar, 0], %)`)
   })
   it('should move a callExpression into a new variable', async () => {
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('def(')
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex],
+      [startIndex, startIndex, true],
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -263,14 +266,13 @@ yo2 = hmm([identifierGuy + 5])`
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a binary expression with call expression into a new variable', async () => {
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('jkl(') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex],
+      [startIndex, startIndex, true],
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -278,14 +280,13 @@ yo2 = hmm([identifierGuy + 5])`
     expect(newCode).toContain(`angledLine([newVar, 3.09], %)`)
   })
   it('should move a identifier into a new variable', async () => {
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const startIndex = code.indexOf('identifierGuy +') + 1
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex],
+      [startIndex, startIndex, true],
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -302,19 +303,20 @@ describe('testing sketchOnExtrudedFace', () => {
   |> line([8.62, -9.57], %)
   |> close(%)
   |> extrude(5 + 7, %)`
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
 
     const segmentSnippet = `line([9.7, 9.19], %)`
-    const segmentRange: [number, number] = [
+    const segmentRange: [number, number, boolean] = [
       code.indexOf(segmentSnippet),
       code.indexOf(segmentSnippet) + segmentSnippet.length,
+      true,
     ]
     const segmentPathToNode = getNodePathFromSourceRange(ast, segmentRange)
     const extrudeSnippet = `extrude(5 + 7, %)`
-    const extrudeRange: [number, number] = [
+    const extrudeRange: [number, number, boolean] = [
       code.indexOf(extrudeSnippet),
       code.indexOf(extrudeSnippet) + extrudeSnippet.length,
+      true,
     ]
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
@@ -342,18 +344,19 @@ sketch001 = startSketchOn(part001, seg01)`)
   |> line([8.62, -9.57], %)
   |> close(%)
   |> extrude(5 + 7, %)`
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const segmentSnippet = `close(%)`
-    const segmentRange: [number, number] = [
+    const segmentRange: [number, number, boolean] = [
       code.indexOf(segmentSnippet),
       code.indexOf(segmentSnippet) + segmentSnippet.length,
+      true,
     ]
     const segmentPathToNode = getNodePathFromSourceRange(ast, segmentRange)
     const extrudeSnippet = `extrude(5 + 7, %)`
-    const extrudeRange: [number, number] = [
+    const extrudeRange: [number, number, boolean] = [
       code.indexOf(extrudeSnippet),
       code.indexOf(extrudeSnippet) + extrudeSnippet.length,
+      true,
     ]
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
@@ -381,18 +384,19 @@ sketch001 = startSketchOn(part001, seg01)`)
   |> line([8.62, -9.57], %)
   |> close(%)
   |> extrude(5 + 7, %)`
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const sketchSnippet = `startProfileAt([3.58, 2.06], %)`
-    const sketchRange: [number, number] = [
+    const sketchRange: [number, number, boolean] = [
       code.indexOf(sketchSnippet),
       code.indexOf(sketchSnippet) + sketchSnippet.length,
+      true,
     ]
     const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
     const extrudeSnippet = `extrude(5 + 7, %)`
-    const extrudeRange: [number, number] = [
+    const extrudeRange: [number, number, boolean] = [
       code.indexOf(extrudeSnippet),
       code.indexOf(extrudeSnippet) + extrudeSnippet.length,
+      true,
     ]
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
@@ -429,18 +433,19 @@ sketch001 = startSketchOn(part001, 'END')`)
     |> line([-17.67, 0.85], %)
     |> close(%)
     part001 = extrude(5 + 7, sketch001)`
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const segmentSnippet = `line([4.99, -0.46], %)`
-    const segmentRange: [number, number] = [
+    const segmentRange: [number, number, boolean] = [
       code.indexOf(segmentSnippet),
       code.indexOf(segmentSnippet) + segmentSnippet.length,
+      true,
     ]
     const segmentPathToNode = getNodePathFromSourceRange(ast, segmentRange)
     const extrudeSnippet = `extrude(5 + 7, sketch001)`
-    const extrudeRange: [number, number] = [
+    const extrudeRange: [number, number, boolean] = [
       code.indexOf(extrudeSnippet),
       code.indexOf(extrudeSnippet) + extrudeSnippet.length,
+      true,
     ]
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
@@ -463,13 +468,13 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
   |> line([306.21, 198.82], %)
   |> line([306.21, 198.85], %, $a)
   |> line([306.21, 198.87], %)`
-    const ast = parse(code)
-    if (err(ast)) throw ast
+    const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const lineOfInterest = 'line([306.21, 198.85], %, $a)'
-    const range: [number, number] = [
+    const range: [number, number, boolean] = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
+      true,
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     const modifiedAst = deleteSegmentFromPipeExpression(
@@ -516,38 +521,38 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       ],
       [
         'angledLineOfXLength',
-        'angledLineOfXLength({ angle: 45.5, length: 198.85 }, %, $a)',
+        'angledLineOfXLength({ angle = 45.5, length = 198.85 }, %, $a)',
         ['283.7', '45.5'],
       ],
       [
         'angledLineOfYLength',
-        'angledLineOfYLength({ angle: 45.5, length: 198.85 }, %, $a)',
+        'angledLineOfYLength({ angle = 45.5, length = 198.85 }, %, $a)',
         ['278.79', '45.5'],
       ],
       [
         'angledLineToX',
-        'angledLineToX({ angle: 45.5, to: 198.85 }, %, $a)',
+        'angledLineToX({ angle = 45.5, to = 198.85 }, %, $a)',
         ['231.33', '134.5'],
       ],
       [
         'angledLineToY',
-        'angledLineToY({ angle: 45.5, to: 198.85 }, %, $a)',
+        'angledLineToY({ angle = 45.5, to = 198.85 }, %, $a)',
         ['134.51', '45.5'],
       ],
       [
         'angledLineThatIntersects',
-        `angledLineThatIntersects({ angle: 45.5, intersectTag: b, offset: 198.85 }, %, $a)`,
+        `angledLineThatIntersects({ angle = 45.5, intersectTag = b, offset = 198.85 }, %, $a)`,
         ['918.4', '45.5'],
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
       const code = makeCode(line)
-      const ast = parse(code)
-      if (err(ast)) throw ast
+      const ast = assertParse(code)
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = line
-      const range: [number, number] = [
+      const range: [number, number, boolean] = [
         code.indexOf(lineOfInterest),
         code.indexOf(lineOfInterest) + lineOfInterest.length,
+        true,
       ]
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
@@ -570,26 +575,26 @@ describe('Testing removeSingleConstraintInfo', () => {
     const code = `part001 = startSketchOn('-XZ')
   |> startProfileAt([0, 0], %)
   |> line([3 + 0, 4 + 0], %)
-  |> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+  |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
   |> lineTo([6.14 + 0, 3.14 + 0], %)
   |> xLineTo(8 + 0, %)
   |> yLineTo(5 + 0, %)
   |> yLine(3.14 + 0, %, $a)
   |> xLine(3.14 + 0, %)
-  |> angledLineOfXLength({ angle: 3 + 0, length: 3.14 + 0 }, %)
-  |> angledLineOfYLength({ angle: 30 + 0, length: 3 + 0 }, %)
-  |> angledLineToX({ angle: 12.14 + 0, to: 12 + 0 }, %)
-  |> angledLineToY({ angle: 30 + 0, to: 10.14 + 0 }, %)
+  |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 + 0 }, %)
+  |> angledLineOfYLength({ angle = 30 + 0, length = 3 + 0 }, %)
+  |> angledLineToX({ angle = 12.14 + 0, to = 12 + 0 }, %)
+  |> angledLineToY({ angle = 30 + 0, to = 10.14 + 0 }, %)
   |> angledLineThatIntersects({
-        angle: 3.14 + 0,
-        intersectTag: a,
-        offset: 0 + 0
+        angle = 3.14 + 0,
+        intersectTag = a,
+        offset = 0 + 0
       }, %)
   |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
     test.each([
       [' line([3 + 0, 4], %)', 'arrayIndex', 1],
       [
-        'angledLine({ angle: 3, length: 3.14 + 0 }, %)',
+        'angledLine({ angle = 3, length = 3.14 + 0 }, %)',
         'objectProperty',
         'angle',
       ],
@@ -599,44 +604,44 @@ describe('Testing removeSingleConstraintInfo', () => {
       ['yLine(3.14, %, $a)', '', ''],
       ['xLine(3.14, %)', '', ''],
       [
-        'angledLineOfXLength({ angle: 3, length: 3.14 + 0 }, %)',
+        'angledLineOfXLength({ angle = 3, length = 3.14 + 0 }, %)',
         'objectProperty',
         'angle',
       ],
       [
-        'angledLineOfYLength({ angle: 30 + 0, length: 3 }, %)',
+        'angledLineOfYLength({ angle = 30 + 0, length = 3 }, %)',
         'objectProperty',
         'length',
       ],
       [
-        'angledLineToX({ angle: 12.14 + 0, to: 12 }, %)',
+        'angledLineToX({ angle = 12.14 + 0, to = 12 }, %)',
         'objectProperty',
         'to',
       ],
       [
-        'angledLineToY({ angle: 30, to: 10.14 + 0 }, %)',
+        'angledLineToY({ angle = 30, to = 10.14 + 0 }, %)',
         'objectProperty',
         'angle',
       ],
       [
         `angledLineThatIntersects({
-       angle: 3.14 + 0,
-       offset: 0,
-       intersectTag: a
+       angle = 3.14 + 0,
+       offset = 0,
+       intersectTag = a
      }, %)`,
         'objectProperty',
         'offset',
       ],
       ['tangentialArcTo([3.14 + 0, 13.14], %)', 'arrayIndex', 1],
     ] as const)('stdlib fn: %s', async (expectedFinish, key, value) => {
-      const ast = parse(code)
-      if (err(ast)) throw ast
+      const ast = assertParse(code)
 
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
-      const range: [number, number] = [
+      const range: [number, number, boolean] = [
         code.indexOf(lineOfInterest) + 1,
         code.indexOf(lineOfInterest) + lineOfInterest.length,
+        true,
       ]
       const pathToNode = getNodePathFromSourceRange(ast, range)
       let argPosition: SimplifiedArgDetails
@@ -683,14 +688,14 @@ describe('Testing removeSingleConstraintInfo', () => {
       ['angledLineToX([12.14 + 0, 12], %)', 'arrayIndex', 1],
       ['angledLineToY([30, 10.14 + 0], %)', 'arrayIndex', 0],
     ])('stdlib fn: %s', async (expectedFinish, key, value) => {
-      const ast = parse(code)
-      if (err(ast)) throw ast
+      const ast = assertParse(code)
 
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
-      const range: [number, number] = [
+      const range: [number, number, boolean] = [
         code.indexOf(lineOfInterest) + 1,
         code.indexOf(lineOfInterest) + lineOfInterest.length,
+        true,
       ]
       let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {
@@ -734,7 +739,7 @@ sketch003 = startSketchOn('XZ')
   |> close(%)`,
         codeAfter: `myVar = 5\n`,
         lineOfInterest: 'line([-2.94, 2.7], %)',
-        type: 'default',
+        type: 'segment',
       },
     ],
     [
@@ -760,7 +765,7 @@ const extrude001 = extrude(10, sketch001)`,
   |> line([-17.67, 0.85], %)
   |> close(%)\n`,
         lineOfInterest: 'line([2.66, 1.17], %)',
-        type: 'extrude-wall',
+        type: 'wall',
       },
     ],
     [
@@ -799,11 +804,11 @@ sketch001 = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 sketch002 = startSketchOn({
-       plane: {
-         origin: { x: 1, y: 2, z: 3 },
-         x_axis: { x: 4, y: 5, z: 6 },
-         y_axis: { x: 7, y: 8, z: 9 },
-         z_axis: { x: 10, y: 11, z: 12 }
+       plane = {
+         origin = { x = 1, y = 2, z = 3 },
+         xAxis = { x = 4, y = 5, z = 6 },
+         yAxis = { x = 7, y = 8, z = 9 },
+         zAxis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)
@@ -816,7 +821,7 @@ sketch002 = startSketchOn({
   |> close(%)
 `,
         lineOfInterest: 'line([-11.18, -2.15], %)',
-        type: 'extrude-wall',
+        type: 'wall',
       },
     ],
     [
@@ -855,11 +860,11 @@ sketch001 = startSketchOn('XZ')
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 sketch002 = startSketchOn({
-       plane: {
-         origin: { x: 1, y: 2, z: 3 },
-         x_axis: { x: 4, y: 5, z: 6 },
-         y_axis: { x: 7, y: 8, z: 9 },
-         z_axis: { x: 10, y: 11, z: 12 }
+       plane = {
+         origin = { x = 1, y = 2, z = 3 },
+         xAxis = { x = 4, y = 5, z = 6 },
+         yAxis = { x = 7, y = 8, z = 9 },
+         zAxis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)
@@ -872,7 +877,7 @@ sketch002 = startSketchOn({
   |> close(%)
 `,
         lineOfInterest: 'startProfileAt([4.46, 5.12], %, $tag)',
-        type: 'end-cap',
+        type: 'cap',
       },
     ],
   ] as const
@@ -880,20 +885,21 @@ sketch002 = startSketchOn({
     '%s',
     async (name, { codeBefore, codeAfter, lineOfInterest, type }) => {
       // const lineOfInterest = 'line([-2.94, 2.7], %)'
-      const ast = parse(codeBefore)
-      if (err(ast)) throw ast
+      const ast = assertParse(codeBefore)
       const execState = await enginelessExecutor(ast)
 
       // deleteFromSelection
-      const range: [number, number] = [
+      const range: [number, number, boolean] = [
         codeBefore.indexOf(lineOfInterest),
         codeBefore.indexOf(lineOfInterest) + lineOfInterest.length,
+        true,
       ]
+      const artifact = { type } as Artifact
       const newAst = await deleteFromSelection(
         ast,
         {
-          range,
-          type,
+          codeRef: codeRefFromRange(range, ast),
+          artifact,
         },
         execState.memory,
         async () => {

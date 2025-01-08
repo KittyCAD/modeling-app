@@ -18,12 +18,16 @@ window.tearDown = engineCommandManager.tearDown
 export const kclManager = new KclManager(engineCommandManager)
 engineCommandManager.kclManager = kclManager
 
-engineCommandManager.getAstCb = () => kclManager.ast
-
 export const sceneInfra = new SceneInfra(engineCommandManager)
 engineCommandManager.camControlsCameraChange = sceneInfra.onCameraChange
 
 export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
+
+declare global {
+  interface Window {
+    editorManager: EditorManager
+  }
+}
 
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager()

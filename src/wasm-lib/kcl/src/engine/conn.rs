@@ -18,10 +18,12 @@ use kittycad_modeling_cmds as kcmc;
 use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 
+use super::ExecutionKind;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    executor::{DefaultPlanes, IdGenerator},
+    execution::{DefaultPlanes, IdGenerator},
+    SourceRange,
 };
 
 #[derive(Debug, PartialEq)]
@@ -39,13 +41,15 @@ pub struct EngineConnection {
     #[allow(dead_code)]
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<Mutex<SocketHealth>>,
-    batch: Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
+    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<Mutex<Option<ModelingSessionData>>>,
+
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 pub struct TcpRead {
@@ -209,7 +213,12 @@ impl EngineConnection {
                             WebSocketResponse::Success(SuccessWebSocketResponse {
                                 resp: OkWebSocketResponseData::ModelingBatch { responses },
                                 ..
-                            }) => {
+                            }) =>
+                            {
+                                #[expect(
+                                    clippy::iter_over_hash_type,
+                                    reason = "modeling command uses a HashMap and keys are random, so we don't really have a choice"
+                                )]
                                 for (resp_id, batch_response) in responses {
                                     let id: uuid::Uuid = (*resp_id).into();
                                     match batch_response {
@@ -278,8 +287,8 @@ impl EngineConnection {
                     }
                     Err(e) => {
                         match &e {
-                            WebSocketReadError::Read(e) => eprintln!("could not read from WS: {:?}", e),
-                            WebSocketReadError::Deser(e) => eprintln!("could not deserialize msg from WS: {:?}", e),
+                            WebSocketReadError::Read(e) => crate::logln!("could not read from WS: {:?}", e),
+                            WebSocketReadError::Deser(e) => crate::logln!("could not deserialize msg from WS: {:?}", e),
                         }
                         *socket_health_tcp_read.lock().unwrap() = SocketHealth::Inactive;
                         return Err(e);
@@ -300,24 +309,37 @@ impl EngineConnection {
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
             default_planes: Default::default(),
             session_data,
+            execution_kind: Default::default(),
         })
     }
 }
 
 #[async_trait::async_trait]
 impl EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, crate::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
     }
 
     async fn default_planes(
         &self,
         id_generator: &mut IdGenerator,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
         {
             let opt = self.default_planes.read().await.as_ref().cloned();
@@ -335,7 +357,7 @@ impl EngineManager for EngineConnection {
     async fn clear_scene_post_hook(
         &self,
         id_generator: &mut IdGenerator,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
     ) -> Result<(), KclError> {
         // Remake the default planes, since they would have been removed after the scene was cleared.
         let new_planes = self.new_default_planes(id_generator, source_range).await?;
@@ -347,9 +369,9 @@ impl EngineManager for EngineConnection {
     async fn inner_send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        source_range: crate::executor::SourceRange,
+        source_range: SourceRange,
         cmd: WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, crate::executor::SourceRange>,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         let (tx, rx) = oneshot::channel();
 

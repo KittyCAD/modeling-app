@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   editorManager,
   engineCommandManager,
@@ -9,22 +9,22 @@ import { useModelingContext } from './useModelingContext'
 import { getEventForSelectWithPoint } from 'lib/selections'
 import {
   getCapCodeRef,
-  getSweepEdgeCodeRef,
   getSweepFromSuspectedSweepSurface,
-  getEdgeCuteConsumedCodeRef,
-  getSolid2dCodeRef,
   getWallCodeRef,
+  getCodeRefsByArtifactId,
   getArtifactOfTypes,
   SegmentArtifact,
 } from 'lang/std/artifactGraph'
 import { err, reportRejection } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
 import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
-import { CallExpression } from 'lang/wasm'
+import { CallExpression, defaultSourceRange } from 'lang/wasm'
 import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
+  const stateRef = useRef(state)
+  stateRef.current = state
 
   useEffect(() => {
     if (!engineCommandManager) return
@@ -34,69 +34,19 @@ export function useEngineConnectionSubscriptions() {
       event: 'highlight_set_entity',
       callback: ({ data }) => {
         if (data?.entity_id) {
-          const artifact = engineCommandManager.artifactGraph.get(
-            data.entity_id
+          const codeRefs = getCodeRefsByArtifactId(
+            data.entity_id,
+            engineCommandManager.artifactGraph
           )
-          if (artifact?.type === 'solid2D') {
-            const codeRef = getSolid2dCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else if (artifact?.type === 'cap') {
-            const codeRef = getCapCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else if (artifact?.type === 'wall') {
-            const extrusion = getSweepFromSuspectedSweepSurface(
-              data.entity_id,
-              engineCommandManager.artifactGraph
-            )
-            const codeRef = getWallCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange(
-              err(extrusion)
-                ? [codeRef.range]
-                : [codeRef.range, extrusion.codeRef.range]
-            )
-          } else if (artifact?.type === 'sweepEdge') {
-            const codeRef = getSweepEdgeCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            if (err(codeRef)) return
-            editorManager.setHighlightRange([codeRef.range])
-          } else if (artifact?.type === 'segment') {
-            editorManager.setHighlightRange([
-              artifact?.codeRef?.range || [0, 0],
-            ])
-          } else if (artifact?.type === 'edgeCut') {
-            const codeRef = artifact.codeRef
-            const consumedCodeRef = getEdgeCuteConsumedCodeRef(
-              artifact,
-              engineCommandManager.artifactGraph
-            )
-            editorManager.setHighlightRange(
-              err(consumedCodeRef)
-                ? [codeRef.range]
-                : [codeRef.range, consumedCodeRef.range]
-            )
-          } else {
-            editorManager.setHighlightRange([[0, 0]])
+          if (codeRefs) {
+            editorManager.setHighlightRange(codeRefs.map(({ range }) => range))
           }
         } else if (
           !editorManager.highlightRange ||
           (editorManager.highlightRange[0][0] !== 0 &&
             editorManager.highlightRange[0][1] !== 0)
         ) {
-          editorManager.setHighlightRange([[0, 0]])
+          editorManager.setHighlightRange([defaultSourceRange()])
         }
       },
     })
@@ -104,6 +54,7 @@ export function useEngineConnectionSubscriptions() {
       event: 'select_with_point',
       callback: (engineEvent) => {
         ;(async () => {
+          if (stateRef.current.matches('Sketch no face')) return
           const event = await getEventForSelectWithPoint(engineEvent)
           event && send(event)
         })().catch(reportRejection)
@@ -186,8 +137,43 @@ export function useEngineConnectionSubscriptions() {
                 })
                 return
               }
+              const artifact =
+                engineCommandManager.artifactGraph.get(planeOrFaceId)
+
+              if (artifact?.type === 'plane') {
+                const planeInfo = await getFaceDetails(planeOrFaceId)
+                sceneInfra.modelingSend({
+                  type: 'Select default plane',
+                  data: {
+                    type: 'offsetPlane',
+                    zAxis: [
+                      planeInfo.z_axis.x,
+                      planeInfo.z_axis.y,
+                      planeInfo.z_axis.z,
+                    ],
+                    yAxis: [
+                      planeInfo.y_axis.x,
+                      planeInfo.y_axis.y,
+                      planeInfo.y_axis.z,
+                    ],
+                    position: [
+                      planeInfo.origin.x,
+                      planeInfo.origin.y,
+                      planeInfo.origin.z,
+                    ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
+                      number,
+                      number,
+                      number
+                    ],
+                    planeId: planeOrFaceId,
+                    pathToNode: artifact.codeRef.pathToNode,
+                  },
+                })
+                return
+              }
+
+              // Artifact is likely an extrusion face
               const faceId = planeOrFaceId
-              const artifact = engineCommandManager.artifactGraph.get(faceId)
               const extrusion = getSweepFromSuspectedSweepSurface(
                 faceId,
                 engineCommandManager.artifactGraph
@@ -215,7 +201,7 @@ export function useEngineConnectionSubscriptions() {
               const { z_axis, y_axis, origin } = faceInfo
               const sketchPathToNode = getNodePathFromSourceRange(
                 kclManager.ast,
-                err(codeRef) ? [0, 0] : codeRef.range
+                err(codeRef) ? defaultSourceRange() : codeRef.range
               )
 
               const getEdgeCutMeta = (): null | EdgeCutInfo => {

@@ -1,10 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
-import { Selections } from 'lib/selections'
 import { Program, Expr } from '../../lang/wasm'
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-} from '../../lang/queryAst'
+import { Selections } from 'lib/selections'
+import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
   getTransformInfos,
@@ -25,6 +22,7 @@ import { removeDoubleNegatives } from '../AvailableVarsHelpers'
 import { normaliseAngle } from '../../lib/utils'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import { KclCommandValue } from 'lib/commandTypes'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 
@@ -40,15 +38,11 @@ export function angleLengthInfo({
       enabled: boolean
     }
   | Error {
-  const paths = selectionRanges.codeBasedSelections.map(({ range }) =>
-    getNodePathFromSourceRange(kclManager.ast, range)
-  )
-
-  const nodes = paths.map((pathToNode) =>
-    getNodeFromPath<Expr>(kclManager.ast, pathToNode, 'CallExpression')
+  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
+    getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, 'CallExpression')
   )
   const _err1 = nodes.find(err)
-  if (err(_err1)) return _err1
+  if (_err1 instanceof Error) return _err1
 
   const isAllTooltips = nodes.every((meta) => {
     if (err(meta)) return false
@@ -64,10 +58,61 @@ export function angleLengthInfo({
     angleOrLength
   )
   const enabled =
-    selectionRanges.codeBasedSelections.length <= 1 &&
+    selectionRanges.graphSelections.length <= 1 &&
     isAllTooltips &&
     transforms.every(Boolean)
   return { enabled, transforms }
+}
+
+export async function applyConstraintLength({
+  length,
+  selectionRanges,
+}: {
+  length: KclCommandValue
+  selectionRanges: Selections
+}) {
+  const ast = kclManager.ast
+  const angleLength = angleLengthInfo({ selectionRanges })
+  if (err(angleLength)) return angleLength
+  const { transforms } = angleLength
+
+  let distanceExpression: Expr = length.valueAst
+
+  /**
+   * To be "constrained", the value must be a binary expression, a named value, or a function call.
+   * If it has a variable name, we need to insert a variable declaration at the correct index.
+   */
+  if (
+    'variableName' in length &&
+    length.variableName &&
+    length.insertIndex !== undefined
+  ) {
+    const newBody = [...ast.body]
+    newBody.splice(length.insertIndex, 0, length.variableDeclarationAst)
+    ast.body = newBody
+    distanceExpression = createIdentifier(length.variableName)
+  }
+
+  if (!isExprBinaryPart(distanceExpression)) {
+    return new Error('Invalid valueNode, is not a BinaryPart')
+  }
+
+  const retval = transformAstSketchLines({
+    ast,
+    selectionRanges,
+    transformInfos: transforms,
+    programMemory: kclManager.programMemory,
+    referenceSegName: '',
+    forceValueUsedInTransform: distanceExpression,
+  })
+  if (err(retval)) return Promise.reject(retval)
+
+  const { modifiedAst: _modifiedAst, pathToNodeMap } = retval
+
+  return {
+    modifiedAst: _modifiedAst,
+    pathToNodeMap,
+  }
 }
 
 export async function applyConstraintAngleLength({

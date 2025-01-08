@@ -5,12 +5,12 @@ import {
   ProgramMemory,
   Path,
   ExtrudeSurface,
-  sketchFromKclValue,
+  sketchFromKclValueOptional,
 } from 'lang/wasm'
 import { useKclContext } from 'lang/KclProvider'
 import { useResolvedTheme } from 'hooks/useResolvedTheme'
 import { ActionButton } from 'components/ActionButton'
-import { err, trap } from 'lib/trap'
+import { Reason, trap } from 'lib/trap'
 import Tooltip from 'components/Tooltip'
 import { useModelingContext } from 'hooks/useModelingContext'
 
@@ -88,25 +88,28 @@ export const MemoryPane = () => {
 export const processMemory = (programMemory: ProgramMemory) => {
   const processedMemory: any = {}
   for (const [key, val] of programMemory?.visibleEntries()) {
-    if (typeof val.value !== 'function') {
-      const sg = sketchFromKclValue(val, null)
+    if (
+      val.type === 'Sketch' ||
+      // @ts-ignore
+      val.type !== 'Function'
+    ) {
+      const sk = sketchFromKclValueOptional(val, key)
       if (val.type === 'Solid') {
         processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
           return rest
         })
-      } else if (!err(sg)) {
-        processedMemory[key] = sg.value.map(({ __geoMeta, ...rest }: Path) => {
+      } else if (!(sk instanceof Reason)) {
+        processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
           return rest
         })
-      } else if ((val.type as any) === 'Function') {
-        processedMemory[key] = `__function(${(val as any)?.expression?.params
-          ?.map?.(({ identifier }: any) => identifier?.name || '')
-          .join(', ')})__`
       } else {
         processedMemory[key] = val.value
       }
-    } else if (key !== 'log') {
-      processedMemory[key] = '__function__'
+      //@ts-ignore
+    } else if (val.type === 'Function') {
+      processedMemory[key] = `__function(${(val as any)?.expression?.params
+        ?.map?.(({ identifier }: any) => identifier?.name || '')
+        .join(', ')})__`
     }
   }
   return processedMemory

@@ -4,6 +4,7 @@ import { AppHeader } from 'components/AppHeader'
 import ProjectCard from 'components/ProjectCard/ProjectCard'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import Loading from 'components/Loading'
 import { PATHS } from 'lib/paths'
 import {
@@ -19,6 +20,7 @@ import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
+import { markOnce } from 'lib/performance'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { useProjectsContext } from 'hooks/useProjectsContext'
@@ -41,6 +43,7 @@ const Home = () => {
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
+    markOnce('code/didLoadHome')
     kclManager.cancelAllExecutions()
   }, [])
 
@@ -94,6 +97,11 @@ const Home = () => {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
     )
+
+    if (typeof newProjectName === 'string' && newProjectName.startsWith('.')) {
+      toast.error('Project names cannot start with a dot (.)')
+      return
+    }
 
     if (newProjectName !== project.name) {
       send({

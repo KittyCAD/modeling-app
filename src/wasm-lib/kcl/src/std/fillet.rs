@@ -12,9 +12,9 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
-    ast::types::TagDeclarator,
     errors::{KclError, KclErrorDetails},
-    executor::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier, UserVal},
+    execution::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier},
+    parsing::ast::types::TagNode,
     settings::types::UnitLength,
     std::Args,
 };
@@ -55,7 +55,7 @@ impl EdgeReference {
 
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid, tag): (FilletData, Box<Solid>, Option<TagDeclarator>) = args.get_data_and_solid_and_tag()?;
+    let (data, solid, tag): (FilletData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
 
     let solid = inner_fillet(data, solid, tag, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
@@ -68,22 +68,22 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// will smoothly blend the transition.
 ///
 /// ```no_run
-/// const width = 20
-/// const length = 10
-/// const thickness = 1
-/// const filletRadius = 2
+/// width = 20
+/// length = 10
+/// thickness = 1
+/// filletRadius = 2
 ///
-/// const mountingPlateSketch = startSketchOn("XY")
+/// mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
 ///   |> lineTo([width/2, -length/2], %, $edge1)
 ///   |> lineTo([width/2, length/2], %, $edge2)
 ///   |> lineTo([-width/2, length/2], %, $edge3)
 ///   |> close(%, $edge4)
 ///
-/// const mountingPlate = extrude(thickness, mountingPlateSketch)
+/// mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> fillet({
-///     radius: filletRadius,
-///     tags: [
+///     radius = filletRadius,
+///     tags = [
 ///       getNextAdjacentEdge(edge1),
 ///       getNextAdjacentEdge(edge2),
 ///       getNextAdjacentEdge(edge3),
@@ -93,23 +93,23 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 ///
 /// ```no_run
-/// const width = 20
-/// const length = 10
-/// const thickness = 1
-/// const filletRadius = 1
+/// width = 20
+/// length = 10
+/// thickness = 1
+/// filletRadius = 1
 ///
-/// const mountingPlateSketch = startSketchOn("XY")
+/// mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
 ///   |> lineTo([width/2, -length/2], %, $edge1)
 ///   |> lineTo([width/2, length/2], %, $edge2)
 ///   |> lineTo([-width/2, length/2], %, $edge3)
 ///   |> close(%, $edge4)
 ///
-/// const mountingPlate = extrude(thickness, mountingPlateSketch)
+/// mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> fillet({
-///     radius: filletRadius,
-///     tolerance: 0.000001,
-///     tags: [
+///     radius = filletRadius,
+///     tolerance = 0.000001,
+///     tags = [
 ///       getNextAdjacentEdge(edge1),
 ///       getNextAdjacentEdge(edge2),
 ///       getNextAdjacentEdge(edge3),
@@ -119,11 +119,12 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "fillet",
+    feature_tree_operation = true,
 }]
 async fn inner_fillet(
     data: FilletData,
     solid: Box<Solid>,
-    tag: Option<TagDeclarator>,
+    tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -142,7 +143,7 @@ async fn inner_fillet(
     for edge_tag in data.tags {
         let edge_id = edge_tag.get_engine_id(exec_state, &args)?;
 
-        let id = exec_state.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
@@ -186,42 +187,37 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_opposite_edge(tag, exec_state, args.clone()).await?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
+    Ok(KclValue::Uuid {
+        value: edge,
         meta: vec![args.source_range.into()],
-    }))
+    })
 }
 
 /// Get the opposite edge to the edge given.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
 ///   |> angledLine({
-///     angle: 120,
-///     length: 10,
+///     angle = 120,
+///     length = 10,
 ///   }, %)
 ///   |> line([-10, 0], %)
 ///   |> angledLine({
-///     angle: 240,
-///     length: 10,
+///     angle = 240,
+///     length = 10,
 ///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 ///   |> fillet({
-///     radius: 3,
-///     tags: [getOppositeEdge(referenceEdge)],
+///     radius = 3,
+///     tags = [getOppositeEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
@@ -229,11 +225,11 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 }]
 async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
     if args.ctx.is_mock() {
-        return Ok(exec_state.id_generator.next_uuid());
+        return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
@@ -264,42 +260,37 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_next_adjacent_edge(tag, exec_state, args.clone()).await?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
+    Ok(KclValue::Uuid {
+        value: edge,
         meta: vec![args.source_range.into()],
-    }))
+    })
 }
 
 /// Get the next adjacent edge to the edge given.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
 ///   |> angledLine({
-///     angle: 120,
-///     length: 10,
+///     angle = 120,
+///     length = 10,
 ///   }, %)
 ///   |> line([-10, 0], %)
 ///   |> angledLine({
-///     angle: 240,
-///     length: 10,
+///     angle = 240,
+///     length = 10,
 ///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 ///   |> fillet({
-///     radius: 3,
-///     tags: [getNextAdjacentEdge(referenceEdge)],
+///     radius = 3,
+///     tags = [getNextAdjacentEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
@@ -311,11 +302,11 @@ async fn inner_get_next_adjacent_edge(
     args: Args,
 ) -> Result<Uuid, KclError> {
     if args.ctx.is_mock() {
-        return Ok(exec_state.id_generator.next_uuid());
+        return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args
@@ -354,42 +345,37 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
     let tag: TagIdentifier = args.get_data()?;
 
     let edge = inner_get_previous_adjacent_edge(tag, exec_state, args.clone()).await?;
-    Ok(KclValue::UserVal(UserVal {
-        value: serde_json::to_value(edge).map_err(|e| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Failed to convert Uuid to json: {}", e),
-                source_ranges: vec![args.source_range],
-            })
-        })?,
+    Ok(KclValue::Uuid {
+        value: edge,
         meta: vec![args.source_range.into()],
-    }))
+    })
 }
 
 /// Get the previous adjacent edge to the edge given.
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> angledLine({
-///     angle: 60,
-///     length: 10,
+///     angle = 60,
+///     length = 10,
 ///   }, %)
 ///   |> angledLine({
-///     angle: 120,
-///     length: 10,
+///     angle = 120,
+///     length = 10,
 ///   }, %)
 ///   |> line([-10, 0], %)
 ///   |> angledLine({
-///     angle: 240,
-///     length: 10,
+///     angle = 240,
+///     length = 10,
 ///   }, %, $referenceEdge)
 ///   |> close(%)
 ///
-/// const example = extrude(5, exampleSketch)
+/// example = extrude(5, exampleSketch)
 ///   |> fillet({
-///     radius: 3,
-///     tags: [getPreviousAdjacentEdge(referenceEdge)],
+///     radius = 3,
+///     tags = [getPreviousAdjacentEdge(referenceEdge)],
 ///   }, %)
 /// ```
 #[stdlib {
@@ -401,11 +387,11 @@ async fn inner_get_previous_adjacent_edge(
     args: Args,
 ) -> Result<Uuid, KclError> {
     if args.ctx.is_mock() {
-        return Ok(exec_state.id_generator.next_uuid());
+        return Ok(exec_state.next_uuid());
     }
     let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
 
     let resp = args

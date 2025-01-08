@@ -24,6 +24,10 @@ import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { useCommandsContext } from 'hooks/useCommandsContext'
+import { maybeWriteToDisk } from 'lib/telemetry'
+maybeWriteToDisk()
+  .then(() => {})
+  .catch(() => {})
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData

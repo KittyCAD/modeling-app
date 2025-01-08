@@ -33,7 +33,7 @@ tan(num: number) -> number
 ```js
 exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
-  |> angledLine({ angle: 50, length: 50 * tan(1 / 2) }, %)
+  |> angledLine({ angle = 50, length = 50 * tan(1 / 2) }, %)
   |> yLineTo(0, %)
   |> close(%)
 

@@ -1,8 +1,13 @@
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
+
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
-    errors::KclError,
-    executor::{DefaultPlanes, IdGenerator},
+    exec::{DefaultPlanes, IdGenerator},
+    ExecutionKind, KclError,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -11,10 +16,6 @@ use kittycad_modeling_cmds::{
     shared::PathSegment::{self, *},
     websocket::{ModelingBatch, ModelingCmdReq, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse},
 };
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
 use tokio::sync::RwLock;
 
 const CPP_PREFIX: &str = "const double scaleFactor = 100;\n";
@@ -22,10 +23,11 @@ const NEED_PLANES: bool = true;
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::executor::SourceRange)>>>,
-    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::executor::SourceRange)>>>,
+    batch: Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>>,
+    batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
     core_test: Arc<Mutex<String>>,
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
 impl EngineConnection {
@@ -39,6 +41,7 @@ impl EngineConnection {
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
             core_test: result,
             default_planes: Default::default(),
+            execution_kind: Default::default(),
         })
     }
 
@@ -186,7 +189,11 @@ impl EngineConnection {
                     uuid_to_cpp(path_id)
                 )
             }
-            kcmc::ModelingCmd::Extrude(kcmc::Extrude { distance, target }) => {
+            kcmc::ModelingCmd::Extrude(kcmc::Extrude {
+                distance,
+                target,
+                faces: _, // Engine team: start using this once the frontend and engine both use it.
+            }) => {
                 format!(
                     r#"
                     scene->getSceneObject(Utils::UUID("{target}"))->extrudeToSolid3D({} * scaleFactor, true);
@@ -351,19 +358,31 @@ fn codegen_cpp_repl_uuid_setters(reps_id: &str, entity_ids: &[uuid::Uuid]) -> St
 }
 
 #[async_trait::async_trait]
-impl kcl_lib::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::executor::SourceRange)>>> {
+impl kcl_lib::EngineManager for EngineConnection {
+    fn batch(&self) -> Arc<Mutex<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>> {
         self.batch.clone()
     }
 
-    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::executor::SourceRange)>>> {
+    fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn execution_kind(&self) -> ExecutionKind {
+        let guard = self.execution_kind.lock().unwrap();
+        *guard
+    }
+
+    fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
+        let mut guard = self.execution_kind.lock().unwrap();
+        let original = *guard;
+        *guard = execution_kind;
+        original
     }
 
     async fn default_planes(
         &self,
         id_generator: &mut IdGenerator,
-        source_range: kcl_lib::executor::SourceRange,
+        source_range: kcl_lib::SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
         if NEED_PLANES {
             {
@@ -385,7 +404,7 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
     async fn clear_scene_post_hook(
         &self,
         _id_generator: &mut IdGenerator,
-        _source_range: kcl_lib::executor::SourceRange,
+        _source_range: kcl_lib::SourceRange,
     ) -> Result<(), KclError> {
         Ok(())
     }
@@ -393,9 +412,9 @@ impl kcl_lib::engine::EngineManager for EngineConnection {
     async fn inner_send_modeling_cmd(
         &self,
         id: uuid::Uuid,
-        _source_range: kcl_lib::executor::SourceRange,
+        _source_range: kcl_lib::SourceRange,
         cmd: WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, kcl_lib::executor::SourceRange>,
+        _id_to_source_range: std::collections::HashMap<uuid::Uuid, kcl_lib::SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
             WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {

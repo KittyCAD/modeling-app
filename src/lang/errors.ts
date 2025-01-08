@@ -1,86 +1,99 @@
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
+import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
 import { posToOffset } from '@kittycad/codemirror-lsp-client'
 import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
 import { Text } from '@codemirror/state'
+import { EditorView } from 'codemirror'
+import { SourceRange } from 'lang/wasm'
+import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
   kind: ExtractKind<RustKclError> | 'name'
-  sourceRanges: [number, number][]
+  sourceRange: SourceRange
   msg: string
+  operations: Operation[]
+
   constructor(
     kind: ExtractKind<RustKclError> | 'name',
     msg: string,
-    sourceRanges: [number, number][]
+    sourceRange: SourceRange,
+    operations: Operation[]
   ) {
     super()
     this.kind = kind
     this.msg = msg
-    this.sourceRanges = sourceRanges
+    this.sourceRange = sourceRange
+    this.operations = operations
     Object.setPrototypeOf(this, KCLError.prototype)
   }
 }
 
 export class KCLLexicalError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
-    super('lexical', msg, sourceRanges)
+  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
+    super('lexical', msg, sourceRange, operations)
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLInternalError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
-    super('internal', msg, sourceRanges)
+  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
+    super('internal', msg, sourceRange, operations)
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLSyntaxError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
-    super('syntax', msg, sourceRanges)
+  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
+    super('syntax', msg, sourceRange, operations)
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLSemanticError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
-    super('semantic', msg, sourceRanges)
+  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
+    super('semantic', msg, sourceRange, operations)
     Object.setPrototypeOf(this, KCLSemanticError.prototype)
   }
 }
 
 export class KCLTypeError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
-    super('type', msg, sourceRanges)
+  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
+    super('type', msg, sourceRange, operations)
     Object.setPrototypeOf(this, KCLTypeError.prototype)
   }
 }
 
 export class KCLUnimplementedError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
-    super('unimplemented', msg, sourceRanges)
+  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
+    super('unimplemented', msg, sourceRange, operations)
     Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
   }
 }
 
 export class KCLUnexpectedError extends KCLError {
-  constructor(msg: string, sourceRanges: [number, number][]) {
-    super('unexpected', msg, sourceRanges)
+  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
+    super('unexpected', msg, sourceRange, operations)
     Object.setPrototypeOf(this, KCLUnexpectedError.prototype)
   }
 }
 
 export class KCLValueAlreadyDefined extends KCLError {
-  constructor(key: string, sourceRanges: [number, number][]) {
-    super('name', `Key ${key} was already defined elsewhere`, sourceRanges)
+  constructor(key: string, sourceRange: SourceRange, operations: Operation[]) {
+    super(
+      'name',
+      `Key ${key} was already defined elsewhere`,
+      sourceRange,
+      operations
+    )
     Object.setPrototypeOf(this, KCLValueAlreadyDefined.prototype)
   }
 }
 
 export class KCLUndefinedValueError extends KCLError {
-  constructor(key: string, sourceRanges: [number, number][]) {
-    super('name', `Key ${key} has not been defined`, sourceRanges)
+  constructor(key: string, sourceRange: SourceRange, operations: Operation[]) {
+    super('name', `Key ${key} has not been defined`, sourceRange, operations)
     Object.setPrototypeOf(this, KCLUndefinedValueError.prototype)
   }
 }
@@ -96,19 +109,16 @@ export function lspDiagnosticsToKclErrors(
   return diagnostics
     .flatMap(
       ({ range, message }) =>
-        new KCLError('unexpected', message, [
-          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!],
-        ])
+        new KCLError(
+          'unexpected',
+          message,
+          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, true],
+          []
+        )
     )
-    .filter(({ sourceRanges }) => {
-      const [from, to] = sourceRanges[0]
-      return (
-        from !== null && to !== null && from !== undefined && to !== undefined
-      )
-    })
     .sort((a, b) => {
-      const c = a.sourceRanges[0][0]
-      const d = b.sourceRanges[0][0]
+      const c = a.sourceRange[0]
+      const d = b.sourceRange[0]
       switch (true) {
         case c < d:
           return -1
@@ -126,9 +136,48 @@ export function lspDiagnosticsToKclErrors(
 export function kclErrorsToDiagnostics(
   errors: KCLError[]
 ): CodeMirrorDiagnostic[] {
-  return errors?.flatMap((err) => {
-    return err.sourceRanges.map(([from, to]) => {
-      return { from, to, message: err.msg, severity: 'error' }
+  return errors
+    ?.filter((err) => err.sourceRange[2])
+    .map((err) => {
+      return {
+        from: err.sourceRange[0],
+        to: err.sourceRange[1],
+        message: err.msg,
+        severity: 'error',
+      }
     })
-  })
+}
+
+export function complilationErrorsToDiagnostics(
+  errors: CompilationError[]
+): CodeMirrorDiagnostic[] {
+  return errors
+    ?.filter((err) => err.sourceRange[2] === 0)
+    .map((err) => {
+      let severity: any = 'error'
+      if (err.severity === 'Warning') {
+        severity = 'warning'
+      }
+      let actions
+      const suggestion = err.suggestion
+      if (suggestion) {
+        actions = [
+          {
+            name: suggestion.title,
+            apply: (view: EditorView, from: number, to: number) => {
+              view.dispatch({
+                changes: { from, to, insert: suggestion.insert },
+              })
+            },
+          },
+        ]
+      }
+      return {
+        from: err.sourceRange[0],
+        to: err.sourceRange[1],
+        message: err.message,
+        severity,
+        actions,
+      }
+    })
 }

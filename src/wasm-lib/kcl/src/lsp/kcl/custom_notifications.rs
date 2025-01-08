@@ -3,14 +3,14 @@
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::notification::Notification;
 
-use crate::settings::types::UnitLength;
+use crate::{parsing::ast::types::Node, settings::types::UnitLength};
 
 /// A notification that the AST has changed.
 #[derive(Debug)]
 pub enum AstUpdated {}
 
 impl Notification for AstUpdated {
-    type Params = crate::ast::types::Program;
+    type Params = Node<crate::parsing::ast::types::Program>;
     const METHOD: &'static str = "kcl/astUpdated";
 }
 
@@ -19,7 +19,7 @@ impl Notification for AstUpdated {
 pub enum MemoryUpdated {}
 
 impl Notification for MemoryUpdated {
-    type Params = crate::executor::ProgramMemory;
+    type Params = crate::execution::ProgramMemory;
     const METHOD: &'static str = "kcl/memoryUpdated";
 }
 

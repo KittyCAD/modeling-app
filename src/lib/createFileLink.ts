@@ -14,7 +14,10 @@ export interface FileLinkParams {
 /**
  * Given a file's code, name, and units, creates shareable link
  */
-export async function createFileLink(token: string, { code, name, units }: FileLinkParams) {
+export async function createFileLink(
+  token: string,
+  { code, name, units }: FileLinkParams
+) {
   let urlUserShortlinks = withBaseURL('/users/shortlinks')
 
   // During development, the "handler" needs to first be the web app version,
@@ -25,12 +28,15 @@ export async function createFileLink(token: string, { code, name, units }: FileL
     `/?${CREATE_FILE_URL_PARAM}&name=${encodeURIComponent(
       name
     )}&units=${units}&code=${encodeURIComponent(stringToBase64(code))}`,
-    origin,
+    origin
   ).toString()
 
   // Remove this monkey patching
   function fixTheBrokenShitUntilItsFixedOnDev() {
-    urlUserShortlinks = urlUserShortlinks.replace('https://api.dev.zoo.dev', 'https://api.zoo.dev')
+    urlUserShortlinks = urlUserShortlinks.replace(
+      'https://api.dev.zoo.dev',
+      'https://api.zoo.dev'
+    )
     console.log(urlUserShortlinks)
   }
 
@@ -40,8 +46,8 @@ export async function createFileLink(token: string, { code, name, units }: FileL
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ url: urlFileToShare })
+    body: JSON.stringify({ url: urlFileToShare }),
   }).then((resp) => resp.json())
 }
