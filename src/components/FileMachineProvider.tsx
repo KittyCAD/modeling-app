@@ -315,7 +315,7 @@ export const FileMachineProvider = ({
           // with the sample's setting.
           if (data.sampleUnits) {
             settings.send({
-              type: 'set.modeling.defaultUnit',
+              type: 'set.modeling.base_unit',
               data: {
                 level: 'project',
                 value: data.sampleUnits,

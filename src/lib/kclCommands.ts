@@ -86,8 +86,7 @@ export function kclCommands(
                 sampleName: data.sample,
                 code,
                 method: data.method,
-                sampleUnits:
-                  projectSettingsPayload.modeling?.defaultUnit || 'mm',
+                sampleUnits: projectSettingsPayload.modeling?.base_unit || 'mm',
               }
             }
           )

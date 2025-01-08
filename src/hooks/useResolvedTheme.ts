@@ -10,7 +10,7 @@ export function useResolvedTheme() {
   const {
     settings: { context },
   } = useSettingsAuthContext()
-  return context.app.theme.current === Themes.System
+  return context.app.appearance.theme.current === Themes.System
     ? getSystemTheme()
-    : context.app.theme.current
+    : context.app.appearance.theme.current
 }

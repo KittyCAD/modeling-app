@@ -69,7 +69,7 @@ export const ModelingPane = ({
   ...props
 }: ModelingPaneProps) => {
   const { settings } = useSettingsAuthContext()
-  const onboardingStatus = settings.context.app.onboardingStatus
+  const onboardingStatus = settings.context.app.onboarding_status
   const pointerEventsCssClass =
     onboardingStatus.current === onboardingPaths.CAMERA
       ? 'pointer-events-none '

@@ -3,13 +3,12 @@
 use anyhow::Result;
 use derive_docs::stdlib;
 
+use super::args::FromArgs;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, KclValue},
     std::Args,
 };
-
-use super::args::FromArgs;
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.

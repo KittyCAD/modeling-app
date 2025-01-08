@@ -2223,7 +2223,10 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{execution::TagIdentifier, std::sketch::PlaneData, std::utils::calculate_circle_center};
+    use crate::{
+        execution::TagIdentifier,
+        std::{sketch::PlaneData, utils::calculate_circle_center},
+    };
 
     #[test]
     fn test_deserialize_plane_data() {

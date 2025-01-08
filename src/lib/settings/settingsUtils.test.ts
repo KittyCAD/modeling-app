@@ -26,8 +26,8 @@ describe(`testing settings initialization`, () => {
 
     setSettingsAtLevel(settings, 'user', appSettingsPayload)
 
-    expect(settings.app.theme.current).toBe('dark')
-    expect(settings.app.themeColor.current).toBe('190')
+    expect(settings.app.appearance.theme.current).toBe('dark')
+    expect(settings.app.appearance.color.current).toBe('190')
   })
 
   it(`doesn't read theme from project settings`, () => {
@@ -61,9 +61,9 @@ describe(`testing settings initialization`, () => {
     setSettingsAtLevel(settings, 'project', projectSettingsPayload)
 
     // The 'project'-level for `theme` setting should be ignored completely
-    expect(settings.app.theme.current).toBe('dark')
+    expect(settings.app.appearance.theme.current).toBe('dark')
     // But the 'project'-level for `themeColor` setting should be applied
-    expect(settings.app.themeColor.current).toBe('200')
+    expect(settings.app.appearance.color.current).toBe('200')
   })
 })
 
@@ -106,8 +106,8 @@ describe(`testing getAllCurrentSettings`, () => {
     const allCurrentSettings = getAllCurrentSettings(settings)
     // This one gets the 'user'-level theme because it's ignored at the project level
     // (see the test "doesn't read theme from project settings")
-    expect(allCurrentSettings.app.theme).toBe('dark')
-    expect(allCurrentSettings.app.themeColor).toBe('200')
-    expect(allCurrentSettings.modeling.defaultUnit).toBe('ft')
+    expect(allCurrentSettings.app.appearance?.theme).toBe('dark')
+    expect(allCurrentSettings.app.appearance?.color).toBe('200')
+    expect(allCurrentSettings.modeling.base_unit).toBe('ft')
   })
 })

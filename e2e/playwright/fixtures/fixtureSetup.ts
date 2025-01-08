@@ -12,9 +12,10 @@ import { CmdBarFixture } from './cmdBarFixture'
 import { EditorFixture } from './editorFixture'
 import { ToolbarFixture } from './toolbarFixture'
 import { SceneFixture } from './sceneFixture'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { HomePageFixture } from './homePageFixture'
 import { unsafeTypedKeys } from 'lib/utils'
+import { DeepPartial } from 'lib/types'
+import { Settings } from 'wasm-lib/kcl/bindings/Settings'
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -78,7 +79,7 @@ export class AuthenticatedTronApp {
       fixtures: Partial<Fixtures>
       folderSetupFn?: (projectDirName: string) => Promise<void>
       cleanProjectDir?: boolean
-      appSettings?: Partial<SaveSettingsPayload>
+      appSettings?: DeepPartial<Settings>
     } = { fixtures: {} }
   ) {
     const { electronApp, page, context, dir } = await setupElectron({

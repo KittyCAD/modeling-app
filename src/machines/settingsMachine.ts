@@ -84,13 +84,13 @@ export const settingsMachine = setup({
       return newContext
     }),
     setThemeClass: ({ context }) => {
-      const currentTheme = context.app.theme.current ?? Themes.System
+      const currentTheme = context.app.appearance.theme.current ?? Themes.System
       setThemeClass(
         currentTheme === Themes.System ? getSystemTheme() : currentTheme
       )
     },
     setEngineCameraProjection: ({ context }) => {
-      const newCurrentProjection = context.modeling.cameraProjection.current
+      const newCurrentProjection = context.modeling.camera_projection.current
       sceneInfra.camControls.setEngineCameraProjection(newCurrentProjection)
     },
   },

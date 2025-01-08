@@ -9,8 +9,8 @@ export function UnitsMenu() {
       {({ close }) => (
         <>
           <Popover.Button
-            className={`flex items-center gap-2 px-3 py-1 
-        text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm 
+            className={`flex items-center gap-2 px-3 py-1
+        text-xs text-primary bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm
         border !border-primary/50 rounded-full`}
           >
             <div className="w-4 h-[1px] bg-primary relative">
@@ -18,7 +18,7 @@ export function UnitsMenu() {
               <div className="absolute w-[1px] h-[1em] bg-primary right-0 top-1/2 -translate-y-1/2"></div>
             </div>
             <span className="sr-only">Current units are:&nbsp;</span>
-            {settings.context.modeling.defaultUnit.current}
+            {settings.context.modeling.base_unit.current}
           </Popover.Button>
           <Popover.Panel
             className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
@@ -32,7 +32,7 @@ export function UnitsMenu() {
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
                       settings.send({
-                        type: 'set.modeling.defaultUnit',
+                        type: 'set.modeling.base_unit',
                         data: {
                           level: 'project',
                           value: unit,
@@ -42,7 +42,7 @@ export function UnitsMenu() {
                     }}
                   >
                     <span className="flex-1">{baseUnitLabels[unit]}</span>
-                    {unit === settings.context.modeling.defaultUnit.current && (
+                    {unit === settings.context.modeling.base_unit.current && (
                       <span className="text-chalkboard-60">current</span>
                     )}
                   </button>

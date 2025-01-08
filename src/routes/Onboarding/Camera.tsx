@@ -16,7 +16,7 @@ export default function Units() {
       send,
       state: {
         context: {
-          modeling: { mouseControls },
+          modeling: { mouse_controls },
         },
       },
     },
@@ -38,10 +38,10 @@ export default function Units() {
           <select
             id="camera-controls"
             className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
-            value={mouseControls.current}
+            value={mouse_controls.current}
             onChange={(e) => {
               send({
-                type: 'set.modeling.mouseControls',
+                type: 'set.modeling.mouse_controls',
                 data: {
                   level: 'user',
                   value: e.target.value as CameraSystem,
@@ -58,15 +58,15 @@ export default function Units() {
           <ul className="mx-4 my-2 text-sm leading-relaxed">
             <li>
               <strong>Pan:</strong>{' '}
-              {cameraMouseDragGuards[mouseControls.current].pan.description}
+              {cameraMouseDragGuards[mouse_controls.current].pan.description}
             </li>
             <li>
               <strong>Zoom:</strong>{' '}
-              {cameraMouseDragGuards[mouseControls.current].zoom.description}
+              {cameraMouseDragGuards[mouse_controls.current].zoom.description}
             </li>
             <li>
               <strong>Rotate:</strong>{' '}
-              {cameraMouseDragGuards[mouseControls.current].rotate.description}
+              {cameraMouseDragGuards[mouse_controls.current].rotate.description}
             </li>
           </ul>
         </SettingsSection>

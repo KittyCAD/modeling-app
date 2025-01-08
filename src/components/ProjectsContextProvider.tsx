@@ -79,11 +79,8 @@ const ProjectsContextDesktop = ({
   } = useSettingsAuthContext()
 
   useEffect(() => {
-    console.log(
-      'project directory changed',
-      settings.app.projectDirectory.current
-    )
-  }, [settings.app.projectDirectory.current])
+    console.log('project directory changed', settings.project.directory.current)
+  }, [settings.project.directory.current])
 
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectPaths, projectsDir } = useProjectsLoader([
@@ -192,7 +189,7 @@ const ProjectsContextDesktop = ({
           let name = (
             input && 'name' in input && input.name
               ? input.name
-              : settings.projects.defaultProjectName.current
+              : settings.project.default_project_name.current
           ).trim()
 
           if (doesProjectNameNeedInterpolated(name)) {
@@ -257,8 +254,8 @@ const ProjectsContextDesktop = ({
     {
       input: {
         projects: projectPaths,
-        defaultProjectName: settings.projects.defaultProjectName.current,
-        defaultDirectory: settings.app.projectDirectory.current,
+        defaultProjectName: settings.project.default_project_name.current,
+        defaultDirectory: settings.project.directory.current,
       },
     }
   )

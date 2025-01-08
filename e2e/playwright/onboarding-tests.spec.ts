@@ -1,7 +1,12 @@
 import { test, expect } from './zoo-test'
 import { join } from 'path'
 import fsp from 'fs/promises'
-import { getUtils, executorInputPath, createProject } from './test-utils'
+import {
+  getUtils,
+  executorInputPath,
+  createProject,
+  settingsToToml,
+} from './test-utils'
 import { bracket } from 'lib/exampleKcl'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import {
@@ -10,7 +15,6 @@ import {
   TEST_SETTINGS_ONBOARDING_EXPORT,
   TEST_SETTINGS_ONBOARDING_USER_MENU,
 } from './storageStates'
-import * as TOML from '@iarna/toml'
 import { expectPixelColor } from './fixtures/sceneFixture'
 
 // Because onboarding relies on an app setting we need to set it as incompletel
@@ -22,7 +26,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboarding_status: 'incomplete',
         },
       },
       cleanProjectDir: true,
@@ -63,7 +67,7 @@ test.describe('Onboarding tests', () => {
       tag: '@electron',
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboarding_status: 'incomplete',
         },
       },
       cleanProjectDir: true,
@@ -108,7 +112,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboarding_status: 'incomplete',
         },
       },
       cleanProjectDir: true,
@@ -158,7 +162,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboarding_status: 'incomplete',
         },
       },
     },
@@ -172,7 +176,7 @@ test.describe('Onboarding tests', () => {
         },
         {
           settingsKey: TEST_SETTINGS_KEY,
-          settings: TOML.stringify({
+          settings: settingsToToml({
             settings: TEST_SETTINGS_ONBOARDING_START,
           }),
         }
@@ -208,7 +212,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: '/export',
+          onboarding_status: '/export',
         },
       },
       cleanProjectDir: true,
@@ -225,7 +229,7 @@ test.describe('Onboarding tests', () => {
         },
         {
           settingsKey: TEST_SETTINGS_KEY,
-          settings: TOML.stringify({
+          settings: settingsToToml({
             settings: TEST_SETTINGS_ONBOARDING_EXPORT,
           }),
         }
@@ -263,7 +267,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: '/parametric-modeling',
+          onboarding_status: '/parametric-modeling',
         },
       },
       cleanProjectDir: true,
@@ -313,7 +317,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboarding_status: 'incomplete',
         },
       },
       cleanProjectDir: true,
@@ -326,7 +330,7 @@ test.describe('Onboarding tests', () => {
         },
         {
           settingsKey: TEST_SETTINGS_KEY,
-          settings: TOML.stringify({
+          settings: settingsToToml({
             settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
           }),
         }
@@ -386,7 +390,7 @@ test.describe('Onboarding tests', () => {
     {
       appSettings: {
         app: {
-          onboardingStatus: 'incomplete',
+          onboarding_status: 'incomplete',
         },
       },
       cleanProjectDir: true,
@@ -400,7 +404,7 @@ test.describe('Onboarding tests', () => {
         },
         {
           settingsKey: TEST_SETTINGS_KEY,
-          settings: TOML.stringify({
+          settings: settingsToToml({
             settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
           }),
         }
@@ -442,7 +446,7 @@ test.fixme(
   {
     appSettings: {
       app: {
-        onboardingStatus: 'dismissed',
+        onboarding_status: 'dismissed',
       },
     },
     cleanProjectDir: true,

@@ -6,7 +6,7 @@ import { useState } from 'react'
 const DownloadAppBanner = () => {
   const { settings } = useSettingsAuthContext()
   const [isBannerDismissed, setIsBannerDismissed] = useState(
-    settings.context.app.dismissWebBanner.current
+    settings.context.app.dismiss_web_banner.current
   )
 
   return (

@@ -13,7 +13,7 @@ export default function Units() {
     settings: {
       send,
       context: {
-        modeling: { defaultUnit },
+        modeling: { base_unit },
       },
     },
   } = useSettingsAuthContext()
@@ -29,10 +29,10 @@ export default function Units() {
           <select
             id="base-unit"
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
-            value={defaultUnit.user}
+            value={base_unit.user}
             onChange={(e) => {
               send({
-                type: 'set.modeling.defaultUnit',
+                type: 'set.modeling.base_unit',
                 data: {
                   level: 'user',
                   value: e.target.value as BaseUnit,

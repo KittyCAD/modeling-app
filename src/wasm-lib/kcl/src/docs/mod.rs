@@ -13,9 +13,7 @@ use tower_lsp::lsp_types::{
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
 
-use crate::execution::Sketch;
-
-use crate::std::Primitive;
+use crate::{execution::Sketch, std::Primitive};
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
 #[ts(export)]

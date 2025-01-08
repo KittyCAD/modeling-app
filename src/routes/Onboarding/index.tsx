@@ -116,7 +116,7 @@ export function useNextClick(newStatus: string) {
 
   return useCallback(() => {
     send({
-      type: 'set.app.onboardingStatus',
+      type: 'set.app.onboarding_status',
       data: { level: 'user', value: newStatus },
     })
     navigate(filePath + PATHS.ONBOARDING.INDEX.slice(0, -1) + newStatus)
@@ -132,7 +132,7 @@ export function useDismiss() {
 
   const settingsCallback = useCallback(() => {
     send({
-      type: 'set.app.onboardingStatus',
+      type: 'set.app.onboarding_status',
       data: { level: 'user', value: 'dismissed' },
     })
   }, [send])
@@ -143,7 +143,7 @@ export function useDismiss() {
    */
   useEffect(() => {
     if (
-      state.context.app.onboardingStatus.user === 'dismissed' &&
+      state.context.app.onboarding_status.user === 'dismissed' &&
       state.matches('idle')
     ) {
       navigate(filePath)

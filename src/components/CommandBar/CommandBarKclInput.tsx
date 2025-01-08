@@ -115,9 +115,9 @@ function CommandBarKclInput({
           : defaultValue.length,
     },
     theme:
-      settings.context.app.theme.current === 'system'
+      settings.context.app.appearance.theme.current === 'system'
         ? getSystemTheme()
-        : settings.context.app.theme.current,
+        : settings.context.app.appearance.theme.current,
     extensions: [
       varMentionsExtension,
       EditorView.updateListener.of((vu: ViewUpdate) => {
