@@ -806,9 +806,9 @@ sketch001 = startSketchOn('XZ')
 sketch002 = startSketchOn({
        plane = {
          origin = { x = 1, y = 2, z = 3 },
-         x_axis = { x = 4, y = 5, z = 6 },
-         y_axis = { x = 7, y = 8, z = 9 },
-         z_axis = { x = 10, y = 11, z = 12 }
+         xAxis = { x = 4, y = 5, z = 6 },
+         yAxis = { x = 7, y = 8, z = 9 },
+         zAxis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)
@@ -862,9 +862,9 @@ sketch001 = startSketchOn('XZ')
 sketch002 = startSketchOn({
        plane = {
          origin = { x = 1, y = 2, z = 3 },
-         x_axis = { x = 4, y = 5, z = 6 },
-         y_axis = { x = 7, y = 8, z = 9 },
-         z_axis = { x = 10, y = 11, z = 12 }
+         xAxis = { x = 4, y = 5, z = 6 },
+         yAxis = { x = 7, y = 8, z = 9 },
+         zAxis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)
@@ -906,9 +906,9 @@ sketch002 = startSketchOn({
           await new Promise((resolve) => setTimeout(resolve, 100))
           return {
             origin: { x: 1, y: 2, z: 3 },
-            x_axis: { x: 4, y: 5, z: 6 },
-            y_axis: { x: 7, y: 8, z: 9 },
-            z_axis: { x: 10, y: 11, z: 12 },
+            xAxis: { x: 4, y: 5, z: 6 },
+            yAxis: { x: 7, y: 8, z: 9 },
+            zAxis: { x: 10, y: 11, z: 12 },
           }
         }
       )
