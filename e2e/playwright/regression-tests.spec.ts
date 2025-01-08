@@ -614,6 +614,38 @@ extrude001 = extrude(50, sketch001)
       await expect(gizmo).toBeVisible()
     })
   })
+
+  test(`Refreshing the app doesn't cause the stream to pause on long-executing files`, async ({
+    context,
+    homePage,
+    scene,
+    toolbar,
+    viewport,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const legoDir = path.join(dir, 'lego')
+      await fsp.mkdir(legoDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('lego.kcl'),
+        path.join(legoDir, 'main.kcl')
+      )
+    })
+
+    await test.step(`Test setup`, async () => {
+      await homePage.openProject('lego')
+      await toolbar.closePane('code')
+    })
+    await test.step(`Waiting for the loading spinner to disappear`, async () => {
+      await scene.loadingIndicator.waitFor({ state: 'detached' })
+    })
+    await test.step(`The part should start loading quickly, not waiting until execution is complete`, async () => {
+      await scene.expectPixelColor(
+        [143, 143, 143],
+        { x: (viewport?.width ?? 1200) / 2, y: (viewport?.height ?? 500) / 2 },
+        15
+      )
+    })
+  })
 })
 
 async function clickExportButton(page: Page) {

@@ -4,6 +4,7 @@ pub mod appearance;
 pub mod args;
 pub mod array;
 pub mod assert;
+pub mod axis_or_reference;
 pub mod chamfer;
 pub mod convert;
 pub mod extrude;
@@ -114,6 +115,7 @@ lazy_static! {
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
+        Box::new(crate::std::helix::HelixRevolutions),
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),
