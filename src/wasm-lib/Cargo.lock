@@ -1819,9 +1819,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.79"
+version = "0.2.86"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10a9cab4476455be70ea57643c31444068b056d091bd348cab6044c0d8ad7fcc"
+checksum = "65e34a8eeb4fff5167666d1f2bc36c95d08ab3a0f736a02c8d33a8cde21cfd8d"
 dependencies = [
  "anyhow",
  "chrono",

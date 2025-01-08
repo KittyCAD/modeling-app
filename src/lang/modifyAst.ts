@@ -1278,17 +1278,17 @@ export async function deleteFromSelection(
                     y: roundLiteral(faceDetails.origin.y),
                     z: roundLiteral(faceDetails.origin.z),
                   }),
-                  x_axis: createObjectExpression({
+                  xAxis: createObjectExpression({
                     x: roundLiteral(faceDetails.x_axis.x),
                     y: roundLiteral(faceDetails.x_axis.y),
                     z: roundLiteral(faceDetails.x_axis.z),
                   }),
-                  y_axis: createObjectExpression({
+                  yAxis: createObjectExpression({
                     x: roundLiteral(faceDetails.y_axis.x),
                     y: roundLiteral(faceDetails.y_axis.y),
                     z: roundLiteral(faceDetails.y_axis.z),
                   }),
-                  z_axis: createObjectExpression({
+                  zAxis: createObjectExpression({
                     x: roundLiteral(faceDetails.z_axis.x),
                     y: roundLiteral(faceDetails.z_axis.y),
                     z: roundLiteral(faceDetails.z_axis.z),
