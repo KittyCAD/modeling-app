@@ -502,7 +502,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       104,
-      188,
+      199,
       0
     ],
     "command": {
