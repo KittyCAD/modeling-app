@@ -1,4 +1,5 @@
-import init, {
+import {
+  init,
   parse_wasm,
   recast_wasm,
   execute,
@@ -16,7 +17,9 @@ import init, {
   default_project_settings,
   base64_decode,
   clear_scene_and_bust_cache,
-} from '../wasm-lib/pkg/wasm_lib'
+  reloadModule,
+} from 'lib/wasm_lib_wrapper'
+
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
@@ -144,6 +147,7 @@ export const wasmUrl = () => {
 // Initialise the wasm module.
 const initialise = async () => {
   try {
+    await reloadModule()
     const fullUrl = wasmUrl()
     const input = await fetch(fullUrl)
     const buffer = await input.arrayBuffer()
