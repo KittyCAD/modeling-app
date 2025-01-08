@@ -281,31 +281,5 @@ snapshot_kind: text
       "object_id": "[uuid]",
       "hidden": true
     }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "zoom_to_fit",
-      "object_ids": [],
-      "padding": 0.1,
-      "animated": false
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "take_snapshot",
-      "format": "png"
-    }
   }
 ]
