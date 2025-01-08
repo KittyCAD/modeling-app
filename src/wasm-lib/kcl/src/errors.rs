@@ -12,11 +12,17 @@ use crate::{
 #[derive(thiserror::Error, Debug)]
 pub enum ExecError {
     #[error("{0}")]
-    Kcl(#[from] crate::KclError),
+    Kcl(#[from] Box<crate::KclErrorWithOutputs>),
     #[error("Could not connect to engine: {0}")]
     Connection(#[from] ConnectionError),
     #[error("PNG snapshot could not be decoded: {0}")]
     BadPng(String),
+}
+
+impl From<KclErrorWithOutputs> for ExecError {
+    fn from(error: KclErrorWithOutputs) -> Self {
+        ExecError::Kcl(Box::new(error))
+    }
 }
 
 /// How did the KCL execution fail, with extra state.
@@ -25,17 +31,12 @@ pub enum ExecError {
 pub struct ExecErrorWithState {
     pub error: ExecError,
     pub exec_state: crate::ExecState,
-    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 impl ExecErrorWithState {
     #[cfg_attr(target_arch = "wasm32", expect(dead_code))]
-    pub fn new(error: ExecError, exec_state: crate::ExecState, artifact_commands: Vec<ArtifactCommand>) -> Self {
-        Self {
-            error,
-            exec_state,
-            artifact_commands,
-        }
+    pub fn new(error: ExecError, exec_state: crate::ExecState) -> Self {
+        Self { error, exec_state }
     }
 }
 
@@ -44,17 +45,6 @@ impl From<ExecError> for ExecErrorWithState {
         Self {
             error,
             exec_state: Default::default(),
-            artifact_commands: Vec::default(),
-        }
-    }
-}
-
-impl From<KclError> for ExecErrorWithState {
-    fn from(error: KclError) -> Self {
-        Self {
-            error: error.into(),
-            exec_state: Default::default(),
-            artifact_commands: Vec::default(),
         }
     }
 }
@@ -64,7 +54,6 @@ impl From<ConnectionError> for ExecErrorWithState {
         Self {
             error: error.into(),
             exec_state: Default::default(),
-            artifact_commands: Vec::default(),
         }
     }
 }
@@ -108,6 +97,12 @@ pub enum KclError {
     Internal(KclErrorDetails),
 }
 
+impl From<KclErrorWithOutputs> for KclError {
+    fn from(error: KclErrorWithOutputs) -> Self {
+        error.error
+    }
+}
+
 #[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq)]
 #[error("{error}")]
 #[ts(export)]
@@ -124,6 +119,13 @@ impl KclErrorWithOutputs {
             error,
             operations,
             artifact_commands,
+        }
+    }
+    pub fn no_outputs(error: KclError) -> Self {
+        Self {
+            error,
+            operations: Default::default(),
+            artifact_commands: Default::default(),
         }
     }
 }

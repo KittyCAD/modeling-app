@@ -45,7 +45,7 @@ use crate::{
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
     walk::Node as WalkNode,
-    ExecError, Program,
+    ExecError, KclErrorWithOutputs, Program,
 };
 
 // Re-exports.
@@ -71,6 +71,10 @@ pub struct GlobalState {
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// Output map of UUIDs to artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Output commands to allow building the artifact graph by the caller.
+    /// These are accumulated in the [`ExecutorContext`] but moved here for
+    /// convenience of the execution cache.
+    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
@@ -143,14 +147,14 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub fn to_wasm_outcome(self, artifact_commands: Vec<ArtifactCommand>) -> ExecOutcome {
+    pub fn to_wasm_outcome(self) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
             memory: self.mod_local.memory,
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
-            artifact_commands,
+            artifact_commands: self.global.artifact_commands,
         }
     }
 
@@ -209,6 +213,7 @@ impl GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
+            artifact_commands: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.
@@ -1972,10 +1977,6 @@ impl ExecutorContext {
         Ok(ctx)
     }
 
-    pub fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
-        self.engine.take_artifact_commands()
-    }
-
     pub fn is_mock(&self) -> bool {
         self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
     }
@@ -2154,21 +2155,50 @@ impl ExecutorContext {
     }
 
     /// Perform the execution of a program.
-    /// You can optionally pass in some initialization memory.
-    /// Kurt uses this for partial execution.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
     pub async fn run(&self, cache_info: CacheInformation, exec_state: &mut ExecState) -> Result<(), KclError> {
         self.run_with_session_data(cache_info, exec_state).await?;
         Ok(())
     }
 
     /// Perform the execution of a program.
-    /// You can optionally pass in some initialization memory.
-    /// Kurt uses this for partial execution.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
+    ///
+    /// The error includes additional outputs used for the feature tree and
+    /// artifact graph.
+    pub async fn run_with_ui_outputs(
+        &self,
+        cache_info: CacheInformation,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclErrorWithOutputs> {
+        self.inner_run(cache_info, exec_state).await?;
+        Ok(())
+    }
+
+    /// Perform the execution of a program.  Additionally return engine session
+    /// data.
     pub async fn run_with_session_data(
         &self,
         cache_info: CacheInformation,
         exec_state: &mut ExecState,
     ) -> Result<Option<ModelingSessionData>, KclError> {
+        self.inner_run(cache_info, exec_state).await.map_err(|e| e.into())
+    }
+
+    /// Perform the execution of a program.  Accept all possible parameters and
+    /// output everything.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
+    async fn inner_run(
+        &self,
+        cache_info: CacheInformation,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<ModelingSessionData>, KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Get the program that actually changed from the old and new information.
@@ -2185,14 +2215,28 @@ impl ExecutorContext {
 
             // We don't do this in mock mode since there is no engine connection
             // anyways and from the TS side we override memory and don't want to clear it.
-            self.reset_scene(exec_state, Default::default()).await?;
+            self.reset_scene(exec_state, Default::default())
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
         }
 
         // Re-apply the settings, in case the cache was busted.
-        self.engine.reapply_settings(&self.settings, Default::default()).await?;
+        self.engine
+            .reapply_settings(&self.settings, Default::default())
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
-            .await?;
+            .await
+            .map_err(|e| {
+                KclErrorWithOutputs::new(
+                    e,
+                    exec_state.mod_local.operations.clone(),
+                    self.engine.take_artifact_commands(),
+                )
+            })?;
+        // Move the artifact commands to simplify cache management.
+        exec_state.global.artifact_commands = self.engine.take_artifact_commands();
         let session_data = self.engine.get_session_data();
         Ok(session_data)
     }
@@ -2545,7 +2589,8 @@ impl ExecutorContext {
                     padding: 0.1,
                 }),
             )
-            .await?;
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Send a snapshot request to the engine.
         let resp = self
@@ -2557,7 +2602,8 @@ impl ExecutorContext {
                     format: ImageFormat::Png,
                 }),
             )
-            .await?;
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::TakeSnapshot(contents),
@@ -2576,7 +2622,7 @@ impl ExecutorContext {
         program: &Program,
         exec_state: &mut ExecState,
     ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.run(program.clone().into(), exec_state).await?;
+        self.run_with_ui_outputs(program.clone().into(), exec_state).await?;
 
         self.prepare_snapshot().await
     }

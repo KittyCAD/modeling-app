@@ -6,7 +6,7 @@ use crate::{
     errors::ExecErrorWithState,
     execution::{new_zoo_client, ArtifactCommand, ExecutorContext, ExecutorSettings, Operation, ProgramMemory},
     settings::types::UnitLength,
-    ConnectionError, ExecError, Program,
+    ConnectionError, ExecError, KclErrorWithOutputs, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -24,10 +24,10 @@ pub async fn execute_and_snapshot(
     project_directory: Option<PathBuf>,
 ) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(units, true, project_directory).await?;
-    let program = Program::parse_no_errs(code)?;
+    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     do_execute_and_snapshot(&ctx, program)
         .await
-        .map(|(_state, _, snap)| snap)
+        .map(|(_state, snap)| snap)
         .map_err(|err| err.error)
 }
 
@@ -39,16 +39,14 @@ pub async fn execute_and_snapshot_ast(
     project_directory: Option<PathBuf>,
 ) -> Result<(ProgramMemory, Vec<Operation>, Vec<ArtifactCommand>, image::DynamicImage), ExecErrorWithState> {
     let ctx = new_context(units, true, project_directory).await?;
-    do_execute_and_snapshot(&ctx, ast)
-        .await
-        .map(|(state, artifact_commands, snap)| {
-            (
-                state.mod_local.memory,
-                state.mod_local.operations,
-                artifact_commands,
-                snap,
-            )
-        })
+    do_execute_and_snapshot(&ctx, ast).await.map(|(state, snap)| {
+        (
+            state.mod_local.memory,
+            state.mod_local.operations,
+            state.global.artifact_commands,
+            snap,
+        )
+    })
 }
 
 pub async fn execute_and_snapshot_no_auth(
@@ -57,22 +55,22 @@ pub async fn execute_and_snapshot_no_auth(
     project_directory: Option<PathBuf>,
 ) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(units, false, project_directory).await?;
-    let program = Program::parse_no_errs(code)?;
+    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
     do_execute_and_snapshot(&ctx, program)
         .await
-        .map(|(_state, _, snap)| snap)
+        .map(|(_state, snap)| snap)
         .map_err(|err| err.error)
 }
 
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
-) -> Result<(crate::execution::ExecState, Vec<ArtifactCommand>, image::DynamicImage), ExecErrorWithState> {
+) -> Result<(crate::execution::ExecState, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = Default::default();
     let snapshot_png_bytes = ctx
         .execute_and_prepare_snapshot(&program, &mut exec_state)
         .await
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), ctx.take_artifact_commands()))?
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?
         .contents
         .0;
 
@@ -81,8 +79,8 @@ async fn do_execute_and_snapshot(
         .with_guessed_format()
         .map_err(|e| ExecError::BadPng(e.to_string()))
         .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), ctx.take_artifact_commands()))?;
-    Ok((exec_state, ctx.take_artifact_commands(), img))
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?;
+    Ok((exec_state, img))
 }
 
 pub async fn new_context(

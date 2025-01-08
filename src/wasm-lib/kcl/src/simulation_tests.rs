@@ -122,7 +122,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
                     let report = crate::errors::Report {
-                        error,
+                        error: error.error,
                         filename: format!("{test_name}.kcl"),
                         kcl_source: read("input.kcl", test_name),
                     };
@@ -134,11 +134,11 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     });
 
                     assert_snapshot(test_name, "Operations executed", || {
-                        insta::assert_json_snapshot!("ops", e.exec_state.mod_local.operations);
+                        insta::assert_json_snapshot!("ops", error.operations);
                     });
 
                     assert_snapshot(test_name, "Artifact commands", || {
-                        insta::assert_json_snapshot!("artifact_commands", e.artifact_commands, {
+                        insta::assert_json_snapshot!("artifact_commands", error.artifact_commands, {
                             "[].command.segment.*.x" => rounded_redaction(4),
                             "[].command.segment.*.y" => rounded_redaction(4),
                             "[].command.segment.*.z" => rounded_redaction(4),
