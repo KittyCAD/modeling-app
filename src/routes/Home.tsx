@@ -35,6 +35,19 @@ const Home = () => {
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
 
+  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
+  useCreateFileLinkQuery((argDefaultValues) => {
+    console.log('oop we got a query string', argDefaultValues)
+    commandBarSend({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Import file from URL',
+        argDefaultValues,
+      },
+    })
+  })
+
   useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const navigate = useNavigate()
   const {
