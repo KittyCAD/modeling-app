@@ -123,7 +123,7 @@ async fn inner_sweep(
             target: sketch.id.into(),
             trajectory: match data.path {
                 SweepPath::Sketch(sketch) => sketch.id.into(),
-                SweepPath::Helix(helix) => helix.id.into(),
+                SweepPath::Helix(helix) => helix.value.into(),
             },
             sectional: data.sectional.unwrap_or(false),
             tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),

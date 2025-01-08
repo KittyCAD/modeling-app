@@ -90,7 +90,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
     let id = exec_state.next_uuid();
 
     let helix_result = Box::new(HelixValue {
-        id,
+        value: id,
         revolutions: data.revolutions,
         angle_start: data.angle_start,
         ccw: data.ccw,

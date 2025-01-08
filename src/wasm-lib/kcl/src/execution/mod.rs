@@ -708,7 +708,7 @@ pub struct ImportedGeometry {
 #[serde(rename_all = "camelCase")]
 pub struct Helix {
     /// The id of the helix.
-    pub id: uuid::Uuid,
+    pub value: uuid::Uuid,
     /// Number of revolutions.
     pub revolutions: f64,
     /// Start angle (in degrees).
