@@ -324,7 +324,8 @@ export function handleSelectionBatch({
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
-      ranges.push(EditorSelection.cursor(codeRef.range[1]))
+      const safeEnd = Math.min(codeRef.range[1], codeManager.code.length)
+      ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
   if (ranges.length)
@@ -778,6 +779,14 @@ export function codeToIdSelections(
                 id: entry.id,
               }
             }
+          }
+        }
+
+        if (entry.artifact.type === 'sweep') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
           }
         }
       })

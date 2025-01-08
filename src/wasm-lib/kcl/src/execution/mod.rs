@@ -53,16 +53,14 @@ pub use artifact::{Artifact, ArtifactId, ArtifactInner};
 pub use cad_op::Operation;
 
 /// State for executing a program.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecState {
     pub global: GlobalState,
     pub mod_local: ModuleState,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalState {
     /// The stable artifact ID generator.
@@ -75,8 +73,7 @@ pub struct GlobalState {
     pub artifacts: IndexMap<ArtifactId, Artifact>,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ModuleState {
     /// Program variable bindings.
@@ -96,6 +93,18 @@ pub struct ModuleState {
     pub operations: Vec<Operation>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
+}
+
+/// Outcome of executing a program.  This is used in TS.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecOutcome {
+    /// Program variable bindings of the top-level module.
+    pub memory: ProgramMemory,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
 }
 
 impl Default for ExecState {
@@ -125,6 +134,18 @@ impl ExecState {
             global,
             mod_local: ModuleState::default(),
         };
+    }
+
+    /// Convert to execution outcome when running in WebAssembly.  We want to
+    /// reduce the amount of data that crosses the WASM boundary as much as
+    /// possible.
+    pub fn to_wasm_outcome(self) -> ExecOutcome {
+        // Fields are opt-in so that we don't accidentally leak private internal
+        // state when we add more to ExecState.
+        ExecOutcome {
+            memory: self.mod_local.memory,
+            operations: self.mod_local.operations,
+        }
     }
 
     pub fn memory(&self) -> &ProgramMemory {
@@ -434,7 +455,7 @@ impl Environment {
 /// Dynamic state that depends on the dynamic flow of the program, like the call
 /// stack.  If the language had exceptions, for example, you could store the
 /// stack of exception handlers here.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct DynamicState {
     pub solid_ids: Vec<SolidLazyIds>,
 }
@@ -472,8 +493,7 @@ impl DynamicState {
 }
 
 /// A generator for ArtifactIds that can be stable across executions.
-#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct IdGenerator {
     next_id: usize,
@@ -1083,7 +1103,7 @@ impl Solid {
 
 /// An solid ID and its fillet and chamfer IDs.  This is needed for lazy
 /// fillet evaluation.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct SolidLazyIds {
     pub solid_id: uuid::Uuid,
     pub sketch_id: uuid::Uuid,
@@ -1163,8 +1183,7 @@ pub enum BodyType {
 
 /// Info about a module.  Right now, this is pretty minimal.  We hope to cache
 /// modules here in the future.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct ModuleInfo {
     /// The ID of the module.
     id: ModuleId,

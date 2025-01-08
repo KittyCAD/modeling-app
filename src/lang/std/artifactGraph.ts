@@ -1156,8 +1156,8 @@ export function getArtifactFromRange(
   for (const artifact of artifactGraph.values()) {
     if ('codeRef' in artifact && artifact.codeRef) {
       const match =
-        artifact?.codeRef.range[0] === range[0] &&
-        artifact?.codeRef.range[1] === range[1]
+        artifact.codeRef?.range[0] === range[0] &&
+        artifact.codeRef.range[1] === range[1]
       if (match) return artifact
     }
   }

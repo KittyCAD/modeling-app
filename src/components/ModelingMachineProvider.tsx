@@ -76,20 +76,18 @@ import {
   resultIsOk,
 } from 'lang/wasm'
 import {
+  artifactIsPlaneWithPaths,
   doesSketchPipeNeedSplitting,
   getNodeFromPath,
   isCursorInFunctionDefinition,
-  traverse,
 } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
-import { EditorSelection, Transaction } from '@codemirror/state'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap, reject } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { modelingMachineEvent } from 'editor/manager'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -105,6 +103,7 @@ import {
   getPlaneFromArtifact,
 } from 'lang/std/artifactGraph'
 import { promptToEditFlow } from 'lib/promptToEdit'
+import { kclEditorActor } from 'machines/kclEditorMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -314,22 +313,6 @@ export const ModelingMachineProvider = ({
               null
             if (!setSelections) return {}
 
-            const dispatchSelection = (selection?: EditorSelection) => {
-              if (!selection) return // TODO less of hack for the below please
-              if (!editorManager.editorView) return
-
-              setTimeout(() => {
-                if (!editorManager.editorView) return
-                editorManager.editorView.dispatch({
-                  selection,
-                  annotations: [
-                    modelingMachineEvent,
-                    Transaction.addToHistory.of(false),
-                  ],
-                })
-              })
-            }
-
             let selections: Selections = {
               graphSelections: [],
               otherSelections: [],
@@ -369,7 +352,15 @@ export const ModelingMachineProvider = ({
               } = handleSelectionBatch({
                 selections,
               })
-              codeMirrorSelection && dispatchSelection(codeMirrorSelection)
+              if (codeMirrorSelection) {
+                kclEditorActor.send({
+                  type: 'setLastSelectionEvent',
+                  data: {
+                    codeMirrorSelection,
+                    scrollIntoView: setSelections.scrollIntoView ?? false,
+                  },
+                })
+              }
               engineEvents &&
                 engineEvents.forEach((event) => {
                   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -579,6 +570,9 @@ export const ModelingMachineProvider = ({
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
+          if (artifactIsPlaneWithPaths(selectionRanges)) {
+            return true
+          }
           if (
             isCursorInFunctionDefinition(
               kclManager.ast,

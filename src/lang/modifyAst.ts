@@ -1137,31 +1137,43 @@ export async function deleteFromSelection(
   )
   if (err(varDec)) return varDec
   if (
-    (selection?.artifact?.type === 'wall' ||
+    ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
-    varDec.node.init.type === 'PipeExpression'
+      varDec.node.init.type === 'PipeExpression') ||
+    selection.artifact?.type === 'sweep'
   ) {
-    const varDecName = varDec.node.id.name
-    let pathToNode: PathToNode | null = null
     let extrudeNameToDelete = ''
-    traverse(astClone, {
-      enter: (node, path) => {
-        if (node.type === 'VariableDeclaration') {
-          const dec = node.declaration
-          if (
-            dec.init.type === 'CallExpression' &&
-            (dec.init.callee.name === 'extrude' ||
-              dec.init.callee.name === 'revolve') &&
-            dec.init.arguments?.[1].type === 'Identifier' &&
-            dec.init.arguments?.[1].name === varDecName
-          ) {
-            pathToNode = path
-            extrudeNameToDelete = dec.id.name
+    let pathToNode: PathToNode | null = null
+    if (selection.artifact?.type !== 'sweep') {
+      const varDecName = varDec.node.id.name
+      traverse(astClone, {
+        enter: (node, path) => {
+          if (node.type === 'VariableDeclaration') {
+            const dec = node.declaration
+            if (
+              dec.init.type === 'CallExpression' &&
+              (dec.init.callee.name === 'extrude' ||
+                dec.init.callee.name === 'revolve') &&
+              dec.init.arguments?.[1].type === 'Identifier' &&
+              dec.init.arguments?.[1].name === varDecName
+            ) {
+              pathToNode = path
+              extrudeNameToDelete = dec.id.name
+            }
           }
-        }
-      },
-    })
-    if (!pathToNode) return new Error('Could not find extrude variable')
+        },
+      })
+      if (!pathToNode) return new Error('Could not find extrude variable')
+    } else {
+      pathToNode = selection.codeRef.pathToNode
+      const extrudeVarDec = getNodeFromPath<VariableDeclarator>(
+        astClone,
+        pathToNode,
+        'VariableDeclarator'
+      )
+      if (err(extrudeVarDec)) return extrudeVarDec
+      extrudeNameToDelete = extrudeVarDec.node.id.name
+    }
 
     const expressionIndex = pathToNode[1][0] as number
     astClone.body.splice(expressionIndex, 1)

@@ -133,7 +133,7 @@ pub async fn execute(
     // gloo-serialize crate instead.
     // DO NOT USE serde_wasm_bindgen::to_value(&exec_state).map_err(|e| e.to_string())
     // it will break the frontend.
-    JsValue::from_serde(&exec_state).map_err(|e| e.to_string())
+    JsValue::from_serde(&exec_state.to_wasm_outcome()).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute
@@ -308,7 +308,7 @@ pub async fn kcl_lsp_run(
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());
 
-    // Check if we can send telememtry for this user.
+    // Check if we can send telemetry for this user.
     let can_send_telemetry = match zoo_client.users().get_privacy_settings().await {
         Ok(privacy_settings) => privacy_settings.can_train_on_data,
         Err(err) => {
@@ -319,7 +319,8 @@ pub async fn kcl_lsp_run(
             {
                 true
             } else {
-                return Err(err.to_string().into());
+                web_sys::console::warn_1(&format!("Failed to get privacy settings: {err:?}").into());
+                false
             }
         }
     };

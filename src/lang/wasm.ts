@@ -35,7 +35,7 @@ import { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 import { DeepPartial } from 'lib/types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
 import { Sketch } from '../wasm-lib/kcl/bindings/Sketch'
-import { ExecState as RawExecState } from '../wasm-lib/kcl/bindings/ExecState'
+import { ExecOutcome as RustExecOutcome } from 'wasm-lib/kcl/bindings/ExecOutcome'
 import { ProgramMemory as RawProgramMemory } from '../wasm-lib/kcl/bindings/ProgramMemory'
 import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
@@ -43,6 +43,7 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
 import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
+import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
 import { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactId } from 'wasm-lib/kcl/bindings/ArtifactId'
@@ -249,6 +250,7 @@ export const isPathToNodeNumber = (
 
 export interface ExecState {
   memory: ProgramMemory
+  operations: Operation[]
   artifacts: { [key in ArtifactId]?: Artifact }
 }
 
@@ -259,14 +261,16 @@ export interface ExecState {
 export function emptyExecState(): ExecState {
   return {
     memory: ProgramMemory.empty(),
+    operations: [],
     artifacts: {},
   }
 }
 
-function execStateFromRaw(raw: RawExecState): ExecState {
+function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
-    memory: ProgramMemory.fromRaw(raw.modLocal.memory),
-    artifacts: raw.global.artifacts,
+    memory: ProgramMemory.fromRaw(execOutcome.memory),
+    operations: execOutcome.operations,
+    artifacts: execOutcome.artifacts,
   }
 }
 
@@ -518,14 +522,14 @@ export const executor = async (
         jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
       }
     }
-    const execState: RawExecState = await execute(
+    const execOutcome: RustExecOutcome = await execute(
       JSON.stringify(node),
       JSON.stringify(programMemoryOverride?.toRaw() || null),
       JSON.stringify({ settings: jsAppSettings }),
       engineCommandManager,
       fileSystemManager
     )
-    return execStateFromRaw(execState)
+    return execStateFromRust(execOutcome)
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
