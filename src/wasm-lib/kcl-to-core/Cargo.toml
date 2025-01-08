@@ -14,7 +14,7 @@ path = "src/tool.rs"
 
 [dependencies]
 anyhow = "1"
-async-trait = "0.1.81"
+async-trait = "0.1.85"
 indexmap = "2.7.0"
 kcl-lib = { path = "../kcl" }
 kittycad = { workspace = true, features = ["clap"] }
