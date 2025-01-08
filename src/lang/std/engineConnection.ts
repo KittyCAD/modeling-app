@@ -1,12 +1,10 @@
 import {
   ArtifactCommand,
   defaultRustSourceRange,
-  defaultSourceRange,
   ExecState,
   Program,
   RustSourceRange,
   SourceRange,
-  sourceRangeFromRust,
 } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
