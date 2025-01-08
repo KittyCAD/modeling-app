@@ -151,6 +151,10 @@ type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 export interface ResponseMap {
   [commandId: string]: OkWebSocketResponseData
 }
+export interface OrderedCommand {
+  command: EngineCommand
+  range: SourceRange
+}
 
 /** Creates a graph of artifacts from a list of ordered commands and their responses
  * muting the Map should happen entirely this function, other functions called within
