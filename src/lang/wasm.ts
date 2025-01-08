@@ -527,8 +527,9 @@ export const executor = async (
       engineCommandManager,
       fileSystemManager
     )
+    const result = execStateFromRust(execOutcome)
     await engineCommandManager.waitForAllCommands()
-    return execStateFromRust(execOutcome)
+    return result
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
