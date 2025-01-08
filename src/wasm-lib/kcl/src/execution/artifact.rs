@@ -8,8 +8,6 @@ use crate::SourceRange;
 /// A command that may create or update artifacts on the TS side.  Because
 /// engine commands are batched, we don't have the response yet when these are
 /// created.
-///
-/// This aspires to replace `OrderedCommand` in TS.
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]

@@ -108,7 +108,6 @@ pub struct ExecOutcome {
     /// Output map of UUIDs to artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
-    /// This corresponds to OrderedCommands on the TS side.
     pub artifact_commands: Vec<ArtifactCommand>,
 }
 
