@@ -12,17 +12,6 @@ snapshot_kind: text
       0
     ],
     "command": {
-      "type": "scene_clear_all"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
