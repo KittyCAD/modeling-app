@@ -1451,7 +1451,7 @@ impl<'a> FromKclValue<'a> for super::sketch::SketchData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::revolve::AxisAndOrigin {
+impl<'a> FromKclValue<'a> for super::axis_or_reference::AxisAndOrigin2d {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 1: predefined planes.
         if let Some(s) = arg.as_str() {
@@ -1472,6 +1472,29 @@ impl<'a> FromKclValue<'a> for super::revolve::AxisAndOrigin {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::axis_or_reference::AxisAndOrigin3d {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        // Case 1: predefined planes.
+        if let Some(s) = arg.as_str() {
+            return match s {
+                "X" | "x" => Some(Self::X),
+                "Y" | "y" => Some(Self::Y),
+                "Z" | "z" => Some(Self::Z),
+                "-X" | "-x" => Some(Self::NegX),
+                "-Y" | "-y" => Some(Self::NegY),
+                "-Z" | "-z" => Some(Self::NegZ),
+                _ => None,
+            };
+        }
+        // Case 2: custom planes.
+        let obj = arg.as_object()?;
+        let_field_of!(obj, custom, &KclObjectFields);
+        let_field_of!(custom, origin);
+        let_field_of!(custom, axis);
+        Some(Self::Custom { axis, origin })
+    }
+}
+
 impl<'a> FromKclValue<'a> for super::fillet::EdgeReference {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let id = arg.as_uuid().map(Self::Uuid);
@@ -1480,9 +1503,17 @@ impl<'a> FromKclValue<'a> for super::fillet::EdgeReference {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::revolve::AxisOrEdgeReference {
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let case1 = super::revolve::AxisAndOrigin::from_kcl_val;
+        let case1 = super::axis_or_reference::AxisAndOrigin2d::from_kcl_val;
+        let case2 = super::fillet::EdgeReference::from_kcl_val;
+        case1(arg).map(Self::Axis).or_else(|| case2(arg).map(Self::Edge))
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = super::axis_or_reference::AxisAndOrigin3d::from_kcl_val;
         let case2 = super::fillet::EdgeReference::from_kcl_val;
         case1(arg).map(Self::Axis).or_else(|| case2(arg).map(Self::Edge))
     }

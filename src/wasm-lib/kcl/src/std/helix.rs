@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::KclError,
     execution::{ExecState, Helix as HelixValue, KclValue, Solid},
-    std::{revolve::AxisOrEdgeReference, Args},
+    std::{axis_or_reference::Axis3dOrEdgeReference, Args},
 };
 
 /// Data for a helix.
@@ -31,7 +31,7 @@ pub struct HelixData {
     /// Radius of the helix.
     pub radius: f64,
     /// Axis to use as mirror.
-    pub axis: AxisOrEdgeReference,
+    pub axis: Axis3dOrEdgeReference,
 }
 
 /// Create a helix.
@@ -45,14 +45,14 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// Create a helix.
 ///
 /// ```no_run
-/// // Create a helix around the Y axis.
+/// // Create a helix around the Z axis.
 /// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
 ///     revolutions = 16,
 ///     length = 10,
 ///     radius = 5,
-///     axis = 'Y',
+///     axis = 'Z',
 ///  })
 ///
 ///
@@ -79,7 +79,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
-///     |> circle({ center = [0, 0], radius = 2 }, %)
+///     |> circle({ center = [0, 0], radius = 1 }, %)
 ///     |> sweep({ path = helixPath }, %)*/
 /// ```
 #[stdlib {
@@ -102,7 +102,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
     }
 
     match data.axis {
-        AxisOrEdgeReference::Axis(axis) => {
+        Axis3dOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
 
             args.batch_modeling_cmd(
@@ -119,7 +119,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             )
             .await?;
         }
-        AxisOrEdgeReference::Edge(_edge) => {
+        Axis3dOrEdgeReference::Edge(_edge) => {
             /*let edge_id = edge.get_engine_id(exec_state, &args)?;
 
             args.batch_modeling_cmd(

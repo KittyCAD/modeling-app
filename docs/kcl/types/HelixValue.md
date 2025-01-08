@@ -16,7 +16,7 @@ A helix.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `id` |`string`| The id of the helix. | No |
+| `value` |`string`| The id of the helix. | No |
 | `revolutions` |`number`| Number of revolutions. | No |
 | `angleStart` |`number`| Start angle (in degrees). | No |
 | `ccw` |`boolean`| Is the helix rotation counter clockwise? | No |

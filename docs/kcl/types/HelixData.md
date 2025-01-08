@@ -21,6 +21,6 @@ Data for a helix.
 | `ccw` |`boolean`| Is the helix rotation counter clockwise? The default is `false`. | No |
 | `length` |`number`| Length of the helix. | No |
 | `radius` |`number`| Radius of the helix. | No |
-| `axis` |[`AxisOrEdgeReference`](/docs/kcl/types/AxisOrEdgeReference)| Axis to use as mirror. | No |
+| `axis` |[`Axis3dOrEdgeReference`](/docs/kcl/types/Axis3dOrEdgeReference)| Axis to use as mirror. | No |
 
 
