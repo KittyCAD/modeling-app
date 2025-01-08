@@ -475,7 +475,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'circle',
           status: 'available',
-          title: 'Three-point circle',
+          title: '3-point circle',
+          disabled: (state) =>
+            state.matches('Sketch no face') ||
+            (!canRectangleOrCircleTool(state.context) &&
+              !state.matches({ Sketch: 'circle3PointToolSelect' })),
+          isActive: (state) =>
+            state.matches({ Sketch: 'circle3PointToolSelect' }),
           showTitle: false,
           description: 'Draw a circle defined by three points',
           links: [],

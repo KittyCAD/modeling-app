@@ -6,6 +6,7 @@ use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
     exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program,
+    execution::Point2d
 };
 use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
@@ -575,4 +576,31 @@ pub fn base64_decode(input: &str) -> Result<Vec<u8>, JsValue> {
     }
 
     Err(JsValue::from_str("Invalid base64 encoding"))
+}
+
+#[wasm_bindgen]
+pub struct WasmCircleParams {
+  pub center_x: f64,
+  pub center_y: f64,
+  pub radius: f64,
+}
+
+/// Calculate a distance.
+#[wasm_bindgen]
+pub fn calculate_circle_from_3_points(
+  ax: f64, ay: f64,
+  bx: f64, by: f64,
+  cx: f64, cy: f64,
+) -> WasmCircleParams {
+  let result = kcl_lib::std::utils::calculate_circle_from_3_points([
+    Point2d { x: ax, y: ay },
+    Point2d { x: bx, y: by },
+    Point2d { x: cx, y: cy },
+  ]);
+
+  WasmCircleParams {
+    center_x: result.center.x,
+    center_y: result.center.y,
+    radius: result.radius,
+  }
 }

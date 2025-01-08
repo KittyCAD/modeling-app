@@ -60,7 +60,7 @@ mod coredump;
 mod docs;
 mod engine;
 mod errors;
-mod execution;
+pub mod execution;
 mod fs;
 pub mod lint;
 mod log;
@@ -70,7 +70,7 @@ mod settings;
 #[cfg(test)]
 mod simulation_tests;
 mod source_range;
-mod std;
+pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
 mod thread;
