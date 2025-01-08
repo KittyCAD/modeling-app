@@ -61,19 +61,18 @@ export interface FilletParameters {
 export type EdgeTreatmentParameters = ChamferParameters | FilletParameters
 
 // Apply Edge Treatment (Fillet or Chamfer) To Selection
-export function applyEdgeTreatmentToSelection(
+export async function applyEdgeTreatmentToSelection(
   ast: Node<Program>,
   selection: Selections,
   parameters: EdgeTreatmentParameters
-): void | Error {
+): Promise<void | Error> {
   // 1. clone and modify with edge treatment and tag
   const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters)
   if (err(result)) return result
   const { modifiedAst, pathToEdgeTreatmentNode } = result
 
   // 2. update ast
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode)
+  await updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode)
 }
 
 export function modifyAstWithEdgeTreatmentAndTag(
@@ -291,7 +290,7 @@ export function getPathToExtrudeForSegmentSelection(
 async function updateAstAndFocus(
   modifiedAst: Node<Program>,
   pathToEdgeTreatmentNode: Array<PathToNode>
-) {
+): Promise<void> {
   const updatedAst = await kclManager.updateAst(modifiedAst, true, {
     focusPath: pathToEdgeTreatmentNode,
   })
