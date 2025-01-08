@@ -40,6 +40,7 @@ export const setDiagnosticsEvent = setDiagnosticsAnnotation.of(true)
 export default class EditorManager {
   private _copilotEnabled: boolean = true
 
+  private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
   private _selectionRanges: Selections = {
     otherSelections: [],
@@ -117,6 +118,10 @@ export default class EditorManager {
     })
   }
 
+  get isAllTextSelected() {
+    return this._isAllTextSelected
+  }
+
   get editorView(): EditorView | null {
     return this._editorView
   }
@@ -127,6 +132,21 @@ export default class EditorManager {
 
   setIsShiftDown(isShiftDown: boolean) {
     this._isShiftDown = isShiftDown
+  }
+
+  private selectionsWithSafeEnds(
+    selection: Array<Selection['codeRef']['range']>
+  ): Array<[number, number]> {
+    if (!this._editorView) {
+      return selection.map((s): [number, number] => {
+        return [s[0], s[1]]
+      })
+    }
+
+    return selection.map((s): [number, number] => {
+      const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
+      return [s[0], safeEnd]
+    })
   }
 
   set selectionRanges(selectionRanges: Selections) {
@@ -154,14 +174,9 @@ export default class EditorManager {
   }
 
   setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
-    this._highlightRange = range.map((s): [number, number] => {
-      return [s[0], s[1]]
-    })
+    const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range)
 
-    const selectionsWithSafeEnds = range.map((s): [number, number] => {
-      const safeEnd = Math.min(s[1], this._editorView?.state.doc.length || s[1])
-      return [s[0], safeEnd]
-    })
+    this._highlightRange = selectionsWithSafeEnds
 
     if (this._editorView) {
       this._editorView.dispatch({
@@ -302,20 +317,20 @@ export default class EditorManager {
     }
     let codeBasedSelections = []
     for (const selection of selections.graphSelections) {
+      const safeEnd = Math.min(
+        selection.codeRef.range[1],
+        this._editorView?.state.doc.length || selection.codeRef.range[1]
+      )
       codeBasedSelections.push(
-        EditorSelection.range(
-          selection.codeRef.range[0],
-          selection.codeRef.range[1]
-        )
+        EditorSelection.range(selection.codeRef.range[0], safeEnd)
       )
     }
 
-    codeBasedSelections.push(
-      EditorSelection.cursor(
-        selections.graphSelections[selections.graphSelections.length - 1]
-          .codeRef.range[1]
-      )
-    )
+    const end =
+      selections.graphSelections[selections.graphSelections.length - 1].codeRef
+        .range[1]
+    const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
+    codeBasedSelections.push(EditorSelection.cursor(safeEnd))
 
     if (!this._editorView) {
       return
@@ -351,6 +366,16 @@ export default class EditorManager {
     if (this._modelingState.matches({ Sketch: 'Change Tool' })) {
       return
     }
+
+    this._isAllTextSelected = viewUpdate.state.selection.ranges.some(
+      (selection) => {
+        return (
+          // The user will need to select the empty new lines as well to be considered all of the text.
+          // CTRL+A is the best way to select all the text
+          selection.from === 0 && selection.to === viewUpdate.state.doc.length
+        )
+      }
+    )
 
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,

@@ -11,6 +11,13 @@ export interface IElectronAPI {
   open: typeof dialog.showOpenDialog
   save: typeof dialog.showSaveDialog
   openExternal: typeof shell.openExternal
+  takeElectronWindowScreenshot: ({
+    width,
+    height,
+  }: {
+    width: number
+    height: number
+  }) => Promise<string>
   showInFolder: typeof shell.showItemInFolder
   /** Require to be called first before {@link loginWithDeviceFlow} */
   startDeviceFlow: (host: string) => Promise<string>
@@ -86,5 +93,6 @@ export interface IElectronAPI {
 declare global {
   interface Window {
     electron: IElectronAPI
+    openExternalLink: (e: React.MouseEvent<HTMLAnchorElement>) => void
   }
 }

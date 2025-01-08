@@ -115,7 +115,7 @@ test(
 )
 
 test(
-  'yyyyyyyyy open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
+  'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
@@ -199,7 +199,7 @@ test(
 )
 
 test(
-  'aaayyyyyyyy open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
+  'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
@@ -276,7 +276,7 @@ test(
 )
 
 test(
-  'nooooooooooooo open a file in a project works and renders, open empty file, it should clear the scene',
+  'open a file in a project works and renders, open empty file, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
@@ -1882,6 +1882,51 @@ test.fixme(
       for (const [index, projectLink] of (await getAllProjects()).entries()) {
         await expect(projectLink).toContainText(projectNames[index])
       }
+    })
+  }
+)
+
+test(
+  'project name with foreign characters should open',
+  { tag: '@electron' },
+  async ({ context, page }, testInfo) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'اَلْعَرَبِيَّةُ')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        path.join(bracketDir, 'main.kcl')
+      )
+
+      await fsp.writeFile(path.join(bracketDir, 'empty.kcl'), '')
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+
+    page.on('console', console.log)
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the اَلْعَرَبِيَّةُ project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('اَلْعَرَبِيَّةُ')).toBeVisible()
+
+      await page.getByText('اَلْعَرَبِيَّةُ').click()
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
     })
   }
 )
