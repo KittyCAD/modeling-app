@@ -506,7 +506,6 @@ export const executor = async (
     return Promise.reject(programMemoryOverride)
 
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  engineCommandManager.startNewSession()
   if (programMemoryOverride !== null && err(programMemoryOverride))
     return Promise.reject(programMemoryOverride)
 
@@ -527,9 +526,7 @@ export const executor = async (
       engineCommandManager,
       fileSystemManager
     )
-    const result = execStateFromRust(execOutcome)
-    await engineCommandManager.waitForAllCommands()
-    return result
+    return execStateFromRust(execOutcome)
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
