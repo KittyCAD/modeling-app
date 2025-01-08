@@ -153,7 +153,12 @@ export function toSync<F extends AsyncFn<F>>(
   ) => void | PromiseLike<void | null | undefined> | null | undefined
 ): (...args: Parameters<F>) => void {
   return (...args: Parameters<F>) => {
-    fn(...args).catch(onReject)
+    try {
+      void fn(...args)
+    } catch(e) {
+      console.trace()
+      void onReject(e)
+    }
   }
 }
 
