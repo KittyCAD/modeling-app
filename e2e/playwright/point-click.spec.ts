@@ -854,6 +854,177 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
   })
 })
 
+test(`Fillet point-and-click`, async ({
+  context,
+  page,
+  homePage,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  // TODO: fix this test on windows after the electron migration
+  test.skip(process.platform === 'win32', 'Skip on windows')
+
+  // Code samples
+  const initialCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-6, -6], %)
+  |> line([0, 12], %)
+  |> line([12, 0], %)
+  |> line([0, -12], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(-12, sketch001)
+`
+  const firstFilletDeclaration = 'fillet({ radius = 5, tags = [seg01] }, %)'
+  const secondFilletDeclaration =
+    'fillet({       radius = 5,       tags = [getNextAdjacentEdge(seg02)]     }, %)'
+
+  // Colors and locators
+  const firstEdgeLocation = { x: 600, y: 92 }
+  const secondEdgeLocation = { x: 666, y: 300 }
+  const bodyLocation = { x: secondEdgeLocation.x - 30, y: secondEdgeLocation.y }
+  const [clickOnFirstEdge] = scene.makeMouseHelpers(
+    firstEdgeLocation.x,
+    firstEdgeLocation.y
+  )
+  const [clickOnSecondEdge] = scene.makeMouseHelpers(
+    secondEdgeLocation.x,
+    secondEdgeLocation.y
+  )
+  const edgeColorWhite: [number, number, number] = [250, 250, 250]
+  const edgeColorYellow: [number, number, number] = [250, 250, 100]
+  const bodyColor: [number, number, number] = [150, 150, 150]
+  const backgroundColor: [number, number, number] = [30, 30, 30]
+  const lowTolerance = 15
+  const highTolerance = 70 // in case of bad visibility or gradient
+
+  // Setup
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
+
+  // verify goToModelingScene is done
+  await scene.expectPixelColor(
+    backgroundColor,
+    secondEdgeLocation,
+    lowTolerance
+  )
+
+  // Wait for stream to load
+  await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+
+  // Test 1: Command bar flow with preselected edges
+  await test.step(`Select first edge`, async () => {
+    await scene.expectPixelColor(
+      edgeColorWhite,
+      firstEdgeLocation,
+      highTolerance
+    )
+    await clickOnFirstEdge()
+    await scene.expectPixelColor(
+      edgeColorYellow,
+      firstEdgeLocation,
+      highTolerance
+    )
+  })
+
+  await test.step(`Apply fillet to the preselected edge`, async () => {
+    await toolbar.filletButton.click()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      headerArguments: {
+        Selection: '1 face',
+        Radius: '5',
+      },
+      stage: 'review',
+    })
+    await cmdBar.progressCmdBar()
+  })
+
+  await test.step(`Confirm code is added to the editor`, async () => {
+    await editor.expectEditor.toContain(firstFilletDeclaration)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: ['|>fillet({radius=5,tags=[seg01]},%)'],
+      highlightedCode: '',
+    })
+  })
+
+  await test.step(`Confirm scene has changed`, async () => {
+    await scene.expectPixelColor(
+      backgroundColor,
+      firstEdgeLocation,
+      lowTolerance
+    )
+  })
+
+  // Test 2: Command bar flow without preselected edges
+  await test.step(`Open fillet UI without selecting edges`, async () => {
+    await toolbar.filletButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Radius: '',
+      },
+      highlightedHeaderArg: 'selection',
+      commandName: 'Fillet',
+    })
+  })
+
+  await test.step(`Select second edge`, async () => {
+    await scene.expectPixelColor(
+      edgeColorWhite,
+      secondEdgeLocation,
+      lowTolerance
+    )
+    await clickOnSecondEdge()
+    await scene.expectPixelColor(
+      edgeColorYellow,
+      secondEdgeLocation,
+      lowTolerance
+    )
+  })
+
+  await test.step(`Apply fillet to the second edge`, async () => {
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      headerArguments: {
+        Selection: '1 sweepEdge',
+        Radius: '5',
+      },
+      stage: 'review',
+    })
+    await cmdBar.progressCmdBar()
+  })
+
+  await test.step(`Confirm code is added to the editor`, async () => {
+    await editor.expectEditor.toContain(secondFilletDeclaration)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: ['radius=5,'],
+      highlightedCode: '',
+    })
+  })
+
+  await test.step(`Confirm scene has changed`, async () => {
+    await scene.expectPixelColor(
+      backgroundColor,
+      secondEdgeLocation,
+      lowTolerance
+    )
+  })
+})
+
 const shellPointAndClickCapCases = [
   { shouldPreselect: true },
   { shouldPreselect: false },
