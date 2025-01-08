@@ -80,6 +80,7 @@ import {
   doesSketchPipeNeedSplitting,
   getNodeFromPath,
   isCursorInFunctionDefinition,
+  traverse,
 } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
