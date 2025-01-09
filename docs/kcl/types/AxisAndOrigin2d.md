@@ -1,10 +1,10 @@
 ---
-title: "AxisAndOrigin"
-excerpt: "Axis and origin."
+title: "AxisAndOrigin2d"
+excerpt: "A 2D axis and origin."
 layout: manual
 ---
 
-Axis and origin.
+A 2D axis and origin.
 
 
 

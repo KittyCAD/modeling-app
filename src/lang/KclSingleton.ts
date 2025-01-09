@@ -376,7 +376,11 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/programMemory
-    await this.engineCommandManager.updateArtifactGraph(this.ast)
+    await this.engineCommandManager.updateArtifactGraph(
+      this.ast,
+      execState.artifactCommands,
+      execState.artifacts
+    )
     this._executeCallback()
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
@@ -390,6 +394,24 @@ export class KclManager {
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
   }
+
+  /**
+   * This cleanup function is external and internal to the KclSingleton class.
+   * Since the WASM runtime can panic and the error cannot be caught in executeAst
+   * we need a global exception handler in exceptions.ts
+   * This file will interface with this cleanup as if it caught the original error
+   * to properly restore the TS application state.
+   */
+  executeAstCleanUp() {
+    this.isExecuting = false
+    this.executeIsStale = null
+    this.engineCommandManager.addCommandLog({
+      type: 'execution-done',
+      data: null,
+    })
+    markOnce('code/endExecuteAst')
+  }
+
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
   async executeAstMock(
