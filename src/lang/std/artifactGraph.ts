@@ -409,7 +409,7 @@ export function getArtifactsToUpdate({
         type: 'sweep',
         subType: 'loft',
         id,
-        // TODO: make sure this is the right one to give here
+        // TODO: make sure to revisit this choice, don't think it matters for now
         pathId: cmd.section_ids[0],
         surfaceIds: [],
         edgeIds: [],
