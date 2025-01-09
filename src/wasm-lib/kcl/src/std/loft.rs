@@ -144,16 +144,16 @@ async fn inner_loft(
 
     let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::Loft {
-                section_ids: sketches.iter().map(|group| group.id).collect(),
-                base_curve_index,
-                bez_approximate_rational,
-                tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
-                v_degree,
-            }),
-        )
-        .await?;
+        id,
+        ModelingCmd::from(mcmd::Loft {
+            section_ids: sketches.iter().map(|group| group.id).collect(),
+            base_curve_index,
+            bez_approximate_rational,
+            tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+            v_degree,
+        }),
+    )
+    .await?;
 
     // Take the sketch with the most paths, and override its id with the loft's solid_id (to get its faces later)
     let mut desc_sorted_sketches = sketches.to_vec();
