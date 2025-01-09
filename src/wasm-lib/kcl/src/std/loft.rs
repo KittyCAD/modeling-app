@@ -4,10 +4,7 @@ use std::num::NonZeroU32;
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::{
-    each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, websocket::OkWebSocketResponseData,
-    ModelingCmd,
-};
+use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
 use crate::{
