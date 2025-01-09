@@ -759,7 +759,10 @@ test(`Offset plane point-and-click`, async ({
 
   await test.step('Delete offset plane via feature tree selection', async () => {
     await editor.closePane()
-    const operationButton = await toolbar.getFeatureTreeOperation('Offset Plane', 0)
+    const operationButton = await toolbar.getFeatureTreeOperation(
+      'Offset Plane',
+      0
+    )
     await operationButton.click({ button: 'left' })
     await page.keyboard.press('Backspace')
     await scene.expectPixelColor([50, 51, 96], testPoint, 15)
