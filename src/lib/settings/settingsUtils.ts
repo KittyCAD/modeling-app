@@ -41,7 +41,8 @@ export function configurationToSettingsPayload(
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
       streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
-      freeCameraMode: configuration?.settings?.app?.free_camera_mode,
+      allowOrbitInSketchMode:
+        configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       projectDirectory: configuration?.settings?.project?.directory,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
     },
@@ -81,7 +82,8 @@ export function projectConfigurationToSettingsPayload(
       onboardingStatus: configuration?.settings?.app?.onboarding_status,
       dismissWebBanner: configuration?.settings?.app?.dismiss_web_banner,
       streamIdleMode: configuration?.settings?.app?.stream_idle_mode,
-      freeCameraMode: configuration?.settings?.app?.free_camera_mode,
+      allowOrbitInSketchMode:
+        configuration?.settings?.app?.allow_orbit_in_sketch_mode,
       enableSSAO: configuration?.settings?.modeling?.enable_ssao,
     },
     modeling: {

@@ -157,9 +157,13 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
-        'set.app.freeCameraMode': {
+        'set.app.allowOrbitInSketchMode': {
           target: 'persisting settings',
-          actions: ['setSettingAtLevel', 'toastSuccess', 'setFreeCameraMode'],
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            'setAllowOrbitInSketchMode',
+          ],
         },
 
         'set.modeling.cameraProjection': {
@@ -188,7 +192,7 @@ export const settingsMachine = setup({
             'setClientSideSceneUnits',
             'Execute AST',
             'setClientTheme',
-            'setFreeCameraMode',
+            'setAllowOrbitInSketchMode',
           ],
         },
 
@@ -200,7 +204,7 @@ export const settingsMachine = setup({
             'setClientSideSceneUnits',
             'Execute AST',
             'setClientTheme',
-            'setFreeCameraMode',
+            'setAllowOrbitInSketchMode',
           ],
         },
 

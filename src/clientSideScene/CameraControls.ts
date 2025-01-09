@@ -109,7 +109,7 @@ export class CameraControls {
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
-  _setting_freeCameraMode = false
+  _setting_allowOrbitInSketchMode = false
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
   }
@@ -1014,7 +1014,7 @@ export class CameraControls {
         } else if (toOrthographic) {
           await this.animateToOrthographic()
         }
-        this.enableRotate = this._setting_freeCameraMode
+        this.enableRotate = false
         this._isCamMovingCallback(false, true)
         resolve()
       }

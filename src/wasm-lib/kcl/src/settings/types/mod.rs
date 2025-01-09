@@ -122,8 +122,8 @@ pub struct AppSettings {
     #[serde(default, alias = "streamIdleMode", skip_serializing_if = "is_default")]
     stream_idle_mode: bool,
     /// When the user is idle, and this is true, the stream will be torn down.
-    #[serde(default, alias = "freeCameraMode", skip_serializing_if = "is_default")]
-    free_camera_mode: bool,
+    #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
+    allow_orbit_in_sketch_mode: bool,
 }
 
 // TODO: When we remove backwards compatibility with the old settings file, we can remove this.
@@ -589,7 +589,7 @@ textWrapping = true
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
-                        free_camera_mode: false,
+                        allow_orbit_in_sketch_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::In,
@@ -651,7 +651,7 @@ includeSettings = false
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
-                        free_camera_mode: false,
+                        allow_orbit_in_sketch_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -718,7 +718,7 @@ defaultProjectName = "projects-$nnn"
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
-                        free_camera_mode: false,
+                        allow_orbit_in_sketch_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
@@ -797,7 +797,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
-                        free_camera_mode: false,
+                        allow_orbit_in_sketch_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Mm,

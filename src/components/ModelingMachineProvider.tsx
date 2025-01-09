@@ -111,7 +111,7 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme, enableSSAO, freeCameraMode },
+        app: { theme, enableSSAO, allowOrbitInSketchMode },
         modeling: {
           defaultUnit,
           cameraProjection,
@@ -284,9 +284,6 @@ export const ModelingMachineProvider = ({
               sketchPathToNode: event.data,
             },
           }
-        }),
-        'Set animate back to initial view': assign(({ context }) => {
-          console.log('ANIMATE BACK', context)
         }),
         'Set selection': assign(
           ({ context: { selectionRanges, sketchDetails }, event }) => {
@@ -637,7 +634,8 @@ export const ModelingMachineProvider = ({
             input.plane
           )
           await kclManager.updateAst(modifiedAst, false)
-          sceneInfra.camControls.enableRotate = true
+          sceneInfra.camControls.enableRotate =
+            sceneInfra.camControls._setting_allowOrbitInSketchMode
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
           await letEngineAnimateAndSyncCamAfter(
@@ -1194,14 +1192,20 @@ export const ModelingMachineProvider = ({
   }, [engineCommandManager.engineConnection, modelingSend])
 
   useEffect(() => {
-    if (!freeCameraMode.current) {
-      const inSketchMode = modelingState.matches('Sketch')
+    const inSketchMode = modelingState.matches('Sketch')
+    if (!allowOrbitInSketchMode.current) {
       const targetId = modelingState.context.sketchDetails?.animateTargetId
       if (inSketchMode && targetId) {
         letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
       }
     }
-  }, [freeCameraMode])
+
+    // While you are in sketch mode you should be able to control the enable rotate
+    // Once you exit it goes back to normal
+    if (inSketchMode) {
+      sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
+    }
+  }, [allowOrbitInSketchMode])
 
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {

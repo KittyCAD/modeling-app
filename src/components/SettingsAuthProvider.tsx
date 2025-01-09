@@ -42,7 +42,6 @@ import { isDesktop } from 'lib/isDesktop'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { codeManager } from 'lib/singletons'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
-import { useModelingContext } from 'hooks/useModelingContext'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -74,7 +73,6 @@ export const SettingsAuthProvider = ({
 }) => {
   const loadedSettings = useRouteLoaderData(PATHS.INDEX) as typeof settings
   const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-  const { state } = useModelingContext()
   return (
     <SettingsAuthProviderBase
       loadedSettings={loadedSettings}
@@ -139,9 +137,9 @@ export const SettingsAuthProviderBase = ({
           sceneInfra.theme = opposingTheme
           sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
         },
-        setFreeCameraMode: ({ context }) => {
-          sceneInfra.camControls._setting_freeCameraMode =
-            context.app.freeCameraMode.current
+        setAllowOrbitInSketchMode: ({ context }) => {
+          sceneInfra.camControls._setting_allowOrbitInSketchMode =
+            context.app.allowOrbitInSketchMode.current
           // ModelingMachineProvider will do a use effect to trigger the camera engine sync
         },
         toastSuccess: ({ event }) => {
