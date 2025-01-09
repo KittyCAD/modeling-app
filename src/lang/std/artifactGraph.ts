@@ -77,7 +77,7 @@ interface SegmentArtifactRich extends BaseArtifact {
 /** A Sweep is a more generic term for extrude, revolve, loft and sweep*/
 interface SweepArtifact extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve'
+  subType: 'extrusion' | 'revolve' | 'loft'
   pathId: string
   surfaceIds: Array<string>
   edgeIds: Array<string>
@@ -85,7 +85,7 @@ interface SweepArtifact extends BaseArtifact {
 }
 interface SweepArtifactRich extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve'
+  subType: 'extrusion' | 'revolve' | 'loft'
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
   edges: Array<SweepEdge>
@@ -397,6 +397,33 @@ export function getArtifactsToUpdate({
         id: cmd.target,
         artifact: { ...path, sweepId: id },
       })
+    return returnArr
+  } else if (
+    cmd.type === 'loft' &&
+    response.type === 'modeling' &&
+    response.data.modeling_response.type === 'loft'
+  ) {
+    returnArr.push({
+      id,
+      artifact: {
+        type: 'sweep',
+        subType: 'loft',
+        id,
+        // TODO: make sure to revisit this choice, don't think it matters for now
+        pathId: cmd.section_ids[0],
+        surfaceIds: [],
+        edgeIds: [],
+        codeRef: { range, pathToNode },
+      },
+    })
+    for (const sectionId of cmd.section_ids) {
+      const path = getArtifact(sectionId)
+      if (path?.type === 'path')
+        returnArr.push({
+          id: sectionId,
+          artifact: { ...path, sweepId: id },
+        })
+    }
     return returnArr
   } else if (
     cmd.type === 'solid3d_get_extrusion_face_info' &&
