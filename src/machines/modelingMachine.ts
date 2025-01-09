@@ -1554,23 +1554,44 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { profile, path } = input
-        const declarators = profile.graphSelections.flatMap((s) => {
-          const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
-          const nodeFromPath = getNodeFromPath<VariableDeclarator>(
-            ast,
-            path,
-            'VariableDeclarator'
-          )
-          return err(nodeFromPath) ? [] : nodeFromPath.node
-        })
+
+        // Find the profile declaration
+        const profileNodePath = getNodePathFromSourceRange(
+          ast,
+          profile.graphSelections[0].codeRef.range
+        )
+        const profileNode = getNodeFromPath<VariableDeclarator>(
+          ast,
+          profileNodePath,
+          'VariableDeclarator'
+        )
+        if (err(profileNode)) {
+          return new Error("Couldn't parse profile selection")
+        }
+        const profileDeclarator = profileNode.node
 
         // TODO: add better validation on selection
-        if (!declarators) {
+        if (!profileDeclarator) {
           trap('Not enough sketches selected')
         }
 
+        // Find the path declaration
+        const pathNodePath = getNodePathFromSourceRange(
+          ast,
+          path.graphSelections[0].codeRef.range
+        )
+        const pathNode = getNodeFromPath<VariableDeclarator>(
+          ast,
+          pathNodePath,
+          'VariableDeclarator'
+        )
+        if (err(pathNode)) {
+          return new Error("Couldn't parse path selection")
+        }
+        const pathDeclarator = pathNode.node
+
         // Perform the sweep
-        const sweepRes = addSweep(ast, declarators)
+        const sweepRes = addSweep(ast, profileDeclarator, pathDeclarator)
         const updateAstResult = await kclManager.updateAst(
           sweepRes.modifiedAst,
           true,
