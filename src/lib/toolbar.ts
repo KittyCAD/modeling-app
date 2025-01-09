@@ -118,17 +118,21 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'sweep',
-        onClick: () => console.error('Sweep not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Sweep', groupId: 'modeling' },
+          }),
         icon: 'sweep',
-        status: 'unavailable',
+        status: 'available',
         title: 'Sweep',
         hotkey: 'W',
         description:
           'Create a 3D body by moving a sketch region along an arbitrary path.',
         links: [
           {
-            label: 'GitHub discussion',
-            url: 'https://github.com/KittyCAD/modeling-app/discussions/498',
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl/sweep',
           },
         ],
       },

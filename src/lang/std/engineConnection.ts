@@ -2098,6 +2098,7 @@ export class EngineCommandManager extends EventTarget {
       ast,
       execStateArtifacts,
     })
+    console.log(this.artifactGraph)
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)

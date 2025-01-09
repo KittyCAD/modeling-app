@@ -374,6 +374,37 @@ export function loftSketches(
   }
 }
 
+export function addSweep(
+  node: Node<Program>,
+  declarators: VariableDeclarator[]
+): {
+  modifiedAst: Node<Program>
+  pathToNode: PathToNode
+} {
+  const modifiedAst = structuredClone(node)
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  // const elements = declarators.map((d) => createIdentifier(d.id.name))
+  const sweep = createCallExpressionStdLib('sweep', [
+    createObjectExpression({ path: createIdentifier('sweepPath') }),
+    createLiteral('sweepSketch'),
+  ])
+  const declaration = createVariableDeclaration(name, sweep)
+  modifiedAst.body.push(declaration)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
 export function revolveSketch(
   node: Node<Program>,
   pathToNode: PathToNode,

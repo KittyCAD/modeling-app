@@ -37,6 +37,10 @@ export type ModelingCommandSchema = {
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
+  Sweep: {
+    path: Selections
+    profile: Selections
+  }
   Loft: {
     selection: Selections
   }
@@ -287,6 +291,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+      },
+    },
+  },
+  Sweep: {
+    description:
+      'Create a 3D body by moving a sketch region along an arbitrary path.',
+    icon: 'sweep',
+    needsReview: true,
+    args: {
+      profile: {
+        inputType: 'selection',
+        selectionTypes: ['solid2D'],
+        required: true,
+        skip: false,
+        // validation: loftValidator,
+      },
+      path: {
+        inputType: 'selection',
+        selectionTypes: ['segment', 'path'],
+        multiple: true,
+        required: true,
+        skip: false,
+        // validation: loftValidator,
       },
     },
   },

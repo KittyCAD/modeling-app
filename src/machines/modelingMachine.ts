@@ -45,6 +45,7 @@ import {
 import { revolveSketch } from 'lang/modifyAst/addRevolve'
 import {
   addOffsetPlane,
+  addSweep,
   deleteFromSelection,
   extrudeSketch,
   loftSketches,
@@ -266,6 +267,7 @@ export type ModelingMachineEvent =
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
@@ -1542,6 +1544,50 @@ export const modelingMachine = setup({
         }
       }
     ),
+    sweepAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Sweep'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { profile, path } = input
+        const declarators = profile.graphSelections.flatMap((s) => {
+          const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
+          const nodeFromPath = getNodeFromPath<VariableDeclarator>(
+            ast,
+            path,
+            'VariableDeclarator'
+          )
+          return err(nodeFromPath) ? [] : nodeFromPath.node
+        })
+
+        // TODO: add better validation on selection
+        if (!declarators) {
+          trap('Not enough sketches selected')
+        }
+
+        // Perform the sweep
+        const sweepRes = addSweep(ast, declarators)
+        const updateAstResult = await kclManager.updateAst(
+          sweepRes.modifiedAst,
+          true,
+          {
+            focusPath: [sweepRes.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
     loftAstMod: fromPromise(
       async ({
         input,
@@ -1735,6 +1781,11 @@ export const modelingMachine = setup({
           target: 'idle',
           actions: ['AST revolve'],
           reenter: false,
+        },
+
+        Sweep: {
+          target: 'Applying sweep',
+          reenter: true,
         },
 
         Loft: {
@@ -2522,6 +2573,19 @@ export const modelingMachine = setup({
         id: 'offsetPlaneAstMod',
         input: ({ event }) => {
           if (event.type !== 'Offset plane') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying sweep': {
+      invoke: {
+        src: 'sweepAstMod',
+        id: 'sweepAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Sweep') return undefined
           return event.data
         },
         onDone: ['idle'],
