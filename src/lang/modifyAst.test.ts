@@ -16,7 +16,6 @@ import {
   deleteSegmentFromPipeExpression,
   removeSingleConstraintInfo,
   deleteFromSelection,
-  splitPipedProfile,
 } from './modifyAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
@@ -807,9 +806,9 @@ sketch001 = startSketchOn('XZ')
 sketch002 = startSketchOn({
        plane = {
          origin = { x = 1, y = 2, z = 3 },
-         x_axis = { x = 4, y = 5, z = 6 },
-         y_axis = { x = 7, y = 8, z = 9 },
-         z_axis = { x = 10, y = 11, z = 12 }
+         xAxis = { x = 4, y = 5, z = 6 },
+         yAxis = { x = 7, y = 8, z = 9 },
+         zAxis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)
@@ -863,9 +862,9 @@ sketch001 = startSketchOn('XZ')
 sketch002 = startSketchOn({
        plane = {
          origin = { x = 1, y = 2, z = 3 },
-         x_axis = { x = 4, y = 5, z = 6 },
-         y_axis = { x = 7, y = 8, z = 9 },
-         z_axis = { x = 10, y = 11, z = 12 }
+         xAxis = { x = 4, y = 5, z = 6 },
+         yAxis = { x = 7, y = 8, z = 9 },
+         zAxis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)
@@ -918,64 +917,4 @@ sketch002 = startSketchOn({
       expect(newCode).toBe(codeAfter)
     }
   )
-})
-
-describe('Testing splitPipedProfile', () => {
-  it('should split the pipe expression correctly', () => {
-    const codeBefore = `part001 = startSketchOn('XZ')
-  |> startProfileAt([1, 2], %)
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
-    `
-
-    const expectedCodeAfter = `sketch001 = startSketchOn('XZ')
-part001 = startProfileAt([1, 2], sketch001)
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
-    `
-
-    const ast = assertParse(codeBefore)
-
-    const codeOfInterest = `startSketchOn('XZ')`
-    const range: [number, number, boolean] = [
-      codeBefore.indexOf(codeOfInterest),
-      codeBefore.indexOf(codeOfInterest) + codeOfInterest.length,
-      true,
-    ]
-    const pathToPipe = getNodePathFromSourceRange(ast, range)
-
-    const result = splitPipedProfile(ast, pathToPipe)
-
-    if (err(result)) throw result
-
-    const newCode = recast(result.modifiedAst)
-    if (err(newCode)) throw newCode
-    expect(newCode.trim()).toBe(expectedCodeAfter.trim())
-  })
-  it('should return error for already split pipe', () => {
-    const codeBefore = `sketch001 = startSketchOn('XZ')
-part001 = startProfileAt([1, 2], sketch001)
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
-    `
-
-    const ast = assertParse(codeBefore)
-
-    const codeOfInterest = `startProfileAt([1, 2], sketch001)`
-    const range: [number, number, boolean] = [
-      codeBefore.indexOf(codeOfInterest),
-      codeBefore.indexOf(codeOfInterest) + codeOfInterest.length,
-      true,
-    ]
-    const pathToPipe = getNodePathFromSourceRange(ast, range)
-
-    const result = splitPipedProfile(ast, pathToPipe)
-    expect(result instanceof Error).toBe(true)
-  })
 })

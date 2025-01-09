@@ -85,7 +85,8 @@ pub async fn execute(
 
     // Populate from the old exec state if it exists.
     if let Some(program_memory_override) = program_memory_override {
-        exec_state.memory = program_memory_override;
+        // We are in mock mode, so don't use any cache.
+        exec_state.mod_local.memory = program_memory_override;
     } else {
         // If we are in mock mode, we don't want to use any cache.
         if let Some(old) = read_old_ast_memory().await {
@@ -95,7 +96,7 @@ pub async fn execute(
     }
 
     if let Err(err) = ctx
-        .run(
+        .run_with_ui_outputs(
             CacheInformation {
                 old: old_ast_memory,
                 new_ast: program.ast.clone(),
@@ -103,14 +104,13 @@ pub async fn execute(
             &mut exec_state,
         )
         .await
-        .map_err(String::from)
     {
         if !is_mock {
             bust_cache().await;
         }
 
         // Throw the error.
-        return Err(err);
+        return Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?);
     }
 
     if !is_mock {
@@ -130,7 +130,7 @@ pub async fn execute(
     // gloo-serialize crate instead.
     // DO NOT USE serde_wasm_bindgen::to_value(&exec_state).map_err(|e| e.to_string())
     // it will break the frontend.
-    JsValue::from_serde(&exec_state).map_err(|e| e.to_string())
+    JsValue::from_serde(&exec_state.to_wasm_outcome()).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute
@@ -305,7 +305,7 @@ pub async fn kcl_lsp_run(
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());
 
-    // Check if we can send telememtry for this user.
+    // Check if we can send telemetry for this user.
     let can_send_telemetry = match zoo_client.users().get_privacy_settings().await {
         Ok(privacy_settings) => privacy_settings.can_train_on_data,
         Err(err) => {
@@ -316,7 +316,8 @@ pub async fn kcl_lsp_run(
             {
                 true
             } else {
-                return Err(err.to_string().into());
+                web_sys::console::warn_1(&format!("Failed to get privacy settings: {err:?}").into());
+                false
             }
         }
     };

@@ -176,6 +176,7 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 #[stdlib {
     name = "shell",
+    feature_tree_operation = true,
 }]
 async fn inner_shell(
     data: ShellData,
@@ -229,7 +230,7 @@ async fn inner_shell(
     }
 
     args.batch_modeling_cmd(
-        exec_state.id_generator.next_uuid(),
+        exec_state.next_uuid(),
         ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: false,
             face_ids,
@@ -302,6 +303,7 @@ pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "hollow",
+    feature_tree_operation = true,
 }]
 async fn inner_hollow(
     thickness: f64,
@@ -314,7 +316,7 @@ async fn inner_hollow(
     args.flush_batch_for_solid_set(exec_state, solid.clone().into()).await?;
 
     args.batch_modeling_cmd(
-        exec_state.id_generator.next_uuid(),
+        exec_state.next_uuid(),
         ModelingCmd::from(mcmd::Solid3dShellFace {
             hollow: true,
             face_ids: Vec::new(), // This is empty because we want to hollow the entire object.

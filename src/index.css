@@ -85,7 +85,8 @@ textarea,
 }
 
 button {
-  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs focus-visible:ring-primary;
+  @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs;
+  @apply focus-visible:outline-chalkboard-100;
 }
 
 button:hover {
@@ -93,7 +94,7 @@ button:hover {
 }
 
 .dark button {
-  @apply border-chalkboard-70 focus-visible:ring-primary/50;
+  @apply border-chalkboard-70 focus-visible:outline-chalkboard-10;
 }
 
 .dark button:hover {
@@ -310,6 +311,19 @@ code {
     @apply px-1 py-0.5 rounded-sm;
     @apply bg-chalkboard-20 text-chalkboard-80;
     @apply dark:bg-chalkboard-80 dark:text-chalkboard-30;
+  }
+
+  button.reset {
+    @apply bg-transparent border-transparent m-0 p-0 rounded-none text-base;
+  }
+
+  button.reset:hover {
+    @apply bg-transparent border-transparent;
+  }
+
+  /* Add an outline that matches the app foreground (or text) color */
+  .outline-appForeground {
+    @apply outline-chalkboard-100 dark:outline-chalkboard-10;
   }
 }
 

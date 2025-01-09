@@ -18,10 +18,8 @@ import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
 import {
-  doesPipeHaveCallExp,
   getNodeFromPath,
   getNodePathFromSourceRange,
-  hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
@@ -280,19 +278,18 @@ export function getEventForSegmentSelection(
   }
   if (!id || !group) return null
   const artifact = engineCommandManager.artifactGraph.get(id)
-  if (!artifact) return null
-  const node = getNodeFromPath<Expr>(kclManager.ast, group.userData.pathToNode)
-  if (err(node)) return null
+  const codeRefs = getCodeRefsByArtifactId(
+    id,
+    engineCommandManager.artifactGraph
+  )
+  if (!artifact || !codeRefs) return null
   return {
     type: 'Set selection',
     data: {
       selectionType: 'singleCodeCursor',
       selection: {
         artifact,
-        codeRef: {
-          pathToNode: group?.userData?.pathToNode,
-          range: [node.node.start, node.node.end, true],
-        },
+        codeRef: codeRefs[0],
       },
     },
   }
@@ -326,7 +323,8 @@ export function handleSelectionBatch({
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
-      ranges.push(EditorSelection.cursor(codeRef.range[1]))
+      const safeEnd = Math.min(codeRef.range[1], codeManager.code.length)
+      ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
   if (ranges.length)
@@ -491,120 +489,14 @@ function resetAndSetEngineEntitySelectionCmds(
   ]
 }
 
+/**
+ * Is the selection a single cursor in a sketch pipe expression chain?
+ */
 export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
     engineCommandManager.artifactGraph,
     selectionRanges
-  )
-}
-
-export function isSelectionLastLine(
-  selectionRanges: Selections,
-  code: string,
-  i = 0
-) {
-  return selectionRanges.graphSelections[i]?.codeRef?.range[1] === code.length
-}
-
-export function isRangeBetweenCharacters(selectionRanges: Selections) {
-  return (
-    selectionRanges.graphSelections.length === 1 &&
-    selectionRanges.graphSelections[0]?.codeRef?.range[0] === 0 &&
-    selectionRanges.graphSelections[0]?.codeRef?.range[1] === 0
-  )
-}
-
-export type CommonASTNode = {
-  selection: Selection
-  ast: Program
-}
-
-function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
-  return {
-    selection: selectionRanges.graphSelections[i],
-    ast: kclManager.ast,
-  }
-}
-
-function nodeHasExtrude(node: CommonASTNode) {
-  return (
-    doesPipeHaveCallExp({
-      calleeName: 'extrude',
-      ...node,
-    }) ||
-    doesPipeHaveCallExp({
-      calleeName: 'revolve',
-      ...node,
-    }) ||
-    doesPipeHaveCallExp({
-      calleeName: 'loft',
-      ...node,
-    })
-  )
-}
-
-function nodeHasClose(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'close',
-    ...node,
-  })
-}
-function nodeHasCircle(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'circle',
-    ...node,
-  })
-}
-
-export function canSweepSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isSketchPipe(selection) &&
-    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    (commonNodes.every((n) => nodeHasClose(n)) ||
-      commonNodes.every((n) => nodeHasCircle(n))) &&
-    commonNodes.every((n) => !nodeHasExtrude(n))
-  )
-}
-
-export function canRevolveSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isSketchPipe(selection) &&
-    (commonNodes.every((n) => nodeHasClose(n)) ||
-      commonNodes.every((n) => nodeHasCircle(n)))
-  )
-}
-
-export function canLoftSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isCursorInSketchCommandRange(
-      engineCommandManager.artifactGraph,
-      selection
-    ) &&
-    commonNodes.length > 1 &&
-    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n)) &&
-    commonNodes.every((n) => !nodeHasExtrude(n))
-  )
-}
-
-export function canShellSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return commonNodes.every(
-    (n) =>
-      n.selection.artifact?.type === 'cap' ||
-      n.selection.artifact?.type === 'wall'
   )
 }
 
@@ -676,7 +568,8 @@ export function getSelectionTypeDisplayText(
   const selectionsByType = getSelectionCountByType(selection)
   if (selectionsByType === 'none') return null
 
-  return [...selectionsByType.entries()]
+  return selectionsByType
+    .entries()
     .map(
       // Hack for showing "face" instead of "extrude-wall" in command bar text
       ([type, count]) =>
@@ -685,6 +578,7 @@ export function getSelectionTypeDisplayText(
           .replace('solid2D', 'face')
           .replace('segment', 'face')}${count > 1 ? 's' : ''}`
     )
+    .toArray()
     .join(', ')
 }
 
@@ -694,7 +588,7 @@ export function canSubmitSelectionArg(
 ) {
   return (
     selectionsByType !== 'none' &&
-    [...selectionsByType.entries()].every(([type, count]) => {
+    selectionsByType.entries().every(([type, count]) => {
       const foundIndex = argument.selectionTypes.findIndex((s) => s === type)
       return (
         foundIndex !== -1 &&
@@ -717,7 +611,7 @@ export function codeToIdSelections(
       // TODO #868: loops over all artifacts will become inefficient at a large scale
       const overlappingEntries = Array.from(engineCommandManager.artifactGraph)
         .map(([id, artifact]) => {
-          if (!('codeRef' in artifact && artifact.codeRef)) return null
+          if (!('codeRef' in artifact)) return null
           return isOverlap(artifact.codeRef.range, selection.range)
             ? {
                 artifact,
@@ -888,6 +782,14 @@ export function codeToIdSelections(
             }
           }
         }
+
+        if (entry.artifact.type === 'sweep') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
+          }
+        }
       })
 
       if (bestCandidate) {
@@ -960,6 +862,7 @@ export function updateSelections(
             JSON.stringify(pathToNode)
           ) {
             artifact = a
+            console.log('found artifact', a)
             break
           }
         }

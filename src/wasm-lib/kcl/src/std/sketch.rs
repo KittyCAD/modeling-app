@@ -11,6 +11,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::execution::{Artifact, ArtifactId, ArtifactInner};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -20,8 +21,8 @@ use crate::{
     parsing::ast::types::TagNode,
     std::{
         utils::{
-            arc_angles, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
-            intersection_with_parallel_line, TangentialArcInfoInput,
+            arc_angles, arc_center_and_end, calculate_circle_center, get_tangential_arc_to_info, get_x_component,
+            get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
         },
         Args,
     },
@@ -124,7 +125,7 @@ async fn inner_line_to(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -299,7 +300,7 @@ async fn inner_line(
     let from = sketch.current_pen_position()?;
     let to = [from.x + delta[0], from.y + delta[1]];
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -488,7 +489,7 @@ async fn inner_angled_line(
 
     let to: [f64; 2] = [from.x + delta[0], from.y + delta[1]];
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -889,6 +890,7 @@ pub async fn start_sketch_at(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "startSketchAt",
+    deprecated = true,
 }]
 async fn inner_start_sketch_at(data: [f64; 2], exec_state: &mut ExecState, args: Args) -> Result<Sketch, KclError> {
     // Let's assume it's the XY plane for now, this is just for backwards compatibility.
@@ -937,13 +939,13 @@ pub enum PlaneData {
         /// Origin of the plane.
         origin: Box<Point3d>,
         /// What should the plane’s X axis be?
-        #[serde(rename = "xAxis", alias = "x_axis")]
+        #[serde(rename = "xAxis")]
         x_axis: Box<Point3d>,
         /// What should the plane’s Y axis be?
-        #[serde(rename = "yAxis", alias = "y_axis")]
+        #[serde(rename = "yAxis")]
         y_axis: Box<Point3d>,
         /// The z-axis (normal).
-        #[serde(rename = "zAxis", alias = "z_axis")]
+        #[serde(rename = "zAxis")]
         z_axis: Box<Point3d>,
     },
 }
@@ -1061,6 +1063,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 #[stdlib {
     name = "startSketchOn",
+    feature_tree_operation = true,
 }]
 async fn inner_start_sketch_on(
     data: SketchData,
@@ -1073,7 +1076,17 @@ async fn inner_start_sketch_on(
             let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
-        SketchData::Plane(plane) => Ok(SketchSurface::Plane(plane)),
+        SketchData::Plane(plane) => {
+            // Create artifact used only by the UI, not the engine.
+            let id = exec_state.next_uuid();
+            exec_state.add_artifact(Artifact {
+                id: ArtifactId::from(id),
+                inner: ArtifactInner::StartSketchOnPlane { plane_id: plane.id },
+                source_range: args.source_range,
+            });
+
+            Ok(SketchSurface::Plane(plane))
+        }
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
                 return Err(KclError::Type(KclErrorDetails {
@@ -1082,6 +1095,15 @@ async fn inner_start_sketch_on(
                 }));
             };
             let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+
+            // Create artifact used only by the UI, not the engine.
+            let id = exec_state.next_uuid();
+            exec_state.add_artifact(Artifact {
+                id: ArtifactId::from(id),
+                inner: ArtifactInner::StartSketchOnFace { face_id: face.id },
+                source_range: args.source_range,
+            });
+
             Ok(SketchSurface::Face(face))
         }
     }
@@ -1229,7 +1251,7 @@ pub(crate) async fn inner_start_profile_at(
             // Hide whatever plane we are sketching on.
             // This is especially helpful for offset planes, which would be visible otherwise.
             args.batch_end_cmd(
-                exec_state.id_generator.next_uuid(),
+                exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::ObjectVisible {
                     object_id: plane.id,
                     hidden: true,
@@ -1242,7 +1264,7 @@ pub(crate) async fn inner_start_profile_at(
 
     // Enter sketch mode on the surface.
     // We call this here so you can reuse the sketch surface for multiple sketches.
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::EnableSketchMode {
@@ -1260,10 +1282,10 @@ pub(crate) async fn inner_start_profile_at(
     )
     .await?;
 
-    let id = exec_state.id_generator.next_uuid();
-    let path_id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
+    let path_id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath {}))
+    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath::default()))
         .await?;
     args.batch_modeling_cmd(
         id,
@@ -1426,7 +1448,7 @@ pub(crate) async fn inner_close(
     let from = sketch.current_pen_position()?;
     let to: Point2d = sketch.start.from.into();
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(id, ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }))
         .await?;
@@ -1435,8 +1457,8 @@ pub(crate) async fn inner_close(
     if let SketchSurface::Plane(_) = sketch.on {
         // We were on a plane, disable the sketch mode.
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+            exec_state.next_uuid(),
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
         )
         .await?;
     }
@@ -1471,11 +1493,11 @@ pub enum ArcData {
     /// Angles and radius with an optional tag.
     AnglesAndRadius {
         /// The start angle.
-        #[serde(rename = "angleStart", alias = "angle_start")]
+        #[serde(rename = "angleStart")]
         #[schemars(range(min = -360.0, max = 360.0))]
         angle_start: f64,
         /// The end angle.
-        #[serde(rename = "angleEnd", alias = "angle_end")]
+        #[serde(rename = "angleEnd")]
         #[schemars(range(min = -360.0, max = 360.0))]
         angle_end: f64,
         /// The radius.
@@ -1572,7 +1594,7 @@ pub(crate) async fn inner_arc(
     }
     let ccw = angle_start < angle_end;
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -1651,7 +1673,7 @@ pub(crate) async fn inner_arc_to(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from: Point2d = sketch.current_pen_position()?;
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     // The start point is taken from the path you are extending.
     args.batch_modeling_cmd(
@@ -1797,7 +1819,7 @@ async fn inner_tangential_arc(
     let tangent_info = sketch.get_tangential_info_from_paths(); //this function desperately needs some documentation
     let tan_previous_point = tangent_info.tan_previous_point(from.into());
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
@@ -1934,7 +1956,7 @@ async fn inner_tangential_arc_to(
     });
 
     let delta = [to_x - from.x, to_y - from.y];
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
@@ -2017,7 +2039,7 @@ async fn inner_tangential_arc_to_relative(
         }));
     }
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
     args.batch_modeling_cmd(id, tan_arc_to(&sketch, &delta)).await?;
 
     let current_path = Path::TangentialArcTo {
@@ -2042,42 +2064,6 @@ async fn inner_tangential_arc_to_relative(
     new_sketch.paths.push(current_path);
 
     Ok(new_sketch)
-}
-
-// Calculate the center of 3 points
-// To calculate the center of the 3 point circle 2 perpendicular lines are created
-// These perpendicular lines will intersect at the center of the circle.
-fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
-    // y2 - y1
-    let y_2_1 = p2[1] - p1[1];
-    // y3 - y2
-    let y_3_2 = p3[1] - p2[1];
-    // x2 - x1
-    let x_2_1 = p2[0] - p1[0];
-    // x3 - x2
-    let x_3_2 = p3[0] - p2[0];
-
-    // Slope of two perpendicular lines
-    let slope_a = y_2_1 / x_2_1;
-    let slope_b = y_3_2 / x_3_2;
-
-    // Values for line intersection
-    // y1 - y3
-    let y_1_3 = p1[1] - p3[1];
-    // x1 + x2
-    let x_1_2 = p1[0] + p2[0];
-    // x2 + x3
-    let x_2_3 = p2[0] + p3[0];
-    // y1 + y2
-    let y_1_2 = p1[1] + p2[1];
-
-    // Solve for the intersection of these two lines
-    let numerator = (slope_a * slope_b * y_1_3) + (slope_b * x_1_2) - (slope_a * x_2_3);
-    let x = numerator / (2.0 * (slope_b - slope_a));
-
-    let y = ((-1.0 / slope_a) * (x - (x_1_2 / 2.0))) + (y_1_2 / 2.0);
-
-    [x, y]
 }
 
 /// Data to draw a bezier curve.
@@ -2137,7 +2123,7 @@ async fn inner_bezier_curve(
     let delta = data.to;
     let to = [from.x + data.to[0], from.y + data.to[1]];
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -2218,6 +2204,7 @@ pub async fn hole(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```
 #[stdlib {
     name = "hole",
+    feature_tree_operation = true,
 }]
 async fn inner_hole(
     hole_sketch: SketchSet,
@@ -2228,7 +2215,7 @@ async fn inner_hole(
     let hole_sketches: Vec<Sketch> = hole_sketch.into();
     for hole_sketch in hole_sketches {
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid2dAddHole {
                 object_id: sketch.id,
                 hole_id: hole_sketch.id,
@@ -2239,7 +2226,7 @@ async fn inner_hole(
         // suggestion (mike)
         // we also hide the source hole since its essentially "consumed" by this operation
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::ObjectVisible {
                 object_id: hole_sketch.id,
                 hidden: true,
@@ -2256,10 +2243,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{
-        execution::TagIdentifier,
-        std::sketch::{calculate_circle_center, PlaneData},
-    };
+    use crate::{execution::TagIdentifier, std::sketch::PlaneData, std::utils::calculate_circle_center};
 
     #[test]
     fn test_deserialize_plane_data() {

@@ -144,7 +144,8 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   stepAngle = (1/10) * tau()
 ///
 ///   // Start the decagon sketch at this point.
-///   startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///   startOfDecagonSketch = startSketchOn('XY')
+///     |> startProfileAt([(cos(0)*radius), (sin(0) * radius)], %)
 ///
 ///   // Use a `reduce` to draw the remaining decagon sides.
 ///   // For each number in the array 1..10, run the given function,
@@ -164,7 +165,8 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// The `decagon` above is basically like this pseudo-code:
 /// fn decagon(radius):
 ///     stepAngle = (1/10) * tau()
-///     startOfDecagonSketch = startSketchAt([(cos(0)*radius), (sin(0) * radius)])
+///     plane = startSketchOn('XY')
+///     startOfDecagonSketch = startProfileAt([(cos(0)*radius), (sin(0) * radius)], plane)
 ///
 ///     // Here's the reduce part.
 ///     partialDecagon = startOfDecagonSketch
@@ -253,6 +255,58 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         }));
     };
     inner_push(array, elem, &args).await
+}
+
+/// Remove the last element from an array.
+///
+/// Returns a new array with the last element removed.
+///
+/// ```no_run
+/// arr = [1, 2, 3, 4]
+/// new_arr = pop(arr)
+/// assertEqual(new_arr[0], 1, 0.00001, "1 is the first element of the array")
+/// assertEqual(new_arr[1], 2, 0.00001, "2 is the second element of the array")
+/// assertEqual(new_arr[2], 3, 0.00001, "3 is the third element of the array")
+/// ```
+#[stdlib {
+    name = "pop",
+    keywords = true,
+    unlabeled_first = true,
+    arg_docs = {
+        array = "The array to pop from.  Must not be empty.",
+    }
+}]
+async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {
+    if array.is_empty() {
+        return Err(KclError::Semantic(KclErrorDetails {
+            message: "Cannot pop from an empty array".to_string(),
+            source_ranges: vec![args.source_range],
+        }));
+    }
+
+    // Create a new array with all elements except the last one
+    let new_array = array[..array.len() - 1].to_vec();
+
+    Ok(KclValue::Array {
+        value: new_array,
+        meta: vec![args.source_range.into()],
+    })
+}
+
+pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    // Extract the array from the arguments
+    let val = args.get_unlabeled_kw_arg("array")?;
+
+    let meta = vec![args.source_range];
+    let KclValue::Array { value: array, meta: _ } = val else {
+        let actual_type = val.human_friendly_type();
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: meta,
+            message: format!("You can't pop from a value of type {actual_type}, only an array"),
+        }));
+    };
+
+    inner_pop(array, &args).await
 }
 
 /// Get the length of an array.

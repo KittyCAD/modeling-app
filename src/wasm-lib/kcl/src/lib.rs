@@ -81,7 +81,7 @@ mod wasm;
 
 pub use coredump::CoreDump;
 pub use engine::{EngineManager, ExecutionKind};
-pub use errors::{CompilationError, ConnectionError, ExecError, KclError};
+pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
 pub use execution::{
     cache::{CacheInformation, OldAstState},
     ExecState, ExecutorContext, ExecutorSettings,
@@ -97,7 +97,9 @@ pub use source_range::{ModuleId, SourceRange};
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    pub use crate::execution::{DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch};
+    pub use crate::execution::{
+        ArtifactCommand, DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch,
+    };
 }
 
 #[cfg(target_arch = "wasm32")]

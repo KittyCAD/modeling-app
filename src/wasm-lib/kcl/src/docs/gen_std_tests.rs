@@ -535,7 +535,11 @@ fn generate_type(
         || name == "CircularPattern3dData"
         || name == "LinearPattern2dData"
         || name == "LinearPattern3dData"
-        || name == "Mirror2dData")
+        || name == "Mirror2dData"
+        || name == "Axis2dOrEdgeReference"
+        || name == "Axis3dOrEdgeReference"
+        || name == "AxisAndOrigin2d"
+        || name == "AxisAndOrigin3d")
     {
         return Err(anyhow::anyhow!("Type name is not pascal cased: {}", name));
     }
@@ -604,24 +608,6 @@ fn clean_function_name(name: &str) -> String {
     fn_name
 }
 
-/// Check if a schema is the same as another schema, but don't check the description.
-fn is_same_schema(sa: &schemars::schema::Schema, sb: &schemars::schema::Schema) -> bool {
-    let schemars::schema::Schema::Object(a) = sa else {
-        return sa == sb;
-    };
-
-    let schemars::schema::Schema::Object(b) = sb else {
-        return sa == sb;
-    };
-
-    let mut a = a.clone();
-    a.metadata = None;
-    let mut b = b.clone();
-    b.metadata = None;
-
-    a == b
-}
-
 /// Recursively create references for types we already know about.
 fn recurse_and_create_references(
     name: &str,
@@ -653,24 +639,6 @@ fn recurse_and_create_references(
             obj.metadata = to.metadata.clone();
         }
         return Ok(schemars::schema::Schema::Object(obj));
-    }
-
-    // Check if this is the type we already know about.
-    for (n, s) in types {
-        if is_same_schema(schema, s) && name != n && !n.starts_with("[") {
-            // Return a reference to the type.
-            let sref = schemars::schema::Schema::new_ref(n.to_string());
-            // Add the existing metadata to the reference.
-            let schemars::schema::Schema::Object(ro) = sref else {
-                return Err(anyhow::anyhow!(
-                    "Failed to get object schema, should have not been a primitive"
-                ));
-            };
-            let mut ro = ro.clone();
-            ro.metadata = o.metadata.clone();
-
-            return Ok(schemars::schema::Schema::Object(ro));
-        }
     }
 
     let mut obj = o.clone();

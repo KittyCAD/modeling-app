@@ -17,7 +17,10 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{BasePath, ExecState, GeoMeta, KclValue, Path, Sketch, SketchSurface},
     parsing::ast::types::TagNode,
-    std::Args,
+    std::{
+        utils::{calculate_circle_center, distance},
+        Args,
+    },
 };
 
 /// A sketch surface or a sketch.
@@ -100,7 +103,7 @@ async fn inner_circle(
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
 
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         id,
@@ -143,6 +146,64 @@ async fn inner_circle(
         .await?;
 
     Ok(new_sketch)
+}
+
+/// Sketch a 3-point circle.
+pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let p1 = args.get_kw_arg("p1")?;
+    let p2 = args.get_kw_arg("p2")?;
+    let p3 = args.get_kw_arg("p3")?;
+    let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
+    let tag = args.get_kw_arg_opt("tag");
+
+    let sketch = inner_circle_three_point(p1, p2, p3, sketch_surface_or_group, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
+}
+
+/// Construct a circle derived from 3 points.
+///
+/// ```no_run
+/// exampleSketch = startSketchOn("XY")
+///   |> circleThreePoint(p1 = [10,10], p2 = [20,8], p3 = [15,5])
+///
+/// example = extrude(5, exampleSketch)
+/// ```
+#[stdlib {
+    name = "circleThreePoint",
+    keywords = true,
+    unlabeled_first = true,
+    arg_docs = {
+        p1 = "1st point to derive the circle.",
+        p2 = "2nd point to derive the circle.",
+        p3 = "3rd point to derive the circle.",
+        sketch_surface_or_group = "Plane or surface to sketch on.",
+        tag = "Identifier for the circle to reference elsewhere.",
+    }
+}]
+async fn inner_circle_three_point(
+    p1: [f64; 2],
+    p2: [f64; 2],
+    p3: [f64; 2],
+    sketch_surface_or_group: SketchOrSurface,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let center = calculate_circle_center(p1, p2, p3);
+    inner_circle(
+        CircleData {
+            center,
+            // It can be the distance to any of the 3 points - they all lay on the circumference.
+            radius: distance(center.into(), p2.into()),
+        },
+        sketch_surface_or_group,
+        tag,
+        exec_state,
+        args,
+    )
+    .await
 }
 
 /// Type of the polygon
@@ -269,7 +330,7 @@ async fn inner_polygon(
     // Draw all the lines with unique IDs and modified tags
     for vertex in vertices.iter().skip(1) {
         let from = sketch.current_pen_position()?;
-        let id = exec_state.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
 
         args.batch_modeling_cmd(
             id,
@@ -304,7 +365,7 @@ async fn inner_polygon(
 
     // Close the polygon by connecting back to the first vertex with a new ID
     let from = sketch.current_pen_position()?;
-    let close_id = exec_state.id_generator.next_uuid();
+    let close_id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(
         close_id,
@@ -337,7 +398,7 @@ async fn inner_polygon(
     sketch.paths.push(current_path);
 
     args.batch_modeling_cmd(
-        exec_state.id_generator.next_uuid(),
+        exec_state.next_uuid(),
         ModelingCmd::from(mcmd::ClosePath { path_id: sketch.id }),
     )
     .await?;

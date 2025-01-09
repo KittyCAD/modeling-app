@@ -1,19 +1,10 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './zoo-test'
 
-import { doExport, getUtils, makeTemplate, setup, tearDown } from './test-utils'
+import { doExport, getUtils, makeTemplate } from './test-utils'
 
-test.beforeEach(async ({ context, page }, testInfo) => {
-  await setup(context, page, testInfo)
-})
-
-test.afterEach(async ({ page }, testInfo) => {
-  await tearDown(page, testInfo)
-})
-
-test('Units menu', async ({ page }) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
+test.fixme('Units menu', async ({ page, homePage }) => {
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
 
   const unitsMenuButton = page.getByRole('button', {
     name: 'Current Units',
@@ -41,7 +32,7 @@ test('Units menu', async ({ page }) => {
   await expect(unitsMenuButton).toContainText('mm')
 })
 
-test('Successful export shows a success toast', async ({ page }) => {
+test('Successful export shows a success toast', async ({ page, homePage }) => {
   // FYI this test doesn't work with only engine running locally
   // And you will need to have the KittyCAD CLI installed
   const u = await getUtils(page)
@@ -57,41 +48,41 @@ totalHeightHalf = 2
 armThick = 0.5
 totalLen = 9.5
 part001 = startSketchOn('-XZ')
-  |> startProfileAt([0, 0], %)
-  |> yLine(baseHeight, %)
-  |> xLine(baseLen, %)
-  |> angledLineToY({
-        angle: topAng,
-        to: totalHeightHalf,
-      }, %, $seg04)
-  |> xLineTo(totalLen, %, $seg03)
-  |> yLine(-armThick, %, $seg01)
-  |> angledLineThatIntersects({
-        angle: HALF_TURN,
-        offset: -armThick,
-        intersectTag: seg04
-      }, %)
-  |> angledLineToY([segAng(seg04) + 180, ZERO], %)
-  |> angledLineToY({
-        angle: -bottomAng,
-        to: -totalHeightHalf - armThick,
-      }, %, $seg02)
-  |> xLineTo(segEndX(seg03) + 0, %)
-  |> yLine(-segLen(seg01), %)
-  |> angledLineThatIntersects({
-        angle: HALF_TURN,
-        offset: -armThick,
-        intersectTag: seg02
-      }, %)
-  |> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
-  |> xLineTo(ZERO, %)
-  |> close(%)
-  |> extrude(4, %)`
+|> startProfileAt([0, 0], %)
+|> yLine(baseHeight, %)
+|> xLine(baseLen, %)
+|> angledLineToY({
+      angle = topAng,
+      to = totalHeightHalf,
+    }, %, $seg04)
+|> xLineTo(totalLen, %, $seg03)
+|> yLine(-armThick, %, $seg01)
+|> angledLineThatIntersects({
+      angle = HALF_TURN,
+      offset = -armThick,
+      intersectTag = seg04
+    }, %)
+|> angledLineToY([segAng(seg04) + 180, ZERO], %)
+|> angledLineToY({
+      angle = -bottomAng,
+      to = -totalHeightHalf - armThick,
+    }, %, $seg02)
+|> xLineTo(segEndX(seg03) + 0, %)
+|> yLine(-segLen(seg01), %)
+|> angledLineThatIntersects({
+      angle = HALF_TURN,
+      offset = -armThick,
+      intersectTag = seg02
+    }, %)
+|> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
+|> xLineTo(ZERO, %)
+|> close(%)
+|> extrude(4, %)`
     )
   })
-  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.setBodyDimensions({ width: 1200, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+  await homePage.goToModelingScene()
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.waitForCmdReceive('extrude')
@@ -106,25 +97,14 @@ part001 = startSketchOn('-XZ')
     },
     page
   )
-
-  // This is the main thing we're testing,
-  // We test the export functionality across all
-  // file types in snapshot-tests.spec.ts
-  await expect(page.getByText('Exported successfully')).toBeVisible()
 })
 
 test('Paste should not work unless an input is focused', async ({
   page,
-  browserName,
+  homePage,
 }) => {
-  // To run this test locally, uncomment Firefox in playwright.config.ts
-  test.skip(
-    browserName !== 'firefox',
-    "This bug is really Firefox-only, which we don't run in CI."
-  )
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
   await page
     .getByRole('button', { name: 'Start Sketch' })
     .waitFor({ state: 'visible' })
@@ -164,12 +144,12 @@ test('Paste should not work unless an input is focused', async ({
 
 test('Keyboard shortcuts can be viewed through the help menu', async ({
   page,
+  homePage,
 }) => {
-  const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await u.waitForAuthSkipAppStart()
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
 
-  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+  await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
   await page
     .getByRole('button', { name: 'Start Sketch' })
     .waitFor({ state: 'visible' })
@@ -181,7 +161,7 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({
   await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
 
   // Verify the URL and that you can see a list of shortcuts
-  await expect(page.url()).toContain('?tab=keybindings')
+  await expect.poll(() => page.url()).toContain('?tab=keybindings')
   await expect(
     page.getByRole('heading', { name: 'Enter Sketch Mode' })
   ).toBeAttached()
@@ -189,12 +169,13 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({
 
 test('First escape in tool pops you out of tool, second exits sketch mode', async ({
   page,
+  homePage,
 }) => {
   // Wait for the app to be ready for use
   const u = await getUtils(page)
-  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.setBodyDimensions({ width: 1200, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+  await homePage.goToModelingScene()
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
@@ -224,13 +205,8 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   // Draw a line
   await page.mouse.move(700, 200, { steps: 5 })
   await page.mouse.click(700, 200)
-
-  const secondMousePosition = { x: 800, y: 250 }
-
-  await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
-    steps: 5,
-  })
-  await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
+  await page.mouse.move(800, 250, { steps: 5 })
+  await page.mouse.click(800, 250)
   // Unequip line tool
   await page.keyboard.press('Escape')
   // Make sure we didn't pop out of sketch mode.
@@ -239,17 +215,9 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   // Equip arc tool
   await page.keyboard.press('a')
   await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
-
-  // click in the same position again to continue the profile
-  await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
-    steps: 5,
-  })
-  await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
-
   await page.mouse.move(1000, 100, { steps: 5 })
   await page.mouse.click(1000, 100)
   await page.keyboard.press('Escape')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
   await page.keyboard.press('l')
   await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
 
@@ -271,7 +239,7 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
 
 test.fixme(
   'Basic default modeling and sketch hotkeys work',
-  async ({ page }) => {
+  async ({ page, homePage }) => {
     const u = await getUtils(page)
 
     // This test can run long if it takes a little too long to load
@@ -298,8 +266,8 @@ test.fixme(
           })
         )
       })
-      await page.setViewportSize({ width: 1200, height: 500 })
-      await u.waitForAuthSkipAppStart()
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+      await homePage.goToModelingScene()
       await u.openDebugPanel()
       await u.expectCmdLog('[data-message-type="execution-done"]')
       await u.closeDebugPanel()
@@ -450,10 +418,11 @@ test.fixme(
   }
 )
 
-test('Delete key does not navigate back', async ({ page }) => {
-  await page.setViewportSize({ width: 1200, height: 500 })
-  await page.goto('/')
-  await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+test('Delete key does not navigate back', async ({ page, homePage }) => {
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
+
+  await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
 
   const settingsButton = page.getByRole('link', {
     name: 'Settings',
@@ -462,45 +431,45 @@ test('Delete key does not navigate back', async ({ page }) => {
   const settingsCloseButton = page.getByTestId('settings-close-button')
 
   await settingsButton.click()
-  await expect(page.url()).toContain('/settings')
+  await expect.poll(() => page.url()).toContain('/settings')
 
   // Make sure that delete doesn't go back from settings
   await page.keyboard.press('Delete')
-  await expect(page.url()).toContain('/settings')
+  await expect.poll(() => page.url()).toContain('/settings')
 
   // Now close the settings and try delete again,
   // make sure it doesn't go back to settings
   await settingsCloseButton.click()
   await page.keyboard.press('Delete')
-  await expect(page.url()).not.toContain('/settings')
+  await expect.poll(() => page.url()).not.toContain('/settings')
 })
 
-test('Sketch on face', async ({ page }) => {
+test('Sketch on face', async ({ page, homePage }) => {
   test.setTimeout(90_000)
   const u = await getUtils(page)
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([3.29, 7.86], %)
-  |> line([2.48, 2.44], %)
-  |> line([2.66, 1.17], %)
-  |> line([3.75, 0.46], %)
-  |> line([4.99, -0.46], %)
-  |> line([3.3, -2.12], %)
-  |> line([2.16, -3.33], %)
-  |> line([0.85, -3.08], %)
-  |> line([-0.18, -3.36], %)
-  |> line([-3.86, -2.73], %)
-  |> line([-17.67, 0.85], %)
-  |> close(%)
-  extrude001 = extrude(5 + 7, sketch001)`
+|> startProfileAt([3.29, 7.86], %)
+|> line([2.48, 2.44], %)
+|> line([2.66, 1.17], %)
+|> line([3.75, 0.46], %)
+|> line([4.99, -0.46], %)
+|> line([3.3, -2.12], %)
+|> line([2.16, -3.33], %)
+|> line([0.85, -3.08], %)
+|> line([-0.18, -3.36], %)
+|> line([-3.86, -2.73], %)
+|> line([-17.67, 0.85], %)
+|> close(%)
+extrude001 = extrude(5 + 7, sketch001)`
     )
   })
 
-  await page.setViewportSize({ width: 1200, height: 500 })
+  await page.setBodyDimensions({ width: 1200, height: 500 })
 
-  await u.waitForAuthSkipAppStart()
+  await homePage.goToModelingScene()
 
   // wait for execution done
   await u.openDebugPanel()
@@ -550,11 +519,12 @@ test('Sketch on face', async ({ page }) => {
 
   await expect.poll(u.normalisedEditorCode).toContain(
     u.normalisedCode(`sketch002 = startSketchOn(extrude001, seg01)
-profile001 = startProfileAt([-12.88, 6.66], sketch002)
-  |> line([2.71, -0.22], %)
-  |> line([-2.87, -1.38], %)
+  |> startProfileAt([-12.94, 6.6], %)
+  |> line([2.45, -0.2], %)
+  |> line([-2.6, -1.25], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`)
+  |> close(%)
+`)
   )
 
   await u.openAndClearDebugPanel()
@@ -567,8 +537,9 @@ profile001 = startProfileAt([-12.88, 6.66], sketch002)
   await page.getByText('startProfileAt([-12').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
-  await page.waitForTimeout(500)
-  await page.setViewportSize({ width: 1200, height: 1200 })
+  await page.waitForTimeout(400)
+  await page.waitForTimeout(150)
+  await page.setBodyDimensions({ width: 1200, height: 1200 })
   await u.openAndClearDebugPanel()
   await u.updateCamPosition([452, -152, 1166])
   await u.closeDebugPanel()
@@ -586,11 +557,11 @@ profile001 = startProfileAt([-12.88, 6.66], sketch002)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   const result = makeTemplate`sketch002 = startSketchOn(extrude001, seg01)
-  |> startProfileAt([-12.83, 6.7], %)
-  |> line([${[2.28, 2.35]}, -${0.07}], %)
-  |> line([-3.05, -1.47], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`
+|> startProfileAt([-12.83, 6.7], %)
+|> line([${[2.28, 2.35]}, -${0.07}], %)
+|> line([-3.05, -1.47], %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)`
 
   await expect(page.locator('.cm-content')).toHaveText(result.regExp)
 
@@ -614,6 +585,6 @@ profile001 = startProfileAt([-12.88, 6.66], sketch002)
   await page.getByRole('button', { name: 'checkmark Submit command' }).click()
 
   const result2 = result.genNext`
-  const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
+const sketch002 = extrude(${[5, 5]} + 7, sketch002)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })

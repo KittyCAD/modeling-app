@@ -8,6 +8,8 @@ import {
   dialog,
   shell,
   nativeTheme,
+  desktopCapturer,
+  systemPreferences,
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
@@ -20,6 +22,8 @@ import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
 import argvFromYargs from './commandLineArgs'
+
+import * as packageJSON from '../package.json'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -61,23 +65,30 @@ if (process.defaultApp) {
 // Must be done before ready event.
 registerStartupListeners()
 
-const createWindow = (filePath?: string): BrowserWindow => {
-  const newWindow = new BrowserWindow({
-    autoHideMenuBar: true,
-    show: false,
-    width: 1800,
-    height: 1200,
-    webPreferences: {
-      nodeIntegration: false, // do not give the application implicit system access
-      contextIsolation: true, // expose system functions in preload
-      sandbox: false, // expose nodejs in preload
-      preload: path.join(__dirname, './preload.js'),
-    },
-    icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
-    frame: os.platform() !== 'darwin',
-    titleBarStyle: 'hiddenInset',
-    backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
-  })
+const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
+  let newWindow
+
+  if (reuse) {
+    newWindow = mainWindow
+  }
+  if (!newWindow) {
+    newWindow = new BrowserWindow({
+      autoHideMenuBar: true,
+      show: false,
+      width: 1800,
+      height: 1200,
+      webPreferences: {
+        nodeIntegration: false, // do not give the application implicit system access
+        contextIsolation: true, // expose system functions in preload
+        sandbox: false, // expose nodejs in preload
+        preload: path.join(__dirname, './preload.js'),
+      },
+      icon: path.resolve(process.cwd(), 'assets', 'icon.png'),
+      frame: os.platform() !== 'darwin',
+      titleBarStyle: 'hiddenInset',
+      backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
+    })
+  }
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
@@ -110,7 +121,9 @@ const createWindow = (filePath?: string): BrowserWindow => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
 
-  newWindow.show()
+  if (!reuse) {
+    if (!process.env.HEADLESS) newWindow.show()
+  }
 
   return newWindow
 }
@@ -134,6 +147,25 @@ app.on('ready', (event, data) => {
 // There is just not enough code to warrant it and further abstracts everything
 // which is already quite abstracted
 
+// @ts-ignore
+// electron/electron.d.ts has done type = App, making declaration merging not
+// possible :(
+app.resizeWindow = async (width: number, height: number) => {
+  return mainWindow?.setSize(width, height)
+}
+
+// @ts-ignore can't declaration merge with App
+app.testProperty = {}
+
+ipcMain.handle('app.testProperty', (event, propertyName) => {
+  // @ts-ignore can't declaration merge with App
+  return app.testProperty[propertyName]
+})
+
+ipcMain.handle('app.resizeWindow', (event, data) => {
+  return mainWindow?.setSize(data[0], data[1])
+})
+
 ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
 })
@@ -152,6 +184,44 @@ ipcMain.handle('shell.showItemInFolder', (event, data) => {
 ipcMain.handle('shell.openExternal', (event, data) => {
   return shell.openExternal(data)
 })
+
+ipcMain.handle(
+  'take.screenshot',
+  async (event, data: { width: number; height: number }) => {
+    /**
+     * Operation system access to getting screen sources, even though we are only use application windows
+     * Linux: Yes!
+     * Mac OS: This user consent was not required on macOS 10.13 High Sierra so this method will always return granted. macOS 10.14 Mojave or higher requires consent for microphone and camera access. macOS 10.15 Catalina or higher requires consent for screen access.
+     * Windows 10: has a global setting controlling microphone and camera access for all win32 applications. It will always return granted for screen and for all media types on older versions of Windows.
+     */
+    let accessToScreenSources = true
+
+    // Can we check for access and if so, is it granted
+    // Linux does not even have access to the function getMediaAccessStatus, not going to polyfill
+    if (systemPreferences && systemPreferences.getMediaAccessStatus) {
+      const accessString = systemPreferences.getMediaAccessStatus('screen')
+      accessToScreenSources = accessString === 'granted' ? true : false
+    }
+
+    if (accessToScreenSources) {
+      const sources = await desktopCapturer.getSources({
+        types: ['window'],
+        thumbnailSize: { width: data.width, height: data.height },
+      })
+
+      for (const source of sources) {
+        // electron-builder uses the value of productName in package.json for the title of the application
+        if (source.name === packageJSON.productName) {
+          // @ts-ignore image/png is real.
+          return source.thumbnail.toDataURL('image/png') // The image to display the screenshot
+        }
+      }
+    }
+
+    // Cannot take a native desktop screenshot, unable to access screens
+    return ''
+  }
+)
 
 ipcMain.handle('argv.parser', (event, data) => {
   return argvFromYargs
