@@ -1070,8 +1070,9 @@ shellSketchOnFacesCases.forEach((initialCode, index) => {
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 550, y: 295 }
     const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-    const shellDeclaration =
-      `shell001 = shell({ faces = ['end'], thickness = 5 }, ${hasExtrudesInPipe ? 'sketch002' : 'extrude002'})`
+    const shellDeclaration = `shell001 = shell({ faces = ['end'], thickness = 5 }, ${
+      hasExtrudesInPipe ? 'sketch002' : 'extrude002'
+    })`
 
     await test.step(`Look for the grey of the shape`, async () => {
       await toolbar.closePane('code')
