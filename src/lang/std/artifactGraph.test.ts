@@ -3,11 +3,11 @@ import {
   assertParse,
   initPromise,
   Program,
+  ArtifactCommand,
   ExecState,
 } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import {
-  OrderedCommand,
   ResponseMap,
   createArtifactGraph,
   filterArtifacts,
@@ -115,7 +115,7 @@ sketch002 = startSketchOn(offsetPlane001)
   |> line([6.78, 15.01], %)
 `
 
-// add more code snippets here and use `getCommands` to get the orderedCommands and responseMap for more tests
+// add more code snippets here and use `getCommands` to get the artifactCommands and responseMap for more tests
 const codeToWriteCacheFor = {
   exampleCode1,
   sketchOnFaceOnFaceEtc,
@@ -127,7 +127,7 @@ type CodeKey = keyof typeof codeToWriteCacheFor
 
 type CacheShape = {
   [key in CodeKey]: {
-    orderedCommands: OrderedCommand[]
+    artifactCommands: ArtifactCommand[]
     responseMap: ResponseMap
     execStateArtifacts: ExecState['artifacts']
   }
@@ -159,7 +159,7 @@ beforeAll(async () => {
           await kclManager.executeAst({ ast })
 
           cacheToWriteToFileTemp[codeKey] = {
-            orderedCommands: engineCommandManager.orderedCommands,
+            artifactCommands: kclManager.execState.artifactCommands,
             responseMap: engineCommandManager.responseMap,
             execStateArtifacts: kclManager.execState.artifacts,
           }
@@ -186,14 +186,14 @@ describe('testing createArtifactGraph', () => {
     it('setup', () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
         execStateArtifacts,
       } = getCommands('exampleCodeOffsetPlanes')
       ast = _ast
       theMap = createArtifactGraph({
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast,
         execStateArtifacts,
@@ -237,14 +237,14 @@ describe('testing createArtifactGraph', () => {
     it('setup', () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
         execStateArtifacts,
       } = getCommands('exampleCode1')
       ast = _ast
       theMap = createArtifactGraph({
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast,
         execStateArtifacts,
@@ -338,14 +338,14 @@ describe('testing createArtifactGraph', () => {
     it(`setup`, () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
         execStateArtifacts,
       } = getCommands('exampleCodeNo3D')
       ast = _ast
       theMap = createArtifactGraph({
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast,
         execStateArtifacts,
@@ -409,14 +409,14 @@ describe('capture graph of sketchOnFaceOnFace...', () => {
     it('setup', async () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
         execStateArtifacts,
       } = getCommands('sketchOnFaceOnFaceEtc')
       ast = _ast
       theMap = createArtifactGraph({
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast,
         execStateArtifacts,
@@ -439,11 +439,11 @@ function getCommands(
   const file = fs.readFileSync(fullPath, 'utf-8')
   const parsed: CacheShape = JSON.parse(file)
   // these either already exist from the last run, or were created in
-  const orderedCommands = parsed[codeKey].orderedCommands
+  const artifactCommands = parsed[codeKey].artifactCommands
   const responseMap = parsed[codeKey].responseMap
   const execStateArtifacts = parsed[codeKey].execStateArtifacts
   return {
-    orderedCommands,
+    artifactCommands,
     responseMap,
     ast,
     execStateArtifacts,
@@ -672,10 +672,10 @@ async function GraphTheGraph(
 
 describe('testing getArtifactsToUpdate', () => {
   it('should return an array of artifacts to update', () => {
-    const { orderedCommands, responseMap, ast, execStateArtifacts } =
+    const { artifactCommands, responseMap, ast, execStateArtifacts } =
       getCommands('exampleCode1')
     const map = createArtifactGraph({
-      orderedCommands,
+      artifactCommands,
       responseMap,
       ast,
       execStateArtifacts,
@@ -683,11 +683,14 @@ describe('testing getArtifactsToUpdate', () => {
     const getArtifact = (id: string) => map.get(id)
     const currentPlaneId = 'UUID-1'
     const getUpdateObjects = (type: Models['ModelingCmd_type']['type']) => {
+      const artifactCommand = artifactCommands.find(
+        (a) => a.command.type === type
+      )
+      if (!artifactCommand) {
+        throw new Error(`No artifactCommand found for ${type}`)
+      }
       const artifactsToUpdate = getArtifactsToUpdate({
-        orderedCommand: orderedCommands.find(
-          (a) =>
-            a.command.type === 'modeling_cmd_req' && a.command.cmd.type === type
-        )!,
+        artifactCommand,
         responseMap,
         getArtifact,
         currentPlaneId,

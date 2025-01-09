@@ -32,6 +32,7 @@ import {
   EntityType_type,
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
+import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -58,7 +59,9 @@ export class KclManager {
   private _execState: ExecState = emptyExecState()
   private _programMemory: ProgramMemory = ProgramMemory.empty()
   lastSuccessfulProgramMemory: ProgramMemory = ProgramMemory.empty()
+  lastSuccessfulOperations: Operation[] = []
   private _logs: string[] = []
+  private _errors: KCLError[] = []
   private _diagnostics: Diagnostic[] = []
   private _isExecuting = false
   private _executeIsStale: ExecuteArgs | null = null
@@ -72,7 +75,8 @@ export class KclManager {
   private _astCallBack: (arg: Node<Program>) => void = () => {}
   private _programMemoryCallBack: (arg: ProgramMemory) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
-  private _kclErrorsCallBack: (errors: Diagnostic[]) => void = () => {}
+  private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
+  private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
   private _executeCallback: () => void = () => {}
 
@@ -106,6 +110,13 @@ export class KclManager {
     return this._execState
   }
 
+  get errors() {
+    return this._errors
+  }
+  set errors(errors) {
+    this._errors = errors
+    this._kclErrorsCallBack(errors)
+  }
   get logs() {
     return this._logs
   }
@@ -135,7 +146,7 @@ export class KclManager {
 
   setDiagnosticsForCurrentErrors() {
     editorManager?.setDiagnostics(this.diagnostics)
-    this._kclErrorsCallBack(this.diagnostics)
+    this._diagnosticsCallback(this.diagnostics)
   }
 
   get isExecuting() {
@@ -188,21 +199,24 @@ export class KclManager {
     setProgramMemory,
     setAst,
     setLogs,
-    setKclErrors,
+    setErrors,
+    setDiagnostics,
     setIsExecuting,
     setWasmInitFailed,
   }: {
     setProgramMemory: (arg: ProgramMemory) => void
     setAst: (arg: Node<Program>) => void
     setLogs: (arg: string[]) => void
-    setKclErrors: (errors: Diagnostic[]) => void
+    setErrors: (errors: KCLError[]) => void
+    setDiagnostics: (errors: Diagnostic[]) => void
     setIsExecuting: (arg: boolean) => void
     setWasmInitFailed: (arg: boolean) => void
   }) {
     this._programMemoryCallBack = setProgramMemory
     this._astCallBack = setAst
     this._logsCallBack = setLogs
-    this._kclErrorsCallBack = setKclErrors
+    this._kclErrorsCallBack = setErrors
+    this._diagnosticsCallback = setDiagnostics
     this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
   }
@@ -352,16 +366,19 @@ export class KclManager {
     }
 
     this.logs = logs
+    this.errors = errors
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     this.execState = execState
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulOperations = execState.operations
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/programMemory
     await this.engineCommandManager.updateArtifactGraph(
       this.ast,
+      execState.artifactCommands,
       execState.artifacts
     )
     this._executeCallback()
@@ -375,6 +392,24 @@ export class KclManager {
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
   }
+
+  /**
+   * This cleanup function is external and internal to the KclSingleton class.
+   * Since the WASM runtime can panic and the error cannot be caught in executeAst
+   * we need a global exception handler in exceptions.ts
+   * This file will interface with this cleanup as if it caught the original error
+   * to properly restore the TS application state.
+   */
+  executeAstCleanUp() {
+    this.isExecuting = false
+    this.executeIsStale = null
+    this.engineCommandManager.addCommandLog({
+      type: 'execution-done',
+      data: null,
+    })
+    markOnce('code/endExecuteAst')
+  }
+
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
   async executeAstMock(
@@ -413,6 +448,7 @@ export class KclManager {
     this._programMemory = execState.memory
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
+      this.lastSuccessfulOperations = execState.operations
     }
     if (updates !== 'artifactRanges') return
 
@@ -449,12 +485,41 @@ export class KclManager {
   }
   async executeCode(zoomToFit?: boolean): Promise<void> {
     const ast = await this.safeParse(codeManager.code)
+
     if (!ast) {
       this.clearAst()
       return
     }
+
+    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, zoomToFit)
+
     this.ast = { ...ast }
     return this.executeAst({ zoomToFit })
+  }
+  /**
+   * This will override the zoom to fit to zoom into the model if the previous AST was empty.
+   * Workflows this improves,
+   *  When someone comments the entire file then uncomments the entire file it zooms to the model
+   *  When someone CRTL+A and deletes the code then adds the code back it zooms to the model
+   *  When someone CRTL+A and copies new code into the editor it zooms to the model
+   */
+  tryToZoomToFitOnCodeUpdate(
+    ast: Node<Program>,
+    zoomToFit: boolean | undefined
+  ) {
+    const isAstEmpty = this._isAstEmpty(this._ast)
+    const isRequestedAstEmpty = this._isAstEmpty(ast)
+
+    // If the AST went from empty to not empty or
+    // If the user has all of the content selected and they copy new code in
+    if (
+      (isAstEmpty && !isRequestedAstEmpty) ||
+      editorManager.isAllTextSelected
+    ) {
+      return true
+    }
+
+    return zoomToFit
   }
   async format() {
     const originalCode = codeManager.code

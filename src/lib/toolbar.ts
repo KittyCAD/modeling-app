@@ -148,10 +148,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             label: 'KCL docs',
             url: 'https://zoo.dev/docs/kcl/loft',
           },
-          {
-            label: 'GitHub discussion',
-            url: 'https://github.com/KittyCAD/modeling-app/discussions/613',
-          },
         ],
       },
       'break',
@@ -273,6 +269,35 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'unavailable',
           title: '3-point plane',
           description: 'Create a plane from three points.',
+          links: [],
+        },
+      ],
+      'break',
+      [
+        {
+          id: 'text-to-cad',
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Text-to-CAD', groupId: 'modeling' },
+            }),
+          icon: 'sparkles',
+          status: 'available',
+          title: 'Text-to-CAD',
+          description: 'Generate geometry from a text prompt.',
+          links: [],
+        },
+        {
+          id: 'prompt-to-edit',
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Prompt-to-edit', groupId: 'modeling' },
+            }),
+          icon: 'sparkles',
+          status: 'available',
+          title: 'Prompt-to-Edit',
+          description: 'Edit geometry based on a text prompt.',
           links: [],
         },
       ],
@@ -418,10 +443,19 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'circle-three-points',
-          onClick: () =>
-            console.error('Three-point circle not yet implemented'),
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({
+                  Sketch: 'circle3PointToolSelect',
+                })
+                  ? 'circle3Points'
+                  : 'none',
+              },
+            }),
           icon: 'circle',
-          status: 'unavailable',
+          status: 'available',
           title: 'Three-point circle',
           showTitle: false,
           description: 'Draw a circle defined by three points',

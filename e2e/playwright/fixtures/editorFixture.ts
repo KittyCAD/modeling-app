@@ -20,7 +20,7 @@ export class EditorFixture {
   private diagnosticsTooltip!: Locator
   private diagnosticsGutterIcon!: Locator
   private codeContent!: Locator
-  private activeLine!: Locator
+  public activeLine!: Locator
 
   constructor(page: Page) {
     this.page = page

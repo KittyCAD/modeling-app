@@ -47,7 +47,7 @@ describe('parsing errors', () => {
     const result = parse(code)
     if (err(result)) throw result
     const error = result.errors[0]
-    expect(error.message).toBe('Unexpected token: (')
-    expect(error.sourceRange).toEqual([27, 28, 0])
+    expect(error.message).toBe('Array is missing a closing bracket(`]`)')
+    expect(error.sourceRange).toEqual([28, 29, 0])
   })
 })

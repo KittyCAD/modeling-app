@@ -12,6 +12,7 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
+use super::{ast::types::LabelledExpression, token::NumericSuffix};
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
@@ -32,8 +33,6 @@ use crate::{
     unparser::ExprContext,
     SourceRange,
 };
-
-use super::{ast::types::LabelledExpression, token::NumericSuffix};
 
 thread_local! {
     /// The current `ParseContext`. `None` if parsing is not currently happening on this thread.
@@ -683,8 +682,8 @@ pub enum NonCodeOr<T> {
 fn array(i: &mut TokenSlice) -> PResult<Expr> {
     alt((
         array_empty.map(Box::new).map(Expr::ArrayExpression),
-        array_elem_by_elem.map(Box::new).map(Expr::ArrayExpression),
         array_end_start.map(Box::new).map(Expr::ArrayRangeExpression),
+        array_elem_by_elem.map(Box::new).map(Expr::ArrayExpression),
     ))
     .parse_next(i)
 }
@@ -732,7 +731,20 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
     .context(expected("array contents, a list of elements (like [1, 2, 3])"))
     .parse_next(i)?;
     ignore_whitespace(i);
-    let end = close_bracket(i)?.end;
+    let end = close_bracket(i)
+        .map_err(|e| {
+            if let Some(mut err) = e.clone().into_inner() {
+                err.cause = Some(CompilationError::fatal(
+                    open.as_source_range(),
+                    "Array is missing a closing bracket(`]`)",
+                ));
+                ErrMode::Cut(err)
+            } else {
+                // ErrMode::Incomplete, not sure if it's actually possible to end up with this here
+                e
+            }
+        })?
+        .end;
 
     // Sort the array's elements (i.e. expression nodes) from the noncode nodes.
     let (elements, non_code_nodes): (Vec<_>, HashMap<usize, _>) = elements.into_iter().enumerate().fold(
@@ -2568,9 +2580,17 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
     Ok(())
 }
 
+/// Either a positional or keyword function call.
+fn fn_call_pos_or_kw(i: &mut TokenSlice) -> PResult<Expr> {
+    alt((
+        fn_call.map(Box::new).map(Expr::CallExpression),
+        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
+    ))
+    .parse_next(i)
+}
+
 fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
-    let call = fn_call.parse_next(i)?;
-    let expr = Expr::CallExpression(Box::new(call));
+    let expr = fn_call_pos_or_kw.parse_next(i)?;
 
     let label = opt(label).parse_next(i)?;
     match label {
@@ -4312,6 +4332,13 @@ let myBox = box([0,0], -3, -16, -10)
     }
 
     #[test]
+    fn test_parse_missing_closing_bracket() {
+        let some_program_string = r#"
+sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
+        assert_err(some_program_string, "Array is missing a closing bracket(`]`)", [51, 52]);
+    }
+
+    #[test]
     fn warn_object_expr() {
         let some_program_string = "{ foo: bar }";
         let (_, errs) = assert_no_err(some_program_string);
@@ -4654,6 +4681,7 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
         kw_function_decl_with_default_and_type,
         r#"fn foo(x?: number = 2) { return 1 }"#
     );
+    snapshot_test!(kw_function_call_in_pipe, r#"val = 1 |> f(arg = x)"#);
 }
 
 #[allow(unused)]

@@ -40,8 +40,8 @@ test.describe('Sketch tests', () => {
   ${startProfileAt1}
   |> arc({
         radius = screwRadius,
-        angle_start = 0,
-        angle_end = 360
+        angleStart = 0,
+        angleEnd = 360
       }, %)
   
     part001 = startSketchOn('XY')
@@ -61,8 +61,8 @@ test.describe('Sketch tests', () => {
   |> yLine(wireOffset, %)
   |> arc({
         radius = wireRadius,
-        angle_start = 0,
-        angle_end = 180
+        angleStart = 0,
+        angleEnd = 180
       }, %)
   |> yLine(-wireOffset, %)
   |> xLine(-width / 4, %)
@@ -2261,5 +2261,87 @@ loft([profile001, profile002])
     await editor.expectEditor.toContain(
       `angledLine([0, 106.42], %, $rectangleSegmentA001)`
     )
+  })
+})
+
+// Regression test for https://github.com/KittyCAD/modeling-app/issues/4891
+test.describe(`Click based selection don't brick the app when clicked out of range after format using cache`, () => {
+  test(`Can select a line that reformmed after entering sketch mode`, async ({
+    context,
+    page,
+    scene,
+    toolbar,
+    editor,
+    homePage,
+  }) => {
+    // We seed the scene with a single offset plane
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> line([3.14, 3.14], %)
+  |> arcTo({
+  end = [4, 2],
+  interior = [1, 2]
+  }, %)
+`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    await test.step(`format the code`, async () => {
+      // doesn't contain condensed version
+      await editor.expectEditor.not.toContain(
+        `arcTo({ end = [4, 2], interior = [1, 2] }, %)`
+      )
+      // click the code to enter sketch mode
+      await page.getByText(`arcTo`).click()
+      // Format the code.
+      await page.locator('#code-pane button:first-child').click()
+      await page.locator('button:has-text("Format code")').click()
+    })
+
+    await test.step(`Ensure the code reformatted`, async () => {
+      await editor.expectEditor.toContain(
+        `arcTo({ end = [4, 2], interior = [1, 2] }, %)`
+      )
+    })
+
+    const [arcClick, arcHover] = scene.makeMouseHelpers(699, 337)
+    await test.step('Ensure we can hover the arc', async () => {
+      await arcHover()
+
+      // Check that the code is highlighted
+      await editor.expectState({
+        activeLines: ["sketch001=startSketchOn('XZ')"],
+        diagnostics: [],
+        highlightedCode: 'arcTo({end = [4, 2], interior = [1, 2]}, %)',
+      })
+    })
+
+    await test.step('reset the selection', async () => {
+      // Move the mouse out of the way
+      await page.mouse.move(655, 337)
+
+      await editor.expectState({
+        activeLines: ["sketch001=startSketchOn('XZ')"],
+        diagnostics: [],
+        highlightedCode: '',
+      })
+    })
+
+    await test.step('Ensure we can click the arc', async () => {
+      await arcClick()
+
+      // Check that the code is highlighted
+      await editor.expectState({
+        activeLines: [],
+        diagnostics: [],
+        highlightedCode: 'arcTo({end = [4, 2], interior = [1, 2]}, %)',
+      })
+    })
   })
 })

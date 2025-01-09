@@ -1,0 +1,60 @@
+# full
+
+fn two = () => {
+  return 2
+}
+
+==>
+
+Program(FunctionDeclaration(fn,
+                            VariableDefinition,
+                            Equals,
+                            ParamList,
+                            Arrow,
+                            Body(ReturnStatement(return,
+                                                 Number))))
+
+# = is optional
+
+fn one () => {
+  return 1
+}
+
+==>
+
+Program(FunctionDeclaration(fn,
+                            VariableDefinition,
+                            ParamList,
+                            Arrow,
+                            Body(ReturnStatement(return,
+                                                 Number))))
+
+# => is optional
+
+fn one = () {
+  return 1
+}
+
+==>
+
+Program(FunctionDeclaration(fn,
+                            VariableDefinition,
+                            Equals,
+                            ParamList,
+                            Body(ReturnStatement(return,
+                                                 Number))))
+
+# terse
+
+fn two() {
+  return 2
+}
+
+==>
+
+Program(FunctionDeclaration(fn,
+                            VariableDefinition,
+                            ParamList,
+                            Body(ReturnStatement(return,
+                                                 Number))))
+

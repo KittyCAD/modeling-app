@@ -832,7 +832,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
             let result = match crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     return Err(miette::Report::new(crate::errors::Report {
-                        error: e,
+                        error: e.error,
                         filename: format!("{}{}", #fn_name, #index),
                         kcl_source: #code_block.to_string(),
                     }));

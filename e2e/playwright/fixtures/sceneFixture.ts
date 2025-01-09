@@ -38,7 +38,8 @@ type DragFromHandler = (
 
 export class SceneFixture {
   public page: Page
-
+  public streamWrapper!: Locator
+  public loadingIndicator!: Locator
   private exeIndicator!: Locator
 
   constructor(page: Page) {
@@ -66,6 +67,8 @@ export class SceneFixture {
     this.page = page
 
     this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
+    this.streamWrapper = page.getByTestId('stream')
+    this.loadingIndicator = this.streamWrapper.getByTestId('loading')
   }
 
   makeMouseHelpers = (

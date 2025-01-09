@@ -413,25 +413,25 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await expect(u.codeLocator).toContainText(`sketch005 = startSketchOn({
      plane = {
        origin = { x = 0, y = -50, z = 0 },
-       x_axis = { x = 1, y = 0, z = 0 },
-       y_axis = { x = 0, y = 0, z = 1 },
-       z_axis = { x = 0, y = -1, z = 0 }
+       xAxis = { x = 1, y = 0, z = 0 },
+       yAxis = { x = 0, y = 0, z = 1 },
+       zAxis = { x = 0, y = -1, z = 0 }
      }
    })`)
     await expect(u.codeLocator).toContainText(`sketch003 = startSketchOn({
      plane = {
        origin = { x = 116.53, y = 0, z = 163.25 },
-       x_axis = { x = -0.81, y = 0, z = 0.58 },
-       y_axis = { x = 0, y = -1, z = 0 },
-       z_axis = { x = 0.58, y = 0, z = 0.81 }
+       xAxis = { x = -0.81, y = 0, z = 0.58 },
+       yAxis = { x = 0, y = -1, z = 0 },
+       zAxis = { x = 0.58, y = 0, z = 0.81 }
      }
    })`)
     await expect(u.codeLocator).toContainText(`sketch002 = startSketchOn({
      plane = {
        origin = { x = -91.74, y = 0, z = 80.89 },
-       x_axis = { x = -0.66, y = 0, z = -0.75 },
-       y_axis = { x = 0, y = -1, z = 0 },
-       z_axis = { x = -0.75, y = 0, z = 0.66 }
+       xAxis = { x = -0.66, y = 0, z = -0.75 },
+       yAxis = { x = 0, y = -1, z = 0 },
+       zAxis = { x = -0.75, y = 0, z = 0.66 }
      }
    })`)
 
@@ -524,7 +524,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')
 
-    await expect(page.getByText('Unable to delete part')).toBeVisible()
+    await expect(page.getByText('Unable to delete selection')).toBeVisible()
   })
   test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({
     page,
