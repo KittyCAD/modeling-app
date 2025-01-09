@@ -1839,6 +1839,7 @@ dependencies = [
  "serde",
  "serde_bytes",
  "serde_json",
+ "ts-rs",
  "uuid",
 ]
 
@@ -1856,9 +1857,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
-version = "0.1.12"
+version = "0.1.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6607507a8a0e4273b943179f0a3ef8e90712308d1d3095246040c29cfdbf985b"
+checksum = "fdb4ee23cc996aa2dca7584d410e8826e08161e1ac4335bb646d5ede33f37cb3"
 dependencies = [
  "proc-macro2",
  "quote",

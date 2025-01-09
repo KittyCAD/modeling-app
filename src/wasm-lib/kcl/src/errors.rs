@@ -3,7 +3,7 @@ use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
-    execution::Operation,
+    execution::{ArtifactCommand, Operation},
     lsp::IntoDiagnostic,
     source_range::{ModuleId, SourceRange},
 };
@@ -12,11 +12,17 @@ use crate::{
 #[derive(thiserror::Error, Debug)]
 pub enum ExecError {
     #[error("{0}")]
-    Kcl(#[from] crate::KclError),
+    Kcl(#[from] Box<crate::KclErrorWithOutputs>),
     #[error("Could not connect to engine: {0}")]
     Connection(#[from] ConnectionError),
     #[error("PNG snapshot could not be decoded: {0}")]
     BadPng(String),
+}
+
+impl From<KclErrorWithOutputs> for ExecError {
+    fn from(error: KclErrorWithOutputs) -> Self {
+        ExecError::Kcl(Box::new(error))
+    }
 }
 
 /// How did the KCL execution fail, with extra state.
@@ -38,15 +44,6 @@ impl From<ExecError> for ExecErrorWithState {
     fn from(error: ExecError) -> Self {
         Self {
             error,
-            exec_state: Default::default(),
-        }
-    }
-}
-
-impl From<KclError> for ExecErrorWithState {
-    fn from(error: KclError) -> Self {
-        Self {
-            error: error.into(),
             exec_state: Default::default(),
         }
     }
@@ -100,18 +97,36 @@ pub enum KclError {
     Internal(KclErrorDetails),
 }
 
-#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq, Eq)]
+impl From<KclErrorWithOutputs> for KclError {
+    fn from(error: KclErrorWithOutputs) -> Self {
+        error.error
+    }
+}
+
+#[derive(Error, Debug, Serialize, Deserialize, ts_rs::TS, Clone, PartialEq)]
 #[error("{error}")]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct KclErrorWithOutputs {
     pub error: KclError,
     pub operations: Vec<Operation>,
+    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 impl KclErrorWithOutputs {
-    pub fn new(error: KclError, operations: Vec<Operation>) -> Self {
-        Self { error, operations }
+    pub fn new(error: KclError, operations: Vec<Operation>, artifact_commands: Vec<ArtifactCommand>) -> Self {
+        Self {
+            error,
+            operations,
+            artifact_commands,
+        }
+    }
+    pub fn no_outputs(error: KclError) -> Self {
+        Self {
+            error,
+            operations: Default::default(),
+            artifact_commands: Default::default(),
+        }
     }
 }
 
