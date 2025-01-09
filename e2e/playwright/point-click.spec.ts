@@ -1095,6 +1095,7 @@ shellSketchOnFacesCases.forEach((initialCode, index) => {
       })
       await clickOnCap()
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
