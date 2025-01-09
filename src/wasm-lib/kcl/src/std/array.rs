@@ -272,8 +272,8 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     name = "pop",
     keywords = true,
     unlabeled_first = true,
-    arg_docs = {
-        array = "The array to pop from.  Must not be empty.",
+    args = {
+        array = { docs = "The array to pop from.  Must not be empty."},
     }
 }]
 async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {

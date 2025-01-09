@@ -710,7 +710,7 @@ part002 = startSketchOn(part001, part001.sketch.tags.here)
         panic!("Expected KCL error, found {err}");
     };
     assert_eq!(
-        err.message(),
+        err.error.message(),
         "could not sketch tangential arc, because its center would be infinitely far away in the X direction"
     );
 }
@@ -769,7 +769,7 @@ async fn kcl_test_stdlib_kcl_error_right_code_path() {
     let ExecError::Kcl(err) = err else {
         panic!("Expected KCL error, found {err}");
     };
-    assert_eq!(err.message(), "Expected an argument at index 1");
+    assert_eq!(err.error.message(), "Expected an argument at index 1");
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -840,7 +840,7 @@ part = rectShape([0, 0], 20, 20)
         panic!("Expected KCL error, found {err}");
     };
     assert_eq!(
-        err.message(),
+        err.error.message(),
         "Argument at index 0 was supposed to be type kcl_lib::std::shapes::CircleData but found string (text)"
     );
 }
@@ -1657,7 +1657,7 @@ part001 = cube([0,0], 20)
         panic!("Expected KCL error, found {err}");
     };
     assert_eq!(
-        err.message(),
+        err.error.message(),
         "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each tag."
     );
 }
