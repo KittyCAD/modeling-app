@@ -1193,6 +1193,8 @@ export const ModelingMachineProvider = ({
 
   useEffect(() => {
     const inSketchMode = modelingState.matches('Sketch')
+
+    // If you are in sketch mode and you disable the orbit, return back to the normal view to the target
     if (!allowOrbitInSketchMode.current) {
       const targetId = modelingState.context.sketchDetails?.animateTargetId
       if (inSketchMode && targetId) {
