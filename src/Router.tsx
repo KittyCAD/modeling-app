@@ -35,7 +35,7 @@ import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
-import { BROWSER_PROJECT_NAME } from 'lib/constants'
+import { ASK_TO_OPEN_QUERY_PARAM, BROWSER_PROJECT_NAME } from 'lib/constants'
 import { CoreDumpManager } from 'lib/coredump'
 import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -47,6 +47,7 @@ import { AppStateProvider } from 'AppState'
 import { reportRejection } from 'lib/trap'
 import { RouteProvider } from 'components/RouteProvider'
 import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
+import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -58,6 +59,7 @@ const router = createRouter([
     /* Make sure auth is the outermost provider or else we will have
      * inefficient re-renders, use the react profiler to see. */
     element: (
+      <OpenInDesktopAppHandler>
         <CommandBarProvider>
           <RouteProvider>
             <SettingsAuthProvider>
@@ -75,6 +77,7 @@ const router = createRouter([
             </SettingsAuthProvider>
           </RouteProvider>
         </CommandBarProvider>
+      </OpenInDesktopAppHandler>
     ),
     errorElement: <ErrorPage />,
     children: [
@@ -82,12 +85,19 @@ const router = createRouter([
         path: PATHS.INDEX,
         loader: async ({ request }) => {
           const onDesktop = isDesktop()
+          console.log('request.url', request.url)
           const url = new URL(request.url)
-          return onDesktop
-            ? redirect(PATHS.HOME + (url.search || ''))
-            : redirect(
+          if (onDesktop) {
+            return redirect(PATHS.HOME + (url.search || ''))
+          } else {
+            const searchParams = new URLSearchParams(url.search)
+            if (!searchParams.has(ASK_TO_OPEN_QUERY_PARAM)) {
+              return redirect(
                 PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
               )
+            }
+          }
+          return null
         },
       },
       {

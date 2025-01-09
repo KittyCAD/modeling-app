@@ -51,7 +51,6 @@ process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
 process.env.VITE_KC_SKIP_AUTH ??= 'false'
 process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
 
-
 /// Register our application to handle all "zoo-studio:" protocols.
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
@@ -92,24 +91,31 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     })
   }
 
-  const pathIsCustomProtocolLink = pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
+  const pathIsCustomProtocolLink =
+    pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    const filteredPath = pathToOpen ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, '')) : ''
+    const filteredPath = pathToOpen
+      ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, ''))
+      : ''
     const fullHashBasedUrl = `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/${filteredPath}`
     newWindow.loadURL(fullHashBasedUrl).catch(reportRejection)
   } else {
     if (pathIsCustomProtocolLink && pathToOpen) {
       // We're trying to open a custom protocol link
-      const filteredPath = pathToOpen ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, '')) : ''
+      const filteredPath = pathToOpen
+        ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, ''))
+        : ''
       const startIndex = path.join(
         __dirname,
         `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
       )
-      newWindow.loadFile(startIndex, {
-        hash: filteredPath,
-      }).catch(reportRejection)
+      newWindow
+        .loadFile(startIndex, {
+          hash: filteredPath,
+        })
+        .catch(reportRejection)
     } else {
       // otherwise we're trying to open a local file from the command line
       getProjectPathAtStartup(pathToOpen)
@@ -118,15 +124,15 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
             __dirname,
             `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
           )
-  
+
           if (projectPath === null) {
             await newWindow.loadFile(startIndex)
             return
           }
-  
+
           const fullUrl = `/file/${encodeURIComponent(projectPath)}`
           console.log('Full URL', fullUrl)
-  
+
           await newWindow.loadFile(startIndex, {
             hash: fullUrl,
           })

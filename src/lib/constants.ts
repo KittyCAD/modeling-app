@@ -142,3 +142,9 @@ export const VIEW_NAMES_SEMANTIC = {
 } as const
 /** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
+
+/** 
+ * A query parameter that triggers a modal
+ * to "open in desktop app" when present in the URL
+*/
+export const ASK_TO_OPEN_QUERY_PARAM = 'askToOpenInDesktop'
