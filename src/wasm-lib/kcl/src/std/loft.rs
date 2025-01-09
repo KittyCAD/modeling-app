@@ -155,10 +155,9 @@ async fn inner_loft(
     )
     .await?;
 
-    // Take the sketch with the most paths, and override its id with the loft's solid_id (to get its faces later)
-    let mut desc_sorted_sketches = sketches.to_vec();
-    desc_sorted_sketches.sort_by(|s0, s1| s1.paths.len().cmp(&s0.paths.len()));
-    let mut sketch = desc_sorted_sketches[0].clone();
+    // Using the first sketch as the base curve, idk we might want to change this later.
+    let mut sketch = sketches[0].clone();
+    // Override its id with the loft id so we can get its faces later
     sketch.id = id;
     do_post_extrude(sketch, 0.0, exec_state, args).await
 }
