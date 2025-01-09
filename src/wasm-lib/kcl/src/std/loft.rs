@@ -145,9 +145,8 @@ async fn inner_loft(
         }));
     }
 
-    let id: uuid::Uuid = exec_state.next_uuid();
-    let resp = args
-        .send_modeling_cmd(
+    let id = exec_state.next_uuid();
+    args.batch_modeling_cmd(
             id,
             ModelingCmd::from(mcmd::Loft {
                 section_ids: sketches.iter().map(|group| group.id).collect(),
@@ -159,20 +158,10 @@ async fn inner_loft(
         )
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::Loft(data),
-    } = &resp
-    else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("mcmd::Loft response was not as expected: {:?}", resp),
-            source_ranges: vec![args.source_range],
-        }));
-    };
-
-    // Take the sketch with the most paths, and override its id with the loft's solid_id (to get its faces)
+    // Take the sketch with the most paths, and override its id with the loft's solid_id (to get its faces later)
     let mut desc_sorted_sketches = sketches.to_vec();
     desc_sorted_sketches.sort_by(|s0, s1| s1.paths.len().cmp(&s0.paths.len()));
     let mut sketch = desc_sorted_sketches[0].clone();
-    sketch.id = data.solid_id;
+    sketch.id = id;
     do_post_extrude(sketch, 0.0, exec_state, args).await
 }
