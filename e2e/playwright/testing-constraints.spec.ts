@@ -679,7 +679,7 @@ test.describe('Testing constraints', () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${testName}`, async ({ context, homePage, page }) => {
+      test(`${testName}`, async ({ context, homePage, page, editor }) => {
         // constants and locators
         const cmdBarKclInput = page
           .getByTestId('cmd-bar-arg-value')
@@ -712,8 +712,11 @@ part002 = startSketchOn('XZ')
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
+        await u.waitForPageLoad()
 
+        await editor.scrollToText('line([74.36, 130.4], %)', true)
         await page.getByText('line([74.36, 130.4], %)').click()
+        await page.screenshot({ path: "ok.png" })
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         const line3 = await u.getSegmentBodyCoords(
