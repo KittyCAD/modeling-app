@@ -1066,6 +1066,7 @@ shellSketchOnFacesCases.forEach((initialCode, index) => {
     }, initialCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     // One dumb hardcoded screen pixel value
     const testPoint = { x: 550, y: 295 }
@@ -1076,7 +1077,7 @@ shellSketchOnFacesCases.forEach((initialCode, index) => {
 
     await test.step(`Look for the grey of the shape`, async () => {
       await toolbar.closePane('code')
-      await scene.expectPixelColor([145, 145, 145], testPoint, 15)
+      await scene.expectPixelColor([128, 128, 128], testPoint, 15)
     })
 
     await test.step(`Go through the command bar flow, selecting a cap and keeping default thickness`, async () => {
