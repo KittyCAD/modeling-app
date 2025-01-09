@@ -191,7 +191,8 @@ function moreNodePathFromSourceRange(
         const arg = args[argIndex].arg
         if (arg.start <= start && arg.end >= end) {
           path.push(['arguments', 'CallExpressionKw'])
-          path.push([argIndex, 'index'])
+          path.push([argIndex, 'arg index'])
+          path.push(['arg', 'LabeledArg -> Arg'])
           return moreNodePathFromSourceRange(arg, sourceRange, path)
         }
       }

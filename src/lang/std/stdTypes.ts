@@ -64,7 +64,7 @@ export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
  * @property referencedSegment - An optional path to a referenced segment.
  * @property spliceBetween=false - Defaults to false. Normal behavior is to add a new callExpression to the end of the pipeExpression.
  */
-interface addCall extends ModifyAstBase {
+export interface addCall extends ModifyAstBase {
   segmentInput: SegmentInputs
   replaceExistingCallback?: (
     rawArgs: RawArgs

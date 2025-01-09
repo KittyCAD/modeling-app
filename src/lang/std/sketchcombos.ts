@@ -1871,7 +1871,7 @@ export function transformAstSketchLines({
         return
       }
     }
-    const segMeta = getSketchSegmentFromPathToNode(sketch, ast, _pathToNode)
+    const segMeta = getSketchSegmentFromPathToNode(sketch, ast, _pathToNode) // ADAM: HERE
     if (err(segMeta)) return segMeta
 
     const seg = segMeta.segment
@@ -1932,9 +1932,12 @@ export function transformAstSketchLines({
   if ('graphSelections' in selectionRanges) {
     // If the processing of any of the selections failed, return the first error
     const maybeProcessErrors = selectionRanges.graphSelections
-      .map(({ codeRef }, index) =>
-        processSelection(getNodePathFromSourceRange(node, codeRef.range), index)
-      )
+      .map(({ codeRef }, index) => {
+        return processSelection(
+          getNodePathFromSourceRange(node, codeRef.range),
+          index
+        )
+      })
       .filter(err)
 
     if (maybeProcessErrors.length) return maybeProcessErrors[0]

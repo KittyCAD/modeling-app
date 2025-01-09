@@ -95,3 +95,15 @@ export function findKwArgAny(
     return labels.includes(arg.label.name)
   })?.arg
 }
+
+/**
+Search the keyword arguments from a call for an argument with one of these labels.
+*/
+export function findKwArgAnyIndex(
+  labels: string[],
+  call: CallExpressionKw
+): number | undefined {
+  return call.arguments.findIndex((arg) => {
+    return labels.includes(arg.label.name)
+  })
+}

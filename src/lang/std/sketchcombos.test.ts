@@ -513,10 +513,10 @@ part001 = startSketchOn('XY')
         ['// base selection', '// xRelative'],
         'setVertDistance'
       )
-      expect(expectedCode).toContain(`|> lineTo([
+      expect(expectedCode).toContain(`|> line(%, endAbsolute = [
        lastSegX(%) + myVar,
        segEndY(seg01) + 2.93
-     ], %) // xRelative`)
+     ]) // xRelative`)
     })
     it('testing for yRelative to horizontal distance', async () => {
       const expectedCode = await helperThing(
@@ -524,10 +524,11 @@ part001 = startSketchOn('XY')
         ['// base selection', '// yRelative'],
         'setHorzDistance'
       )
-      expect(expectedCode).toContain(`|> lineTo([
+      // ADAM here
+      expect(expectedCode).toContain(`|> line(%, endAbsolute = [
        segEndX(seg01) + 2.6,
        lastSegY(%) + myVar
-     ], %) // yRelative`)
+     ]) // yRelative`)
     })
   })
 })

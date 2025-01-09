@@ -28,10 +28,7 @@ export function getSketchSegmentFromPathToNode(
   // TODO: once pathToNode is stored on program memory as part of execution,
   // we can check if the pathToNode matches the pathToNode of the sketch.
   // For now we fall back to the sourceRange
-  const nodeMeta = getNodeFromPath<Node<Expr> | Node<LabeledArg>>(
-    ast,
-    pathToNode
-  )
+  const nodeMeta = getNodeFromPath<Node<Expr> | LabeledArg>(ast, pathToNode)
   if (err(nodeMeta)) return nodeMeta
 
   const _node = nodeMeta.node
