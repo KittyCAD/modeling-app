@@ -240,7 +240,9 @@ describe('testing addTagForSketchOnFace', () => {
     if (err(sketchOnFaceRetVal)) return sketchOnFaceRetVal
 
     const { modifiedAst } = sketchOnFaceRetVal
-    const expectedCode = genCode('line(endAbsolute = [-1.59, -1.54], tag = $seg01)')
+    const expectedCode = genCode(
+      'line(endAbsolute = [-1.59, -1.54], tag = $seg01)'
+    )
     expect(recast(modifiedAst)).toBe(expectedCode)
   })
   const chamferTestCases = [

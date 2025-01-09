@@ -1612,7 +1612,7 @@ export function getTransformInfos(
 
       const node = nodeMeta.node
       if (node?.type === 'CallExpression') {
-      return getTransformInfo(node, constraintType)
+        return getTransformInfo(node, constraintType)
       }
 
       if (node?.type === 'CallExpressionKw') {

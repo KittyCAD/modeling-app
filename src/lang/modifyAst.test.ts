@@ -503,7 +503,11 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
 `
     test.each([
       ['line', 'line(end = [306.21, 198.85], tag = $a)', ['365.11', '33']],
-      ['lineTo', 'line(endAbsolute = [306.21, 198.85], tag = $a)', ['110.48', '119.73']],
+      [
+        'lineTo',
+        'line(endAbsolute = [306.21, 198.85], tag = $a)',
+        ['110.48', '119.73'],
+      ],
       ['yLine', 'yLine(198.85, %, $a)', ['198.85', '90']],
       ['xLine', 'xLine(198.85, %, $a)', ['198.85', '0']],
       ['yLineTo', 'yLineTo(198.85, %, $a)', ['95.94', '90']],

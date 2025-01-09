@@ -1018,10 +1018,7 @@ export function giveSketchFnCallTag(
       const { node: primaryCallExp } = kwCallNode
       const existingTag = findKwArg(ARG_TAG, primaryCallExp)
       const tagDeclarator =
-      existingTag ||
-      (createTagDeclarator(
-        tag || findUniqueName(ast, 'seg', 2)
-      ))
+        existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
       const isTagExisting = !!existingTag
       kwCallNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
       return { tagDeclarator, isTagExisting }
