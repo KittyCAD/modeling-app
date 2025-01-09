@@ -1,19 +1,19 @@
 ---
-title: "AxisOrEdgeReference"
-excerpt: "Axis or tagged edge."
+title: "Axis3dOrEdgeReference"
+excerpt: "A 3D axis or tagged edge."
 layout: manual
 ---
 
-Axis or tagged edge.
+A 3D axis or tagged edge.
 
 
 
 
 **This schema accepts any of the following:**
 
-Axis and origin.
+3D axis and origin.
 
-[`AxisAndOrigin`](/docs/kcl/types/AxisAndOrigin)
+[`AxisAndOrigin3d`](/docs/kcl/types/AxisAndOrigin3d)
 
 
 

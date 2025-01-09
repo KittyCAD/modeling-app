@@ -286,6 +286,27 @@ An solid is a collection of extrude surfaces.
 
 
 ----
+A helix.
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: [`Helix`](/docs/kcl/types/Helix)|  | No |
+| `value` |`string`| The id of the helix. | No |
+| `revolutions` |`number`| Number of revolutions. | No |
+| `angleStart` |`number`| Start angle (in degrees). | No |
+| `ccw` |`boolean`| Is the helix rotation counter clockwise? | No |
+| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+
+
+----
 Data for an imported geometry.
 
 **Type:** `object`

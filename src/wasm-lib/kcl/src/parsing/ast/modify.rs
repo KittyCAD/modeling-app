@@ -89,7 +89,7 @@ pub async fn modify_ast_for_sketch(
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
-            ModelingCmd::PathGetInfo(mcmd::PathGetInfo { path_id: sketch_id }),
+            &ModelingCmd::PathGetInfo(mcmd::PathGetInfo { path_id: sketch_id }),
         )
         .await?;
 
@@ -110,13 +110,10 @@ pub async fn modify_ast_for_sketch(
     let mut control_points = Vec::new();
     for segment in &path_info.segments {
         if let Some(command_id) = &segment.command_id {
-            let h = engine.send_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                ModelingCmd::from(mcmd::CurveGetControlPoints {
-                    curve_id: (*command_id).into(),
-                }),
-            );
+            let cmd = ModelingCmd::from(mcmd::CurveGetControlPoints {
+                curve_id: (*command_id).into(),
+            });
+            let h = engine.send_modeling_cmd(uuid::Uuid::new_v4(), SourceRange::default(), &cmd);
 
             let OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::CurveGetControlPoints(data),

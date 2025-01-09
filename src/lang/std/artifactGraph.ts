@@ -1,7 +1,15 @@
-import { PathToNode, Program, SourceRange } from 'lang/wasm'
+import {
+  ArtifactCommand,
+  ExecState,
+  PathToNode,
+  Program,
+  SourceRange,
+  sourceRangeFromRust,
+} from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type ArtifactId = string
 
@@ -143,50 +151,47 @@ type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 export interface ResponseMap {
   [commandId: string]: OkWebSocketResponseData
 }
-export interface OrderedCommand {
-  command: EngineCommand
-  range: SourceRange
-}
 
 /** Creates a graph of artifacts from a list of ordered commands and their responses
  * muting the Map should happen entirely this function, other functions called within
  * should return data on how to update the map, and not do so directly.
  */
 export function createArtifactGraph({
-  orderedCommands,
+  artifactCommands,
   responseMap,
   ast,
+  execStateArtifacts,
 }: {
-  orderedCommands: Array<OrderedCommand>
+  artifactCommands: Array<ArtifactCommand>
   responseMap: ResponseMap
-  ast: Program
+  ast: Node<Program>
+  execStateArtifacts: ExecState['artifacts']
 }) {
   const myMap = new Map<ArtifactId, Artifact>()
 
   /** see docstring for {@link getArtifactsToUpdate} as to why this is needed */
   let currentPlaneId = ''
 
-  orderedCommands.forEach((orderedCommand) => {
-    if (orderedCommand.command?.type === 'modeling_cmd_req') {
-      if (orderedCommand.command.cmd.type === 'enable_sketch_mode') {
-        currentPlaneId = orderedCommand.command.cmd.entity_id
-      }
-      if (orderedCommand.command.cmd.type === 'sketch_mode_disable') {
-        currentPlaneId = ''
-      }
+  for (const artifactCommand of artifactCommands) {
+    if (artifactCommand.command.type === 'enable_sketch_mode') {
+      currentPlaneId = artifactCommand.command.entity_id
+    }
+    if (artifactCommand.command.type === 'sketch_mode_disable') {
+      currentPlaneId = ''
     }
     const artifactsToUpdate = getArtifactsToUpdate({
-      orderedCommand,
+      artifactCommand,
       responseMap,
       getArtifact: (id: ArtifactId) => myMap.get(id),
       currentPlaneId,
       ast,
+      execStateArtifacts,
     })
     artifactsToUpdate.forEach(({ id, artifact }) => {
       const mergedArtifact = mergeArtifacts(myMap.get(id), artifact)
       myMap.set(id, mergedArtifact)
     })
-  })
+  }
   return myMap
 }
 
@@ -227,30 +232,30 @@ function mergeArtifacts(
  * can remove this.
  */
 export function getArtifactsToUpdate({
-  orderedCommand: { command, range },
+  artifactCommand,
   getArtifact,
   responseMap,
   currentPlaneId,
   ast,
+  execStateArtifacts,
 }: {
-  orderedCommand: OrderedCommand
+  artifactCommand: ArtifactCommand
   responseMap: ResponseMap
   /** Passing in a getter because we don't wan this function to update the map directly */
   getArtifact: (id: ArtifactId) => Artifact | undefined
   currentPlaneId: ArtifactId
-  ast: Program
+  ast: Node<Program>
+  execStateArtifacts: ExecState['artifacts']
 }): Array<{
   id: ArtifactId
   artifact: Artifact
 }> {
+  const range = sourceRangeFromRust(artifactCommand.range)
   const pathToNode = getNodePathFromSourceRange(ast, range)
 
-  // expect all to be `modeling_cmd_req` as batch commands have
-  // already been expanded before being added to orderedCommands
-  if (command.type !== 'modeling_cmd_req') return []
-  const id = command.cmd_id
+  const id = artifactCommand.cmdId
   const response = responseMap[id]
-  const cmd = command.cmd
+  const cmd = artifactCommand.command
   const returnArr: ReturnType<typeof getArtifactsToUpdate> = []
   if (!response) return returnArr
   if (cmd.type === 'make_plane' && range[1] !== 0) {

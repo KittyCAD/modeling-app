@@ -535,7 +535,11 @@ fn generate_type(
         || name == "CircularPattern3dData"
         || name == "LinearPattern2dData"
         || name == "LinearPattern3dData"
-        || name == "Mirror2dData")
+        || name == "Mirror2dData"
+        || name == "Axis2dOrEdgeReference"
+        || name == "Axis3dOrEdgeReference"
+        || name == "AxisAndOrigin2d"
+        || name == "AxisAndOrigin3d")
     {
         return Err(anyhow::anyhow!("Type name is not pascal cased: {}", name));
     }

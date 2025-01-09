@@ -1,0 +1,43 @@
+# spaced
+
+a = [0 .. 1]
+
+==>
+Program(VariableDeclaration(VariableDefinition,
+                            Equals,
+                            ArrayExpression(IntegerRange(Number,
+                                                         Number))))
+
+# compact
+
+a = [0..1]
+
+==>
+Program(VariableDeclaration(VariableDefinition,
+                            Equals,
+                            ArrayExpression(IntegerRange(Number,
+                                                         Number))))
+
+# expr spaced
+
+a = [start .. start + 10]
+
+==>
+Program(VariableDeclaration(VariableDefinition,
+                            Equals,
+                            ArrayExpression(IntegerRange(VariableName,
+                                                         BinaryExpression(VariableName,
+                                                                          AddOp,
+                                                                          Number)))))
+
+# expr compact
+
+a = [start..start + 10]
+
+==>
+Program(VariableDeclaration(VariableDefinition,
+                            Equals,
+                            ArrayExpression(IntegerRange(VariableName,
+                                                         BinaryExpression(VariableName,
+                                                                          AddOp,
+                                                                          Number)))))
