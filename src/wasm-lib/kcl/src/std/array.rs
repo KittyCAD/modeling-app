@@ -320,6 +320,11 @@ pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```
 #[stdlib {
     name = "len",
+    keywords = true,
+    unlabeled_first = true,
+    arg_docs = {
+        array = "The array to get the length of.",
+    }
 }]
 async fn inner_len(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {
     Ok(KclValue::Number {
@@ -329,7 +334,7 @@ async fn inner_len(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclErr
 }
 
 pub async fn len(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let val: KclValue = FromArgs::from_args(&args, 0)?;
+    let val = args.get_unlabeled_kw_arg("array")?;
     let meta = vec![args.source_range];
     let KclValue::Array { value: array, meta: _ } = val else {
         let actual_type = val.human_friendly_type();

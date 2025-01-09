@@ -17,7 +17,7 @@ len(array: [KclValue]) -> KclValue
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) |  | Yes |
+| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | The array to get the length of. | Yes |
 
 ### Returns
 
