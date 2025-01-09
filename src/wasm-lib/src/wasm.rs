@@ -5,8 +5,8 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Program,
-    execution::Point2d
+    exec::IdGenerator, execution::Point2d, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState,
+    Program,
 };
 use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
