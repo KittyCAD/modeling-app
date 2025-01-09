@@ -859,6 +859,14 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
       })
       await scene.expectPixelColor([89, 89, 89], testPoint, 15)
     })
+
+    await test.step('Delete loft via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation('Loft', 0)
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Backspace')
+      await scene.expectPixelColor([254, 254, 254], testPoint, 15)
+    })
   })
 })
 
