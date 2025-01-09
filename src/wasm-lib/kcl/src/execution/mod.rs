@@ -3,6 +3,7 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
+use artifact::build_artifact_graph;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 use kcmc::{
@@ -49,7 +50,7 @@ use crate::{
 };
 
 // Re-exports.
-pub use artifact::{Artifact, ArtifactCommand, ArtifactId, ArtifactInner};
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ArtifactInner};
 pub use cad_op::Operation;
 
 /// State for executing a program.
@@ -75,6 +76,8 @@ pub struct GlobalState {
     /// These are accumulated in the [`ExecutorContext`] but moved here for
     /// convenience of the execution cache.
     pub artifact_commands: Vec<ArtifactCommand>,
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -216,6 +219,7 @@ impl GlobalState {
             module_infos: Default::default(),
             artifacts: Default::default(),
             artifact_commands: Default::default(),
+            artifact_graph: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.
@@ -2253,6 +2257,14 @@ impl ExecutorContext {
             .global
             .artifact_commands
             .extend(self.engine.take_artifact_commands());
+        // Build the artifact graph.
+        exec_state.global.artifact_graph = build_artifact_graph(
+            &exec_state.global.artifact_commands,
+            self.engine.responses(),
+            &cache_result.program,
+            &exec_state.global.artifacts,
+        );
+
         let session_data = self.engine.get_session_data();
         Ok(session_data)
     }
