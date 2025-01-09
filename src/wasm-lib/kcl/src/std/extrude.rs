@@ -122,7 +122,7 @@ async fn inner_extrude(
         // Disable the sketch mode.
         args.batch_modeling_cmd(
             exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
         )
         .await?;
         solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);

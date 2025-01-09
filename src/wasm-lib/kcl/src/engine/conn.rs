@@ -1,7 +1,10 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
 use anyhow::{anyhow, Result};
 use dashmap::DashMap;
@@ -14,15 +17,16 @@ use kcmc::{
     },
     ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId, websocket::ModelingBatch};
 use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
+use uuid::Uuid;
 
 use super::ExecutionKind;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator},
+    execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
     SourceRange,
 };
 
@@ -43,6 +47,7 @@ pub struct EngineConnection {
     socket_health: Arc<Mutex<SocketHealth>>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    artifact_commands: Arc<Mutex<Vec<ArtifactCommand>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
@@ -307,10 +312,33 @@ impl EngineConnection {
             socket_health,
             batch: Arc::new(Mutex::new(Vec::new())),
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
+            artifact_commands: Arc::new(Mutex::new(Vec::new())),
             default_planes: Default::default(),
             session_data,
             execution_kind: Default::default(),
         })
+    }
+
+    fn handle_command(
+        &self,
+        cmd: &ModelingCmd,
+        cmd_id: ModelingCmdId,
+        id_to_source_range: &HashMap<Uuid, SourceRange>,
+    ) -> Result<(), KclError> {
+        let cmd_id = *cmd_id.as_ref();
+        let range = id_to_source_range
+            .get(&cmd_id)
+            .copied()
+            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
+
+        // Add artifact command.
+        let mut artifact_commands = self.artifact_commands.lock().unwrap();
+        artifact_commands.push(ArtifactCommand {
+            cmd_id,
+            range,
+            command: cmd.clone(),
+        });
+        Ok(())
     }
 }
 
@@ -322,6 +350,11 @@ impl EngineManager for EngineConnection {
 
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
+        let mut artifact_commands = self.artifact_commands.lock().unwrap();
+        std::mem::take(&mut *artifact_commands)
     }
 
     fn execution_kind(&self) -> ExecutionKind {
@@ -371,8 +404,20 @@ impl EngineManager for EngineConnection {
         id: uuid::Uuid,
         source_range: SourceRange,
         cmd: WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, SourceRange>,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
+        match &cmd {
+            WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
+                for request in requests {
+                    self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
+                }
+            }
+            WebSocketRequest::ModelingCmdReq(request) => {
+                self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
+            }
+            _ => {}
+        }
+
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
