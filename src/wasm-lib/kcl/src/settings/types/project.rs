@@ -124,6 +124,7 @@ includeSettings = false
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
+                        free_camera_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,

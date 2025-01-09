@@ -606,8 +606,8 @@ export class SceneEntities {
         segment.type === 'TangentialArcTo'
           ? segmentUtils.tangentialArcTo.init
           : segment.type === 'Circle'
-          ? segmentUtils.circle.init
-          : segmentUtils.straight.init
+            ? segmentUtils.circle.init
+            : segmentUtils.straight.init
       const input: SegmentInputs =
         segment.type === 'Circle'
           ? {
@@ -670,7 +670,8 @@ export class SceneEntities {
       position &&
       this.intersectionPlane.position.set(...position)
     this.scene.add(group)
-    sceneInfra.camControls.enableRotate = false
+    // TODO: Kevin - false
+    sceneInfra.camControls.enableRotate = true
     sceneInfra.overlayCallbacks(callbacks)
 
     return {

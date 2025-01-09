@@ -111,7 +111,7 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme, enableSSAO },
+        app: { theme, enableSSAO, freeCameraMode },
         modeling: {
           defaultUnit,
           cameraProjection,
@@ -284,6 +284,9 @@ export const ModelingMachineProvider = ({
               sketchPathToNode: event.data,
             },
           }
+        }),
+        'Set animate back to initial view': assign(({ context }) => {
+          console.log('ANIMATE BACK', context)
         }),
         'Set selection': assign(
           ({ context: { selectionRanges, sketchDetails }, event }) => {
@@ -634,9 +637,17 @@ export const ModelingMachineProvider = ({
             input.plane
           )
           await kclManager.updateAst(modifiedAst, false)
-          sceneInfra.camControls.enableRotate = false
+          // TODO: Kevin - false
+          sceneInfra.camControls.enableRotate = true
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
+          window.syncCamera = async () => {
+            await letEngineAnimateAndSyncCamAfter(
+              engineCommandManager,
+              input.planeId
+            )
+          }
+          // TODO: Kevin
           await letEngineAnimateAndSyncCamAfter(
             engineCommandManager,
             input.planeId
@@ -647,6 +658,7 @@ export const ModelingMachineProvider = ({
             zAxis: input.zAxis,
             yAxis: input.yAxis,
             origin: [0, 0, 0],
+            animateTargetId: input.planeId,
           }
         }),
         'animate-to-sketch': fromPromise(
@@ -671,6 +683,7 @@ export const ModelingMachineProvider = ({
               origin: info.sketchDetails.origin.map(
                 (a) => a / sceneInfra._baseUnitMultiplier
               ) as [number, number, number],
+              animateTargetId: info?.sketchDetails?.faceId || '',
             }
           }
         ),
@@ -1187,6 +1200,16 @@ export const ModelingMachineProvider = ({
       )
     }
   }, [engineCommandManager.engineConnection, modelingSend])
+
+  useEffect(() => {
+    if (!freeCameraMode.current) {
+      const inSketchMode = modelingState.matches('Sketch')
+      const targetId = modelingState.context.sketchDetails?.animateTargetId
+      if (inSketchMode && targetId) {
+        letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
+      }
+    }
+  }, [freeCameraMode])
 
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {

@@ -108,6 +108,8 @@ export class CameraControls {
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
+  // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
+  _setting_freeCameraMode = false
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
   }
@@ -1012,7 +1014,8 @@ export class CameraControls {
         } else if (toOrthographic) {
           await this.animateToOrthographic()
         }
-        this.enableRotate = false
+        // TODO: Kevin - false
+        this.enableRotate = this._setting_freeCameraMode
         this._isCamMovingCallback(false, true)
         resolve()
       }

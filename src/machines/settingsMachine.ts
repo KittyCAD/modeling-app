@@ -157,6 +157,11 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
+        'set.app.freeCameraMode': {
+          target: 'persisting settings',
+          actions: ['setSettingAtLevel', 'toastSuccess', 'setFreeCameraMode'],
+        },
+
         'set.modeling.cameraProjection': {
           target: 'persisting settings',
 
@@ -183,6 +188,7 @@ export const settingsMachine = setup({
             'setClientSideSceneUnits',
             'Execute AST',
             'setClientTheme',
+            'setFreeCameraMode',
           ],
         },
 
@@ -194,6 +200,7 @@ export const settingsMachine = setup({
             'setClientSideSceneUnits',
             'Execute AST',
             'setClientTheme',
+            'setFreeCameraMode',
           ],
         },
 
