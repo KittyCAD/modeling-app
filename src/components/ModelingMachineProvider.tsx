@@ -271,6 +271,7 @@ export const ModelingMachineProvider = ({
               cmd_id: uuidv4(),
               cmd: {
                 type: 'default_camera_center_to_selection',
+                camera_movement: 'vantage',
               },
             })
             .catch(reportRejection)
