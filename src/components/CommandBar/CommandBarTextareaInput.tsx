@@ -75,6 +75,7 @@ function CommandBarTextareaInput({
               target.selectionStart = selectionStart + 1
               target.selectionEnd = selectionStart + 1
             } else if (event.key === 'Enter') {
+              event.preventDefault()
               formRef.current?.dispatchEvent(
                 new Event('submit', { bubbles: true })
               )

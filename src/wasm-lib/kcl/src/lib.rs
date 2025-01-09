@@ -98,7 +98,9 @@ pub use source_range::{ModuleId, SourceRange};
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    pub use crate::execution::{DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch};
+    pub use crate::execution::{
+        ArtifactCommand, DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch,
+    };
 }
 
 #[cfg(target_arch = "wasm32")]

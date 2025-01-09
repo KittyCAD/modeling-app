@@ -756,6 +756,17 @@ test(`Offset plane point-and-click`, async ({
     })
     await scene.expectPixelColor([74, 74, 74], testPoint, 15)
   })
+
+  await test.step('Delete offset plane via feature tree selection', async () => {
+    await editor.closePane()
+    const operationButton = await toolbar.getFeatureTreeOperation(
+      'Offset Plane',
+      0
+    )
+    await operationButton.click({ button: 'left' })
+    await page.keyboard.press('Backspace')
+    await scene.expectPixelColor([50, 51, 96], testPoint, 15)
+  })
 })
 
 const loftPointAndClickCases = [
@@ -851,6 +862,75 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
       })
       await scene.expectPixelColor([89, 89, 89], testPoint, 15)
     })
+
+    await test.step('Delete loft via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation('Loft', 0)
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Backspace')
+      await scene.expectPixelColor([254, 254, 254], testPoint, 15)
+    })
+  })
+})
+
+// TODO: merge with above test. Right now we're not able to delete a loft
+// right after creation via selection for some reason, so we go with a new instance
+test('Loft and offset plane deletion via selection', async ({
+  context,
+  page,
+  homePage,
+  scene,
+}) => {
+  const initialCode = `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 30 }, %)
+  plane001 = offsetPlane('XZ', 50)
+  sketch002 = startSketchOn(plane001)
+  |> circle({ center = [0, 0], radius = 20 }, %)
+loft001 = loft([sketch001, sketch002])
+`
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
+
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 575, y: 200 }
+  const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const [clickOnSketch2] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 80)
+
+  await test.step(`Delete loft`, async () => {
+    // Check for loft
+    await scene.expectPixelColor([89, 89, 89], testPoint, 15)
+    await clickOnSketch1()
+    await expect(page.locator('.cm-activeLine')).toHaveText(`
+      |> circle({ center = [0, 0], radius = 30 }, %)
+    `)
+    await page.keyboard.press('Backspace')
+    // Check for sketch 1
+    await scene.expectPixelColor([254, 254, 254], testPoint, 15)
+  })
+
+  await test.step('Delete sketch002', async () => {
+    await page.waitForTimeout(1000)
+    await clickOnSketch2()
+    await expect(page.locator('.cm-activeLine')).toHaveText(`
+      |> circle({ center = [0, 0], radius = 20 }, %)
+    `)
+    await page.keyboard.press('Backspace')
+    // Check for plane001
+    await scene.expectPixelColor([228, 228, 228], testPoint, 15)
+  })
+
+  await test.step('Delete plane001', async () => {
+    await page.waitForTimeout(1000)
+    await clickOnSketch2()
+    await expect(page.locator('.cm-activeLine')).toHaveText(`
+      plane001 = offsetPlane('XZ', 50)
+    `)
+    await page.keyboard.press('Backspace')
+    // Check for sketch 1
+    await scene.expectPixelColor([254, 254, 254], testPoint, 15)
   })
 })
 
@@ -1029,5 +1109,13 @@ extrude001 = extrude(40, sketch001)
       highlightedCode: '',
     })
     await scene.expectPixelColor([49, 49, 49], testPoint, 15)
+  })
+
+  await test.step('Delete shell via feature tree selection', async () => {
+    await editor.closePane()
+    const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
+    await operationButton.click({ button: 'left' })
+    await page.keyboard.press('Backspace')
+    await scene.expectPixelColor([99, 99, 99], testPoint, 15)
   })
 })
