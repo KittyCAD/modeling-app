@@ -17,9 +17,9 @@ reduce(array: [KclValue], start: KclValue, reduce_fn: FunctionParam) -> KclValue
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) |  | Yes |
-| `start` | [`KclValue`](/docs/kcl/types/KclValue) | Any KCL value. | Yes |
-| `reduce_fn` | `FunctionParam` |  | Yes |
+| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | The array to reduce. | Yes |
+| `start` | [`KclValue`](/docs/kcl/types/KclValue) | The starting value for the reduction. | Yes |
+| `reduce_fn` | `FunctionParam` | The function to reduce the array with. | Yes |
 
 ### Returns
 
@@ -38,7 +38,7 @@ fn add(a, b) {
 // It uses the `reduce` function, to call the `add` function on every
 // element of the `arr` parameter. The starting value is 0.
 fn sum(arr) {
-  return reduce(arr, 0, add)
+  return reduce(arr, start = 0, reduce_fn = add)
 }
 
 /* The above is basically like this pseudo-code:
@@ -61,7 +61,7 @@ assertEqual(sum([1, 2, 3]), 6, 0.00001, "1 + 2 + 3 summed is 6")
 // an anonymous `add` function as its parameter, instead of declaring a
 // named function outside.
 arr = [1, 2, 3]
-sum = reduce(arr, 0, fn(i, result_so_far) {
+sum = reduce(arr, start = 0, reduce_fn = fn(i, result_so_far) {
   return i + result_so_far
 })
 
@@ -85,7 +85,7 @@ fn decagon(radius) {
     // Use a `reduce` to draw the remaining decagon sides.
     // For each number in the array 1..10, run the given function,
   // which takes a partially-sketched decagon and adds one more edge to it.
-  fullDecagon = reduce([1..10], startOfDecagonSketch, fn(i, partialDecagon) {
+  fullDecagon = reduce([1..10], start = startOfDecagonSketch, reduce_fn = fn(i, partialDecagon) {
     // Draw one edge of the decagon.
     x = cos(stepAngle * i) * radius
     y = sin(stepAngle * i) * radius

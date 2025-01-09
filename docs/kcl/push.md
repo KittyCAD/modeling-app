@@ -17,8 +17,8 @@ push(array: [KclValue], elem: KclValue) -> KclValue
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) |  | Yes |
-| `elem` | [`KclValue`](/docs/kcl/types/KclValue) | Any KCL value. | Yes |
+| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | The array to push to. | Yes |
+| `elem` | [`KclValue`](/docs/kcl/types/KclValue) | The element to push to the array. | Yes |
 
 ### Returns
 
@@ -29,7 +29,7 @@ push(array: [KclValue], elem: KclValue) -> KclValue
 
 ```js
 arr = [1, 2, 3]
-new_arr = push(arr, 4)
+new_arr = push(arr, elem = 4)
 assertEqual(new_arr[3], 4, 0.00001, "4 was added to the end of the array")
 ```
 

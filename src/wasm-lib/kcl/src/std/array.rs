@@ -1,9 +1,6 @@
 use derive_docs::stdlib;
 
-use super::{
-    args::{Arg, FromArgs},
-    Args, FnAsArg,
-};
+use super::{args::Arg, Args, FnAsArg};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, FunctionParam, KclValue},
@@ -12,14 +9,47 @@ use crate::{
 
 /// Apply a function to each element of an array.
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, f): (Vec<KclValue>, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
+    let array = args.get_unlabeled_kw_arg("array")?;
+
+    // Check that the array is an array
+    let array: Vec<KclValue> = match array {
+        KclValue::Array { value, meta: _ } => value,
+        _ => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: format!(
+                    "Expected an array to map, but got a value of type {}",
+                    array.human_friendly_type()
+                ),
+            }))
+        }
+    };
+
+    // Check that the map_fn is a function
+    let map_fn_kclvalue: KclValue = args.get_kw_arg("map_fn")?;
+    match map_fn_kclvalue {
+        KclValue::Function { .. } => (),
+        _ => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: format!(
+                    "Expected map_fn to be a function, but got a value of type {}",
+                    map_fn_kclvalue.human_friendly_type()
+                ),
+            }))
+        }
+    }
+
+    // Extract the function from the KclValue
+    let map_fn: FnAsArg<'_> = args.get_kw_arg("map_fn")?;
+
     let meta = vec![args.source_range.into()];
     let map_fn = FunctionParam {
-        inner: f.func,
-        fn_expr: f.expr,
+        inner: map_fn.func,
+        fn_expr: map_fn.expr,
         meta: meta.clone(),
         ctx: args.ctx.clone(),
-        memory: *f.memory,
+        memory: *map_fn.memory,
     };
     let new_array = inner_map(array, map_fn, exec_state, &args).await?;
     Ok(KclValue::Array { value: new_array, meta })
@@ -41,7 +71,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// // which is the return value from `map`.
 /// circles = map(
 ///   [1..3],
-///   drawCircle
+///   map_fn = drawCircle
 /// )
 /// ```
 /// ```no_run
@@ -49,7 +79,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// // Call `map`, using an anonymous function instead of a named one.
 /// circles = map(
 ///   [1..3],
-///   fn(id) {
+///   map_fn = fn(id) {
 ///     return startSketchOn("XY")
 ///       |> circle({ center: [id * 2 * r, 0], radius: r}, %)
 ///   }
@@ -57,6 +87,12 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// ```
 #[stdlib {
     name = "map",
+    keywords = true,
+    unlabeled_first = true,
+    arg_docs = {
+        array = "The array to map.",
+        map_fn = "The function to map the array with.",
+    }
 }]
 async fn inner_map<'a>(
     array: Vec<KclValue>,
@@ -91,13 +127,43 @@ async fn call_map_closure<'a>(
 
 /// For each item in an array, update a value.
 pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, start, f): (Vec<KclValue>, KclValue, FnAsArg<'_>) = FromArgs::from_args(&args, 0)?;
+    let array_val = args.get_unlabeled_kw_arg("array")?;
+    let start = args.get_kw_arg("start")?;
+    let reduce_fn_kclvalue: KclValue = args.get_kw_arg("reduce_fn")?;
+
+    let array: Vec<KclValue> = match array_val {
+        KclValue::Array { value, meta: _ } => value,
+        _ => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: format!("You can't reduce a value of type {}", array_val.human_friendly_type()),
+            }))
+        }
+    };
+
+    // Check that the reduce_fn is a function
+    match reduce_fn_kclvalue {
+        KclValue::Function { .. } => (),
+        _ => {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![args.source_range],
+                message: format!(
+                    "Expected reduce_fn to be a function, but got a value of type {}",
+                    reduce_fn_kclvalue.human_friendly_type()
+                ),
+            }))
+        }
+    }
+
+    // Extract the function from the KclValue
+    let reduce_fn: FnAsArg<'_> = args.get_kw_arg("reduce_fn")?;
+
     let reduce_fn = FunctionParam {
-        inner: f.func,
-        fn_expr: f.expr,
+        inner: reduce_fn.func,
+        fn_expr: reduce_fn.expr,
         meta: vec![args.source_range.into()],
         ctx: args.ctx.clone(),
-        memory: *f.memory,
+        memory: *reduce_fn.memory,
     };
     inner_reduce(array, start, reduce_fn, exec_state, &args).await
 }
@@ -111,7 +177,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // This function adds an array of numbers.
 /// // It uses the `reduce` function, to call the `add` function on every
 /// // element of the `arr` parameter. The starting value is 0.
-/// fn sum(arr) { return reduce(arr, 0, add) }
+/// fn sum(arr) { return reduce(arr, start = 0, reduce_fn = add) }
 ///
 /// /*
 /// The above is basically like this pseudo-code:
@@ -131,7 +197,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // an anonymous `add` function as its parameter, instead of declaring a
 /// // named function outside.
 /// arr = [1, 2, 3]
-/// sum = reduce(arr, 0, (i, result_so_far) => { return i + result_so_far })
+/// sum = reduce(arr, start = 0, reduce_fn = (i, result_so_far) => { return i + result_so_far })
 ///
 /// // We use `assertEqual` to check that our `sum` function gives the
 /// // expected result. It's good to check your work!
@@ -150,7 +216,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   // Use a `reduce` to draw the remaining decagon sides.
 ///   // For each number in the array 1..10, run the given function,
 ///   // which takes a partially-sketched decagon and adds one more edge to it.
-///   fullDecagon = reduce([1..10], startOfDecagonSketch, fn(i, partialDecagon) {
+///   fullDecagon = reduce([1..10], start = startOfDecagonSketch, reduce_fn = fn(i, partialDecagon) {
 ///       // Draw one edge of the decagon.
 ///       x = cos(stepAngle * i) * radius
 ///       y = sin(stepAngle * i) * radius
@@ -183,6 +249,13 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "reduce",
+    keywords = true,
+    unlabeled_first = true,
+    arg_docs = {
+        array = "The array to reduce.",
+        start = "The starting value for the reduction.",
+        reduce_fn = "The function to reduce the array with.",
+    }
 }]
 async fn inner_reduce<'a>(
     array: Vec<KclValue>,
@@ -227,11 +300,17 @@ async fn call_reduce_closure<'a>(
 ///
 /// ```no_run
 /// arr = [1, 2, 3]
-/// new_arr = push(arr, 4)
+/// new_arr = push(arr, elem = 4)
 /// assertEqual(new_arr[3], 4, 0.00001, "4 was added to the end of the array")
 /// ```
 #[stdlib {
     name = "push",
+    keywords = true,
+    unlabeled_first = true,
+    arg_docs = {
+        array = "The array to push to.",
+        elem = "The element to push to the array.",
+    }
 }]
 async fn inner_push(mut array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
     // Unwrap the KclValues to JValues for manipulation
@@ -244,7 +323,8 @@ async fn inner_push(mut array: Vec<KclValue>, elem: KclValue, args: &Args) -> Re
 
 pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // Extract the array and the element from the arguments
-    let (val, elem): (KclValue, KclValue) = FromArgs::from_args(&args, 0)?;
+    let val = args.get_unlabeled_kw_arg("array")?;
+    let elem = args.get_kw_arg("elem")?;
 
     let meta = vec![args.source_range];
     let KclValue::Array { value: array, meta: _ } = val else {

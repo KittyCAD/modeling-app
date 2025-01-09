@@ -1,12 +1,14 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 133
 description: Error from executing argument_error.kcl
+snapshot_kind: text
 ---
-KCL Type error
+KCL Semantic error
 
-  × type: Expected an array but found Function
-   ╭─[5:5]
+  × semantic: Expected an array to map, but got a value of type Function
+   ╭─[5:1]
  4 │ 
- 5 │ map(f, [0, 1])
-   ·     ─
+ 5 │ map(f, map_fn = [0, 1])
+   · ───────────────────────
    ╰────

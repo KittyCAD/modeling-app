@@ -1,6 +1,8 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 55
 description: Result of parsing double_map_fn.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -117,7 +119,7 @@ description: Result of parsing double_map_fn.kcl
       },
       {
         "declaration": {
-          "end": 101,
+          "end": 119,
           "id": {
             "end": 50,
             "name": "ys",
@@ -136,17 +138,18 @@ description: Result of parsing double_map_fn.kcl
               {
                 "arguments": [
                   {
-                    "end": 66,
-                    "start": 65,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 77,
-                    "name": "increment",
-                    "start": 68,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "map_fn"
+                    },
+                    "arg": {
+                      "end": 86,
+                      "name": "increment",
+                      "start": 77,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
                   }
                 ],
                 "callee": {
@@ -155,40 +158,53 @@ description: Result of parsing double_map_fn.kcl
                   "start": 61,
                   "type": "Identifier"
                 },
-                "end": 78,
+                "end": 87,
                 "start": 61,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "end": 66,
+                  "start": 65,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
               },
               {
                 "arguments": [
                   {
-                    "end": 89,
-                    "start": 88,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 100,
-                    "name": "increment",
-                    "start": 91,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "map_fn"
+                    },
+                    "arg": {
+                      "end": 118,
+                      "name": "increment",
+                      "start": 109,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 87,
+                  "end": 96,
                   "name": "map",
-                  "start": 84,
+                  "start": 93,
                   "type": "Identifier"
                 },
-                "end": 101,
-                "start": 84,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "end": 119,
+                "start": 93,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "end": 98,
+                  "start": 97,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
               }
             ],
-            "end": 101,
+            "end": 119,
             "start": 53,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -196,14 +212,14 @@ description: Result of parsing double_map_fn.kcl
           "start": 48,
           "type": "VariableDeclarator"
         },
-        "end": 101,
+        "end": 119,
         "kind": "const",
         "start": 48,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 102,
+    "end": 120,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
