@@ -637,17 +637,9 @@ export const ModelingMachineProvider = ({
             input.plane
           )
           await kclManager.updateAst(modifiedAst, false)
-          // TODO: Kevin - false
           sceneInfra.camControls.enableRotate = true
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-          window.syncCamera = async () => {
-            await letEngineAnimateAndSyncCamAfter(
-              engineCommandManager,
-              input.planeId
-            )
-          }
-          // TODO: Kevin
           await letEngineAnimateAndSyncCamAfter(
             engineCommandManager,
             input.planeId

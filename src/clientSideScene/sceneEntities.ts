@@ -670,7 +670,6 @@ export class SceneEntities {
       position &&
       this.intersectionPlane.position.set(...position)
     this.scene.add(group)
-    // TODO: Kevin - false
     sceneInfra.camControls.enableRotate = true
     sceneInfra.overlayCallbacks(callbacks)
 

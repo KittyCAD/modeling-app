@@ -1014,7 +1014,6 @@ export class CameraControls {
         } else if (toOrthographic) {
           await this.animateToOrthographic()
         }
-        // TODO: Kevin - false
         this.enableRotate = this._setting_freeCameraMode
         this._isCamMovingCallback(false, true)
         resolve()
