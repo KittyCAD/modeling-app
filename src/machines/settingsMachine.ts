@@ -43,6 +43,7 @@ export const settingsMachine = setup({
     'Execute AST': () => {},
     toastSuccess: () => {},
     setClientSideSceneUnits: () => {},
+    setAllowOrbitInSketchMode: () => {},
     persistSettings: () => {},
     resetSettings: assign(({ context, event }) => {
       if (!('level' in event)) return {}

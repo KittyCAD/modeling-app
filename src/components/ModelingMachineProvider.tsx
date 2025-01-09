@@ -1197,6 +1197,13 @@ export const ModelingMachineProvider = ({
       const targetId = modelingState.context.sketchDetails?.animateTargetId
       if (inSketchMode && targetId) {
         letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
+          .then(() => {})
+          .catch((e) => {
+            console.error(
+              'failed to sync engine and client scene after disabling allow orbit in sketch mode'
+            )
+            console.error(e)
+          })
       }
     }
 
