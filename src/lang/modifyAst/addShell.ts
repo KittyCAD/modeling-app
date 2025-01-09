@@ -102,8 +102,6 @@ export function addShell({
     pathToExtrudeNode,
     'VariableDeclarator'
   )
-  console.log('pathToExtrudeNode', pathToExtrudeNode)
-  console.log('extrudeNode', extrudeNode)
   if (err(extrudeNode)) {
     return extrudeNode
   }
