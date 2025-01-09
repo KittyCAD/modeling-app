@@ -29,7 +29,7 @@ import * as TWEEN from '@tweenjs/tween.js'
 import { isQuaternionVertical } from './helpers'
 import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
-import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
+import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
@@ -1190,7 +1190,9 @@ export class CameraControls {
     this.deferReactUpdate(this.reactCameraProperties)
     Object.values(this._camChangeCallbacks).forEach((cb) => cb())
   }
-  getInteractionType = (event: MouseEvent) => {
+  getInteractionType = (
+    event: MouseEvent
+  ): CameraDragInteractionType_type | 'none' => {
     const initialInteractionType = _getInteractionType(
       this.interactionGuards,
       event,
