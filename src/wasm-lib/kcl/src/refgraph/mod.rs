@@ -7,21 +7,15 @@ use crate::{
 use std::sync::{Arc, Mutex};
 
 ///
-type Declaration<'tree> = (
-    Vec<types::NodeRef<'tree, types::Program>>,
-    Node<'tree>,
-    &'tree types::Identifier,
-);
+type Declaration<'tree> = (Vec<Node<'tree>>, &'tree types::Identifier);
 
 ///
-type Reference<'tree> = (
-    Vec<types::NodeRef<'tree, types::Program>>,
-    Node<'tree>,
-    &'tree types::Identifier,
-);
+type Reference<'tree> = (Vec<Node<'tree>>, &'tree types::Identifier);
 
 ///
 type RefEdge<'tree> = (Option<Declaration<'tree>>, Reference<'tree>);
+
+// TODO change to a list of all parents of the node instead
 
 ///
 #[derive(Clone, Debug)]
@@ -54,30 +48,26 @@ impl<'tree> Scope<'tree> {
         let mut unmatched_refs = self.references.clone();
 
         for child in &self.children {
-            for (declaration, (ref_program, ref_node, ref_id)) in child.edges() {
+            for (declaration, (ref_node, ref_id)) in child.edges() {
                 match declaration {
-                    Some((mut decl_programs, decl_node, decl_id)) => {
-                        decl_programs.insert(0, self.program);
-                        edges.push((
-                            Some((decl_programs, decl_node.clone(), decl_id)),
-                            (ref_program, ref_node.clone(), ref_id),
-                        ));
+                    Some((mut decl_node, decl_id)) => {
+                        edges.push((Some((decl_node.clone(), decl_id)), (ref_node.clone(), ref_id)));
                     }
                     None => {
-                        unmatched_refs.push((ref_program, ref_node.clone(), ref_id));
+                        unmatched_refs.push((ref_node.clone(), ref_id));
                     }
                 }
             }
         }
 
-        for (ref_program, ref_node, ref_id) in unmatched_refs.into_iter() {
+        for (ref_node, ref_id) in unmatched_refs.into_iter() {
             edges.push((
                 self.declarations
                     .iter()
-                    .filter(|(_, _, decl_id)| decl_id.name == ref_id.name)
+                    .filter(|(_, decl_id)| decl_id.name == ref_id.name)
                     .cloned()
                     .next(),
-                (ref_program, ref_node.clone(), ref_id),
+                (ref_node.clone(), ref_id),
             ));
         }
 
@@ -99,14 +89,14 @@ impl<'tree> ScopeVisitor<'tree> {
     }
 }
 
-impl<'tree> Visitor<'tree> for ScopeVisitor<'tree> {
-    type Error = std::convert::Infallible;
-
-    fn visit_node(&self, node: Node<'tree>) -> Result<bool, Self::Error> {
+impl<'tree> ScopeVisitor<'tree> {
+    fn visit(&self, path: Vec<Node<'tree>>, node: Node<'tree>) -> Result<bool, std::convert::Infallible> {
         if let Node::Program(program) = node {
             let csv = ScopeVisitor::new(program);
             for child in node.children() {
-                child.visit(csv.clone())?;
+                let mut path = path.clone();
+                path.push(node.clone());
+                csv.clone().visit(path, child.clone())?;
             }
 
             self.scope
@@ -117,29 +107,26 @@ impl<'tree> Visitor<'tree> for ScopeVisitor<'tree> {
             return Ok(true);
         }
 
+        let mut path = path.clone();
+        path.push(node.clone());
+
         match node {
             Node::VariableDeclaration(vd) => {
-                let program = self.scope.lock().unwrap().program;
                 self.scope
                     .lock()
                     .unwrap()
                     .declarations
-                    .push((vec![program], node.clone(), &vd.declaration.id));
+                    .push((vec![node.clone()], &vd.declaration.id));
 
                 let node: Node = (&vd.declaration.init).into();
-                node.visit(self.clone())?;
+                self.clone().visit(path, node)?;
             }
             Node::Identifier(id) => {
-                let program = self.scope.lock().unwrap().program;
-                self.scope
-                    .lock()
-                    .unwrap()
-                    .references
-                    .push((vec![program], node.clone(), &id));
+                self.scope.lock().unwrap().references.push((vec![node.clone()], &id));
             }
             _ => {
                 for child in node.children() {
-                    child.visit(self.clone())?;
+                    self.visit(path.clone(), child.clone())?;
                 }
             }
         }
@@ -155,7 +142,7 @@ pub fn extract_refgraph<'a, 'tree>(
     let node: Node = (program).into();
 
     for child in node.children() {
-        child.visit(sv.clone())?;
+        sv.clone().visit(vec![node.clone()], child.clone())?;
     }
 
     let x = sv.scope.lock().unwrap().clone();
@@ -192,15 +179,21 @@ fn myfn = () => {
         assert_eq!(edges.len(), 3);
 
         // sin is a global so we are chilin
-        let (decl, (_ref_prog, _ref_node, ref_id)) = edges.get(2).unwrap();
+        let (decl, (_ref_node, ref_id)) = edges.get(2).unwrap();
         assert_eq!("sin", ref_id.name);
         assert!(decl.is_none());
 
         // myfn's foo
-        let (decl, (_ref_prog, _ref_node, ref_id)) = edges.get(1).unwrap();
+        let (decl, (_ref_node, ref_id)) = edges.get(1).unwrap();
         assert_eq!("foo", ref_id.name);
         assert!(decl.is_some());
         // todo: check this is actually refering to the parent scope foo
+
+        let (Some((decl_nodes, _)), _) = edges.get(1).unwrap() else {
+            panic!("not some");
+        };
+
+        assert!(decl_nodes[0].ptr_eq((&program.body[0]).into()));
     }
 
     #[test]
@@ -225,7 +218,7 @@ fn myfn = () => {
             refgraph
                 .declarations
                 .iter()
-                .map(|(_, _, id)| id.name.as_str())
+                .map(|(_, id)| id.name.as_str())
                 .collect::<Vec<_>>()
                 .as_slice()
         );
@@ -236,7 +229,7 @@ fn myfn = () => {
             refgraph
                 .references
                 .iter()
-                .map(|(_, _, id)| id.name.as_str())
+                .map(|(_, id)| id.name.as_str())
                 .collect::<Vec<_>>()
                 .as_slice()
         );
@@ -249,7 +242,7 @@ fn myfn = () => {
             &["foo"],
             myfn.declarations
                 .iter()
-                .map(|(_, _, id)| id.name.as_str())
+                .map(|(_, id)| id.name.as_str())
                 .collect::<Vec<_>>()
                 .as_slice()
         );
@@ -259,7 +252,7 @@ fn myfn = () => {
             &["sin", "foo"],
             myfn.references
                 .iter()
-                .map(|(_, _, id)| id.name.as_str())
+                .map(|(_, id)| id.name.as_str())
                 .collect::<Vec<_>>()
                 .as_slice()
         );

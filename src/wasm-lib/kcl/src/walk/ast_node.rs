@@ -42,6 +42,46 @@ pub enum Node<'a> {
 }
 
 impl Node<'_> {
+    ///
+    pub fn ptr_eq(&self, other: Node) -> bool {
+        unsafe { std::ptr::eq(self.ptr(), other.ptr()) }
+    }
+
+    unsafe fn ptr(&self) -> *const () {
+        match self {
+            Node::Program(n) => *n as *const _ as *const (),
+            Node::ImportStatement(n) => *n as *const _ as *const (),
+            Node::ExpressionStatement(n) => *n as *const _ as *const (),
+            Node::VariableDeclaration(n) => *n as *const _ as *const (),
+            Node::ReturnStatement(n) => *n as *const _ as *const (),
+            Node::VariableDeclarator(n) => *n as *const _ as *const (),
+            Node::Literal(n) => *n as *const _ as *const (),
+            Node::TagDeclarator(n) => *n as *const _ as *const (),
+            Node::Identifier(n) => *n as *const _ as *const (),
+            Node::BinaryExpression(n) => *n as *const _ as *const (),
+            Node::FunctionExpression(n) => *n as *const _ as *const (),
+            Node::CallExpression(n) => *n as *const _ as *const (),
+            Node::CallExpressionKw(n) => *n as *const _ as *const (),
+            Node::PipeExpression(n) => *n as *const _ as *const (),
+            Node::PipeSubstitution(n) => *n as *const _ as *const (),
+            Node::ArrayExpression(n) => *n as *const _ as *const (),
+            Node::ArrayRangeExpression(n) => *n as *const _ as *const (),
+            Node::ObjectExpression(n) => *n as *const _ as *const (),
+            Node::MemberExpression(n) => *n as *const _ as *const (),
+            Node::UnaryExpression(n) => *n as *const _ as *const (),
+            Node::Parameter(p) => *p as *const _ as *const (),
+            Node::ObjectProperty(n) => *n as *const _ as *const (),
+            Node::IfExpression(n) => *n as *const _ as *const (),
+            Node::ElseIf(n) => *n as *const _ as *const (),
+            Node::KclNone(n) => *n as *const _ as *const (),
+            Node::LabelledExpression(n) => *n as *const _ as *const (),
+        }
+    }
+
+    // pub fn ptr_eq(&self, other: Node<'_>) -> bool {}
+}
+
+impl Node<'_> {
     /// Return the digest of the [Node], pulling the underlying Digest from
     /// the AST types.
     ///
