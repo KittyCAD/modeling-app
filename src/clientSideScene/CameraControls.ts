@@ -741,25 +741,16 @@ export class CameraControls {
   }
 
   update = (forceUpdate = false) => {
-    // console.log(
-    //   'START',
-    //   this.camera.quaternion.x,
-    //   this.camera.quaternion.y,
-    //   this.camera.quaternion.z,
-    //   this.camera.quaternion.w
-    // )
     // If there are any changes that need to be applied to the camera, apply them here.
 
     let didChange = false
     if (this.pendingRotation) {
-      console.log('YEAH I ROTATED!')
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
       this.pendingRotation = null // Clear the pending rotation after applying it
       didChange = true
     }
 
     if (this.pendingZoom) {
-      console.log('YEAH I ZOOMED!')
       if (this.camera instanceof PerspectiveCamera) {
         // move camera towards or away from the target
         const distance = this.camera.position.distanceTo(this.target)
@@ -784,7 +775,6 @@ export class CameraControls {
     }
 
     if (this.pendingPan) {
-      console.log('YEAH I PANNED')
       // move camera left/right and up/down
       const offset = this.camera.position.clone().sub(this.target)
       const direction = offset.clone().normalize()
