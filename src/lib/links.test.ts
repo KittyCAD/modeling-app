@@ -1,4 +1,3 @@
-import { ASK_TO_OPEN_QUERY_PARAM, CREATE_FILE_URL_PARAM } from './constants'
 import { createCreateFileUrl } from './links'
 
 describe(`link creation tests`, () => {
@@ -9,7 +8,7 @@ describe(`link creation tests`, () => {
 
     // Converted with external online tools
     const expectedEncodedCode = `ZXh0cnVzaW9uRGlzdGFuY2UgPSAxMg%3D%3D`
-    const expectedLink = `http:/localhost:3000/?${CREATE_FILE_URL_PARAM}&name=test&units=mm&code=${expectedEncodedCode}&${ASK_TO_OPEN_QUERY_PARAM}`
+    const expectedLink = `http://localhost:3000/?create-file=&name=test&units=mm&code=${expectedEncodedCode}&askToOpenInDesktop`
 
     const result = createCreateFileUrl({ code, name, units })
     expect(result.toString()).toBe(expectedLink)
