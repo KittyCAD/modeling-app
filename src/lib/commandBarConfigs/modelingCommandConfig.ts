@@ -308,6 +308,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['solid2D'],
         required: true,
         skip: true,
+        multiple: false,
         // TODO: add dry-run validation
         warningMessage:
           'The sweep workflow is new and under tested. Please break it and report issues.',
@@ -317,6 +318,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'path'],
         required: true,
         skip: true,
+        multiple: false,
         // TODO: add dry-run validation
       },
     },

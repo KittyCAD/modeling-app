@@ -208,7 +208,6 @@ export async function getEventForSelectWithPoint({
   }
 
   let _artifact = engineCommandManager.artifactGraph.get(data.entity_id)
-  console.log('_artifact', _artifact)
   const codeRefs = getCodeRefsByArtifactId(
     data.entity_id,
     engineCommandManager.artifactGraph

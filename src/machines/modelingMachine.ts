@@ -1572,11 +1572,6 @@ export const modelingMachine = setup({
         }
         const profileDeclarator = profileNode.node
 
-        // TODO: add better validation on selection
-        if (!profileDeclarator) {
-          trap('Not enough sketches selected')
-        }
-
         // Find the path declaration
         const pathNodePath = getNodePathFromSourceRange(
           ast,
