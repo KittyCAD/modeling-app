@@ -1182,9 +1182,11 @@ shellSketchOnFacesCases.forEach((initialCode, index) => {
         commandName: 'Shell',
       })
       await clickOnCap()
+      await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
       await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
