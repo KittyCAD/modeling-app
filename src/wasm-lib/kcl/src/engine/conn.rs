@@ -18,7 +18,10 @@ use kcmc::{
     ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId, websocket::ModelingBatch};
-use tokio::sync::{mpsc, oneshot, RwLock};
+use tokio::{
+    sync::{mpsc, oneshot, RwLock},
+    task::JoinHandle,
+};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
@@ -37,9 +40,11 @@ enum SocketHealth {
 }
 
 type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocketStream<reqwest::Upgraded>, WsMsg>;
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
+    shutdown_tx: mpsc::Sender<()>,
+    write_actor_task: JoinHandle<()>,
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
     pending_errors: Arc<Mutex<Vec<String>>>,
     #[allow(dead_code)]
@@ -113,6 +118,8 @@ impl std::fmt::Debug for TcpReadHandle {
 
 impl Drop for TcpReadHandle {
     fn drop(&mut self) {
+        crate::logln!("DROPPING TcpReadHandle");
+
         // Drop the read handle.
         self.handle.abort();
     }
@@ -130,21 +137,49 @@ struct ToEngineReq {
 
 impl EngineConnection {
     /// Start waiting for incoming engine requests, and send each one over the WebSocket to the engine.
-    async fn start_write_actor(mut tcp_write: WebSocketTcpWrite, mut engine_req_rx: mpsc::Receiver<ToEngineReq>) {
-        while let Some(req) = engine_req_rx.recv().await {
-            let ToEngineReq { req, request_sent } = req;
-            let res = if let WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
-                cmd: ModelingCmd::ImportFiles { .. },
-                cmd_id: _,
-            }) = &req
-            {
-                // Send it as binary.
-                Self::inner_send_to_engine_binary(req, &mut tcp_write).await
-            } else {
-                Self::inner_send_to_engine(req, &mut tcp_write).await
-            };
-            let _ = request_sent.send(res);
+    async fn start_write_actor(
+        mut tcp_write: WebSocketTcpWrite,
+        mut engine_req_rx: mpsc::Receiver<ToEngineReq>,
+        mut shutdown_rx: mpsc::Receiver<()>,
+    ) {
+        loop {
+            tokio::select! {
+                maybe_req = engine_req_rx.recv() => {
+                    match maybe_req {
+                        Some(ToEngineReq { req, request_sent }) => {
+                            // Decide whether to send as binary or text,
+                            // then send to the engine.
+                            let res = if let WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                                cmd: ModelingCmd::ImportFiles { .. },
+                                cmd_id: _,
+                            }) = &req
+                            {
+                                Self::inner_send_to_engine_binary(req, &mut tcp_write).await
+                            } else {
+                                Self::inner_send_to_engine(req, &mut tcp_write).await
+                            };
+
+                            // Let the caller know we’ve sent the request (ok or error).
+                            let _ = request_sent.send(res);
+                        }
+                        None => {
+                            // The engine_req_rx channel has closed, so no more requests.
+                            // We'll gracefully exit the loop and close the engine.
+                            break;
+                        }
+                    }
+                },
+
+                // If we get a shutdown signal, close the engine immediately and return.
+                _ = shutdown_rx.recv() => {
+                    let _ = Self::inner_close_engine(&mut tcp_write).await;
+                    return;
+                }
+            }
         }
+
+        // If we exit the loop (e.g. engine_req_rx was closed),
+        // still gracefully close the engine before returning.
         let _ = Self::inner_close_engine(&mut tcp_write).await;
     }
 
@@ -194,7 +229,8 @@ impl EngineConnection {
 
         let (tcp_write, tcp_read) = ws_stream.split();
         let (engine_req_tx, engine_req_rx) = mpsc::channel(10);
-        tokio::task::spawn(Self::start_write_actor(tcp_write, engine_req_rx));
+        let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
+        let write_actor_task = tokio::task::spawn(Self::start_write_actor(tcp_write, engine_req_rx, shutdown_rx));
 
         let mut tcp_read = TcpRead { stream: tcp_read };
 
@@ -304,6 +340,8 @@ impl EngineConnection {
 
         Ok(EngineConnection {
             engine_req_tx,
+            shutdown_tx,
+            write_actor_task,
             tcp_read_handle: Arc::new(TcpReadHandle {
                 handle: Arc::new(tcp_read_handle),
             }),
@@ -483,5 +521,16 @@ impl EngineManager for EngineConnection {
 
     fn get_session_data(&self) -> Option<ModelingSessionData> {
         self.session_data.lock().unwrap().clone()
+    }
+
+    async fn close(&self) {
+        let _ = self.shutdown_tx.send(()).await;
+        loop {
+            if let Ok(guard) = self.socket_health.lock() {
+                if *guard == SocketHealth::Inactive {
+                    return;
+                }
+            }
+        }
     }
 }

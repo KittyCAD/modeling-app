@@ -600,6 +600,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn get_session_data(&self) -> Option<ModelingSessionData> {
         None
     }
+
+    /// Close the engine connection and wait for it to finish.
+    async fn close(&self);
 }
 
 #[derive(Debug, Hash, Eq, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
