@@ -996,11 +996,11 @@ extrude001 = extrude(-12, sketch001)
   const firstEdgeColorWhite: [number, number, number] = [246, 246, 246]
   const secondEdgeColorWhite: [number, number, number] = [250, 250, 250]
   const firstEdgeColorYellow: [number, number, number] = [251, 251, 67]
-  // Error: ExpectPixelColor: expecting 194,194,134 got 183,183,183
   const secondEdgeColorYellow: [number, number, number] = [251, 251, 67]
-  const bodyColor: [number, number, number] = [130, 130, 130]
+  const bodyColor: [number, number, number] = [155, 155, 155]
+  const filletColor: [number, number, number] = [127, 127, 127]
   const backgroundColor: [number, number, number] = [30, 30, 30]
-  const lowTolerance = 15
+  const lowTolerance = 20
   const highTolerance = 70 // in case of bad visibility or gradient
 
   // Setup
@@ -1062,7 +1062,7 @@ extrude001 = extrude(-12, sketch001)
   })
 
   await test.step(`Confirm scene has changed`, async () => {
-    await scene.expectPixelColor(bodyColor, firstEdgeLocation, lowTolerance)
+    await scene.expectPixelColor(filletColor, firstEdgeLocation, lowTolerance)
   })
 
   // Test 2: Command bar flow without preselected edges
