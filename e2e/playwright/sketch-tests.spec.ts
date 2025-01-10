@@ -1399,7 +1399,9 @@ test.describe('multi-profile sketching', () => {
       await endLineStartTanArc({ delay: 544 })
 
       await endArcStartLine()
-      await editor.expectEditor.toContain(`|> tangentialArcTo([16.61, 4.14], %)`)
+      await editor.expectEditor.toContain(
+        `|> tangentialArcTo([16.61, 4.14], %)`
+      )
       await toolbar.lineBtn.click()
       await page.waitForTimeout(300)
       await endArcStartLine()
@@ -1461,15 +1463,16 @@ test.describe('multi-profile sketching', () => {
         `profile005 = startProfileAt([5.63, 3.05], sketch001)`
       )
       await crnRect1point2()
-      await editor.expectEditor
-        .toContain(`|> angledLine([0, 2.37], %, $rectangleSegmentA001)
+      await editor.expectEditor.toContain(
+        `|> angledLine([0, 2.37], %, $rectangleSegmentA001)
   |> angledLine([segAng(rectangleSegmentA001) - 90, 7.8], %)
   |> angledLine([
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`.replaceAll("\n", ""))
+  |> close(%)`.replaceAll('\n', '')
+      )
 
       await crnRect2point1()
       await page.waitForTimeout(300)
@@ -1478,8 +1481,8 @@ test.describe('multi-profile sketching', () => {
       )
       await crnRect2point2()
       await page.waitForTimeout(300)
-      await editor.expectEditor
-        .toContain(`|> angledLine([0, 5.49], %, $rectangleSegmentA002)
+      await editor.expectEditor.toContain(
+        `|> angledLine([0, 5.49], %, $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) - 90,
        4.14
@@ -1489,7 +1492,8 @@ test.describe('multi-profile sketching', () => {
        -segLen(rectangleSegmentA002)
      ], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`.replaceAll("\n", ""))
+  |> close(%)`.replaceAll('\n', '')
+      )
     })
 
     await test.step('create two center rectangles in a row without unequip', async () => {
@@ -1502,8 +1506,8 @@ test.describe('multi-profile sketching', () => {
       )
       await cntrRect1point2()
       await page.waitForTimeout(300)
-      await editor.expectEditor
-        .toContain(`|> angledLine([0, 7.06], %, $rectangleSegmentA003)
+      await editor.expectEditor.toContain(
+        `|> angledLine([0, 7.06], %, $rectangleSegmentA003)
   |> angledLine([
        segAng(rectangleSegmentA003) + 90,
        4.34
@@ -1513,7 +1517,8 @@ test.describe('multi-profile sketching', () => {
        -segLen(rectangleSegmentA003)
      ], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`.replaceAll("\n", ""))
+  |> close(%)`.replaceAll('\n', '')
+      )
       await page.waitForTimeout(300)
 
       await cntrRect2point1()
@@ -1523,8 +1528,8 @@ test.describe('multi-profile sketching', () => {
       )
       await cntrRect2point2()
       await page.waitForTimeout(300)
-      await editor.expectEditor
-        .toContain(`|> angledLine([0, 3.12], %, $rectangleSegmentA004)
+      await editor.expectEditor.toContain(
+        `|> angledLine([0, 3.12], %, $rectangleSegmentA004)
   |> angledLine([
        segAng(rectangleSegmentA004) + 90,
        6.24
@@ -1534,7 +1539,8 @@ test.describe('multi-profile sketching', () => {
        -segLen(rectangleSegmentA004)
      ], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`.replaceAll("\n", ""))
+  |> close(%)`.replaceAll('\n', '')
+      )
     })
   })
 
@@ -1593,11 +1599,11 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
     const [rectEnd] = scene.makeMouseHelpers(757, 395)
 
     await test.step('enter sketch and setup', async () => {
-      await page.screenshot({ path: "toolbar1.png" })
+      await page.screenshot({ path: 'toolbar1.png' })
       await pointOnSegment({ shouldDbClick: true })
       await page.waitForTimeout(600)
 
-      await page.screenshot({ path: "toolbar2.png" })
+      await page.screenshot({ path: 'toolbar2.png' })
       await toolbar.lineBtn.click()
       await page.waitForTimeout(100)
     })
@@ -1648,8 +1654,8 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
       )
       await page.waitForTimeout(100)
       await rectEnd()
-      await editor.expectEditor
-        .toContain(`|> angledLine([180, 1.97], %, $rectangleSegmentA002)
+      await editor.expectEditor.toContain(
+        `|> angledLine([180, 1.97], %, $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) + 90,
        3.88
@@ -1659,7 +1665,8 @@ profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
        -segLen(rectangleSegmentA002)
      ], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)`.replaceAll("\n", ""))
+  |> close(%)`.replaceAll('\n', '')
+      )
     })
   })
   test('Can delete a profile in the editor while is sketch mode, and sketch mode does not break, can ctrl+z to undo after constraint with variable was added', async ({
@@ -1952,7 +1959,9 @@ extrude001 = extrude(75, thePart)
     })
 
     await test.step('expect code to match initial conditions still', async () => {
-      await editor.expectEditor.toContain(`thePart = startSketchOn('XZ')  |> startProfileAt([7.53, 10.51], %)`)
+      await editor.expectEditor.toContain(
+        `thePart = startSketchOn('XZ')  |> startProfileAt([7.53, 10.51], %)`
+      )
     })
 
     await test.step('equiping the line tool should break up the pipe expression', async () => {
@@ -2290,10 +2299,7 @@ loft([profile001, profile002])
       topProfileEdgeClickCoords.x,
       topProfileEdgeClickCoords.y
     )
-    const [sideProfileEdgeClick] = scene.makeMouseHelpers(
-      788,
-      188,
-    )
+    const [sideProfileEdgeClick] = scene.makeMouseHelpers(788, 188)
 
     const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
     const [rect1Crn2] = scene.makeMouseHelpers(797, 268)

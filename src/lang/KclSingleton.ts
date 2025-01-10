@@ -37,6 +37,7 @@ import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 interface ExecuteArgs {
   ast?: Node<Program>
   zoomToFit?: boolean
+  isPartialExecution?: boolean
   executionId?: number
   zoomOnRangeAndType?: {
     range: SourceRange
@@ -379,7 +380,8 @@ export class KclManager {
     await this.engineCommandManager.updateArtifactGraph(
       this.ast,
       execState.artifactCommands,
-      execState.artifacts
+      execState.artifacts,
+      args.isPartialExecution,
     )
     this._executeCallback()
     if (!isInterrupted)
@@ -483,7 +485,7 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(zoomToFit?: boolean): Promise<void> {
+  async executeCode(opts?: { zoomToFit?: true, isPartialExecution?: true }): Promise<void> {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
@@ -491,10 +493,10 @@ export class KclManager {
       return
     }
 
-    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, zoomToFit)
+    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, opts?.zoomToFit)
 
     this.ast = { ...ast }
-    return this.executeAst({ zoomToFit })
+    return this.executeAst(opts)
   }
   /**
    * This will override the zoom to fit to zoom into the model if the previous AST was empty.

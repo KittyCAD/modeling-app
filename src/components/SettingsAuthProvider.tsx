@@ -188,7 +188,7 @@ export const SettingsAuthProviderBase = ({
             ) {
               // Unit changes requires a re-exec of code
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              kclManager.executeCode(true)
+              kclManager.executeCode({ zoomToFit: true })
             } else {
               // For any future logging we'd like to do
               // console.log(

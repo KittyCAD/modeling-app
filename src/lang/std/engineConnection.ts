@@ -2090,14 +2090,22 @@ export class EngineCommandManager extends EventTarget {
   updateArtifactGraph(
     ast: Node<Program>,
     artifactCommands: ArtifactCommand[],
-    execStateArtifacts: ExecState['artifacts']
+    execStateArtifacts: ExecState['artifacts'],
+    isPartialExecution?: true,
   ) {
-    this.artifactGraph = createArtifactGraph({
+    const newGraphArtifacts = createArtifactGraph({
       artifactCommands,
       responseMap: this.responseMap,
       ast,
       execStateArtifacts,
     })
+    if (isPartialExecution) {
+      for (let [id, artifact] of newGraphArtifacts) {
+        this.artifactGraph.set(id, artifact)
+      }
+    } else {
+      this.artifactGraph = newGraphArtifacts
+    }
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)
