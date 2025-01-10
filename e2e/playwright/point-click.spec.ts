@@ -961,14 +961,16 @@ extrude001 = extrude(-12, sketch001)
     'fillet({       radius = 5,       tags = [getOppositeEdge(seg01)]     }, %)'
 
   // Colors and locators
-  const firstEdgeLocation = { x: 600, y: 194 }
+  const firstEdgeLocation = { x: 600, y: 193 }
   /**
    * x for fillet checker is 733
    * x min for clicker is 568
    * y safe 188-198
-   * y = 193 color is 127
+   * y = 193 color is 127 > 246
    * y = 194 color is 191
    * y = 195 color is 154
+   * 
+   * y = 194 failed on ubuntu
    */
 
   const secondEdgeLocation = { x: 600, y: 383 }
@@ -991,9 +993,10 @@ extrude001 = extrude(-12, sketch001)
     secondEdgeLocation.x,
     secondEdgeLocation.y
   )
-  const firstEdgeColorWhite: [number, number, number] = [190, 190, 190]
+  const firstEdgeColorWhite: [number, number, number] = [246, 246, 246]
   const secondEdgeColorWhite: [number, number, number] = [250, 250, 250]
-  const firstEdgeColorYellow: [number, number, number] = [194, 194, 134]
+  const firstEdgeColorYellow: [number, number, number] = [251, 251, 67]
+  // Error: ExpectPixelColor: expecting 194,194,134 got 183,183,183
   const secondEdgeColorYellow: [number, number, number] = [251, 251, 67]
   const bodyColor: [number, number, number] = [130, 130, 130]
   const backgroundColor: [number, number, number] = [30, 30, 30]
