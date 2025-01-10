@@ -1256,6 +1256,10 @@ export const ModelingMachineProvider = ({
   }, [modelingState.context.selectionRanges])
 
   useEffect(() => {
+    sceneInfra.camControls.resetCameraPosition()
+  }, [cameraOrbit])
+
+  useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {
       // If we are in sketch mode we need to exit it.
       // TODO: how do i check if we are in a sketch mode, I only want to call

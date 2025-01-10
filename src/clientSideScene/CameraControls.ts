@@ -142,7 +142,8 @@ export class CameraControls {
       this.useOrthographicCamera()
     }
     this.camera.position.set(...camProps.position)
-    this.camera.quaternion.set(...camProps.quaternion)
+    // DEBUG
+    // this.camera.quaternion.set(...camProps.quaternion)
     if (
       camProps.type === 'perspective' &&
       this.camera instanceof PerspectiveCamera
@@ -263,6 +264,42 @@ export class CameraControls {
 
     const cb = ({ data, type }: CallBackParam) => {
       const camSettings = data.settings
+      // DEBUG
+      // console.log(
+      //   'data',
+      //   data.settings.orientation.x,
+      //   data.settings.orientation.y,
+      //   data.settings.orientation.z,
+      //   data.settings.orientation.w
+      // )
+      // const camSettings = data.settings
+      // const q = new Quaternion(
+      //   camSettings.orientation.x,
+      //   camSettings.orientation.y,
+      //   camSettings.orientation.z,
+      //   camSettings.orientation.w
+      // ) //.invert()
+      // this.camera.quaternion.set(q.x, q.y, q.z, q.w)
+      // console.log(
+      //   'c1',
+      //   this.camera.quaternion.x,
+      //   this.camera.quaternion.y,
+      //   this.camera.quaternion.z,
+      //   this.camera.quaternion.w
+      // )
+      // this.onCameraChange()
+
+      // console.log(
+      //   'c2',
+      //   this.camera.quaternion.x,
+      //   this.camera.quaternion.y,
+      //   this.camera.quaternion.z,
+      //   this.camera.quaternion.w
+      // )
+      // window.qq = q
+      // return
+      // END DEBUG
+
       this.camera.position.set(
         camSettings.pos.x,
         camSettings.pos.y,
@@ -549,7 +586,8 @@ export class CameraControls {
     const fovFactor = 45 / this.lastPerspectiveFov
     this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
 
-    this.camera.quaternion.set(qx, qy, qz, qw)
+    //DEBUG
+    // this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
@@ -583,7 +621,8 @@ export class CameraControls {
     this.camera = this.createPerspectiveCamera()
 
     this.camera.position.set(px, py, pz)
-    this.camera.quaternion.set(qx, qy, qz, qw)
+    // DEBUG
+    // this.camera.quaternion.set(qx, qy, qz, qw)
     const direction = new Vector3().subVectors(
       this.camera.position,
       this.target
@@ -702,16 +741,25 @@ export class CameraControls {
   }
 
   update = (forceUpdate = false) => {
+    // console.log(
+    //   'START',
+    //   this.camera.quaternion.x,
+    //   this.camera.quaternion.y,
+    //   this.camera.quaternion.z,
+    //   this.camera.quaternion.w
+    // )
     // If there are any changes that need to be applied to the camera, apply them here.
 
     let didChange = false
     if (this.pendingRotation) {
+      console.log('YEAH I ROTATED!')
       this.rotateCamera(this.pendingRotation.x, this.pendingRotation.y)
       this.pendingRotation = null // Clear the pending rotation after applying it
       didChange = true
     }
 
     if (this.pendingZoom) {
+      console.log('YEAH I ZOOMED!')
       if (this.camera instanceof PerspectiveCamera) {
         // move camera towards or away from the target
         const distance = this.camera.position.distanceTo(this.target)
@@ -736,6 +784,7 @@ export class CameraControls {
     }
 
     if (this.pendingPan) {
+      console.log('YEAH I PANNED')
       // move camera left/right and up/down
       const offset = this.camera.position.clone().sub(this.target)
       const direction = offset.clone().normalize()
@@ -752,15 +801,23 @@ export class CameraControls {
       didChange = true
     }
 
-    this.safeLookAtTarget(this.camera.up)
+    // this.safeLookAtTarget(this.camera.up)
 
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
     if (didChange || forceUpdate) {
+      console.log('didChange, forceUpdate', didChange, forceUpdate)
       this.onCameraChange(forceUpdate)
     }
 
     // damping would be implemented here in update if we choose to add it.
+    // console.log(
+    //   'END',
+    //   this.camera.quaternion.x,
+    //   this.camera.quaternion.y,
+    //   this.camera.quaternion.z,
+    //   this.camera.quaternion.w
+    // )
   }
 
   rotateCamera = (deltaX: number, deltaY: number) => {

@@ -59,6 +59,7 @@ export default function Gizmo() {
     const camera = createCamera()
     const { gizmoAxes, gizmoAxisHeads } = createGizmo()
     scene.add(...gizmoAxes, ...gizmoAxisHeads)
+    console.log('nice! added gizmo!')
 
     const raycaster = new Raycaster()
     const { mouse, disposeMouseEvents } = initializeMouseEvents(
@@ -71,8 +72,28 @@ export default function Gizmo() {
     const clock = new Clock()
     const clientCamera = sceneInfra.camControls.camera
     let currentQuaternion = new Quaternion().copy(clientCamera.quaternion)
+    window.camera = camera
 
+    renderer.render(scene, camera)
+    window.render = () => {
+      renderer.render(scene, camera)
+    }
+    console.log('gizmo should be renderer!')
     const animate = () => {
+      /* console.log(
+       *   'current',
+       *   currentQuaternion.x,
+       *   currentQuaternion.y,
+       *   currentQuaternion.z,
+       *   currentQuaternion.w
+       * )
+       * console.log(
+       *   'target',
+       *   sceneInfra.camControls.camera.quaternion.x,
+       *   sceneInfra.camControls.camera.quaternion.y,
+       *   sceneInfra.camControls.camera.quaternion.z,
+       *   sceneInfra.camControls.camera.quaternion.w
+       * ) */
       const delta = clock.getDelta()
       updateCameraOrientation(
         camera,
