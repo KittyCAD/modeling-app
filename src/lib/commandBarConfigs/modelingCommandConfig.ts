@@ -300,6 +300,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description:
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
+    status: 'development',
     needsReview: true,
     args: {
       profile: {
@@ -308,6 +309,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         skip: true,
         // validation: loftValidator,
+        warningMessage:
+          'The sweep workflow is new and under tested. Please break it and report issues.',
       },
       path: {
         inputType: 'selection',

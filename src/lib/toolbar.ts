@@ -125,7 +125,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Sweep', groupId: 'modeling' },
           }),
         icon: 'sweep',
-        status: 'available',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Sweep',
         hotkey: 'W',
         description:
