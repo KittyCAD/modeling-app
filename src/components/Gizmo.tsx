@@ -59,7 +59,6 @@ export default function Gizmo() {
     const camera = createCamera()
     const { gizmoAxes, gizmoAxisHeads } = createGizmo()
     scene.add(...gizmoAxes, ...gizmoAxisHeads)
-    console.log('nice! added gizmo!')
 
     const raycaster = new Raycaster()
     const { mouse, disposeMouseEvents } = initializeMouseEvents(
