@@ -986,15 +986,18 @@ extrude001 = extrude(-12, sketch001)
   await page.setBodyDimensions({ width: 1000, height: 500 })
   await homePage.goToModelingScene()
 
-  // verify goToModelingScene is done
-  await scene.expectPixelColor(
-    backgroundColor,
-    secondEdgeLocation,
-    lowTolerance
-  )
+  await test.step(`Verify scene is loaded`, async () => {
+    // verify goToModelingScene is done
+    await scene.expectPixelColor(
+      backgroundColor,
+      secondEdgeLocation,
+      lowTolerance
+    )
 
-  // Wait for stream to load
-  await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+    // wait for stream to load
+    await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+  })
+
 
   // Test 1: Command bar flow with preselected edges
   await test.step(`Select first edge`, async () => {
