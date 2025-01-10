@@ -135,12 +135,11 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        options: [],
-        optionsFromContext: (context) =>
-          context.projects.map((p) => ({
+        options: (_, context) =>
+          context?.projects.map((p) => ({
             name: p.name!,
             value: p.name!,
-          })),
+          })) || [],
       },
       name: {
         inputType: 'string',
