@@ -524,7 +524,6 @@ part001 = startSketchOn('XY')
         ['// base selection', '// yRelative'],
         'setHorzDistance'
       )
-      // ADAM here
       expect(expectedCode).toContain(`|> line(%, endAbsolute = [
        segEndX(seg01) + 2.6,
        lastSegY(%) + myVar
@@ -575,7 +574,7 @@ async function helperThing(
 }
 
 describe('testing getConstraintLevelFromSourceRange', () => {
-  it('should divide up lines into free, partial and fully contrained', () => {
+  it.only('should divide up lines into free, partial and fully contrained', () => {
     const code = `baseLength = 3
 baseThick = 1
 armThick = 0.5

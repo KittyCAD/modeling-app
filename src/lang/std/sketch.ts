@@ -68,8 +68,8 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { findKwArg, findKwArgAny, findKwArgAnyIndex } from 'lang/util'
 
 export const ARG_TAG = 'tag'
-const ARG_END = 'end'
-const ARG_END_ABSOLUTE = 'endAbsolute'
+export const ARG_END = 'end'
+export const ARG_END_ABSOLUTE = 'endAbsolute'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'

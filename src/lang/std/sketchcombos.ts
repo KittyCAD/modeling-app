@@ -50,6 +50,8 @@ import {
   getArgForEnd,
   replaceSketchLine,
   ARG_TAG,
+  ARG_END,
+  ARG_END_ABSOLUTE,
   getConstraintInfoKw,
 } from './sketch'
 import {
@@ -58,7 +60,7 @@ import {
 } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { findKwArg } from 'lang/util'
+import { findKwArg, findKwArgAny } from 'lang/util'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -1871,7 +1873,7 @@ export function transformAstSketchLines({
         return
       }
     }
-    const segMeta = getSketchSegmentFromPathToNode(sketch, ast, _pathToNode) // ADAM: HERE
+    const segMeta = getSketchSegmentFromPathToNode(sketch, ast, _pathToNode)
     if (err(segMeta)) return segMeta
 
     const seg = segMeta.segment
@@ -1984,36 +1986,36 @@ export function getConstraintLevelFromSourceRange(
 ): Error | { range: [number, number]; level: ConstraintLevel } {
   if (err(ast)) return ast
   let partsOfCallNode = (() => {
-    const nodeMeta = getNodeFromPath<Node<CallExpression>>(
-      ast,
-      getNodePathFromSourceRange(ast, cursorRange),
-      'CallExpression'
-    )
+    const path = getNodePathFromSourceRange(ast, cursorRange)
+    const nodeMeta = getNodeFromPath<
+      Node<CallExpression> | Node<CallExpressionKw>
+    >(ast, path, ['CallExpression', 'CallExpressionKw'])
     if (err(nodeMeta)) return nodeMeta
 
     const { node: sketchFnExp } = nodeMeta
     const name = sketchFnExp?.callee?.name as ToolTip
     const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
-    const firstArg = getFirstArg(sketchFnExp)
+    const firstArg = (() => {
+      switch (nodeMeta.node.type) {
+        case 'CallExpression':
+          return getFirstArg(nodeMeta.node)
+        case 'CallExpressionKw':
+          const arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], nodeMeta.node)
+          if (arg === undefined) {
+            return new Error('unexpected call expression: ' + name)
+          }
+          const val =
+            arg.type == 'ArrayExpression' && arg.elements.length == 2
+              ? (arg.elements as [Expr, Expr])
+              : arg
+          return {
+            val,
+            tag: findKwArg(ARG_TAG, nodeMeta.node),
+          }
+      }
+    })()
     return { name, range, firstArg }
   })()
-  const partsOfCallKwNode = () => {
-    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
-      ast,
-      getNodePathFromSourceRange(ast, cursorRange),
-      'CallExpressionKw'
-    )
-    if (err(nodeMeta)) return nodeMeta
-
-    const { node: sketchFnExp } = nodeMeta
-    const name = sketchFnExp?.callee?.name as ToolTip
-    const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
-    const firstArg = getArgForEnd(sketchFnExp)
-    return { name, range, firstArg }
-  }
-  if (err(partsOfCallNode)) {
-    partsOfCallNode = partsOfCallKwNode()
-  }
   if (err(partsOfCallNode)) return partsOfCallNode
   const { name, range, firstArg } = partsOfCallNode
   if (!toolTips.includes(name)) return { level: 'free', range: range }
