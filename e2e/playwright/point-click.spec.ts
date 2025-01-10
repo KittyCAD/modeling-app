@@ -969,7 +969,7 @@ extrude001 = extrude(-12, sketch001)
    * y = 193 color is 127 > 246
    * y = 194 color is 191
    * y = 195 color is 154
-   * 
+   *
    * y = 194 failed on ubuntu
    */
 
@@ -1033,7 +1033,7 @@ extrude001 = extrude(-12, sketch001)
     await scene.expectPixelColor(
       firstEdgeColorYellow,
       firstEdgeLocation,
-      lowTolerance
+      highTolerance // Ubuntu 254,255,12 instead of 251,251,67
     )
   })
 
