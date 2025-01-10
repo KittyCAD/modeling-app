@@ -329,6 +329,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
+    status: 'development',
     needsReview: true,
     args: {
       selection: {
