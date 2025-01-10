@@ -415,7 +415,6 @@ const getProjectPathAtStartup = async (
     // macOS: open-url events that were received before the app is ready
     const getOpenUrls: string[] = (global as any).getOpenUrls
     if (getOpenUrls && getOpenUrls.length > 0) {
-      console.log('getOpenUrls', getOpenUrls)
       projectPath = getOpenUrls[0] // We only do one project at a
     }
     // Reset this so we don't accidentally use it again.

@@ -85,7 +85,6 @@ const router = createRouter([
         path: PATHS.INDEX,
         loader: async ({ request }) => {
           const onDesktop = isDesktop()
-          console.log('request.url', request.url)
           const url = new URL(request.url)
           if (onDesktop) {
             return redirect(PATHS.HOME + (url.search || ''))

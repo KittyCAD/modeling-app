@@ -32,11 +32,6 @@ export function useCreateFileLinkQuery(
   useEffect(() => {
     const createFileParam = searchParams.has(CREATE_FILE_URL_PARAM)
 
-    console.log('checking for createFileParam', {
-      createFileParam,
-      searchParams: [...searchParams.entries()],
-    })
-
     if (createFileParam) {
       const params: FileLinkParams = {
         code: base64ToString(

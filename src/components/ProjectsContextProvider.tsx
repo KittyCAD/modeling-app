@@ -314,9 +314,6 @@ const ProjectsContextDesktop = ({
           if (isDesktop()) {
             const needsInterpolated =
               doesProjectNameNeedInterpolated(projectName)
-            console.log(
-              `The project name "${projectName}" needs interpolated: ${needsInterpolated}`
-            )
             if (needsInterpolated) {
               const nextIndex = getNextProjectIndex(projectName, input.projects)
               projectName = interpolateProjectNameWithIndex(

@@ -215,11 +215,6 @@ export const commandBarMachine = setup({
             cmd.name === event.data.name && cmd.groupId === event.data.groupId
         )
 
-        console.log('within find and select command', {
-          event,
-          found,
-        })
-
         return !!found ? found : context.selectedCommand
       },
     }),
