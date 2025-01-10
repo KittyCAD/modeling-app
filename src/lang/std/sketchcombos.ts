@@ -445,8 +445,10 @@ const setHorzVertDistanceConstraintLineCreateNode =
     ])
 
     const makeBinExp = (index: 0 | 1) => {
+      console.error("ADAM args", args)
       const arg = getArgLiteralVal(args?.[index].expr)
       const refNum = referencedSegment?.to?.[index]
+      console.error("ADAM arg and refNum:", arg, refNum)
       if (err(arg) || !isNum(refNum)) return REF_NUM_ERR
       return createBinaryExpressionWithUnary([
         createSegEnd(referenceSegName, isX),
