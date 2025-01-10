@@ -8,6 +8,7 @@ import {
   modelingMachine,
   pipeHasCircle,
 } from 'machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 import { EventFrom, StateFrom } from 'xstate'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
@@ -103,7 +104,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
         icon: 'revolve',
-        status: DEV ? 'available' : 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Revolve',
         hotkey: 'R',
         description:
@@ -165,7 +166,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Fillet', groupId: 'modeling' },
           }),
         icon: 'fillet3d',
-        status: DEV ? 'available' : 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',

@@ -687,7 +687,7 @@ export const modelingMachine = setup({
       if (event.type !== 'Revolve') return
       ;(async () => {
         if (!event.data) return
-        const { selection, angle, axis } = event.data
+        const { selection, angle, axis, edge, axisOrEdge } = event.data
         let ast = kclManager.ast
         if (
           'variableName' in angle &&
@@ -712,7 +712,9 @@ export const modelingMachine = setup({
           'variableName' in angle
             ? angle.variableIdentifierAst
             : angle.valueAst,
-          axis
+          axisOrEdge,
+          axis,
+          edge
         )
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
