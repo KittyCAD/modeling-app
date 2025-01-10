@@ -2,6 +2,7 @@ import { test, expect } from './zoo-test'
 
 import { getUtils } from './test-utils'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
+import { url } from 'inspector'
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -344,5 +345,52 @@ test.describe('Command bar tests', () => {
     await cmdBarButton.click()
     await arcToolCommand.click()
     await expect(arcToolButton).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  test(`Reacts to query param to open "import from URL" command`, async ({
+    page,
+    cmdBar,
+    editor,
+    homePage,
+  }) => {
+    await test.step(`Prepare and navigate to home page with query params`, async () => {
+      const targetURL = `?create-file&name=test&units=mm&code=ZXh0cnVzaW9uRGlzdGFuY2UgPSAxMg%3D%3D&askToOpenInDesktop`
+      await homePage.expectState({
+        projectCards: [],
+        sortBy: 'last-modified-desc',
+      })
+      await page.goto(page.url() + targetURL)
+      expect(page.url()).toContain(targetURL)
+    })
+
+    await test.step(`Submit the command`, async () => {
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Import file from URL',
+        currentArgKey: 'method',
+        currentArgValue: '',
+        headerArguments: {
+          Method: '',
+          Name: 'test',
+          Code: '1 line',
+        },
+        highlightedHeaderArg: 'method',
+      })
+      await cmdBar.selectOption({ name: 'New Project' }).click()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Import file from URL',
+        headerArguments: {
+          Method: 'New project',
+          Name: 'test',
+          Code: '1 line',
+        },
+      })
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
+      await editor.expectEditor.toContain('extrusionDistance = 12')
+    })
   })
 })

@@ -152,7 +152,8 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
         required: true,
         skip: true,
         valueSummary(value) {
-          return value?.trim().split('\n').length + ' lines'
+          const lineCount = value?.trim().split('\n').length
+          return `${lineCount} line${lineCount === 1 ? '' : 's'}`
         },
       },
       units: {

@@ -135,4 +135,11 @@ export class CmdBarFixture {
       await promptEditCommand.first().click()
     }
   }
+
+  /**
+   * Select an option from the command bar
+   */
+  selectOption = (options: Parameters<typeof this.page.getByRole>[1]) => {
+    return this.page.getByRole('option', options)
+  }
 }
