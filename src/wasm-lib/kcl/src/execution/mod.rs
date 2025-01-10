@@ -50,7 +50,7 @@ use crate::{
 };
 
 // Re-exports.
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, ArtifactInner};
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 pub use cad_op::Operation;
 
 /// State for executing a program.
@@ -168,7 +168,7 @@ impl ExecState {
     }
 
     pub fn add_artifact(&mut self, artifact: Artifact) {
-        let id = artifact.id;
+        let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
     }
 
@@ -2260,10 +2260,17 @@ impl ExecutorContext {
         // Build the artifact graph.
         exec_state.global.artifact_graph = build_artifact_graph(
             &exec_state.global.artifact_commands,
-            self.engine.responses(),
+            &self.engine.responses(),
             &cache_result.program,
             &exec_state.global.artifacts,
-        );
+        )
+        .map_err(|e| {
+            KclErrorWithOutputs::new(
+                e,
+                exec_state.mod_local.operations.clone(),
+                self.engine.take_artifact_commands(),
+            )
+        })?;
 
         let session_data = self.engine.get_session_data();
         Ok(session_data)

@@ -58,6 +58,12 @@ impl SourceRange {
         Self::default()
     }
 
+    /// True if this is a source range that doesn't correspond to any source
+    /// code.
+    pub fn is_synthetic(&self) -> bool {
+        self.start() == 0 && self.end() == 0
+    }
+
     /// Get the start of the range.
     pub fn start(&self) -> usize {
         self.0[0]
