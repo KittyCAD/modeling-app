@@ -225,14 +225,6 @@ const Home = () => {
             </Link>
             .
           </p>
-          <p>
-            <Link
-              to="/?create-file&name=Untitled-1.kcl&units=in&code=c2tldGNoMDAxID0gc3RhcnRTa2V0Y2hPbignWFknKQogIHw%2BIGNpcmNsZSh7CiAgICAgICBjZW50ZXI6IFstMTUuNTEsIDE1LjMzXSwKICAgICAgIHJhZGl1czogMTIuMTkKICAgICB9LCAlKQpleHRydXNpb25EaXN0YW5jZSA9IDEyCmV4dHJ1ZGUwMDEgPSBleHRydWRlKGV4dHJ1c2lvbkRpc3RhbmNlLCBza2V0Y2gwMDEpCnNrZXRjaDAwMiA9IHN0YXJ0U2tldGNoT24oZXh0cnVkZTAwMSwgJ0VORCcpCiAgfD4gY2lyY2xlKHsKICAgICAgIGNlbnRlcjogWy0xOC42OSwgMjAuMjNdLAogICAgICAgcmFkaXVzOiA0LjgzCiAgICAgfSwgJSkKZXh0cnVkZTAwMiA9IGV4dHJ1ZGUoLWV4dHJ1c2lvbkRpc3RhbmNlLCBza2V0Y2gwMDIpCgo%3D"
-              className="text-primary underline underline-offset-2"
-            >
-              Go to a test create-file link
-            </Link>
-          </p>
         </section>
         <section
           data-testid="home-section"

@@ -143,6 +143,9 @@ export const VIEW_NAMES_SEMANTIC = {
 /** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
 
+/** Custom URL protocol our desktop registers */
+export const ZOO_STUDIO_PROTOCOL = 'zoo-studio:'
+
 /** 
  * A query parameter that triggers a modal
  * to "open in desktop app" when present in the URL

@@ -1,7 +1,7 @@
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { ASK_TO_OPEN_QUERY_PARAM, CREATE_FILE_URL_PARAM, PROD_APP_URL } from './constants'
 import { stringToBase64 } from './base64'
-import { ZOO_STUDIO_PROTOCOL } from './link'
+import { ZOO_STUDIO_PROTOCOL } from './links'
 import { DEV } from 'env'
 export interface FileLinkParams {
   code: string
@@ -10,15 +10,16 @@ export interface FileLinkParams {
 }
 
 /**
- * Given a file's code, name, and units, creates shareable link
+ * Given a file's code, name, and units, creates shareable link to the
+ * web app with a query parameter that triggers a modal to "open in desktop app".
+ * That modal is defined in the `OpenInDesktopAppHandler` component.
  * TODO: update the return type to use TS library after its updated
  */
 export async function createFileLink(
   token: string,
   { code, name, units }: FileLinkParams
 ): Promise<Error | { key: string; url: string }> {
-  // During development, the "handler" needs to first be the web app version,
-  // which exists on localhost:3000 typically.
+  // Use the dev server if we are in development mode
   let origin = DEV ? 'http://localhost:3000' : PROD_APP_URL
 
   let urlFileToShare = new URL(

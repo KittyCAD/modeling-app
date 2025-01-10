@@ -1,5 +1,5 @@
 import { getSystemTheme, Themes } from 'lib/theme'
-import { ZOO_STUDIO_PROTOCOL } from 'lib/link'
+import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
 import { isDesktop } from 'lib/isDesktop'
 import { Spinner } from './Spinner'
 import { useSearchParams } from 'react-router-dom'

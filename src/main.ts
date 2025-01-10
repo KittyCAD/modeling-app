@@ -8,12 +8,10 @@ import {
   dialog,
   shell,
   nativeTheme,
-  session,
   desktopCapturer,
   systemPreferences,
 } from 'electron'
-import path, { join } from 'path'
-import fs from 'fs'
+import path from 'path'
 import { Issuer } from 'openid-client'
 import { Bonjour, Service } from 'bonjour-service'
 // @ts-ignore: TS1343
@@ -23,7 +21,7 @@ import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
-import { ZOO_STUDIO_PROTOCOL } from 'lib/link'
+import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
 import argvFromYargs from './commandLineArgs'
 
 import * as packageJSON from '../package.json'
