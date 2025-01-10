@@ -18,10 +18,7 @@ use kcmc::{
     ModelingCmd,
 };
 use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId, websocket::ModelingBatch};
-use tokio::{
-    sync::{mpsc, oneshot, RwLock},
-    task::JoinHandle,
-};
+use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
@@ -44,7 +41,6 @@ type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocket
 pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     shutdown_tx: mpsc::Sender<()>,
-    write_actor_task: JoinHandle<()>,
     responses: Arc<DashMap<uuid::Uuid, WebSocketResponse>>,
     pending_errors: Arc<Mutex<Vec<String>>>,
     #[allow(dead_code)]
@@ -230,7 +226,7 @@ impl EngineConnection {
         let (tcp_write, tcp_read) = ws_stream.split();
         let (engine_req_tx, engine_req_rx) = mpsc::channel(10);
         let (shutdown_tx, shutdown_rx) = mpsc::channel(1);
-        let write_actor_task = tokio::task::spawn(Self::start_write_actor(tcp_write, engine_req_rx, shutdown_rx));
+        tokio::task::spawn(Self::start_write_actor(tcp_write, engine_req_rx, shutdown_rx));
 
         let mut tcp_read = TcpRead { stream: tcp_read };
 
@@ -341,7 +337,6 @@ impl EngineConnection {
         Ok(EngineConnection {
             engine_req_tx,
             shutdown_tx,
-            write_actor_task,
             tcp_read_handle: Arc::new(TcpReadHandle {
                 handle: Arc::new(tcp_read_handle),
             }),
