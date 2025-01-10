@@ -343,6 +343,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
         validation: revolveAxisValidator,
+        warningMessage:
+          'Revolve only works with edges now, not with arbitrary axis. This is under development.',
       },
       angle: {
         inputType: 'kcl',
