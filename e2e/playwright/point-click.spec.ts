@@ -948,9 +948,9 @@ test(`Fillet point-and-click`, async ({
 
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
-  |> startProfileAt([-6, -6], %)
+  |> startProfileAt([-12, -6], %)
   |> line([0, 12], %)
-  |> line([12, 0], %)
+  |> line([24, 0], %)
   |> line([0, -12], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
@@ -958,12 +958,31 @@ extrude001 = extrude(-12, sketch001)
 `
   const firstFilletDeclaration = 'fillet({ radius = 5, tags = [seg01] }, %)'
   const secondFilletDeclaration =
-    'fillet({       radius = 5,       tags = [getNextAdjacentEdge(seg02)]     }, %)'
+    'fillet({       radius = 5,       tags = [getOppositeEdge(seg01)]     }, %)'
 
   // Colors and locators
-  const firstEdgeLocation = { x: 600, y: 92 }
-  const secondEdgeLocation = { x: 666, y: 300 }
-  const bodyLocation = { x: secondEdgeLocation.x - 30, y: secondEdgeLocation.y }
+  const firstEdgeLocation = { x: 600, y: 194 }
+  /**
+   * x for fillet checker is 733
+   * x min for clicker is 568
+   * y safe 188-198
+   * y = 193 color is 127
+   * y = 194 color is 191
+   * y = 195 color is 154
+   */
+
+  const secondEdgeLocation = { x: 600, y: 383 }
+  /**
+   * x for fillet checker is 701
+   * x min for clicker is 568
+   * y safe 377-388
+   * y = 376 color is 148
+   * y = 382 color is 238
+   * y = 383 color is 250
+   * y = 384 color is 64
+   * y = 385 color is 30
+   */
+  const bodyLocation = { x: 630, y: 290 }
   const [clickOnFirstEdge] = scene.makeMouseHelpers(
     firstEdgeLocation.x,
     firstEdgeLocation.y
@@ -972,9 +991,11 @@ extrude001 = extrude(-12, sketch001)
     secondEdgeLocation.x,
     secondEdgeLocation.y
   )
-  const edgeColorWhite: [number, number, number] = [250, 250, 250]
-  const edgeColorYellow: [number, number, number] = [250, 250, 100]
-  const bodyColor: [number, number, number] = [150, 150, 150]
+  const firstEdgeColorWhite: [number, number, number] = [190, 190, 190]
+  const secondEdgeColorWhite: [number, number, number] = [250, 250, 250]
+  const firstEdgeColorYellow: [number, number, number] = [194, 194, 134]
+  const secondEdgeColorYellow: [number, number, number] = [251, 251, 67]
+  const bodyColor: [number, number, number] = [130, 130, 130]
   const backgroundColor: [number, number, number] = [30, 30, 30]
   const lowTolerance = 15
   const highTolerance = 70 // in case of bad visibility or gradient
@@ -998,19 +1019,18 @@ extrude001 = extrude(-12, sketch001)
     await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
   })
 
-
   // Test 1: Command bar flow with preselected edges
   await test.step(`Select first edge`, async () => {
     await scene.expectPixelColor(
-      edgeColorWhite,
+      firstEdgeColorWhite,
       firstEdgeLocation,
-      highTolerance
+      lowTolerance
     )
     await clickOnFirstEdge()
     await scene.expectPixelColor(
-      edgeColorYellow,
+      firstEdgeColorYellow,
       firstEdgeLocation,
-      highTolerance
+      lowTolerance
     )
   })
 
@@ -1039,11 +1059,7 @@ extrude001 = extrude(-12, sketch001)
   })
 
   await test.step(`Confirm scene has changed`, async () => {
-    await scene.expectPixelColor(
-      backgroundColor,
-      firstEdgeLocation,
-      lowTolerance
-    )
+    await scene.expectPixelColor(bodyColor, firstEdgeLocation, lowTolerance)
   })
 
   // Test 2: Command bar flow without preselected edges
@@ -1064,13 +1080,13 @@ extrude001 = extrude(-12, sketch001)
 
   await test.step(`Select second edge`, async () => {
     await scene.expectPixelColor(
-      edgeColorWhite,
+      secondEdgeColorWhite,
       secondEdgeLocation,
       lowTolerance
     )
     await clickOnSecondEdge()
     await scene.expectPixelColor(
-      edgeColorYellow,
+      secondEdgeColorYellow,
       secondEdgeLocation,
       lowTolerance
     )
