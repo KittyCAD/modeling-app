@@ -1,10 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { BrowserRouter, Route, Routes, useNavigate } from 'react-router-dom'
-import { SettingsAuthProviderJest } from './SettingsAuthProvider'
-import { CommandBarProvider } from './CommandBar/CommandBarProvider'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { OpenInDesktopAppHandler } from './OpenInDesktopAppHandler'
-import { vi } from 'vitest'
-import { useEffect, useState } from 'react'
 
 function TestWrap({
   children,

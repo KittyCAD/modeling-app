@@ -38,7 +38,6 @@ import {
   saveSettings,
   setSettingsAtLevel,
 } from 'lib/settings/settingsUtils'
-import { Project } from 'lib/project'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
