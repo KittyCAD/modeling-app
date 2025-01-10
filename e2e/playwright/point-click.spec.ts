@@ -1119,3 +1119,93 @@ extrude001 = extrude(40, sketch001)
     await scene.expectPixelColor([99, 99, 99], testPoint, 15)
   })
 })
+
+const shellSketchOnFacesCases = [
+  `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 100 }, %)
+  |> extrude(100, %)
+
+sketch002 = startSketchOn(sketch001, 'END')
+  |> circle({ center = [0, 0], radius = 50 }, %)
+  |> extrude(50, %)
+  `,
+  `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 100 }, %)
+extrude001 = extrude(100, sketch001)
+
+sketch002 = startSketchOn(extrude001, 'END')
+  |> circle({ center = [0, 0], radius = 50 }, %)
+extrude002 = extrude(50, sketch002)
+  `,
+]
+shellSketchOnFacesCases.forEach((initialCode, index) => {
+  const hasExtrudesInPipe = index === 0
+  test(`Shell point-and-click sketch on face (extrudes in pipes: ${hasExtrudesInPipe})`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 550, y: 295 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const shellDeclaration = `shell001 = shell({ faces = ['end'], thickness = 5 }, ${
+      hasExtrudesInPipe ? 'sketch002' : 'extrude002'
+    })`
+
+    await test.step(`Look for the grey of the shape`, async () => {
+      await toolbar.closePane('code')
+      await scene.expectPixelColor([128, 128, 128], testPoint, 15)
+    })
+
+    await test.step(`Go through the command bar flow, selecting a cap and keeping default thickness`, async () => {
+      await toolbar.shellButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          Thickness: '',
+        },
+        highlightedHeaderArg: 'selection',
+        commandName: 'Shell',
+      })
+      await clickOnCap()
+      await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '1 cap',
+          Thickness: '5',
+        },
+        commandName: 'Shell',
+      })
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(shellDeclaration)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [shellDeclaration],
+        highlightedCode: '',
+      })
+      await toolbar.closePane('code')
+      await scene.expectPixelColor([73, 73, 73], testPoint, 15)
+    })
+  })
+})
