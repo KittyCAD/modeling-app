@@ -756,6 +756,17 @@ test(`Offset plane point-and-click`, async ({
     })
     await scene.expectPixelColor([74, 74, 74], testPoint, 15)
   })
+
+  await test.step('Delete offset plane via feature tree selection', async () => {
+    await editor.closePane()
+    const operationButton = await toolbar.getFeatureTreeOperation(
+      'Offset Plane',
+      0
+    )
+    await operationButton.click({ button: 'left' })
+    await page.keyboard.press('Backspace')
+    await scene.expectPixelColor([50, 51, 96], testPoint, 15)
+  })
 })
 
 const loftPointAndClickCases = [
@@ -851,6 +862,75 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
       })
       await scene.expectPixelColor([89, 89, 89], testPoint, 15)
     })
+
+    await test.step('Delete loft via feature tree selection', async () => {
+      await editor.closePane()
+      const operationButton = await toolbar.getFeatureTreeOperation('Loft', 0)
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Backspace')
+      await scene.expectPixelColor([254, 254, 254], testPoint, 15)
+    })
+  })
+})
+
+// TODO: merge with above test. Right now we're not able to delete a loft
+// right after creation via selection for some reason, so we go with a new instance
+test('Loft and offset plane deletion via selection', async ({
+  context,
+  page,
+  homePage,
+  scene,
+}) => {
+  const initialCode = `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 30 }, %)
+  plane001 = offsetPlane('XZ', 50)
+  sketch002 = startSketchOn(plane001)
+  |> circle({ center = [0, 0], radius = 20 }, %)
+loft001 = loft([sketch001, sketch002])
+`
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
+
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 575, y: 200 }
+  const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const [clickOnSketch2] = scene.makeMouseHelpers(testPoint.x, testPoint.y + 80)
+
+  await test.step(`Delete loft`, async () => {
+    // Check for loft
+    await scene.expectPixelColor([89, 89, 89], testPoint, 15)
+    await clickOnSketch1()
+    await expect(page.locator('.cm-activeLine')).toHaveText(`
+      |> circle({ center = [0, 0], radius = 30 }, %)
+    `)
+    await page.keyboard.press('Backspace')
+    // Check for sketch 1
+    await scene.expectPixelColor([254, 254, 254], testPoint, 15)
+  })
+
+  await test.step('Delete sketch002', async () => {
+    await page.waitForTimeout(1000)
+    await clickOnSketch2()
+    await expect(page.locator('.cm-activeLine')).toHaveText(`
+      |> circle({ center = [0, 0], radius = 20 }, %)
+    `)
+    await page.keyboard.press('Backspace')
+    // Check for plane001
+    await scene.expectPixelColor([228, 228, 228], testPoint, 15)
+  })
+
+  await test.step('Delete plane001', async () => {
+    await page.waitForTimeout(1000)
+    await clickOnSketch2()
+    await expect(page.locator('.cm-activeLine')).toHaveText(`
+      plane001 = offsetPlane('XZ', 50)
+    `)
+    await page.keyboard.press('Backspace')
+    // Check for sketch 1
+    await scene.expectPixelColor([254, 254, 254], testPoint, 15)
   })
 })
 
@@ -1029,5 +1109,103 @@ extrude001 = extrude(40, sketch001)
       highlightedCode: '',
     })
     await scene.expectPixelColor([49, 49, 49], testPoint, 15)
+  })
+
+  await test.step('Delete shell via feature tree selection', async () => {
+    await editor.closePane()
+    const operationButton = await toolbar.getFeatureTreeOperation('Shell', 0)
+    await operationButton.click({ button: 'left' })
+    await page.keyboard.press('Backspace')
+    await scene.expectPixelColor([99, 99, 99], testPoint, 15)
+  })
+})
+
+const shellSketchOnFacesCases = [
+  `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 100 }, %)
+  |> extrude(100, %)
+
+sketch002 = startSketchOn(sketch001, 'END')
+  |> circle({ center = [0, 0], radius = 50 }, %)
+  |> extrude(50, %)
+  `,
+  `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 100 }, %)
+extrude001 = extrude(100, sketch001)
+
+sketch002 = startSketchOn(extrude001, 'END')
+  |> circle({ center = [0, 0], radius = 50 }, %)
+extrude002 = extrude(50, sketch002)
+  `,
+]
+shellSketchOnFacesCases.forEach((initialCode, index) => {
+  const hasExtrudesInPipe = index === 0
+  test(`Shell point-and-click sketch on face (extrudes in pipes: ${hasExtrudesInPipe})`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    // One dumb hardcoded screen pixel value
+    const testPoint = { x: 550, y: 295 }
+    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+    const shellDeclaration = `shell001 = shell({ faces = ['end'], thickness = 5 }, ${
+      hasExtrudesInPipe ? 'sketch002' : 'extrude002'
+    })`
+
+    await test.step(`Look for the grey of the shape`, async () => {
+      await toolbar.closePane('code')
+      await scene.expectPixelColor([128, 128, 128], testPoint, 15)
+    })
+
+    await test.step(`Go through the command bar flow, selecting a cap and keeping default thickness`, async () => {
+      await toolbar.shellButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          Thickness: '',
+        },
+        highlightedHeaderArg: 'selection',
+        commandName: 'Shell',
+      })
+      await clickOnCap()
+      await cmdBar.progressCmdBar()
+      await page.waitForTimeout(500)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '1 cap',
+          Thickness: '5',
+        },
+        commandName: 'Shell',
+      })
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(shellDeclaration)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [shellDeclaration],
+        highlightedCode: '',
+      })
+      await toolbar.closePane('code')
+      await scene.expectPixelColor([73, 73, 73], testPoint, 15)
+    })
   })
 })

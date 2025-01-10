@@ -47,7 +47,6 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
-    axis: Selections
   }
   Fillet: {
     // todo
@@ -290,40 +289,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  Loft: {
-    description: 'Create a 3D body by blending between two or more sketches',
-    icon: 'loft',
-    needsReview: true,
-    args: {
-      selection: {
-        inputType: 'selection',
-        selectionTypes: ['solid2D'],
-        multiple: true,
-        required: true,
-        skip: false,
-        validation: loftValidator,
-      },
-    },
-  },
-  Shell: {
-    description: 'Hollow out a 3D solid.',
-    icon: 'shell',
-    needsReview: true,
-    args: {
-      selection: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall'],
-        multiple: true,
-        required: true,
-        skip: false,
-      },
-      thickness: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
-      },
-    },
-  },
   // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
@@ -336,13 +301,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
-      },
-      axis: {
-        required: true,
-        inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
-        multiple: false,
-        validation: revolveAxisValidator,
       },
       angle: {
         inputType: 'kcl',
