@@ -337,6 +337,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+        warningMessage:
+          'The revolve workflow is new and under tested. Please break it and report issues.',
       },
       axisOrEdge: {
         inputType: 'options',
@@ -367,8 +369,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
         validation: revolveAxisValidator,
-        warningMessage:
-          'Revolve only works with edges now, not with arbitrary axis. This is under development.',
       },
       angle: {
         inputType: 'kcl',
