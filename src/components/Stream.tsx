@@ -59,7 +59,7 @@ export const Stream = () => {
    */
   function executeCodeAndPlayStream() {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    kclManager.executeCode(true).then(async () => {
+    kclManager.executeCode({ zoomToFit: true }).then(async () => {
       await videoRef.current?.play().catch((e) => {
         console.warn('Video playing was prevented', e, videoRef.current)
       })

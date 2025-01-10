@@ -181,7 +181,7 @@ export const ModelingMachineProvider = ({
           store.videoElement?.pause()
 
           return kclManager
-            .executeCode()
+            .executeCode({ isPartialExecution: true })
             .then(() => {
               if (engineCommandManager.engineConnection?.idleMode) return
 

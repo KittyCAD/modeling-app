@@ -261,7 +261,7 @@ const FileTreeItem = ({
       await codeManager.writeToFile()
 
       // Prevent seeing the model built one piece at a time when changing files
-      await kclManager.executeCode(true)
+      await kclManager.executeCode({ zoomToFit: true })
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)
