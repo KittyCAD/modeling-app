@@ -297,14 +297,20 @@ export const lineTo: SketchLineHelper = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const to = segmentInput.to
-    const _node = { ...node }
+    const _node = structuredClone(node)
     const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
     )
     if (err(nodeMeta)) return nodeMeta
-    const { node: pipe } = nodeMeta
+    const varDec = getNodeFromPath<VariableDeclaration>(
+      _node,
+      pathToNode,
+      'VariableDeclaration'
+    )
+    if (err(varDec)) return varDec
+    const dec = varDec.node.declaration
 
     const newVals: [Expr, Expr] = [
       createLiteral(roundOff(to[0], 2)),
@@ -333,14 +339,20 @@ export const lineTo: SketchLineHelper = {
       ])
       if (err(result)) return result
       const { callExp, valueUsedInTransform } = result
-      pipe.body[callIndex] = callExp
+      if (dec.init.type === 'PipeExpression') {
+        dec.init.body[callIndex] = callExp
+      } else {
+        dec.init = callExp
+      }
       return {
         modifiedAst: _node,
         pathToNode,
         valueUsedInTransform: valueUsedInTransform,
       }
+    } else if (dec.init.type === 'PipeExpression') {
+      dec.init.body = [...dec.init.body, newLine]
     } else {
-      pipe.body = [...pipe.body, newLine]
+      dec.init = createPipeExpression([dec.init, newLine])
     }
     return {
       modifiedAst: _node,
@@ -663,11 +675,11 @@ export const xLine: SketchLineHelper = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
-    const _node = { ...node }
+    const _node = structuredClone(node)
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression>('PipeExpression')
-    if (err(_node1)) return _node1
-    const { node: pipe } = _node1
+    const varDec = getNode<VariableDeclaration>('VariableDeclaration')
+    if (err(varDec)) return varDec
+    const dec = varDec.node.declaration
 
     const newVal = createLiteral(roundOff(to[0] - from[0], 2))
 
@@ -682,7 +694,11 @@ export const xLine: SketchLineHelper = {
       ])
       if (err(result)) return result
       const { callExp, valueUsedInTransform } = result
-      pipe.body[callIndex] = callExp
+      if (dec.init.type === 'PipeExpression') {
+        dec.init.body[callIndex] = callExp
+      } else {
+        dec.init = callExp
+      }
       return {
         modifiedAst: _node,
         pathToNode,
@@ -694,7 +710,11 @@ export const xLine: SketchLineHelper = {
       newVal,
       createPipeSubstitution(),
     ])
-    pipe.body = [...pipe.body, newLine]
+    if (dec.init.type === 'PipeExpression') {
+      dec.init.body = [...dec.init.body, newLine]
+    } else {
+      dec.init = createPipeExpression([dec.init, newLine])
+    }
     return { modifiedAst: _node, pathToNode }
   },
   updateArgs: ({ node, pathToNode, input }) => {
@@ -731,11 +751,11 @@ export const yLine: SketchLineHelper = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
-    const _node = { ...node }
+    const _node = structuredClone(node)
     const getNode = getNodeFromPathCurry(_node, pathToNode)
-    const _node1 = getNode<PipeExpression>('PipeExpression')
-    if (err(_node1)) return _node1
-    const { node: pipe } = _node1
+    const varDec = getNode<VariableDeclaration>('VariableDeclaration')
+    if (err(varDec)) return varDec
+    const dec = varDec.node.declaration
     const newVal = createLiteral(roundOff(to[1] - from[1], 2))
     if (replaceExistingCallback) {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
@@ -748,7 +768,11 @@ export const yLine: SketchLineHelper = {
       ])
       if (err(result)) return result
       const { callExp, valueUsedInTransform } = result
-      pipe.body[callIndex] = callExp
+      if (dec.init.type === 'PipeExpression') {
+        dec.init.body[callIndex] = callExp
+      } else {
+        dec.init = callExp
+      }
       return {
         modifiedAst: _node,
         pathToNode,
@@ -760,7 +784,11 @@ export const yLine: SketchLineHelper = {
       newVal,
       createPipeSubstitution(),
     ])
-    pipe.body = [...pipe.body, newLine]
+    if (dec.init.type === 'PipeExpression') {
+      dec.init.body = [...dec.init.body, newLine]
+    } else {
+      dec.init = createPipeExpression([dec.init, newLine])
+    }
     return { modifiedAst: _node, pathToNode }
   },
   updateArgs: ({ node, pathToNode, input }) => {
@@ -2145,8 +2173,6 @@ function addTagToChamfer(
   if (err(variableDec)) return variableDec
   const isPipeExpression = pipeExpr.node.type === 'PipeExpression'
 
-  console.log('pipeExpr', pipeExpr, variableDec)
-  // const callExpr = isPipeExpression ? pipeExpr.node.body[pipeIndex] : variableDec.node.init
   const callExpr = isPipeExpression
     ? pipeExpr.node.body[pipeIndex]
     : variableDec.node.init
@@ -2227,7 +2253,6 @@ function addTagToChamfer(
   if (isPipeExpression) {
     pipeExpr.node.body.splice(pipeIndex, 0, newExpressionToInsert)
   } else {
-    console.log('yo', createPipeExpression([newExpressionToInsert, callExpr]))
     callExpr.arguments[1] = createPipeSubstitution()
     variableDec.node.init = createPipeExpression([
       newExpressionToInsert,

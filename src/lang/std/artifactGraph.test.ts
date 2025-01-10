@@ -823,6 +823,10 @@ describe('testing getArtifactsToUpdate', () => {
       },
       {
         type: 'wall',
+        codeRef: {
+          pathToNode: [['body', '']],
+          range: [312, 344, true],
+        },
         id: expect.any(String),
         segId: expect.any(String),
         edgeCutEdgeIds: [],

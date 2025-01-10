@@ -67,7 +67,6 @@ export async function executeAst({
       : executor(ast, engineCommandManager))
 
     await engineCommandManager.waitForAllCommands()
-
     return {
       logs: [],
       errors: [],

@@ -522,10 +522,6 @@ export const executor = async (
   if (programMemoryOverride !== null && err(programMemoryOverride))
     return Promise.reject(programMemoryOverride)
 
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  if (programMemoryOverride !== null && err(programMemoryOverride))
-    return Promise.reject(programMemoryOverride)
-
   try {
     let jsAppSettings = default_app_settings()
     if (!TEST) {
