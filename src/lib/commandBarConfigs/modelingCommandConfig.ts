@@ -47,7 +47,9 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
-    axis: Selections
+    axisOrEdge: string
+    axis: string
+    edge: Selections
   }
   Fillet: {
     // todo
@@ -324,7 +326,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
@@ -337,8 +338,31 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         skip: true,
       },
-      axis: {
+      axisOrEdge: {
+        inputType: 'options',
         required: true,
+        defaultValue: 'Axis',
+        options: [
+          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Edge', isCurrent: false, value: 'Edge' },
+        ],
+      },
+      axis: {
+        required: (commandContext) =>
+          ['Axis'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'options',
+        options: [
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+        ],
+      },
+      edge: {
+        required: (commandContext) =>
+          ['Edge'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
