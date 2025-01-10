@@ -502,4 +502,6 @@ impl kcl_lib::EngineManager for EngineConnection {
             })),
         }
     }
+
+    async fn close(&self) {}
 }
