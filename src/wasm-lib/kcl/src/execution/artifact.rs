@@ -158,6 +158,7 @@ pub struct Sweep {
 pub enum SweepSubType {
     Extrusion,
     Revolve,
+    Loft,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -547,6 +548,35 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
+        ModelingCmd::Loft(loft_cmd) => match response {
+            OkModelingCmdResponse::Loft(_) => {
+                let mut return_arr = Vec::new();
+                return_arr.push(Artifact::Sweep(Sweep {
+                    id,
+                    sub_type: SweepSubType::Loft,
+                    // TODO: Using the first one.  Make sure to revisit this
+                    // choice, don't think it matters for now.
+                    path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
+                        KclError::internal(format!(
+                            "Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"
+                        ))
+                    })?),
+                    surface_ids: Vec::new(),
+                    edge_ids: Vec::new(),
+                    code_ref: CodeRef { range },
+                }));
+                for section_id in &loft_cmd.section_ids {
+                    let path = artifacts.get(&ArtifactId::new(*section_id));
+                    if let Some(Artifact::Path(path)) = path {
+                        let mut new_path = path.clone();
+                        new_path.id = id;
+                        return_arr.push(Artifact::Path(new_path));
+                    }
+                }
+                return Ok(return_arr);
+            }
+            _ => {}
+        },
         ModelingCmd::Solid3dGetExtrusionFaceInfo(_) => match response {
             OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info) => {
                 let mut return_arr = Vec::new();
