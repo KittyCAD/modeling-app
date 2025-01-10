@@ -1,7 +1,6 @@
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { ASK_TO_OPEN_QUERY_PARAM, CREATE_FILE_URL_PARAM, PROD_APP_URL } from './constants'
 import { stringToBase64 } from './base64'
-import { ZOO_STUDIO_PROTOCOL } from './links'
 import { DEV } from 'env'
 export interface FileLinkParams {
   code: string
@@ -10,25 +9,37 @@ export interface FileLinkParams {
 }
 
 /**
+ * Creates a URL with the necessary query parameters to trigger
+ * the "Import file from URL" command in the app.
+ * 
+ * With the additional step of asking the user if they want to 
+ * open the URL in the desktop app.
+ */
+export function createCreateFileUrl({ code, name, units }: FileLinkParams) {
+  // Use the dev server if we are in development mode
+  let origin = DEV ? 'http://localhost:3000' : PROD_APP_URL
+  const searchParams = new URLSearchParams({
+    [CREATE_FILE_URL_PARAM]: '',
+    name,
+    units,
+    code: stringToBase64(code),
+    [ASK_TO_OPEN_QUERY_PARAM]: '',
+  })
+  const createFileUrl = new URL(`?${searchParams.toString()}`, origin)
+
+  return createFileUrl
+}
+
+/**
  * Given a file's code, name, and units, creates shareable link to the
  * web app with a query parameter that triggers a modal to "open in desktop app".
  * That modal is defined in the `OpenInDesktopAppHandler` component.
  * TODO: update the return type to use TS library after its updated
  */
-export async function createFileLink(
+export async function createShortlink(
   token: string,
-  { code, name, units }: FileLinkParams
+  url: string
 ): Promise<Error | { key: string; url: string }> {
-  // Use the dev server if we are in development mode
-  let origin = DEV ? 'http://localhost:3000' : PROD_APP_URL
-
-  let urlFileToShare = new URL(
-    `?${CREATE_FILE_URL_PARAM}&name=${encodeURIComponent(
-      name
-    )}&units=${units}&code=${encodeURIComponent(stringToBase64(code))}&${ASK_TO_OPEN_QUERY_PARAM}`,
-    origin
-  ).toString()
-
   /**
    * We don't use our `withBaseURL` function here because
    * there is no URL shortener service in the dev API.
@@ -40,12 +51,11 @@ export async function createFileLink(
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      url: urlFileToShare,
+      url,
       // In future we can support org-scoped and password-protected shortlinks here
       // https://zoo.dev/docs/api/shortlinks/create-a-shortlink-for-a-user?lang=typescript
     }),
   })
-  console.log('response', response)
   if (!response.ok) {
     const error = await response.json()
     return new Error(`Failed to create shortlink: ${error.message}`)

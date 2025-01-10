@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useSettingsAuthContext } from './useSettingsAuthContext'
 import { isDesktop } from 'lib/isDesktop'
-import { FileLinkParams } from 'lib/createFileLink'
+import { FileLinkParams } from 'lib/links'
 import { ProjectsCommandSchema } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { baseUnitsUnion } from 'lib/settings/settingsTypes'
 

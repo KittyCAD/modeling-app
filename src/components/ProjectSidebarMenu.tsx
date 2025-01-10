@@ -15,7 +15,7 @@ import { MachineManagerContext } from 'components/MachineManagerProvider'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
-import { createFileLink } from 'lib/createFileLink'
+import { createCreateFileUrl, createShortlink } from 'lib/links'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import toast from 'react-hot-toast'
 import { DEV, VITE_KC_PROD_TOKEN } from 'env'
@@ -212,20 +212,21 @@ function ProjectMenuPopover({
               })
               return
             }
-            const shareUrl = await createFileLink(token, {
+            const shareUrl = createCreateFileUrl({
               code: codeManager.code,
               name: project?.name || '',
               units: settings.context.modeling.defaultUnit.current,
             })
+            const shortlink = await createShortlink(token, shareUrl.toString())
 
-            if (err(shareUrl)) {
-              toast.error(shareUrl.message, {
+            if (err(shortlink)) {
+              toast.error(shortlink.message, {
                 duration: 5000,
               })
               return
             }
 
-            await globalThis.navigator.clipboard.writeText(shareUrl.url)
+            await globalThis.navigator.clipboard.writeText(shortlink.url)
             toast.success(
               'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!',
               {
