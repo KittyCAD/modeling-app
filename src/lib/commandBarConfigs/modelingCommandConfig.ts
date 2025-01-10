@@ -47,6 +47,9 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
+    axisOrEdge: string
+    axis: string
+    edge: Selections
   }
   Fillet: {
     // todo
@@ -289,10 +292,44 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
+  Loft: {
+    description: 'Create a 3D body by blending between two or more sketches',
+    icon: 'loft',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['solid2D'],
+        multiple: true,
+        required: true,
+        skip: false,
+        validation: loftValidator,
+      },
+    },
+  },
+  Shell: {
+    description: 'Hollow out a 3D solid.',
+    icon: 'shell',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall'],
+        multiple: true,
+        required: true,
+        skip: false,
+      },
+      thickness: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
+    status: 'development',
     needsReview: true,
     args: {
       selection: {
@@ -301,6 +338,38 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+        warningMessage:
+          'The revolve workflow is new and under tested. Please break it and report issues.',
+      },
+      axisOrEdge: {
+        inputType: 'options',
+        required: true,
+        defaultValue: 'Axis',
+        options: [
+          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Edge', isCurrent: false, value: 'Edge' },
+        ],
+      },
+      axis: {
+        required: (commandContext) =>
+          ['Axis'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'options',
+        options: [
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+        ],
+      },
+      edge: {
+        required: (commandContext) =>
+          ['Edge'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        multiple: false,
+        validation: revolveAxisValidator,
       },
       angle: {
         inputType: 'kcl',

@@ -1087,6 +1087,17 @@ async fn inner_start_sketch_on(
 
             Ok(SketchSurface::Plane(plane))
         }
+        SketchData::Plane(plane) => {
+            // Create artifact used only by the UI, not the engine.
+            let id = exec_state.next_uuid();
+            exec_state.add_artifact(Artifact {
+                id: ArtifactId::from(id),
+                inner: ArtifactInner::StartSketchOnPlane { plane_id: plane.id },
+                source_range: args.source_range,
+            });
+
+            Ok(SketchSurface::Plane(plane))
+        }
         SketchData::Plane(plane) => Ok(SketchSurface::Plane(plane)),
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
