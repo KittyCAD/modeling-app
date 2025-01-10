@@ -11,6 +11,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::execution::{Artifact, ArtifactId, ArtifactInner};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -20,8 +21,8 @@ use crate::{
     parsing::ast::types::TagNode,
     std::{
         utils::{
-            arc_angles, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
-            intersection_with_parallel_line, TangentialArcInfoInput,
+            arc_angles, arc_center_and_end, calculate_circle_center, get_tangential_arc_to_info, get_x_component,
+            get_y_component, intersection_with_parallel_line, TangentialArcInfoInput,
         },
         Args,
     },
@@ -938,13 +939,13 @@ pub enum PlaneData {
         /// Origin of the plane.
         origin: Box<Point3d>,
         /// What should the plane’s X axis be?
-        #[serde(rename = "xAxis", alias = "x_axis")]
+        #[serde(rename = "xAxis")]
         x_axis: Box<Point3d>,
         /// What should the plane’s Y axis be?
-        #[serde(rename = "yAxis", alias = "y_axis")]
+        #[serde(rename = "yAxis")]
         y_axis: Box<Point3d>,
         /// The z-axis (normal).
-        #[serde(rename = "zAxis", alias = "z_axis")]
+        #[serde(rename = "zAxis")]
         z_axis: Box<Point3d>,
     },
 }
@@ -1075,7 +1076,17 @@ async fn inner_start_sketch_on(
             let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
-        SketchData::Plane(plane) => Ok(SketchSurface::Plane(plane)),
+        SketchData::Plane(plane) => {
+            // Create artifact used only by the UI, not the engine.
+            let id = exec_state.next_uuid();
+            exec_state.add_artifact(Artifact {
+                id: ArtifactId::from(id),
+                inner: ArtifactInner::StartSketchOnPlane { plane_id: plane.id },
+                source_range: args.source_range,
+            });
+
+            Ok(SketchSurface::Plane(plane))
+        }
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
                 return Err(KclError::Type(KclErrorDetails {
@@ -1084,6 +1095,15 @@ async fn inner_start_sketch_on(
                 }));
             };
             let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+
+            // Create artifact used only by the UI, not the engine.
+            let id = exec_state.next_uuid();
+            exec_state.add_artifact(Artifact {
+                id: ArtifactId::from(id),
+                inner: ArtifactInner::StartSketchOnFace { face_id: face.id },
+                source_range: args.source_range,
+            });
+
             Ok(SketchSurface::Face(face))
         }
     }
@@ -1265,7 +1285,7 @@ pub(crate) async fn inner_start_profile_at(
     let id = exec_state.next_uuid();
     let path_id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath {}))
+    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath::default()))
         .await?;
     args.batch_modeling_cmd(
         id,
@@ -1438,7 +1458,7 @@ pub(crate) async fn inner_close(
         // We were on a plane, disable the sketch mode.
         args.batch_modeling_cmd(
             exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
         )
         .await?;
     }
@@ -1473,11 +1493,11 @@ pub enum ArcData {
     /// Angles and radius with an optional tag.
     AnglesAndRadius {
         /// The start angle.
-        #[serde(rename = "angleStart", alias = "angle_start")]
+        #[serde(rename = "angleStart")]
         #[schemars(range(min = -360.0, max = 360.0))]
         angle_start: f64,
         /// The end angle.
-        #[serde(rename = "angleEnd", alias = "angle_end")]
+        #[serde(rename = "angleEnd")]
         #[schemars(range(min = -360.0, max = 360.0))]
         angle_end: f64,
         /// The radius.
@@ -2046,42 +2066,6 @@ async fn inner_tangential_arc_to_relative(
     Ok(new_sketch)
 }
 
-// Calculate the center of 3 points
-// To calculate the center of the 3 point circle 2 perpendicular lines are created
-// These perpendicular lines will intersect at the center of the circle.
-fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
-    // y2 - y1
-    let y_2_1 = p2[1] - p1[1];
-    // y3 - y2
-    let y_3_2 = p3[1] - p2[1];
-    // x2 - x1
-    let x_2_1 = p2[0] - p1[0];
-    // x3 - x2
-    let x_3_2 = p3[0] - p2[0];
-
-    // Slope of two perpendicular lines
-    let slope_a = y_2_1 / x_2_1;
-    let slope_b = y_3_2 / x_3_2;
-
-    // Values for line intersection
-    // y1 - y3
-    let y_1_3 = p1[1] - p3[1];
-    // x1 + x2
-    let x_1_2 = p1[0] + p2[0];
-    // x2 + x3
-    let x_2_3 = p2[0] + p3[0];
-    // y1 + y2
-    let y_1_2 = p1[1] + p2[1];
-
-    // Solve for the intersection of these two lines
-    let numerator = (slope_a * slope_b * y_1_3) + (slope_b * x_1_2) - (slope_a * x_2_3);
-    let x = numerator / (2.0 * (slope_b - slope_a));
-
-    let y = ((-1.0 / slope_a) * (x - (x_1_2 / 2.0))) + (y_1_2 / 2.0);
-
-    [x, y]
-}
-
 /// Data to draw a bezier curve.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -2259,10 +2243,7 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{
-        execution::TagIdentifier,
-        std::sketch::{calculate_circle_center, PlaneData},
-    };
+    use crate::{execution::TagIdentifier, std::sketch::PlaneData, std::utils::calculate_circle_center};
 
     #[test]
     fn test_deserialize_plane_data() {

@@ -1,6 +1,24 @@
-import html2canvas from 'html2canvas-pro'
+function takeScreenshotOfVideoStreamCanvas() {
+  const canvas = document.querySelector('[data-engine]')
+  const video = document.getElementById('video-stream')
+  if (
+    canvas &&
+    video &&
+    canvas instanceof HTMLCanvasElement &&
+    video instanceof HTMLVideoElement
+  ) {
+    const videoCanvas = document.createElement('canvas')
+    videoCanvas.width = canvas.width
+    videoCanvas.height = canvas.height
+    const context = videoCanvas.getContext('2d')
+    context?.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height)
+    const url = videoCanvas.toDataURL('image/png')
+    return url
+  } else {
+    return ''
+  }
+}
 
-// Return a data URL (png format) of the screenshot of the current page.
 export default async function screenshot(): Promise<string> {
   if (typeof window === 'undefined') {
     return Promise.reject(
@@ -9,11 +27,17 @@ export default async function screenshot(): Promise<string> {
       )
     )
   }
-  return html2canvas(document.documentElement)
-    .then((canvas) => {
-      return canvas.toDataURL()
-    })
-    .catch((error) => {
-      return Promise.reject(error)
-    })
+
+  if (window.electron) {
+    const canvas = document.querySelector('[data-engine]')
+    if (canvas instanceof HTMLCanvasElement) {
+      const url = await window.electron.takeElectronWindowScreenshot({
+        width: canvas?.width || 500,
+        height: canvas?.height || 500,
+      })
+      return url !== '' ? url : takeScreenshotOfVideoStreamCanvas()
+    }
+  }
+
+  return takeScreenshotOfVideoStreamCanvas()
 }

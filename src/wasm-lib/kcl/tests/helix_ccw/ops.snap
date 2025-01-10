@@ -53,23 +53,23 @@ snapshot_kind: text
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          110,
-          184,
+          121,
+          195,
           0
         ]
       },
       "solid": {
         "sourceRange": [
-          186,
-          187,
+          197,
+          198,
           0
         ]
       }
     },
-    "name": "helix",
+    "name": "helixRevolutions",
     "sourceRange": [
       104,
-      188,
+      199,
       0
     ],
     "type": "StdLibCall",
