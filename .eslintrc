@@ -5,16 +5,24 @@
     },
     "plugins": [
       "css-modules",
+      "jest",
+      "react",
       "suggest-no-throw",
+      "@typescript-eslint"
     ],
     "extends": [
-      "react-app",
-      "react-app/jest",
       "plugin:css-modules/recommended"
     ],
     "rules": {
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
+      "no-restricted-globals": [
+        "error",
+        {
+          "name": "isNaN",
+          "message": "Use Number.isNaN() instead."
+        }
+      ],
       "semi": [
         "error",
         "never"

@@ -45,6 +45,7 @@ import {
 import { revolveSketch } from 'lang/modifyAst/addRevolve'
 import {
   addOffsetPlane,
+  addSweep,
   deleteFromSelection,
   extrudeSketch,
   loftSketches,
@@ -266,6 +267,7 @@ export type ModelingMachineEvent =
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
@@ -685,7 +687,7 @@ export const modelingMachine = setup({
       if (event.type !== 'Revolve') return
       ;(async () => {
         if (!event.data) return
-        const { selection, angle, axis } = event.data
+        const { selection, angle, axis, edge, axisOrEdge } = event.data
         let ast = kclManager.ast
         if (
           'variableName' in angle &&
@@ -710,7 +712,9 @@ export const modelingMachine = setup({
           'variableName' in angle
             ? angle.variableIdentifierAst
             : angle.valueAst,
-          axis
+          axisOrEdge,
+          axis,
+          edge
         )
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
@@ -1542,6 +1546,66 @@ export const modelingMachine = setup({
         }
       }
     ),
+    sweepAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Sweep'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { profile, path } = input
+
+        // Find the profile declaration
+        const profileNodePath = getNodePathFromSourceRange(
+          ast,
+          profile.graphSelections[0].codeRef.range
+        )
+        const profileNode = getNodeFromPath<VariableDeclarator>(
+          ast,
+          profileNodePath,
+          'VariableDeclarator'
+        )
+        if (err(profileNode)) {
+          return new Error("Couldn't parse profile selection")
+        }
+        const profileDeclarator = profileNode.node
+
+        // Find the path declaration
+        const pathNodePath = getNodePathFromSourceRange(
+          ast,
+          path.graphSelections[0].codeRef.range
+        )
+        const pathNode = getNodeFromPath<VariableDeclarator>(
+          ast,
+          pathNodePath,
+          'VariableDeclarator'
+        )
+        if (err(pathNode)) {
+          return new Error("Couldn't parse path selection")
+        }
+        const pathDeclarator = pathNode.node
+
+        // Perform the sweep
+        const sweepRes = addSweep(ast, profileDeclarator, pathDeclarator)
+        const updateAstResult = await kclManager.updateAst(
+          sweepRes.modifiedAst,
+          true,
+          {
+            focusPath: [sweepRes.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
     loftAstMod: fromPromise(
       async ({
         input,
@@ -1735,6 +1799,11 @@ export const modelingMachine = setup({
           target: 'idle',
           actions: ['AST revolve'],
           reenter: false,
+        },
+
+        Sweep: {
+          target: 'Applying sweep',
+          reenter: true,
         },
 
         Loft: {
@@ -2522,6 +2591,19 @@ export const modelingMachine = setup({
         id: 'offsetPlaneAstMod',
         input: ({ event }) => {
           if (event.type !== 'Offset plane') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying sweep': {
+      invoke: {
+        src: 'sweepAstMod',
+        id: 'sweepAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Sweep') return undefined
           return event.data
         },
         onDone: ['idle'],
