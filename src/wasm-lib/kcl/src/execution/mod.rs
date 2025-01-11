@@ -2626,6 +2626,10 @@ impl ExecutorContext {
 
         self.prepare_snapshot().await
     }
+
+    pub async fn close(&self) {
+        self.engine.close().await;
+    }
 }
 
 /// For each argument given,

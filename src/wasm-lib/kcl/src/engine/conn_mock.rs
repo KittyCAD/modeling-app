@@ -160,4 +160,6 @@ impl crate::engine::EngineManager for EngineConnection {
             })),
         }
     }
+
+    async fn close(&self) {}
 }
