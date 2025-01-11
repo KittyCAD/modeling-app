@@ -77,7 +77,7 @@ interface SegmentArtifactRich extends BaseArtifact {
 /** A Sweep is a more generic term for extrude, revolve, loft and sweep*/
 interface SweepArtifact extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve' | 'loft'
+  subType: 'extrusion' | 'revolve' | 'loft' | 'sweep'
   pathId: string
   surfaceIds: Array<string>
   edgeIds: Array<string>
@@ -85,7 +85,7 @@ interface SweepArtifact extends BaseArtifact {
 }
 interface SweepArtifactRich extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve' | 'loft'
+  subType: 'extrusion' | 'revolve' | 'loft' | 'sweep'
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
   edges: Array<SweepEdge>
@@ -377,7 +377,11 @@ export function getArtifactsToUpdate({
         })
     }
     return returnArr
-  } else if (cmd.type === 'extrude' || cmd.type === 'revolve') {
+  } else if (
+    cmd.type === 'extrude' ||
+    cmd.type === 'revolve' ||
+    cmd.type === 'sweep'
+  ) {
     const subType = cmd.type === 'extrude' ? 'extrusion' : cmd.type
     returnArr.push({
       id,
