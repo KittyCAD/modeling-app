@@ -1074,13 +1074,13 @@ extrude001 = extrude(-12, sketch001)
   // Colors
   const firstEdgeColorWhite: [number, number, number] = [246, 246, 246]
   const secondEdgeColorWhite: [number, number, number] = [250, 250, 250]
-  const firstEdgeColorYellow: [number, number, number] = [251, 251, 67]
-  const secondEdgeColorYellow: [number, number, number] = [251, 251, 67]
+  const firstEdgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
+  const secondEdgeColorYellow: [number, number, number] = [251, 251, 40]
   const bodyColor: [number, number, number] = [155, 155, 155]
   const filletColor: [number, number, number] = [127, 127, 127]
   const backgroundColor: [number, number, number] = [30, 30, 30]
   const lowTolerance = 20
-  const highTolerance = 70 // in case of bad visibility or gradient
+  const highTolerance = 40 // in case of bad visibility or gradient
 
   // Setup
   await context.addInitScript((initialCode) => {
@@ -1192,7 +1192,7 @@ extrude001 = extrude(-12, sketch001)
     await scene.expectPixelColor(
       secondEdgeColorYellow,
       secondEdgeLocation,
-      lowTolerance
+      highTolerance // Ubuntu 254,255,12 instead of 251,251,67
     )
   })
 
