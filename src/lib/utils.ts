@@ -345,7 +345,7 @@ export function onDragNumberCalculation(text: string, e: MouseEvent) {
   )
   const newVal = roundOff(addition, precision)
 
-  if (isNaN(newVal)) {
+  if (Number.isNaN(newVal)) {
     return
   }
 

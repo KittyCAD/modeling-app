@@ -15,6 +15,13 @@
     "rules": {
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
+      "no-restricted-globals": [
+        "error",
+        {
+          "name": "isNaN",
+          "message": "Use Number.isNaN() instead."
+        }
+      ],
       "semi": [
         "error",
         "never"

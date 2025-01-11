@@ -42,7 +42,7 @@ export default class StreamDemuxer extends Queue<Uint8Array> {
           // try to parse the content-length from the headers
           const length = parseInt(match[1])
 
-          if (isNaN(length))
+          if (Number.isNaN(length))
             return Promise.reject(new Error('invalid content length'))
 
           // slice the headers since we now have the content length
