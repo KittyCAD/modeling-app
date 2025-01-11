@@ -5,11 +5,12 @@
     },
     "plugins": [
       "css-modules",
+      "jest",
+      "react",
       "suggest-no-throw",
+      "@typescript-eslint"
     ],
     "extends": [
-      "react-app",
-      "react-app/jest",
       "plugin:css-modules/recommended"
     ],
     "rules": {
