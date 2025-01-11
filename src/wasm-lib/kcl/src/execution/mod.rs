@@ -2236,7 +2236,10 @@ impl ExecutorContext {
                 )
             })?;
         // Move the artifact commands to simplify cache management.
-        exec_state.global.artifact_commands = self.engine.take_artifact_commands();
+        exec_state
+            .global
+            .artifact_commands
+            .extend(self.engine.take_artifact_commands());
         let session_data = self.engine.get_session_data();
         Ok(session_data)
     }
