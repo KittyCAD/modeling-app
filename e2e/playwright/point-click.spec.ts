@@ -960,30 +960,9 @@ extrude001 = extrude(-12, sketch001)
   const secondFilletDeclaration =
     'fillet({       radius = 5,       tags = [getOppositeEdge(seg01)]     }, %)'
 
-  // Colors and locators
+  // Locators
   const firstEdgeLocation = { x: 600, y: 193 }
-  /**
-   * x for fillet checker is 733
-   * x min for clicker is 568
-   * y safe 188-198
-   * y = 193 color is 127 > 246
-   * y = 194 color is 191
-   * y = 195 color is 154
-   *
-   * y = 194 failed on ubuntu
-   */
-
   const secondEdgeLocation = { x: 600, y: 383 }
-  /**
-   * x for fillet checker is 701
-   * x min for clicker is 568
-   * y safe 377-388
-   * y = 376 color is 148
-   * y = 382 color is 238
-   * y = 383 color is 250
-   * y = 384 color is 64
-   * y = 385 color is 30
-   */
   const bodyLocation = { x: 630, y: 290 }
   const [clickOnFirstEdge] = scene.makeMouseHelpers(
     firstEdgeLocation.x,
@@ -993,6 +972,8 @@ extrude001 = extrude(-12, sketch001)
     secondEdgeLocation.x,
     secondEdgeLocation.y
   )
+
+  // Colors
   const firstEdgeColorWhite: [number, number, number] = [246, 246, 246]
   const secondEdgeColorWhite: [number, number, number] = [250, 250, 250]
   const firstEdgeColorYellow: [number, number, number] = [251, 251, 67]
@@ -1039,7 +1020,29 @@ extrude001 = extrude(-12, sketch001)
 
   await test.step(`Apply fillet to the preselected edge`, async () => {
     await toolbar.filletButton.click()
-    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      highlightedHeaderArg: 'selection',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Radius: '',
+      },
+      stage: 'arguments',
+    })
+    await cmdBar.progressCmdBar() // ubuntu alarm
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      highlightedHeaderArg: 'radius',
+      currentArgKey: 'radius',
+      currentArgValue: '5',
+      headerArguments: {
+        Selection: '1 face',
+        Radius: '',
+      },
+      stage: 'arguments',
+    })
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       commandName: 'Fillet',
