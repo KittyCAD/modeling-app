@@ -267,4 +267,7 @@ impl crate::engine::EngineManager for EngineConnection {
 
         Ok(ws_result)
     }
+
+    // maybe we can actually impl this here? not sure how atm.
+    async fn close(&self) {}
 }

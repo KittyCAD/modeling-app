@@ -52,6 +52,8 @@ async fn cache_test(test_name: &str, variations: Vec<Variation<'_>>) -> Result<V
         });
     }
 
+    ctx.close().await;
+
     Ok(img_results)
 }
 
