@@ -114,8 +114,6 @@ impl std::fmt::Debug for TcpReadHandle {
 
 impl Drop for TcpReadHandle {
     fn drop(&mut self) {
-        crate::logln!("DROPPING TcpReadHandle");
-
         // Drop the read handle.
         self.handle.abort();
     }
