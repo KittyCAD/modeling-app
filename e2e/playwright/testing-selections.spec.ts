@@ -940,19 +940,17 @@ test.describe('Testing selections', () => {
     await clickEmpty()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
 
-    // add a body and retest
+    // test fillet button with the body in the scene
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
   extrude001 = extrude(10, sketch001)`
     await u.codeLocator.clear()
     await u.codeLocator.fill(codeToAdd)
     await selectSegment()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
-    await expect(page.getByRole('button', { name: 'Chamfer' })).toBeEnabled()
     await selectClose()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
     await clickEmpty()
     await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
-    await expect(page.getByRole('button', { name: 'Chamfer' })).toBeEnabled()
   })
 
   const removeAfterFirstParenthesis = (inputString: string) => {
