@@ -1072,15 +1072,13 @@ extrude001 = extrude(-12, sketch001)
   )
 
   // Colors
-  const firstEdgeColorWhite: [number, number, number] = [246, 246, 246]
-  const secondEdgeColorWhite: [number, number, number] = [250, 250, 250]
-  const firstEdgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
-  const secondEdgeColorYellow: [number, number, number] = [251, 251, 40]
+  const edgeColorWhite: [number, number, number] = [248, 248, 248]
+  const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
   const bodyColor: [number, number, number] = [155, 155, 155]
   const filletColor: [number, number, number] = [127, 127, 127]
   const backgroundColor: [number, number, number] = [30, 30, 30]
   const lowTolerance = 20
-  const highTolerance = 40 // in case of bad visibility or gradient
+  const highTolerance = 40
 
   // Setup
   await context.addInitScript((initialCode) => {
@@ -1090,7 +1088,7 @@ extrude001 = extrude(-12, sketch001)
   await homePage.goToModelingScene()
 
   await test.step(`Verify scene is loaded`, async () => {
-    // verify goToModelingScene is done
+    // verify modeling scene is loaded
     await scene.expectPixelColor(
       backgroundColor,
       secondEdgeLocation,
@@ -1104,15 +1102,15 @@ extrude001 = extrude(-12, sketch001)
   // Test 1: Command bar flow with preselected edges
   await test.step(`Select first edge`, async () => {
     await scene.expectPixelColor(
-      firstEdgeColorWhite,
+      edgeColorWhite,
       firstEdgeLocation,
       lowTolerance
     )
     await clickOnFirstEdge()
     await scene.expectPixelColor(
-      firstEdgeColorYellow,
+      edgeColorYellow,
       firstEdgeLocation,
-      highTolerance // Ubuntu 254,255,12 instead of 251,251,67
+      highTolerance // Ubuntu color mismatch can require high tolerance
     )
   })
 
@@ -1129,7 +1127,7 @@ extrude001 = extrude(-12, sketch001)
       },
       stage: 'arguments',
     })
-    await cmdBar.progressCmdBar() // ubuntu alarm
+    await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       commandName: 'Fillet',
       highlightedHeaderArg: 'radius',
@@ -1184,20 +1182,42 @@ extrude001 = extrude(-12, sketch001)
 
   await test.step(`Select second edge`, async () => {
     await scene.expectPixelColor(
-      secondEdgeColorWhite,
+      edgeColorWhite,
       secondEdgeLocation,
       lowTolerance
     )
     await clickOnSecondEdge()
     await scene.expectPixelColor(
-      secondEdgeColorYellow,
+      edgeColorYellow,
       secondEdgeLocation,
-      highTolerance // Ubuntu 254,255,12 instead of 251,251,67
+      highTolerance // Ubuntu color mismatch can require high tolerance
     )
   })
 
   await test.step(`Apply fillet to the second edge`, async () => {
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      highlightedHeaderArg: 'selection',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Radius: '',
+      },
+      stage: 'arguments',
+    })
     await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Fillet',
+      highlightedHeaderArg: 'radius',
+      currentArgKey: 'radius',
+      currentArgValue: '5',
+      headerArguments: {
+        Selection: '1 sweepEdge',
+        Radius: '',
+      },
+      stage: 'arguments',
+    })
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       commandName: 'Fillet',
@@ -1227,7 +1247,7 @@ extrude001 = extrude(-12, sketch001)
     )
   })
 })
-    
+
 const shellPointAndClickCapCases = [
   { shouldPreselect: true },
   { shouldPreselect: false },
