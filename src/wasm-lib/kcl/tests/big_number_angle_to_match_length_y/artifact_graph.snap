@@ -1,0 +1,129 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph big_number_angle_to_match_length_y.kcl
+snapshot_kind: text
+---
+{
+  "map": {
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          98,
+          154,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Path",
+      "id": "[uuid]",
+      "planeId": "[uuid]",
+      "segIds": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]"
+      ],
+      "sweepId": "[uuid]",
+      "solid2dId": "[uuid]",
+      "codeRef": {
+        "range": [
+          35,
+          60,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Cap",
+      "id": "[uuid]",
+      "subType": "end",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          66,
+          92,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Plane",
+      "id": "[uuid]",
+      "pathIds": [
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          10,
+          29,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Cap",
+      "id": "[uuid]",
+      "subType": "start",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Sweep",
+      "id": "[uuid]",
+      "subType": "extrusion",
+      "pathId": "[uuid]",
+      "codeRef": {
+        "range": [
+          174,
+          188,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Solid2d",
+      "id": "[uuid]",
+      "pathId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          160,
+          168,
+          0
+        ]
+      }
+    }
+  }
+}

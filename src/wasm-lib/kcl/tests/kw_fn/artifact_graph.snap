@@ -1,0 +1,8 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph kw_fn.kcl
+snapshot_kind: text
+---
+{
+  "map": {}
+}

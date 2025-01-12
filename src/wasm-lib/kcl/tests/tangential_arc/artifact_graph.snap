@@ -1,0 +1,123 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph tangential_arc.kcl
+snapshot_kind: text
+---
+{
+  "map": {
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Plane",
+      "id": "[uuid]",
+      "pathIds": [
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          12,
+          33,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Sweep",
+      "id": "[uuid]",
+      "subType": "extrusion",
+      "pathId": "[uuid]",
+      "codeRef": {
+        "range": [
+          135,
+          149,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          112,
+          129,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Path",
+      "id": "[uuid]",
+      "planeId": "[uuid]",
+      "segIds": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]"
+      ],
+      "sweepId": "[uuid]",
+      "codeRef": {
+        "range": [
+          12,
+          33,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Cap",
+      "id": "[uuid]",
+      "subType": "end",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          39,
+          55,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Cap",
+      "id": "[uuid]",
+      "subType": "start",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          61,
+          106,
+          0
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,108 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph tan_arc_x_line.kcl
+snapshot_kind: text
+---
+{
+  "map": {
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          443,
+          456,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Plane",
+      "id": "[uuid]",
+      "pathIds": [
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          64,
+          83,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          258,
+          344,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Path",
+      "id": "[uuid]",
+      "planeId": "[uuid]",
+      "segIds": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]"
+      ],
+      "sweepId": "[uuid]",
+      "codeRef": {
+        "range": [
+          89,
+          124,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          130,
+          185,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          350,
+          437,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          191,
+          252,
+          0
+        ]
+      }
+    }
+  }
+}

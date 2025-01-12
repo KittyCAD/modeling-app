@@ -1,0 +1,89 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph helix_ccw.kcl
+snapshot_kind: text
+---
+{
+  "map": {
+    "[uuid]": {
+      "type": "Cap",
+      "id": "[uuid]",
+      "subType": "end",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Solid2d",
+      "id": "[uuid]",
+      "pathId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Cap",
+      "id": "[uuid]",
+      "subType": "start",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Path",
+      "id": "[uuid]",
+      "planeId": "[uuid]",
+      "segIds": [
+        "[uuid]"
+      ],
+      "sweepId": "[uuid]",
+      "solid2dId": "[uuid]",
+      "codeRef": {
+        "range": [
+          35,
+          78,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Sweep",
+      "id": "[uuid]",
+      "subType": "extrusion",
+      "pathId": "[uuid]",
+      "codeRef": {
+        "range": [
+          84,
+          98,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Plane",
+      "id": "[uuid]",
+      "pathIds": [
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          10,
+          29,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          35,
+          78,
+          0
+        ]
+      }
+    }
+  }
+}

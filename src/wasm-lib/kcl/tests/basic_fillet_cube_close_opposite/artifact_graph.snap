@@ -1,0 +1,178 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph basic_fillet_cube_close_opposite.kcl
+snapshot_kind: text
+---
+{
+  "map": {
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          118,
+          144,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "edgeCutId": "[uuid]",
+      "codeRef": {
+        "range": [
+          150,
+          167,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          96,
+          112,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Solid2d",
+      "id": "[uuid]",
+      "pathId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Path",
+      "id": "[uuid]",
+      "planeId": "[uuid]",
+      "segIds": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]",
+        "[uuid]"
+      ],
+      "sweepId": "[uuid]",
+      "solid2dId": "[uuid]",
+      "codeRef": {
+        "range": [
+          35,
+          60,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Cap",
+      "id": "[uuid]",
+      "subType": "end",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          66,
+          90,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "EdgeCut",
+      "id": "[uuid]",
+      "subType": "fillet",
+      "consumedEdgeId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          193,
+          279,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Cap",
+      "id": "[uuid]",
+      "subType": "start",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "EdgeCut",
+      "id": "[uuid]",
+      "subType": "fillet",
+      "consumedEdgeId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "codeRef": {
+        "range": [
+          193,
+          279,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Sweep",
+      "id": "[uuid]",
+      "subType": "extrusion",
+      "pathId": "[uuid]",
+      "codeRef": {
+        "range": [
+          173,
+          187,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "Plane",
+      "id": "[uuid]",
+      "pathIds": [
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          10,
+          29,
+          0
+        ]
+      }
+    },
+    "[uuid]": {
+      "type": "Wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    }
+  }
+}
