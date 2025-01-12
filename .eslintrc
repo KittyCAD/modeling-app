@@ -10,6 +10,7 @@
       "react",
       "react-hooks",
       "suggest-no-throw",
+      "testing-library",
       "@typescript-eslint"
     ],
     "extends": [
@@ -40,6 +41,9 @@
     "overrides": [
       {
         "files": ["e2e/**/*.ts"], // Update the pattern based on your file structure
+        "extends": [
+          "plugin:testing-library/react"
+        ],
         "rules": {
           "suggest-no-throw/suggest-no-throw": "off",
           "testing-library/prefer-screen-queries": "off",
@@ -48,6 +52,9 @@
       },
       {
         "files": ["src/**/*.test.ts"],
+        "extends": [
+          "plugin:testing-library/react"
+        ],
         "rules": {
           "suggest-no-throw/suggest-no-throw": "off",
         }
