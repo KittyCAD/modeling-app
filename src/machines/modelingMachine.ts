@@ -769,54 +769,6 @@ export const modelingMachine = setup({
         await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       })().catch(reportRejection)
     },
-    'AST fillet': ({ event }) => {
-      if (event.type !== 'Fillet') return
-      if (!event.data) return
-
-      // Extract inputs
-      const ast = kclManager.ast
-      const { selection, radius } = event.data
-      const parameters: FilletParameters = {
-        type: EdgeTreatmentType.Fillet,
-        radius,
-      }
-
-      // Apply fillet to selection
-      const applyEdgeTreatmentToSelectionResult = applyEdgeTreatmentToSelection(
-        ast,
-        selection,
-        parameters
-      )
-      if (err(applyEdgeTreatmentToSelectionResult))
-        return applyEdgeTreatmentToSelectionResult
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-    },
-    'AST chamfer': ({ event }) => {
-      if (event.type !== 'Chamfer') return
-      if (!event.data) return
-
-      // Extract inputs
-      const ast = kclManager.ast
-      const { selection, length } = event.data
-      const parameters: ChamferParameters = {
-        type: EdgeTreatmentType.Chamfer,
-        length,
-      }
-
-      // Apply chamfer to selection
-      const applyEdgeTreatmentToSelectionResult = applyEdgeTreatmentToSelection(
-        ast,
-        selection,
-        parameters
-      )
-      if (err(applyEdgeTreatmentToSelectionResult))
-        return applyEdgeTreatmentToSelectionResult
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
-    },
     'set selection filter to curves only': () => {
       ;(async () => {
         await engineCommandManager.sendSceneCommand({
@@ -1787,6 +1739,33 @@ export const modelingMachine = setup({
         if (err(filletResult)) return filletResult
       }
     ),
+    chamferAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Chamfer'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection, length } = input
+        const parameters: ChamferParameters = {
+          type: EdgeTreatmentType.Chamfer,
+          length,
+        }
+
+        // Apply chamfer to selection
+        const chamferResult = await applyEdgeTreatmentToSelection(
+          ast,
+          selection,
+          parameters
+        )
+        if (err(chamferResult)) return chamferResult
+      }
+    ),
     'submit-prompt-edit': fromPromise(
       async ({ input }: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {
         console.log('doing thing', input)
@@ -1872,10 +1851,8 @@ export const modelingMachine = setup({
         },
 
         Chamfer: {
-          target: 'idle',
-          guard: 'has valid edge treatment selection',
-          actions: ['AST chamfer'],
-          reenter: false,
+          target: 'Applying chamfer',
+          reenter: true,
         },
 
         Export: {
@@ -2700,6 +2677,19 @@ export const modelingMachine = setup({
         id: 'filletAstMod',
         input: ({ event }) => {
           if (event.type !== 'Fillet') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying chamfer': {
+      invoke: {
+        src: 'chamferAstMod',
+        id: 'chamferAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Chamfer') return undefined
           return event.data
         },
         onDone: ['idle'],
