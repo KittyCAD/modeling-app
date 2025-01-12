@@ -1,6 +1,7 @@
 use fnv::FnvHashMap;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::{
+    self as kcmc,
     id::ModelingCmdId,
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
@@ -206,6 +207,63 @@ pub enum CapSubType {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SweepEdge {
+    pub id: ArtifactId,
+    pub seg_id: ArtifactId,
+    pub sweep_id: ArtifactId,
+    pub sub_type: SweepEdgeSubType,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum SweepEdgeSubType {
+    Opposite,
+    Adjacent,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct EdgeCut {
+    pub id: ArtifactId,
+    pub sub_type: EdgeCutSubType,
+    pub consumed_edge_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub edge_ids: Vec<ArtifactId>,
+    pub surface_id: ArtifactId,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum EdgeCutSubType {
+    Fillet,
+    Chamfer,
+}
+
+impl From<kcmc::shared::CutType> for EdgeCutSubType {
+    fn from(cut_type: kcmc::shared::CutType) -> Self {
+        match cut_type {
+            kcmc::shared::CutType::Fillet => EdgeCutSubType::Fillet,
+            kcmc::shared::CutType::Chamfer => EdgeCutSubType::Chamfer,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct EdgeCutEdge {
+    pub id: ArtifactId,
+    pub edge_cut_id: ArtifactId,
+    pub surface_id: ArtifactId,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type")]
 pub enum Artifact {
     Plane(Plane),
@@ -227,6 +285,9 @@ pub enum Artifact {
     Sweep(Sweep),
     Wall(Wall),
     Cap(Cap),
+    SweepEdge(SweepEdge),
+    EdgeCut(EdgeCut),
+    EdgeCutEdge(EdgeCutEdge),
 }
 
 impl Artifact {
@@ -241,6 +302,9 @@ impl Artifact {
             Artifact::Sweep(a) => a.id,
             Artifact::Wall(a) => a.id,
             Artifact::Cap(a) => a.id,
+            Artifact::SweepEdge(a) => a.id,
+            Artifact::EdgeCut(a) => a.id,
+            Artifact::EdgeCutEdge(a) => a.id,
         }
     }
 
@@ -257,6 +321,9 @@ impl Artifact {
             Artifact::Sweep(a) => a.merge(new),
             Artifact::Wall(a) => a.merge(new),
             Artifact::Cap(a) => a.merge(new),
+            Artifact::SweepEdge(_) => Some(new),
+            Artifact::EdgeCut(a) => a.merge(new),
+            Artifact::EdgeCutEdge(_) => Some(new),
         }
     }
 }
@@ -290,9 +357,7 @@ impl Segment {
             return Some(new);
         };
         // We initialize this with a placeholder.
-        if self.surface_id != new.surface_id {
-            self.surface_id = new.surface_id;
-        }
+        self.surface_id = new.surface_id;
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_ids(&mut self.edge_cut_id, new.edge_cut_id);
 
@@ -331,6 +396,19 @@ impl Cap {
         };
         merge_ids(&mut self.edge_cut_ids, new.edge_cut_ids);
         merge_ids(&mut self.path_ids, new.path_ids);
+
+        None
+    }
+}
+
+impl EdgeCut {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::EdgeCut(new) = new else {
+            return Some(new);
+        };
+        // We initialize this with a placeholder.
+        self.surface_id = new.surface_id;
+        merge_ids(&mut self.edge_ids, new.edge_ids);
 
         None
     }
@@ -707,10 +785,74 @@ fn artifacts_to_update(
             }
             _ => {}
         },
-        ModelingCmd::Solid3dGetOppositeEdge(_) | ModelingCmd::Solid3dGetNextAdjacentEdge(_) => todo!(),
-        ModelingCmd::Solid3dGetPrevAdjacentEdge(_) => todo!(),
-        ModelingCmd::EngineUtilEvaluatePath(_) => todo!(),
-        ModelingCmd::Solid3dFilletEdge(_) => todo!(),
+        ModelingCmd::Solid3dGetOppositeEdge(_) | ModelingCmd::Solid3dGetNextAdjacentEdge(_) => {
+            let (face_id, edge_id) = match cmd {
+                ModelingCmd::Solid3dGetOppositeEdge(e) => (ArtifactId::new(e.face_id), e.edge_id.into()),
+                ModelingCmd::Solid3dGetNextAdjacentEdge(e) => (ArtifactId::new(e.face_id), e.edge_id.into()),
+                _ => unreachable!(),
+            };
+            let Some(Artifact::Wall(wall)) = artifacts.get(&face_id) else {
+                return Ok(Vec::new());
+            };
+            let Some(Artifact::Sweep(sweep)) = artifacts.get(&wall.sweep_id) else {
+                return Ok(Vec::new());
+            };
+            let Some(Artifact::Path(path)) = artifacts.get(&sweep.path_id) else {
+                return Ok(Vec::new());
+            };
+            let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
+                return Ok(Vec::new());
+            };
+            let (sub_type, response_edge_id) = match response {
+                OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(r) => {
+                    let Some(edge_id) = r.edge else {
+                        return Err(KclError::internal(format!(
+                            "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: {response:?}"
+                        )));
+                    };
+                    (SweepEdgeSubType::Adjacent, edge_id.into())
+                }
+                OkModelingCmdResponse::Solid3dGetOppositeEdge(r) => (SweepEdgeSubType::Opposite, r.edge.into()),
+                _ => {
+                    return Err(KclError::internal(format!(
+                        "Expected Solid3dGetOppositeEdge or Solid3dGetNextAdjacentEdge response, but got: {response:?}"
+                    )));
+                }
+            };
+
+            let mut return_arr = Vec::new();
+            return_arr.push(Artifact::SweepEdge(SweepEdge {
+                id: response_edge_id,
+                seg_id: edge_id,
+                sweep_id: path.sweep_id,
+                sub_type,
+            }));
+            let mut new_segment = segment.clone();
+            new_segment.edge_ids = vec![response_edge_id];
+            return_arr.push(Artifact::Segment(new_segment));
+            let mut new_sweep = sweep.clone();
+            new_sweep.edge_ids = vec![response_edge_id];
+            return_arr.push(Artifact::Sweep(new_sweep));
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dFilletEdge(cmd) => {
+            let mut return_arr = Vec::new();
+            return_arr.push(Artifact::EdgeCut(EdgeCut {
+                id,
+                sub_type: cmd.cut_type.into(),
+                consumed_edge_id: cmd.edge_id.into(),
+                edge_ids: Vec::new(),
+                surface_id: ArtifactId::fake_placeholder(),
+                code_ref: CodeRef { range },
+            }));
+            let consumed_edge = artifacts.get(&ArtifactId::new(cmd.edge_id));
+            if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
+                let mut new_segment = consumed_edge.clone();
+                new_segment.edge_cut_id = Some(id);
+                return_arr.push(Artifact::Segment(new_segment));
+            }
+            return Ok(return_arr);
+        }
         _ => {}
     }
 
