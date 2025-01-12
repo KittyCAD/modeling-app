@@ -159,6 +159,7 @@ pub enum SweepSubType {
     Extrusion,
     Revolve,
     Loft,
+    Sweep,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -582,11 +583,12 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Extrude(_) | ModelingCmd::Revolve(_) => {
+        ModelingCmd::Extrude(_) | ModelingCmd::Revolve(_) | ModelingCmd::Sweep(_) => {
             let mut return_arr = Vec::new();
             let (sub_type, target) = match cmd {
                 ModelingCmd::Extrude(e) => (SweepSubType::Extrusion, e.target.into()),
                 ModelingCmd::Revolve(r) => (SweepSubType::Revolve, r.target.into()),
+                ModelingCmd::Sweep(s) => (SweepSubType::Sweep, s.target.into()),
                 _ => unreachable!(),
             };
             return_arr.push(Artifact::Sweep(Sweep {
