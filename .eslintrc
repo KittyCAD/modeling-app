@@ -6,16 +6,21 @@
     "plugins": [
       "css-modules",
       "jest",
+      "jsx-a11y",
       "react",
       "suggest-no-throw",
       "@typescript-eslint"
     ],
     "extends": [
-      "plugin:css-modules/recommended"
+      "plugin:css-modules/recommended",
+      "plugin:jsx-a11y/recommended"
     ],
     "rules": {
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
+      "jsx-a11y/click-events-have-key-events": "off",
+      "jsx-a11y/no-autofocus": "off",
+      "jsx-a11y/no-noninteractive-element-interactions": "off",
       "no-restricted-globals": [
         "error",
         {
