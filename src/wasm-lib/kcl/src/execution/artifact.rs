@@ -242,6 +242,97 @@ impl Artifact {
             Artifact::Cap(a) => a.id,
         }
     }
+
+    /// Merge the new artifact into self.  If it can't because it's a different
+    /// type, return the new artifact which should be used as a replacement.
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        match self {
+            Artifact::Plane(a) => a.merge(new),
+            Artifact::Path(a) => a.merge(new),
+            Artifact::Segment(a) => a.merge(new),
+            Artifact::Solid2d(_) => Some(new),
+            Artifact::StartSketchOnFace { .. } => Some(new),
+            Artifact::StartSketchOnPlane { .. } => Some(new),
+            Artifact::Sweep(a) => a.merge(new),
+            Artifact::Wall(a) => a.merge(new),
+            Artifact::Cap(a) => a.merge(new),
+        }
+    }
+}
+
+impl Plane {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Plane(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.path_ids, new.path_ids);
+
+        None
+    }
+}
+
+impl Path {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Path(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.seg_ids, new.seg_ids);
+        merge_opt_ids(&mut self.solid2d_id, new.solid2d_id);
+
+        None
+    }
+}
+
+impl Segment {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Segment(new) = new else {
+            return Some(new);
+        };
+        // We initialize this with a placeholder.
+        if self.surface_id != new.surface_id {
+            self.surface_id = new.surface_id;
+        }
+        merge_ids(&mut self.edge_ids, new.edge_ids);
+        merge_opt_ids(&mut self.edge_cut_id, new.edge_cut_id);
+
+        None
+    }
+}
+
+impl Sweep {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Sweep(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.surface_ids, new.surface_ids);
+        merge_ids(&mut self.edge_ids, new.edge_ids);
+
+        None
+    }
+}
+
+impl Wall {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Wall(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.edge_cut_ids, new.edge_cut_ids);
+        merge_ids(&mut self.path_ids, new.path_ids);
+
+        None
+    }
+}
+
+impl Cap {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::Cap(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.edge_cut_ids, new.edge_cut_ids);
+        merge_ids(&mut self.path_ids, new.path_ids);
+
+        None
+    }
 }
 
 pub(crate) fn build_artifact_graph(
@@ -326,42 +417,8 @@ fn merge_artifact_into_map(map: &mut IndexMap<ArtifactId, Artifact>, new_artifac
         return;
     };
 
-    merge_artifact(old_artifact, new_artifact);
-}
-
-/// Merge the new artifact into the existing one, mutating it.  If it can't be
-/// merged because it's a different type, return the new artifact which should
-/// be used as a replacement.
-fn merge_artifact(base: &mut Artifact, new: Artifact) {
-    match (base, new) {
-        (Artifact::Plane(old), Artifact::Plane(new)) => {
-            merge_ids(&mut old.path_ids, new.path_ids);
-        }
-        (Artifact::Path(old), Artifact::Path(new)) => {
-            merge_ids(&mut old.seg_ids, new.seg_ids);
-            merge_opt_ids(&mut old.solid2d_id, new.solid2d_id);
-        }
-        (Artifact::Segment(old), Artifact::Segment(new)) => {
-            // We initialize this with a placeholder.
-            if old.surface_id != new.surface_id {
-                old.surface_id = new.surface_id;
-            }
-            merge_ids(&mut old.edge_ids, new.edge_ids);
-            merge_opt_ids(&mut old.edge_cut_id, new.edge_cut_id);
-        }
-        (Artifact::Sweep(old), Artifact::Sweep(new)) => {
-            merge_ids(&mut old.surface_ids, new.surface_ids);
-            merge_ids(&mut old.edge_ids, new.edge_ids);
-        }
-        (Artifact::Wall(old), Artifact::Wall(new)) => {
-            merge_ids(&mut old.edge_cut_ids, new.edge_cut_ids);
-            merge_ids(&mut old.path_ids, new.path_ids);
-        }
-        (base, new) => {
-            // They're different types.  So replace the old one with the new
-            // one.
-            *base = new;
-        }
+    if let Some(replacement) = old_artifact.merge(new_artifact) {
+        map.insert(id, replacement);
     }
 }
 
