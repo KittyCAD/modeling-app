@@ -3,7 +3,7 @@
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::Node;
+use super::{super::digest::Digest, Node};
 use crate::{execution::KclValue, parsing::ast::types::ConstraintLevel};
 
 const KCL_NONE_ID: &str = "KCL_NONE_ID";
@@ -19,11 +19,18 @@ pub struct KclNone {
     #[ts(skip)]
     #[schemars(skip)]
     __private: Private,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
 }
 
 impl KclNone {
     pub fn new() -> Self {
-        Self { __private: Private {} }
+        Self {
+            __private: Private {},
+            digest: None,
+        }
     }
 }
 

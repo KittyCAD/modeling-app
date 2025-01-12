@@ -1,9 +1,11 @@
 //! Data types for the AST.
 
 use std::{
+    cell::RefCell,
     collections::HashMap,
     fmt,
     ops::{Deref, DerefMut, RangeInclusive},
+    rc::Rc,
     sync::{Arc, Mutex},
 };
 
@@ -183,28 +185,31 @@ pub struct Program {
 impl Node<Program> {
     /// Walk the ast and get all the variables and tags as completion items.
     pub fn completion_items<'a>(&'a self) -> Result<Vec<CompletionItem>> {
-        let completions = Arc::new(Mutex::new(vec![]));
-        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
-            let mut findings = completions.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+        let completions = Rc::new(RefCell::new(vec![]));
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            let mut findings = completions.borrow_mut();
             match node {
                 crate::walk::Node::TagDeclarator(tag) => {
                     findings.push(tag.into());
                 }
                 crate::walk::Node::VariableDeclaration(variable) => {
-                    findings.extend::<Vec<CompletionItem>>(variable.into());
+                    findings.extend::<Vec<CompletionItem>>((&variable.inner).into());
+                }
+                crate::walk::Node::ImportStatement(i) => {
+                    findings.extend::<Vec<CompletionItem>>((&i.inner).into());
                 }
                 _ => {}
             }
-            Ok(true)
+            Ok::<bool, anyhow::Error>(true)
         })?;
-        let x = completions.lock().unwrap();
+        let x = completions.take();
         Ok(x.clone())
     }
 
     /// Returns all the lsp symbols in the program.
     pub fn get_lsp_symbols<'a>(&'a self, code: &str) -> Result<Vec<DocumentSymbol>> {
         let symbols = Arc::new(Mutex::new(vec![]));
-        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             let mut findings = symbols.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             match node {
                 crate::walk::Node::TagDeclarator(tag) => {
@@ -215,7 +220,7 @@ impl Node<Program> {
                 }
                 _ => {}
             }
-            Ok(true)
+            Ok::<bool, anyhow::Error>(true)
         })?;
         let x = symbols.lock().unwrap();
         Ok(x.clone())
@@ -227,10 +232,10 @@ impl Node<Program> {
         RuleT: crate::lint::Rule<'a>,
     {
         let v = Arc::new(Mutex::new(vec![]));
-        crate::walk::walk(self, &|node: crate::walk::Node<'a>| {
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
             findings.append(&mut rule.check(node)?);
-            Ok(true)
+            Ok::<bool, anyhow::Error>(true)
         })?;
         let x = v.lock().unwrap();
         Ok(x.clone())
@@ -598,6 +603,7 @@ pub enum Expr {
     MemberExpression(BoxNode<MemberExpression>),
     UnaryExpression(BoxNode<UnaryExpression>),
     IfExpression(BoxNode<IfExpression>),
+    LabelledExpression(BoxNode<LabelledExpression>),
     None(Node<KclNone>),
 }
 
@@ -640,6 +646,7 @@ impl Expr {
             Expr::UnaryExpression(_unary_exp) => None,
             Expr::PipeSubstitution(_pipe_substitution) => None,
             Expr::IfExpression(_) => None,
+            Expr::LabelledExpression(expr) => expr.expr.get_non_code_meta(),
             Expr::None(_none) => None,
         }
     }
@@ -666,6 +673,7 @@ impl Expr {
             Expr::UnaryExpression(ref mut unary_exp) => unary_exp.replace_value(source_range, new_value),
             Expr::IfExpression(_) => {}
             Expr::PipeSubstitution(_) => {}
+            Expr::LabelledExpression(expr) => expr.expr.replace_value(source_range, new_value),
             Expr::None(_) => {}
         }
     }
@@ -687,6 +695,7 @@ impl Expr {
             Expr::MemberExpression(member_expression) => member_expression.start,
             Expr::UnaryExpression(unary_expression) => unary_expression.start,
             Expr::IfExpression(expr) => expr.start,
+            Expr::LabelledExpression(expr) => expr.start,
             Expr::None(none) => none.start,
         }
     }
@@ -708,6 +717,7 @@ impl Expr {
             Expr::MemberExpression(member_expression) => member_expression.end,
             Expr::UnaryExpression(unary_expression) => unary_expression.end,
             Expr::IfExpression(expr) => expr.end,
+            Expr::LabelledExpression(expr) => expr.end,
             Expr::None(none) => none.end,
         }
     }
@@ -734,6 +744,8 @@ impl Expr {
             Expr::Literal(_) => None,
             Expr::Identifier(_) => None,
             Expr::TagDeclarator(_) => None,
+            // TODO LSP hover info for tag
+            Expr::LabelledExpression(expr) => expr.expr.get_hover_value_for_position(pos, code),
             // TODO: LSP hover information for symbols. https://github.com/KittyCAD/modeling-app/issues/1127
             Expr::PipeSubstitution(_) => None,
         }
@@ -763,6 +775,7 @@ impl Expr {
             }
             Expr::UnaryExpression(ref mut unary_expression) => unary_expression.rename_identifiers(old_name, new_name),
             Expr::IfExpression(ref mut expr) => expr.rename_identifiers(old_name, new_name),
+            Expr::LabelledExpression(expr) => expr.expr.rename_identifiers(old_name, new_name),
             Expr::None(_) => {}
         }
     }
@@ -788,7 +801,17 @@ impl Expr {
             Expr::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             Expr::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             Expr::IfExpression(expr) => expr.get_constraint_level(),
+            Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
+        }
+    }
+
+    pub fn has_substitution_arg(&self) -> bool {
+        match self {
+            Expr::CallExpression(call_expression) => call_expression.has_substitution_arg(),
+            Expr::CallExpressionKw(call_expression) => call_expression.has_substitution_arg(),
+            Expr::LabelledExpression(expr) => expr.expr.has_substitution_arg(),
+            _ => false,
         }
     }
 }
@@ -802,6 +825,36 @@ impl From<Expr> for SourceRange {
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
         Self::new(value.start(), value.end(), value.module_id())
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub struct LabelledExpression {
+    pub expr: Expr,
+    pub label: Node<Identifier>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl LabelledExpression {
+    pub(crate) fn new(expr: Expr, label: Node<Identifier>) -> Node<LabelledExpression> {
+        let start = expr.start();
+        let end = label.end;
+        let module_id = expr.module_id();
+        Node::new(
+            LabelledExpression {
+                expr,
+                label,
+                digest: None,
+            },
+            start,
+            end,
+            module_id,
+        )
     }
 }
 
@@ -947,52 +1000,22 @@ pub struct NonCodeNode {
     pub digest: Option<Digest>,
 }
 
-impl Node<NonCodeNode> {
-    pub fn format(&self, indentation: &str) -> String {
-        match &self.value {
-            NonCodeValue::InlineComment {
-                value,
-                style: CommentStyle::Line,
-            } => format!(" // {}\n", value),
-            NonCodeValue::InlineComment {
-                value,
-                style: CommentStyle::Block,
-            } => format!(" /* {} */", value),
-            NonCodeValue::BlockComment { value, style } => match style {
-                CommentStyle::Block => format!("{}/* {} */", indentation, value),
-                CommentStyle::Line => {
-                    if value.trim().is_empty() {
-                        format!("{}//\n", indentation)
-                    } else {
-                        format!("{}// {}\n", indentation, value.trim())
-                    }
-                }
-            },
-            NonCodeValue::NewLineBlockComment { value, style } => {
-                let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
-                match style {
-                    CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
-                    CommentStyle::Line => {
-                        if value.trim().is_empty() {
-                            format!("{}{}//\n", add_start_new_line, indentation)
-                        } else {
-                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
-                        }
-                    }
-                }
-            }
-            NonCodeValue::NewLine => "\n\n".to_string(),
-        }
-    }
-}
-
 impl NonCodeNode {
+    #[cfg(test)]
     pub fn value(&self) -> String {
         match &self.value {
             NonCodeValue::InlineComment { value, style: _ } => value.clone(),
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
+            NonCodeValue::Annotation { name, .. } => name.name.clone(),
+        }
+    }
+
+    pub fn annotation(&self, expected_name: &str) -> Option<&NonCodeValue> {
+        match &self.value {
+            a @ NonCodeValue::Annotation { name, .. } if name.name == expected_name => Some(a),
+            _ => None,
         }
     }
 }
@@ -1010,6 +1033,7 @@ pub enum CommentStyle {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::large_enum_variant)]
 pub enum NonCodeValue {
     /// An inline comment.
     /// Here are examples:
@@ -1042,6 +1066,10 @@ pub enum NonCodeValue {
     // A new line like `\n\n` NOT a new line like `\n`.
     // This is also not a comment.
     NewLine,
+    Annotation {
+        name: Node<Identifier>,
+        properties: Option<Vec<Node<ObjectProperty>>>,
+    },
 }
 
 #[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1177,7 +1205,7 @@ pub enum ImportSelector {
     Glob(Node<()>),
     /// Import the module itself (the param is an optional alias).
     /// E.g., `import "foo.kcl" as bar`
-    None(Option<Node<Identifier>>),
+    None { alias: Option<Node<Identifier>> },
 }
 
 impl ImportSelector {
@@ -1196,8 +1224,8 @@ impl ImportSelector {
                 None
             }
             ImportSelector::Glob(_) => None,
-            ImportSelector::None(None) => None,
-            ImportSelector::None(Some(alias)) => {
+            ImportSelector::None { alias: None } => None,
+            ImportSelector::None { alias: Some(alias) } => {
                 let alias_source_range = SourceRange::from(&*alias);
                 if !alias_source_range.contains(pos) {
                     return None;
@@ -1216,8 +1244,8 @@ impl ImportSelector {
                 }
             }
             ImportSelector::Glob(_) => {}
-            ImportSelector::None(None) => {}
-            ImportSelector::None(Some(alias)) => alias.rename(old_name, new_name),
+            ImportSelector::None { alias: None } => {}
+            ImportSelector::None { alias: Some(alias) } => alias.rename(old_name, new_name),
         }
     }
 }
@@ -1228,6 +1256,7 @@ impl ImportSelector {
 pub struct ImportStatement {
     pub selector: ImportSelector,
     pub path: String,
+    #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1247,28 +1276,8 @@ impl Node<ImportStatement> {
                 false
             }
             ImportSelector::Glob(_) => false,
-            ImportSelector::None(_) => name == self.module_name().unwrap(),
+            ImportSelector::None { .. } => name == self.module_name().unwrap(),
         }
-    }
-
-    /// Get the name of the module object for this import.
-    /// Validated during parsing and guaranteed to return `Some` if the statement imports
-    /// the module itself (i.e., self.selector is ImportSelector::None).
-    pub fn module_name(&self) -> Option<String> {
-        if let ImportSelector::None(Some(alias)) = &self.selector {
-            return Some(alias.name.clone());
-        }
-
-        let mut parts = self.path.split('.');
-        let name = parts.next()?;
-        let ext = parts.next()?;
-        let rest = parts.next();
-
-        if rest.is_some() || ext != "kcl" {
-            return None;
-        }
-
-        Some(name.to_owned())
     }
 
     pub fn get_constraint_level(&self) -> ConstraintLevel {
@@ -1285,6 +1294,59 @@ impl Node<ImportStatement> {
 impl ImportStatement {
     pub fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.selector.rename_identifiers(old_name, new_name);
+    }
+
+    /// Get the name of the module object for this import.
+    /// Validated during parsing and guaranteed to return `Some` if the statement imports
+    /// the module itself (i.e., self.selector is ImportSelector::None).
+    pub fn module_name(&self) -> Option<String> {
+        if let ImportSelector::None { alias: Some(alias) } = &self.selector {
+            return Some(alias.name.clone());
+        }
+
+        let mut parts = self.path.split('.');
+        let name = parts.next()?;
+        let ext = parts.next()?;
+        let rest = parts.next();
+
+        if rest.is_some() || ext != "kcl" {
+            return None;
+        }
+
+        Some(name.to_owned())
+    }
+}
+
+impl From<&ImportStatement> for Vec<CompletionItem> {
+    fn from(import: &ImportStatement) -> Self {
+        match &import.selector {
+            ImportSelector::List { items } => {
+                items
+                    .iter()
+                    .map(|i| {
+                        let as_str = match &i.alias {
+                            Some(s) => format!(" as {}", s.name),
+                            None => String::new(),
+                        };
+                        CompletionItem {
+                            label: i.identifier().to_owned(),
+                            // TODO we can only find this after opening the module
+                            kind: None,
+                            detail: Some(format!("{}{as_str} from '{}'", i.name.name, import.path)),
+                            ..CompletionItem::default()
+                        }
+                    })
+                    .collect()
+            }
+            // TODO can't do completion for glob imports without static name resolution
+            ImportSelector::Glob(_) => vec![],
+            ImportSelector::None { .. } => vec![CompletionItem {
+                label: import.module_name().unwrap(),
+                kind: Some(CompletionItemKind::MODULE),
+                detail: Some(format!("from '{}'", import.path)),
+                ..CompletionItem::default()
+            }],
+        }
     }
 }
 
@@ -1556,30 +1618,16 @@ pub struct VariableDeclaration {
     pub digest: Option<Digest>,
 }
 
-impl From<&Node<VariableDeclaration>> for Vec<CompletionItem> {
-    fn from(declaration: &Node<VariableDeclaration>) -> Self {
+impl From<&VariableDeclaration> for Vec<CompletionItem> {
+    fn from(declaration: &VariableDeclaration) -> Self {
         vec![CompletionItem {
             label: declaration.declaration.id.name.to_string(),
-            label_details: None,
-            kind: Some(match declaration.inner.kind {
+            kind: Some(match declaration.kind {
                 VariableKind::Const => CompletionItemKind::CONSTANT,
                 VariableKind::Fn => CompletionItemKind::FUNCTION,
             }),
-            detail: Some(declaration.inner.kind.to_string()),
-            documentation: None,
-            deprecated: None,
-            preselect: None,
-            sort_text: None,
-            filter_text: None,
-            insert_text: None,
-            insert_text_format: None,
-            insert_text_mode: None,
-            text_edit: None,
-            additional_text_edits: None,
-            command: None,
-            commit_characters: None,
-            data: None,
-            tags: None,
+            detail: Some(declaration.kind.to_string()),
+            ..CompletionItem::default()
         }]
     }
 }
@@ -1877,6 +1925,10 @@ impl Identifier {
             name: name.to_string(),
             digest: None,
         })
+    }
+
+    pub fn is_nameable(&self) -> bool {
+        !self.name.starts_with('_')
     }
 
     /// Rename all identifiers that have the old name to the new given name.
@@ -2519,6 +2571,14 @@ pub enum BinaryOperator {
     #[serde(rename = "<=")]
     #[display("<=")]
     Lte,
+    /// Are both left and right true?
+    #[serde(rename = "&")]
+    #[display("&")]
+    And,
+    /// Is either left or right true?
+    #[serde(rename = "|")]
+    #[display("|")]
+    Or,
 }
 
 /// Mathematical associativity.
@@ -2553,6 +2613,8 @@ impl BinaryOperator {
             BinaryOperator::Gte => *b"gte",
             BinaryOperator::Lt => *b"ltr",
             BinaryOperator::Lte => *b"lte",
+            BinaryOperator::And => *b"and",
+            BinaryOperator::Or => *b"lor",
         }
     }
 
@@ -2565,6 +2627,8 @@ impl BinaryOperator {
             BinaryOperator::Pow => 13,
             Self::Gt | Self::Gte | Self::Lt | Self::Lte => 9,
             Self::Eq | Self::Neq => 8,
+            Self::And => 7,
+            Self::Or => 6,
         }
     }
 
@@ -2575,6 +2639,7 @@ impl BinaryOperator {
             Self::Add | Self::Sub | Self::Mul | Self::Div | Self::Mod => Associativity::Left,
             Self::Pow => Associativity::Right,
             Self::Gt | Self::Gte | Self::Lt | Self::Lte | Self::Eq | Self::Neq => Associativity::Left, // I don't know if this is correct
+            Self::And | Self::Or => Associativity::Left,
         }
     }
 }
@@ -2809,7 +2874,8 @@ pub struct Parameter {
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
     /// This is optional if the user defines a type.
-    #[serde(skip)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(skip)]
     pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     /// If so, what is its default value?

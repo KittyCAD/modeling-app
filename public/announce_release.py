@@ -1,6 +1,7 @@
 import re
 import os
 import requests
+import textwrap
 
 webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
 release_version = os.getenv('RELEASE_VERSION')
@@ -25,11 +26,11 @@ if len(modified_release_body) > max_length:
 
 # Message to send to Discord
 data = {
-    "content": 
-        f'''
+    "content": textwrap.dedent(f'''
         **{release_version}** is now available! Check out the latest features and improvements here: <https://zoo.dev/modeling-app/download>
+
         {modified_release_body}
-        ''',
+    '''),
     "username": "Modeling App Release Updates",
     "avatar_url": "https://raw.githubusercontent.com/KittyCAD/modeling-app/main/public/discord-avatar.png"
 }

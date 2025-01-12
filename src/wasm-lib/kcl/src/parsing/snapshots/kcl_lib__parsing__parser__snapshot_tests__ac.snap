@@ -6,29 +6,29 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 23,
+        "end": 17,
         "id": {
-          "end": 13,
+          "end": 7,
           "name": "myArray",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
-          "end": 23,
+          "end": 17,
           "endElement": {
-            "end": 22,
+            "end": 16,
             "raw": "10",
-            "start": 20,
+            "start": 14,
             "type": "Literal",
             "type": "Literal",
             "value": 10.0
           },
           "endInclusive": true,
-          "start": 16,
+          "start": 10,
           "startElement": {
-            "end": 18,
+            "end": 12,
             "raw": "0",
-            "start": 17,
+            "start": 11,
             "type": "Literal",
             "type": "Literal",
             "value": 0.0
@@ -36,16 +36,16 @@ expression: actual
           "type": "ArrayRangeExpression",
           "type": "ArrayRangeExpression"
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 23,
+      "end": 17,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 23,
+  "end": 17,
   "start": 0
 }

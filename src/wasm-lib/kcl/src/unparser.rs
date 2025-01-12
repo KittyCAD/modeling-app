@@ -3,10 +3,10 @@ use std::fmt::Write;
 use crate::parsing::{
     ast::types::{
         ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem, CallExpression,
-        CallExpressionKw, Expr, FnArgType, FormatOptions, FunctionExpression, IfExpression, ImportSelector,
-        ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
-        MemberObject, Node, NonCodeValue, ObjectExpression, Parameter, PipeExpression, Program, TagDeclarator,
-        UnaryExpression, VariableDeclaration, VariableKind,
+        CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FnArgType, FormatOptions, FunctionExpression,
+        IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
+        LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
+        PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
     PIPE_OPERATOR,
 };
@@ -55,7 +55,7 @@ impl Program {
                         self.non_code_meta
                             .start_nodes
                             .iter()
-                            .map(|start| start.format(&indentation))
+                            .map(|start| start.recast(options, indentation_level))
                             .collect()
                     }
                 } else {
@@ -76,7 +76,7 @@ impl Program {
                         .iter()
                         .enumerate()
                         .map(|(i, custom_white_space_or_comment)| {
-                            let formatted = custom_white_space_or_comment.format(&indentation);
+                            let formatted = custom_white_space_or_comment.recast(options, indentation_level);
                             if i == 0 && !formatted.trim().is_empty() {
                                 if let NonCodeValue::BlockComment { .. } = custom_white_space_or_comment.value {
                                     format!("\n{}", formatted)
@@ -115,7 +115,75 @@ impl NonCodeValue {
     fn should_cause_array_newline(&self) -> bool {
         match self {
             Self::InlineComment { .. } => false,
-            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine => true,
+            Self::BlockComment { .. } | Self::NewLineBlockComment { .. } | Self::NewLine | Self::Annotation { .. } => {
+                true
+            }
+        }
+    }
+}
+
+impl Node<NonCodeNode> {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+        let indentation = options.get_indentation(indentation_level);
+        match &self.value {
+            NonCodeValue::InlineComment {
+                value,
+                style: CommentStyle::Line,
+            } => format!(" // {}\n", value),
+            NonCodeValue::InlineComment {
+                value,
+                style: CommentStyle::Block,
+            } => format!(" /* {} */", value),
+            NonCodeValue::BlockComment { value, style } => match style {
+                CommentStyle::Block => format!("{}/* {} */", indentation, value),
+                CommentStyle::Line => {
+                    if value.trim().is_empty() {
+                        format!("{}//\n", indentation)
+                    } else {
+                        format!("{}// {}\n", indentation, value.trim())
+                    }
+                }
+            },
+            NonCodeValue::NewLineBlockComment { value, style } => {
+                let add_start_new_line = if self.start == 0 { "" } else { "\n\n" };
+                match style {
+                    CommentStyle::Block => format!("{}{}/* {} */\n", add_start_new_line, indentation, value),
+                    CommentStyle::Line => {
+                        if value.trim().is_empty() {
+                            format!("{}{}//\n", add_start_new_line, indentation)
+                        } else {
+                            format!("{}{}// {}\n", add_start_new_line, indentation, value.trim())
+                        }
+                    }
+                }
+            }
+            NonCodeValue::NewLine => "\n\n".to_string(),
+            NonCodeValue::Annotation { name, properties } => {
+                let mut result = "@".to_owned();
+                result.push_str(&name.name);
+                if let Some(properties) = properties {
+                    result.push('(');
+                    result.push_str(
+                        &properties
+                            .iter()
+                            .map(|prop| {
+                                format!(
+                                    "{} = {}",
+                                    prop.key.name,
+                                    prop.value
+                                        .recast(options, indentation_level + 1, ExprContext::Other)
+                                        .trim()
+                                )
+                            })
+                            .collect::<Vec<String>>()
+                            .join(", "),
+                    );
+                    result.push(')');
+                    result.push('\n');
+                }
+
+                result
+            }
         }
     }
 }
@@ -146,11 +214,11 @@ impl ImportStatement {
                 string.push_str(" from ");
             }
             ImportSelector::Glob(_) => string.push_str("* from "),
-            ImportSelector::None(_) => {}
+            ImportSelector::None { .. } => {}
         }
         string.push_str(&format!("\"{}\"", self.path));
 
-        if let ImportSelector::None(Some(alias)) = &self.selector {
+        if let ImportSelector::None { alias: Some(alias) } = &self.selector {
             string.push_str(" as ");
             string.push_str(&alias.name);
         }
@@ -166,7 +234,14 @@ pub(crate) enum ExprContext {
 }
 
 impl Expr {
-    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
+    pub(crate) fn recast(&self, options: &FormatOptions, indentation_level: usize, mut ctxt: ExprContext) -> String {
+        let is_decl = matches!(ctxt, ExprContext::Decl);
+        if is_decl {
+            // Just because this expression is being bound to a variable, doesn't mean that every child
+            // expression is being bound. So, reset the expression context if necessary.
+            // This will still preserve the "::Pipe" context though.
+            ctxt = ExprContext::Other;
+        }
         match &self {
             Expr::BinaryExpression(bin_exp) => bin_exp.recast(options),
             Expr::ArrayExpression(array_exp) => array_exp.recast(options, indentation_level, ctxt),
@@ -175,11 +250,7 @@ impl Expr {
             Expr::MemberExpression(mem_exp) => mem_exp.recast(),
             Expr::Literal(literal) => literal.recast(),
             Expr::FunctionExpression(func_exp) => {
-                let mut result = if ctxt == ExprContext::Decl {
-                    String::new()
-                } else {
-                    "fn".to_owned()
-                };
+                let mut result = if is_decl { String::new() } else { "fn".to_owned() };
                 result += &func_exp.recast(options, indentation_level);
                 result
             }
@@ -191,6 +262,12 @@ impl Expr {
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(options),
             Expr::IfExpression(e) => e.recast(options, indentation_level, ctxt),
             Expr::PipeSubstitution(_) => crate::parsing::PIPE_SUBSTITUTION_OPERATOR.to_string(),
+            Expr::LabelledExpression(e) => {
+                let mut result = e.expr.recast(options, indentation_level, ctxt);
+                result += " as ";
+                result += &e.label.name;
+                result
+            }
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
@@ -263,7 +340,7 @@ impl LabeledArg {
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
         let label = &self.label.name;
         let arg = self.arg.recast(options, indentation_level, ctxt);
-        format!("{label}: {arg}")
+        format!("{label} = {arg}")
     }
 }
 
@@ -334,7 +411,7 @@ impl ArrayExpression {
                         .iter()
                         .map(|nc| {
                             found_line_comment |= nc.value.should_cause_array_newline();
-                            nc.format("")
+                            nc.recast(options, 0)
                         })
                         .collect::<Vec<_>>()
                 } else {
@@ -404,7 +481,8 @@ fn expr_is_trivial(expr: &Expr) -> bool {
         | Expr::ObjectExpression(_)
         | Expr::MemberExpression(_)
         | Expr::UnaryExpression(_)
-        | Expr::IfExpression(_) => false,
+        | Expr::IfExpression(_)
+        | Expr::LabelledExpression(_) => false,
     }
 }
 
@@ -471,7 +549,7 @@ impl ObjectExpression {
         let format_items: Vec<_> = (0..num_items)
             .flat_map(|i| {
                 if let Some(noncode) = self.non_code_meta.non_code_nodes.get(&i) {
-                    noncode.iter().map(|nc| nc.format("")).collect::<Vec<_>>()
+                    noncode.iter().map(|nc| nc.recast(options, 0)).collect::<Vec<_>>()
                 } else {
                     let prop = props.next().unwrap();
                     // Use a comma unless it's the last item
@@ -607,10 +685,13 @@ impl Node<PipeExpression> {
                 if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                     for val in non_code_meta_value {
                         let formatted = if val.end == self.end {
-                            let indentation = options.get_indentation(indentation_level);
-                            val.format(&indentation).trim_end_matches('\n').to_string()
+                            val.recast(options, indentation_level)
+                                .trim_end_matches('\n')
+                                .to_string()
                         } else {
-                            val.format(&indentation).trim_end_matches('\n').to_string()
+                            val.recast(options, indentation_level + 1)
+                                .trim_end_matches('\n')
+                                .to_string()
                         };
                         if let NonCodeValue::BlockComment { .. } = val.value {
                             s += "\n";
@@ -659,15 +740,18 @@ impl FunctionExpression {
 
 impl Parameter {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let mut result = format!(
-            "{}{}",
-            if self.labeled { "" } else { "@" },
-            self.identifier.name.clone()
-        );
+        let at_sign = if self.labeled { "" } else { "@" };
+        let identifier = &self.identifier.name;
+        let question_mark = if self.default_value.is_some() { "?" } else { "" };
+        let mut result = format!("{at_sign}{identifier}{question_mark}");
         if let Some(ty) = &self.type_ {
             result += ": ";
             result += &ty.recast(options, indentation_level);
         }
+        if let Some(DefaultParamVal::Literal(ref literal)) = self.default_value {
+            let lit = literal.recast();
+            result.push_str(&format!(" = {lit}"));
+        };
 
         result
     }
@@ -1239,7 +1323,8 @@ part001 = startSketchOn('XY')
 
     #[test]
     fn test_recast_large_file() {
-        let some_program_string = r#"// define nts
+        let some_program_string = r#"@settings(units=mm)
+// define nts
 radius = 6.0
 width = 144.0
 length = 83.0
@@ -1363,7 +1448,8 @@ tabs_l = startSketchOn({
         // Its VERY important this comes back with zero new lines.
         assert_eq!(
             recasted,
-            r#"// define nts
+            r#"@settings(units = mm)
+// define nts
 radius = 6.0
 width = 144.0
 length = 83.0
@@ -1511,6 +1597,28 @@ tabs_l = startSketchOn({
 }
 "#
         );
+    }
+
+    #[test]
+    fn test_as() {
+        let some_program_string = r#"fn cube(pos, scale) {
+  x = dfsfs + dfsfsd as y
+
+  sg = startSketchOn('XY')
+    |> startProfileAt(pos, %) as foo
+    |> line([0, scale], %)
+    |> line([scale, 0], %) as bar
+    |> line([0 as baz, -scale] as qux, %)
+    |> close(%)
+    |> extrude(scale, %)
+}
+
+cube(0, 0) as cub
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string,);
     }
 
     #[test]
@@ -2134,8 +2242,10 @@ fn f() {
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(raw, ModuleId::default()).unwrap();
-            let literal = crate::parsing::parser::unsigned_number_literal.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(raw, ModuleId::default()).unwrap();
+            let literal = crate::parsing::parser::unsigned_number_literal
+                .parse(tokens.as_slice())
+                .unwrap();
             assert_eq!(
                 literal.recast(),
                 expected,
@@ -2171,6 +2281,28 @@ sketch002 = startSketchOn({
     }
 
     #[test]
+    fn unparse_fn_unnamed() {
+        let input = r#"squares_out = reduce(arr, 0, fn(i, squares) {
+  return 1
+})
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
+    fn unparse_fn_named() {
+        let input = r#"fn f(x) {
+  return 1
+}
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
     fn recast_objects_with_comments() {
         use winnow::Parser;
         for (i, (input, expected, reason)) in [(
@@ -2191,9 +2323,9 @@ sketch002 = startSketchOn({
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-            crate::parsing::parser::print_tokens(&tokens);
-            let expr = crate::parsing::parser::object.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+            crate::parsing::parser::print_tokens(tokens.as_slice());
+            let expr = crate::parsing::parser::object.parse(tokens.as_slice()).unwrap();
             assert_eq!(
                 expr.recast(&FormatOptions::new(), 0, ExprContext::Other),
                 expected,
@@ -2289,8 +2421,10 @@ sketch002 = startSketchOn({
         .into_iter()
         .enumerate()
         {
-            let tokens = crate::parsing::token::lexer(input, ModuleId::default()).unwrap();
-            let expr = crate::parsing::parser::array_elem_by_elem.parse(&tokens).unwrap();
+            let tokens = crate::parsing::token::lex(input, ModuleId::default()).unwrap();
+            let expr = crate::parsing::parser::array_elem_by_elem
+                .parse(tokens.as_slice())
+                .unwrap();
             assert_eq!(
                 expr.recast(&FormatOptions::new(), 0, ExprContext::Other),
                 expected,

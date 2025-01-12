@@ -6,7 +6,7 @@ use std::{
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
-    exec::{DefaultPlanes, IdGenerator},
+    exec::{ArtifactCommand, DefaultPlanes, IdGenerator},
     ExecutionKind, KclError,
 };
 use kittycad_modeling_cmds::{
@@ -76,7 +76,9 @@ impl EngineConnection {
                     "".into()
                 }
             }
-            kcmc::ModelingCmd::SketchModeDisable(kcmc::SketchModeDisable {}) => "scene->disableSketchMode();".into(),
+            kcmc::ModelingCmd::SketchModeDisable(kcmc::SketchModeDisable { .. }) => {
+                "scene->disableSketchMode();".into()
+            }
             kcmc::ModelingCmd::MakePlane(kcmc::MakePlane {
                 origin,
                 x_axis,
@@ -105,7 +107,7 @@ impl EngineConnection {
                     size.0
                 )
             }
-            kcmc::ModelingCmd::StartPath(kcmc::StartPath {}) => {
+            kcmc::ModelingCmd::StartPath(kcmc::StartPath { .. }) => {
                 let sketch_id = format!("sketch_{}", cpp_id);
                 let path_id = format!("path_{}", cpp_id);
                 format!(
@@ -189,7 +191,11 @@ impl EngineConnection {
                     uuid_to_cpp(path_id)
                 )
             }
-            kcmc::ModelingCmd::Extrude(kcmc::Extrude { distance, target }) => {
+            kcmc::ModelingCmd::Extrude(kcmc::Extrude {
+                distance,
+                target,
+                faces: _, // Engine team: start using this once the frontend and engine both use it.
+            }) => {
                 format!(
                     r#"
                     scene->getSceneObject(Utils::UUID("{target}"))->extrudeToSolid3D({} * scaleFactor, true);
@@ -363,6 +369,10 @@ impl kcl_lib::EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
+    fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
+        Vec::new()
+    }
+
     fn execution_kind(&self) -> ExecutionKind {
         let guard = self.execution_kind.lock().unwrap();
         *guard
@@ -410,7 +420,7 @@ impl kcl_lib::EngineManager for EngineConnection {
         id: uuid::Uuid,
         _source_range: kcl_lib::SourceRange,
         cmd: WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, kcl_lib::SourceRange>,
+        _id_to_source_range: HashMap<uuid::Uuid, kcl_lib::SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
             WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
@@ -492,4 +502,6 @@ impl kcl_lib::EngineManager for EngineConnection {
             })),
         }
     }
+
+    async fn close(&self) {}
 }

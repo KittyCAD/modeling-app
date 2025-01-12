@@ -35,7 +35,7 @@ The transform function returns a transform object. All properties of the object 
    - `rotation.origin` (either "local" i.e. rotate around its own center, "global" i.e. rotate around the scene's center, or a 3D point, defaults to "local")
 
 ```js
-patternTransform(total_instances: u32, transform_function: FunctionParam, solid_set: SolidSet) -> [Solid]
+patternTransform(total_instances: integer, transform_function: FunctionParam, solid_set: SolidSet) -> [Solid]
 ```
 
 
@@ -43,7 +43,7 @@ patternTransform(total_instances: u32, transform_function: FunctionParam, solid_
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `total_instances` | `u32` |  | Yes |
+| `total_instances` | `integer` |  | Yes |
 | `transform_function` | `FunctionParam` |  | Yes |
 | `solid_set` | [`SolidSet`](/docs/kcl/types/SolidSet) | A solid or a group of solids. | Yes |
 
@@ -95,7 +95,8 @@ fn cube(length, center) {
   p2 = [l + x, l + y]
   p3 = [l + x, -l + y]
 
-  return startSketchAt(p0)
+  return startSketchOn('XY')
+    |> startProfileAt(p0, %)
     |> lineTo(p1, %)
     |> lineTo(p2, %)
     |> lineTo(p3, %)
@@ -132,7 +133,8 @@ fn cube(length, center) {
   p2 = [l + x, l + y]
   p3 = [l + x, -l + y]
 
-  return startSketchAt(p0)
+  return startSketchOn('XY')
+    |> startProfileAt(p0, %)
     |> lineTo(p1, %)
     |> lineTo(p2, %)
     |> lineTo(p3, %)
@@ -195,7 +197,8 @@ fn transform(i) {
     { rotation = { angle = 45 * i } }
   ]
 }
-startSketchAt([0, 0])
+startSketchOn('XY')
+  |> startProfileAt([0, 0], %)
   |> polygon({
        radius = 10,
        numSides = 4,

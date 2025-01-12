@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test_examples_show {
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_mock_example_show0() {
+    async fn test_mock_example_show0() -> miette::Result<()> {
         let program =
             crate::Program::parse_no_errs("This is code.\nIt does other shit.\nshow").unwrap();
         let ctx = crate::ExecutorContext {
@@ -15,26 +15,43 @@ mod test_examples_show {
             settings: Default::default(),
             context_type: crate::execution::ContextType::Mock,
         };
-        ctx.run(program.into(), &mut crate::ExecState::default())
-            .await
-            .unwrap();
+        if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new()).await {
+            return Err(miette::Report::new(crate::errors::Report {
+                error: e,
+                filename: format!("{}{}", "show", 0usize),
+                kcl_source: "This is code.\nIt does other shit.\nshow".to_string(),
+            }));
+        }
+
+        Ok(())
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn kcl_test_example_show0() {
+    async fn kcl_test_example_show0() -> miette::Result<()> {
         let code = "This is code.\nIt does other shit.\nshow";
-        let result = crate::test_server::execute_and_snapshot(
+        let result = match crate::test_server::execute_and_snapshot(
             code,
             crate::settings::types::UnitLength::Mm,
             None,
         )
         .await
-        .unwrap();
+        {
+            Err(crate::errors::ExecError::Kcl(e)) => {
+                return Err(miette::Report::new(crate::errors::Report {
+                    error: e.error,
+                    filename: format!("{}{}", "show", 0usize),
+                    kcl_source: "This is code.\nIt does other shit.\nshow".to_string(),
+                }));
+            }
+            Err(other_err) => panic!("{}", other_err),
+            Ok(img) => img,
+        };
         twenty_twenty::assert_image(
             &format!("tests/outputs/{}.png", "serial_test_example_show0"),
             &result,
             0.99,
         );
+        Ok(())
     }
 }
 
@@ -92,6 +109,7 @@ impl crate::docs::StdLibFn for Show {
             schema: generator.root_schema_for::<f64>(),
             required: true,
             label_required: true,
+            description: String::new().to_string(),
         }]
     }
 
@@ -106,6 +124,7 @@ impl crate::docs::StdLibFn for Show {
             schema,
             required: true,
             label_required: true,
+            description: String::new(),
         })
     }
 
@@ -114,6 +133,10 @@ impl crate::docs::StdLibFn for Show {
     }
 
     fn deprecated(&self) -> bool {
+        false
+    }
+
+    fn feature_tree_operation(&self) -> bool {
         false
     }
 

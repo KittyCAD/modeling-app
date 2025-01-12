@@ -1,6 +1,6 @@
 //! Wasm bindings for `kcl`.
 
-use std::{str::FromStr, sync::Arc};
+use std::sync::Arc;
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
@@ -56,10 +56,10 @@ pub async fn clear_scene_and_bust_cache(
 
 // wasm_bindgen wrapper for execute
 #[wasm_bindgen]
-pub async fn execute_wasm(
+pub async fn execute(
     program_ast_json: &str,
     program_memory_override_str: &str,
-    units: &str,
+    settings: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
     fs_manager: kcl_lib::wasm_engine::FileSystemManager,
 ) -> Result<JsValue, String> {
@@ -73,11 +73,11 @@ pub async fn execute_wasm(
     // You cannot override the memory in non-mock mode.
     let is_mock = program_memory_override.is_some();
 
-    let units = kcl_lib::UnitLength::from_str(units).map_err(|e| e.to_string())?;
+    let settings: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
     let ctx = if is_mock {
-        kcl_lib::ExecutorContext::new_mock(fs_manager, units).await?
+        kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?
     } else {
-        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, units).await?
+        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?
     };
 
     let mut exec_state = ExecState::default();
@@ -85,7 +85,8 @@ pub async fn execute_wasm(
 
     // Populate from the old exec state if it exists.
     if let Some(program_memory_override) = program_memory_override {
-        exec_state.memory = program_memory_override;
+        // We are in mock mode, so don't use any cache.
+        exec_state.mod_local.memory = program_memory_override;
     } else {
         // If we are in mock mode, we don't want to use any cache.
         if let Some(old) = read_old_ast_memory().await {
@@ -95,7 +96,7 @@ pub async fn execute_wasm(
     }
 
     if let Err(err) = ctx
-        .run(
+        .run_with_ui_outputs(
             CacheInformation {
                 old: old_ast_memory,
                 new_ast: program.ast.clone(),
@@ -103,14 +104,13 @@ pub async fn execute_wasm(
             &mut exec_state,
         )
         .await
-        .map_err(String::from)
     {
         if !is_mock {
             bust_cache().await;
         }
 
         // Throw the error.
-        return Err(err);
+        return Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?);
     }
 
     if !is_mock {
@@ -130,7 +130,7 @@ pub async fn execute_wasm(
     // gloo-serialize crate instead.
     // DO NOT USE serde_wasm_bindgen::to_value(&exec_state).map_err(|e| e.to_string())
     // it will break the frontend.
-    JsValue::from_serde(&exec_state).map_err(|e| e.to_string())
+    JsValue::from_serde(&exec_state.to_wasm_outcome()).map_err(|e| e.to_string())
 }
 
 // wasm_bindgen wrapper for execute
@@ -166,23 +166,6 @@ pub async fn make_default_planes(
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&default_planes).map_err(|e| e.to_string())
-}
-
-// wasm_bindgen wrapper for modifying the grid
-#[wasm_bindgen]
-pub async fn modify_grid(
-    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
-    hidden: bool,
-) -> Result<(), String> {
-    console_error_panic_hook::set_once();
-    // deserialize the ast from a stringified json
-
-    let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-    engine.modify_grid(hidden).await.map_err(String::from)?;
-
-    Ok(())
 }
 
 // wasm_bindgen wrapper for execute
@@ -296,7 +279,7 @@ impl ServerConfig {
 pub async fn kcl_lsp_run(
     config: ServerConfig,
     engine_manager: Option<kcl_lib::wasm_engine::EngineCommandManager>,
-    units: &str,
+    settings: Option<String>,
     token: String,
     baseurl: String,
 ) -> Result<(), JsValue> {
@@ -309,8 +292,12 @@ pub async fn kcl_lsp_run(
     } = config;
 
     let executor_ctx = if let Some(engine_manager) = engine_manager {
-        let units = kcl_lib::UnitLength::from_str(units).map_err(|e| e.to_string())?;
-        Some(kcl_lib::ExecutorContext::new(engine_manager, fs.clone(), units).await?)
+        let settings: kcl_lib::Configuration = if let Some(settings) = settings {
+            serde_json::from_str(&settings).map_err(|e| e.to_string())?
+        } else {
+            Default::default()
+        };
+        Some(kcl_lib::ExecutorContext::new(engine_manager, fs.clone(), settings.into()).await?)
     } else {
         None
     };
@@ -318,7 +305,7 @@ pub async fn kcl_lsp_run(
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());
 
-    // Check if we can send telememtry for this user.
+    // Check if we can send telemetry for this user.
     let can_send_telemetry = match zoo_client.users().get_privacy_settings().await {
         Ok(privacy_settings) => privacy_settings.can_train_on_data,
         Err(err) => {
@@ -329,7 +316,8 @@ pub async fn kcl_lsp_run(
             {
                 true
             } else {
-                return Err(err.to_string().into());
+                web_sys::console::warn_1(&format!("Failed to get privacy settings: {err:?}").into());
+                false
             }
         }
     };

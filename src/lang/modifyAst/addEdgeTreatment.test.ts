@@ -22,7 +22,7 @@ import {
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
-import { Selections } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { isOverlap } from 'lib/utils'
@@ -40,7 +40,6 @@ beforeAll(async () => {
       makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
       setMediaStream: () => {},
       setIsStreamReady: () => {},
-      modifyGrid: async () => {},
       callbackOnEngineLiteConnect: () => {
         resolve(true)
       },
@@ -118,13 +117,8 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length,
     true,
   ]
-  const selection: Selections = {
-    graphSelections: [
-      {
-        codeRef: codeRefFromRange(segmentRange, ast),
-      },
-    ],
-    otherSelections: [],
+  const selection: Selection = {
+    codeRef: codeRefFromRange(segmentRange, ast),
   }
 
   // executeAst and artifactGraph
@@ -253,7 +247,7 @@ extrude003 = extrude(-15, sketch003)`
       selectedSegmentSnippet,
       expectedExtrudeSnippet
     )
-  })
+  }, 5_000)
 })
 
 const runModifyAstCloneWithEdgeTreatmentAndTag = async (
@@ -483,7 +477,7 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> chamfer({ length: 5, tags: [seg01] }, %)`
+  |> chamfer({ length = 5, tags = [seg01] }, %)`
         const segmentSnippets = ['line([-20, 0], %)']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
@@ -493,8 +487,8 @@ extrude001 = extrude(-15, sketch001)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> chamfer({ length: 5, tags: [seg01] }, %)
-  |> ${edgeTreatmentType}({ ${parameterName}: 3, tags: [seg02] }, %)`
+  |> chamfer({ length = 5, tags = [seg01] }, %)
+  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg02] }, %)`
 
         await runModifyAstCloneWithEdgeTreatmentAndTag(
           code,

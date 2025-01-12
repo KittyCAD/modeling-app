@@ -1,9 +1,15 @@
 import { Models } from '@kittycad/lib'
+import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
+import { transformAstSketchLines } from 'lang/std/sketchcombos'
+import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
+import { kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
+import { loftValidator, revolveAxisValidator } from './validators'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -31,12 +37,23 @@ export type ModelingCommandSchema = {
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
+  Sweep: {
+    path: Selections
+    profile: Selections
+  }
   Loft: {
     selection: Selections
+  }
+  Shell: {
+    selection: Selections
+    thickness: KclCommandValue
   }
   Revolve: {
     selection: Selections
     angle: KclCommandValue
+    axisOrEdge: string
+    axis: string
+    edge: Selections
   }
   Fillet: {
     selection: Selections
@@ -53,8 +70,24 @@ export type ModelingCommandSchema = {
   'change tool': {
     tool: SketchTool
   }
+  'Constrain length': {
+    selection: Selections
+    length: KclCommandValue
+  }
+  'Constrain with named value': {
+    currentValue: {
+      valueText: string
+      pathToNode: PathToNode
+      variableName: string
+    }
+    namedValue: KclCommandValue
+  }
   'Text-to-CAD': {
     prompt: string
+  }
+  'Prompt-to-edit': {
+    prompt: string
+    selection: Selections
   }
 }
 
@@ -266,6 +299,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  Sweep: {
+    description:
+      'Create a 3D body by moving a sketch region along an arbitrary path.',
+    icon: 'sweep',
+    status: 'development',
+    needsReview: true,
+    args: {
+      profile: {
+        inputType: 'selection',
+        selectionTypes: ['solid2D'],
+        required: true,
+        skip: true,
+        multiple: false,
+        // TODO: add dry-run validation
+        warningMessage:
+          'The sweep workflow is new and under tested. Please break it and report issues.',
+      },
+      path: {
+        inputType: 'selection',
+        selectionTypes: ['segment', 'path'],
+        required: true,
+        skip: true,
+        multiple: false,
+        // TODO: add dry-run validation
+      },
+    },
+  },
   Loft: {
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
@@ -277,13 +337,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
+        validation: loftValidator,
       },
     },
   },
-  // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
+  Shell: {
+    description: 'Hollow out a 3D solid.',
+    icon: 'shell',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall'],
+        multiple: true,
+        required: true,
+        skip: false,
+      },
+      thickness: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
+    status: 'development',
     needsReview: true,
     args: {
       selection: {
@@ -292,6 +372,38 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+        warningMessage:
+          'The revolve workflow is new and under tested. Please break it and report issues.',
+      },
+      axisOrEdge: {
+        inputType: 'options',
+        required: true,
+        defaultValue: 'Axis',
+        options: [
+          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Edge', isCurrent: false, value: 'Edge' },
+        ],
+      },
+      axis: {
+        required: (commandContext) =>
+          ['Axis'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'options',
+        options: [
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+        ],
+      },
+      edge: {
+        required: (commandContext) =>
+          ['Edge'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        multiple: false,
+        validation: revolveAxisValidator,
       },
       angle: {
         inputType: 'kcl',
@@ -362,10 +474,117 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Constrain length': {
+    description: 'Constrain the length of one or more segments.',
+    icon: 'dimension',
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['segment'],
+        multiple: false,
+        required: true,
+        skip: true,
+      },
+      length: {
+        inputType: 'kcl',
+        required: true,
+        createVariableByDefault: true,
+        defaultValue(_, machineContext) {
+          const selectionRanges = machineContext?.selectionRanges
+          if (!selectionRanges) return KCL_DEFAULT_LENGTH
+          const angleLength = angleLengthInfo({
+            selectionRanges,
+            angleOrLength: 'setLength',
+          })
+          if (err(angleLength)) return KCL_DEFAULT_LENGTH
+          const { transforms } = angleLength
+
+          // QUESTION: is it okay to reference kclManager here? will its state be up to date?
+          const sketched = transformAstSketchLines({
+            ast: structuredClone(kclManager.ast),
+            selectionRanges,
+            transformInfos: transforms,
+            programMemory: kclManager.programMemory,
+            referenceSegName: '',
+          })
+          if (err(sketched)) return KCL_DEFAULT_LENGTH
+          const { valueUsedInTransform } = sketched
+          return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
+        },
+      },
+    },
+  },
+  'Constrain with named value': {
+    description: 'Constrain a value by making it a named constant.',
+    icon: 'make-variable',
+    args: {
+      currentValue: {
+        description:
+          'Path to the node in the AST to constrain. This is never shown to the user.',
+        inputType: 'text',
+        required: false,
+        skip: true,
+      },
+      namedValue: {
+        inputType: 'kcl',
+        required: true,
+        createVariableByDefault: true,
+        variableName(commandBarContext, machineContext) {
+          const { currentValue } = commandBarContext.argumentsToSubmit
+          if (
+            !currentValue ||
+            !(currentValue instanceof Object) ||
+            !('variableName' in currentValue) ||
+            typeof currentValue.variableName !== 'string'
+          ) {
+            return 'value'
+          }
+          return currentValue.variableName
+        },
+        defaultValue: (commandBarContext) => {
+          const { currentValue } = commandBarContext.argumentsToSubmit
+          if (
+            !currentValue ||
+            !(currentValue instanceof Object) ||
+            !('valueText' in currentValue) ||
+            typeof currentValue.valueText !== 'string'
+          ) {
+            return KCL_DEFAULT_LENGTH
+          }
+          return currentValue.valueText
+        },
+      },
+    },
+  },
   'Text-to-CAD': {
     description: 'Use the Zoo Text-to-CAD API to generate part starters.',
     icon: 'chat',
     args: {
+      prompt: {
+        inputType: 'text',
+        required: true,
+      },
+    },
+  },
+  'Prompt-to-edit': {
+    description: 'Use Zoo AI to edit your kcl',
+    icon: 'chat',
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: [
+          'solid2D',
+          'segment',
+          'sweepEdge',
+          'cap',
+          'wall',
+          'edgeCut',
+          'edgeCutEdge',
+        ],
+        multiple: true,
+        required: true,
+        skip: true,
+      },
       prompt: {
         inputType: 'text',
         required: true,

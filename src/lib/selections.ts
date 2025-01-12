@@ -18,10 +18,8 @@ import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
 import {
-  doesPipeHaveCallExp,
   getNodeFromPath,
   getNodePathFromSourceRange,
-  hasSketchPipeBeenExtruded,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { CommandArgument } from './commandTypes'
@@ -325,7 +323,8 @@ export function handleSelectionBatch({
     resetAndSetEngineEntitySelectionCmds(selectionToEngine)
   selections.graphSelections.forEach(({ codeRef }) => {
     if (codeRef.range?.[1]) {
-      ranges.push(EditorSelection.cursor(codeRef.range[1]))
+      const safeEnd = Math.min(codeRef.range[1], codeManager.code.length)
+      ranges.push(EditorSelection.cursor(safeEnd))
     }
   })
   if (ranges.length)
@@ -490,98 +489,14 @@ function resetAndSetEngineEntitySelectionCmds(
   ]
 }
 
+/**
+ * Is the selection a single cursor in a sketch pipe expression chain?
+ */
 export function isSketchPipe(selectionRanges: Selections) {
   if (!isSingleCursorInPipe(selectionRanges, kclManager.ast)) return false
   return isCursorInSketchCommandRange(
     engineCommandManager.artifactGraph,
     selectionRanges
-  )
-}
-
-export function isSelectionLastLine(
-  selectionRanges: Selections,
-  code: string,
-  i = 0
-) {
-  return selectionRanges.graphSelections[i]?.codeRef?.range[1] === code.length
-}
-
-export function isRangeBetweenCharacters(selectionRanges: Selections) {
-  return (
-    selectionRanges.graphSelections.length === 1 &&
-    selectionRanges.graphSelections[0]?.codeRef?.range[0] === 0 &&
-    selectionRanges.graphSelections[0]?.codeRef?.range[1] === 0
-  )
-}
-
-export type CommonASTNode = {
-  selection: Selection
-  ast: Program
-}
-
-function buildCommonNodeFromSelection(selectionRanges: Selections, i: number) {
-  return {
-    selection: selectionRanges.graphSelections[i],
-    ast: kclManager.ast,
-  }
-}
-
-function nodeHasExtrude(node: CommonASTNode) {
-  return (
-    doesPipeHaveCallExp({
-      calleeName: 'extrude',
-      ...node,
-    }) ||
-    doesPipeHaveCallExp({
-      calleeName: 'revolve',
-      ...node,
-    }) ||
-    doesPipeHaveCallExp({
-      calleeName: 'loft',
-      ...node,
-    })
-  )
-}
-
-function nodeHasClose(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'close',
-    ...node,
-  })
-}
-function nodeHasCircle(node: CommonASTNode) {
-  return doesPipeHaveCallExp({
-    calleeName: 'circle',
-    ...node,
-  })
-}
-
-export function canSweepSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isSketchPipe(selection) &&
-    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    (commonNodes.every((n) => nodeHasClose(n)) ||
-      commonNodes.every((n) => nodeHasCircle(n))) &&
-    commonNodes.every((n) => !nodeHasExtrude(n))
-  )
-}
-
-export function canLoftSelection(selection: Selections) {
-  const commonNodes = selection.graphSelections.map((_, i) =>
-    buildCommonNodeFromSelection(selection, i)
-  )
-  return (
-    !!isCursorInSketchCommandRange(
-      engineCommandManager.artifactGraph,
-      selection
-    ) &&
-    commonNodes.length > 1 &&
-    commonNodes.every((n) => !hasSketchPipeBeenExtruded(n.selection, n.ast)) &&
-    commonNodes.every((n) => nodeHasClose(n) || nodeHasCircle(n)) &&
-    commonNodes.every((n) => !nodeHasExtrude(n))
   )
 }
 
@@ -619,12 +534,29 @@ export function getSelectionCountByType(
     }
   })
 
-  selection.graphSelections.forEach((selection) => {
-    if (!selection.artifact) {
-      incrementOrInitializeSelectionType('other')
-      return
+  selection.graphSelections.forEach((graphSelection) => {
+    if (!graphSelection.artifact) {
+      /**
+       * TODO: remove this heuristic-based selection type detection.
+       * Currently, if you've created a sketch and have not left sketch mode,
+       * the selection will be a segment selection with no artifact.
+       * This is because the mock execution does not update the artifact graph.
+       * Once we move the artifactGraph creation to WASM, we can remove this,
+       * as the artifactGraph will always be up-to-date.
+       */
+      if (isSingleCursorInPipe(selection, kclManager.ast)) {
+        incrementOrInitializeSelectionType('segment')
+        return
+      } else {
+        console.warn(
+          'Selection is outside of a sketch but has no artifact. Sketch segment selections are the only kind that can have a valid selection with no artifact.',
+          JSON.stringify(graphSelection)
+        )
+        incrementOrInitializeSelectionType('other')
+        return
+      }
     }
-    incrementOrInitializeSelectionType(selection.artifact.type)
+    incrementOrInitializeSelectionType(graphSelection.artifact.type)
   })
 
   return selectionsByType
@@ -848,6 +780,14 @@ export function codeToIdSelections(
                 id: entry.id,
               }
             }
+          }
+        }
+
+        if (entry.artifact.type === 'sweep') {
+          bestCandidate = {
+            artifact: entry.artifact,
+            selection,
+            id: entry.id,
           }
         }
       })

@@ -32,7 +32,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator, Point3d},
+    execution::{ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -66,6 +66,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     /// Get the batch of end commands to be sent to the engine.
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
+
+    /// Take the artifact commands generated up to this point and clear them.
+    fn take_artifact_commands(&self) -> Vec<ArtifactCommand>;
+
+    /// Clear all artifact commands that have accumulated so far.
+    fn clear_artifact_commands(&self) {
+        self.take_artifact_commands();
+    }
 
     /// Get the current execution kind.
     fn execution_kind(&self) -> ExecutionKind;
@@ -106,7 +114,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             source_range,
-            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll {}),
+            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
         )
         .await?;
 
@@ -114,8 +122,67 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
 
+        // Ensure artifact commands are cleared so that we don't accumulate them
+        // across runs.
+        self.clear_artifact_commands();
+
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
+
+        Ok(())
+    }
+
+    /// Set the visibility of edges.
+    async fn set_edge_visibility(
+        &self,
+        visible: bool,
+        source_range: SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
+        self.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            source_range,
+            &ModelingCmd::from(mcmd::EdgeLinesVisible { hidden: !visible }),
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    async fn set_units(
+        &self,
+        units: crate::UnitLength,
+        source_range: SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
+        // Before we even start executing the program, set the units.
+        self.batch_modeling_cmd(
+            uuid::Uuid::new_v4(),
+            source_range,
+            &ModelingCmd::from(mcmd::SetSceneUnits { unit: units.into() }),
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    /// Re-run the command to apply the settings.
+    async fn reapply_settings(
+        &self,
+        settings: &crate::ExecutorSettings,
+        source_range: SourceRange,
+    ) -> Result<(), crate::errors::KclError> {
+        // Set the edge visibility.
+        self.set_edge_visibility(settings.highlight_edges, source_range).await?;
+
+        // Change the units.
+        self.set_units(settings.units, source_range).await?;
+
+        // Send the command to show the grid.
+        self.modify_grid(!settings.show_grid, source_range).await?;
+
+        // We do not have commands for changing ssao on the fly.
+
+        // Flush the batch queue, so the settings are applied right away.
+        self.flush_batch(false, source_range).await?;
 
         Ok(())
     }
@@ -162,15 +229,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     }
 
     /// Send the modeling cmd and wait for the response.
-    // TODO: This should only borrow `cmd`.
-    // See https://github.com/KittyCAD/modeling-app/issues/2821
     async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: SourceRange,
-        cmd: ModelingCmd,
+        cmd: &ModelingCmd,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        self.batch_modeling_cmd(id, source_range, &cmd).await?;
+        self.batch_modeling_cmd(id, source_range, cmd).await?;
 
         // Flush the batch queue.
         self.flush_batch(false, source_range).await
@@ -504,11 +569,11 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }))
     }
 
-    async fn modify_grid(&self, hidden: bool) -> Result<(), KclError> {
+    async fn modify_grid(&self, hidden: bool, source_range: SourceRange) -> Result<(), KclError> {
         // Hide/show the grid.
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            Default::default(),
+            source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_OBJECT_ID,
@@ -519,15 +584,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Hide/show the grid scale text.
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
-            Default::default(),
+            source_range,
             &ModelingCmd::from(mcmd::ObjectVisible {
                 hidden,
                 object_id: *GRID_SCALE_TEXT_OBJECT_ID,
             }),
         )
         .await?;
-
-        self.flush_batch(false, Default::default()).await?;
 
         Ok(())
     }
@@ -537,6 +600,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn get_session_data(&self) -> Option<ModelingSessionData> {
         None
     }
+
+    /// Close the engine connection and wait for it to finish.
+    async fn close(&self);
 }
 
 #[derive(Debug, Hash, Eq, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]

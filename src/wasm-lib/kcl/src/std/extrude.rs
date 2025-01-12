@@ -33,7 +33,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// cut into an existing solid.
 ///
 /// ```no_run
-/// const example = startSketchOn('XZ')
+/// example = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
 ///   |> line([10, 0], %)
 ///   |> arc({
@@ -54,7 +54,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// const exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([-10, 0], %)
 ///   |> arc({
 ///     angleStart = 120,
@@ -72,10 +72,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///   |> line([-5, -2], %)
 ///   |> close(%)
 ///
-/// const example = extrude(10, exampleSketch)
+/// example = extrude(10, exampleSketch)
 /// ```
 #[stdlib {
-    name = "extrude"
+    name = "extrude",
+    feature_tree_operation = true,
 }]
 async fn inner_extrude(
     length: f64,
@@ -83,7 +84,7 @@ async fn inner_extrude(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidSet, KclError> {
-    let id = exec_state.id_generator.next_uuid();
+    let id = exec_state.next_uuid();
 
     // Extrude the element(s).
     let sketches: Vec<Sketch> = sketch_set.into();
@@ -92,7 +93,7 @@ async fn inner_extrude(
         // Before we extrude, we need to enable the sketch mode.
         // We do this here in case extrude is called out of order.
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: false,
@@ -113,14 +114,15 @@ async fn inner_extrude(
             ModelingCmd::from(mcmd::Extrude {
                 target: sketch.id.into(),
                 distance: LengthUnit(length),
+                faces: Default::default(),
             }),
         )
         .await?;
 
         // Disable the sketch mode.
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+            exec_state.next_uuid(),
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
         )
         .await?;
         solids.push(do_post_extrude(sketch.clone(), length, exec_state, args.clone()).await?);
@@ -138,7 +140,7 @@ pub(crate) async fn do_post_extrude(
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.batch_modeling_cmd(
-        exec_state.id_generator.next_uuid(),
+        exec_state.next_uuid(),
         ModelingCmd::from(mcmd::ObjectBringToFront { object_id: sketch.id }),
     )
     .await?;
@@ -161,7 +163,7 @@ pub(crate) async fn do_post_extrude(
 
     let solid3d_info = args
         .send_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetExtrusionFaceInfo {
                 edge_id: any_edge_id,
                 object_id: sketch.id,
@@ -194,7 +196,7 @@ pub(crate) async fn do_post_extrude(
         // Instead, the Typescript codebases (which handles WebSocket sends when compiled via Wasm)
         // uses this to build the artifact graph, which the UI needs.
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetOppositeEdge {
                 edge_id: curve_id,
                 object_id: sketch.id,
@@ -204,7 +206,7 @@ pub(crate) async fn do_post_extrude(
         .await?;
 
         args.batch_modeling_cmd(
-            exec_state.id_generator.next_uuid(),
+            exec_state.next_uuid(),
             ModelingCmd::from(mcmd::Solid3dGetNextAdjacentEdge {
                 edge_id: curve_id,
                 object_id: sketch.id,
@@ -257,7 +259,7 @@ pub(crate) async fn do_post_extrude(
 
                 let extrude_surface = ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
                     // pushing this values with a fake face_id to make extrudes mock-execute safe
-                    face_id: exec_state.id_generator.next_uuid(),
+                    face_id: exec_state.next_uuid(),
                     tag: path.get_base().tag.clone(),
                     geo_meta: GeoMeta {
                         id: path.get_base().geo_meta.id,
@@ -303,8 +305,8 @@ fn analyze_faces(exec_state: &mut ExecState, args: &Args, face_infos: Vec<Extrus
     };
     if args.ctx.is_mock() {
         // Create fake IDs for start and end caps, to make extrudes mock-execute safe
-        faces.start_cap_id = Some(exec_state.id_generator.next_uuid());
-        faces.end_cap_id = Some(exec_state.id_generator.next_uuid());
+        faces.start_cap_id = Some(exec_state.next_uuid());
+        faces.end_cap_id = Some(exec_state.next_uuid());
     }
     for face_info in face_infos {
         match face_info.cap {

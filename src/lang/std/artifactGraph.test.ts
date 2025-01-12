@@ -1,7 +1,13 @@
-import { makeDefaultPlanes, assertParse, initPromise, Program } from 'lang/wasm'
+import {
+  makeDefaultPlanes,
+  assertParse,
+  initPromise,
+  Program,
+  ArtifactCommand,
+  ExecState,
+} from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import {
-  OrderedCommand,
   ResponseMap,
   createArtifactGraph,
   filterArtifacts,
@@ -22,6 +28,7 @@ import * as d3 from 'd3-force'
 import path from 'path'
 import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 /*
 Note this is an integration test, these tests connect to our real dev server and make websocket commands.
@@ -108,7 +115,7 @@ sketch002 = startSketchOn(offsetPlane001)
   |> line([6.78, 15.01], %)
 `
 
-// add more code snippets here and use `getCommands` to get the orderedCommands and responseMap for more tests
+// add more code snippets here and use `getCommands` to get the artifactCommands and responseMap for more tests
 const codeToWriteCacheFor = {
   exampleCode1,
   sketchOnFaceOnFaceEtc,
@@ -120,8 +127,9 @@ type CodeKey = keyof typeof codeToWriteCacheFor
 
 type CacheShape = {
   [key in CodeKey]: {
-    orderedCommands: OrderedCommand[]
+    artifactCommands: ArtifactCommand[]
     responseMap: ResponseMap
+    execStateArtifacts: ExecState['artifacts']
   }
 }
 
@@ -139,7 +147,6 @@ beforeAll(async () => {
       makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
       setMediaStream: () => {},
       setIsStreamReady: () => {},
-      modifyGrid: async () => {},
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       callbackOnEngineLiteConnect: async () => {
         const cacheEntries = Object.entries(codeToWriteCacheFor) as [
@@ -152,8 +159,9 @@ beforeAll(async () => {
           await kclManager.executeAst({ ast })
 
           cacheToWriteToFileTemp[codeKey] = {
-            orderedCommands: engineCommandManager.orderedCommands,
+            artifactCommands: kclManager.execState.artifactCommands,
             responseMap: engineCommandManager.responseMap,
+            execStateArtifacts: kclManager.execState.artifacts,
           }
         }
         const cache = JSON.stringify(cacheToWriteToFileTemp)
@@ -172,18 +180,24 @@ afterAll(() => {
 
 describe('testing createArtifactGraph', () => {
   describe('code with offset planes and a sketch:', () => {
-    let ast: Program
+    let ast: Node<Program>
     let theMap: ReturnType<typeof createArtifactGraph>
 
     it('setup', () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
+        execStateArtifacts,
       } = getCommands('exampleCodeOffsetPlanes')
       ast = _ast
-      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({
+        artifactCommands,
+        responseMap,
+        ast,
+        execStateArtifacts,
+      })
     })
 
     it(`there should be one sketch`, () => {
@@ -218,17 +232,23 @@ describe('testing createArtifactGraph', () => {
     })
   })
   describe('code with an extrusion, fillet and sketch of face:', () => {
-    let ast: Program
+    let ast: Node<Program>
     let theMap: ReturnType<typeof createArtifactGraph>
     it('setup', () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
+        execStateArtifacts,
       } = getCommands('exampleCode1')
       ast = _ast
-      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({
+        artifactCommands,
+        responseMap,
+        ast,
+        execStateArtifacts,
+      })
     })
 
     it('there should be two planes for the extrusion and the sketch on face', () => {
@@ -260,11 +280,13 @@ describe('testing createArtifactGraph', () => {
         if (err(extrusion)) throw extrusion
         expect(extrusion.type).toBe('sweep')
         const firstExtrusionIsACubeIE6Sides = 6
-        const secondExtrusionIsATriangularPrismIE5Sides = 5
+        // Each face of the triangular prism (5), but without the bottom cap.
+        // The engine doesn't generate that.
+        const secondExtrusionIsATriangularPrism = 4
         expect(extrusion.surfaces.length).toBe(
           !index
             ? firstExtrusionIsACubeIE6Sides
-            : secondExtrusionIsATriangularPrismIE5Sides
+            : secondExtrusionIsATriangularPrism
         )
       })
     })
@@ -311,17 +333,23 @@ describe('testing createArtifactGraph', () => {
   })
 
   describe(`code with sketches but no extrusions or other 3D elements`, () => {
-    let ast: Program
+    let ast: Node<Program>
     let theMap: ReturnType<typeof createArtifactGraph>
     it(`setup`, () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
+        execStateArtifacts,
       } = getCommands('exampleCodeNo3D')
       ast = _ast
-      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({
+        artifactCommands,
+        responseMap,
+        ast,
+        execStateArtifacts,
+      })
     })
 
     it('there should be two planes, one for each sketch path', () => {
@@ -376,17 +404,23 @@ describe('testing createArtifactGraph', () => {
 
 describe('capture graph of sketchOnFaceOnFace...', () => {
   describe('code with an extrusion, fillet and sketch of face:', () => {
-    let ast: Program
+    let ast: Node<Program>
     let theMap: ReturnType<typeof createArtifactGraph>
     it('setup', async () => {
       // putting this logic in here because describe blocks runs before beforeAll has finished
       const {
-        orderedCommands,
+        artifactCommands,
         responseMap,
         ast: _ast,
+        execStateArtifacts,
       } = getCommands('sketchOnFaceOnFaceEtc')
       ast = _ast
-      theMap = createArtifactGraph({ orderedCommands, responseMap, ast })
+      theMap = createArtifactGraph({
+        artifactCommands,
+        responseMap,
+        ast,
+        execStateArtifacts,
+      })
 
       // Ostensibly this takes a screen shot of the graph of the artifactGraph
       // but it's it also tests that all of the id links are correct because if one
@@ -398,17 +432,21 @@ describe('capture graph of sketchOnFaceOnFace...', () => {
   })
 })
 
-function getCommands(codeKey: CodeKey): CacheShape[CodeKey] & { ast: Program } {
+function getCommands(
+  codeKey: CodeKey
+): CacheShape[CodeKey] & { ast: Node<Program> } {
   const ast = assertParse(codeKey)
   const file = fs.readFileSync(fullPath, 'utf-8')
   const parsed: CacheShape = JSON.parse(file)
   // these either already exist from the last run, or were created in
-  const orderedCommands = parsed[codeKey].orderedCommands
+  const artifactCommands = parsed[codeKey].artifactCommands
   const responseMap = parsed[codeKey].responseMap
+  const execStateArtifacts = parsed[codeKey].execStateArtifacts
   return {
-    orderedCommands,
+    artifactCommands,
     responseMap,
     ast,
+    execStateArtifacts,
   }
 }
 
@@ -634,20 +672,30 @@ async function GraphTheGraph(
 
 describe('testing getArtifactsToUpdate', () => {
   it('should return an array of artifacts to update', () => {
-    const { orderedCommands, responseMap, ast } = getCommands('exampleCode1')
-    const map = createArtifactGraph({ orderedCommands, responseMap, ast })
+    const { artifactCommands, responseMap, ast, execStateArtifacts } =
+      getCommands('exampleCode1')
+    const map = createArtifactGraph({
+      artifactCommands,
+      responseMap,
+      ast,
+      execStateArtifacts,
+    })
     const getArtifact = (id: string) => map.get(id)
     const currentPlaneId = 'UUID-1'
     const getUpdateObjects = (type: Models['ModelingCmd_type']['type']) => {
+      const artifactCommand = artifactCommands.find(
+        (a) => a.command.type === type
+      )
+      if (!artifactCommand) {
+        throw new Error(`No artifactCommand found for ${type}`)
+      }
       const artifactsToUpdate = getArtifactsToUpdate({
-        orderedCommand: orderedCommands.find(
-          (a) =>
-            a.command.type === 'modeling_cmd_req' && a.command.cmd.type === type
-        )!,
+        artifactCommand,
         responseMap,
         getArtifact,
         currentPlaneId,
         ast,
+        execStateArtifacts,
       })
       return artifactsToUpdate.map(({ artifact }) => artifact)
     }
@@ -660,7 +708,7 @@ describe('testing getArtifactsToUpdate', () => {
         sweepId: '',
         codeRef: {
           pathToNode: [['body', '']],
-          range: [37, 64, 0],
+          range: [37, 64, true],
         },
       },
     ])
@@ -673,7 +721,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: [],
         edgeIds: [],
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -684,7 +732,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [37, 64, 0],
+          range: [37, 64, true],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -698,7 +746,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: '',
         edgeIds: [],
         codeRef: {
-          range: [70, 86, 0],
+          range: [70, 86, true],
           pathToNode: [['body', '']],
         },
       },
@@ -709,7 +757,7 @@ describe('testing getArtifactsToUpdate', () => {
         planeId: expect.any(String),
         sweepId: expect.any(String),
         codeRef: {
-          range: [37, 64, 0],
+          range: [37, 64, true],
           pathToNode: [['body', '']],
         },
         solid2dId: expect.any(String),
@@ -724,7 +772,7 @@ describe('testing getArtifactsToUpdate', () => {
         edgeIds: [],
         surfaceId: '',
         codeRef: {
-          range: [260, 299, 0],
+          range: [260, 299, true],
           pathToNode: [['body', '']],
         },
       },
@@ -735,7 +783,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [92, 119, 0],
+          range: [92, 119, true],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -757,7 +805,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [156, 203, 0],
+          range: [156, 203, true],
           pathToNode: [['body', '']],
         },
       },
@@ -769,7 +817,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -788,7 +836,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [125, 150, 0],
+          range: [125, 150, true],
           pathToNode: [['body', '']],
         },
       },
@@ -800,7 +848,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -819,7 +867,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [92, 119, 0],
+          range: [92, 119, true],
           pathToNode: [['body', '']],
         },
         edgeCutId: expect.any(String),
@@ -832,7 +880,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -851,7 +899,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceId: expect.any(String),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [70, 86, 0],
+          range: [70, 86, true],
           pathToNode: [['body', '']],
         },
       },
@@ -863,7 +911,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -883,7 +931,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },
@@ -903,7 +951,7 @@ describe('testing getArtifactsToUpdate', () => {
         surfaceIds: expect.any(Array),
         edgeIds: expect.any(Array),
         codeRef: {
-          range: [231, 254, 0],
+          range: [231, 254, true],
           pathToNode: [['body', '']],
         },
       },

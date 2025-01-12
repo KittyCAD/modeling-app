@@ -85,6 +85,11 @@
     "description": "A hex nut is a type of fastener with a threaded hole and a hexagonal outer shape, used in a wide variety of applications to secure parts together. The hexagonal shape allows for a greater torque to be applied with wrenches or tools, making it one of the most common nut types in hardware."
   },
   {
+    "file": "i-beam.kcl",
+    "title": "I-beam",
+    "description": "A structural metal beam with an I shaped cross section. Often used in construction"
+  },
+  {
     "file": "kitt.kcl",
     "title": "Kitt",
     "description": "The beloved KittyCAD mascot in a voxelized style."
@@ -118,6 +123,11 @@
     "file": "pipe-flange-assembly.kcl",
     "title": "Pipe and Flange Assembly",
     "description": "A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint."
+  },
+  {
+    "file": "pipe-with-bend.kcl",
+    "title": "Pipe with bend",
+    "description": "A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow."
   },
   {
     "file": "poopy-shoe.kcl",

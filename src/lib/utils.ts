@@ -153,7 +153,10 @@ export function toSync<F extends AsyncFn<F>>(
   ) => void | PromiseLike<void | null | undefined> | null | undefined
 ): (...args: Parameters<F>) => void {
   return (...args: Parameters<F>) => {
-    fn(...args).catch(onReject)
+    void fn(...args).catch((...args) => {
+      console.error(...args)
+      return onReject(...args)
+    })
   }
 }
 
@@ -342,7 +345,7 @@ export function onDragNumberCalculation(text: string, e: MouseEvent) {
   )
   const newVal = roundOff(addition, precision)
 
-  if (isNaN(newVal)) {
+  if (Number.isNaN(newVal)) {
     return
   }
 

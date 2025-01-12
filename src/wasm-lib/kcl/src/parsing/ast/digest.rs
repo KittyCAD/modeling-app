@@ -1,13 +1,12 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
-use super::types::{DefaultParamVal, ItemVisibility, VariableKind};
+use super::types::{DefaultParamVal, ItemVisibility, LabelledExpression, VariableKind};
 use crate::parsing::ast::types::{
     ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
-    CommentStyle, ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression,
-    ImportItem, ImportSelector, ImportStatement, Literal, LiteralIdentifier, MemberExpression, MemberObject,
-    NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-    PipeSubstitution, Program, ReturnStatement, TagDeclarator, UnaryExpression, VariableDeclaration,
-    VariableDeclarator,
+    ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
+    ImportSelector, ImportStatement, KclNone, Literal, LiteralIdentifier, MemberExpression, MemberObject,
+    ObjectExpression, ObjectProperty, Parameter, PipeExpression, PipeSubstitution, Program, ReturnStatement,
+    TagDeclarator, UnaryExpression, VariableDeclaration, VariableDeclarator,
 };
 
 /// Position-independent digest of the AST node.
@@ -60,8 +59,8 @@ impl ImportStatement {
                 }
             }
             ImportSelector::Glob(_) => hasher.update(b"ImportSelector::Glob"),
-            ImportSelector::None(None) => hasher.update(b"ImportSelector::None"),
-            ImportSelector::None(Some(alias)) => {
+            ImportSelector::None { alias: None } => hasher.update(b"ImportSelector::None"),
+            ImportSelector::None { alias: Some(alias) } => {
                 hasher.update(b"ImportSelector::None");
                 hasher.update(alias.compute_digest());
             }
@@ -82,7 +81,6 @@ impl Program {
         if let Some(shebang) = &slf.shebang {
             hasher.update(&shebang.inner.content);
         }
-        hasher.update(slf.non_code_meta.compute_digest());
     });
 }
 
@@ -115,6 +113,7 @@ impl Expr {
             Expr::MemberExpression(me) => me.compute_digest(),
             Expr::UnaryExpression(ue) => ue.compute_digest(),
             Expr::IfExpression(e) => e.compute_digest(),
+            Expr::LabelledExpression(e) => e.compute_digest(),
             Expr::None(_) => {
                 let mut hasher = Sha256::new();
                 hasher.update(b"Value::None");
@@ -202,6 +201,12 @@ impl Parameter {
     });
 }
 
+impl KclNone {
+    compute_digest!(|slf, hasher| {
+        hasher.update(b"KclNone");
+    });
+}
+
 impl FunctionExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.params.len().to_ne_bytes());
@@ -224,53 +229,6 @@ impl FunctionExpression {
 impl ReturnStatement {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.argument.compute_digest());
-    });
-}
-
-impl CommentStyle {
-    fn digestable_id(&self) -> [u8; 2] {
-        match &self {
-            CommentStyle::Line => *b"//",
-            CommentStyle::Block => *b"/*",
-        }
-    }
-}
-
-impl NonCodeNode {
-    compute_digest!(|slf, hasher| {
-        match &slf.value {
-            NonCodeValue::InlineComment { value, style } => {
-                hasher.update(value);
-                hasher.update(style.digestable_id());
-            }
-            NonCodeValue::BlockComment { value, style } => {
-                hasher.update(value);
-                hasher.update(style.digestable_id());
-            }
-            NonCodeValue::NewLineBlockComment { value, style } => {
-                hasher.update(value);
-                hasher.update(style.digestable_id());
-            }
-            NonCodeValue::NewLine => {
-                hasher.update(b"\r\n");
-            }
-        }
-    });
-}
-
-impl NonCodeMeta {
-    compute_digest!(|slf, hasher| {
-        let mut keys = slf.non_code_nodes.keys().copied().collect::<Vec<_>>();
-        keys.sort();
-
-        for key in keys.into_iter() {
-            hasher.update(key.to_ne_bytes());
-            let nodes = slf.non_code_nodes.get_mut(&key).unwrap();
-            hasher.update(nodes.len().to_ne_bytes());
-            for node in nodes.iter_mut() {
-                hasher.update(node.compute_digest());
-            }
-        }
     });
 }
 
@@ -396,13 +354,19 @@ impl UnaryExpression {
     });
 }
 
+impl LabelledExpression {
+    compute_digest!(|slf, hasher| {
+        hasher.update(slf.expr.compute_digest());
+        hasher.update(slf.label.compute_digest());
+    });
+}
+
 impl PipeExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.body.len().to_ne_bytes());
         for value in slf.body.iter_mut() {
             hasher.update(value.compute_digest());
         }
-        hasher.update(slf.non_code_meta.compute_digest());
     });
 }
 

@@ -1,5 +1,11 @@
-import { Completion } from '@codemirror/autocomplete'
-import { EditorView, ViewUpdate } from '@codemirror/view'
+import {
+  closeBrackets,
+  closeBracketsKeymap,
+  Completion,
+  completionKeymap,
+  completionStatus,
+} from '@codemirror/autocomplete'
+import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
 import { CustomIcon } from 'components/CustomIcon'
 import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
@@ -8,11 +14,16 @@ import { getSystemTheme } from 'lib/theme'
 import { useCalculateKclExpression } from 'lib/useCalculateKclExpression'
 import { roundOff } from 'lib/utils'
 import { varMentions } from 'lib/varCompletionExtension'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import styles from './CommandBarKclInput.module.css'
 import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
 import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
+import { useSelector } from '@xstate/react'
+
+const machineContextSelector = (snapshot?: {
+  context: Record<string, unknown>
+}) => snapshot?.context
 
 function CommandBarKclInput({
   arg,
@@ -31,12 +42,44 @@ function CommandBarKclInput({
     arg.name
   ] as KclCommandValue | undefined
   const { settings } = useSettingsAuthContext()
-  const defaultValue = (arg.defaultValue as string) || ''
+  const argMachineContext = useSelector(
+    arg.machineActor,
+    machineContextSelector
+  )
+  const defaultValue = useMemo(
+    () =>
+      arg.defaultValue
+        ? arg.defaultValue instanceof Function
+          ? arg.defaultValue(commandBarState.context, argMachineContext)
+          : arg.defaultValue
+        : '',
+    [arg.defaultValue, commandBarState.context, argMachineContext]
+  )
+  const initialVariableName = useMemo(() => {
+    // Use the configured variable name if it exists
+    if (arg.variableName !== undefined) {
+      return arg.variableName instanceof Function
+        ? arg.variableName(commandBarState.context, argMachineContext)
+        : arg.variableName
+    }
+    // or derive it from the previously set value or the argument name
+    return previouslySetValue && 'variableName' in previouslySetValue
+      ? previouslySetValue.variableName
+      : arg.name
+  }, [
+    arg.variableName,
+    commandBarState.context,
+    argMachineContext,
+    arg.name,
+    previouslySetValue,
+  ])
   const [value, setValue] = useState(
     previouslySetValue?.valueText || defaultValue || ''
   )
   const [createNewVariable, setCreateNewVariable] = useState(
-    previouslySetValue && 'variableName' in previouslySetValue
+    (previouslySetValue && 'variableName' in previouslySetValue) ||
+      arg.createVariableByDefault ||
+      false
   )
   const [canSubmit, setCanSubmit] = useState(true)
   useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
@@ -52,15 +95,13 @@ function CommandBarKclInput({
     isNewVariableNameUnique,
   } = useCalculateKclExpression({
     value,
-    initialVariableName:
-      previouslySetValue && 'variableName' in previouslySetValue
-        ? previouslySetValue.variableName
-        : arg.name,
+    initialVariableName,
   })
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
     detail: String(roundOff(v.value as number)),
   }))
+  const varMentionsExtension = varMentions(varMentionData)
 
   const { setContainer } = useCodeMirror({
     container: editorRef.current,
@@ -78,23 +119,40 @@ function CommandBarKclInput({
         ? getSystemTheme()
         : settings.context.app.theme.current,
     extensions: [
-      EditorView.domEventHandlers({
-        keydown: (event) => {
-          if (event.key === 'Backspace' && value === '') {
-            event.preventDefault()
-            stepBack()
-          } else if (event.key === 'Enter') {
-            event.preventDefault()
-            handleSubmit()
-          }
-        },
-      }),
-      varMentions(varMentionData),
+      varMentionsExtension,
       EditorView.updateListener.of((vu: ViewUpdate) => {
         if (vu.docChanged) {
           setValue(vu.state.doc.toString())
         }
       }),
+      closeBrackets(),
+      keymap.of([
+        ...closeBracketsKeymap,
+        ...completionKeymap,
+        {
+          key: 'Enter',
+          run: (editor) => {
+            // Only submit if there is no completion active
+            if (completionStatus(editor.state) === null) {
+              handleSubmit()
+              return true
+            } else {
+              return false
+            }
+          },
+        },
+        {
+          key: 'Backspace',
+          run: (editor) => {
+            // Only step back if the editor is empty
+            if (editor.state.doc.toString() === '') {
+              stepBack()
+              return true
+            }
+            return false
+          },
+        },
+      ]),
     ],
   })
 
@@ -193,7 +251,7 @@ function CommandBarKclInput({
               }
             }}
             onKeyUp={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === 'Enter' && canSubmit) {
                 handleSubmit()
               }
             }}

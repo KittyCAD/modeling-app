@@ -7,10 +7,15 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
-    execution::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
-    parsing::ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
+    execution::{
+        Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier,
+    },
+    parsing::{
+        ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
+        token::NumericSuffix,
+    },
     std::{args::Arg, FnAsArg},
-    ExecState, ExecutorContext, KclError, SourceRange,
+    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
 pub type KclObjectFields = HashMap<String, KclValue>;
@@ -69,14 +74,24 @@ pub enum KclValue {
     Solids {
         value: Vec<Box<Solid>>,
     },
+    Helix(Box<Helix>),
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     Function {
+        /// Adam Chalmers speculation:
+        /// Reference to a KCL stdlib function (written in Rust).
+        /// Some if the KCL value is an alias of a stdlib function,
+        /// None if it's a KCL function written/declared in KCL.
         #[serde(skip)]
         func: Option<MemoryFunction>,
         #[schemars(skip)]
         expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         memory: Box<ProgramMemory>,
+        #[serde(rename = "__meta")]
+        meta: Vec<Metadata>,
+    },
+    Module {
+        value: ModuleId,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -129,6 +144,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Helix(e) => to_vec_sr(&e.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
             KclValue::Plane(p) => to_vec_sr(&p.meta),
@@ -139,6 +155,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::String { meta, .. } => to_vec_sr(&meta),
             KclValue::Array { meta, .. } => to_vec_sr(&meta),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
+            KclValue::Module { meta, .. } => to_vec_sr(&meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
         }
@@ -158,6 +175,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Helix(x) => to_vec_sr(&x.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
             KclValue::Plane(p) => to_vec_sr(&p.meta),
@@ -169,6 +187,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
             KclValue::Array { meta, .. } => to_vec_sr(meta),
             KclValue::Object { meta, .. } => to_vec_sr(meta),
+            KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
         }
     }
@@ -192,10 +211,21 @@ impl KclValue {
             KclValue::Sketches { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
             KclValue::Solid(x) => x.meta.clone(),
             KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
+            KclValue::Helix(x) => x.meta.clone(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
+            KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
         }
+    }
+
+    pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
+        let KclValue::Function { expression, .. } = self else {
+            return None;
+        };
+        // TODO: It would be nice if we could extract the source range starting
+        // at the fn, but that's the variable declaration.
+        Some(expression.as_source_range())
     }
 
     pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
@@ -240,6 +270,7 @@ impl KclValue {
             KclValue::Solids { .. } => "Solids",
             KclValue::Sketch { .. } => "Sketch",
             KclValue::Sketches { .. } => "Sketches",
+            KclValue::Helix(_) => "Helix",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
             KclValue::Function { .. } => "Function",
             KclValue::Plane(_) => "Plane",
@@ -250,6 +281,7 @@ impl KclValue {
             KclValue::String { .. } => "string (text)",
             KclValue::Array { .. } => "array (list)",
             KclValue::Object { .. } => "object",
+            KclValue::Module { .. } => "module",
             KclValue::KclNone { .. } => "None",
         }
     }
@@ -501,6 +533,90 @@ impl KclValue {
                 &ctx,
             )
             .await
+        }
+    }
+
+    /// If this is a function, call it by applying keyword arguments.
+    /// If it's not a function, returns an error.
+    pub async fn call_fn_kw(
+        &self,
+        args: crate::std::Args,
+        exec_state: &mut ExecState,
+        ctx: ExecutorContext,
+        callsite: SourceRange,
+    ) -> Result<Option<KclValue>, KclError> {
+        let KclValue::Function {
+            func,
+            expression,
+            memory: closure_memory,
+            meta: _,
+        } = &self
+        else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "cannot call this because it isn't a function".to_string(),
+                source_ranges: vec![callsite],
+            }));
+        };
+        if let Some(_func) = func {
+            todo!("Implement calling KCL stdlib fns that are aliased. Part of https://github.com/KittyCAD/modeling-app/issues/4600");
+        } else {
+            crate::execution::call_user_defined_function_kw(
+                args.kw_args,
+                closure_memory.as_ref(),
+                expression.as_ref(),
+                exec_state,
+                &ctx,
+            )
+            .await
+        }
+    }
+}
+
+// TODO called UnitLen so as not to clash with UnitLength in settings)
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum UnitLen {
+    Mm,
+    Cm,
+    M,
+    Inches,
+    Feet,
+    Yards,
+}
+
+impl TryFrom<NumericSuffix> for UnitLen {
+    type Error = ();
+
+    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
+        match suffix {
+            NumericSuffix::Mm => Ok(Self::Mm),
+            NumericSuffix::Cm => Ok(Self::Cm),
+            NumericSuffix::M => Ok(Self::M),
+            NumericSuffix::Inch => Ok(Self::Inches),
+            NumericSuffix::Ft => Ok(Self::Feet),
+            NumericSuffix::Yd => Ok(Self::Yards),
+            _ => Err(()),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum UnitAngle {
+    Degrees,
+    Radians,
+}
+
+impl TryFrom<NumericSuffix> for UnitAngle {
+    type Error = ();
+
+    fn try_from(suffix: NumericSuffix) -> std::result::Result<Self, Self::Error> {
+        match suffix {
+            NumericSuffix::Deg => Ok(Self::Degrees),
+            NumericSuffix::Rad => Ok(Self::Radians),
+            _ => Err(()),
         }
     }
 }

@@ -43,19 +43,19 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// ```no_run
 /// // Chamfer a mounting plate.
-/// const width = 20
-/// const length = 10
-/// const thickness = 1
-/// const chamferLength = 2
+/// width = 20
+/// length = 10
+/// thickness = 1
+/// chamferLength = 2
 ///
-/// const mountingPlateSketch = startSketchOn("XY")
+/// mountingPlateSketch = startSketchOn("XY")
 ///   |> startProfileAt([-width/2, -length/2], %)
 ///   |> lineTo([width/2, -length/2], %, $edge1)
 ///   |> lineTo([width/2, length/2], %, $edge2)
 ///   |> lineTo([-width/2, length/2], %, $edge3)
 ///   |> close(%, $edge4)
 ///
-/// const mountingPlate = extrude(thickness, mountingPlateSketch)
+/// mountingPlate = extrude(thickness, mountingPlateSketch)
 ///   |> chamfer({
 ///     length = chamferLength,
 ///     tags = [
@@ -69,8 +69,8 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///
 /// ```no_run
 /// // Sketch on the face of a chamfer.
-/// fn cube = (pos, scale) => {
-/// const sg = startSketchOn('XY')
+/// fn cube(pos, scale) {
+/// sg = startSketchOn('XY')
 ///     |> startProfileAt(pos, %)
 ///     |> line([0, scale], %)
 ///     |> line([scale, 0], %)
@@ -79,7 +79,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     return sg
 /// }
 ///
-/// const part001 = cube([0,0], 20)
+/// part001 = cube([0,0], 20)
 ///     |> close(%, $line1)
 ///     |> extrude(20, %)
 ///     |> chamfer({
@@ -87,7 +87,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///         tags = [getOppositeEdge(line1)]
 ///     }, %, $chamfer1) // We tag the chamfer to reference it later.
 ///
-/// const sketch001 = startSketchOn(part001, chamfer1)
+/// sketch001 = startSketchOn(part001, chamfer1)
 ///     |> startProfileAt([10, 10], %)
 ///     |> line([2, 0], %)
 ///     |> line([0, 2], %)
@@ -98,6 +98,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 #[stdlib {
     name = "chamfer",
+    feature_tree_operation = true,
 }]
 async fn inner_chamfer(
     data: ChamferData,
@@ -133,7 +134,7 @@ async fn inner_chamfer(
             EdgeReference::Tag(edge_tag) => args.get_tag_engine_info(exec_state, &edge_tag)?.id,
         };
 
-        let id = exec_state.id_generator.next_uuid();
+        let id = exec_state.global.id_generator.next_uuid();
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {

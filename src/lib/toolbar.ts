@@ -8,6 +8,7 @@ import {
   modelingMachine,
   pipeHasCircle,
 } from 'machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 import { EventFrom, StateFrom } from 'xstate'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
@@ -71,7 +72,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        disabled: (state) => !state.matches('idle'),
         title: ({ sketchPathId }) =>
           `${sketchPathId ? 'Edit' : 'Start'} Sketch`,
         showTitle: true,
@@ -89,7 +89,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
-        disabled: (state) => !state.can({ type: 'Extrude' }),
         icon: 'extrude',
         status: 'available',
         title: 'Extrude',
@@ -104,11 +103,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
-        // TODO: disabled
-        // Who's state is this?
-        disabled: (state) => !state.can({ type: 'Revolve' }),
         icon: 'revolve',
-        status: DEV ? 'available' : 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Revolve',
         hotkey: 'R',
         description:
@@ -123,17 +119,21 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'sweep',
-        onClick: () => console.error('Sweep not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Sweep', groupId: 'modeling' },
+          }),
         icon: 'sweep',
-        status: 'unavailable',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Sweep',
         hotkey: 'W',
         description:
           'Create a 3D body by moving a sketch region along an arbitrary path.',
         links: [
           {
-            label: 'GitHub discussion',
-            url: 'https://github.com/KittyCAD/modeling-app/discussions/498',
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl/sweep',
           },
         ],
       },
@@ -144,7 +144,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             type: 'Find and select command',
             data: { name: 'Loft', groupId: 'modeling' },
           }),
-        disabled: (state) => !state.can({ type: 'Loft' }),
         icon: 'loft',
         status: 'available',
         title: 'Loft',
@@ -155,10 +154,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           {
             label: 'KCL docs',
             url: 'https://zoo.dev/docs/kcl/loft',
-          },
-          {
-            label: 'GitHub discussion',
-            url: 'https://github.com/KittyCAD/modeling-app/discussions/613',
           },
         ],
       },
@@ -171,8 +166,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Fillet', groupId: 'modeling' },
           }),
         icon: 'fillet3d',
-        status: DEV ? 'available' : 'kcl-only',
-        disabled: (state) => !state.can({ type: 'Fillet' }),
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
@@ -195,9 +189,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'shell',
-        onClick: () => console.error('Shell not yet implemented'),
+        onClick: ({ commandBarSend }) => {
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Shell', groupId: 'modeling' },
+          })
+        },
         icon: 'shell',
-        status: 'kcl-only',
+        status: 'available',
         title: 'Shell',
         description: 'Hollow out a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/shell' }],
@@ -282,6 +281,35 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'unavailable',
           title: '3-point plane',
           description: 'Create a plane from three points.',
+          links: [],
+        },
+      ],
+      'break',
+      [
+        {
+          id: 'text-to-cad',
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Text-to-CAD', groupId: 'modeling' },
+            }),
+          icon: 'sparkles',
+          status: 'available',
+          title: 'Text-to-CAD',
+          description: 'Generate geometry from a text prompt.',
+          links: [],
+        },
+        {
+          id: 'prompt-to-edit',
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: { name: 'Prompt-to-edit', groupId: 'modeling' },
+            }),
+          icon: 'sparkles',
+          status: 'available',
+          title: 'Prompt-to-Edit',
+          description: 'Edit geometry based on a text prompt.',
           links: [],
         },
       ],
@@ -439,10 +467,19 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'circle-three-points',
-          onClick: () =>
-            console.error('Three-point circle not yet implemented'),
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({
+                  Sketch: 'circle3PointToolSelect',
+                })
+                  ? 'circle3Points'
+                  : 'none',
+              },
+            }),
           icon: 'circle',
-          status: 'unavailable',
+          status: 'available',
           title: 'Three-point circle',
           showTitle: false,
           description: 'Draw a circle defined by three points',
@@ -539,13 +576,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'constraint-length',
-          disabled: (state) =>
-            !(
-              state.matches({ Sketch: 'SketchIdle' }) &&
-              state.can({ type: 'Constrain length' })
-            ),
-          onClick: ({ modelingSend }) =>
-            modelingSend({ type: 'Constrain length' }),
+          disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
+          onClick: ({ commandBarSend }) =>
+            commandBarSend({
+              type: 'Find and select command',
+              data: {
+                name: 'Constrain length',
+                groupId: 'modeling',
+              },
+            }),
           icon: 'dimension',
           status: 'available',
           title: 'Length',

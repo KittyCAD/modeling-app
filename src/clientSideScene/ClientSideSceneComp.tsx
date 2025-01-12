@@ -174,8 +174,13 @@ export const ClientSideScene = ({
 const Overlays = () => {
   const { context } = useModelingContext()
   if (context.mouseState.type === 'isDragging') return null
+  // Set a large zIndex, the overlay for hover dropdown menu on line segments needs to render
+  // over the length labels on the line segments
   return (
-    <div className="absolute inset-0 pointer-events-none">
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{ zIndex: '99999999' }}
+    >
       {Object.entries(context.segmentOverlays)
         .filter((a) => a[1].visible)
         .map(([pathToNodeString, overlay], index) => {
@@ -505,7 +510,8 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { context, send } = useModelingContext()
+  const { commandBarSend } = useCommandsContext()
+  const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
       varName: string
@@ -624,11 +630,18 @@ const ConstraintSymbol = ({
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={toSync(async () => {
           if (!isConstrained) {
-            send({
-              type: 'Convert to variable',
+            commandBarSend({
+              type: 'Find and select command',
               data: {
-                pathToNode,
-                variableName: varName,
+                name: 'Constrain with named value',
+                groupId: 'modeling',
+                argDefaultValues: {
+                  currentValue: {
+                    pathToNode,
+                    variableName: varName,
+                    valueText: value,
+                  },
+                },
               },
             })
           } else if (isConstrained) {

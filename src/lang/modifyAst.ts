@@ -45,6 +45,7 @@ import { TagDeclarator } from 'wasm-lib/kcl/bindings/TagDeclarator'
 import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { KclExpressionWithVariable } from 'lib/commandTypes'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -373,6 +374,37 @@ export function loftSketches(
   }
 }
 
+export function addSweep(
+  node: Node<Program>,
+  profileDeclarator: VariableDeclarator,
+  pathDeclarator: VariableDeclarator
+): {
+  modifiedAst: Node<Program>
+  pathToNode: PathToNode
+} {
+  const modifiedAst = structuredClone(node)
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  const sweep = createCallExpressionStdLib('sweep', [
+    createObjectExpression({ path: createIdentifier(pathDeclarator.id.name) }),
+    createIdentifier(profileDeclarator.id.name),
+  ])
+  const declaration = createVariableDeclaration(name, sweep)
+  modifiedAst.body.push(declaration)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
 export function revolveSketch(
   node: Node<Program>,
   pathToNode: PathToNode,
@@ -588,6 +620,25 @@ export function addOffsetPlane({
     modifiedAst,
     pathToNode,
   }
+}
+
+/**
+ * Return a modified clone of an AST with a named constant inserted into the body
+ */
+export function insertNamedConstant({
+  node,
+  newExpression,
+}: {
+  node: Node<Program>
+  newExpression: KclExpressionWithVariable
+}): Node<Program> {
+  const ast = structuredClone(node)
+  ast.body.splice(
+    newExpression.insertIndex,
+    0,
+    newExpression.variableDeclarationAst
+  )
+  return ast
 }
 
 /**
@@ -933,6 +984,31 @@ export function giveSketchFnCallTag(
   }
 }
 
+/**
+ * Replace a
+ */
+export function replaceValueAtNodePath({
+  ast,
+  pathToNode,
+  newExpressionString,
+}: {
+  ast: Node<Program>
+  pathToNode: PathToNode
+  newExpressionString: string
+}) {
+  const replaceCheckResult = isNodeSafeToReplacePath(ast, pathToNode)
+  if (err(replaceCheckResult)) {
+    return replaceCheckResult
+  }
+  const { isSafe, value, replacer } = replaceCheckResult
+
+  if (!isSafe || value.type === 'Identifier') {
+    return new Error('Not safe to replace')
+  }
+
+  return replacer(ast, newExpressionString)
+}
+
 export function moveValueIntoNewVariablePath(
   ast: Node<Program>,
   programMemory: ProgramMemory,
@@ -1101,31 +1177,60 @@ export async function deleteFromSelection(
   )
   if (err(varDec)) return varDec
   if (
-    (selection?.artifact?.type === 'wall' ||
+    ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
-    varDec.node.init.type === 'PipeExpression'
+      varDec.node.init.type === 'PipeExpression') ||
+    selection.artifact?.type === 'sweep' ||
+    selection.artifact?.type === 'plane' ||
+    !selection.artifact // aka expected to be a shell at this point
   ) {
-    const varDecName = varDec.node.id.name
-    let pathToNode: PathToNode | null = null
     let extrudeNameToDelete = ''
-    traverse(astClone, {
-      enter: (node, path) => {
-        if (node.type === 'VariableDeclaration') {
-          const dec = node.declaration
-          if (
-            dec.init.type === 'CallExpression' &&
-            (dec.init.callee.name === 'extrude' ||
-              dec.init.callee.name === 'revolve') &&
-            dec.init.arguments?.[1].type === 'Identifier' &&
-            dec.init.arguments?.[1].name === varDecName
-          ) {
-            pathToNode = path
-            extrudeNameToDelete = dec.id.name
+    let pathToNode: PathToNode | null = null
+    if (
+      selection.artifact &&
+      selection.artifact.type !== 'sweep' &&
+      selection.artifact.type !== 'plane'
+    ) {
+      const varDecName = varDec.node.id.name
+      traverse(astClone, {
+        enter: (node, path) => {
+          if (node.type === 'VariableDeclaration') {
+            const dec = node.declaration
+            if (
+              dec.init.type === 'CallExpression' &&
+              (dec.init.callee.name === 'extrude' ||
+                dec.init.callee.name === 'revolve') &&
+              dec.init.arguments?.[1].type === 'Identifier' &&
+              dec.init.arguments?.[1].name === varDecName
+            ) {
+              pathToNode = path
+              extrudeNameToDelete = dec.id.name
+            }
+            if (
+              dec.init.type === 'CallExpression' &&
+              dec.init.callee.name === 'loft' &&
+              dec.init.arguments?.[0].type === 'ArrayExpression' &&
+              dec.init.arguments?.[0].elements.some(
+                (a) => a.type === 'Identifier' && a.name === varDecName
+              )
+            ) {
+              pathToNode = path
+              extrudeNameToDelete = dec.id.name
+            }
           }
-        }
-      },
-    })
-    if (!pathToNode) return new Error('Could not find extrude variable')
+        },
+      })
+      if (!pathToNode) return new Error('Could not find extrude variable')
+    } else {
+      pathToNode = selection.codeRef.pathToNode
+      const extrudeVarDec = getNodeFromPath<VariableDeclarator>(
+        astClone,
+        pathToNode,
+        'VariableDeclarator'
+      )
+      if (err(extrudeVarDec)) return extrudeVarDec
+      extrudeNameToDelete = extrudeVarDec.node.id.name
+    }
 
     const expressionIndex = pathToNode[1][0] as number
     astClone.body.splice(expressionIndex, 1)
@@ -1221,17 +1326,17 @@ export async function deleteFromSelection(
                     y: roundLiteral(faceDetails.origin.y),
                     z: roundLiteral(faceDetails.origin.z),
                   }),
-                  x_axis: createObjectExpression({
+                  xAxis: createObjectExpression({
                     x: roundLiteral(faceDetails.x_axis.x),
                     y: roundLiteral(faceDetails.x_axis.y),
                     z: roundLiteral(faceDetails.x_axis.z),
                   }),
-                  y_axis: createObjectExpression({
+                  yAxis: createObjectExpression({
                     x: roundLiteral(faceDetails.y_axis.x),
                     y: roundLiteral(faceDetails.y_axis.y),
                     z: roundLiteral(faceDetails.y_axis.z),
                   }),
-                  z_axis: createObjectExpression({
+                  zAxis: createObjectExpression({
                     x: roundLiteral(faceDetails.z_axis.x),
                     y: roundLiteral(faceDetails.z_axis.y),
                     z: roundLiteral(faceDetails.z_axis.z),

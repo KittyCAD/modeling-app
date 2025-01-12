@@ -13,6 +13,8 @@ use tower_lsp::lsp_types::{
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
 
+use crate::execution::Sketch;
+
 use crate::std::Primitive;
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
@@ -57,6 +59,12 @@ pub struct StdLibFnArg {
     pub schema: schemars::schema::RootSchema,
     /// If the argument is required.
     pub required: bool,
+    /// Additional information that could be used instead of the type's description.
+    /// This is helpful if the type is really basic, like "u32" -- that won't tell the user much about
+    /// how this argument is meant to be used.
+    /// Empty string means this has no docs.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub description: String,
     /// Even in functions that use keyword arguments, not every parameter requires a label (most do though).
     /// Some functions allow one unlabeled parameter, which has to be first in the
     /// argument list.
@@ -104,6 +112,11 @@ impl StdLibFnArg {
     }
 
     pub fn description(&self) -> Option<String> {
+        // Check if we explicitly gave this stdlib arg a description.
+        if !self.description.is_empty() {
+            return Some(self.description.clone());
+        }
+        // If not, then try to get something meaningful from the schema.
         get_description_string_from_schema(&self.schema.clone())
     }
 }
@@ -151,6 +164,9 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
 
     /// If the function is deprecated.
     fn deprecated(&self) -> bool;
+
+    /// If the function should appear in the feature tree.
+    fn feature_tree_operation(&self) -> bool;
 
     /// Any example code blocks.
     fn examples(&self) -> Vec<String>;
@@ -232,6 +248,11 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     }
 
     fn to_autocomplete_snippet(&self) -> Result<String> {
+        if self.name() == "loft" {
+            return Ok("loft([${0:sketch000}, ${1:sketch001}])${}".to_string());
+        } else if self.name() == "hole" {
+            return Ok("hole(${0:holeSketch}, ${1:%})${}".to_string());
+        }
         let mut args = Vec::new();
         let mut index = 0;
         for arg in self.args(true).iter() {
@@ -451,6 +472,16 @@ fn get_autocomplete_snippet_from_schema(
 ) -> Result<Option<(usize, String)>> {
     match schema {
         schemars::schema::Schema::Object(o) => {
+            // Check if the schema is the same as a Sketch.
+            let mut settings = schemars::gen::SchemaSettings::openapi3();
+            // We set this so we can recurse them later.
+            settings.inline_subschemas = true;
+            let mut generator = schemars::gen::SchemaGenerator::new(settings);
+            let sketch_schema = generator.root_schema_for::<Sketch>().schema;
+            if sketch_schema.object == o.object {
+                return Ok(Some((index, format!("${{{}:sketch{}}}", index, "000"))));
+            }
+
             if let Some(serde_json::Value::Bool(nullable)) = o.extensions.get("nullable") {
                 if *nullable {
                     return Ok(None);
@@ -489,8 +520,14 @@ fn get_autocomplete_snippet_from_schema(
                         continue;
                     }
 
+                    if prop_name == "color" {
+                        fn_docs.push_str(&format!("\t{} = ${{{}:\"#ff0000\"}},\n", prop_name, i));
+                        i += 1;
+                        continue;
+                    }
+
                     if let Some((new_index, snippet)) = get_autocomplete_snippet_from_schema(prop, i)? {
-                        fn_docs.push_str(&format!("\t{}: {},\n", prop_name, snippet));
+                        fn_docs.push_str(&format!("\t{} = {},\n", prop_name, snippet));
                         i = new_index + 1;
                     }
                 }
@@ -856,8 +893,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"fillet({
-	radius: ${0:3.14},
-	tags: [${1:"tag_or_edge_fn"}],
+	radius = ${0:3.14},
+	tags = [${1:"tag_or_edge_fn"}],
 }, ${2:%})${}"#
         );
     }
@@ -877,11 +914,11 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternCircular3d({
-	instances: ${0:10},
-	axis: [${1:3.14}, ${2:3.14}, ${3:3.14}],
-	center: [${4:3.14}, ${5:3.14}, ${6:3.14}],
-	arcDegrees: ${7:3.14},
-	rotateDuplicates: ${8:false},
+	instances = ${0:10},
+	axis = [${1:3.14}, ${2:3.14}, ${3:3.14}],
+	center = [${4:3.14}, ${5:3.14}, ${6:3.14}],
+	arcDegrees = ${7:3.14},
+	rotateDuplicates = ${8:false},
 }, ${9:%})${}"#
         );
     }
@@ -893,7 +930,7 @@ mod tests {
         assert_eq!(
             snippet,
             r#"revolve({
-	axis: ${0:"X"},
+	axis = ${0:"X"},
 }, ${1:%})${}"#
         );
     }
@@ -905,8 +942,8 @@ mod tests {
         assert_eq!(
             snippet,
             r#"circle({
-	center: [${0:3.14}, ${1:3.14}],
-	radius: ${2:3.14},
+	center = [${0:3.14}, ${1:3.14}],
+	radius = ${2:3.14},
 }, ${3:%})${}"#
         );
     }
@@ -918,9 +955,9 @@ mod tests {
         assert_eq!(
             snippet,
             r#"arc({
-	angleStart: ${0:3.14},
-	angleEnd: ${1:3.14},
-	radius: ${2:3.14},
+	angleStart = ${0:3.14},
+	angleEnd = ${1:3.14},
+	radius = ${2:3.14},
 }, ${3:%})${}"#
         );
     }
@@ -939,11 +976,52 @@ mod tests {
         assert_eq!(
             snippet,
             r#"patternLinear2d({
-	instances: ${0:10},
-	distance: ${1:3.14},
-	axis: [${2:3.14}, ${3:3.14}],
+	instances = ${0:10},
+	distance = ${1:3.14},
+	axis = [${2:3.14}, ${3:3.14}],
 }, ${4:%})${}"#
         );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_appearance() {
+        let appearance_fn: Box<dyn StdLibFn> = Box::new(crate::std::appearance::Appearance);
+        let snippet = appearance_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"appearance({
+	color = ${0:"#
+                .to_owned()
+                + "\"#"
+                + r#"ff0000"},
+}, ${1:%})${}"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_loft() {
+        let loft_fn: Box<dyn StdLibFn> = Box::new(crate::std::loft::Loft);
+        let snippet = loft_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"loft([${0:sketch000}, ${1:sketch001}])${}"#);
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_sweep() {
+        let sweep_fn: Box<dyn StdLibFn> = Box::new(crate::std::sweep::Sweep);
+        let snippet = sweep_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"sweep({
+	path = ${0:sketch000},
+}, ${1:%})${}"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_hole() {
+        let hole_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Hole);
+        let snippet = hole_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"hole(${0:holeSketch}, ${1:%})${}"#);
     }
 
     // We want to test the snippets we compile at lsp start.

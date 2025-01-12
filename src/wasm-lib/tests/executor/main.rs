@@ -1,3 +1,5 @@
+mod cache;
+
 use kcl_lib::{
     test_server::{execute_and_snapshot, execute_and_snapshot_no_auth},
     UnitLength,
@@ -5,7 +7,7 @@ use kcl_lib::{
 
 /// The minimum permissible difference between asserted twenty-twenty images.
 /// i.e. how different the current model snapshot can be from the previous saved one.
-const MIN_DIFF: f64 = 0.99;
+pub(crate) const MIN_DIFF: f64 = 0.99;
 
 macro_rules! kcl_input {
     ($file:literal) => {
@@ -13,8 +15,11 @@ macro_rules! kcl_input {
     };
 }
 
-fn assert_out(test_name: &str, result: &image::DynamicImage) {
-    twenty_twenty::assert_image(format!("tests/executor/outputs/{test_name}.png"), result, MIN_DIFF);
+pub(crate) fn assert_out(test_name: &str, result: &image::DynamicImage) -> String {
+    let path = format!("tests/executor/outputs/{test_name}.png");
+    twenty_twenty::assert_image(&path, result, MIN_DIFF);
+
+    path
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -280,7 +285,7 @@ async fn optional_params() {
     fn other_circle = (pos, radius, tag?) => {
       sg = startSketchOn('XY')
         |> startProfileAt(pos, %)
-        |> arc({angle_end: 360, angle_start: 0, radius: radius}, %)
+        |> arc({angleEnd: 360, angleStart: 0, radius: radius}, %)
         |> close(%)
         |> extrude(2, %)
 
@@ -1155,8 +1160,8 @@ async fn kcl_test_plumbus_fillets() {
   sg = startSketchOn(ext, face)
   |> startProfileAt([pos[0] + radius, pos[1]], %)
   |> arc({
-       angle_end: 360,
-       angle_start: 0,
+       angleEnd: 360,
+       angleStart: 0,
        radius: radius
      }, %, $arc1)
   |> close(%)
@@ -1230,9 +1235,9 @@ async fn kcl_test_member_expression_in_params() {
           y: originStart[1],
           z: originStart[2],
          },
-         x_axis: { x: 0, y: 0, z: -1 },
-         y_axis: { x: 1, y: 0, z: 0 },
-         z_axis: { x: 0, y: 1, z: 0 }
+         xAxis: { x: 0, y: 0, z: -1 },
+         yAxis: { x: 1, y: 0, z: 0 },
+         zAxis: { x: 0, y: 1, z: 0 }
       }
   })
     |> circle({ center: [0, 0], radius: capDia / 2 }, %)
@@ -1727,8 +1732,8 @@ async fn kcl_test_arc_error_same_start_end() {
     let code = r#"startSketchOn('XY')
   |> startProfileAt([10, 0], %)
   |> arc({
-       angle_start: 180,
-       angle_end: 180,
+       angleStart: 180,
+       angleEnd: 180,
        radius: 1.5
      }, %)
   |> close(%)
@@ -1744,7 +1749,7 @@ async fn kcl_test_arc_error_same_start_end() {
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([57, 140, 0])], message: "Arc start and end angles must be different" }"#
+        r#"type: KclErrorDetails { source_ranges: [SourceRange([57, 138, 0])], message: "Arc start and end angles must be different" }"#
     );
 }
 

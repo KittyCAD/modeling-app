@@ -22,36 +22,66 @@ type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use function_param::FunctionParam;
 pub use kcl_value::{KclObjectFields, KclValue};
+use uuid::Uuid;
 
-use crate::{
-    engine::{EngineManager, ExecutionKind},
-    errors::{KclError, KclErrorDetails},
-    fs::{FileManager, FileSystem},
-    parsing::ast::{
-        cache::{get_changed_program, CacheInformation},
-        types::{
-            BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, TagDeclarator, TagNode,
-        },
-    },
-    settings::types::UnitLength,
-    source_range::{ModuleId, SourceRange},
-    std::{args::Arg, StdLib},
-    ExecError, Program,
-};
-
+mod annotations;
+mod artifact;
+pub(crate) mod cache;
+mod cad_op;
 mod exec_ast;
 mod function_param;
 mod kcl_value;
 
+use crate::{
+    engine::{EngineManager, ExecutionKind},
+    errors::{KclError, KclErrorDetails},
+    execution::cache::{CacheInformation, CacheResult},
+    fs::{FileManager, FileSystem},
+    parsing::ast::types::{
+        BodyItem, Expr, FunctionExpression, ImportSelector, ItemVisibility, Node, NodeRef, NonCodeValue,
+        Program as AstProgram, TagDeclarator, TagNode,
+    },
+    settings::types::UnitLength,
+    source_range::{ModuleId, SourceRange},
+    std::{args::Arg, StdLib},
+    walk::Node as WalkNode,
+    ExecError, KclErrorWithOutputs, Program,
+};
+
+// Re-exports.
+pub use artifact::{Artifact, ArtifactCommand, ArtifactId, ArtifactInner};
+pub use cad_op::Operation;
+
 /// State for executing a program.
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecState {
-    /// Program variable bindings.
-    pub memory: ProgramMemory,
+    pub global: GlobalState,
+    pub mod_local: ModuleState,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct GlobalState {
     /// The stable artifact ID generator.
     pub id_generator: IdGenerator,
+    /// Map from source file absolute path to module ID.
+    pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
+    /// Map from module ID to module info.
+    pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    /// Output map of UUIDs to artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Output commands to allow building the artifact graph by the caller.
+    /// These are accumulated in the [`ExecutorContext`] but moved here for
+    /// convenience of the execution cache.
+    pub artifact_commands: Vec<ArtifactCommand>,
+}
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
+#[serde(rename_all = "camelCase")]
+pub struct ModuleState {
+    /// Program variable bindings.
+    pub memory: ProgramMemory,
     /// Dynamic state that follows dynamic flow of the program.
     pub dynamic_state: DynamicState,
     /// The current value of the pipe operator returned from the previous
@@ -62,26 +92,193 @@ pub struct ExecState {
     /// The stack of import statements for detecting circular module imports.
     /// If this is empty, we're not currently executing an import statement.
     pub import_stack: Vec<std::path::PathBuf>,
-    /// Map from source file absolute path to module ID.
-    pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
-    /// Map from module ID to module info.
-    pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
+    /// Settings specified from annotations.
+    pub settings: MetaSettings,
+}
+
+/// Outcome of executing a program.  This is used in TS.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecOutcome {
+    /// Program variable bindings of the top-level module.
+    pub memory: ProgramMemory,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
+    /// Output map of UUIDs to artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Output commands to allow building the artifact graph by the caller.
+    pub artifact_commands: Vec<ArtifactCommand>,
+}
+
+impl Default for ExecState {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl ExecState {
-    fn add_module(&mut self, path: std::path::PathBuf) -> ModuleId {
+    pub fn new() -> Self {
+        ExecState {
+            global: GlobalState::new(),
+            mod_local: ModuleState::default(),
+        }
+    }
+
+    fn reset(&mut self) {
+        let mut id_generator = self.global.id_generator.clone();
+        // We do not pop the ids, since we want to keep the same id generator.
+        // This is for the front end to keep track of the ids.
+        id_generator.next_id = 0;
+
+        let mut global = GlobalState::new();
+        global.id_generator = id_generator;
+
+        *self = ExecState {
+            global,
+            mod_local: ModuleState::default(),
+        };
+    }
+
+    /// Convert to execution outcome when running in WebAssembly.  We want to
+    /// reduce the amount of data that crosses the WASM boundary as much as
+    /// possible.
+    pub fn to_wasm_outcome(self) -> ExecOutcome {
+        // Fields are opt-in so that we don't accidentally leak private internal
+        // state when we add more to ExecState.
+        ExecOutcome {
+            memory: self.mod_local.memory,
+            operations: self.mod_local.operations,
+            artifacts: self.global.artifacts,
+            artifact_commands: self.global.artifact_commands,
+        }
+    }
+
+    pub fn memory(&self) -> &ProgramMemory {
+        &self.mod_local.memory
+    }
+
+    pub fn mut_memory(&mut self) -> &mut ProgramMemory {
+        &mut self.mod_local.memory
+    }
+
+    pub fn next_uuid(&mut self) -> Uuid {
+        self.global.id_generator.next_uuid()
+    }
+
+    pub fn add_artifact(&mut self, artifact: Artifact) {
+        let id = artifact.id;
+        self.global.artifacts.insert(id, artifact);
+    }
+
+    async fn add_module(
+        &mut self,
+        path: std::path::PathBuf,
+        ctxt: &ExecutorContext,
+        source_range: SourceRange,
+    ) -> Result<ModuleId, KclError> {
         // Need to avoid borrowing self in the closure.
-        let new_module_id = ModuleId::from_usize(self.path_to_source_id.len());
+        let new_module_id = ModuleId::from_usize(self.global.path_to_source_id.len());
         let mut is_new = false;
-        let id = *self.path_to_source_id.entry(path.clone()).or_insert_with(|| {
+        let id = *self.global.path_to_source_id.entry(path.clone()).or_insert_with(|| {
             is_new = true;
             new_module_id
         });
+
         if is_new {
-            let module_info = ModuleInfo { id, path };
-            self.module_infos.insert(id, module_info);
+            let source = ctxt.fs.read_to_string(&path, source_range).await?;
+            // TODO handle parsing errors properly
+            let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
+
+            let module_info = ModuleInfo {
+                id,
+                path,
+                parsed: Some(parsed),
+            };
+            self.global.module_infos.insert(id, module_info);
         }
-        id
+
+        Ok(id)
+    }
+}
+
+impl GlobalState {
+    fn new() -> Self {
+        let mut global = GlobalState {
+            id_generator: Default::default(),
+            path_to_source_id: Default::default(),
+            module_infos: Default::default(),
+            artifacts: Default::default(),
+            artifact_commands: Default::default(),
+        };
+
+        // TODO(#4434): Use the top-level file's path.
+        let root_path = PathBuf::new();
+        let root_id = ModuleId::default();
+        global.module_infos.insert(
+            root_id,
+            ModuleInfo {
+                id: root_id,
+                path: root_path.clone(),
+                parsed: None,
+            },
+        );
+        global.path_to_source_id.insert(root_path, root_id);
+        global
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct MetaSettings {
+    pub default_length_units: kcl_value::UnitLen,
+    pub default_angle_units: kcl_value::UnitAngle,
+}
+
+impl Default for MetaSettings {
+    fn default() -> Self {
+        MetaSettings {
+            default_length_units: kcl_value::UnitLen::Mm,
+            default_angle_units: kcl_value::UnitAngle::Degrees,
+        }
+    }
+}
+
+impl MetaSettings {
+    fn update_from_annotation(&mut self, annotation: &NonCodeValue, source_range: SourceRange) -> Result<(), KclError> {
+        let properties = annotations::expect_properties(annotations::SETTINGS, annotation, source_range)?;
+
+        for p in properties {
+            match &*p.inner.key.name {
+                annotations::SETTINGS_UNIT_LENGTH => {
+                    let value = annotations::expect_ident(&p.inner.value)?;
+                    let value = kcl_value::UnitLen::from_str(value, source_range)?;
+                    self.default_length_units = value;
+                }
+                annotations::SETTINGS_UNIT_ANGLE => {
+                    let value = annotations::expect_ident(&p.inner.value)?;
+                    let value = kcl_value::UnitAngle::from_str(value, source_range)?;
+                    self.default_angle_units = value;
+                }
+                name => {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: format!(
+                            "Unexpected settings key: `{name}`; expected one of `{}`, `{}`",
+                            annotations::SETTINGS_UNIT_LENGTH,
+                            annotations::SETTINGS_UNIT_ANGLE
+                        ),
+                        source_ranges: vec![source_range],
+                    }))
+                }
+            }
+        }
+
+        Ok(())
     }
 }
 
@@ -151,6 +348,13 @@ impl ProgramMemory {
             message: format!("memory item key `{}` is not defined", var),
             source_ranges: vec![source_range],
         }))
+    }
+
+    /// Returns all bindings in the current scope.
+    #[allow(dead_code)]
+    fn get_all_cur_scope(&self) -> IndexMap<String, KclValue> {
+        let env = &self.environments[self.current_env.index()];
+        env.bindings.clone()
     }
 
     /// Find all solids in the memory that are on a specific sketch id.
@@ -262,24 +466,20 @@ impl Environment {
 /// Dynamic state that depends on the dynamic flow of the program, like the call
 /// stack.  If the language had exceptions, for example, you could store the
 /// stack of exception handlers here.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct DynamicState {
     pub solid_ids: Vec<SolidLazyIds>,
 }
 
 impl DynamicState {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     #[must_use]
-    pub fn merge(&self, memory: &ProgramMemory) -> Self {
+    fn merge(&self, memory: &ProgramMemory) -> Self {
         let mut merged = self.clone();
         merged.append(memory);
         merged
     }
 
-    pub fn append(&mut self, memory: &ProgramMemory) {
+    fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
                 if let KclValue::Solid(eg) = item {
@@ -289,7 +489,7 @@ impl DynamicState {
         }
     }
 
-    pub fn edge_cut_ids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<uuid::Uuid> {
+    pub(crate) fn edge_cut_ids_on_sketch(&self, sketch_id: uuid::Uuid) -> Vec<uuid::Uuid> {
         self.solid_ids
             .iter()
             .flat_map(|eg| {
@@ -304,8 +504,7 @@ impl DynamicState {
 }
 
 /// A generator for ArtifactIds that can be stable across executions.
-#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct IdGenerator {
     next_id: usize,
@@ -524,6 +723,23 @@ pub struct ImportedGeometry {
     pub meta: Vec<Metadata>,
 }
 
+/// A helix.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Helix {
+    /// The id of the helix.
+    pub value: uuid::Uuid,
+    /// Number of revolutions.
+    pub revolutions: f64,
+    /// Start angle (in degrees).
+    pub angle_start: f64,
+    /// Is the helix rotation counter clockwise?
+    pub ccw: bool,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
 /// A plane.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -547,7 +763,7 @@ pub struct Plane {
 
 impl Plane {
     pub(crate) fn from_plane_data(value: crate::std::sketch::PlaneData, exec_state: &mut ExecState) -> Self {
-        let id = exec_state.id_generator.next_uuid();
+        let id = exec_state.global.id_generator.next_uuid();
         match value {
             crate::std::sketch::PlaneData::XY => Plane {
                 id,
@@ -915,7 +1131,7 @@ impl Solid {
 
 /// An solid ID and its fillet and chamfer IDs.  This is needed for lazy
 /// fillet evaluation.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct SolidLazyIds {
     pub solid_id: uuid::Uuid,
     pub sketch_id: uuid::Uuid,
@@ -995,13 +1211,13 @@ pub enum BodyType {
 
 /// Info about a module.  Right now, this is pretty minimal.  We hope to cache
 /// modules here in the future.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct ModuleInfo {
     /// The ID of the module.
     id: ModuleId,
     /// Absolute path of the module's source file.
     path: std::path::PathBuf,
+    parsed: Option<Node<AstProgram>>,
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
@@ -1654,17 +1870,6 @@ impl ExecutorContext {
         let engine: Arc<Box<dyn EngineManager>> =
             Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
 
-        // Set the edge visibility.
-        engine
-            .batch_modeling_cmd(
-                uuid::Uuid::new_v4(),
-                SourceRange::default(),
-                &ModelingCmd::from(mcmd::EdgeLinesVisible {
-                    hidden: !settings.highlight_edges,
-                }),
-            )
-            .await?;
-
         Ok(Self {
             engine,
             fs: Arc::new(FileManager::new()),
@@ -1691,7 +1896,7 @@ impl ExecutorContext {
     pub async fn new(
         engine_manager: crate::engine::conn_wasm::EngineCommandManager,
         fs_manager: crate::fs::wasm::FileSystemManager,
-        units: UnitLength,
+        settings: ExecutorSettings,
     ) -> Result<Self, String> {
         Ok(ExecutorContext {
             engine: Arc::new(Box::new(
@@ -1701,16 +1906,16 @@ impl ExecutorContext {
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
             stdlib: Arc::new(StdLib::new()),
-            settings: ExecutorSettings {
-                units,
-                ..Default::default()
-            },
+            settings,
             context_type: ContextType::Live,
         })
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub async fn new_mock(fs_manager: crate::fs::wasm::FileSystemManager, units: UnitLength) -> Result<Self, String> {
+    pub async fn new_mock(
+        fs_manager: crate::fs::wasm::FileSystemManager,
+        settings: ExecutorSettings,
+    ) -> Result<Self, String> {
         Ok(ExecutorContext {
             engine: Arc::new(Box::new(
                 crate::engine::conn_mock::EngineConnection::new()
@@ -1719,10 +1924,7 @@ impl ExecutorContext {
             )),
             fs: Arc::new(FileManager::new(fs_manager)),
             stdlib: Arc::new(StdLib::new()),
-            settings: ExecutorSettings {
-                units,
-                ..Default::default()
-            },
+            settings,
             context_type: ContextType::Mock,
         })
     }
@@ -1804,34 +2006,206 @@ impl ExecutorContext {
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
         self.engine
-            .clear_scene(&mut exec_state.id_generator, source_range)
+            .clear_scene(&mut exec_state.global.id_generator, source_range)
             .await?;
 
         // We do not create the planes here as the post hook in wasm will do that
         // AND if we aren't in wasm it doesn't really matter.
         Ok(())
     }
+    /// Given an old ast, old program memory and new ast, find the parts of the code that need to be
+    /// re-executed.
+    /// This function should never error, because in the case of any internal error, we should just pop
+    /// the cache.
+    ///
+    /// Returns `None` when there are no changes to the program, i.e. it is
+    /// fully cached.
+    pub async fn get_changed_program(&self, info: CacheInformation) -> Option<CacheResult> {
+        let Some(old) = info.old else {
+            // We have no old info, we need to re-execute the whole thing.
+            return Some(CacheResult {
+                clear_scene: true,
+                program: info.new_ast,
+            });
+        };
+
+        // If the settings are different we might need to bust the cache.
+        // We specifically do this before checking if they are the exact same.
+        if old.settings != self.settings {
+            // If the units are different we need to re-execute the whole thing.
+            if old.settings.units != self.settings.units {
+                return Some(CacheResult {
+                    clear_scene: true,
+                    program: info.new_ast,
+                });
+            }
+
+            // If anything else is different we do not need to re-execute, but rather just
+            // run the settings again.
+
+            if self
+                .engine
+                .reapply_settings(&self.settings, Default::default())
+                .await
+                .is_err()
+            {
+                // Bust the cache, we errored.
+                return Some(CacheResult {
+                    clear_scene: true,
+                    program: info.new_ast,
+                });
+            }
+        }
+
+        // If the ASTs are the EXACT same we return None.
+        // We don't even need to waste time computing the digests.
+        if old.ast == info.new_ast {
+            return None;
+        }
+
+        let mut old_ast = old.ast;
+        let mut new_ast = info.new_ast;
+
+        // The digests should already be computed, but just in case we don't
+        // want to compare against none.
+        old_ast.compute_digest();
+        new_ast.compute_digest();
+
+        // Check if the digest is the same.
+        if old_ast.digest == new_ast.digest {
+            return None;
+        }
+
+        // Check if the changes were only to Non-code areas, like comments or whitespace.
+        Some(self.generate_changed_program(old_ast, new_ast))
+    }
+
+    /// Force-generate a new CacheResult, even if one shouldn't be made. The
+    /// way in which this gets invoked should always be through
+    /// [Self::get_changed_program]. This is purely to contain the logic on
+    /// how we construct a new [CacheResult].
+    pub fn generate_changed_program(&self, old_ast: Node<AstProgram>, new_ast: Node<AstProgram>) -> CacheResult {
+        let mut generated_program = new_ast.clone();
+        generated_program.body = vec![];
+
+        if !old_ast.body.iter().zip(new_ast.body.iter()).all(|(old, new)| {
+            let old_node: WalkNode = old.into();
+            let new_node: WalkNode = new.into();
+            old_node.digest() == new_node.digest()
+        }) {
+            // If any of the nodes are different in the stretch of body that
+            // overlaps, we have to bust cache and rebuild the scene. This
+            // means a single insertion or deletion will result in a cache
+            // bust.
+
+            return CacheResult {
+                clear_scene: true,
+                program: new_ast,
+            };
+        }
+
+        // otherwise the overlapping section of the ast bodies matches.
+        // Let's see what the rest of the slice looks like.
+
+        match new_ast.body.len().cmp(&old_ast.body.len()) {
+            std::cmp::Ordering::Less => {
+                // the new AST is shorter than the old AST -- statements
+                // were removed from the "current" code in the "new" code.
+                //
+                // Statements up until now match which means this is a
+                // "pure delete" of the remaining slice, when we get to
+                // supporting that.
+
+                // Cache bust time.
+                CacheResult {
+                    clear_scene: true,
+                    program: new_ast,
+                }
+            }
+            std::cmp::Ordering::Greater => {
+                // the new AST is longer than the old AST, which means
+                // statements were added to the new code we haven't previously
+                // seen.
+                //
+                // Statements up until now are the same, which means this
+                // is a "pure addition" of the remaining slice.
+
+                generated_program
+                    .body
+                    .extend_from_slice(&new_ast.body[old_ast.body.len()..]);
+
+                CacheResult {
+                    clear_scene: false,
+                    program: generated_program,
+                }
+            }
+            std::cmp::Ordering::Equal => {
+                // currently unreachable, but let's pretend like the code
+                // above can do something meaningful here for when we get
+                // to diffing and yanking chunks of the program apart.
+
+                // We don't actually want to do anything here; so we're going
+                // to not clear and do nothing. Is this wrong? I don't think
+                // so but i think many things. This def needs to change
+                // when the code above changes.
+
+                CacheResult {
+                    clear_scene: false,
+                    program: generated_program,
+                }
+            }
+        }
+    }
 
     /// Perform the execution of a program.
-    /// You can optionally pass in some initialization memory.
-    /// Kurt uses this for partial execution.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
     pub async fn run(&self, cache_info: CacheInformation, exec_state: &mut ExecState) -> Result<(), KclError> {
         self.run_with_session_data(cache_info, exec_state).await?;
         Ok(())
     }
 
     /// Perform the execution of a program.
-    /// You can optionally pass in some initialization memory.
-    /// Kurt uses this for partial execution.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
+    ///
+    /// The error includes additional outputs used for the feature tree and
+    /// artifact graph.
+    pub async fn run_with_ui_outputs(
+        &self,
+        cache_info: CacheInformation,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclErrorWithOutputs> {
+        self.inner_run(cache_info, exec_state).await?;
+        Ok(())
+    }
+
+    /// Perform the execution of a program.  Additionally return engine session
+    /// data.
     pub async fn run_with_session_data(
         &self,
         cache_info: CacheInformation,
         exec_state: &mut ExecState,
     ) -> Result<Option<ModelingSessionData>, KclError> {
+        self.inner_run(cache_info, exec_state).await.map_err(|e| e.into())
+    }
+
+    /// Perform the execution of a program.  Accept all possible parameters and
+    /// output everything.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
+    async fn inner_run(
+        &self,
+        cache_info: CacheInformation,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<ModelingSessionData>, KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Get the program that actually changed from the old and new information.
-        let cache_result = get_changed_program(cache_info.clone(), &self.settings);
+        let cache_result = self.get_changed_program(cache_info.clone()).await;
 
         // Check if we don't need to re-execute.
         let Some(cache_result) = cache_result else {
@@ -1839,35 +2213,36 @@ impl ExecutorContext {
         };
 
         if cache_result.clear_scene && !self.is_mock() {
+            // Pop the execution state, since we are starting fresh.
+            exec_state.reset();
+
             // We don't do this in mock mode since there is no engine connection
             // anyways and from the TS side we override memory and don't want to clear it.
-            self.reset_scene(exec_state, Default::default()).await?;
-            // Pop the execution state, since we are starting fresh.
-            *exec_state = Default::default();
+            self.reset_scene(exec_state, Default::default())
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
         }
 
-        // TODO: Use the top-level file's path.
-        exec_state.add_module(std::path::PathBuf::from(""));
-        // Before we even start executing the program, set the units.
+        // Re-apply the settings, in case the cache was busted.
         self.engine
-            .batch_modeling_cmd(
-                exec_state.id_generator.next_uuid(),
-                SourceRange::default(),
-                &ModelingCmd::from(mcmd::SetSceneUnits {
-                    unit: match self.settings.units {
-                        UnitLength::Cm => kcmc::units::UnitLength::Centimeters,
-                        UnitLength::Ft => kcmc::units::UnitLength::Feet,
-                        UnitLength::In => kcmc::units::UnitLength::Inches,
-                        UnitLength::M => kcmc::units::UnitLength::Meters,
-                        UnitLength::Mm => kcmc::units::UnitLength::Millimeters,
-                        UnitLength::Yd => kcmc::units::UnitLength::Yards,
-                    },
-                }),
-            )
-            .await?;
+            .reapply_settings(&self.settings, Default::default())
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
-            .await?;
+            .await
+            .map_err(|e| {
+                KclErrorWithOutputs::new(
+                    e,
+                    exec_state.mod_local.operations.clone(),
+                    self.engine.take_artifact_commands(),
+                )
+            })?;
+        // Move the artifact commands to simplify cache management.
+        exec_state
+            .global
+            .artifact_commands
+            .extend(self.engine.take_artifact_commands());
         let session_data = self.engine.get_session_data();
         Ok(session_data)
     }
@@ -1880,17 +2255,35 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
+        if let Some((annotation, source_range)) = program
+            .non_code_meta
+            .start_nodes
+            .iter()
+            .filter_map(|n| {
+                n.annotation(annotations::SETTINGS)
+                    .map(|result| (result, n.as_source_range()))
+            })
+            .next()
+        {
+            exec_state
+                .mod_local
+                .settings
+                .update_from_annotation(annotation, source_range)?;
+        }
+
         let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
                     let source_range = SourceRange::from(import_stmt);
-                    let (module_memory, module_exports) =
-                        self.open_module(&import_stmt.path, exec_state, source_range).await?;
+                    let module_id = self.open_module(&import_stmt.path, exec_state, source_range).await?;
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
+                            let (_, module_memory, module_exports) = self
+                                .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
+                                .await?;
                             for import_item in items {
                                 // Extract the item from the module.
                                 let item =
@@ -1914,18 +2307,24 @@ impl ExecutorContext {
                                 }
 
                                 // Add the item to the current module.
-                                exec_state.memory.add(
+                                exec_state.mut_memory().add(
                                     import_item.identifier(),
                                     item.clone(),
                                     SourceRange::from(&import_item.name),
                                 )?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state.module_exports.push(import_item.identifier().to_owned());
+                                    exec_state
+                                        .mod_local
+                                        .module_exports
+                                        .push(import_item.identifier().to_owned());
                                 }
                             }
                         }
                         ImportSelector::Glob(_) => {
+                            let (_, module_memory, module_exports) = self
+                                .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
+                                .await?;
                             for name in module_exports.iter() {
                                 let item = module_memory.get(name, source_range).map_err(|_err| {
                                     KclError::Internal(KclErrorDetails {
@@ -1933,18 +2332,20 @@ impl ExecutorContext {
                                         source_ranges: vec![source_range],
                                     })
                                 })?;
-                                exec_state.memory.add(name, item.clone(), source_range)?;
+                                exec_state.mut_memory().add(name, item.clone(), source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state.module_exports.push(name.clone());
+                                    exec_state.mod_local.module_exports.push(name.clone());
                                 }
                             }
                         }
-                        ImportSelector::None(_) => {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                message: "Importing whole module is not yet implemented, sorry.".to_owned(),
-                                source_ranges: vec![source_range],
-                            }));
+                        ImportSelector::None { .. } => {
+                            let name = import_stmt.module_name().unwrap();
+                            let item = KclValue::Module {
+                                value: module_id,
+                                meta: vec![source_range.into()],
+                            };
+                            exec_state.mut_memory().add(&name, item, source_range)?;
                         }
                     }
                     last_expr = None;
@@ -1974,11 +2375,11 @@ impl ExecutorContext {
                             StatementKind::Declaration { name: &var_name },
                         )
                         .await?;
-                    exec_state.memory.add(&var_name, memory_item, source_range)?;
+                    exec_state.mut_memory().add(&var_name, memory_item, source_range)?;
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
-                        exec_state.module_exports.push(var_name);
+                        exec_state.mod_local.module_exports.push(var_name);
                     }
                     last_expr = None;
                 }
@@ -1992,7 +2393,7 @@ impl ExecutorContext {
                             StatementKind::Expression,
                         )
                         .await?;
-                    exec_state.memory.return_ = Some(value);
+                    exec_state.mut_memory().return_ = Some(value);
                     last_expr = None;
                 }
             }
@@ -2018,18 +2419,19 @@ impl ExecutorContext {
         path: &str,
         exec_state: &mut ExecState,
         source_range: SourceRange,
-    ) -> Result<(ProgramMemory, Vec<String>), KclError> {
+    ) -> Result<ModuleId, KclError> {
         let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
             project_dir.join(path)
         } else {
             std::path::PathBuf::from(&path)
         };
 
-        if exec_state.import_stack.contains(&resolved_path) {
+        if exec_state.mod_local.import_stack.contains(&resolved_path) {
             return Err(KclError::ImportCycle(KclErrorDetails {
                 message: format!(
                     "circular import of modules is not allowed: {} -> {}",
                     exec_state
+                        .mod_local
                         .import_stack
                         .iter()
                         .map(|p| p.as_path().to_string_lossy())
@@ -2040,31 +2442,44 @@ impl ExecutorContext {
                 source_ranges: vec![source_range],
             }));
         }
-        let module_id = exec_state.add_module(resolved_path.clone());
-        let source = self.fs.read_to_string(&resolved_path, source_range).await?;
-        // TODO handle parsing errors properly
-        let program = crate::parsing::parse_str(&source, module_id).parse_errs_as_err()?;
+        exec_state.add_module(resolved_path.clone(), self, source_range).await
+    }
 
-        exec_state.import_stack.push(resolved_path.clone());
-        let original_execution = self.engine.replace_execution_kind(ExecutionKind::Isolated);
-        let original_memory = std::mem::take(&mut exec_state.memory);
-        let original_exports = std::mem::take(&mut exec_state.module_exports);
+    async fn exec_module(
+        &self,
+        module_id: ModuleId,
+        exec_state: &mut ExecState,
+        exec_kind: ExecutionKind,
+        source_range: SourceRange,
+    ) -> Result<(Option<KclValue>, ProgramMemory, Vec<String>), KclError> {
+        // TODO It sucks that we have to clone the whole module AST here
+        let info = exec_state.global.module_infos[&module_id].clone();
+
+        let mut local_state = ModuleState {
+            import_stack: exec_state.mod_local.import_stack.clone(),
+            ..Default::default()
+        };
+        local_state.import_stack.push(info.path.clone());
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        let original_execution = self.engine.replace_execution_kind(exec_kind);
+
+        // The unwrap here is safe since we only elide the AST for the top module.
         let result = self
-            .inner_execute(&program, exec_state, crate::execution::BodyType::Root)
+            .inner_execute(&info.parsed.unwrap(), exec_state, crate::execution::BodyType::Root)
             .await;
-        let module_exports = std::mem::replace(&mut exec_state.module_exports, original_exports);
-        let module_memory = std::mem::replace(&mut exec_state.memory, original_memory);
-        self.engine.replace_execution_kind(original_execution);
-        exec_state.import_stack.pop();
 
-        result.map_err(|err| {
+        std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        self.engine.replace_execution_kind(original_execution);
+
+        let result = result.map_err(|err| {
             if let KclError::ImportCycle(_) = err {
                 // It was an import cycle.  Keep the original message.
                 err.override_source_ranges(vec![source_range])
             } else {
                 KclError::Semantic(KclErrorDetails {
                     message: format!(
-                        "Error loading imported file. Open it to view more details. {path}: {}",
+                        "Error loading imported file. Open it to view more details. {}: {}",
+                        info.path.display(),
                         err.message()
                     ),
                     source_ranges: vec![source_range],
@@ -2072,10 +2487,11 @@ impl ExecutorContext {
             }
         })?;
 
-        Ok((module_memory, module_exports))
+        Ok((result, local_state.memory, local_state.module_exports))
     }
 
-    pub async fn execute_expr<'a>(
+    #[async_recursion]
+    pub async fn execute_expr<'a: 'async_recursion>(
         &self,
         init: &Expr,
         exec_state: &mut ExecState,
@@ -2087,8 +2503,23 @@ impl ExecutorContext {
             Expr::Literal(literal) => KclValue::from(literal),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?,
             Expr::Identifier(identifier) => {
-                let value = exec_state.memory.get(&identifier.name, identifier.into())?;
-                value.clone()
+                let value = exec_state.memory().get(&identifier.name, identifier.into())?.clone();
+                if let KclValue::Module { value: module_id, meta } = value {
+                    let (result, _, _) = self
+                        .exec_module(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
+                        .await?;
+                    result.ok_or_else(|| {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!(
+                                "Evaluating module `{}` as part of an assembly did not produce a result",
+                                identifier.name
+                            ),
+                            source_ranges: vec![metadata.source_range, meta[0].source_range],
+                        })
+                    })?
+                } else {
+                    value
+                }
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
@@ -2099,7 +2530,7 @@ impl ExecutorContext {
                     expression: function_expression.clone(),
                     meta: vec![metadata.to_owned()],
                     func: None,
-                    memory: Box::new(exec_state.memory.clone()),
+                    memory: Box::new(exec_state.memory().clone()),
                 }
             }
             Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
@@ -2116,7 +2547,7 @@ impl ExecutorContext {
                         source_ranges: vec![pipe_substitution.into()],
                     }));
                 }
-                StatementKind::Expression => match exec_state.pipe_value.clone() {
+                StatementKind::Expression => match exec_state.mod_local.pipe_value.clone() {
                     Some(x) => x,
                     None => {
                         return Err(KclError::Semantic(KclErrorDetails {
@@ -2132,6 +2563,16 @@ impl ExecutorContext {
             Expr::MemberExpression(member_expression) => member_expression.get_result(exec_state)?,
             Expr::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, self).await?,
             Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
+            Expr::LabelledExpression(expr) => {
+                let result = self
+                    .execute_expr(&expr.expr, exec_state, metadata, statement_kind)
+                    .await?;
+                exec_state
+                    .mut_memory()
+                    .add(&expr.label.name, result.clone(), init.into())?;
+                // TODO this lets us use the label as a variable name, but not as a tag in most cases
+                result
+            }
         };
         Ok(item)
     }
@@ -2141,35 +2582,21 @@ impl ExecutorContext {
         self.settings.units = units;
     }
 
-    /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(
-        &self,
-        program: &Program,
-        exec_state: &mut ExecState,
-    ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.execute_and_prepare(program, exec_state).await
-    }
-
-    /// Execute the program, return the interpreter and outputs.
-    pub async fn execute_and_prepare(
-        &self,
-        program: &Program,
-        exec_state: &mut ExecState,
-    ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.run(program.clone().into(), exec_state).await?;
-
+    /// Get a snapshot of the current scene.
+    pub async fn prepare_snapshot(&self) -> std::result::Result<TakeSnapshot, ExecError> {
         // Zoom to fit.
         self.engine
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                ModelingCmd::from(mcmd::ZoomToFit {
+                &ModelingCmd::from(mcmd::ZoomToFit {
                     object_ids: Default::default(),
                     animated: false,
                     padding: 0.1,
                 }),
             )
-            .await?;
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Send a snapshot request to the engine.
         let resp = self
@@ -2177,11 +2604,12 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                ModelingCmd::from(mcmd::TakeSnapshot {
+                &ModelingCmd::from(mcmd::TakeSnapshot {
                     format: ImageFormat::Png,
                 }),
             )
-            .await?;
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::TakeSnapshot(contents),
@@ -2192,6 +2620,21 @@ impl ExecutorContext {
             )));
         };
         Ok(contents)
+    }
+
+    /// Execute the program, then get a PNG screenshot.
+    pub async fn execute_and_prepare_snapshot(
+        &self,
+        program: &Program,
+        exec_state: &mut ExecState,
+    ) -> std::result::Result<TakeSnapshot, ExecError> {
+        self.run_with_ui_outputs(program.clone().into(), exec_state).await?;
+
+        self.prepare_snapshot().await
+    }
+
+    pub async fn close(&self) {
+        self.engine.close().await;
     }
 }
 
@@ -2247,6 +2690,59 @@ fn assign_args_to_params(
     Ok(fn_memory)
 }
 
+fn assign_args_to_params_kw(
+    function_expression: NodeRef<'_, FunctionExpression>,
+    mut args: crate::std::args::KwArgs,
+    mut fn_memory: ProgramMemory,
+) -> Result<ProgramMemory, KclError> {
+    // Add the arguments to the memory.  A new call frame should have already
+    // been created.
+    let source_ranges = vec![function_expression.into()];
+    for param in function_expression.params.iter() {
+        if param.labeled {
+            let arg = args.labeled.get(&param.identifier.name);
+            let arg_val = match arg {
+                Some(arg) => arg.value.clone(),
+                None => match param.default_value {
+                    Some(ref default_val) => KclValue::from(default_val.clone()),
+                    None => {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            source_ranges,
+                            message: format!(
+                                "This function requires a parameter {}, but you haven't passed it one.",
+                                param.identifier.name
+                            ),
+                        }));
+                    }
+                },
+            };
+            fn_memory.add(&param.identifier.name, arg_val, (&param.identifier).into())?;
+        } else {
+            let Some(unlabeled) = args.unlabeled.take() else {
+                let param_name = &param.identifier.name;
+                return Err(if args.labeled.contains_key(param_name) {
+                    KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        message: format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
+                    })
+                } else {
+                    KclError::Semantic(KclErrorDetails {
+                        source_ranges,
+                        message: "This function expects an unlabeled first parameter, but you haven't passed it one."
+                            .to_owned(),
+                    })
+                });
+            };
+            fn_memory.add(
+                &param.identifier.name,
+                unlabeled.value.clone(),
+                (&param.identifier).into(),
+            )?;
+        }
+    }
+    Ok(fn_memory)
+}
+
 pub(crate) async fn call_user_defined_function(
     args: Vec<Arg>,
     memory: &ProgramMemory,
@@ -2264,12 +2760,42 @@ pub(crate) async fn call_user_defined_function(
 
     // Execute the function body using the memory we just created.
     let (result, fn_memory) = {
-        let previous_memory = std::mem::replace(&mut exec_state.memory, fn_memory);
+        let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
         let result = ctx
             .inner_execute(&function_expression.body, exec_state, BodyType::Block)
             .await;
         // Restore the previous memory.
-        let fn_memory = std::mem::replace(&mut exec_state.memory, previous_memory);
+        let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
+
+        (result, fn_memory)
+    };
+
+    result.map(|_| fn_memory.return_)
+}
+
+pub(crate) async fn call_user_defined_function_kw(
+    args: crate::std::args::KwArgs,
+    memory: &ProgramMemory,
+    function_expression: NodeRef<'_, FunctionExpression>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<Option<KclValue>, KclError> {
+    // Create a new environment to execute the function body in so that local
+    // variables shadow variables in the parent scope.  The new environment's
+    // parent should be the environment of the closure.
+    let mut body_memory = memory.clone();
+    let body_env = body_memory.new_env_for_call(memory.current_env);
+    body_memory.current_env = body_env;
+    let fn_memory = assign_args_to_params_kw(function_expression, args, body_memory)?;
+
+    // Execute the function body using the memory we just created.
+    let (result, fn_memory) = {
+        let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
+        let result = ctx
+            .inner_execute(&function_expression.body, exec_state, BodyType::Block)
+            .await;
+        // Restore the previous memory.
+        let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
 
         (result, fn_memory)
     };
@@ -2289,9 +2815,12 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Node, Parameter};
+    use crate::{
+        parsing::ast::types::{DefaultParamVal, Identifier, Node, Parameter},
+        OldAstState,
+    };
 
-    pub async fn parse_execute(code: &str) -> Result<ProgramMemory> {
+    async fn parse_execute(code: &str) -> Result<(Program, ExecutorContext, ExecState)> {
         let program = Program::parse_no_errs(code)?;
 
         let ctx = ExecutorContext {
@@ -2302,12 +2831,13 @@ mod tests {
             context_type: ContextType::Mock,
         };
         let mut exec_state = ExecState::default();
-        ctx.run(program.into(), &mut exec_state).await?;
+        ctx.run(program.clone().into(), &mut exec_state).await?;
 
-        Ok(exec_state.memory)
+        Ok((program, ctx, exec_state))
     }
 
     /// Convenience function to get a JSON value from memory and unwrap.
+    #[track_caller]
     fn mem_get_json(memory: &ProgramMemory, name: &str) -> KclValue {
         memory.get(name, SourceRange::default()).unwrap().to_owned()
     }
@@ -2676,6 +3206,28 @@ const answer = returnX()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_cannot_shebang_in_fn() {
+        let ast = r#"
+fn foo () {
+  #!hello
+  return true
+}
+
+foo
+"#;
+
+        let result = parse_execute(ast).await;
+        let err = result.unwrap_err().downcast::<KclError>().unwrap();
+        assert_eq!(
+            err,
+            KclError::Syntax(KclErrorDetails {
+                message: "Unexpected token: #".to_owned(),
+                source_ranges: vec![SourceRange::new(15, 16, ModuleId::default())],
+            }),
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_pattern_transform_function_cannot_access_future_definitions() {
         let ast = r#"
 fn transform = (replicaId) => {
@@ -2715,36 +3267,39 @@ let shape = layer() |> patternTransform(10, transform, %)
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
         let ast = r#"const myVar = 2 + min(100, -1 + legLen(5, 3))"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(5.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(5.0, mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
         let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(7.4, mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"const myVar = -5 + 6"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(1.0, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
         let ast = r#"const myVar = pi() * 2"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(std::f64::consts::TAU, mem_get_json(&memory, "myVar").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(
+            std::f64::consts::TAU,
+            mem_get_json(exec_state.memory(), "myVar").as_f64().unwrap()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
         let ast = r#"let thing = .4 + 7"#;
-        let memory = parse_execute(ast).await.unwrap();
-        assert_eq!(7.4, mem_get_json(&memory, "thing").as_f64().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(7.4, mem_get_json(exec_state.memory(), "thing").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2783,11 +3338,11 @@ fn check = (x) => {
 }
 check(false)
 "#;
-        let mem = parse_execute(ast).await.unwrap();
-        assert_eq!(false, mem_get_json(&mem, "notTrue").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(&mem, "notFalse").as_bool().unwrap());
-        assert_eq!(true, mem_get_json(&mem, "c").as_bool().unwrap());
-        assert_eq!(false, mem_get_json(&mem, "d").as_bool().unwrap());
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(false, mem_get_json(exec_state.memory(), "notTrue").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(exec_state.memory(), "notFalse").as_bool().unwrap());
+        assert_eq!(true, mem_get_json(exec_state.memory(), "c").as_bool().unwrap());
+        assert_eq!(false, mem_get_json(exec_state.memory(), "d").as_bool().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3166,5 +3721,367 @@ let w = f() + f()
         };
         let json = serde_json::to_string(&mem).unwrap();
         assert_eq!(json, r#"{"type":"Solids","value":[]}"#);
+    }
+
+    // Easy case where we have no old ast and memory.
+    // We need to re-execute everything.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_no_old_information() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+        let (program, ctx, _) = parse_execute(new).await.unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: None,
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert!(result.is_some());
+
+        let result = result.unwrap();
+
+        assert_eq!(result.program, program.ast);
+        assert!(result.clear_scene);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_changed_whitespace() {
+        let old = r#" // Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program_old, ctx, exec_state) = parse_execute(old).await.unwrap();
+
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program_old.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program_new.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_changed_code_comment_start_of_program() {
+        let old = r#" // Removed the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, ctx, exec_state) = parse_execute(old).await.unwrap();
+
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program_new.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_changed_code_comments() {
+        let old = r#" // Removed the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %) // my thing
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
+
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, ctx, exec_state) = parse_execute(old).await.unwrap();
+
+        let program_new = crate::Program::parse_no_errs(new).unwrap();
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program_new.ast.clone(),
+            })
+            .await;
+
+        assert!(result.is_none());
+    }
+
+    // Changing the units with the exact same file should bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_units() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        // Change the settings to cm.
+        ctx.settings.units = crate::UnitLength::Cm;
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert!(result.is_some());
+
+        let result = result.unwrap();
+
+        assert_eq!(result.program, program.ast);
+        assert!(result.clear_scene);
+    }
+
+    // Changing the grid settings with the exact same file should NOT bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_grid_setting() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        // Change the settings.
+        ctx.settings.show_grid = !ctx.settings.show_grid;
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    // Changing the edge visibility settings with the exact same file should NOT bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
+        let new = r#"// Remove the end face for the extrusion.
+firstSketch = startSketchOn('XY')
+  |> startProfileAt([-12, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -24], %)
+  |> line([-24, 0], %)
+  |> close(%)
+  |> extrude(6, %)
+
+// Remove the end face for the extrusion.
+shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
+
+        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
+
+        // Change the settings.
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+
+        let result = ctx
+            .get_changed_program(CacheInformation {
+                old: Some(OldAstState {
+                    ast: program.ast.clone(),
+                    exec_state,
+                    settings: Default::default(),
+                }),
+                new_ast: program.ast.clone(),
+            })
+            .await;
+
+        assert_eq!(result, None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_ids_stable_between_executions() {
+        let code = r#"sketch001 = startSketchOn('XZ')
+|> startProfileAt([61.74, 206.13], %)
+|> xLine(305.11, %, $seg01)
+|> yLine(-291.85, %)
+|> xLine(-segLen(seg01), %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+|> extrude(40.14, %)
+|> shell({
+    faces: [seg01],
+    thickness: 3.14,
+}, %)
+"#;
+
+        let ctx = crate::test_server::new_context(UnitLength::Mm, true, None)
+            .await
+            .unwrap();
+        let old_program = crate::Program::parse_no_errs(code).unwrap();
+        // Execute the program.
+        let mut exec_state = Default::default();
+        let cache_info = crate::CacheInformation {
+            old: None,
+            new_ast: old_program.ast.clone(),
+        };
+        ctx.run(cache_info, &mut exec_state).await.unwrap();
+
+        // Get the id_generator from the first execution.
+        let id_generator = exec_state.global.id_generator.clone();
+
+        let code = r#"sketch001 = startSketchOn('XZ')
+|> startProfileAt([62.74, 206.13], %)
+|> xLine(305.11, %, $seg01)
+|> yLine(-291.85, %)
+|> xLine(-segLen(seg01), %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+|> extrude(40.14, %)
+|> shell({
+    faces: [seg01],
+    thickness: 3.14,
+}, %)
+"#;
+
+        // Execute a slightly different program again.
+        let program: Program = crate::Program::parse_no_errs(code).unwrap();
+        let cache_info = crate::CacheInformation {
+            old: Some(crate::OldAstState {
+                ast: old_program.ast.clone(),
+                exec_state: exec_state.clone(),
+                settings: ctx.settings.clone(),
+            }),
+            new_ast: program.ast.clone(),
+        };
+        // Execute the program.
+        ctx.run(cache_info, &mut exec_state).await.unwrap();
+
+        assert_eq!(id_generator, exec_state.global.id_generator);
     }
 }

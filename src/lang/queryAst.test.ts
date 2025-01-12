@@ -10,13 +10,13 @@ import {
   isNodeSafeToReplace,
   isTypeInValue,
   getNodePathFromSourceRange,
-  doesPipeHaveCallExp,
   hasExtrudeSketch,
   findUsesOfTagInPipe,
   hasSketchPipeBeenExtruded,
   doesSceneHaveSweepableSketch,
   traverse,
   getNodeFromPath,
+  doesSceneHaveExtrudedSketch,
 } from './queryAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
@@ -361,82 +361,6 @@ describe('testing getNodePathFromSourceRange', () => {
   })
 })
 
-describe('testing doesPipeHave', () => {
-  it('finds close', () => {
-    const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, $seg01)
-  |> angledLine([-35, length001], %)
-  |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen(seg01)], %)
-  |> close(%)
-`
-    const ast = assertParse(exampleCode)
-
-    const result = doesPipeHaveCallExp({
-      calleeName: 'close',
-      ast,
-      selection: {
-        codeRef: codeRefFromRange([100, 101, true], ast),
-      },
-    })
-    expect(result).toEqual(true)
-  })
-  it('finds extrude', () => {
-    const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, $seg01)
-  |> angledLine([-35, length001], %)
-  |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen(seg01)], %)
-  |> close(%)
-  |> extrude(1, %)
-`
-    const ast = assertParse(exampleCode)
-
-    const result = doesPipeHaveCallExp({
-      calleeName: 'extrude',
-      ast,
-      selection: {
-        codeRef: codeRefFromRange([100, 101, true], ast),
-      },
-    })
-    expect(result).toEqual(true)
-  })
-  it('does NOT find close', () => {
-    const exampleCode = `length001 = 2
-part001 = startSketchAt([-1.41, 3.46])
-  |> line([19.49, 1.16], %, $seg01)
-  |> angledLine([-35, length001], %)
-  |> line([-3.22, -7.36], %)
-  |> angledLine([-175, segLen(seg01)], %)
-`
-    const ast = assertParse(exampleCode)
-
-    const result = doesPipeHaveCallExp({
-      calleeName: 'close',
-      ast,
-      selection: {
-        codeRef: codeRefFromRange([100, 101, true], ast),
-      },
-    })
-    expect(result).toEqual(false)
-  })
-  it('returns false if not a pipe', () => {
-    const exampleCode = `length001 = 2`
-    const ast = assertParse(exampleCode)
-
-    const result = doesPipeHaveCallExp({
-      calleeName: 'close',
-      ast,
-      selection: {
-        codeRef: codeRefFromRange([9, 10, true], ast),
-      },
-    })
-    expect(result).toEqual(false)
-  })
-})
-
 describe('testing hasExtrudeSketch', () => {
   it('find sketch', async () => {
     const exampleCode = `length001 = 2
@@ -650,6 +574,38 @@ extrude001 = extrude(10, sketch001)
 `
     const ast = assertParse(exampleCode)
     const extrudable = doesSceneHaveSweepableSketch(ast)
+    expect(extrudable).toBeFalsy()
+  })
+})
+
+describe('Testing doesSceneHaveExtrudedSketch', () => {
+  it('finds extruded sketch as variable', async () => {
+    const exampleCode = `sketch001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+extrude001 = extrude(1, sketch001)
+`
+    const ast = assertParse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveExtrudedSketch(ast)
+    expect(extrudable).toBeTruthy()
+  })
+  it('finds extruded sketch in pipe', async () => {
+    const exampleCode = `extrude001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+  |> extrude(1, %)
+`
+    const ast = assertParse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveExtrudedSketch(ast)
+    expect(extrudable).toBeTruthy()
+  })
+  it('finds no extrusion with sketch only', async () => {
+    const exampleCode = `extrude001 = startSketchOn('XZ')
+  |> circle({ center = [0, 0], radius = 1 }, %)
+`
+    const ast = assertParse(exampleCode)
+    if (err(ast)) throw ast
+    const extrudable = doesSceneHaveExtrudedSketch(ast)
     expect(extrudable).toBeFalsy()
   })
 })

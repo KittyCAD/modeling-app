@@ -1,4 +1,11 @@
-import { defaultSourceRange, SourceRange } from 'lang/wasm'
+import {
+  ArtifactCommand,
+  defaultRustSourceRange,
+  ExecState,
+  Program,
+  RustSourceRange,
+  SourceRange,
+} from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
 import { exportSave } from 'lib/exportSave'
@@ -13,7 +20,6 @@ import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
 import {
   ArtifactGraph,
   EngineCommand,
-  OrderedCommand,
   ResponseMap,
   createArtifactGraph,
 } from 'lang/std/artifactGraph'
@@ -30,6 +36,7 @@ import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000
@@ -1296,14 +1303,14 @@ export enum EngineCommandManagerEvents {
  *
  * As commands are send their state is tracked in {@link pendingCommands} and clear as soon as we receive a response.
  *
- * Also all commands that are sent are kept track of in {@link orderedCommands} and their responses are kept in {@link responseMap}
+ * Also all commands that are sent are kept track of in WASM artifactCommands and their responses are kept in {@link responseMap}
  * Both of these data structures are used to process the {@link artifactGraph}.
  */
 
 interface PendingMessage {
   command: EngineCommand
-  range: SourceRange
-  idToRangeMap: { [key: string]: SourceRange }
+  range: RustSourceRange
+  idToRangeMap: { [key: string]: RustSourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
@@ -1322,12 +1329,7 @@ export class EngineCommandManager extends EventTarget {
     [commandId: string]: PendingMessage
   } = {}
   /**
-   * The orderedCommands array of all the the commands sent to the engine, un-folded from batches, and made into one long
-   * list of the individual commands, this is used to process all the commands into the artifactGraph
-   */
-  orderedCommands: Array<OrderedCommand> = []
-  /**
-   * A map of the responses to the {@link orderedCommands}, when processing the commands into the artifactGraph, this response map allow
+   * A map of the responses to the WASM artifactCommands, when processing the commands into the artifactGraph, this response map allow
    * us to look up the response by command id
    */
   responseMap: ResponseMap = {}
@@ -1399,7 +1401,6 @@ export class EngineCommandManager extends EventTarget {
   }
 
   private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
-  private modifyGrid: (hidden: boolean) => Promise<void> | null = () => null
 
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
@@ -1432,7 +1433,6 @@ export class EngineCommandManager extends EventTarget {
     height,
     token,
     makeDefaultPlanes,
-    modifyGrid,
     settings = {
       pool: null,
       theme: Themes.Dark,
@@ -1452,14 +1452,12 @@ export class EngineCommandManager extends EventTarget {
     height: number
     token?: string
     makeDefaultPlanes: () => Promise<DefaultPlanes>
-    modifyGrid: (hidden: boolean) => Promise<void>
     settings?: SettingsViaQueryString
   }) {
     if (settings) {
       this.settings = settings
     }
     this.makeDefaultPlanes = makeDefaultPlanes
-    this.modifyGrid = modifyGrid
     if (width === 0 || height === 0) {
       return
     }
@@ -1539,21 +1537,15 @@ export class EngineCommandManager extends EventTarget {
           type: 'default_camera_get_settings',
         },
       })
-      // We want modify the grid first because we don't want it to flash.
-      // Ideally these would already be default hidden in engine (TODO do
-      // that) https://github.com/KittyCAD/engine/issues/2282
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.modifyGrid(!this.settings.showScaleGrid)?.then(async () => {
-        await this.initPlanes()
-        setIsStreamReady(true)
+      await this.initPlanes()
+      setIsStreamReady(true)
 
-        // Other parts of the application should use this to react on scene ready.
-        this.dispatchEvent(
-          new CustomEvent(EngineCommandManagerEvents.SceneReady, {
-            detail: this.engineConnection,
-          })
-        )
-      })
+      // Other parts of the application should use this to react on scene ready.
+      this.dispatchEvent(
+        new CustomEvent(EngineCommandManagerEvents.SceneReady, {
+          detail: this.engineConnection,
+        })
+      )
     }
 
     this.engineConnection.addEventListener(
@@ -1833,7 +1825,6 @@ export class EngineCommandManager extends EventTarget {
     }
   }
   async startNewSession() {
-    this.orderedCommands = []
     this.responseMap = {}
     await this.initPlanes()
   }
@@ -2003,7 +1994,7 @@ export class EngineCommandManager extends EventTarget {
       {
         command,
         idToRangeMap: {},
-        range: defaultSourceRange(),
+        range: defaultRustSourceRange(),
       },
       true // isSceneCommand
     )
@@ -2034,9 +2025,9 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(new Error('rangeStr is undefined'))
     if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    const range: SourceRange = JSON.parse(rangeStr)
+    const range: RustSourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
-    const idToRangeMap: { [key: string]: SourceRange } =
+    const idToRangeMap: { [key: string]: RustSourceRange } =
       JSON.parse(idToRangeStr)
 
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger
@@ -2076,24 +2067,6 @@ export class EngineCommandManager extends EventTarget {
       isSceneCommand,
     }
 
-    if (message.command.type === 'modeling_cmd_req') {
-      this.orderedCommands.push({
-        command: message.command,
-        range: message.range,
-      })
-    } else if (message.command.type === 'modeling_cmd_batch_req') {
-      message.command.requests.forEach((req) => {
-        const cmd: EngineCommand = {
-          type: 'modeling_cmd_req',
-          cmd_id: req.cmd_id,
-          cmd: req.cmd,
-        }
-        this.orderedCommands.push({
-          command: cmd,
-          range: message.idToRangeMap[req.cmd_id || ''],
-        })
-      })
-    }
     this.engineConnection?.send(message.command)
     return promise
   }
@@ -2109,30 +2082,28 @@ export class EngineCommandManager extends EventTarget {
    * When an execution takes place we want to wait until we've got replies for all of the commands
    * When this is done when we build the artifact map synchronously.
    */
-  async waitForAllCommands(useFakeExecutor = false) {
-    await Promise.all(Object.values(this.pendingCommands).map((a) => a.promise))
-    setTimeout(() => {
-      // the ast is wrong without this one tick timeout.
-      // an example is `Solids should be select and deletable` e2e test will fail
-      // because the out of date ast messes with selections
-      // TODO: race condition
-      if (!this?.kclManager) return
-      this.artifactGraph = createArtifactGraph({
-        orderedCommands: this.orderedCommands,
-        responseMap: this.responseMap,
-        ast: this.kclManager.ast,
-      })
-      if (useFakeExecutor) {
-        // mock executions don't produce an artifactGraph, so this will always be empty
-        // skipping the below logic to wait for the next real execution
-        return
-      }
-      if (this.artifactGraph.size) {
-        this.deferredArtifactEmptied(null)
-      } else {
-        this.deferredArtifactPopulated(null)
-      }
+  waitForAllCommands() {
+    return Promise.all(
+      Object.values(this.pendingCommands).map((a) => a.promise)
+    )
+  }
+  updateArtifactGraph(
+    ast: Node<Program>,
+    artifactCommands: ArtifactCommand[],
+    execStateArtifacts: ExecState['artifacts']
+  ) {
+    this.artifactGraph = createArtifactGraph({
+      artifactCommands,
+      responseMap: this.responseMap,
+      ast,
+      execStateArtifacts,
     })
+    // TODO check if these still need to be deferred once e2e tests are working again.
+    if (this.artifactGraph.size) {
+      this.deferredArtifactEmptied(null)
+    } else {
+      this.deferredArtifactPopulated(null)
+    }
   }
 
   /**
@@ -2210,15 +2181,6 @@ export class EngineCommandManager extends EventTarget {
         color: getThemeColorForEngine(opposingTheme),
       },
     }).catch(reportRejection)
-  }
-
-  /**
-   * Set the visibility of the scale grid in the engine scene.
-   * @param visible - whether to show or hide the scale grid
-   */
-  setScaleGridVisibility(visible: boolean) {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.modifyGrid(!visible)
   }
 
   // Some "objects" have the same source range, such as sketch_mode_start and start_path.

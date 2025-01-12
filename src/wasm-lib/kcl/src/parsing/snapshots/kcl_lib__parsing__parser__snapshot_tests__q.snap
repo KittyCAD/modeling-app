@@ -6,61 +6,61 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 30,
+        "end": 24,
         "id": {
-          "end": 12,
+          "end": 6,
           "name": "height",
-          "start": 6,
+          "start": 0,
           "type": "Identifier"
         },
         "init": {
           "elements": [
             {
               "computed": false,
-              "end": 25,
+              "end": 19,
               "object": {
-                "end": 20,
+                "end": 14,
                 "name": "obj",
-                "start": 17,
+                "start": 11,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 24,
+                "end": 18,
                 "raw": "\"a\"",
-                "start": 21,
+                "start": 15,
                 "type": "Literal",
                 "type": "Literal",
                 "value": "a"
               },
-              "start": 17,
+              "start": 11,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 28,
+              "end": 22,
               "raw": "0",
-              "start": 27,
+              "start": 21,
               "type": "Literal",
               "type": "Literal",
               "value": 0.0
             }
           ],
-          "end": 30,
-          "start": 15,
+          "end": 24,
+          "start": 9,
           "type": "ArrayExpression",
           "type": "ArrayExpression"
         },
-        "start": 6,
+        "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 30,
+      "end": 24,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 30,
+  "end": 24,
   "start": 0
 }

@@ -47,7 +47,7 @@ fn read(filename: &'static str, test_name: &str) -> String {
 
 fn parse(test_name: &str) {
     let input = read("input.kcl", test_name);
-    let tokens = crate::parsing::token::lexer(&input, ModuleId::default()).unwrap();
+    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
 
     // Parse the tokens into an AST.
     let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
@@ -91,7 +91,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
     )
     .await;
     match exec_res {
-        Ok((program_memory, png)) => {
+        Ok((program_memory, ops, artifact_commands, png)) => {
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
@@ -104,15 +104,25 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     ".environments[].**[].z[]" => rounded_redaction(4),
                 });
             });
+            assert_snapshot(test_name, "Operations executed", || {
+                insta::assert_json_snapshot!("ops", ops);
+            });
+            assert_snapshot(test_name, "Artifact commands", || {
+                insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
+                    "[].command.segment.*.x" => rounded_redaction(4),
+                    "[].command.segment.*.y" => rounded_redaction(4),
+                    "[].command.segment.*.z" => rounded_redaction(4),
+                });
+            });
         }
         Err(e) => {
-            match e {
+            match e.error {
                 crate::errors::ExecError::Kcl(error) => {
                     // Snapshot the KCL error with a fancy graphical report.
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
                     let report = crate::errors::Report {
-                        error,
+                        error: error.error,
                         filename: format!("{test_name}.kcl"),
                         kcl_source: read("input.kcl", test_name),
                     };
@@ -121,6 +131,18 @@ async fn execute(test_name: &str, render_to_png: bool) {
 
                     assert_snapshot(test_name, "Error from executing", || {
                         insta::assert_snapshot!("execution_error", report);
+                    });
+
+                    assert_snapshot(test_name, "Operations executed", || {
+                        insta::assert_json_snapshot!("ops", error.operations);
+                    });
+
+                    assert_snapshot(test_name, "Artifact commands", || {
+                        insta::assert_json_snapshot!("artifact_commands", error.artifact_commands, {
+                            "[].command.segment.*.x" => rounded_redaction(4),
+                            "[].command.segment.*.y" => rounded_redaction(4),
+                            "[].command.segment.*.z" => rounded_redaction(4),
+                        });
                     });
                 }
                 e => {
@@ -685,6 +707,27 @@ mod import_export {
 }
 mod import_glob {
     const TEST_NAME: &str = "import_glob";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_whole {
+    const TEST_NAME: &str = "import_whole";
 
     /// Test parsing KCL.
     #[test]
@@ -1500,5 +1543,215 @@ mod kw_fn {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
+    }
+}
+mod kw_fn_too_few_args {
+    const TEST_NAME: &str = "kw_fn_too_few_args";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod kw_fn_unlabeled_but_has_label {
+    const TEST_NAME: &str = "kw_fn_unlabeled_but_has_label";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod kw_fn_with_defaults {
+    const TEST_NAME: &str = "kw_fn_with_defaults";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod boolean_logical_and {
+    const TEST_NAME: &str = "boolean_logical_and";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod boolean_logical_or {
+    const TEST_NAME: &str = "boolean_logical_or";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod boolean_logical_multiple {
+    const TEST_NAME: &str = "boolean_logical_multiple";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod circle_three_point {
+    const TEST_NAME: &str = "circle_three_point";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod array_elem_pop {
+    const TEST_NAME: &str = "array_elem_pop";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod array_elem_pop_empty_fail {
+    const TEST_NAME: &str = "array_elem_pop_empty_fail";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod array_elem_pop_fail {
+    const TEST_NAME: &str = "array_elem_pop_fail";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
     }
 }

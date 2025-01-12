@@ -15,8 +15,8 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, Modu
 
     // We need to get the sketch ID.
     // Get the sketch ID from memory.
-    let KclValue::Sketch { value: sketch } = exec_state.memory.get(name, SourceRange::default()).unwrap() else {
-        anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory);
+    let KclValue::Sketch { value: sketch } = exec_state.memory().get(name, SourceRange::default()).unwrap() else {
+        anyhow::bail!("part001 not found in memory: {:?}", exec_state.memory());
     };
     let sketch_id = sketch.id;
 
@@ -25,7 +25,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, Modu
         .send_modeling_cmd(
             plane_id,
             SourceRange::default(),
-            ModelingCmd::from(mcmd::MakePlane {
+            &ModelingCmd::from(mcmd::MakePlane {
                 clobber: false,
                 origin: Point3d::default(),
                 size: LengthUnit(60.0),
@@ -43,7 +43,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, Modu
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
-            ModelingCmd::from(mcmd::EnableSketchMode {
+            &ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: true,
                 entity_id: plane_id,

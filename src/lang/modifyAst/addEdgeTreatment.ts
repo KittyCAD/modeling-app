@@ -29,7 +29,7 @@ import {
   sketchLineHelperMap,
 } from '../std/sketch'
 import { err, trap } from 'lib/trap'
-import { Selections } from 'lib/selections'
+import { Selection, Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import {
   Artifact,
@@ -61,19 +61,18 @@ export interface FilletParameters {
 export type EdgeTreatmentParameters = ChamferParameters | FilletParameters
 
 // Apply Edge Treatment (Fillet or Chamfer) To Selection
-export function applyEdgeTreatmentToSelection(
+export async function applyEdgeTreatmentToSelection(
   ast: Node<Program>,
   selection: Selections,
   parameters: EdgeTreatmentParameters
-): void | Error {
+): Promise<void | Error> {
   // 1. clone and modify with edge treatment and tag
   const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters)
   if (err(result)) return result
   const { modifiedAst, pathToEdgeTreatmentNode } = result
 
   // 2. update ast
-  // eslint-disable-next-line @typescript-eslint/no-floating-promises
-  updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode)
+  await updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode)
 }
 
 export function modifyAstWithEdgeTreatmentAndTag(
@@ -99,14 +98,9 @@ export function modifyAstWithEdgeTreatmentAndTag(
   const lookupMap: Map<string, PathToNode> = new Map() // work around for Map key comparison
 
   for (const selection of selections.graphSelections) {
-    const singleSelection = {
-      graphSelections: [selection],
-      otherSelections: [],
-    }
-
     const result = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
-      singleSelection,
+      selection,
       artifactGraph
     )
     if (err(result)) return result
@@ -259,12 +253,12 @@ function insertParametersIntoAst(
 
 export function getPathToExtrudeForSegmentSelection(
   ast: Program,
-  selection: Selections,
+  selection: Selection,
   artifactGraph: ArtifactGraph
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
   const pathToSegmentNode = getNodePathFromSourceRange(
     ast,
-    selection.graphSelections[0]?.codeRef?.range
+    selection.codeRef?.range
   )
 
   const varDecNode = getNodeFromPath<VariableDeclaration>(
@@ -296,7 +290,7 @@ export function getPathToExtrudeForSegmentSelection(
 async function updateAstAndFocus(
   modifiedAst: Node<Program>,
   pathToEdgeTreatmentNode: Array<PathToNode>
-) {
+): Promise<void> {
   const updatedAst = await kclManager.updateAst(modifiedAst, true, {
     focusPath: pathToEdgeTreatmentNode,
   })
@@ -308,7 +302,7 @@ async function updateAstAndFocus(
   }
 }
 
-function mutateAstWithTagForSketchSegment(
+export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode
 ): { modifiedAst: Program; tag: string } | Error {
@@ -340,7 +334,7 @@ function mutateAstWithTagForSketchSegment(
   return { modifiedAst: astClone, tag }
 }
 
-function getEdgeTagCall(
+export function getEdgeTagCall(
   tag: string,
   artifact: Artifact
 ): Node<Identifier | CallExpression> {

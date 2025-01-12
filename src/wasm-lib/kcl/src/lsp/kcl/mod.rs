@@ -45,38 +45,32 @@ use crate::{
     errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
-        ast::{
-            cache::{CacheInformation, OldAstState},
-            types::{Expr, Node, VariableKind},
-        },
-        token::TokenType,
+        ast::types::{Expr, Node, VariableKind},
+        token::TokenStream,
         PIPE_OPERATOR,
     },
-    ModuleId, Program, SourceRange,
+    CacheInformation, ModuleId, OldAstState, Program, SourceRange,
 };
+const SEMANTIC_TOKEN_TYPES: [SemanticTokenType; 10] = [
+    SemanticTokenType::NUMBER,
+    SemanticTokenType::VARIABLE,
+    SemanticTokenType::KEYWORD,
+    SemanticTokenType::TYPE,
+    SemanticTokenType::STRING,
+    SemanticTokenType::OPERATOR,
+    SemanticTokenType::COMMENT,
+    SemanticTokenType::FUNCTION,
+    SemanticTokenType::PARAMETER,
+    SemanticTokenType::PROPERTY,
+];
 
-lazy_static::lazy_static! {
-    pub static ref SEMANTIC_TOKEN_TYPES: Vec<SemanticTokenType> = {
-        // This is safe to unwrap because we know all the token types are valid.
-        // And the test would fail if they were not.
-        let mut gen = TokenType::all_semantic_token_types().unwrap();
-        gen.extend(vec![
-            SemanticTokenType::PARAMETER,
-            SemanticTokenType::PROPERTY,
-        ]);
-        gen
-    };
-
-    pub static ref SEMANTIC_TOKEN_MODIFIERS: Vec<SemanticTokenModifier> = {
-        vec![
-            SemanticTokenModifier::DECLARATION,
-            SemanticTokenModifier::DEFINITION,
-            SemanticTokenModifier::DEFAULT_LIBRARY,
-            SemanticTokenModifier::READONLY,
-            SemanticTokenModifier::STATIC,
-        ]
-    };
-}
+const SEMANTIC_TOKEN_MODIFIERS: [SemanticTokenModifier; 5] = [
+    SemanticTokenModifier::DECLARATION,
+    SemanticTokenModifier::DEFINITION,
+    SemanticTokenModifier::DEFAULT_LIBRARY,
+    SemanticTokenModifier::READONLY,
+    SemanticTokenModifier::STATIC,
+];
 
 /// A subcommand for running the server.
 #[derive(Clone, Debug)]
@@ -105,7 +99,7 @@ pub struct Backend {
     /// The stdlib signatures for the language.
     pub stdlib_signatures: HashMap<String, SignatureHelp>,
     /// Token maps.
-    pub token_map: DashMap<String, Vec<crate::parsing::token::Token>>,
+    pub(super) token_map: DashMap<String, TokenStream>,
     /// AST maps.
     pub ast_map: DashMap<String, Node<crate::parsing::ast::types::Program>>,
     /// Last successful execution.
@@ -284,7 +278,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Lets update the tokens.
         let module_id = ModuleId::default();
-        let tokens = match crate::parsing::token::lexer(&params.text, module_id) {
+        let tokens = match crate::parsing::token::lex(&params.text, module_id) {
             Ok(tokens) => tokens,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], true).await;
@@ -410,11 +404,11 @@ impl Backend {
         self.executor_ctx.read().await
     }
 
-    async fn update_semantic_tokens(&self, tokens: &[crate::parsing::token::Token], params: &TextDocumentItem) {
+    async fn update_semantic_tokens(&self, tokens: &TokenStream, params: &TextDocumentItem) {
         // Update the semantic tokens map.
         let mut semantic_tokens = vec![];
         let mut last_position = Position::new(0, 0);
-        for token in tokens {
+        for token in tokens.as_slice() {
             let Ok(token_type) = SemanticTokenType::try_from(token.token_type) else {
                 // We continue here because not all tokens can be converted this way, we will get
                 // the rest from the ast.
@@ -444,8 +438,11 @@ impl Backend {
             let token_modifiers_bitset = if let Some(ast) = self.ast_map.get(params.uri.as_str()) {
                 let token_index = Arc::new(Mutex::new(token_type_index));
                 let modifier_index: Arc<Mutex<u32>> = Arc::new(Mutex::new(0));
-                crate::walk::walk(&ast, &|node: crate::walk::Node| {
-                    let node_range: SourceRange = (&node).into();
+                crate::walk::walk(&ast, |node: crate::walk::Node| {
+                    let Ok(node_range): Result<SourceRange, _> = (&node).try_into() else {
+                        return Ok(true);
+                    };
+
                     if !node_range.contains(source_range.start()) {
                         return Ok(true);
                     }
@@ -563,7 +560,7 @@ impl Backend {
                     let semantic_token = SemanticToken {
                         delta_line: position.line - last_position.line + 1,
                         delta_start: 0,
-                        length: token.value.len() as u32,
+                        length: (token.end - token.start) as u32,
                         token_type: token_type_index,
                         token_modifiers_bitset,
                     };
@@ -582,7 +579,7 @@ impl Backend {
                 } else {
                     position.character - last_position.character
                 },
-                length: token.value.len() as u32,
+                length: (token.end - token.start) as u32,
                 token_type: token_type_index,
                 token_modifiers_bitset,
             };
@@ -729,11 +726,11 @@ impl Backend {
         drop(last_successful_ast_state);
 
         self.memory_map
-            .insert(params.uri.to_string(), exec_state.memory.clone());
+            .insert(params.uri.to_string(), exec_state.memory().clone());
 
         // Send the notification to the client that the memory was updated.
         self.client
-            .send_notification::<custom_notifications::MemoryUpdated>(exec_state.memory)
+            .send_notification::<custom_notifications::MemoryUpdated>(exec_state.mod_local.memory)
             .await;
 
         Ok(())
@@ -963,8 +960,8 @@ impl LanguageServer for Backend {
                         semantic_tokens_options: SemanticTokensOptions {
                             work_done_progress_options: WorkDoneProgressOptions::default(),
                             legend: SemanticTokensLegend {
-                                token_types: SEMANTIC_TOKEN_TYPES.clone(),
-                                token_modifiers: SEMANTIC_TOKEN_MODIFIERS.clone(),
+                                token_types: SEMANTIC_TOKEN_TYPES.to_vec(),
+                                token_modifiers: SEMANTIC_TOKEN_MODIFIERS.to_vec(),
                             },
                             range: Some(false),
                             full: Some(SemanticTokensFullOptions::Bool(true)),
@@ -1219,7 +1216,7 @@ impl LanguageServer for Backend {
             return Ok(None);
         }
 
-        // Get the completion items forem the ast.
+        // Get the completion items for the ast.
         let Ok(variables) = ast.completion_items() else {
             return Ok(Some(CompletionResponse::Array(completions)));
         };

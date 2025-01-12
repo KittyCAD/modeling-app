@@ -53,6 +53,8 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
   LOFT: 'loft',
+  SWEEP: 'sweep',
+  SHELL: 'shell',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
   PLANE: 'plane',
@@ -110,3 +112,30 @@ export const KCL_SAMPLES_MANIFEST_URLS = {
 
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
+
+/** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
+export const KCL_AXIS_X = 'X'
+export const KCL_AXIS_Y = 'Y'
+export const KCL_AXIS_NEG_X = '-X'
+export const KCL_AXIS_NEG_Y = '-Y'
+export const KCL_DEFAULT_AXIS = 'X'
+
+export enum AxisNames {
+  X = 'x',
+  Y = 'y',
+  Z = 'z',
+  NEG_X = '-x',
+  NEG_Y = '-y',
+  NEG_Z = '-z',
+}
+/** Semantic names of views from AxisNames */
+export const VIEW_NAMES_SEMANTIC = {
+  [AxisNames.X]: 'Right',
+  [AxisNames.Y]: 'Back',
+  [AxisNames.Z]: 'Top',
+  [AxisNames.NEG_X]: 'Left',
+  [AxisNames.NEG_Y]: 'Front',
+  [AxisNames.NEG_Z]: 'Bottom',
+} as const
+/** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
+export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
