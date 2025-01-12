@@ -465,7 +465,12 @@ fn flatten_modeling_command_responses(
             OkWebSocketResponseData::Modeling { modeling_response } => {
                 map.insert(*cmd_id, modeling_response.clone());
             }
-            OkWebSocketResponseData::ModelingBatch { responses } => {
+            OkWebSocketResponseData::ModelingBatch { responses } =>
+            {
+                #[expect(
+                    clippy::iter_over_hash_type,
+                    reason = "Since we're moving entries to another unordered map, it's fine that the order is undefined"
+                )]
                 for (cmd_id, batch_response) in responses {
                     if let BatchResponse::Success {
                         response: modeling_response,
@@ -557,7 +562,7 @@ fn artifacts_to_update(
         ModelingCmd::EnableSketchMode(_) => {
             let current_plane_id = current_plane_id.ok_or_else(|| {
                 KclError::internal(format!(
-                    "Expected a current plane ID when processing EnableSketchMode command, but we have none"
+                    "Expected a current plane ID when processing EnableSketchMode command, but we have none: {id:?}"
                 ))
             })?;
             let existing_plane = artifacts.get(&ArtifactId::new(current_plane_id));
