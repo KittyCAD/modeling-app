@@ -91,12 +91,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
     )
     .await;
     match exec_res {
-        Ok((program_memory, ops, artifact_commands, png)) => {
+        Ok((exec_state, png)) => {
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
             assert_snapshot(test_name, "Program memory after executing", || {
-                insta::assert_json_snapshot!("program_memory", program_memory, {
+                insta::assert_json_snapshot!("program_memory", exec_state.mod_local.memory, {
                     ".environments[].**[].from[]" => rounded_redaction(4),
                     ".environments[].**[].to[]" => rounded_redaction(4),
                     ".environments[].**[].x[]" => rounded_redaction(4),
@@ -105,14 +105,17 @@ async fn execute(test_name: &str, render_to_png: bool) {
                 });
             });
             assert_snapshot(test_name, "Operations executed", || {
-                insta::assert_json_snapshot!("ops", ops);
+                insta::assert_json_snapshot!("ops", exec_state.mod_local.operations);
             });
             assert_snapshot(test_name, "Artifact commands", || {
-                insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
+                insta::assert_json_snapshot!("artifact_commands", exec_state.global.artifact_commands, {
                     "[].command.segment.*.x" => rounded_redaction(4),
                     "[].command.segment.*.y" => rounded_redaction(4),
                     "[].command.segment.*.z" => rounded_redaction(4),
                 });
+            });
+            assert_snapshot(test_name, "Artifact graph", || {
+                insta::assert_json_snapshot!("artifact_graph", exec_state.global.artifact_graph);
             });
         }
         Err(e) => {
