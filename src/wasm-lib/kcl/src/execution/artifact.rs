@@ -451,7 +451,7 @@ pub(crate) fn build_artifact_graph(
 }
 
 /// Flatten the responses into a map of command IDs to modeling command
-/// responses.  The raw responses from the engine contains batches.
+/// responses.  The raw responses from the engine contain batches.
 fn flatten_modeling_command_responses(
     responses: &IndexMap<Uuid, WebSocketResponse>,
 ) -> FnvHashMap<Uuid, OkModelingCmdResponse> {
@@ -502,7 +502,7 @@ fn merge_artifact_into_map(map: &mut IndexMap<ArtifactId, Artifact>, new_artifac
     };
 
     if let Some(replacement) = old_artifact.merge(new_artifact) {
-        map.insert(id, replacement);
+        *old_artifact = replacement;
     }
 }
 
