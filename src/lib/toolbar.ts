@@ -173,7 +173,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/fillet' }],
       },
       {
-        id: 'chamfer',
+        id: 'chamfer3d',
         onClick: ({ commandBarSend }) =>
           commandBarSend({
             type: 'Find and select command',
