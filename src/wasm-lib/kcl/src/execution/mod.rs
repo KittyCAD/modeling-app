@@ -116,6 +116,8 @@ pub struct ExecOutcome {
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
     pub artifact_commands: Vec<ArtifactCommand>,
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
 impl ExecState {
@@ -152,6 +154,7 @@ impl ExecState {
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
+            artifact_graph: self.global.artifact_graph,
         }
     }
 
