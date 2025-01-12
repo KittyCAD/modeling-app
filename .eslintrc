@@ -8,12 +8,14 @@
       "jest",
       "jsx-a11y",
       "react",
+      "react-hooks",
       "suggest-no-throw",
       "@typescript-eslint"
     ],
     "extends": [
       "plugin:css-modules/recommended",
-      "plugin:jsx-a11y/recommended"
+      "plugin:jsx-a11y/recommended",
+      "plugin:react-hooks/recommended"
     ],
     "rules": {
       "@typescript-eslint/no-floating-promises": "error",
