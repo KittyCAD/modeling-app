@@ -93,7 +93,7 @@ impl From<&ModelingCmdId> for ArtifactId {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct CodeRef {
@@ -633,7 +633,7 @@ fn artifacts_to_update(
             });
             return_arr.push(Artifact::Segment(Segment {
                 id,
-                path_id: path_id.into(),
+                path_id,
                 surface_id: ArtifactId::fake_placeholder(),
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
@@ -650,19 +650,16 @@ fn artifacts_to_update(
                     code_ref: path.code_ref.clone(),
                 }));
             }
-            match response {
-                OkModelingCmdResponse::ClosePath(close_path) => {
-                    return_arr.push(Artifact::Solid2d(Solid2d {
-                        id: close_path.face_id.into(),
-                        path_id,
-                    }));
-                    if let Some(Artifact::Path(path)) = path {
-                        let mut new_path = path.clone();
-                        new_path.solid2d_id = Some(close_path.face_id.into());
-                        return_arr.push(Artifact::Path(new_path));
-                    }
+            if let OkModelingCmdResponse::ClosePath(close_path) = response {
+                return_arr.push(Artifact::Solid2d(Solid2d {
+                    id: close_path.face_id.into(),
+                    path_id,
+                }));
+                if let Some(Artifact::Path(path)) = path {
+                    let mut new_path = path.clone();
+                    new_path.solid2d_id = Some(close_path.face_id.into());
+                    return_arr.push(Artifact::Path(new_path));
                 }
-                _ => {}
             }
             return Ok(return_arr);
         }
@@ -690,106 +687,106 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Loft(loft_cmd) => match response {
-            OkModelingCmdResponse::Loft(_) => {
-                let mut return_arr = Vec::new();
-                return_arr.push(Artifact::Sweep(Sweep {
-                    id,
-                    sub_type: SweepSubType::Loft,
-                    // TODO: Using the first one.  Make sure to revisit this
-                    // choice, don't think it matters for now.
-                    path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
-                        KclError::internal(format!(
-                            "Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"
-                        ))
-                    })?),
-                    surface_ids: Vec::new(),
-                    edge_ids: Vec::new(),
-                    code_ref: CodeRef { range },
-                }));
-                for section_id in &loft_cmd.section_ids {
-                    let path = artifacts.get(&ArtifactId::new(*section_id));
-                    if let Some(Artifact::Path(path)) = path {
-                        let mut new_path = path.clone();
-                        new_path.id = id;
-                        return_arr.push(Artifact::Path(new_path));
-                    }
+        ModelingCmd::Loft(loft_cmd) => {
+            let OkModelingCmdResponse::Loft(_) = response else {
+                return Ok(Vec::new());
+            };
+            let mut return_arr = Vec::new();
+            return_arr.push(Artifact::Sweep(Sweep {
+                id,
+                sub_type: SweepSubType::Loft,
+                // TODO: Using the first one.  Make sure to revisit this
+                // choice, don't think it matters for now.
+                path_id: ArtifactId::new(*loft_cmd.section_ids.first().ok_or_else(|| {
+                    KclError::internal(format!(
+                        "Expected at least one section ID in Loft command: {id:?}; cmd={cmd:?}"
+                    ))
+                })?),
+                surface_ids: Vec::new(),
+                edge_ids: Vec::new(),
+                code_ref: CodeRef { range },
+            }));
+            for section_id in &loft_cmd.section_ids {
+                let path = artifacts.get(&ArtifactId::new(*section_id));
+                if let Some(Artifact::Path(path)) = path {
+                    let mut new_path = path.clone();
+                    new_path.id = id;
+                    return_arr.push(Artifact::Path(new_path));
                 }
-                return Ok(return_arr);
             }
-            _ => {}
-        },
-        ModelingCmd::Solid3dGetExtrusionFaceInfo(_) => match response {
-            OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info) => {
-                let mut return_arr = Vec::new();
-                let mut last_path = None;
-                for face in &face_info.faces {
-                    if face.cap != ExtrusionFaceCapType::None {
-                        continue;
-                    }
-                    let Some(curve_id) = face.curve_id.map(ArtifactId::new) else {
-                        continue;
-                    };
-                    let Some(face_id) = face.face_id.map(ArtifactId::new) else {
-                        continue;
-                    };
-                    let Some(Artifact::Segment(seg)) = artifacts.get(&curve_id) else {
-                        continue;
-                    };
-                    let Some(Artifact::Path(path)) = artifacts.get(&seg.path_id) else {
-                        continue;
-                    };
-                    last_path = Some(path);
-                    return_arr.push(Artifact::Wall(Wall {
-                        id: face_id,
-                        seg_id: curve_id,
-                        edge_cut_ids: Vec::new(),
-                        sweep_id: path.sweep_id,
-                        path_ids: vec![],
-                    }));
-                    let mut new_seg = seg.clone();
-                    new_seg.surface_id = face_id;
-                    return_arr.push(Artifact::Segment(new_seg));
-                    if let Some(Artifact::Sweep(sweep)) = artifacts.get(&path.sweep_id) {
-                        let mut new_sweep = sweep.clone();
-                        new_sweep.surface_ids = vec![face_id];
-                        return_arr.push(Artifact::Sweep(new_sweep));
-                    }
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dGetExtrusionFaceInfo(_) => {
+            let OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info) = response else {
+                return Ok(Vec::new());
+            };
+            let mut return_arr = Vec::new();
+            let mut last_path = None;
+            for face in &face_info.faces {
+                if face.cap != ExtrusionFaceCapType::None {
+                    continue;
                 }
-                for face in &face_info.faces {
-                    if face.cap != ExtrusionFaceCapType::Top && face.cap != ExtrusionFaceCapType::Bottom {
-                        continue;
-                    }
-                    let Some(face_id) = face.face_id.map(ArtifactId::new) else {
-                        continue;
-                    };
-                    let path = last_path.ok_or_else(|| {
-                        KclError::internal(format!(
-                            "Expected a last path to exist when processing Solid3dGetExtrusionFaceInfo command: {id:?}"
-                        ))
-                    })?;
-                    return_arr.push(Artifact::Cap(Cap {
-                        id: face_id,
-                        sub_type: match face.cap {
-                            ExtrusionFaceCapType::Bottom => CapSubType::Start,
-                            ExtrusionFaceCapType::Top => CapSubType::End,
-                            _ => unreachable!(),
-                        },
-                        edge_cut_ids: Vec::new(),
-                        sweep_id: path.sweep_id,
-                        path_ids: Vec::new(),
-                    }));
-                    let Some(Artifact::Sweep(sweep)) = artifacts.get(&path.sweep_id) else {
-                        continue;
-                    };
+                let Some(curve_id) = face.curve_id.map(ArtifactId::new) else {
+                    continue;
+                };
+                let Some(face_id) = face.face_id.map(ArtifactId::new) else {
+                    continue;
+                };
+                let Some(Artifact::Segment(seg)) = artifacts.get(&curve_id) else {
+                    continue;
+                };
+                let Some(Artifact::Path(path)) = artifacts.get(&seg.path_id) else {
+                    continue;
+                };
+                last_path = Some(path);
+                return_arr.push(Artifact::Wall(Wall {
+                    id: face_id,
+                    seg_id: curve_id,
+                    edge_cut_ids: Vec::new(),
+                    sweep_id: path.sweep_id,
+                    path_ids: vec![],
+                }));
+                let mut new_seg = seg.clone();
+                new_seg.surface_id = face_id;
+                return_arr.push(Artifact::Segment(new_seg));
+                if let Some(Artifact::Sweep(sweep)) = artifacts.get(&path.sweep_id) {
                     let mut new_sweep = sweep.clone();
                     new_sweep.surface_ids = vec![face_id];
                     return_arr.push(Artifact::Sweep(new_sweep));
                 }
-                return Ok(return_arr);
             }
-            _ => {}
-        },
+            for face in &face_info.faces {
+                if face.cap != ExtrusionFaceCapType::Top && face.cap != ExtrusionFaceCapType::Bottom {
+                    continue;
+                }
+                let Some(face_id) = face.face_id.map(ArtifactId::new) else {
+                    continue;
+                };
+                let path = last_path.ok_or_else(|| {
+                    KclError::internal(format!(
+                        "Expected a last path to exist when processing Solid3dGetExtrusionFaceInfo command: {id:?}"
+                    ))
+                })?;
+                return_arr.push(Artifact::Cap(Cap {
+                    id: face_id,
+                    sub_type: match face.cap {
+                        ExtrusionFaceCapType::Bottom => CapSubType::Start,
+                        ExtrusionFaceCapType::Top => CapSubType::End,
+                        _ => unreachable!(),
+                    },
+                    edge_cut_ids: Vec::new(),
+                    sweep_id: path.sweep_id,
+                    path_ids: Vec::new(),
+                }));
+                let Some(Artifact::Sweep(sweep)) = artifacts.get(&path.sweep_id) else {
+                    continue;
+                };
+                let mut new_sweep = sweep.clone();
+                new_sweep.surface_ids = vec![face_id];
+                return_arr.push(Artifact::Sweep(new_sweep));
+            }
+            return Ok(return_arr);
+        }
         ModelingCmd::Solid3dGetOppositeEdge(_) | ModelingCmd::Solid3dGetNextAdjacentEdge(_) => {
             let (face_id, edge_id) = match cmd {
                 ModelingCmd::Solid3dGetOppositeEdge(e) => (ArtifactId::new(e.face_id), e.edge_id.into()),
