@@ -264,41 +264,6 @@ export class CameraControls {
 
     const cb = ({ data, type }: CallBackParam) => {
       const camSettings = data.settings
-      // DEBUG
-      // console.log(
-      //   'data',
-      //   data.settings.orientation.x,
-      //   data.settings.orientation.y,
-      //   data.settings.orientation.z,
-      //   data.settings.orientation.w
-      // )
-      // const camSettings = data.settings
-      // const q = new Quaternion(
-      //   camSettings.orientation.x,
-      //   camSettings.orientation.y,
-      //   camSettings.orientation.z,
-      //   camSettings.orientation.w
-      // ) //.invert()
-      // this.camera.quaternion.set(q.x, q.y, q.z, q.w)
-      // console.log(
-      //   'c1',
-      //   this.camera.quaternion.x,
-      //   this.camera.quaternion.y,
-      //   this.camera.quaternion.z,
-      //   this.camera.quaternion.w
-      // )
-      // this.onCameraChange()
-
-      // console.log(
-      //   'c2',
-      //   this.camera.quaternion.x,
-      //   this.camera.quaternion.y,
-      //   this.camera.quaternion.z,
-      //   this.camera.quaternion.w
-      // )
-      // window.qq = q
-      // return
-      // END DEBUG
 
       this.camera.position.set(
         camSettings.pos.x,
@@ -796,18 +761,10 @@ export class CameraControls {
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
     if (didChange || forceUpdate) {
-      console.log('didChange, forceUpdate', didChange, forceUpdate)
       this.onCameraChange(forceUpdate)
     }
 
     // damping would be implemented here in update if we choose to add it.
-    // console.log(
-    //   'END',
-    //   this.camera.quaternion.x,
-    //   this.camera.quaternion.y,
-    //   this.camera.quaternion.z,
-    //   this.camera.quaternion.w
-    // )
   }
 
   rotateCamera = (deltaX: number, deltaY: number) => {
