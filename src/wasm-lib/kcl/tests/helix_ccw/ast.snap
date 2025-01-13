@@ -1,13 +1,14 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing helix_ccw.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
         "declaration": {
-          "end": 188,
+          "end": 199,
           "id": {
             "end": 7,
             "name": "part001",
@@ -151,90 +152,90 @@ description: Result of parsing helix_ccw.kcl
               {
                 "arguments": [
                   {
-                    "end": 184,
+                    "end": 195,
                     "properties": [
                       {
-                        "end": 135,
+                        "end": 146,
                         "key": {
-                          "end": 130,
+                          "end": 141,
                           "name": "revolutions",
-                          "start": 119,
+                          "start": 130,
                           "type": "Identifier"
                         },
-                        "start": 119,
+                        "start": 130,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 135,
+                          "end": 146,
                           "raw": "16",
-                          "start": 133,
+                          "start": 144,
                           "type": "Literal",
                           "type": "Literal",
                           "value": 16.0
                         }
                       },
                       {
-                        "end": 158,
+                        "end": 169,
                         "key": {
-                          "end": 154,
+                          "end": 165,
                           "name": "angleStart",
-                          "start": 144,
+                          "start": 155,
                           "type": "Identifier"
                         },
-                        "start": 144,
+                        "start": 155,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 158,
+                          "end": 169,
                           "raw": "0",
-                          "start": 157,
+                          "start": 168,
                           "type": "Literal",
                           "type": "Literal",
                           "value": 0.0
                         }
                       },
                       {
-                        "end": 177,
+                        "end": 188,
                         "key": {
-                          "end": 170,
+                          "end": 181,
                           "name": "ccw",
-                          "start": 167,
+                          "start": 178,
                           "type": "Identifier"
                         },
-                        "start": 167,
+                        "start": 178,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 177,
+                          "end": 188,
                           "raw": "true",
-                          "start": 173,
+                          "start": 184,
                           "type": "Literal",
                           "type": "Literal",
                           "value": true
                         }
                       }
                     ],
-                    "start": 110,
+                    "start": 121,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 187,
-                    "start": 186,
+                    "end": 198,
+                    "start": 197,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 109,
-                  "name": "helix",
+                  "end": 120,
+                  "name": "helixRevolutions",
                   "start": 104,
                   "type": "Identifier"
                 },
-                "end": 188,
+                "end": 199,
                 "start": 104,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 188,
+            "end": 199,
             "start": 10,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -242,14 +243,14 @@ description: Result of parsing helix_ccw.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 188,
+        "end": 199,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 189,
+    "end": 200,
     "start": 0
   }
 }

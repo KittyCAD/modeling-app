@@ -15,12 +15,14 @@ use kcmc::{
         WebSocketResponse,
     },
 };
-use kittycad_modeling_cmds::{self as kcmc};
+use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId, ModelingCmd};
+use uuid::Uuid;
 
 use super::ExecutionKind;
 use crate::{
     errors::KclError,
-    execution::{DefaultPlanes, IdGenerator},
+    exec::DefaultPlanes,
+    execution::{ArtifactCommand, IdGenerator},
     SourceRange,
 };
 
@@ -28,6 +30,7 @@ use crate::{
 pub struct EngineConnection {
     batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    artifact_commands: Arc<Mutex<Vec<ArtifactCommand>>>,
     execution_kind: Arc<Mutex<ExecutionKind>>,
 }
 
@@ -36,8 +39,31 @@ impl EngineConnection {
         Ok(EngineConnection {
             batch: Arc::new(Mutex::new(Vec::new())),
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
+            artifact_commands: Arc::new(Mutex::new(Vec::new())),
             execution_kind: Default::default(),
         })
+    }
+
+    fn handle_command(
+        &self,
+        cmd: &ModelingCmd,
+        cmd_id: ModelingCmdId,
+        id_to_source_range: &HashMap<Uuid, SourceRange>,
+    ) -> Result<(), KclError> {
+        let cmd_id = *cmd_id.as_ref();
+        let range = id_to_source_range
+            .get(&cmd_id)
+            .copied()
+            .ok_or_else(|| KclError::internal(format!("Failed to get source range for command ID: {:?}", cmd_id)))?;
+
+        // Add artifact command.
+        let mut artifact_commands = self.artifact_commands.lock().unwrap();
+        artifact_commands.push(ArtifactCommand {
+            cmd_id,
+            range,
+            command: cmd.clone(),
+        });
+        Ok(())
     }
 }
 
@@ -49,6 +75,11 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
+        let mut artifact_commands = self.artifact_commands.lock().unwrap();
+        std::mem::take(&mut *artifact_commands)
     }
 
     fn execution_kind(&self) -> ExecutionKind {
@@ -84,7 +115,7 @@ impl crate::engine::EngineManager for EngineConnection {
         id: uuid::Uuid,
         _source_range: SourceRange,
         cmd: WebSocketRequest,
-        _id_to_source_range: std::collections::HashMap<uuid::Uuid, SourceRange>,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
         match cmd {
             WebSocketRequest::ModelingCmdBatchReq(ModelingBatch {
@@ -95,6 +126,7 @@ impl crate::engine::EngineManager for EngineConnection {
                 // Create the empty responses.
                 let mut responses = HashMap::new();
                 for request in requests {
+                    self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
                     responses.insert(
                         request.cmd_id,
                         BatchResponse::Success {
@@ -108,6 +140,17 @@ impl crate::engine::EngineManager for EngineConnection {
                     success: true,
                 }))
             }
+            WebSocketRequest::ModelingCmdReq(request) => {
+                self.handle_command(&request.cmd, request.cmd_id, &id_to_source_range)?;
+
+                Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
+                    request_id: Some(id),
+                    resp: OkWebSocketResponseData::Modeling {
+                        modeling_response: OkModelingCmdResponse::Empty {},
+                    },
+                    success: true,
+                }))
+            }
             _ => Ok(WebSocketResponse::Success(SuccessWebSocketResponse {
                 request_id: Some(id),
                 resp: OkWebSocketResponseData::Modeling {
@@ -117,4 +160,6 @@ impl crate::engine::EngineManager for EngineConnection {
             })),
         }
     }
+
+    async fn close(&self) {}
 }

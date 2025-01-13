@@ -16,6 +16,6 @@ Data for a mirror.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `axis` |[`AxisOrEdgeReference`](/docs/kcl/types/AxisOrEdgeReference)| Axis to use as mirror. | No |
+| `axis` |[`Axis2dOrEdgeReference`](/docs/kcl/types/Axis2dOrEdgeReference)| Axis to use as mirror. | No |
 
 

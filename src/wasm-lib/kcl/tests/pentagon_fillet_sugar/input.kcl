@@ -2,8 +2,8 @@ triangleHeight = 200
 plumbusLen = 100
 radius = 80
 circ = {
-  angle_start = 0,
-  angle_end = 360,
+  angleStart = 0,
+  angleEnd = 360,
   radius = radius
 }
 

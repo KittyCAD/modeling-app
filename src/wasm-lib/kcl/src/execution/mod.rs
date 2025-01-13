@@ -25,6 +25,7 @@ pub use kcl_value::{KclObjectFields, KclValue};
 use uuid::Uuid;
 
 mod annotations;
+mod artifact;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
@@ -44,23 +45,22 @@ use crate::{
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
     walk::Node as WalkNode,
-    ExecError, Program,
+    ExecError, KclErrorWithOutputs, Program,
 };
 
 // Re-exports.
+pub use artifact::{Artifact, ArtifactCommand, ArtifactId, ArtifactInner};
 pub use cad_op::Operation;
 
 /// State for executing a program.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecState {
     pub global: GlobalState,
     pub mod_local: ModuleState,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalState {
     /// The stable artifact ID generator.
@@ -69,10 +69,15 @@ pub struct GlobalState {
     pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
+    /// Output map of UUIDs to artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Output commands to allow building the artifact graph by the caller.
+    /// These are accumulated in the [`ExecutorContext`] but moved here for
+    /// convenience of the execution cache.
+    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ModuleState {
     /// Program variable bindings.
@@ -92,6 +97,22 @@ pub struct ModuleState {
     pub operations: Vec<Operation>,
     /// Settings specified from annotations.
     pub settings: MetaSettings,
+}
+
+/// Outcome of executing a program.  This is used in TS.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct ExecOutcome {
+    /// Program variable bindings of the top-level module.
+    pub memory: ProgramMemory,
+    /// Operations that have been performed in execution order, for display in
+    /// the Feature Tree.
+    pub operations: Vec<Operation>,
+    /// Output map of UUIDs to artifacts.
+    pub artifacts: IndexMap<ArtifactId, Artifact>,
+    /// Output commands to allow building the artifact graph by the caller.
+    pub artifact_commands: Vec<ArtifactCommand>,
 }
 
 impl Default for ExecState {
@@ -123,6 +144,20 @@ impl ExecState {
         };
     }
 
+    /// Convert to execution outcome when running in WebAssembly.  We want to
+    /// reduce the amount of data that crosses the WASM boundary as much as
+    /// possible.
+    pub fn to_wasm_outcome(self) -> ExecOutcome {
+        // Fields are opt-in so that we don't accidentally leak private internal
+        // state when we add more to ExecState.
+        ExecOutcome {
+            memory: self.mod_local.memory,
+            operations: self.mod_local.operations,
+            artifacts: self.global.artifacts,
+            artifact_commands: self.global.artifact_commands,
+        }
+    }
+
     pub fn memory(&self) -> &ProgramMemory {
         &self.mod_local.memory
     }
@@ -133,6 +168,11 @@ impl ExecState {
 
     pub fn next_uuid(&mut self) -> Uuid {
         self.global.id_generator.next_uuid()
+    }
+
+    pub fn add_artifact(&mut self, artifact: Artifact) {
+        let id = artifact.id;
+        self.global.artifacts.insert(id, artifact);
     }
 
     async fn add_module(
@@ -172,6 +212,8 @@ impl GlobalState {
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
+            artifacts: Default::default(),
+            artifact_commands: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.
@@ -424,7 +466,7 @@ impl Environment {
 /// Dynamic state that depends on the dynamic flow of the program, like the call
 /// stack.  If the language had exceptions, for example, you could store the
 /// stack of exception handlers here.
-#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct DynamicState {
     pub solid_ids: Vec<SolidLazyIds>,
 }
@@ -462,8 +504,7 @@ impl DynamicState {
 }
 
 /// A generator for ArtifactIds that can be stable across executions.
-#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct IdGenerator {
     next_id: usize,
@@ -678,6 +719,23 @@ pub struct ImportedGeometry {
     pub id: uuid::Uuid,
     /// The original file paths.
     pub value: Vec<String>,
+    #[serde(rename = "__meta")]
+    pub meta: Vec<Metadata>,
+}
+
+/// A helix.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Helix {
+    /// The id of the helix.
+    pub value: uuid::Uuid,
+    /// Number of revolutions.
+    pub revolutions: f64,
+    /// Start angle (in degrees).
+    pub angle_start: f64,
+    /// Is the helix rotation counter clockwise?
+    pub ccw: bool,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -1073,7 +1131,7 @@ impl Solid {
 
 /// An solid ID and its fillet and chamfer IDs.  This is needed for lazy
 /// fillet evaluation.
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct SolidLazyIds {
     pub solid_id: uuid::Uuid,
     pub sketch_id: uuid::Uuid,
@@ -1153,8 +1211,7 @@ pub enum BodyType {
 
 /// Info about a module.  Right now, this is pretty minimal.  We hope to cache
 /// modules here in the future.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub struct ModuleInfo {
     /// The ID of the module.
     id: ModuleId,
@@ -1956,10 +2013,13 @@ impl ExecutorContext {
         // AND if we aren't in wasm it doesn't really matter.
         Ok(())
     }
-    // Given an old ast, old program memory and new ast, find the parts of the code that need to be
-    // re-executed.
-    // This function should never error, because in the case of any internal error, we should just pop
-    // the cache.
+    /// Given an old ast, old program memory and new ast, find the parts of the code that need to be
+    /// re-executed.
+    /// This function should never error, because in the case of any internal error, we should just pop
+    /// the cache.
+    ///
+    /// Returns `None` when there are no changes to the program, i.e. it is
+    /// fully cached.
     pub async fn get_changed_program(&self, info: CacheInformation) -> Option<CacheResult> {
         let Some(old) = info.old else {
             // We have no old info, we need to re-execute the whole thing.
@@ -2080,7 +2140,7 @@ impl ExecutorContext {
                 }
             }
             std::cmp::Ordering::Equal => {
-                // currently unreachable, but lets pretend like the code
+                // currently unreachable, but let's pretend like the code
                 // above can do something meaningful here for when we get
                 // to diffing and yanking chunks of the program apart.
 
@@ -2098,21 +2158,50 @@ impl ExecutorContext {
     }
 
     /// Perform the execution of a program.
-    /// You can optionally pass in some initialization memory.
-    /// Kurt uses this for partial execution.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
     pub async fn run(&self, cache_info: CacheInformation, exec_state: &mut ExecState) -> Result<(), KclError> {
         self.run_with_session_data(cache_info, exec_state).await?;
         Ok(())
     }
 
     /// Perform the execution of a program.
-    /// You can optionally pass in some initialization memory.
-    /// Kurt uses this for partial execution.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
+    ///
+    /// The error includes additional outputs used for the feature tree and
+    /// artifact graph.
+    pub async fn run_with_ui_outputs(
+        &self,
+        cache_info: CacheInformation,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclErrorWithOutputs> {
+        self.inner_run(cache_info, exec_state).await?;
+        Ok(())
+    }
+
+    /// Perform the execution of a program.  Additionally return engine session
+    /// data.
     pub async fn run_with_session_data(
         &self,
         cache_info: CacheInformation,
         exec_state: &mut ExecState,
     ) -> Result<Option<ModelingSessionData>, KclError> {
+        self.inner_run(cache_info, exec_state).await.map_err(|e| e.into())
+    }
+
+    /// Perform the execution of a program.  Accept all possible parameters and
+    /// output everything.
+    ///
+    /// You can optionally pass in some initialization memory for partial
+    /// execution.
+    async fn inner_run(
+        &self,
+        cache_info: CacheInformation,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<ModelingSessionData>, KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Get the program that actually changed from the old and new information.
@@ -2129,14 +2218,31 @@ impl ExecutorContext {
 
             // We don't do this in mock mode since there is no engine connection
             // anyways and from the TS side we override memory and don't want to clear it.
-            self.reset_scene(exec_state, Default::default()).await?;
+            self.reset_scene(exec_state, Default::default())
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
         }
 
         // Re-apply the settings, in case the cache was busted.
-        self.engine.reapply_settings(&self.settings, Default::default()).await?;
+        self.engine
+            .reapply_settings(&self.settings, Default::default())
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
-            .await?;
+            .await
+            .map_err(|e| {
+                KclErrorWithOutputs::new(
+                    e,
+                    exec_state.mod_local.operations.clone(),
+                    self.engine.take_artifact_commands(),
+                )
+            })?;
+        // Move the artifact commands to simplify cache management.
+        exec_state
+            .global
+            .artifact_commands
+            .extend(self.engine.take_artifact_commands());
         let session_data = self.engine.get_session_data();
         Ok(session_data)
     }
@@ -2483,13 +2589,14 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                ModelingCmd::from(mcmd::ZoomToFit {
+                &ModelingCmd::from(mcmd::ZoomToFit {
                     object_ids: Default::default(),
                     animated: false,
                     padding: 0.1,
                 }),
             )
-            .await?;
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         // Send a snapshot request to the engine.
         let resp = self
@@ -2497,11 +2604,12 @@ impl ExecutorContext {
             .send_modeling_cmd(
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
-                ModelingCmd::from(mcmd::TakeSnapshot {
+                &ModelingCmd::from(mcmd::TakeSnapshot {
                     format: ImageFormat::Png,
                 }),
             )
-            .await?;
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::TakeSnapshot(contents),
@@ -2520,9 +2628,13 @@ impl ExecutorContext {
         program: &Program,
         exec_state: &mut ExecState,
     ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.run(program.clone().into(), exec_state).await?;
+        self.run_with_ui_outputs(program.clone().into(), exec_state).await?;
 
         self.prepare_snapshot().await
+    }
+
+    pub async fn close(&self) {
+        self.engine.close().await;
     }
 }
 

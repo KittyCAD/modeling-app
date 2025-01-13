@@ -368,13 +368,20 @@ export class LanguageServerPlugin implements PluginValue {
         sortText,
         filterText,
       }) => {
+        const detailText = [
+          deprecated ? 'Deprecated' : undefined,
+          labelDetails ? labelDetails.detail : detail,
+        ]
+          // Don't let undefined appear.
+          .filter(Boolean)
+          .join(' ')
         const completion: Completion & {
           filterText: string
           sortText?: string
           apply: string
         } = {
           label,
-          detail: labelDetails ? labelDetails.detail : detail,
+          detail: detailText,
           apply: label,
           type: kind && CompletionItemKindMap[kind].toLowerCase(),
           sortText: sortText ?? label,
@@ -382,7 +389,11 @@ export class LanguageServerPlugin implements PluginValue {
         }
         if (documentation) {
           completion.info = () => {
-            const htmlString = formatMarkdownContents(documentation)
+            const deprecatedHtml = deprecated
+              ? '<p><strong>Deprecated</strong></p>'
+              : ''
+            const htmlString =
+              deprecatedHtml + formatMarkdownContents(documentation)
             const htmlNode = document.createElement('div')
             htmlNode.style.display = 'contents'
             htmlNode.innerHTML = htmlString

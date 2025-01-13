@@ -5,24 +5,31 @@
 
 version: 2
 updates:
-    - package-ecosystem: 'npm' # See documentation for possible values
-      directory: '/' # Location of package manifests
-      schedule:
-          interval: 'weekly'
-      reviewers:
-          - franknoirot
-          - irev-dev
-    - package-ecosystem: 'github-actions' # See documentation for possible values
-      directory: '/' # Location of package manifests
-      schedule:
-          interval: 'weekly'
-      reviewers:
-          - adamchalmers
-          - jessfraz
-    - package-ecosystem: 'cargo' # See documentation for possible values
-      directory: '/src/wasm-lib/' # Location of package manifests
-      schedule:
-          interval: 'weekly'
-      reviewers:
-          - adamchalmers
-          - jessfraz
+  - package-ecosystem: 'npm' # See documentation for possible values
+    directory: '/' # Location of package manifests
+    schedule:
+      interval: weekly
+      day: monday
+    reviewers:
+      - franknoirot
+      - irev-dev
+  - package-ecosystem: 'github-actions' # See documentation for possible values
+    directory: '/' # Location of package manifests
+    schedule:
+      interval: weekly
+      day: monday
+    reviewers:
+      - adamchalmers
+      - jessfraz
+  - package-ecosystem: 'cargo' # See documentation for possible values
+    directory: '/src/wasm-lib/' # Location of package manifests
+    schedule:
+      interval: weekly
+      day: monday
+    reviewers:
+      - adamchalmers
+      - jessfraz
+    groups:
+      serde-dependencies:
+        patterns:
+          - "serde*"
