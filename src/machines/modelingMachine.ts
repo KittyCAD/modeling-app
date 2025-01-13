@@ -642,56 +642,6 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'AST extrude': ({ event }) => {
-      if (event.type !== 'Extrude') return
-      ;(async () => {
-        if (!event.data) return
-        const { selection, distance } = event.data
-        let ast = kclManager.ast
-        if (
-          'variableName' in distance &&
-          distance.variableName &&
-          distance.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(
-            distance.insertIndex,
-            0,
-            distance.variableDeclarationAst
-          )
-          ast.body = newBody
-        }
-        const pathToNode = getNodePathFromSourceRange(
-          ast,
-          selection.graphSelections[0]?.codeRef.range
-        )
-        const extrudeSketchRes = extrudeSketch(
-          ast,
-          pathToNode,
-          false,
-          'variableName' in distance
-            ? distance.variableIdentifierAst
-            : distance.valueAst
-        )
-        if (trap(extrudeSketchRes)) return
-        const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
-
-        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: [pathToExtrudeArg],
-          zoomToFit: true,
-          zoomOnRangeAndType: {
-            range: selection.graphSelections[0]?.codeRef.range,
-            type: 'path',
-          },
-        })
-
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-        if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
-        }
-      })().catch(reportRejection)
-    },
     'AST revolve': ({ context: { store }, event }) => {
       if (event.type !== 'Revolve') return
       ;(async () => {
