@@ -643,14 +643,9 @@ fn artifacts_to_update(
             }));
             let path = artifacts.get(&path_id);
             if let Some(Artifact::Path(path)) = path {
-                return_arr.push(Artifact::Path(Path {
-                    id: path.id,
-                    plane_id: path.plane_id,
-                    seg_ids: vec![id],
-                    sweep_id: path.sweep_id,
-                    solid2d_id: path.solid2d_id,
-                    code_ref: path.code_ref.clone(),
-                }));
+                let mut new_path = path.clone();
+                new_path.seg_ids = vec![id];
+                return_arr.push(Artifact::Path(new_path));
             }
             if let OkModelingCmdResponse::ClosePath(close_path) = response {
                 return_arr.push(Artifact::Solid2d(Solid2d {
