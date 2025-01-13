@@ -207,8 +207,8 @@ export const shellValidator = async ({
       },
     })
   }
-  const attemptRevolve = await dryRunWrapper(shellCommand)
-  if (attemptRevolve?.success) {
+  const attemptShell = await dryRunWrapper(shellCommand)
+  if (attemptShell?.success) {
     return true
   } else {
     // return error message for the toast
