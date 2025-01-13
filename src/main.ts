@@ -341,6 +341,11 @@ export function getAutoUpdater(): AppUpdater {
 }
 
 app.on('ready', () => {
+  // Disable auto updater on non-versioned builds
+  if (packageJSON.version === '0.0.0') {
+    return
+  }
+
   const autoUpdater = getAutoUpdater()
   // TODO: we're getting `Error: Response ends without calling any handlers` with our setup,
   // so at the moment this isn't worth enabling
