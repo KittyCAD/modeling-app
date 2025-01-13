@@ -785,8 +785,13 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Solid3dGetOppositeEdge(kcmc::Solid3dGetOppositeEdge { face_id, edge_id, .. })
-        | ModelingCmd::Solid3dGetNextAdjacentEdge(kcmc::Solid3dGetNextAdjacentEdge { face_id, edge_id, .. }) => {
+        ModelingCmd::Solid3dGetNextAdjacentEdge(kcmc::Solid3dGetNextAdjacentEdge { face_id, edge_id, .. })
+        | ModelingCmd::Solid3dGetOppositeEdge(kcmc::Solid3dGetOppositeEdge { face_id, edge_id, .. }) => {
+            let sub_type = match cmd {
+                ModelingCmd::Solid3dGetNextAdjacentEdge(_) => SweepEdgeSubType::Adjacent,
+                ModelingCmd::Solid3dGetOppositeEdge(_) => SweepEdgeSubType::Opposite,
+                _ => unreachable!(),
+            };
             let face_id = ArtifactId::new(*face_id);
             let edge_id = ArtifactId::new(*edge_id);
             let Some(Artifact::Wall(wall)) = artifacts.get(&face_id) else {
@@ -801,19 +806,19 @@ fn artifacts_to_update(
             let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
                 return Ok(Vec::new());
             };
-            let (sub_type, response_edge_id) = match response {
+            let response_edge_id = match response {
                 OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(r) => {
                     let Some(edge_id) = r.edge else {
                         return Err(KclError::internal(format!(
                             "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: {response:?}"
                         )));
                     };
-                    (SweepEdgeSubType::Adjacent, edge_id.into())
+                    edge_id.into()
                 }
-                OkModelingCmdResponse::Solid3dGetOppositeEdge(r) => (SweepEdgeSubType::Opposite, r.edge.into()),
+                OkModelingCmdResponse::Solid3dGetOppositeEdge(r) => r.edge.into(),
                 _ => {
                     return Err(KclError::internal(format!(
-                        "Expected Solid3dGetOppositeEdge or Solid3dGetNextAdjacentEdge response, but got: {response:?}"
+                        "Expected Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge response, but got: {response:?}"
                     )));
                 }
             };
