@@ -186,7 +186,7 @@ pub struct Cap {
     pub id: ArtifactId,
     pub sub_type: CapSubType,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
-    pub edge_cut_ids: Vec<ArtifactId>,
+    pub edge_cut_edge_ids: Vec<ArtifactId>,
     pub sweep_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
@@ -390,7 +390,7 @@ impl Cap {
         let Artifact::Cap(new) = new else {
             return Some(new);
         };
-        merge_ids(&mut self.edge_cut_ids, new.edge_cut_ids);
+        merge_ids(&mut self.edge_cut_edge_ids, new.edge_cut_edge_ids);
         merge_ids(&mut self.path_ids, new.path_ids);
 
         None
@@ -773,7 +773,7 @@ fn artifacts_to_update(
                     return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
                         sub_type,
-                        edge_cut_ids: Vec::new(),
+                        edge_cut_edge_ids: Vec::new(),
                         sweep_id: path_sweep_id,
                         path_ids: Vec::new(),
                     }));
