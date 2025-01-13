@@ -36,3 +36,6 @@ updates:
       serde-dependencies:
         patterns:
           - "serde*"
+      wasm-bindgen-deps:
+        patterns:
+          - "wasm-bindgen*"
