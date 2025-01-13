@@ -73,12 +73,11 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
       name: {
         inputType: 'options',
         required: true,
-        options: [],
-        optionsFromContext: (context) =>
-          context.projects.map((p) => ({
+        options: (_, context) =>
+          context?.projects.map((p) => ({
             name: p.name!,
             value: p.name!,
-          })),
+          })) || [],
       },
     },
   },
@@ -90,12 +89,11 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
       oldName: {
         inputType: 'options',
         required: true,
-        options: [],
-        optionsFromContext: (context) =>
-          context.projects.map((p) => ({
+        options: (_, context) =>
+          context?.projects.map((p) => ({
             name: p.name!,
             value: p.name!,
-          })),
+          })) || [],
       },
       newName: {
         inputType: 'string',
