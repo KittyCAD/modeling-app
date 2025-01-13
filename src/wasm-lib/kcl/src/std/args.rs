@@ -185,7 +185,7 @@ impl Args {
         id: uuid::Uuid,
         cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+        self.ctx.engine.send_modeling_cmd(id, self.source_range, &cmd).await
     }
 
     fn get_tag_info_from_memory<'a, 'e>(

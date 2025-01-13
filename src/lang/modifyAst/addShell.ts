@@ -45,17 +45,27 @@ export function getExtrudeNodeFromSelection(
       return new Error("Couldn't find extrude")
     }
 
-    pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
-    // Get the sketch ref from the selection
     // TODO: this assumes the segment is piped directly from the sketch, with no intermediate `VariableDeclarator` between.
     // We must find a technique for these situations that is robust to intermediate declarations
-    const sketchNode = getNodeFromPath<VariableDeclarator>(
+    const extrudeNode = getNodeFromPath<VariableDeclarator>(
       modifiedAst,
-      graphSelection.codeRef.pathToNode,
+      extrudeLookupResult.pathToExtrudeNode,
       'VariableDeclarator'
     )
-    if (err(sketchNode)) {
-      return sketchNode
+    const segmentNode = getNodeFromPath<VariableDeclarator>(
+      modifiedAst,
+      extrudeLookupResult.pathToSegmentNode,
+      'VariableDeclarator'
+    )
+    if (err(extrudeNode) || err(segmentNode)) {
+      return new Error("Couldn't find extrude")
+    }
+    if (extrudeNode.node.init.type === 'CallExpression') {
+      pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
+    } else if (segmentNode.node.init.type === 'PipeExpression') {
+      pathToExtrudeNode = extrudeLookupResult.pathToSegmentNode
+    } else {
+      return new Error("Couldn't find extrude")
     }
 
     const selectedArtifact = graphSelection.artifact

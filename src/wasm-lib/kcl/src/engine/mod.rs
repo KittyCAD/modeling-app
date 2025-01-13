@@ -32,7 +32,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{DefaultPlanes, IdGenerator, Point3d},
+    execution::{ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -66,6 +66,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
     /// Get the batch of end commands to be sent to the engine.
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
+
+    /// Take the artifact commands generated up to this point and clear them.
+    fn take_artifact_commands(&self) -> Vec<ArtifactCommand>;
+
+    /// Clear all artifact commands that have accumulated so far.
+    fn clear_artifact_commands(&self) {
+        self.take_artifact_commands();
+    }
 
     /// Get the current execution kind.
     fn execution_kind(&self) -> ExecutionKind;
@@ -106,13 +114,17 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch_modeling_cmd(
             uuid::Uuid::new_v4(),
             source_range,
-            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll {}),
+            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
         )
         .await?;
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
+
+        // Ensure artifact commands are cleared so that we don't accumulate them
+        // across runs.
+        self.clear_artifact_commands();
 
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
@@ -217,15 +229,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     }
 
     /// Send the modeling cmd and wait for the response.
-    // TODO: This should only borrow `cmd`.
-    // See https://github.com/KittyCAD/modeling-app/issues/2821
     async fn send_modeling_cmd(
         &self,
         id: uuid::Uuid,
         source_range: SourceRange,
-        cmd: ModelingCmd,
+        cmd: &ModelingCmd,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        self.batch_modeling_cmd(id, source_range, &cmd).await?;
+        self.batch_modeling_cmd(id, source_range, cmd).await?;
 
         // Flush the batch queue.
         self.flush_batch(false, source_range).await
@@ -590,6 +600,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn get_session_data(&self) -> Option<ModelingSessionData> {
         None
     }
+
+    /// Close the engine connection and wait for it to finish.
+    async fn close(&self);
 }
 
 #[derive(Debug, Hash, Eq, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
