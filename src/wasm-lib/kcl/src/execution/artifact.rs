@@ -210,9 +210,9 @@ pub enum CapSubType {
 #[serde(rename_all = "camelCase")]
 pub struct SweepEdge {
     pub id: ArtifactId,
+    pub sub_type: SweepEdgeSubType,
     pub seg_id: ArtifactId,
     pub sweep_id: ArtifactId,
-    pub sub_type: SweepEdgeSubType,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
