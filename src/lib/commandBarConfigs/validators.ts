@@ -162,10 +162,9 @@ export const shellValidator = async ({
   context: CommandBarContext
 }): Promise<boolean | string> => {
   if (!isSelections(data.selection)) {
-    return 'Unable to revolve, selections are missing'
+    return 'Unable to shell, selections are missing'
   }
   const selection = data.selection as Selections
-  console.log('selection', selection)
   const firstArtifact = selection.graphSelections[0].artifact
 
   if (!firstArtifact) {
@@ -176,8 +175,6 @@ export const shellValidator = async ({
     return 'Unable to shell, first artifact is not a cap or a wall'
   }
 
-  console.log('selection artifact', firstArtifact)
-  console.log('artifactGraph', engineCommandManager.artifactGraph)
   const sweep = engineCommandManager.artifactGraph.get(firstArtifact.sweepId)
   if (!sweep || sweep?.type !== 'sweep') {
     return 'Unable to shell, couldnt find pathId'
@@ -193,9 +190,9 @@ export const shellValidator = async ({
     return 'Unable to shell, selection is across solids'
   }
 
-  // TODO: NOT WORKING YET
   const shellCommand = async () => {
-    const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 1
+    // TODO: figure out something better than an arbitrarily small value
+    const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 1e-9
     const DEFAULT_HOLLOW = false
     const cmdArgs = {
       face_ids: [faceId],
@@ -203,7 +200,6 @@ export const shellValidator = async ({
       hollow: DEFAULT_HOLLOW,
       shell_thickness: DEFAULT_THICKNESS,
     }
-    console.log('cmd', cmdArgs)
     return await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

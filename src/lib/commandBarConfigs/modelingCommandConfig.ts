@@ -352,13 +352,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
-        skip: false,
         validation: shellValidator,
       },
       thickness: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+        // TODO: add dry-run validation on thickness param
       },
     },
   },
