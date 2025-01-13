@@ -260,7 +260,7 @@ pub struct EdgeCutEdge {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
-#[serde(tag = "type")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
     Plane(Plane),
     Path(Path),
