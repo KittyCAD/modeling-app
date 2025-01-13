@@ -188,9 +188,9 @@ test.describe('Feature Tree pane', () => {
       |> circle({ center = [0, 0], radius = 5 }, %)
       renamedExtrude = extrude(${initialInput}, sketch001)`
     const newConstantName = 'distance001'
-    const expectedCode = `${newConstantName} = 23
-      sketch001 = startSketchOn('XZ')
+    const expectedCode = `sketch001 = startSketchOn('XZ')
       |> circle({ center = [0, 0], radius = 5 }, %)
+      ${newConstantName} = 23
       renamedExtrude = extrude(${newConstantName}, sketch001)`
 
     await context.folderSetupFn(async (dir) => {
@@ -257,10 +257,12 @@ test.describe('Feature Tree pane', () => {
         highlightedCode: '',
         diagnostics: [],
         activeLines: [
-          `renamedExtrude = extrude(${newConstantName}, sketch002)`,
+          `renamedExtrude = extrude(${newConstantName}, sketch001)`,
         ],
       })
-      await editor.expectEditor.toContain(expectedCode)
+      await editor.expectEditor.toContain(expectedCode, {
+        shouldNormalise: true,
+      })
     })
   })
   test(`User can edit an offset plane operation from the feature tree`, async ({

@@ -252,12 +252,19 @@ export function mutateObjExpProp(
   return false
 }
 
-export function extrudeSketch(
-  node: Node<Program>,
-  pathToNode: PathToNode,
+export function extrudeSketch({
+  node,
+  pathToNode,
   shouldPipe = false,
-  distance: Expr = createLiteral(4)
-):
+  distance = createLiteral(4),
+  extrudeName,
+}: {
+  node: Node<Program>
+  pathToNode: PathToNode
+  shouldPipe?: boolean
+  distance: Expr
+  extrudeName?: string
+}):
   | {
       modifiedAst: Node<Program>
       pathToNode: PathToNode
@@ -321,7 +328,8 @@ export function extrudeSketch(
 
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
+  const name =
+    extrudeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
   const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
 
   const sketchIndexInPathToNode =

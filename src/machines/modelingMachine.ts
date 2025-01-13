@@ -1452,38 +1452,65 @@ export const modelingMachine = setup({
     >(async ({ input }) => {
       if (!input) return new Error('No input provided')
       const { selection, distance, nodeToEdit } = input
+      const isEditing =
+        nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number'
       let ast = structuredClone(kclManager.ast)
+      let extrudeName: string | undefined = undefined
 
       // If this is an edit flow, first we're going to remove the old extrusion
-      if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+      if (isEditing) {
+        // Extract the plane name from the node to edit
+        const extrudeNameNode = getNodeFromPath<VariableDeclaration>(
+          ast,
+          nodeToEdit,
+          'VariableDeclaration'
+        )
+        if (err(extrudeNameNode)) {
+          console.error('Error extracting plane name')
+        } else {
+          extrudeName = extrudeNameNode.node.declaration.id.name
+        }
+
+        // Removing the old extrusion statement
         const newBody = [...ast.body]
-        newBody.splice(nodeToEdit[1][0], 1)
+        newBody.splice(nodeToEdit[1][0] as number, 1)
         ast.body = newBody
       }
 
-      if (
-        'variableName' in distance &&
-        distance.variableName &&
-        distance.insertIndex !== undefined
-      ) {
-        const newBody = [...ast.body]
-        newBody.splice(distance.insertIndex, 0, distance.variableDeclarationAst)
-        ast.body = newBody
-      }
       const pathToNode = getNodePathFromSourceRange(
         ast,
         selection.graphSelections[0]?.codeRef.range
       )
-      const extrudeSketchRes = extrudeSketch(
-        ast,
+      // Add an extrude statement to the AST
+      const extrudeSketchRes = extrudeSketch({
+        node: ast,
         pathToNode,
-        false,
-        'variableName' in distance
-          ? distance.variableIdentifierAst
-          : distance.valueAst
-      )
+        shouldPipe: false,
+        distance:
+          'variableName' in distance
+            ? distance.variableIdentifierAst
+            : distance.valueAst,
+        extrudeName,
+      })
       if (err(extrudeSketchRes)) return extrudeSketchRes
       const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
+
+      // Insert the distance variable if the user has provided a variable name
+      if (
+        'variableName' in distance &&
+        distance.variableName &&
+        typeof pathToExtrudeArg[1][0] === 'number'
+      ) {
+        const insertIndex = Math.min(
+          pathToExtrudeArg[1][0],
+          distance.insertIndex
+        )
+        const newBody = [...modifiedAst.body]
+        newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
+        modifiedAst.body = newBody
+        // Since we inserted a new variable, we need to update the path to the extrude argument
+        pathToExtrudeArg[1][0]++
+      }
 
       const updatedAst = await kclManager.updateAst(modifiedAst, true, {
         focusPath: [pathToExtrudeArg],
@@ -1539,23 +1566,7 @@ export const modelingMachine = setup({
         if (!(plane && plane instanceof Object && 'name' in plane))
           return trap('No plane selected')
 
-        // Insert the distance variable if it exists
-        if (
-          'variableName' in distance &&
-          distance.variableName &&
-          distance.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(
-            distance.insertIndex,
-            0,
-            distance.variableDeclarationAst
-          )
-          ast.body = newBody
-        }
-
         // Get the default plane name from the selection
-
         const offsetPlaneResult = addOffsetPlane({
           node: ast,
           defaultPlane: plane.name,
@@ -1566,6 +1577,23 @@ export const modelingMachine = setup({
           insertIndex,
           planeName,
         })
+
+        // Insert the distance variable if the user has provided a variable name
+        if (
+          'variableName' in distance &&
+          distance.variableName &&
+          typeof offsetPlaneResult.pathToNode[1][0] === 'number'
+        ) {
+          const insertIndex = Math.min(
+            offsetPlaneResult.pathToNode[1][0],
+            distance.insertIndex
+          )
+          const newBody = [...offsetPlaneResult.modifiedAst.body]
+          newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
+          offsetPlaneResult.modifiedAst.body = newBody
+          // Since we inserted a new variable, we need to update the path to the extrude argument
+          offsetPlaneResult.pathToNode[1][0]++
+        }
 
         const updateAstResult = await kclManager.updateAst(
           offsetPlaneResult.modifiedAst,
