@@ -180,7 +180,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Chamfer', groupId: 'modeling' },
           }),
         icon: 'chamfer3d',
-        status: DEV ? 'available' : 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         disabled: (state) => !state.can({ type: 'Chamfer' }),
         title: 'Chamfer',
         hotkey: 'C',
