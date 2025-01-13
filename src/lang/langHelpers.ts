@@ -28,6 +28,8 @@ export type ToolTip =
   | 'tangentialArcTo'
   | 'circle'
 
+export type ToolTipKw = 'line'
+
 export const toolTips: Array<ToolTip> = [
   'line',
   'lineTo',

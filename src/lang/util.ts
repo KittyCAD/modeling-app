@@ -11,6 +11,8 @@ import {
 } from './wasm'
 import { filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
+import { ToolTip, ToolTipKw } from './langHelpers'
+import { ARG_END_ABSOLUTE } from './std/sketch'
 
 export function updatePathToNodeFromMap(
   oldPath: PathToNode,
@@ -106,4 +108,17 @@ export function findKwArgAnyIndex(
   return call.arguments.findIndex((arg) => {
     return labels.includes(arg.label.name)
   })
+}
+
+export function isAbsolute(call: CallExpressionKw): boolean {
+  return findKwArgAny(['endAbsolute'], call) !== undefined
+}
+
+export function handleAbsolute(call: CallExpressionKw): ToolTip | undefined {
+  switch (call.callee.name) {
+    case 'line':
+      return findKwArg(ARG_END_ABSOLUTE, call) !== undefined ? 'lineTo' : 'line'
+    default:
+      return undefined
+  }
 }

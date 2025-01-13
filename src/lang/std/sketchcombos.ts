@@ -60,7 +60,7 @@ import {
 } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { findKwArg, findKwArgAny } from 'lang/util'
+import { findKwArg, findKwArgAny, handleAbsolute } from 'lang/util'
 
 export type LineInputsType =
   | 'xAbsolute'
@@ -610,6 +610,16 @@ const setAngleBetweenCreateNode =
     )
   }
 
+/**
+  IMO, the transformMap is a nested structure that maps like this:
+Name of function
+-> Current constraints
+-> Constraints you could apply
+-> How to apply the extra constraint.
+For example, line could be partially constrained with x (relative), with y (relative), or unconstrained (free).
+If it's x-rel constrained, you could add an equal length constraint. That'd involve changing the line to a different line.
+OTOH if you instead constrained it to be horizontal, you'd change it into an xLine node.
+*/
 const transformMap: TransformMap = {
   line: {
     xRelative: {
@@ -1261,6 +1271,8 @@ export function getRemoveConstraintsTransform(
     },
   }
 
+  const isAbsolute = false // ADAM: todo
+
   // check if the function is locked down and so can't be transformed
   const firstArg = getFirstArg(sketchFnExp)
   if (err(firstArg)) {
@@ -1285,7 +1297,7 @@ export function getRemoveConstraintsTransform(
   }
 
   // check what constraints the function has
-  const lineInputType = getConstraintType(firstArg.val, name)
+  const lineInputType = getConstraintType(firstArg.val, name, isAbsolute)
   if (lineInputType) {
     return transformInfo
   }
@@ -1466,7 +1478,7 @@ function getTransformMapPath(
   }
 
   // check what constraints the function has
-  const lineInputType = getConstraintType(firstArg.val, name)
+  const lineInputType = getConstraintType(firstArg.val, name, false)
   if (lineInputType) {
     const info = transformMap?.[name]?.[lineInputType]?.[constraintType]
     if (info)
@@ -1492,6 +1504,8 @@ function getTransformMapPathKw(
     }
   | false {
   const name = sketchFnExp.callee.name as ToolTip
+  const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
+  const nameAbsolute = name == 'line' ? 'lineTo' : name
   if (!toolTips.includes(name)) {
     return false
   }
@@ -1520,12 +1534,13 @@ function getTransformMapPathKw(
   }
 
   // check what constraints the function has
-  const lineInputType = getConstraintType(argForEnd.val, name)
+  const lineInputType = getConstraintType(argForEnd.val, name, isAbsolute)
+  const fnName = isAbsolute ? nameAbsolute : name
   if (lineInputType) {
-    const info = transformMap?.[name]?.[lineInputType]?.[constraintType]
+    const info = transformMap?.[fnName]?.[lineInputType]?.[constraintType]
     if (info)
       return {
-        toolTip: name,
+        toolTip: fnName,
         lineInputType,
         constraintType,
       }
@@ -1561,7 +1576,8 @@ export function getTransformInfoKw(
 
 export function getConstraintType(
   val: Expr | [Expr, Expr] | [Expr, Expr, Expr],
-  fnName: ToolTip
+  fnName: ToolTip,
+  isAbsolute: boolean
 ): LineInputsType | null {
   // this function assumes that for two val sketch functions that one arg is locked down not both
   // and for one val sketch functions that the arg is NOT locked down
@@ -1575,9 +1591,9 @@ export function getConstraintType(
     if (fnName === 'yLineTo') return 'xAbsolute'
   } else {
     const isFirstArgLockedDown = isNotLiteralArrayOrStatic(val[0])
-    if (fnName === 'line')
+    if (fnName === 'line' && !isAbsolute)
       return isFirstArgLockedDown ? 'xRelative' : 'yRelative'
-    if (fnName === 'lineTo')
+    if (fnName === 'lineTo' || (fnName === 'line' && isAbsolute))
       return isFirstArgLockedDown ? 'xAbsolute' : 'yAbsolute'
     if (fnName === 'angledLine')
       return isFirstArgLockedDown ? 'angle' : 'length'
@@ -2005,7 +2021,7 @@ export function getConstraintLevelFromSourceRange(
             return new Error('unexpected call expression: ' + name)
           }
           const val =
-            arg.type == 'ArrayExpression' && arg.elements.length == 2
+            arg.type === 'ArrayExpression' && arg.elements.length === 2
               ? (arg.elements as [Expr, Expr])
               : arg
           return {
