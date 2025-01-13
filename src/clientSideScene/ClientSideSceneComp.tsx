@@ -601,7 +601,7 @@ const ConstraintSymbol = ({
   const node = _node.node
 
   const range: SourceRange = node
-    ? [node.start, node.end, true]
+    ? [node.start, node.end, 0]
     : defaultSourceRange()
 
   if (_type === 'intersectionTag') return null

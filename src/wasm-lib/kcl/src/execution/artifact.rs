@@ -8,7 +8,7 @@ use kittycad_modeling_cmds::{
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
     EnableSketchMode, ModelingCmd, SketchModeDisable,
 };
-use serde::{Deserialize, Serialize};
+use serde::{ser::SerializeSeq, Deserialize, Serialize};
 use uuid::Uuid;
 
 use crate::{
@@ -86,13 +86,26 @@ impl From<&ModelingCmdId> for ArtifactId {
     }
 }
 
+pub type DummyPathToNode = Vec<()>;
+
+fn serialize_dummy_path_to_node<S>(_path_to_node: &DummyPathToNode, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    // Always output an empty array, for now.
+    let seq = serializer.serialize_seq(Some(0))?;
+    seq.end()
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct CodeRef {
     pub range: SourceRange,
-    // TODO
-    // pub path_to_node: PathToNode,
+    // TODO: We should implement this in Rust.
+    #[serde(default, serialize_with = "serialize_dummy_path_to_node")]
+    #[ts(type = "Array<[string | number, string]>")]
+    pub path_to_node: DummyPathToNode,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -529,7 +542,10 @@ fn artifacts_to_update(
     _ast: &Node<Program>,
     _exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
-    // TODO: Build path-to-node from artifact_command source range.
+    // TODO: Build path-to-node from artifact_command source range.  Right now,
+    // we're serializing an empty array, and the TS wrapper fills it in with the
+    // correct value.
+    let path_to_node = Vec::new();
 
     let range = artifact_command.range;
     let uuid = artifact_command.cmd_id;
@@ -553,7 +569,7 @@ fn artifacts_to_update(
             return Ok(vec![Artifact::Plane(Plane {
                 id,
                 path_ids: Vec::new(),
-                code_ref: CodeRef { range },
+                code_ref: CodeRef { range, path_to_node },
             })]);
         }
         ModelingCmd::EnableSketchMode(_) => {
@@ -581,7 +597,7 @@ fn artifacts_to_update(
                     return Ok(vec![Artifact::Plane(Plane {
                         id: current_plane_id.into(),
                         path_ids,
-                        code_ref: CodeRef { range },
+                        code_ref: CodeRef { range, path_to_node },
                     })]);
                 }
             }
@@ -599,7 +615,7 @@ fn artifacts_to_update(
                 seg_ids: Vec::new(),
                 sweep_id: None,
                 solid2d_id: None,
-                code_ref: CodeRef { range },
+                code_ref: CodeRef { range, path_to_node },
             }));
             let plane = artifacts.get(&ArtifactId::new(current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
@@ -634,7 +650,7 @@ fn artifacts_to_update(
                 surface_id: None,
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
-                code_ref: CodeRef { range },
+                code_ref: CodeRef { range, path_to_node },
             }));
             let path = artifacts.get(&path_id);
             if let Some(Artifact::Path(path)) = path {
@@ -672,7 +688,7 @@ fn artifacts_to_update(
                 path_id: target,
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
-                code_ref: CodeRef { range },
+                code_ref: CodeRef { range, path_to_node },
             }));
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
@@ -699,7 +715,7 @@ fn artifacts_to_update(
                 })?),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
-                code_ref: CodeRef { range },
+                code_ref: CodeRef { range, path_to_node },
             }));
             for section_id in &loft_cmd.section_ids {
                 let path = artifacts.get(&ArtifactId::new(*section_id));
@@ -848,7 +864,7 @@ fn artifacts_to_update(
                 consumed_edge_id: cmd.edge_id.into(),
                 edge_ids: Vec::new(),
                 surface_id: None,
-                code_ref: CodeRef { range },
+                code_ref: CodeRef { range, path_to_node },
             }));
             let consumed_edge = artifacts.get(&ArtifactId::new(cmd.edge_id));
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {

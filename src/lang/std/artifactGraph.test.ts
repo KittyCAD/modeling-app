@@ -372,9 +372,9 @@ describe('testing createArtifactGraph', () => {
       })
     })
 
-    it(`there should be 1 solid2D, just for the first closed path`, () => {
-      const solid2Ds = [...filterArtifacts({ types: ['solid2D'] }, theMap)]
-      expect(solid2Ds).toHaveLength(1)
+    it(`there should be 1 solid2d, just for the first closed path`, () => {
+      const solid2ds = [...filterArtifacts({ types: ['solid2d'] }, theMap)]
+      expect(solid2ds).toHaveLength(1)
     })
 
     it('there should be no extrusions', () => {

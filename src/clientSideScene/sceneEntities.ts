@@ -628,7 +628,7 @@ export class SceneEntities {
 
       const startRange = _node1.node.start
       const endRange = _node1.node.end
-      const sourceRange: SourceRange = [startRange, endRange, true]
+      const sourceRange: SourceRange = [startRange, endRange, 0]
       const selection: Selections = computeSelectionFromSourceRangeAndAST(
         sourceRange,
         maybeModdedAst
@@ -2012,7 +2012,7 @@ export class SceneEntities {
         kclManager.programMemory,
         {
           type: 'sourceRange',
-          sourceRange: [node.start, node.end, true],
+          sourceRange: [node.start, node.end, 0],
         },
         getChangeSketchInput()
       )
@@ -2263,7 +2263,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          editorManager.setHighlightRange([[node.start, node.end, true]])
+          editorManager.setHighlightRange([[node.start, node.end, 0]])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)

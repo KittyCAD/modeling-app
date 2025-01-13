@@ -164,7 +164,7 @@ Map {
   "UUID-7" => {
     "id": "UUID",
     "pathId": "UUID",
-    "type": "solid2D",
+    "type": "solid2d",
   },
   "UUID-8" => {
     "codeRef": {
@@ -446,7 +446,7 @@ Map {
   "UUID-29" => {
     "id": "UUID",
     "pathId": "UUID",
-    "type": "solid2D",
+    "type": "solid2d",
   },
   "UUID-30" => {
     "codeRef": {

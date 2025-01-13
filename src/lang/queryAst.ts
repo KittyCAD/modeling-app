@@ -819,7 +819,7 @@ export function isLinesParallelAndConstrained(
     return {
       isParallelAndConstrained,
       selection: {
-        codeRef: codeRefFromRange(sourceRangeFromRust(prevSourceRange), ast),
+        codeRef: codeRefFromRange(prevSourceRange, ast),
         artifact: artifactGraph.get(prevSegment.__geoMeta.id),
       },
     }
@@ -936,8 +936,7 @@ export function findUsesOfTagInPipe(
         return
       const tagArgValue =
         tagArg.type === 'TagDeclarator' ? String(tagArg.value) : tagArg.name
-      if (tagArgValue === tag)
-        dependentRanges.push([node.start, node.end, true])
+      if (tagArgValue === tag) dependentRanges.push([node.start, node.end, 0])
     },
   })
   return dependentRanges

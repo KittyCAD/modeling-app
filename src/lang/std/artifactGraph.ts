@@ -1,10 +1,12 @@
 import {
   ArtifactCommand,
+  Artifact as RustArtifact,
   ExecState,
   PathToNode,
   Program,
   SourceRange,
   sourceRangeFromRust,
+  RustSourceRange,
 } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
@@ -18,7 +20,7 @@ interface BaseArtifact {
 }
 
 export interface CodeRef {
-  range: SourceRange
+  range: RustSourceRange
   pathToNode: PathToNode
 }
 
@@ -37,13 +39,13 @@ export interface PathArtifact extends BaseArtifact {
   type: 'path'
   planeId: ArtifactId
   segIds: Array<ArtifactId>
-  sweepId?: ArtifactId
-  solid2dId?: ArtifactId
+  sweepId: ArtifactId | null
+  solid2dId: ArtifactId | null
   codeRef: CodeRef
 }
 
-interface solid2D extends BaseArtifact {
-  type: 'solid2D'
+interface Solid2D extends BaseArtifact {
+  type: 'solid2d'
   pathId: ArtifactId
 }
 export interface PathArtifactRich extends BaseArtifact {
@@ -53,16 +55,16 @@ export interface PathArtifactRich extends BaseArtifact {
   /** A path must always contain 0 or more segments */
   segments: Array<SegmentArtifact>
   /** A path may not result in a sweep artifact */
-  sweep?: SweepArtifact
+  sweep: SweepArtifact | null
   codeRef: CodeRef
 }
 
 export interface SegmentArtifact extends BaseArtifact {
   type: 'segment'
   pathId: ArtifactId
-  surfaceId?: ArtifactId
+  surfaceId: ArtifactId | null
   edgeIds: Array<ArtifactId>
-  edgeCutId?: ArtifactId
+  edgeCutId: ArtifactId | null
   codeRef: CodeRef
 }
 interface SegmentArtifactRich extends BaseArtifact {
@@ -120,7 +122,7 @@ interface EdgeCut extends BaseArtifact {
   subType: 'fillet' | 'chamfer'
   consumedEdgeId: ArtifactId
   edgeIds: Array<ArtifactId>
-  surfaceId?: ArtifactId
+  surfaceId: ArtifactId | null
   codeRef: CodeRef
 }
 
@@ -131,6 +133,18 @@ interface EdgeCutEdge extends BaseArtifact {
 }
 
 export type Artifact =
+  | {
+      type: 'startSketchOnFace'
+      id: ArtifactId
+      faceId: string
+      sourceRange: SourceRange
+    }
+  | {
+      type: 'startSketchOnPlane'
+      id: ArtifactId
+      planeId: string
+      sourceRange: SourceRange
+    }
   | PlaneArtifact
   | PathArtifact
   | SegmentArtifact
@@ -140,7 +154,7 @@ export type Artifact =
   | SweepEdge
   | EdgeCut
   | EdgeCutEdge
-  | solid2D
+  | Solid2D
 
 export type ArtifactGraph = Map<ArtifactId, Artifact>
 
@@ -161,11 +175,13 @@ export function createArtifactGraph({
   responseMap,
   ast,
   execStateArtifacts,
+  execStateArtifactGraph,
 }: {
   artifactCommands: Array<ArtifactCommand>
   responseMap: ResponseMap
   ast: Node<Program>
   execStateArtifacts: ExecState['artifacts']
+  execStateArtifactGraph: ExecState['artifactGraph']
 }) {
   const myMap = new Map<ArtifactId, Artifact>()
 
@@ -192,7 +208,7 @@ export function createArtifactGraph({
       myMap.set(id, mergedArtifact)
     })
   }
-  return myMap
+  return execStateArtifactGraph
 }
 
 /** Merges two artifacts, since our artifacts only contain strings and arrays of string for values we coerce that
@@ -250,8 +266,8 @@ export function getArtifactsToUpdate({
   id: ArtifactId
   artifact: Artifact
 }> {
-  const range = sourceRangeFromRust(artifactCommand.range)
-  const pathToNode = getNodePathFromSourceRange(ast, range)
+  const range = artifactCommand.range
+  const pathToNode = getNodePathFromSourceRange(ast, sourceRangeFromRust(range))
 
   const id = artifactCommand.cmdId
   const response = responseMap[id]
@@ -308,7 +324,8 @@ export function getArtifactsToUpdate({
         id,
         segIds: [],
         planeId: currentPlaneId,
-        sweepId: undefined,
+        sweepId: null,
+        solid2dId: null,
         codeRef: { range, pathToNode },
       },
     })
@@ -343,8 +360,9 @@ export function getArtifactsToUpdate({
         type: 'segment',
         id,
         pathId,
-        surfaceId: undefined,
+        surfaceId: null,
         edgeIds: [],
+        edgeCutId: null,
         codeRef: { range, pathToNode },
       },
     })
@@ -361,7 +379,7 @@ export function getArtifactsToUpdate({
       returnArr.push({
         id: response.data.modeling_response.data.face_id,
         artifact: {
-          type: 'solid2D',
+          type: 'solid2d',
           id: response.data.modeling_response.data.face_id,
           pathId,
         },
@@ -567,7 +585,7 @@ export function getArtifactsToUpdate({
         subType: cmd.cut_type,
         consumedEdgeId: cmd.edge_id,
         edgeIds: [],
-        surfaceId: undefined,
+        surfaceId: null,
         codeRef: { range, pathToNode },
       },
     })
@@ -676,7 +694,7 @@ export function expandPath(
         },
         artifactGraph
       )
-    : undefined
+    : null
   const plane = getArtifactOfTypes(
     { key: path.planeId, types: ['plane', 'wall'] },
     artifactGraph
@@ -778,11 +796,11 @@ export function getCapCodeRef(
 }
 
 export function getSolid2dCodeRef(
-  solid2D: solid2D,
+  solid2d: Solid2D,
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
   const path = getArtifactOfTypes(
-    { key: solid2D.pathId, types: ['path'] },
+    { key: solid2d.pathId, types: ['path'] },
     artifactGraph
   )
   if (err(path)) return path
@@ -881,7 +899,7 @@ export function getCodeRefsByArtifactId(
   artifactGraph: ArtifactGraph
 ): Array<CodeRef> | null {
   const artifact = artifactGraph.get(id)
-  if (artifact?.type === 'solid2D') {
+  if (artifact?.type === 'solid2d') {
     const codeRef = getSolid2dCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null
     return [codeRef]
@@ -912,10 +930,13 @@ export function getCodeRefsByArtifactId(
   }
 }
 
-export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
+export function codeRefFromRange(
+  range: RustSourceRange,
+  ast: Program
+): CodeRef {
   return {
     range,
-    pathToNode: getNodePathFromSourceRange(ast, range),
+    pathToNode: getNodePathFromSourceRange(ast, sourceRangeFromRust(range)),
   }
 }
 

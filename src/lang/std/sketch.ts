@@ -222,7 +222,7 @@ const commonConstraintInfoHelper = (
         code.slice(input1.start, input1.end),
         stdLibFnName,
         isArr ? abbreviatedInputs[0].arrayInput : abbreviatedInputs[0].objInput,
-        [input1.start, input1.end, true],
+        [input1.start, input1.end, 0],
         pathToFirstArg
       )
     )
@@ -234,7 +234,7 @@ const commonConstraintInfoHelper = (
         code.slice(input2.start, input2.end),
         stdLibFnName,
         isArr ? abbreviatedInputs[1].arrayInput : abbreviatedInputs[1].objInput,
-        [input2.start, input2.end, true],
+        [input2.start, input2.end, 0],
         pathToSecondArg
       )
     )
@@ -266,7 +266,7 @@ const horzVertConstraintInfoHelper = (
       callee.name,
       stdLibFnName,
       undefined,
-      [callee.start, callee.end, true],
+      [callee.start, callee.end, 0],
       pathToCallee
     ),
     constrainInfo(
@@ -275,7 +275,7 @@ const horzVertConstraintInfoHelper = (
       code.slice(firstArg.start, firstArg.end),
       stdLibFnName,
       abbreviatedInput,
-      [firstArg.start, firstArg.end, true],
+      [firstArg.start, firstArg.end, 0],
       pathToFirstArg
     ),
   ]
@@ -905,7 +905,7 @@ export const tangentialArcTo: SketchLineHelper = {
         callee.name,
         'tangentialArcTo',
         undefined,
-        [callee.start, callee.end, true],
+        [callee.start, callee.end, 0],
         pathToCallee
       ),
       constrainInfo(
@@ -914,7 +914,7 @@ export const tangentialArcTo: SketchLineHelper = {
         code.slice(firstArg.elements[0].start, firstArg.elements[0].end),
         'tangentialArcTo',
         0,
-        [firstArg.elements[0].start, firstArg.elements[0].end, true],
+        [firstArg.elements[0].start, firstArg.elements[0].end, 0],
         pathToFirstArg
       ),
       constrainInfo(
@@ -923,7 +923,7 @@ export const tangentialArcTo: SketchLineHelper = {
         code.slice(firstArg.elements[1].start, firstArg.elements[1].end),
         'tangentialArcTo',
         1,
-        [firstArg.elements[1].start, firstArg.elements[1].end, true],
+        [firstArg.elements[1].start, firstArg.elements[1].end, 0],
         pathToSecondArg
       ),
     ]
@@ -1052,7 +1052,7 @@ export const circle: SketchLineHelper = {
         code.slice(radiusDetails.expr.start, radiusDetails.expr.end),
         'circle',
         'radius',
-        [radiusDetails.expr.start, radiusDetails.expr.end, true],
+        [radiusDetails.expr.start, radiusDetails.expr.end, 0],
         pathToRadiusLiteral
       ),
       {
@@ -1064,7 +1064,7 @@ export const circle: SketchLineHelper = {
         sourceRange: [
           centerDetails.expr.elements[0].start,
           centerDetails.expr.elements[0].end,
-          true,
+          0,
         ],
         pathToNode: pathToXArg,
         value: code.slice(
@@ -1086,7 +1086,7 @@ export const circle: SketchLineHelper = {
         sourceRange: [
           centerDetails.expr.elements[1].start,
           centerDetails.expr.elements[1].end,
-          true,
+          0,
         ],
         pathToNode: pathToYArg,
         value: code.slice(
@@ -1763,7 +1763,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
           code.slice(angle.start, angle.end),
           'angledLineThatIntersects',
           'angle',
-          [angle.start, angle.end, true],
+          [angle.start, angle.end, 0],
           pathToAngleProp
         )
       )
@@ -1782,7 +1782,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
           code.slice(offset.start, offset.end),
           'angledLineThatIntersects',
           'offset',
-          [offset.start, offset.end, true],
+          [offset.start, offset.end, 0],
           pathToOffsetProp
         )
       )
@@ -1801,7 +1801,7 @@ export const angledLineThatIntersects: SketchLineHelper = {
         code.slice(tag.start, tag.end),
         'angledLineThatIntersects',
         'intersectTag',
-        [tag.start, tag.end, true],
+        [tag.start, tag.end, 0],
         pathToTagProp
       )
       returnVal.push(info)

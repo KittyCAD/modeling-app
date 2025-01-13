@@ -167,7 +167,7 @@ export function lspDiagnosticsToKclErrors(
         new KCLError(
           'unexpected',
           message,
-          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, true],
+          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
           [],
           []
         )
@@ -193,7 +193,7 @@ export function kclErrorsToDiagnostics(
   errors: KCLError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => err.sourceRange[2])
+    ?.filter((err) => err.sourceRange[2] === 0)
     .map((err) => {
       return {
         from: err.sourceRange[0],

@@ -376,10 +376,11 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/programMemory
-    await this.engineCommandManager.updateArtifactGraph(
+    this.engineCommandManager.updateArtifactGraph(
       this.ast,
       execState.artifactCommands,
-      execState.artifacts
+      execState.artifacts,
+      execState.artifactGraph
     )
     this._executeCallback()
     if (!isInterrupted) {
@@ -473,7 +474,7 @@ export class KclManager {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,
-            range: [node.start, node.end, true],
+            range: [node.start, node.end, 0],
           },
         })
       }
@@ -594,7 +595,7 @@ export class KclManager {
         if (start && end) {
           returnVal.graphSelections.push({
             codeRef: {
-              range: [start, end, true],
+              range: [start, end, 0],
               pathToNode: path,
             },
           })

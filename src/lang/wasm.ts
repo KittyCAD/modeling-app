@@ -48,9 +48,12 @@ import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRang
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
-import { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
+import { Artifact as RustArtifact } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
+import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
+import { Artifact } from './std/artifactGraph'
+import { getNodePathFromSourceRange } from './queryAst'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -110,7 +113,7 @@ export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
  * The third item is whether the source range belongs to the 'main' file, i.e., the file currently
  * being rendered/displayed in the editor (TODO we need to handle modules better in the frontend).
  */
-export type SourceRange = [number, number, boolean]
+export type SourceRange = [number, number, number]
 
 /**
  * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
@@ -119,14 +122,14 @@ export type SourceRange = [number, number, boolean]
  * the frontend).
  */
 export function sourceRangeFromRust(s: RustSourceRange): SourceRange {
-  return [s[0], s[1], s[2] === 0]
+  return [s[0], s[1], s[2]]
 }
 
 /**
  * Create a default SourceRange for testing or as a placeholder.
  */
 export function defaultSourceRange(): SourceRange {
-  return [0, 0, true]
+  return [0, 0, 0]
 }
 
 /**
@@ -258,8 +261,9 @@ export const isPathToNodeNumber = (
 export interface ExecState {
   memory: ProgramMemory
   operations: Operation[]
-  artifacts: { [key in ArtifactId]?: Artifact }
+  artifacts: { [key in ArtifactId]?: RustArtifact }
   artifactCommands: ArtifactCommand[]
+  artifactGraph: Map<ArtifactId, Artifact>
 }
 
 /**
@@ -272,16 +276,45 @@ export function emptyExecState(): ExecState {
     operations: [],
     artifacts: {},
     artifactCommands: [],
+    artifactGraph: new Map(),
   }
 }
 
-function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
+function execStateFromRust(
+  execOutcome: RustExecOutcome,
+  program: Node<Program>
+): ExecState {
+  const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
+  // We haven't ported pathToNode logic to Rust yet, so we need to fill it in.
+  for (const [id, artifact] of artifactGraph) {
+    if (!artifact) continue
+    if (!('codeRef' in artifact)) continue
+    const pathToNode = getNodePathFromSourceRange(
+      program,
+      sourceRangeFromRust(artifact.codeRef.range)
+    )
+    artifact.codeRef.pathToNode = pathToNode
+  }
+
   return {
     memory: ProgramMemory.fromRaw(execOutcome.memory),
     operations: execOutcome.operations,
     artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
+    artifactGraph,
   }
+}
+
+function rustArtifactGraphToMap(
+  rustArtifactGraph: RustArtifactGraph
+): Map<ArtifactId, Artifact> {
+  const map = new Map<ArtifactId, Artifact>()
+  for (const [id, artifact] of Object.entries(rustArtifactGraph.map)) {
+    if (!artifact) continue
+    map.set(id, artifact)
+  }
+
+  return map
 }
 
 interface Memory {
@@ -543,7 +576,7 @@ export const executor = async (
       engineCommandManager,
       fileSystemManager
     )
-    return execStateFromRust(execOutcome)
+    return execStateFromRust(execOutcome, node)
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())

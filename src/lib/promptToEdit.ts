@@ -334,7 +334,7 @@ const reBuildNewCodeWithRanges = (
     } else if (change.added && !change.removed) {
       const start = newCodeWithRanges.length
       const end = start + change.value.length
-      insertRanges.push([start, end, true])
+      insertRanges.push([start, end, 0])
       newCodeWithRanges += change.value
     }
   }
