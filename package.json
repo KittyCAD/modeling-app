@@ -149,7 +149,7 @@
     "@electron-forge/plugin-vite": "7.4.0",
     "@electron/fuses": "1.8.0",
     "@iarna/toml": "^2.2.5",
-    "@lezer/generator": "^1.7.1",
+    "@lezer/generator": "^1.7.2",
     "@nabla/vite-plugin-eslint": "^2.0.5",
     "@playwright/test": "^1.49.0",
     "@testing-library/jest-dom": "^5.14.1",
