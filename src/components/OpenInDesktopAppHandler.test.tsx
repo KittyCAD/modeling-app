@@ -39,7 +39,7 @@ describe('OpenInDesktopAppHandler tests', () => {
   test(`renders the modal if the query param is present`, () => {
     render(
       <BrowserRouter>
-        <TestWrap location="/?askToOpenInDesktop">
+        <TestWrap location="/?ask-open-desktop">
           <p>Dummy app contents</p>
         </TestWrap>
       </BrowserRouter>

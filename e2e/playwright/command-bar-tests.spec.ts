@@ -354,7 +354,7 @@ test.describe('Command bar tests', () => {
     homePage,
   }) => {
     await test.step(`Prepare and navigate to home page with query params`, async () => {
-      const targetURL = `?create-file&name=test&units=mm&code=ZXh0cnVzaW9uRGlzdGFuY2UgPSAxMg%3D%3D&askToOpenInDesktop`
+      const targetURL = `?create-file&name=test&units=mm&code=ZXh0cnVzaW9uRGlzdGFuY2UgPSAxMg%3D%3D&ask-open-desktop`
       await homePage.expectState({
         projectCards: [],
         sortBy: 'last-modified-desc',
@@ -413,7 +413,7 @@ test.describe('Command bar tests', () => {
       ])
     })
     await test.step(`Prepare and navigate to home page with query params`, async () => {
-      const targetURL = `?create-file&name=test&units=mm&code=ZXh0cnVzaW9uRGlzdGFuY2UgPSAxMg%3D%3D&askToOpenInDesktop`
+      const targetURL = `?create-file&name=test&units=mm&code=ZXh0cnVzaW9uRGlzdGFuY2UgPSAxMg%3D%3D&ask-open-desktop`
       await homePage.expectState({
         projectCards: [
           {

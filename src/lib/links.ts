@@ -23,11 +23,11 @@ export function createCreateFileUrl({ code, name, units }: FileLinkParams) {
   // Use the dev server if we are in development mode
   let origin = DEV ? 'http://localhost:3000' : PROD_APP_URL
   const searchParams = new URLSearchParams({
-    [CREATE_FILE_URL_PARAM]: '',
+    [CREATE_FILE_URL_PARAM]: String(true),
     name,
     units,
     code: stringToBase64(code),
-    [ASK_TO_OPEN_QUERY_PARAM]: '',
+    [ASK_TO_OPEN_QUERY_PARAM]: String(true),
   })
   const createFileUrl = new URL(`?${searchParams.toString()}`, origin)
 

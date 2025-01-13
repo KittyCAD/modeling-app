@@ -150,4 +150,4 @@ export const ZOO_STUDIO_PROTOCOL = 'zoo-studio:'
  * A query parameter that triggers a modal
  * to "open in desktop app" when present in the URL
  */
-export const ASK_TO_OPEN_QUERY_PARAM = 'askToOpenInDesktop'
+export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
