@@ -802,7 +802,7 @@ fn artifacts_to_update(
             let Some(Artifact::Sweep(sweep)) = artifacts.get(&wall.sweep_id) else {
                 return Ok(Vec::new());
             };
-            let Some(Artifact::Path(path)) = artifacts.get(&sweep.path_id) else {
+            let Some(Artifact::Path(_)) = artifacts.get(&sweep.path_id) else {
                 return Ok(Vec::new());
             };
             let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
@@ -826,17 +826,11 @@ fn artifacts_to_update(
             };
 
             let mut return_arr = Vec::new();
-            // TODO: Can we use sweep.id to make this error impossible?
-            let path_sweep_id = path.sweep_id.ok_or_else(|| {
-                KclError::internal(format!(
-                    "Expected a sweep ID on the path when processing Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge command, but we have none: {id:?}, {path:?}"
-                ))
-            })?;
             return_arr.push(Artifact::SweepEdge(SweepEdge {
                 id: response_edge_id,
-                seg_id: edge_id,
-                sweep_id: path_sweep_id,
                 sub_type,
+                seg_id: edge_id,
+                sweep_id: sweep.id,
             }));
             let mut new_segment = segment.clone();
             new_segment.edge_ids = vec![response_edge_id];
