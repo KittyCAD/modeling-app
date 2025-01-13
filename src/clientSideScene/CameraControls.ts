@@ -143,7 +143,7 @@ export class CameraControls {
     }
     this.camera.position.set(...camProps.position)
     // DEBUG
-    // this.camera.quaternion.set(...camProps.quaternion)
+    this.camera.quaternion.set(...camProps.quaternion)
     if (
       camProps.type === 'perspective' &&
       this.camera instanceof PerspectiveCamera
