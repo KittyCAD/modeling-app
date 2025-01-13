@@ -244,7 +244,6 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   shell: {
     label: 'Shell',
     icon: 'shell',
-    prepareToEdit: () => ({ name: 'Shell', groupId: 'modeling' }),
   },
   startSketchOn: {
     label: 'Sketch',
