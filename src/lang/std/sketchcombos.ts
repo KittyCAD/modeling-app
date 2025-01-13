@@ -1505,7 +1505,7 @@ function getTransformMapPathKw(
   | false {
   const name = sketchFnExp.callee.name as ToolTip
   const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
-  const nameAbsolute = name == 'line' ? 'lineTo' : name
+  const nameAbsolute = name === 'line' ? 'lineTo' : name
   if (!toolTips.includes(name)) {
     return false
   }

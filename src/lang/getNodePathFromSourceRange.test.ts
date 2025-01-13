@@ -36,7 +36,7 @@ const sk3 = startSketchAt([0, 0])
     const { node } = _node
 
     expect(topLevelRange(node.start, node.end)).toEqual(sourceRange)
-    expect(node.type).toBe('CallExpression')
+    expect(node.type).toBe('CallExpressionKw')
   })
   it('gets path right for function definition params', () => {
     const code = `fn cube = (pos, scale) => {
@@ -102,8 +102,9 @@ const b1 = cube([0,0], 10)`
       ['init', ''],
       ['body', 'PipeExpression'],
       [2, 'index'],
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
+      ['arguments', 'CallExpressionKw'],
+      [0, 'arg index'],
+      ['arg', 'LabeledArg -> Arg'],
       ['elements', 'ArrayExpression'],
       [0, 'index'],
     ])
