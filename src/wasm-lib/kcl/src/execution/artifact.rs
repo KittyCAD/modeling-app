@@ -48,13 +48,6 @@ impl ArtifactId {
     pub fn new(uuid: Uuid) -> Self {
         Self(uuid)
     }
-
-    /// Create a fake placeholder artifact ID.  This is terrible because it's
-    /// essentially side-stepping the type system.  But I wanted to faithfully
-    /// reproduce the TS behavior.
-    pub fn fake_placeholder() -> Self {
-        Self(Uuid::nil())
-    }
 }
 
 impl From<Uuid> for ArtifactId {
@@ -118,7 +111,8 @@ pub struct Path {
     pub id: ArtifactId,
     pub plane_id: ArtifactId,
     pub seg_ids: Vec<ArtifactId>,
-    pub sweep_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sweep_id: Option<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solid2d_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
@@ -130,7 +124,8 @@ pub struct Path {
 pub struct Segment {
     pub id: ArtifactId,
     pub path_id: ArtifactId,
-    pub surface_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub surface_id: Option<ArtifactId>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -232,7 +227,8 @@ pub struct EdgeCut {
     pub consumed_edge_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
-    pub surface_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub surface_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
 }
 
@@ -344,8 +340,7 @@ impl Path {
         let Artifact::Path(new) = new else {
             return Some(new);
         };
-        // We initialize this with a placeholder.
-        self.sweep_id = new.sweep_id;
+        merge_opt_ids(&mut self.sweep_id, new.sweep_id);
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_ids(&mut self.solid2d_id, new.solid2d_id);
 
@@ -358,8 +353,7 @@ impl Segment {
         let Artifact::Segment(new) = new else {
             return Some(new);
         };
-        // We initialize this with a placeholder.
-        self.surface_id = new.surface_id;
+        merge_opt_ids(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_ids(&mut self.edge_cut_id, new.edge_cut_id);
 
@@ -408,8 +402,7 @@ impl EdgeCut {
         let Artifact::EdgeCut(new) = new else {
             return Some(new);
         };
-        // We initialize this with a placeholder.
-        self.surface_id = new.surface_id;
+        merge_opt_ids(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
 
         None
@@ -602,7 +595,7 @@ fn artifacts_to_update(
                 id,
                 plane_id: current_plane_id.into(),
                 seg_ids: Vec::new(),
-                sweep_id: ArtifactId::fake_placeholder(),
+                sweep_id: None,
                 solid2d_id: None,
                 code_ref: CodeRef { range },
             }));
@@ -636,7 +629,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::Segment(Segment {
                 id,
                 path_id,
-                surface_id: ArtifactId::fake_placeholder(),
+                surface_id: None,
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
                 code_ref: CodeRef { range },
@@ -682,7 +675,7 @@ fn artifacts_to_update(
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
                 let mut new_path = path.clone();
-                new_path.sweep_id = id;
+                new_path.sweep_id = Some(id);
                 return_arr.push(Artifact::Path(new_path));
             }
             return Ok(return_arr);
@@ -739,17 +732,22 @@ fn artifacts_to_update(
                     continue;
                 };
                 last_path = Some(path);
+                let path_sweep_id = path.sweep_id.ok_or_else(|| {
+                    KclError::internal(format!(
+                        "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                    ))
+                })?;
                 return_arr.push(Artifact::Wall(Wall {
                     id: face_id,
                     seg_id: curve_id,
                     edge_cut_edge_ids: Vec::new(),
-                    sweep_id: path.sweep_id,
+                    sweep_id: path_sweep_id,
                     path_ids: vec![],
                 }));
                 let mut new_seg = seg.clone();
-                new_seg.surface_id = face_id;
+                new_seg.surface_id = Some(face_id);
                 return_arr.push(Artifact::Segment(new_seg));
-                if let Some(Artifact::Sweep(sweep)) = artifacts.get(&path.sweep_id) {
+                if let Some(Artifact::Sweep(sweep)) = path.sweep_id.and_then(|id| artifacts.get(&id)) {
                     let mut new_sweep = sweep.clone();
                     new_sweep.surface_ids = vec![face_id];
                     return_arr.push(Artifact::Sweep(new_sweep));
@@ -765,14 +763,19 @@ fn artifacts_to_update(
                     let Some(face_id) = face.face_id.map(ArtifactId::new) else {
                         continue;
                     };
+                    let path_sweep_id = path.sweep_id.ok_or_else(|| {
+                        KclError::internal(format!(
+                            "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
+                        ))
+                    })?;
                     return_arr.push(Artifact::Cap(Cap {
                         id: face_id,
                         sub_type,
                         edge_cut_ids: Vec::new(),
-                        sweep_id: path.sweep_id,
+                        sweep_id: path_sweep_id,
                         path_ids: Vec::new(),
                     }));
-                    let Some(Artifact::Sweep(sweep)) = artifacts.get(&path.sweep_id) else {
+                    let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {
                         continue;
                     };
                     let mut new_sweep = sweep.clone();
@@ -821,10 +824,16 @@ fn artifacts_to_update(
             };
 
             let mut return_arr = Vec::new();
+            // TODO: Can we use sweep.id to make this error impossible?
+            let path_sweep_id = path.sweep_id.ok_or_else(|| {
+                KclError::internal(format!(
+                    "Expected a sweep ID on the path when processing Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge command, but we have none: {id:?}, {path:?}"
+                ))
+            })?;
             return_arr.push(Artifact::SweepEdge(SweepEdge {
                 id: response_edge_id,
                 seg_id: edge_id,
-                sweep_id: path.sweep_id,
+                sweep_id: path_sweep_id,
                 sub_type,
             }));
             let mut new_segment = segment.clone();
@@ -842,7 +851,7 @@ fn artifacts_to_update(
                 sub_type: cmd.cut_type.into(),
                 consumed_edge_id: cmd.edge_id.into(),
                 edge_ids: Vec::new(),
-                surface_id: ArtifactId::fake_placeholder(),
+                surface_id: None,
                 code_ref: CodeRef { range },
             }));
             let consumed_edge = artifacts.get(&ArtifactId::new(cmd.edge_id));
