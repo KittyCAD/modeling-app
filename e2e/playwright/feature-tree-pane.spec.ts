@@ -174,10 +174,95 @@ test.describe('Feature Tree pane', () => {
     'User can edit a sketch (on an offset plane) from the feature tree',
     async () => {}
   )
-  test.fixme(
-    `User can edit an extrude operation from the feature tree`,
-    async () => {}
-  )
+  test(`User can edit an extrude operation from the feature tree`, async ({
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+    page,
+  }) => {
+    const initialInput = '23'
+    const initialCode = `sketch001 = startSketchOn('XZ')
+      |> circle({ center = [0, 0], radius = 5 }, %)
+      renamedExtrude = extrude(${initialInput}, sketch001)`
+    const newConstantName = 'distance001'
+    const expectedCode = `${newConstantName} = 23
+      sketch001 = startSketchOn('XZ')
+      |> circle({ center = [0, 0], radius = 5 }, %)
+      renamedExtrude = extrude(${newConstantName}, sketch001)`
+
+    await context.folderSetupFn(async (dir) => {
+      const testDir = join(dir, 'test-sample')
+      await fsp.mkdir(testDir, { recursive: true })
+      await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
+    })
+
+    await test.step('setup test', async () => {
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'test-sample',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+      await homePage.openProject('test-sample')
+      await scene.waitForExecutionDone()
+      await toolbar.openFeatureTreePane()
+    })
+
+    await test.step('Double click on the extrude operation', async () => {
+      await (await toolbar.getFeatureTreeOperation('Extrude', 0))
+        .first()
+        .dblclick()
+      await editor.expectState({
+        highlightedCode: '',
+        diagnostics: [],
+        activeLines: [`renamedExtrude = extrude(${initialInput}, sketch001)`],
+      })
+      await cmdBar.expectState({
+        commandName: 'Extrude',
+        stage: 'arguments',
+        currentArgKey: 'distance',
+        currentArgValue: initialInput,
+        headerArguments: {
+          Selection: '1 face',
+          Distance: initialInput,
+        },
+        highlightedHeaderArg: 'distance',
+      })
+    })
+
+    await test.step('Add a named constant for distance argument and submit', async () => {
+      await expect(cmdBar.currentArgumentInput).toBeVisible()
+      const addVariableButton = page.getByRole('button', {
+        name: 'Create new variable',
+      })
+      await addVariableButton.click()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '1 face',
+          // The calculated value is shown in the argument summary
+          Distance: initialInput,
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectState({
+        highlightedCode: '',
+        diagnostics: [],
+        activeLines: [
+          `renamedExtrude = extrude(${newConstantName}, sketch002)`,
+        ],
+      })
+      await editor.expectEditor.toContain(expectedCode)
+    })
+  })
   test(`User can edit an offset plane operation from the feature tree`, async ({
     context,
     homePage,
