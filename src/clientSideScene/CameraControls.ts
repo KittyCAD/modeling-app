@@ -142,7 +142,6 @@ export class CameraControls {
       this.useOrthographicCamera()
     }
     this.camera.position.set(...camProps.position)
-    // DEBUG
     this.camera.quaternion.set(...camProps.quaternion)
     if (
       camProps.type === 'perspective' &&
@@ -264,7 +263,6 @@ export class CameraControls {
 
     const cb = ({ data, type }: CallBackParam) => {
       const camSettings = data.settings
-
       this.camera.position.set(
         camSettings.pos.x,
         camSettings.pos.y,
@@ -551,8 +549,7 @@ export class CameraControls {
     const fovFactor = 45 / this.lastPerspectiveFov
     this.camera.zoom = (ZOOM_MAGIC_NUMBER * fovFactor * 0.8) / distance
 
-    //DEBUG
-    // this.camera.quaternion.set(qx, qy, qz, qw)
+    this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
@@ -586,8 +583,7 @@ export class CameraControls {
     this.camera = this.createPerspectiveCamera()
 
     this.camera.position.set(px, py, pz)
-    // DEBUG
-    // this.camera.quaternion.set(qx, qy, qz, qw)
+    this.camera.quaternion.set(qx, qy, qz, qw)
     const direction = new Vector3().subVectors(
       this.camera.position,
       this.target
@@ -755,8 +751,6 @@ export class CameraControls {
       this.pendingPan = null
       didChange = true
     }
-
-    // this.safeLookAtTarget(this.camera.up)
 
     // Update the camera's matrices
     this.camera.updateMatrixWorld()

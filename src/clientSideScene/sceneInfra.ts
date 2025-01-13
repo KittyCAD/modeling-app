@@ -346,7 +346,6 @@ export class SceneInfra {
     requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
-      // PROBLEM
       this.camControls.update()
       this.renderer.render(this.scene, this.camControls.camera)
       this.labelRenderer.render(this.scene, this.camControls.camera)
