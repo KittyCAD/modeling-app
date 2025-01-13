@@ -1562,9 +1562,22 @@ export const modelingMachine = setup({
         const { plane: selection, distance, nodeToEdit } = input
 
         let insertIndex: number | undefined = undefined
+        let planeName: string | undefined = undefined
 
         // If this is an edit flow, first we're going to remove the old extrusion
         if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
+          // Extract the plane name from the node to edit
+          const planeNameNode = getNodeFromPath<VariableDeclaration>(
+            ast,
+            nodeToEdit,
+            'VariableDeclaration'
+          )
+          if (err(planeNameNode)) {
+            console.error('Error extracting plane name')
+          } else {
+            planeName = planeNameNode.node.declaration.id.name
+          }
+
           const newBody = [...ast.body]
           newBody.splice(nodeToEdit[1][0], 1)
           ast.body = newBody
@@ -1601,6 +1614,7 @@ export const modelingMachine = setup({
               ? distance.variableIdentifierAst
               : distance.valueAst,
           insertIndex,
+          planeName,
         })
 
         const updateAstResult = await kclManager.updateAst(

@@ -249,10 +249,9 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   startSketchOn: {
     label: 'Sketch',
     icon: 'sketch',
-    // Turned off because of a current limitation with 
-    // matching sketches-on-faces and offset planes back to their
+    // TODO: fix matching sketches-on-faces and offset planes back to their
     // original plane artifacts in order to edit them.
-    // prepareToEdit: { name: 'Enter sketch', groupId: 'modeling' },
+    prepareToEdit: { name: 'Enter sketch', groupId: 'modeling' },
   },
   sweep: {
     label: 'Sweep',

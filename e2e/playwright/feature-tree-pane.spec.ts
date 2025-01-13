@@ -124,4 +124,135 @@ test.describe('Feature Tree pane', () => {
       })
     }
   )
+
+  test(
+    `User can edit a sketch (on default plane) from the feature tree`,
+    { tag: '@electron' },
+    async ({ context, homePage, scene, editor, toolbar }) => {
+      await context.folderSetupFn(async (dir) => {
+        const bracketDir = join(dir, 'test-sample')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.writeFile(
+          join(bracketDir, 'main.kcl'),
+          FEATURE_TREE_EXAMPLE_CODE,
+          'utf-8'
+        )
+      })
+
+      await test.step('setup test', async () => {
+        await homePage.expectState({
+          projectCards: [
+            {
+              title: 'test-sample',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+        await homePage.openProject('test-sample')
+        await scene.waitForExecutionDone()
+        await toolbar.openFeatureTreePane()
+      })
+
+      await test.step('Double click on the sketch operation', async () => {
+        await (await toolbar.getFeatureTreeOperation('Sketch', 0))
+          .first()
+          .dblclick()
+        await expect(
+          toolbar.exitSketchBtn,
+          'We should be in sketch mode now'
+        ).toBeVisible()
+        await editor.expectState({
+          highlightedCode: '',
+          diagnostics: [],
+          activeLines: ["sketch001 = startSketchOn('XZ')"],
+        })
+      })
+    }
+  )
+  test.fixme(
+    'User can edit a sketch (on an offset plane) from the feature tree',
+    async () => {}
+  )
+  test.fixme(
+    `User can edit an extrude operation from the feature tree`,
+    async () => {}
+  )
+  test(`User can edit an offset plane operation from the feature tree`, async ({
+    context,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const testCode = (value: string) => `p = offsetPlane('XY', ${value})`
+    const initialInput = '10'
+    const initialCode = testCode(initialInput)
+    const newInput = '5 + 10'
+    const expectedCode = testCode(newInput)
+    await context.folderSetupFn(async (dir) => {
+      const testDir = join(dir, 'test-sample')
+      await fsp.mkdir(testDir, { recursive: true })
+      await fsp.writeFile(join(testDir, 'main.kcl'), initialCode, 'utf-8')
+    })
+
+    await test.step('setup test', async () => {
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'test-sample',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+      await homePage.openProject('test-sample')
+      await scene.waitForExecutionDone()
+      await toolbar.openFeatureTreePane()
+    })
+
+    await test.step('Double click on the offset plane operation', async () => {
+      await (await toolbar.getFeatureTreeOperation('Offset Plane', 0))
+        .first()
+        .dblclick()
+      await editor.expectState({
+        highlightedCode: '',
+        diagnostics: [],
+        activeLines: [initialCode],
+      })
+      await cmdBar.expectState({
+        commandName: 'Offset plane',
+        stage: 'arguments',
+        currentArgKey: 'distance',
+        currentArgValue: initialInput,
+        headerArguments: {
+          Plane: '1 plane',
+          Distance: initialInput,
+        },
+        highlightedHeaderArg: 'distance',
+      })
+    })
+
+    await test.step('Edit the distance argument and submit', async () => {
+      await expect(cmdBar.currentArgumentInput).toBeVisible()
+      await cmdBar.currentArgumentInput.locator('.cm-content').fill(newInput)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Plane: '1 plane',
+          // We show the calculated value in the argument summary
+          Distance: '15',
+        },
+        commandName: 'Offset plane',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectState({
+        highlightedCode: '',
+        diagnostics: [],
+        activeLines: [expectedCode],
+      })
+    })
+  })
 })

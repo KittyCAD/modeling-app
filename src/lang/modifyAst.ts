@@ -594,14 +594,17 @@ export function addOffsetPlane({
   defaultPlane,
   insertIndex,
   offset,
+  planeName,
 }: {
   node: Node<Program>
   defaultPlane: DefaultPlaneStr
   insertIndex?: number
   offset: Expr
+  planeName?: string
 }): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
-  const newPlaneName = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
+  const newPlaneName =
+    planeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.PLANE)
 
   const newPlane = createVariableDeclaration(
     newPlaneName,
