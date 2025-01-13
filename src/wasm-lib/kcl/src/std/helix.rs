@@ -26,8 +26,9 @@ pub struct HelixData {
     /// The default is `false`.
     #[serde(default)]
     pub ccw: bool,
-    /// Length of the helix.
-    pub length: f64,
+    /// Length of the helix. This is not necessary if the helix is created around an edge. If not
+    /// given the length of the edge is used.
+    pub length: Option<f64>,
     /// Radius of the helix.
     pub radius: f64,
     /// Axis to use as mirror.
@@ -64,7 +65,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// ```no_run
 /// // Create a helix around an edge.
-/// /*helper001 = startSketchOn('XZ')
+/// helper001 = startSketchOn('XZ')
 ///  |> startProfileAt([0, 0], %)
 ///  |> line([0, 10], %, $edge001)
 ///
@@ -80,7 +81,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
 ///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     |> sweep({ path = helixPath }, %)*/
+///     |> sweep({ path = helixPath }, %)
 /// ```
 #[stdlib {
     name = "helix",
@@ -105,12 +106,20 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
         Axis3dOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
 
+            // Make sure they gave us a length.
+            let Some(length) = data.length else {
+                return Err(KclError::Semantic(crate::errors::KclErrorDetails {
+                    message: "Length is required when creating a helix around an axis.".to_string(),
+                    source_ranges: vec![args.source_range],
+                }));
+            };
+
             args.batch_modeling_cmd(
                 exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
                     radius: data.radius,
                     is_clockwise: !data.ccw,
-                    length: LengthUnit(data.length),
+                    length: LengthUnit(length),
                     revolutions: data.revolutions,
                     start_angle: Angle::from_degrees(data.angle_start),
                     axis,
@@ -119,25 +128,21 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             )
             .await?;
         }
-        Axis3dOrEdgeReference::Edge(_edge) => {
-            /*let edge_id = edge.get_engine_id(exec_state, &args)?;
+        Axis3dOrEdgeReference::Edge(edge) => {
+            let edge_id = edge.get_engine_id(exec_state, &args)?;
 
             args.batch_modeling_cmd(
                 exec_state.next_uuid(),
                 ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
                     radius: data.radius,
                     is_clockwise: !data.ccw,
-                    length: LengthUnit(data.length),
+                    length: data.length.map(LengthUnit),
                     revolutions: data.revolutions,
                     start_angle: Angle::from_degrees(data.angle_start),
                     edge_id,
                 }),
             )
-            .await?;*/
-            return Err(KclError::Unimplemented(crate::errors::KclErrorDetails {
-                message: "Helix around edge is not yet implemented".to_string(),
-                source_ranges: vec![args.source_range],
-            }));
+            .await?;
         }
     };
 
