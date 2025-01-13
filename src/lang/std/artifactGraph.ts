@@ -98,6 +98,9 @@ interface WallArtifact extends BaseArtifact {
   edgeCutEdgeIds: Array<ArtifactId>
   sweepId: ArtifactId
   pathIds: Array<ArtifactId>
+  // codeRef is for the sketchOnFace plane, not for the wall itself
+  // traverse to the extrude and or segment to get the wall's codeRef
+  codeRef?: CodeRef
 }
 interface CapArtifact extends BaseArtifact {
   type: 'cap'
@@ -105,6 +108,9 @@ interface CapArtifact extends BaseArtifact {
   edgeCutEdgeIds: Array<ArtifactId>
   sweepId: ArtifactId
   pathIds: Array<ArtifactId>
+  // codeRef is for the sketchOnFace plane, not for the wall itself
+  // traverse to the extrude and or segment to get the wall's codeRef
+  codeRef?: CodeRef
 }
 
 interface SweepEdge extends BaseArtifact {
@@ -289,6 +295,22 @@ export function getArtifactsToUpdate({
             edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
             sweepId: existingPlane.sweepId,
             pathIds: existingPlane.pathIds,
+            codeRef: existingPlane.codeRef,
+          },
+        },
+      ]
+    } else if (existingPlane?.type === 'cap') {
+      return [
+        {
+          id: currentPlaneId,
+          artifact: {
+            type: 'cap',
+            subType: existingPlane.subType,
+            id: currentPlaneId,
+            edgeCutEdgeIds: existingPlane.edgeCutEdgeIds,
+            sweepId: existingPlane.sweepId,
+            pathIds: existingPlane.pathIds,
+            codeRef: existingPlane.codeRef,
           },
         },
       ]
@@ -443,16 +465,33 @@ export function getArtifactsToUpdate({
           const path = getArtifact(seg.pathId)
           if (path?.type === 'path' && seg?.type === 'segment') {
             lastPath = path
+            const extraArtifact = Object.values(execStateArtifacts).find(
+              (a) => a?.type === 'StartSketchOnFace' && a.faceId === face_id
+            )
+            const sketchOnFaceSourceRange = extraArtifact?.sourceRange
+            const wallArtifact: Artifact = {
+              type: 'wall',
+              id: face_id,
+              segId: curve_id,
+              edgeCutEdgeIds: [],
+              sweepId: path.sweepId,
+              pathIds: [],
+            }
+
+            if (sketchOnFaceSourceRange) {
+              const range: SourceRange = [
+                sketchOnFaceSourceRange[0],
+                sketchOnFaceSourceRange[1],
+                true,
+              ]
+              wallArtifact.codeRef = {
+                range,
+                pathToNode: getNodePathFromSourceRange(ast, range),
+              }
+            }
             returnArr.push({
               id: face_id,
-              artifact: {
-                type: 'wall',
-                id: face_id,
-                segId: curve_id,
-                edgeCutEdgeIds: [],
-                sweepId: path.sweepId,
-                pathIds: [],
-              },
+              artifact: wallArtifact,
             })
             returnArr.push({
               id: curve_id,
@@ -476,16 +515,33 @@ export function getArtifactsToUpdate({
       if ((cap === 'top' || cap === 'bottom') && face_id) {
         const path = lastPath
         if (path?.type === 'path') {
+          const extraArtifact = Object.values(execStateArtifacts).find(
+            (a) => a?.type === 'StartSketchOnFace' && a.faceId === face_id
+          )
+          const sketchOnFaceSourceRange = extraArtifact?.sourceRange
+          const capArtifact: Artifact = {
+            type: 'cap',
+            id: face_id,
+            subType: cap === 'bottom' ? 'start' : 'end',
+            edgeCutEdgeIds: [],
+            sweepId: path.sweepId,
+            pathIds: [],
+          }
+          if (sketchOnFaceSourceRange) {
+            const range: SourceRange = [
+              sketchOnFaceSourceRange[0],
+              sketchOnFaceSourceRange[1],
+              true,
+            ]
+
+            capArtifact.codeRef = {
+              range,
+              pathToNode: getNodePathFromSourceRange(ast, range),
+            }
+          }
           returnArr.push({
             id: face_id,
-            artifact: {
-              type: 'cap',
-              id: face_id,
-              subType: cap === 'bottom' ? 'start' : 'end',
-              edgeCutEdgeIds: [],
-              sweepId: path.sweepId,
-              pathIds: [],
-            },
+            artifact: capArtifact,
           })
           const sweep = getArtifact(path.sweepId)
           if (sweep?.type !== 'sweep') return

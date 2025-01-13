@@ -13,7 +13,12 @@ import {
   getOperationLabel,
   stdLibMap,
 } from 'lib/operations'
-import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+} from 'lib/singletons'
 import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { Actor, Prop } from 'xstate'
@@ -64,7 +69,27 @@ export const FeatureTreePane = () => {
               )
             : null
 
-          console.log('artifact', artifact, engineCommandManager.artifactGraph)
+          console.log(
+            'artifact',
+            context.targetSourceRange,
+            `target code: ${codeManager.code.slice(
+              context.targetSourceRange[0],
+              context.targetSourceRange[1]
+            )}`,
+            artifact,
+            Array.from(engineCommandManager.artifactGraph.values()).map(
+              (a) => ({
+                code:
+                  'codeRef' in a && a.codeRef
+                    ? codeManager.code.slice(
+                        a.codeRef.range[0],
+                        a.codeRef.range[1]
+                      )
+                    : undefined,
+                ...a,
+              })
+            )
+          )
           if (!artifact || !('codeRef' in artifact)) {
             modelingSend({
               type: 'Set selection',
