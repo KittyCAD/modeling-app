@@ -344,6 +344,8 @@ impl Path {
         let Artifact::Path(new) = new else {
             return Some(new);
         };
+        // We initialize this with a placeholder.
+        self.sweep_id = new.sweep_id;
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_ids(&mut self.solid2d_id, new.solid2d_id);
 
@@ -600,7 +602,7 @@ fn artifacts_to_update(
                 id,
                 plane_id: current_plane_id.into(),
                 seg_ids: Vec::new(),
-                sweep_id: ArtifactId::new(Uuid::new_v4()),
+                sweep_id: ArtifactId::fake_placeholder(),
                 solid2d_id: None,
                 code_ref: CodeRef { range },
             }));
