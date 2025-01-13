@@ -340,9 +340,9 @@ impl Path {
         let Artifact::Path(new) = new else {
             return Some(new);
         };
-        merge_opt_ids(&mut self.sweep_id, new.sweep_id);
+        merge_opt_id(&mut self.sweep_id, new.sweep_id);
         merge_ids(&mut self.seg_ids, new.seg_ids);
-        merge_opt_ids(&mut self.solid2d_id, new.solid2d_id);
+        merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
 
         None
     }
@@ -353,9 +353,9 @@ impl Segment {
         let Artifact::Segment(new) = new else {
             return Some(new);
         };
-        merge_opt_ids(&mut self.surface_id, new.surface_id);
+        merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
-        merge_opt_ids(&mut self.edge_cut_id, new.edge_cut_id);
+        merge_opt_id(&mut self.edge_cut_id, new.edge_cut_id);
 
         None
     }
@@ -402,7 +402,7 @@ impl EdgeCut {
         let Artifact::EdgeCut(new) = new else {
             return Some(new);
         };
-        merge_opt_ids(&mut self.surface_id, new.surface_id);
+        merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
 
         None
@@ -515,8 +515,10 @@ fn merge_ids(base: &mut Vec<ArtifactId>, new: Vec<ArtifactId>) {
     }
 }
 
-fn merge_opt_ids(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
-    *base = base.or(new);
+fn merge_opt_id(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
+    if let Some(new) = new {
+        *base = Some(new);
+    }
 }
 
 fn artifacts_to_update(
