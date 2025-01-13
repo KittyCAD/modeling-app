@@ -156,10 +156,8 @@ export const loftValidator = async ({
 
 export const shellValidator = async ({
   data,
-  context,
 }: {
   data: any
-  context: CommandBarContext
 }): Promise<boolean | string> => {
   if (!isSelections(data.selection)) {
     return 'Unable to shell, selections are missing'
@@ -177,7 +175,7 @@ export const shellValidator = async ({
 
   const sweep = engineCommandManager.artifactGraph.get(firstArtifact.sweepId)
   if (!sweep || sweep?.type !== 'sweep') {
-    return 'Unable to shell, couldnt find pathId'
+    return "Unable to shell, couldn't find sweep"
   }
 
   const faceId = firstArtifact.id
