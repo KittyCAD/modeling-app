@@ -1521,12 +1521,14 @@ function getTransformMapPathKw(
     return false
   }
 
+  const fnName = isAbsolute ? nameAbsolute : name
+
   // check if the function has no constraints
   if (isLiteralArrayOrStatic(argForEnd.val)) {
-    const info = transformMap?.[name]?.free?.[constraintType]
+    const info = transformMap?.[fnName]?.free?.[constraintType]
     if (info)
       return {
-        toolTip: name,
+        toolTip: fnName,
         lineInputType: 'free',
         constraintType,
       }
@@ -1535,7 +1537,6 @@ function getTransformMapPathKw(
 
   // check what constraints the function has
   const lineInputType = getConstraintType(argForEnd.val, name, isAbsolute)
-  const fnName = isAbsolute ? nameAbsolute : name
   if (lineInputType) {
     const info = transformMap?.[fnName]?.[lineInputType]?.[constraintType]
     if (info)
