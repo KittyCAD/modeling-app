@@ -65,7 +65,7 @@
     "vscode-languageserver-protocol": "^3.17.5",
     "vscode-uri": "^3.0.8",
     "web-vitals": "^3.5.2",
-    "xstate": "^5.17.4",
+    "xstate": "^5.19.2",
     "yargs": "^17.7.2"
   },
   "scripts": {
@@ -149,7 +149,7 @@
     "@electron-forge/plugin-vite": "7.4.0",
     "@electron/fuses": "1.8.0",
     "@iarna/toml": "^2.2.5",
-    "@lezer/generator": "^1.7.1",
+    "@lezer/generator": "^1.7.2",
     "@nabla/vite-plugin-eslint": "^2.0.5",
     "@playwright/test": "^1.49.0",
     "@testing-library/jest-dom": "^5.14.1",

@@ -1867,10 +1867,10 @@
   resolved "https://registry.yarnpkg.com/@lezer/common/-/common-1.2.1.tgz#198b278b7869668e1bebbe687586e12a42731049"
   integrity sha512-yemX0ZD2xS/73llMZIK6KplkjIjf2EvAHcinDi/TfJ9hS25G0388+ClHt6/3but0oOxinTcQHJLDXh6w1crzFQ==
 
-"@lezer/generator@^1.7.1":
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/@lezer/generator/-/generator-1.7.1.tgz#90c1a9de2fb4d5a714216fa659058c7859accaab"
-  integrity sha512-MgPJN9Si+ccxzXl3OAmCeZuUKw4XiPl4y664FX/hnnyG9CTqUPq65N3/VGPA2jD23D7QgMTtNqflta+cPN+5mQ==
+"@lezer/generator@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@lezer/generator/-/generator-1.7.2.tgz#a491c91eb9f117ea803e748fa97574514156a2a3"
+  integrity sha512-CwgULPOPPmH54tv4gki18bElLCdJ1+FBC+nGVSVD08vFWDsMjS7KEjNTph9JOypDnet90ujN3LzQiW3CyVODNQ==
   dependencies:
     "@lezer/common" "^1.1.0"
     "@lezer/lr" "^1.3.0"
@@ -9804,10 +9804,10 @@ xstate@^4.33.4:
   resolved "https://registry.yarnpkg.com/xstate/-/xstate-4.38.3.tgz#4e15e7ad3aa0ca1eea2010548a5379966d8f1075"
   integrity sha512-SH7nAaaPQx57dx6qvfcIgqKRXIh4L0A1iYEqim4s1u7c9VoCgzZc+63FY90AKU4ZzOC2cfJzTnpO4zK7fCUzzw==
 
-xstate@^5.17.4:
-  version "5.17.4"
-  resolved "https://registry.yarnpkg.com/xstate/-/xstate-5.17.4.tgz#334ab2da123973634097f7ca48387ae1589c774e"
-  integrity sha512-KM2FYVOUJ04HlOO4TY3wEXqoYPR/XsDu+ewm+IWw0vilXqND0jVfvv04tEFwp8Mkk7I/oHXM8t1Ex9xJyUS4ZA==
+xstate@^5.19.2:
+  version "5.19.2"
+  resolved "https://registry.yarnpkg.com/xstate/-/xstate-5.19.2.tgz#db3f1ee614bbb6a49ad3f0c96ddbf98562d456ba"
+  integrity sha512-B8fL2aP0ogn5aviAXFzI5oZseAMqN00fg/TeDa3ZtatyDcViYLIfuQl4y8qmHCiKZgGEzmnTyNtNQL9oeJE2gw==
 
 xterm-addon-fit@^0.5.0:
   version "0.5.0"
