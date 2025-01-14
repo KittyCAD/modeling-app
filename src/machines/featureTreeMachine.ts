@@ -4,6 +4,7 @@ import { SourceRange, sourceRangeFromRust } from 'lang/wasm'
 import { enterEditFlow, EnterEditFlowProps } from 'lib/operations'
 import { engineCommandManager } from 'lib/singletons'
 import { err } from 'lib/trap'
+import toast from 'react-hot-toast'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { assign, fromPromise, setup } from 'xstate'
 
@@ -25,6 +26,7 @@ type FeatureTreeEvent =
   | { type: 'codePaneOpened' }
   | { type: 'selected' }
   | { type: 'done' }
+  | { type: 'xstate.error.actor.prepareEditCommand'; error: Error }
 
 type FeatureTreeContext = {
   targetSourceRange?: SourceRange
@@ -42,22 +44,34 @@ export const featureTreeMachine = setup({
     codePaneIsOpen: () => false,
   },
   actors: {
-    prepareEditCommand: fromPromise<
-      unknown,
-      EnterEditFlowProps & { commandBarSend: CommandBarSend }
-    >(async ({ input }) => {
-      const { commandBarSend, ...editFlowProps } = input
-      const editFlowResult = await enterEditFlow(editFlowProps)
-      if (err(editFlowResult)) return editFlowResult
-      console.log('edit flow input', input)
-      input.commandBarSend(editFlowResult)
-      console.log('Edit flow result', editFlowResult)
-    }),
+    prepareEditCommand: fromPromise(
+      ({
+        input,
+      }: {
+        input: EnterEditFlowProps & { commandBarSend: CommandBarSend }
+      }) => {
+        return new Promise((resolve, reject) => {
+          const { commandBarSend, ...editFlowProps } = input
+          enterEditFlow(editFlowProps)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              input.commandBarSend(result)
+              resolve(result)
+            })
+            .catch(reject)
+        })
+      }
+    ),
   },
   actions: {
     saveTargetSourceRange: assign({
       targetSourceRange: ({ event }) =>
-        'data' in event ? event.data.targetSourceRange : undefined,
+        'data' in event && !err(event.data)
+          ? event.data.targetSourceRange
+          : undefined,
     }),
     saveCurrentOperation: assign({
       currentOperation: ({ event }) =>
@@ -184,7 +198,15 @@ export const featureTreeMachine = setup({
               target: 'done',
               reenter: true,
             },
-            onError: 'done',
+            onError: {
+              target: 'done',
+              reenter: true,
+              actions: ({ event }) => {
+                if ('error' in event && err(event.error)) {
+                  toast.error(event.error.message)
+                }
+              },
+            },
           },
         },
       },

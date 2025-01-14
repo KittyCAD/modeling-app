@@ -262,7 +262,19 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'sketch',
     // TODO: fix matching sketches-on-faces and offset planes back to their
     // original plane artifacts in order to edit them.
-    prepareToEdit: { name: 'Enter sketch', groupId: 'modeling' },
+    async prepareToEdit({ artifact }) {
+      if (artifact) {
+        return {
+          name: 'Enter sketch',
+          groupId: 'modeling',
+        }
+      } else {
+        return {
+          reason:
+            'Editing sketches on offset planes through the feature tree is not yet supported. Please double-click the path in the scene for now.',
+        }
+      }
+    },
   },
   sweep: {
     label: 'Sweep',
@@ -393,19 +405,24 @@ export async function enterEditFlow({
   if (stdLibInfo && stdLibInfo.prepareToEdit) {
     if (typeof stdLibInfo.prepareToEdit === 'function') {
       const eventPayload = await stdLibInfo.prepareToEdit({
-        operation: operation,
+        operation,
         artifact,
       })
       console.log('eventPayload', eventPayload)
+      if ('reason' in eventPayload) {
+        return new Error(eventPayload.reason)
+      }
       return {
         type: 'Find and select command',
         data: eventPayload,
       }
     } else {
-      return {
-        type: 'Find and select command',
-        data: stdLibInfo.prepareToEdit,
-      }
+      return 'reason' in stdLibInfo.prepareToEdit
+        ? new Error(stdLibInfo.prepareToEdit.reason)
+        : {
+            type: 'Find and select command',
+            data: stdLibInfo.prepareToEdit,
+          }
     }
   }
 
