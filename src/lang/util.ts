@@ -11,8 +11,6 @@ import {
 } from './wasm'
 import { filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
-import { ToolTip, ToolTipKw } from './langHelpers'
-import { ARG_END_ABSOLUTE } from './std/sketch'
 
 export function updatePathToNodeFromMap(
   oldPath: PathToNode,

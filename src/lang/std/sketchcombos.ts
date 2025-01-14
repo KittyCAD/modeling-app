@@ -60,7 +60,7 @@ import {
 } from './sketchConstraints'
 import { getAngle, roundOff, normaliseAngle } from '../../lib/utils'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { findKwArg, findKwArgAny, handleAbsolute } from 'lang/util'
+import { findKwArg, findKwArgAny } from 'lang/util'
 
 export type LineInputsType =
   | 'xAbsolute'

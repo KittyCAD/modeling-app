@@ -780,9 +780,11 @@ export function isLinesParallelAndConstrained(
     const secondaryFirstArg = getFirstArg(secondaryNode)
     if (err(secondaryFirstArg)) return secondaryFirstArg
 
+    const isAbsolute = false // ADAM: TODO
     const constraintType = getConstraintType(
       secondaryFirstArg.val,
-      secondaryNode.callee.name as ToolTip
+      secondaryNode.callee.name as ToolTip,
+      isAbsolute
     )
 
     const constraintLevelMeta = getConstraintLevelFromSourceRange(

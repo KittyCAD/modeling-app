@@ -80,7 +80,7 @@ function getConstraintTypeFromSourceHelper(
     Expr
   ]
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
-  return getConstraintType(args, fnName)
+  return getConstraintType(args, fnName, false)
 }
 function getConstraintTypeFromSourceHelper2(
   code: string
@@ -89,7 +89,7 @@ function getConstraintTypeFromSourceHelper2(
 
   const arg = (ast.body[0] as any).expression.arguments[0] as Expr
   const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
-  return getConstraintType(arg, fnName)
+  return getConstraintType(arg, fnName, false)
 }
 
 function makeSelections(
