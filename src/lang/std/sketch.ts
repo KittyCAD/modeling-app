@@ -2388,7 +2388,7 @@ export function addTagForSketchOnFace(
     }
   | Error {
   if (expressionName === 'close') {
-    return addTag(1)(tagInfo)
+    return addTagKw()(tagInfo)
   }
   if (expressionName === 'chamfer') {
     return addTagToChamfer(tagInfo, edgeCutMeta)
