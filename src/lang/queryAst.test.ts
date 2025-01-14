@@ -281,7 +281,7 @@ describe('testing getNodePathFromSourceRange', () => {
       ast,
       topLevelRange(startSourceIndex, startSourceIndex)
     )
-    expect(startResult).toEqual([...expected, ['callee', 'CallExpression']])
+    expect(startResult).toEqual([...expected, ['callee', 'CallExpressionKw']])
     // expect similar result when whole line is selected
     const selectWholeThing = getNodePathFromSourceRange(
       ast,
