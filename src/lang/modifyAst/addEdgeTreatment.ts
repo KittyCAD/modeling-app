@@ -291,11 +291,11 @@ async function updateAstAndFocus(
   modifiedAst: Node<Program>,
   pathToEdgeTreatmentNode: Array<PathToNode>
 ): Promise<void> {
+  await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
+
   const updatedAst = await kclManager.updateAst(modifiedAst, true, {
     focusPath: pathToEdgeTreatmentNode,
   })
-
-  await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
 
   if (updatedAst?.selections) {
     editorManager.selectRange(updatedAst?.selections)
