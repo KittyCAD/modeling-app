@@ -55,6 +55,10 @@ impl KwArgs {
     pub fn len(&self) -> usize {
         self.labeled.len() + if self.unlabeled.is_some() { 1 } else { 0 }
     }
+    /// Are there no arguments?
+    pub fn is_empty(&self) -> bool {
+        self.labeled.len() == 0 && self.unlabeled.is_none()
+    }
 }
 
 #[derive(Debug, Clone)]
