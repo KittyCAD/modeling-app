@@ -1112,6 +1112,7 @@ extrude001 = extrude(-12, sketch001)
   })
 
   await test.step(`Apply fillet to the preselected edge`, async () => {
+    await page.waitForTimeout(100)
     await toolbar.filletButton.click()
     await cmdBar.expectState({
       commandName: 'Fillet',
@@ -1163,6 +1164,7 @@ extrude001 = extrude(-12, sketch001)
 
   // Test 2: Command bar flow without preselected edges
   await test.step(`Open fillet UI without selecting edges`, async () => {
+    await page.waitForTimeout(100)
     await toolbar.filletButton.click()
     await cmdBar.expectState({
       stage: 'arguments',
@@ -1325,6 +1327,7 @@ extrude001 = extrude(-12, sketch001)
   })
 
   await test.step(`Apply chamfer to the preselected edge`, async () => {
+    await page.waitForTimeout(100)
     await toolbar.chamferButton.click()
     await cmdBar.expectState({
       commandName: 'Chamfer',
@@ -1376,6 +1379,7 @@ extrude001 = extrude(-12, sketch001)
 
   // Test 2: Command bar flow without preselected edges
   await test.step(`Open chamfer UI without selecting edges`, async () => {
+    await page.waitForTimeout(100)
     await toolbar.chamferButton.click()
     await cmdBar.expectState({
       stage: 'arguments',
