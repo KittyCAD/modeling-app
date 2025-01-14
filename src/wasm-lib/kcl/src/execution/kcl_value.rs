@@ -288,7 +288,7 @@ impl KclValue {
 
     pub(crate) fn from_literal(literal: LiteralValue, meta: Vec<Metadata>) -> Self {
         match literal {
-            LiteralValue::Number(value) => KclValue::Number { value, meta },
+            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }
