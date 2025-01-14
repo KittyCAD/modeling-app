@@ -111,6 +111,9 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { LabeledArg } from 'wasm-lib/kcl/bindings/LabeledArg'
+import { Literal } from 'wasm-lib/kcl/bindings/Literal'
+import { ArrayExpression } from 'wasm-lib/kcl/bindings/ArrayExpression'
 import { radToDeg } from 'three/src/math/MathUtils'
 import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
 
@@ -1317,7 +1320,12 @@ export class SceneEntities {
       center: Vector2,
       radius: number
     ) => {
-      if (isNaN(radius) || isNaN(center.x) || isNaN(center.y)) return
+      if (
+        Number.isNaN(radius) ||
+        Number.isNaN(center.x) ||
+        Number.isNaN(center.y)
+      )
+        return
 
       const color = getThemeColorForThreeJs(sceneInfra._theme)
       const lineCircle = createCircleGeometry({
@@ -1372,32 +1380,35 @@ export class SceneEntities {
       )
         return kclManager.ast
 
-      // The typechecking really made this ultra unergonomic. I wrote these to
-      // help out.
-      // x should be a LabeledArg but we've got none in wasm/lang?
-      const arg = (x: any) => {
-        return (
-          (x.type === 'LabeledArg' && x.arg).type === 'ArrayExpression' &&
-          x.arg.elements
-        )
+
+      const arg = (x: LabeledArg): Literal[] | undefined => {
+          if ("arg" in x && "elements" in x.arg && x.arg.type === "ArrayExpression") {
+            if (x.arg.elements.every(x => x.type === "Literal")) {
+              return x.arg.elements
+            }
+          }
+          return undefined
       }
 
       const kclCircle3PointArgs =
         kclCircle3Point.program.body[0].expression.arguments
 
       const arg0 = arg(kclCircle3PointArgs[0])
+      if (!arg0) return kclManager.ast
       arg0[0].value = points[0].x
       arg0[0].raw = points[0].x.toString()
       arg0[1].value = points[0].y
       arg0[1].raw = points[0].y.toString()
 
       const arg1 = arg(kclCircle3PointArgs[1])
+      if (!arg1) return kclManager.ast
       arg1[0].value = points[1].x
       arg1[0].raw = points[1].x.toString()
       arg1[1].value = points[1].y
       arg1[1].raw = points[1].y.toString()
 
       const arg2 = arg(kclCircle3PointArgs[2])
+      if (!arg2) return kclManager.ast
       arg2[0].value = points[2].x
       arg2[0].raw = points[2].x.toString()
       arg2[1].value = points[2].y
