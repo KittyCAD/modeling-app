@@ -141,14 +141,14 @@ yo2 = hmm([identifierGuy + 5])`
   })
   it('find an UNsafe Identifier, as it is a callee', () => {
     const ast = assertParse(code)
-    const rangeStart = code.indexOf('ine([2.8,')
+    const rangeStart = code.indexOf('ine(end = [2.8,')
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(false)
-    expect(result.value?.type).toBe('CallExpression')
+    expect(result.value?.type).toBe('CallExpressionKw')
     expect(code.slice(result.value.start, result.value.end)).toBe(
       'line(end = [2.8, 0])'
     )

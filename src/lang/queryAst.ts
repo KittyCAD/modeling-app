@@ -478,6 +478,22 @@ export function traverse(
         [index, 'index'],
       ])
     )
+  } else if (_node.type === 'CallExpressionKw') {
+    _traverse(_node.callee, [...pathToNode, ['callee', 'CallExpressionKw']])
+    if (_node.unlabeled !== null) {
+      _traverse(_node.unlabeled, [
+        ...pathToNode,
+        ['unlabeled', 'Unlabeled arg'],
+      ])
+    }
+    _node.arguments.forEach((arg, index) =>
+      _traverse(arg.arg, [
+        ...pathToNode,
+        ['arguments', 'CallExpressionKw'],
+        [index, 'arg index'],
+        ['arg', 'LabeledArg -> Arg'],
+      ])
+    )
   } else if (_node.type === 'BinaryExpression') {
     _traverse(_node.left, [...pathToNode, ['left', 'BinaryExpression']])
     _traverse(_node.right, [...pathToNode, ['right', 'BinaryExpression']])
