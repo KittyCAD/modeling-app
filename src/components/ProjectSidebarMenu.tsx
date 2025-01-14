@@ -197,16 +197,8 @@ function ProjectMenuPopover({
              * This override allows us to shim in an environment variable
              * for the prod token.
              */
-            const token = DEV ? VITE_KC_PROD_TOKEN : auth.context.token
-            if (DEV && !VITE_KC_PROD_TOKEN) {
-              toast.error(
-                'You need to set a prod token in your environment to share a file in development.',
-                {
-                  duration: 5000,
-                }
-              )
-              return
-            } else if (!token) {
+            const token = auth.context.token
+            if (!token) {
               toast.error('You need to be signed in to share a file.', {
                 duration: 5000,
               })

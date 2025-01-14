@@ -2,10 +2,9 @@ import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
-  PROD_APP_URL,
 } from './constants'
 import { stringToBase64 } from './base64'
-import { DEV } from 'env'
+import { DEV, VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from 'env'
 export interface FileLinkParams {
   code: string
   name: string
@@ -21,7 +20,7 @@ export interface FileLinkParams {
  */
 export function createCreateFileUrl({ code, name, units }: FileLinkParams) {
   // Use the dev server if we are in development mode
-  let origin = DEV ? 'http://localhost:3000' : PROD_APP_URL
+  let origin = DEV ? 'http://localhost:3000' : VITE_KC_SITE_BASE_URL
   const searchParams = new URLSearchParams({
     [CREATE_FILE_URL_PARAM]: String(true),
     name,
@@ -48,7 +47,7 @@ export async function createShortlink(
    * We don't use our `withBaseURL` function here because
    * there is no URL shortener service in the dev API.
    */
-  const response = await fetch('https://api.zoo.dev/user/shortlinks', {
+  const response = await fetch(`${VITE_KC_API_BASE_URL}/user/shortlinks`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json',
