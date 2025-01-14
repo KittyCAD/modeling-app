@@ -1,4 +1,4 @@
-import { assertParse, recast, initPromise, Identifier } from './wasm'
+import { assertParse, recast, initPromise, VariableDeclaration } from './wasm'
 import {
   createLiteral,
   createIdentifier,
@@ -16,6 +16,7 @@ import {
   deleteSegmentFromPipeExpression,
   removeSingleConstraintInfo,
   deleteFromSelection,
+  createCallExpressionStdLib,
 } from './modifyAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
@@ -100,22 +101,35 @@ describe('Testing createPipeExpression', () => {
 
 describe('Testing findUniqueName', () => {
   it('should find a unique name', () => {
-    const result = findUniqueName(
-      JSON.stringify([
-        { type: 'Identifier', name: 'yo01', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo02', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo03', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo04', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo05', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo06', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo07', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo08', start: 0, end: 0, moduleId: 0 },
-        { type: 'Identifier', name: 'yo09', start: 0, end: 0, moduleId: 0 },
-      ] satisfies Node<Identifier>[]),
-      'yo',
-      2
-    )
+    const sampleCode = `yo01 = 5
+    yo02 = 5
+    yo03 = 5
+    yo04 = 5
+    yo05 = 5
+    yo06 = startSketchOn('XY')
+      |> startProfileAt([0, 0], %)
+      |> line([0, 1], %, $yo07)
+    yo08 = 5
+    yo09 = 5
+    `
+    const ast = assertParse(sampleCode)
+    const result = findUniqueName(ast, 'yo', 2)
     expect(result).toBe('yo10')
+  })
+
+  it(`should find a unique unique name even with user-defined functions`, () => {
+    const sampleCode = `fn yo01 = (x) => {
+      yo03 = 6
+      return x + yo03
+    }
+    yo02 = 5
+    sketch001 = startSketchOn('XY')
+      |> startProfileAt([0, 0], %)
+      |> line([0, yo01(4)], %, $yo04)
+    `
+    const ast = assertParse(sampleCode)
+    const result = findUniqueName(ast, 'yo', 2)
+    expect(result).toBe('yo05')
   })
 })
 describe('Testing addSketchTo', () => {

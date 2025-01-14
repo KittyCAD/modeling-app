@@ -163,39 +163,51 @@ export function addSketchTo(
   }
 }
 
+/**
+ * Given a target name and an AST,
+ * return a unique name that is not already used as
+ * a constant or tag.
+ */
 export function findUniqueName(
-  ast: Program | string,
+  ast: Program,
   name: string,
   pad = 3,
   index = 1
 ): string {
-  let searchStr: string = typeof ast === 'string' ? ast : JSON.stringify(ast)
+  // Searches for partial TagDeclarator or VariableDeclarator strings
+  const searchStrings = (n: string) => [
+    `{"type":"TagDeclarator","value":"${n}"`,
+    `{"type":"VariableDeclarator","id":{"type":"Identifier","name":"${n}"`,
+  ]
+  const nameIsInAstIdentifier = (target: string) =>
+    searchStrings(target).reduce(
+      (prev, curr) => prev || JSON.stringify(ast).includes(curr),
+      false
+    )
   const indexStr = String(index).padStart(pad, '0')
 
   const endingDigitsMatcher = /\d+$/
   const nameEndsInDigits = name.match(endingDigitsMatcher)
-  let nameIsInString = searchStr.includes(`:"${name}"`)
 
   if (nameEndsInDigits !== null) {
     // base case: name is unique and ends in digits
-    if (!nameIsInString) return name
+    if (!nameIsInAstIdentifier(name)) return name
 
     // recursive case: name is not unique and ends in digits
     const newPad = nameEndsInDigits[1].length
     const newIndex = parseInt(nameEndsInDigits[1]) + 1
     const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
 
-    return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)
+    return findUniqueName(ast, nameWithoutDigits, newPad, newIndex)
   }
 
   const newName = `${name}${indexStr}`
-  nameIsInString = searchStr.includes(`:"${newName}"`)
 
-  // base case: name is unique and does not end in digits
-  if (!nameIsInString) return newName
-
-  // recursive case: name is not unique and does not end in digits
-  return findUniqueName(searchStr, name, pad, index + 1)
+  return !nameIsInAstIdentifier(newName)
+    ? // base case: name is unique and does not end in digits
+      newName
+    : // recursive case: name is not unique and does not end in digits
+      findUniqueName(ast, name, pad, index + 1)
 }
 
 export function mutateArrExp(node: Expr, updateWith: ArrayExpression): boolean {
