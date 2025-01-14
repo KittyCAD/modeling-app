@@ -37,7 +37,7 @@ export interface PathArtifact extends BaseArtifact {
   type: 'path'
   planeId: ArtifactId
   segIds: Array<ArtifactId>
-  sweepId: ArtifactId
+  sweepId?: ArtifactId
   solid2dId?: ArtifactId
   codeRef: CodeRef
 }
@@ -60,7 +60,7 @@ export interface PathArtifactRich extends BaseArtifact {
 export interface SegmentArtifact extends BaseArtifact {
   type: 'segment'
   pathId: ArtifactId
-  surfaceId: ArtifactId
+  surfaceId?: ArtifactId
   edgeIds: Array<ArtifactId>
   edgeCutId?: ArtifactId
   codeRef: CodeRef
@@ -68,7 +68,7 @@ export interface SegmentArtifact extends BaseArtifact {
 interface SegmentArtifactRich extends BaseArtifact {
   type: 'segment'
   path: PathArtifact
-  surf: WallArtifact
+  surf?: WallArtifact
   edges: Array<SweepEdge>
   edgeCut?: EdgeCut
   codeRef: CodeRef
@@ -126,7 +126,7 @@ interface EdgeCut extends BaseArtifact {
   subType: 'fillet' | 'chamfer'
   consumedEdgeId: ArtifactId
   edgeIds: Array<ArtifactId>
-  surfaceId: ArtifactId
+  surfaceId?: ArtifactId
   codeRef: CodeRef
 }
 
@@ -330,7 +330,7 @@ export function getArtifactsToUpdate({
         id,
         segIds: [],
         planeId: currentPlaneId,
-        sweepId: '',
+        sweepId: undefined,
         codeRef: { range, pathToNode },
       },
     })
@@ -365,7 +365,7 @@ export function getArtifactsToUpdate({
         type: 'segment',
         id,
         pathId,
-        surfaceId: '',
+        surfaceId: undefined,
         edgeIds: [],
         codeRef: { range, pathToNode },
       },
@@ -463,7 +463,7 @@ export function getArtifactsToUpdate({
           const seg = getArtifact(curve_id)
           if (seg?.type !== 'segment') return
           const path = getArtifact(seg.pathId)
-          if (path?.type === 'path' && seg?.type === 'segment') {
+          if (path?.type === 'path' && seg?.type === 'segment' && path.sweepId) {
             lastPath = path
             const extraArtifact = Object.values(execStateArtifacts).find(
               (a) => a?.type === 'StartSketchOnFace' && a.faceId === face_id
@@ -497,15 +497,17 @@ export function getArtifactsToUpdate({
               id: curve_id,
               artifact: { ...seg, surfaceId: face_id },
             })
-            const sweep = getArtifact(path.sweepId)
-            if (sweep?.type === 'sweep') {
-              returnArr.push({
-                id: path.sweepId,
-                artifact: {
-                  ...sweep,
-                  surfaceIds: [face_id],
-                },
-              })
+            if (path.sweepId) {
+              const sweep = getArtifact(path.sweepId)
+              if (sweep?.type === 'sweep') {
+                returnArr.push({
+                  id: path.sweepId,
+                  artifact: {
+                    ...sweep,
+                    surfaceIds: [face_id],
+                  },
+                })
+              }
             }
           }
         }
@@ -514,7 +516,7 @@ export function getArtifactsToUpdate({
     response.data.modeling_response.data.faces.forEach(({ cap, face_id }) => {
       if ((cap === 'top' || cap === 'bottom') && face_id) {
         const path = lastPath
-        if (path?.type === 'path') {
+        if (path?.type === 'path' && path.sweepId) {
           const extraArtifact = Object.values(execStateArtifacts).find(
             (a) => a?.type === 'StartSketchOnFace' && a.faceId === face_id
           )
@@ -543,15 +545,17 @@ export function getArtifactsToUpdate({
             id: face_id,
             artifact: capArtifact,
           })
-          const sweep = getArtifact(path.sweepId)
-          if (sweep?.type !== 'sweep') return
-          returnArr.push({
-            id: path.sweepId,
-            artifact: {
-              ...sweep,
-              surfaceIds: [face_id],
-            },
-          })
+          if (path.sweepId) {
+            const sweep = getArtifact(path.sweepId)
+            if (sweep?.type !== 'sweep') return
+            returnArr.push({
+              id: path.sweepId,
+              artifact: {
+                ...sweep,
+                surfaceIds: [face_id],
+              },
+            })
+          }
         }
       }
     })
@@ -589,7 +593,8 @@ export function getArtifactsToUpdate({
               ? 'adjacent'
               : 'opposite',
           segId: cmd.edge_id,
-          sweepId: path.sweepId,
+          // TODO: Add explicit check for sweepId.  Should never use ''
+          sweepId: path.sweepId ?? '',
         },
       },
       {
@@ -600,7 +605,7 @@ export function getArtifactsToUpdate({
         },
       },
       {
-        id: path.sweepId,
+        id: sweep.id,
         artifact: {
           ...sweep,
           edgeIds: [response.data.modeling_response.data.edge],
@@ -616,7 +621,7 @@ export function getArtifactsToUpdate({
         subType: cmd.cut_type,
         consumedEdgeId: cmd.edge_id,
         edgeIds: [],
-        surfaceId: '',
+        surfaceId: undefined,
         codeRef: { range, pathToNode },
       },
     })
@@ -778,10 +783,12 @@ export function expandSegment(
     { key: segment.pathId, types: ['path'] },
     artifactGraph
   )
-  const surf = getArtifactOfTypes(
-    { key: segment.surfaceId, types: ['wall'] },
-    artifactGraph
-  )
+  const surf = segment.surfaceId
+    ? getArtifactOfTypes(
+        { key: segment.surfaceId, types: ['wall'] },
+        artifactGraph
+      )
+    : undefined
   const edges = getArtifactsOfTypes(
     { keys: segment.edgeIds, types: ['sweepEdge'] },
     artifactGraph
@@ -898,6 +905,7 @@ export function getSweepFromSuspectedSweepSurface(
       artifactGraph
     )
     if (err(path)) return path
+    if (!path.sweepId) return new Error('Path does not have a sweepId')
     return getArtifactOfTypes(
       { key: path.sweepId, types: ['sweep'] },
       artifactGraph
@@ -915,6 +923,7 @@ export function getSweepFromSuspectedPath(
 ): SweepArtifact | Error {
   const path = getArtifactOfTypes({ key: id, types: ['path'] }, artifactGraph)
   if (err(path)) return path
+  if (!path.sweepId) return new Error('Path does not have a sweepId')
   return getArtifactOfTypes(
     { key: path.sweepId, types: ['sweep'] },
     artifactGraph

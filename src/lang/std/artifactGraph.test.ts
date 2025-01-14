@@ -705,7 +705,7 @@ describe('testing getArtifactsToUpdate', () => {
         segIds: [],
         id: expect.any(String),
         planeId: 'UUID-1',
-        sweepId: '',
+        sweepId: undefined,
         codeRef: {
           pathToNode: [['body', '']],
           range: [37, 64, true],
@@ -743,7 +743,7 @@ describe('testing getArtifactsToUpdate', () => {
         type: 'segment',
         id: expect.any(String),
         pathId: expect.any(String),
-        surfaceId: '',
+        surfaceId: undefined,
         edgeIds: [],
         codeRef: {
           range: [70, 86, true],
@@ -770,7 +770,7 @@ describe('testing getArtifactsToUpdate', () => {
         id: expect.any(String),
         consumedEdgeId: expect.any(String),
         edgeIds: [],
-        surfaceId: '',
+        surfaceId: undefined,
         codeRef: {
           range: [260, 299, true],
           pathToNode: [['body', '']],

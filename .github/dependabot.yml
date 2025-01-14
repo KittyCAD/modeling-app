@@ -6,7 +6,10 @@
 version: 2
 updates:
   - package-ecosystem: 'npm' # See documentation for possible values
-    directory: '/' # Location of package manifests
+    directories:
+      - '/'
+      - '/packages/codemirror-lang-kcl/'
+      - '/packages/codemirror-lsp-client/'
     schedule:
       interval: weekly
       day: monday
@@ -33,3 +36,6 @@ updates:
       serde-dependencies:
         patterns:
           - "serde*"
+      wasm-bindgen-deps:
+        patterns:
+          - "wasm-bindgen*"
