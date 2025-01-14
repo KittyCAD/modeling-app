@@ -5,6 +5,7 @@ import {
   ArtifactGraph,
   BinaryExpression,
   CallExpression,
+  CallExpressionKw,
   Expr,
   ExpressionStatement,
   ObjectExpression,
@@ -25,7 +26,7 @@ import {
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
 import { getAngle } from '../lib/utils'
-import { getFirstArg } from './std/sketch'
+import { ARG_TAG, getFirstArg } from './std/sketch'
 import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
@@ -33,7 +34,8 @@ import {
 import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { codeRefFromRange } from './std/artifactGraph'
+import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
+import { findKwArg } from './util'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -885,27 +887,27 @@ export function findUsesOfTagInPipe(
     'segEndY',
     'segLen',
   ]
-  const nodeMeta = getNodeFromPath<CallExpression>(
+  const nodeMeta = getNodeFromPath<CallExpression | CallExpressionKw>(
     ast,
     pathToNode,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
   if (err(nodeMeta)) {
     console.error(nodeMeta)
     return []
   }
   const node = nodeMeta.node
-  if (node.type !== 'CallExpression') return []
+  if (node.type !== 'CallExpressionKw' && node.type !== 'CallExpression')
+    return []
   const tagIndex = node.callee.name === 'close' ? 1 : 2
-  const thirdParam = node.arguments[tagIndex]
-  if (
-    !(thirdParam?.type === 'TagDeclarator' || thirdParam?.type === 'Identifier')
-  )
+  const tagParam =
+    node.type === 'CallExpression'
+      ? node.arguments[tagIndex]
+      : findKwArg(ARG_TAG, node)
+  if (!(tagParam?.type === 'TagDeclarator' || tagParam?.type === 'Identifier'))
     return []
   const tag =
-    thirdParam?.type === 'TagDeclarator'
-      ? String(thirdParam.value)
-      : thirdParam.name
+    tagParam?.type === 'TagDeclarator' ? String(tagParam.value) : tagParam.name
 
   const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     ast,

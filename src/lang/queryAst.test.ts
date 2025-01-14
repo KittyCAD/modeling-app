@@ -443,7 +443,7 @@ describe('Testing findUsesOfTagInPipe', () => {
   it('finds the current segment', async () => {
     const ast = assertParse(exampleCode)
 
-    const lineOfInterest = `198.85], %, $seg01`
+    const lineOfInterest = `198.85], tag = $seg01`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const pathToNode = getNodePathFromSourceRange(
