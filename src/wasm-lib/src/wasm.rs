@@ -80,7 +80,7 @@ pub async fn execute(
         kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?
     };
 
-    let mut exec_state = ExecState::default();
+    let mut exec_state = ExecState::new(&ctx.settings);
     let mut old_ast_memory = None;
 
     // Populate from the old exec state if it exists.

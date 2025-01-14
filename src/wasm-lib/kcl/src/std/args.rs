@@ -92,25 +92,6 @@ impl Args {
         }
     }
 
-    #[cfg(test)]
-    pub(crate) async fn new_test_args() -> Result<Self> {
-        use std::sync::Arc;
-
-        Ok(Self {
-            args: Vec::new(),
-            kw_args: Default::default(),
-            source_range: SourceRange::default(),
-            ctx: ExecutorContext {
-                engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
-                fs: Arc::new(crate::fs::FileManager::new()),
-                stdlib: Arc::new(crate::std::StdLib::new()),
-                settings: Default::default(),
-                context_type: crate::execution::ContextType::Mock,
-            },
-            pipe_value: None,
-        })
-    }
-
     /// Get a keyword argument. If not set, returns None.
     pub(crate) fn get_kw_arg_opt<'a, T>(&'a self, label: &str) -> Option<T>
     where

@@ -21,7 +21,7 @@ type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use function_param::FunctionParam;
-pub use kcl_value::{KclObjectFields, KclValue};
+pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use uuid::Uuid;
 
 mod annotations;
@@ -197,6 +197,14 @@ impl ExecState {
         }
 
         Ok(id)
+    }
+
+    pub fn length_unit(&self) -> UnitLen {
+        self.mod_local.settings.default_length_units
+    }
+
+    pub fn angle_unit(&self) -> UnitAngle {
+        self.mod_local.settings.default_angle_units
     }
 }
 
@@ -3302,6 +3310,25 @@ let shape = layer() |> patternTransform(10, transform, %)
         let ast = r#"let thing = .4 + 7"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(7.4, mem_get_json(exec_state.memory(), "thing").as_f64().unwrap());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_default() {
+        let ast = r#"const inMm = 25.4 * mm()
+const inInches = 1.0 * inch()"#;
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(25.4, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap());
+        assert_eq!(25.4, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_overriden() {
+        let ast = r#"@settings(defaultLengthUnit = inch)
+const inMm = 25.4 * mm()
+const inInches = 1.0 * inch()"#;
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap().round());
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
