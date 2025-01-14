@@ -1,8 +1,0 @@
----
-source: kcl/src/simulation_tests.rs
-description: Artifact graph boolean_logical_and.kcl
-snapshot_kind: text
----
-{
-  "map": {}
-}

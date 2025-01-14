@@ -1,8 +1,0 @@
----
-source: kcl/src/simulation_tests.rs
-description: Artifact graph import_constant.kcl
-snapshot_kind: text
----
-{
-  "map": {}
-}

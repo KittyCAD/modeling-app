@@ -1,8 +1,0 @@
----
-source: kcl/src/simulation_tests.rs
-description: Artifact graph array_range_negative_expr.kcl
-snapshot_kind: text
----
-{
-  "map": {}
-}
