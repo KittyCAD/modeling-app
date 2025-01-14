@@ -134,7 +134,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// Move a solid.
 ///
 /// ```no_run
-/// // Scale a pipe.
+/// // Move a pipe.
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
@@ -244,7 +244,7 @@ pub async fn rotate_about_axis(exec_state: &mut ExecState, args: Args) -> Result
 /// Rotate a solid around an axis with an angle.
 ///
 /// ```no_run
-/// // Scale a pipe.
+/// // Rotate a pipe about an axis with an angle.
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
@@ -370,7 +370,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// - **Yaw**: Like turning your head left or right, this is a rotation around the vertical axis
 ///
 /// ```no_run
-/// // Scale a pipe.
+/// // Rotate a pipe with roll, pitch, and yaw.
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
