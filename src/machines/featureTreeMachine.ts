@@ -175,7 +175,7 @@ export const featureTreeMachine = setup({
                 : undefined
               return {
                 // currentOperation is guaranteed to be defined here
-                item: context.currentOperation!,
+                operation: context.currentOperation!,
                 artifact,
                 commandBarSend: context.commandBarSend,
               }

@@ -15,18 +15,24 @@ type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
 }
 type ExecuteCommandEventPayload = ExecuteCommandEvent['data']
+type PrepareToEditFailurePayload = { reason: string }
 type PrepareToEditCallback = (
   props: Omit<EnterEditFlowProps, 'commandBarSend'>
-) => ExecuteCommandEventPayload | Promise<ExecuteCommandEventPayload>
+) =>
+  | ExecuteCommandEventPayload
+  | Promise<ExecuteCommandEventPayload | PrepareToEditFailurePayload>
 
 interface StdLibCallInfo {
   label: string
   icon: CustomIconName
   /**
-   * There are items which are honored by the feature tree
+   * There are operations which are honored by the feature tree
    * that do not yet have a corresponding modeling command.
    */
-  prepareToEdit?: ExecuteCommandEventPayload | PrepareToEditCallback
+  prepareToEdit?:
+    | ExecuteCommandEventPayload
+    | PrepareToEditCallback
+    | PrepareToEditFailurePayload
 }
 
 /**
@@ -34,12 +40,16 @@ interface StdLibCallInfo {
  * to be used in the command bar edit flow.
  */
 const prepareToEditExtrude: PrepareToEditCallback =
-  async function prepareToEditExtrude({ item, artifact }) {
+  async function prepareToEditExtrude({ operation, artifact }) {
     const baseCommand = {
       name: 'Extrude',
       groupId: 'modeling',
     }
-    if (!artifact || !('pathId' in artifact) || item.type !== 'StdLibCall') {
+    if (
+      !artifact ||
+      !('pathId' in artifact) ||
+      operation.type !== 'StdLibCall'
+    ) {
       return baseCommand
     }
 
@@ -72,8 +82,8 @@ const prepareToEditExtrude: PrepareToEditCallback =
     // Convert the length argument from a string to a KCL expression
     const distanceResult = await stringToKclExpression({
       value: codeManager.code.slice(
-        item.labeledArgs?.['length']?.sourceRange[0],
-        item.labeledArgs?.['length']?.sourceRange[1]
+        operation.labeledArgs?.['length']?.sourceRange[0],
+        operation.labeledArgs?.['length']?.sourceRange[1]
       ),
       programMemory: kclManager.programMemory.clone(),
     })
@@ -97,7 +107,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
       distance: distanceResult,
       nodeToEdit: getNodePathFromSourceRange(
         kclManager.ast,
-        sourceRangeFromRust(item.sourceRange)
+        sourceRangeFromRust(operation.sourceRange)
       ),
     }
     return {
@@ -106,18 +116,20 @@ const prepareToEditExtrude: PrepareToEditCallback =
     }
   }
 
-const prepareToEditOffsetPlane: PrepareToEditCallback = async ({ item }) => {
+const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
+  operation,
+}) => {
   const baseCommand = {
     name: 'Offset plane',
     groupId: 'modeling',
   }
   if (
-    item.type !== 'StdLibCall' ||
-    !item.labeledArgs ||
-    !('std_plane' in item.labeledArgs) ||
-    !item.labeledArgs.std_plane ||
-    !('offset' in item.labeledArgs) ||
-    !item.labeledArgs.offset
+    operation.type !== 'StdLibCall' ||
+    !operation.labeledArgs ||
+    !('std_plane' in operation.labeledArgs) ||
+    !operation.labeledArgs.std_plane ||
+    !('offset' in operation.labeledArgs) ||
+    !operation.labeledArgs.offset
   ) {
     return baseCommand
   }
@@ -125,8 +137,8 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({ item }) => {
   // once the Offset Plane command supports it.
   const planeName = codeManager.code
     .slice(
-      item.labeledArgs.std_plane.sourceRange[0],
-      item.labeledArgs.std_plane.sourceRange[1]
+      operation.labeledArgs.std_plane.sourceRange[0],
+      operation.labeledArgs.std_plane.sourceRange[1]
     )
     .replaceAll(`'`, ``)
 
@@ -153,8 +165,8 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({ item }) => {
   // Convert the distance argument from a string to a KCL expression
   const distanceResult = await stringToKclExpression({
     value: codeManager.code.slice(
-      item.labeledArgs.offset.sourceRange[0],
-      item.labeledArgs.offset.sourceRange[1]
+      operation.labeledArgs.offset.sourceRange[0],
+      operation.labeledArgs.offset.sourceRange[1]
     ),
     programMemory: kclManager.programMemory.clone(),
   })
@@ -171,7 +183,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({ item }) => {
     plane,
     nodeToEdit: getNodePathFromSourceRange(
       kclManager.ast,
-      sourceRangeFromRust(item.sourceRange)
+      sourceRangeFromRust(operation.sourceRange)
     ),
   }
 
@@ -365,23 +377,23 @@ function isNotUserFunctionReturn(ops: Operation[]): Operation[] {
 }
 
 export interface EnterEditFlowProps {
-  item: Operation
+  operation: Operation
   artifact?: Artifact
 }
 
 export async function enterEditFlow({
-  item,
+  operation,
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
-  if (item.type !== 'StdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return new Error('Not a StdLibCall')
   }
-  const stdLibInfo = stdLibMap[item.name]
+  const stdLibInfo = stdLibMap[operation.name]
 
   if (stdLibInfo && stdLibInfo.prepareToEdit) {
     if (typeof stdLibInfo.prepareToEdit === 'function') {
       const eventPayload = await stdLibInfo.prepareToEdit({
-        item,
+        operation: operation,
         artifact,
       })
       console.log('eventPayload', eventPayload)
