@@ -398,7 +398,9 @@ export async function enterEditFlow({
   artifact,
 }: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
   if (operation.type !== 'StdLibCall') {
-    return new Error('Not a StdLibCall')
+    return new Error(
+      'Feature tree editing not yet supported for user-defined functions. Please edit in the code editor.'
+    )
   }
   const stdLibInfo = stdLibMap[operation.name]
 
@@ -426,5 +428,7 @@ export async function enterEditFlow({
     }
   }
 
-  return new Error('No prepareToEdit function found')
+  return new Error(
+    'Feature tree editing not yet supported for this operation. Please edit in the code editor.'
+  )
 }
