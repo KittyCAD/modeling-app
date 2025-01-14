@@ -1271,11 +1271,16 @@ export async function deleteFromSelection(
           if (node.type === 'VariableDeclaration') {
             const dec = node.declaration
             if (
-              dec.init.type === 'CallExpression' &&
-              (dec.init.callee.name === 'extrude' ||
-                dec.init.callee.name === 'revolve') &&
-              dec.init.arguments?.[1].type === 'Identifier' &&
-              dec.init.arguments?.[1].name === varDecName
+              (dec.init.type === 'CallExpression' &&
+                (dec.init.callee.name === 'extrude' ||
+                  dec.init.callee.name === 'revolve') &&
+                dec.init.arguments?.[1].type === 'Identifier' &&
+                dec.init.arguments?.[1].name === varDecName) ||
+              (dec.init.type === 'CallExpressionKw' &&
+                (dec.init.callee.name === 'extrude' ||
+                  dec.init.callee.name === 'revolve') &&
+                dec.init.unlabeled?.type === 'Identifier' &&
+                dec.init.unlabeled?.name === varDecName)
             ) {
               pathToNode = path
               extrudeNameToDelete = dec.id.name

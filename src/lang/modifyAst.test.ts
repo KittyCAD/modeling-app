@@ -820,7 +820,7 @@ sketch002 = startSketchOn({
       },
     ],
     [
-      'delete extrude with sketch on it',
+      'delete extrude with sketch on it 2',
       {
         codeBefore: `myVar = 5
 sketch001 = startSketchOn('XZ')
