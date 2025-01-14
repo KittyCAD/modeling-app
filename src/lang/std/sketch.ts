@@ -20,6 +20,7 @@ import {
   getNodeFromPathCurry,
   getNodePathFromSourceRange,
   getObjExprProperty,
+  LABELED_ARG_FIELD,
 } from 'lang/queryAst'
 import {
   isLiteralArrayOrStatic,
@@ -212,7 +213,7 @@ const commonConstraintInfoHelper = (
       [argIndex, 'index'],
     ]
     if (isKw) {
-      path.push(['arg', 'LabeledArg -> Arg'])
+      path.push(['arg', LABELED_ARG_FIELD])
     }
     path.push(
       isArr

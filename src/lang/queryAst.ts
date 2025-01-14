@@ -37,6 +37,9 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
 import { findKwArg } from './util'
 
+export const LABELED_ARG_FIELD = 'LabeledArg -> Arg'
+export const ARG_INDEX_FIELD = 'arg index'
+
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
  * This function navigates through the AST (Abstract Syntax Tree) based on the provided path, attempting to locate
@@ -193,8 +196,8 @@ function moreNodePathFromSourceRange(
         const arg = args[argIndex].arg
         if (arg.start <= start && arg.end >= end) {
           path.push(['arguments', 'CallExpressionKw'])
-          path.push([argIndex, 'arg index'])
-          path.push(['arg', 'LabeledArg -> Arg'])
+          path.push([argIndex, ARG_INDEX_FIELD])
+          path.push(['arg', LABELED_ARG_FIELD])
           return moreNodePathFromSourceRange(arg, sourceRange, path)
         }
       }
@@ -490,8 +493,8 @@ export function traverse(
       _traverse(arg.arg, [
         ...pathToNode,
         ['arguments', 'CallExpressionKw'],
-        [index, 'arg index'],
-        ['arg', 'LabeledArg -> Arg'],
+        [index, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
       ])
     )
   } else if (_node.type === 'BinaryExpression') {

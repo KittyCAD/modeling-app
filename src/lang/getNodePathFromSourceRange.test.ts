@@ -1,4 +1,9 @@
-import { getNodePathFromSourceRange, getNodeFromPath } from './queryAst'
+import {
+  getNodePathFromSourceRange,
+  getNodeFromPath,
+  LABELED_ARG_FIELD,
+  ARG_INDEX_FIELD,
+} from './queryAst'
 import {
   Identifier,
   assertParse,
@@ -103,8 +108,8 @@ const b1 = cube([0,0], 10)`
       ['body', 'PipeExpression'],
       [2, 'index'],
       ['arguments', 'CallExpressionKw'],
-      [0, 'arg index'],
-      ['arg', 'LabeledArg -> Arg'],
+      [0, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
       ['elements', 'ArrayExpression'],
       [0, 'index'],
     ])
