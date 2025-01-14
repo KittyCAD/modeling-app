@@ -1122,6 +1122,32 @@ impl<'a> FromKclValue<'a> for super::transform::TranslateData {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::transform::RotateAboutAxisData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, axis);
+        let_field_of!(obj, angle);
+        Some(Self { axis, angle })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::transform::RotateData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, roll);
+        let_field_of!(obj, pitch);
+        let_field_of!(obj, yaw);
+        let_field_of!(obj, global?);
+
+        Some(Self {
+            roll,
+            pitch,
+            yaw,
+            global,
+        })
+    }
+}
+
 impl<'a> FromKclValue<'a> for super::helix::HelixData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
@@ -1630,6 +1656,15 @@ impl<'a> FromKclValue<'a> for f64 {
         match arg {
             KclValue::Number { value, meta: _ } => Some(*value),
             KclValue::Int { value, meta: _ } => Some(*value as f64),
+            _ => None,
+        }
+    }
+}
+impl<'a> FromKclValue<'a> for f32 {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Number { value, meta: _ } => Some(*value as f32),
+            KclValue::Int { value, meta: _ } => Some(*value as f32),
             _ => None,
         }
     }
