@@ -447,18 +447,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           disabled: (state) =>
             state.matches('Sketch no face') ||
             (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Circle tool' })),
-          isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
+              !state.matches({ Sketch: 'Circle tool' }) &&
+              !state.matches({ Sketch: 'circle3PointToolSelect' })),
+          isActive: (state) => state.matches({ Sketch: 'Circle tool' }) || state.matches({ Sketch: 'circle3PointToolSelect' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
           showTitle: false,
           description: 'Start drawing a circle from its center',
-          links: [
-            {
-              label: 'GitHub issue',
-              url: 'https://github.com/KittyCAD/modeling-app/issues/1501',
-            },
-          ],
+          links: [],
         },
         {
           id: 'circle-three-points',
@@ -476,12 +472,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'circle',
           status: 'available',
           title: '3-point circle',
-          disabled: (state) =>
-            state.matches('Sketch no face') ||
-            (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'circle3PointToolSelect' })),
-          isActive: (state) =>
-            state.matches({ Sketch: 'circle3PointToolSelect' }),
           showTitle: false,
           description: 'Draw a circle defined by three points',
           links: [],
