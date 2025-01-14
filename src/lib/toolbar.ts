@@ -8,6 +8,7 @@ import {
   modelingMachine,
   pipeHasCircle,
 } from 'machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 import { EventFrom, StateFrom } from 'xstate'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
@@ -103,7 +104,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
         icon: 'revolve',
-        status: DEV ? 'available' : 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Revolve',
         hotkey: 'R',
         description:
@@ -118,17 +119,21 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'sweep',
-        onClick: () => console.error('Sweep not yet implemented'),
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Sweep', groupId: 'modeling' },
+          }),
         icon: 'sweep',
-        status: 'unavailable',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Sweep',
         hotkey: 'W',
         description:
           'Create a 3D body by moving a sketch region along an arbitrary path.',
         links: [
           {
-            label: 'GitHub discussion',
-            url: 'https://github.com/KittyCAD/modeling-app/discussions/498',
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl/sweep',
           },
         ],
       },
@@ -161,17 +166,21 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             data: { name: 'Fillet', groupId: 'modeling' },
           }),
         icon: 'fillet3d',
-        status: DEV ? 'available' : 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/fillet' }],
       },
       {
-        id: 'chamfer',
-        onClick: () => console.error('Chamfer not yet implemented'),
+        id: 'chamfer3d',
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Chamfer', groupId: 'modeling' },
+          }),
         icon: 'chamfer3d',
-        status: 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Chamfer',
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',

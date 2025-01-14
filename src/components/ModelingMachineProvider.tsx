@@ -157,39 +157,38 @@ export const ModelingMachineProvider = ({
         'enable copilot': () => {
           editorManager.setCopilotEnabled(true)
         },
-        // tsc reports this typing as perfectly fine, but eslint is complaining.
-        // It's actually nonsensical, so I'm quieting.
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        'sketch exit execute': async ({
-          context: { store },
-        }): Promise<void> => {
-          // When cancelling the sketch mode we should disable sketch mode within the engine.
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'sketch_mode_disable' },
-          })
-
-          sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-          if (cameraProjection.current === 'perspective') {
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
-          }
-
-          sceneInfra.camControls.syncDirection = 'engineToClient'
-
-          store.videoElement?.pause()
-
-          return kclManager
-            .executeCode()
-            .then(() => {
-              if (engineCommandManager.engineConnection?.idleMode) return
-
-              store.videoElement?.play().catch((e) => {
-                console.warn('Video playing was prevented', e)
-              })
+        'sketch exit execute': ({ context: { store } }) => {
+          // TODO: Remove this async callback.  For some reason eslint wouldn't
+          // let me disable @typescript-eslint/no-misused-promises for the line.
+          ;(async () => {
+            // When cancelling the sketch mode we should disable sketch mode within the engine.
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'sketch_mode_disable' },
             })
-            .catch(reportRejection)
+
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
+
+            sceneInfra.camControls.syncDirection = 'engineToClient'
+
+            store.videoElement?.pause()
+
+            return kclManager
+              .executeCode()
+              .then(() => {
+                if (engineCommandManager.engineConnection?.idleMode) return
+
+                store.videoElement?.play().catch((e) => {
+                  console.warn('Video playing was prevented', e)
+                })
+              })
+              .catch(reportRejection)
+          })().catch(reportRejection)
         },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}
@@ -271,6 +270,7 @@ export const ModelingMachineProvider = ({
               cmd_id: uuidv4(),
               cmd: {
                 type: 'default_camera_center_to_selection',
+                camera_movement: 'vantage',
               },
             })
             .catch(reportRejection)

@@ -32,10 +32,9 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'Google Chrome',
+      name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        channel: 'chrome',
         contextOptions: {
           /* Chromium is the only one with these permission types */
           permissions: ['clipboard-write', 'clipboard-read'],
