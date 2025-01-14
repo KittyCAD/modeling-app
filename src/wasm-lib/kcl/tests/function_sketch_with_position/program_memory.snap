@@ -101,7 +101,10 @@ description: Program memory after executing function_sketch_with_position.kcl
                                   "start": 92,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "end": 96,
@@ -151,7 +154,10 @@ description: Program memory after executing function_sketch_with_position.kcl
                                   "start": 118,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 }
                               ],
                               "end": 120,
@@ -187,7 +193,10 @@ description: Program memory after executing function_sketch_with_position.kcl
                                   "start": 138,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "argument": {
