@@ -1078,13 +1078,13 @@ extrude001 = extrude(-12, sketch001)
   const highTolerance = 40
 
   // Setup
-  await context.addInitScript((initialCode) => {
-    localStorage.setItem('persistCode', initialCode)
-  }, initialCode)
-  await page.setBodyDimensions({ width: 1000, height: 500 })
-  await homePage.goToModelingScene()
+  await test.step(`Initial test setup`, async () => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
 
-  await test.step(`Verify scene is loaded`, async () => {
     // verify modeling scene is loaded
     await scene.expectPixelColor(
       backgroundColor,
@@ -1291,13 +1291,13 @@ extrude001 = extrude(-12, sketch001)
   const highTolerance = 40
 
   // Setup
-  await context.addInitScript((initialCode) => {
-    localStorage.setItem('persistCode', initialCode)
-  }, initialCode)
-  await page.setBodyDimensions({ width: 1000, height: 500 })
-  await homePage.goToModelingScene()
+  await test.step(`Initial test setup`, async () => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
 
-  await test.step(`Verify scene is loaded`, async () => {
     // verify modeling scene is loaded
     await scene.expectPixelColor(
       backgroundColor,
