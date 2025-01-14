@@ -16,13 +16,6 @@ use crate::{
     KclError, SourceRange,
 };
 
-#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export_to = "Artifact.ts")]
-#[serde(rename_all = "camelCase")]
-pub struct ArtifactGraph {
-    map: IndexMap<ArtifactId, Artifact>,
-}
-
 /// A command that may create or update artifacts on the TS side.  Because
 /// engine commands are batched, we don't have the response yet when these are
 /// created.
@@ -317,6 +310,104 @@ impl Artifact {
         }
     }
 
+    #[expect(dead_code)]
+    pub(crate) fn code_ref(&self) -> Option<&CodeRef> {
+        match self {
+            Artifact::Plane(a) => Some(&a.code_ref),
+            Artifact::Path(a) => Some(&a.code_ref),
+            Artifact::Segment(a) => Some(&a.code_ref),
+            Artifact::Solid2d(_) => None,
+            // TODO: We should add code refs for these.
+            Artifact::StartSketchOnFace { .. } => None,
+            Artifact::StartSketchOnPlane { .. } => None,
+            Artifact::Sweep(a) => Some(&a.code_ref),
+            Artifact::Wall(_) => None,
+            Artifact::Cap(_) => None,
+            Artifact::SweepEdge(_) => None,
+            Artifact::EdgeCut(a) => Some(&a.code_ref),
+            Artifact::EdgeCutEdge(_) => None,
+        }
+    }
+
+    /// The child IDs of this artifact, used to do a depth-first traversal of
+    /// the graph.
+    #[cfg(test)]
+    pub(crate) fn child_ids(&self) -> Vec<ArtifactId> {
+        match self {
+            Artifact::Plane(a) => a.path_ids.clone(),
+            Artifact::Path(a) => {
+                // Note: Don't include these since they're parents: plane_id.
+                let mut ids = a.seg_ids.clone();
+                if let Some(sweep_id) = a.sweep_id {
+                    ids.push(sweep_id);
+                }
+                if let Some(solid2d_id) = a.solid2d_id {
+                    ids.push(solid2d_id);
+                }
+                ids
+            }
+            Artifact::Segment(a) => {
+                // Note: Don't include these since they're parents: path_id.
+                let mut ids = Vec::new();
+                if let Some(surface_id) = a.surface_id {
+                    ids.push(surface_id);
+                }
+                ids.extend(&a.edge_ids);
+                if let Some(edge_cut_id) = a.edge_cut_id {
+                    ids.push(edge_cut_id);
+                }
+                ids
+            }
+            Artifact::Solid2d(_) => {
+                // Note: Don't include these since they're parents: path_id.
+                Vec::new()
+            }
+            Artifact::StartSketchOnFace { .. } => Vec::new(),
+            Artifact::StartSketchOnPlane { .. } => Vec::new(),
+            Artifact::Sweep(a) => {
+                // Note: Don't include these since they're parents: path_id.
+                let mut ids = Vec::new();
+                ids.extend(&a.surface_ids);
+                ids.extend(&a.edge_ids);
+                ids
+            }
+            Artifact::Wall(a) => {
+                // Note: Don't include these since they're parents: seg_id,
+                // sweep_id.
+                let mut ids = Vec::new();
+                ids.extend(&a.edge_cut_edge_ids);
+                ids.extend(&a.path_ids);
+                ids
+            }
+            Artifact::Cap(a) => {
+                // Note: Don't include these since they're parents: sweep_id.
+                let mut ids = Vec::new();
+                ids.extend(&a.edge_cut_edge_ids);
+                ids.extend(&a.path_ids);
+                ids
+            }
+            Artifact::SweepEdge(_) => {
+                // Note: Don't include these since they're parents: seg_id,
+                // sweep_id.
+                Vec::new()
+            }
+            Artifact::EdgeCut(a) => {
+                // Note: Don't include these since they're parents:
+                // consumed_edge_id.
+                let mut ids = Vec::new();
+                ids.extend(&a.edge_ids);
+                if let Some(surface_id) = a.surface_id {
+                    ids.push(surface_id);
+                }
+                ids
+            }
+            Artifact::EdgeCutEdge(a) => {
+                // Note: Don't include these since they're parents: edge_cut_id.
+                vec![a.surface_id]
+            }
+        }
+    }
+
     /// Merge the new artifact into self.  If it can't because it's a different
     /// type, return the new artifact which should be used as a replacement.
     fn merge(&mut self, new: Artifact) -> Option<Artifact> {
@@ -420,6 +511,13 @@ impl EdgeCut {
 
         None
     }
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct ArtifactGraph {
+    map: IndexMap<ArtifactId, Artifact>,
 }
 
 pub(crate) fn build_artifact_graph(
@@ -878,4 +976,82 @@ fn artifacts_to_update(
     }
 
     Ok(Vec::new())
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fmt::Write;
+
+    use super::*;
+
+    impl ArtifactGraph {
+        pub(crate) fn to_mermaid_mind_map(&self) -> Result<String, std::fmt::Error> {
+            let mut output = String::new();
+            output.push_str("```mermaid\n");
+            output.push_str("mindmap\n");
+            output.push_str("  root\n");
+
+            for (_, artifact) in &self.map {
+                // Only the planes are roots.
+                let Artifact::Plane(_) = artifact else {
+                    continue;
+                };
+                self.mind_map_artifact(&mut output, artifact, "    ")?;
+            }
+
+            output.push_str("```\n");
+
+            Ok(output)
+        }
+
+        fn mind_map_artifact<W: Write>(&self, output: &mut W, artifact: &Artifact, prefix: &str) -> std::fmt::Result {
+            match artifact {
+                Artifact::Plane(_plane) => {
+                    writeln!(output, "{prefix}Plane")?;
+                }
+                Artifact::Path(_path) => {
+                    writeln!(output, "{prefix}Path")?;
+                }
+                Artifact::Segment(_segment) => {
+                    writeln!(output, "{prefix}Segment")?;
+                }
+                Artifact::Solid2d(_solid2d) => {
+                    writeln!(output, "{prefix}Solid2d")?;
+                }
+                Artifact::StartSketchOnFace { .. } => {
+                    writeln!(output, "{prefix}StartSketchOnFace")?;
+                }
+                Artifact::StartSketchOnPlane { .. } => {
+                    writeln!(output, "{prefix}StartSketchOnPlane")?;
+                }
+                Artifact::Sweep(sweep) => {
+                    writeln!(output, "{prefix}Sweep {:?}", sweep.sub_type)?;
+                }
+                Artifact::Wall(_wall) => {
+                    writeln!(output, "{prefix}Wall")?;
+                }
+                Artifact::Cap(cap) => {
+                    writeln!(output, "{prefix}Cap {:?}", cap.sub_type)?;
+                }
+                Artifact::SweepEdge(sweep_edge) => {
+                    writeln!(output, "{prefix}SweepEdge {:?}", sweep_edge.sub_type,)?;
+                }
+                Artifact::EdgeCut(edge_cut) => {
+                    writeln!(output, "{prefix}EdgeCut {:?}", edge_cut.sub_type)?;
+                }
+                Artifact::EdgeCutEdge(_edge_cut_edge) => {
+                    writeln!(output, "{prefix}EdgeCutEdge")?;
+                }
+            }
+
+            for child_id in artifact.child_ids() {
+                let Some(child_artifact) = self.map.get(&child_id) else {
+                    continue;
+                };
+                self.mind_map_artifact(output, child_artifact, &format!("{}  ", prefix))?;
+            }
+
+            Ok(())
+        }
+    }
 }

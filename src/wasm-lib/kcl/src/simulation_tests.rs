@@ -117,6 +117,18 @@ async fn execute(test_name: &str, render_to_png: bool) {
             assert_snapshot(test_name, "Artifact graph", || {
                 insta::assert_json_snapshot!("artifact_graph", exec_state.global.artifact_graph);
             });
+            let mind_map = exec_state
+                .global
+                .artifact_graph
+                .to_mermaid_mind_map()
+                .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
+            {
+                assert_snapshot(test_name, "Artifact graph mind map", || {
+                    // Change the snapshot suffix so that it is rendered as a
+                    // Markdown file in GitHub.
+                    insta::assert_binary_snapshot!("artifact_graph_mind_map.md", mind_map.as_bytes().to_owned());
+                });
+            }
         }
         Err(e) => {
             match e.error {
