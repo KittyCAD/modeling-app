@@ -137,7 +137,7 @@ export function addSketchTo(
   ])
   const initialLineTo = createCallExpressionStdLibKw(
     'line',
-    createPipeSubstitution(),
+    null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
     [createLabeledArg('end', createLiteral('default'))]
   )
 
