@@ -279,7 +279,7 @@ pub fn calculate_circle_from_3_points(points: [Point2d; 3]) -> CircleParams {
     let center: Point2d = calculate_circle_center(points[0].into(), points[1].into(), points[2].into()).into();
     CircleParams {
         center,
-        radius: distance(center.into(), points[1]),
+        radius: distance(center, points[1]),
     }
 }
 
