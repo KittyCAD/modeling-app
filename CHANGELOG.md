@@ -19,6 +19,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [v0.36.0] - 2025-01-14
+
+##### Added
+* KCL stdlib function to pop from arrays by @guptaarnav
+* Code editor autocomplete shows when a KCL stdlib function is deprecated
+* Point-and-click deletion (Backspace or Delete) of lofts, shells, and offset planes
+* KCL helixes are now available (no point-and-click yet)
+
+##### Fixed
+* Open updater toast changelog links externally by @marc2332
+* Refactor: removed unused `UpdaterModal` component by @marc2332
+* Error for missing a closing bracket clearer
+* Show the stream while the scene builds, relevant for large files
+* More testing for foreign characters in project name
+* Wasm panic catching errors and restoring application state and WebAssembly instance
+* Shell point-and-click picking the wrong face with piped extrudes
+
+##### New Contributors
+* @marc2332 made their first contribution in https://github.com/KittyCAD/modeling-app/pull/4791
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.35.0...v0.36.0
+
 ## [v0.35.0] - 2025-01-07
 
 ##### Added
