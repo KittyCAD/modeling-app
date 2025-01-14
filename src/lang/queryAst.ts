@@ -1085,7 +1085,8 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
       ) {
         for (const pipe of node.init.body) {
           if (
-            pipe.type === 'CallExpression' &&
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
             pipe.callee.name === 'extrude'
           ) {
             theMap[node.id.name] = true
@@ -1093,9 +1094,12 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
           }
         }
       } else if (
-        node.type === 'CallExpression' &&
-        node.callee.name === 'extrude' &&
-        node.arguments[1]?.type === 'Identifier'
+        (node.type === 'CallExpression' &&
+          node.callee.name === 'extrude' &&
+          node.arguments[1]?.type === 'Identifier') ||
+        (node.type === 'CallExpressionKw' &&
+          node.callee.name === 'extrude' &&
+          node.unlabeled?.type === 'Identifier')
       ) {
         theMap[node.moduleId] = true
       }
