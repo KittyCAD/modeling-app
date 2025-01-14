@@ -6,6 +6,7 @@ import {
   getXComponent,
   addCloseToPipe,
   getConstraintInfo,
+  getConstraintInfoKw,
 } from './sketch'
 import {
   assertParse,
@@ -13,6 +14,7 @@ import {
   initPromise,
   CallExpression,
   topLevelRange,
+  CallExpressionKw,
 } from '../wasm'
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { enginelessExecutor } from '../../lib/testHelpers'
@@ -689,13 +691,16 @@ describe('testing getConstraintInfo', () => {
       )
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpression>>(
+      const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
         ast,
         pathToNode,
-        'CallExpression'
+        ['CallExpression', 'CallExpressionKw']
       )
       if (err(callExp)) return callExp
-      const result = getConstraintInfo(callExp.node, code, pathToNode)
+      const result =
+        callExp.node.type === 'CallExpression'
+          ? getConstraintInfo(callExp.node, code, pathToNode)
+          : getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
@@ -843,13 +848,16 @@ describe('testing getConstraintInfo', () => {
       )
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpression>>(
+      const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
         ast,
         pathToNode,
-        'CallExpression'
+        ['CallExpression', 'CallExpressionKw']
       )
       if (err(callExp)) return callExp
-      const result = getConstraintInfo(callExp.node, code, pathToNode)
+      const result =
+        callExp.node.type === 'CallExpression'
+          ? getConstraintInfo(callExp.node, code, pathToNode)
+          : getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
@@ -1199,14 +1207,17 @@ describe('testing getConstraintInfo', () => {
       )
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpression>>(
+      const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
         ast,
         pathToNode,
-        'CallExpression'
+        ['CallExpression', 'CallExpressionKw']
       )
       if (err(callExp)) return callExp
 
-      const result = getConstraintInfo(callExp.node, code, pathToNode)
+      const result =
+        callExp.node.type === 'CallExpression'
+          ? getConstraintInfo(callExp.node, code, pathToNode)
+          : getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
