@@ -1,7 +1,15 @@
-import { PathToNode, Program, SourceRange } from 'lang/wasm'
+import {
+  ArtifactCommand,
+  ExecState,
+  PathToNode,
+  Program,
+  SourceRange,
+  sourceRangeFromRust,
+} from 'lang/wasm'
 import { Models } from '@kittycad/lib'
 import { getNodePathFromSourceRange } from 'lang/queryAst'
 import { err } from 'lib/trap'
+import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 export type ArtifactId = string
 
@@ -29,7 +37,7 @@ export interface PathArtifact extends BaseArtifact {
   type: 'path'
   planeId: ArtifactId
   segIds: Array<ArtifactId>
-  sweepId: ArtifactId
+  sweepId?: ArtifactId
   solid2dId?: ArtifactId
   codeRef: CodeRef
 }
@@ -52,7 +60,7 @@ export interface PathArtifactRich extends BaseArtifact {
 export interface SegmentArtifact extends BaseArtifact {
   type: 'segment'
   pathId: ArtifactId
-  surfaceId: ArtifactId
+  surfaceId?: ArtifactId
   edgeIds: Array<ArtifactId>
   edgeCutId?: ArtifactId
   codeRef: CodeRef
@@ -60,7 +68,7 @@ export interface SegmentArtifact extends BaseArtifact {
 interface SegmentArtifactRich extends BaseArtifact {
   type: 'segment'
   path: PathArtifact
-  surf: WallArtifact
+  surf?: WallArtifact
   edges: Array<SweepEdge>
   edgeCut?: EdgeCut
   codeRef: CodeRef
@@ -69,7 +77,7 @@ interface SegmentArtifactRich extends BaseArtifact {
 /** A Sweep is a more generic term for extrude, revolve, loft and sweep*/
 interface SweepArtifact extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve'
+  subType: 'extrusion' | 'revolve' | 'loft' | 'sweep'
   pathId: string
   surfaceIds: Array<string>
   edgeIds: Array<string>
@@ -77,7 +85,7 @@ interface SweepArtifact extends BaseArtifact {
 }
 interface SweepArtifactRich extends BaseArtifact {
   type: 'sweep'
-  subType: 'extrusion' | 'revolve'
+  subType: 'extrusion' | 'revolve' | 'loft' | 'sweep'
   path: PathArtifact
   surfaces: Array<WallArtifact | CapArtifact>
   edges: Array<SweepEdge>
@@ -112,7 +120,7 @@ interface EdgeCut extends BaseArtifact {
   subType: 'fillet' | 'chamfer'
   consumedEdgeId: ArtifactId
   edgeIds: Array<ArtifactId>
-  surfaceId: ArtifactId
+  surfaceId?: ArtifactId
   codeRef: CodeRef
 }
 
@@ -143,50 +151,47 @@ type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 export interface ResponseMap {
   [commandId: string]: OkWebSocketResponseData
 }
-export interface OrderedCommand {
-  command: EngineCommand
-  range: SourceRange
-}
 
 /** Creates a graph of artifacts from a list of ordered commands and their responses
  * muting the Map should happen entirely this function, other functions called within
  * should return data on how to update the map, and not do so directly.
  */
 export function createArtifactGraph({
-  orderedCommands,
+  artifactCommands,
   responseMap,
   ast,
+  execStateArtifacts,
 }: {
-  orderedCommands: Array<OrderedCommand>
+  artifactCommands: Array<ArtifactCommand>
   responseMap: ResponseMap
-  ast: Program
+  ast: Node<Program>
+  execStateArtifacts: ExecState['artifacts']
 }) {
   const myMap = new Map<ArtifactId, Artifact>()
 
   /** see docstring for {@link getArtifactsToUpdate} as to why this is needed */
   let currentPlaneId = ''
 
-  orderedCommands.forEach((orderedCommand) => {
-    if (orderedCommand.command?.type === 'modeling_cmd_req') {
-      if (orderedCommand.command.cmd.type === 'enable_sketch_mode') {
-        currentPlaneId = orderedCommand.command.cmd.entity_id
-      }
-      if (orderedCommand.command.cmd.type === 'sketch_mode_disable') {
-        currentPlaneId = ''
-      }
+  for (const artifactCommand of artifactCommands) {
+    if (artifactCommand.command.type === 'enable_sketch_mode') {
+      currentPlaneId = artifactCommand.command.entity_id
+    }
+    if (artifactCommand.command.type === 'sketch_mode_disable') {
+      currentPlaneId = ''
     }
     const artifactsToUpdate = getArtifactsToUpdate({
-      orderedCommand,
+      artifactCommand,
       responseMap,
       getArtifact: (id: ArtifactId) => myMap.get(id),
       currentPlaneId,
       ast,
+      execStateArtifacts,
     })
     artifactsToUpdate.forEach(({ id, artifact }) => {
       const mergedArtifact = mergeArtifacts(myMap.get(id), artifact)
       myMap.set(id, mergedArtifact)
     })
-  })
+  }
   return myMap
 }
 
@@ -227,30 +232,30 @@ function mergeArtifacts(
  * can remove this.
  */
 export function getArtifactsToUpdate({
-  orderedCommand: { command, range },
+  artifactCommand,
   getArtifact,
   responseMap,
   currentPlaneId,
   ast,
+  execStateArtifacts,
 }: {
-  orderedCommand: OrderedCommand
+  artifactCommand: ArtifactCommand
   responseMap: ResponseMap
   /** Passing in a getter because we don't wan this function to update the map directly */
   getArtifact: (id: ArtifactId) => Artifact | undefined
   currentPlaneId: ArtifactId
-  ast: Program
+  ast: Node<Program>
+  execStateArtifacts: ExecState['artifacts']
 }): Array<{
   id: ArtifactId
   artifact: Artifact
 }> {
+  const range = sourceRangeFromRust(artifactCommand.range)
   const pathToNode = getNodePathFromSourceRange(ast, range)
 
-  // expect all to be `modeling_cmd_req` as batch commands have
-  // already been expanded before being added to orderedCommands
-  if (command.type !== 'modeling_cmd_req') return []
-  const id = command.cmd_id
+  const id = artifactCommand.cmdId
   const response = responseMap[id]
-  const cmd = command.cmd
+  const cmd = artifactCommand.command
   const returnArr: ReturnType<typeof getArtifactsToUpdate> = []
   if (!response) return returnArr
   if (cmd.type === 'make_plane' && range[1] !== 0) {
@@ -303,7 +308,7 @@ export function getArtifactsToUpdate({
         id,
         segIds: [],
         planeId: currentPlaneId,
-        sweepId: '',
+        sweepId: undefined,
         codeRef: { range, pathToNode },
       },
     })
@@ -338,7 +343,7 @@ export function getArtifactsToUpdate({
         type: 'segment',
         id,
         pathId,
-        surfaceId: '',
+        surfaceId: undefined,
         edgeIds: [],
         codeRef: { range, pathToNode },
       },
@@ -372,7 +377,11 @@ export function getArtifactsToUpdate({
         })
     }
     return returnArr
-  } else if (cmd.type === 'extrude' || cmd.type === 'revolve') {
+  } else if (
+    cmd.type === 'extrude' ||
+    cmd.type === 'revolve' ||
+    cmd.type === 'sweep'
+  ) {
     const subType = cmd.type === 'extrude' ? 'extrusion' : cmd.type
     returnArr.push({
       id,
@@ -392,6 +401,33 @@ export function getArtifactsToUpdate({
         id: cmd.target,
         artifact: { ...path, sweepId: id },
       })
+    return returnArr
+  } else if (
+    cmd.type === 'loft' &&
+    response.type === 'modeling' &&
+    response.data.modeling_response.type === 'loft'
+  ) {
+    returnArr.push({
+      id,
+      artifact: {
+        type: 'sweep',
+        subType: 'loft',
+        id,
+        // TODO: make sure to revisit this choice, don't think it matters for now
+        pathId: cmd.section_ids[0],
+        surfaceIds: [],
+        edgeIds: [],
+        codeRef: { range, pathToNode },
+      },
+    })
+    for (const sectionId of cmd.section_ids) {
+      const path = getArtifact(sectionId)
+      if (path?.type === 'path')
+        returnArr.push({
+          id: sectionId,
+          artifact: { ...path, sweepId: id },
+        })
+    }
     return returnArr
   } else if (
     cmd.type === 'solid3d_get_extrusion_face_info' &&
@@ -414,7 +450,8 @@ export function getArtifactsToUpdate({
                 id: face_id,
                 segId: curve_id,
                 edgeCutEdgeIds: [],
-                sweepId: path.sweepId,
+                // TODO: Add explicit check for sweepId.  Should never use ''
+                sweepId: path.sweepId ?? '',
                 pathIds: [],
               },
             })
@@ -422,15 +459,17 @@ export function getArtifactsToUpdate({
               id: curve_id,
               artifact: { ...seg, surfaceId: face_id },
             })
-            const sweep = getArtifact(path.sweepId)
-            if (sweep?.type === 'sweep') {
-              returnArr.push({
-                id: path.sweepId,
-                artifact: {
-                  ...sweep,
-                  surfaceIds: [face_id],
-                },
-              })
+            if (path.sweepId) {
+              const sweep = getArtifact(path.sweepId)
+              if (sweep?.type === 'sweep') {
+                returnArr.push({
+                  id: path.sweepId,
+                  artifact: {
+                    ...sweep,
+                    surfaceIds: [face_id],
+                  },
+                })
+              }
             }
           }
         }
@@ -447,19 +486,22 @@ export function getArtifactsToUpdate({
               id: face_id,
               subType: cap === 'bottom' ? 'start' : 'end',
               edgeCutEdgeIds: [],
-              sweepId: path.sweepId,
+              // TODO: Add explicit check for sweepId.  Should never use ''
+              sweepId: path.sweepId ?? '',
               pathIds: [],
             },
           })
-          const sweep = getArtifact(path.sweepId)
-          if (sweep?.type !== 'sweep') return
-          returnArr.push({
-            id: path.sweepId,
-            artifact: {
-              ...sweep,
-              surfaceIds: [face_id],
-            },
-          })
+          if (path.sweepId) {
+            const sweep = getArtifact(path.sweepId)
+            if (sweep?.type !== 'sweep') return
+            returnArr.push({
+              id: path.sweepId,
+              artifact: {
+                ...sweep,
+                surfaceIds: [face_id],
+              },
+            })
+          }
         }
       }
     })
@@ -497,7 +539,8 @@ export function getArtifactsToUpdate({
               ? 'adjacent'
               : 'opposite',
           segId: cmd.edge_id,
-          sweepId: path.sweepId,
+          // TODO: Add explicit check for sweepId.  Should never use ''
+          sweepId: path.sweepId ?? '',
         },
       },
       {
@@ -508,7 +551,7 @@ export function getArtifactsToUpdate({
         },
       },
       {
-        id: path.sweepId,
+        id: sweep.id,
         artifact: {
           ...sweep,
           edgeIds: [response.data.modeling_response.data.edge],
@@ -524,7 +567,7 @@ export function getArtifactsToUpdate({
         subType: cmd.cut_type,
         consumedEdgeId: cmd.edge_id,
         edgeIds: [],
-        surfaceId: '',
+        surfaceId: undefined,
         codeRef: { range, pathToNode },
       },
     })
@@ -686,10 +729,12 @@ export function expandSegment(
     { key: segment.pathId, types: ['path'] },
     artifactGraph
   )
-  const surf = getArtifactOfTypes(
-    { key: segment.surfaceId, types: ['wall'] },
-    artifactGraph
-  )
+  const surf = segment.surfaceId
+    ? getArtifactOfTypes(
+        { key: segment.surfaceId, types: ['wall'] },
+        artifactGraph
+      )
+    : undefined
   const edges = getArtifactsOfTypes(
     { keys: segment.edgeIds, types: ['sweepEdge'] },
     artifactGraph
@@ -806,6 +851,7 @@ export function getSweepFromSuspectedSweepSurface(
       artifactGraph
     )
     if (err(path)) return path
+    if (!path.sweepId) return new Error('Path does not have a sweepId')
     return getArtifactOfTypes(
       { key: path.sweepId, types: ['sweep'] },
       artifactGraph
@@ -823,6 +869,7 @@ export function getSweepFromSuspectedPath(
 ): SweepArtifact | Error {
   const path = getArtifactOfTypes({ key: id, types: ['path'] }, artifactGraph)
   if (err(path)) return path
+  if (!path.sweepId) return new Error('Path does not have a sweepId')
   return getArtifactOfTypes(
     { key: path.sweepId, types: ['sweep'] },
     artifactGraph

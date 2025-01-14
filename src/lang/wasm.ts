@@ -1,4 +1,5 @@
-import init, {
+import {
+  init,
   parse_wasm,
   recast_wasm,
   execute,
@@ -16,7 +17,9 @@ import init, {
   default_project_settings,
   base64_decode,
   clear_scene_and_bust_cache,
-} from '../wasm-lib/pkg/wasm_lib'
+  reloadModule,
+} from 'lib/wasm_lib_wrapper'
+
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '../wasm-lib/kcl/bindings/KclError'
 import { EngineCommandManager } from './std/engineConnection'
@@ -45,7 +48,13 @@ import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRang
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
+import { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
+import { ArtifactId } from 'wasm-lib/kcl/bindings/ArtifactId'
+import { ArtifactCommand } from 'wasm-lib/kcl/bindings/ArtifactCommand'
 
+export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
+export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/ArtifactCommand'
+export type { ArtifactId } from 'wasm-lib/kcl/bindings/ArtifactId'
 export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -144,6 +153,7 @@ export const wasmUrl = () => {
 // Initialise the wasm module.
 const initialise = async () => {
   try {
+    await reloadModule()
     const fullUrl = wasmUrl()
     const input = await fetch(fullUrl)
     const buffer = await input.arrayBuffer()
@@ -223,6 +233,7 @@ export const parse = (code: string | Error): ParseResult | Error => {
       parsed.kind,
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
+      [],
       []
     )
   }
@@ -247,6 +258,8 @@ export const isPathToNodeNumber = (
 export interface ExecState {
   memory: ProgramMemory
   operations: Operation[]
+  artifacts: { [key in ArtifactId]?: Artifact }
+  artifactCommands: ArtifactCommand[]
 }
 
 /**
@@ -257,6 +270,8 @@ export function emptyExecState(): ExecState {
   return {
     memory: ProgramMemory.empty(),
     operations: [],
+    artifacts: {},
+    artifactCommands: [],
   }
 }
 
@@ -264,6 +279,8 @@ function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
     memory: ProgramMemory.fromRaw(execOutcome.memory),
     operations: execOutcome.operations,
+    artifacts: execOutcome.artifacts,
+    artifactCommands: execOutcome.artifactCommands,
   }
 }
 
@@ -534,7 +551,8 @@ export const executor = async (
       parsed.error.kind,
       parsed.error.msg,
       sourceRangeFromRust(parsed.error.sourceRanges[0]),
-      parsed.operations
+      parsed.operations,
+      parsed.artifactCommands
     )
 
     return Promise.reject(kclError)
@@ -594,6 +612,7 @@ export const modifyAstForSketch = async (
       parsed.kind,
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
+      [],
       []
     )
 
@@ -663,6 +682,7 @@ export function programMemoryInit(): ProgramMemory | Error {
       parsed.kind,
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
+      [],
       []
     )
   }
