@@ -862,7 +862,9 @@ export function hasExtrudeSketch({
 export function artifactIsPlaneWithPaths(selectionRanges: Selections) {
   return (
     selectionRanges.graphSelections.length &&
-    selectionRanges.graphSelections[0].artifact?.type === 'plane' &&
+    (selectionRanges.graphSelections[0].artifact?.type === 'plane' ||
+      selectionRanges.graphSelections[0].artifact?.type === 'cap' ||
+      selectionRanges.graphSelections[0].artifact?.type === 'wall') &&
     selectionRanges.graphSelections[0].artifact.pathIds.length
   )
 }
