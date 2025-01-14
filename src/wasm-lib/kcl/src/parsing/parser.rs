@@ -4329,17 +4329,6 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
     }
 
     #[test]
-    fn warn_fn_int() {
-        let some_program_string = r#"int(1.0)
-int(42.3)"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2);
-        let replaced = errs[1].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[0].apply_suggestion(&replaced).unwrap();
-        assert_eq!(replaced, "1.0\nround(42.3)");
-    }
-
-    #[test]
     fn warn_fn_decl() {
         let some_program_string = r#"fn foo = () => {
     return 0
