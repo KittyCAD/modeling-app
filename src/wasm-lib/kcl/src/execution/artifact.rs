@@ -329,6 +329,26 @@ impl Artifact {
         }
     }
 
+    /// The IDs pointing back to prior nodes in a depth-first traversal of
+    /// the graph.  This should be disjoint with `child_ids`.
+    #[cfg(test)]
+    pub(crate) fn back_edges(&self) -> Vec<ArtifactId> {
+        match self {
+            Artifact::Plane(_) => Vec::new(),
+            Artifact::Path(a) => vec![a.plane_id],
+            Artifact::Segment(a) => vec![a.path_id],
+            Artifact::Solid2d(a) => vec![a.path_id],
+            Artifact::StartSketchOnFace { face_id, .. } => vec![face_id.into()],
+            Artifact::StartSketchOnPlane { plane_id, .. } => vec![plane_id.into()],
+            Artifact::Sweep(a) => vec![a.path_id],
+            Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
+            Artifact::Cap(a) => vec![a.sweep_id],
+            Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
+            Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
+            Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
+        }
+    }
+
     /// The child IDs of this artifact, used to do a depth-first traversal of
     /// the graph.
     #[cfg(test)]
@@ -985,6 +1005,145 @@ mod tests {
     use super::*;
 
     impl ArtifactGraph {
+        pub(crate) fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
+            let mut output = String::new();
+            output.push_str("```mermaid\n");
+            output.push_str("flowchart LR\n");
+
+            let mut next_id = 1_u32;
+            let mut stable_id_map = FnvHashMap::default();
+            for id in self.map.keys() {
+                stable_id_map.insert(*id, next_id);
+                next_id += 1;
+            }
+
+            // Output all nodes first in sorted order since an edge to a node
+            // can change its structure.
+            for (_, artifact) in &self.map {
+                self.flowchart_artifact(&mut output, artifact, &stable_id_map, "  ")?;
+            }
+            for (_, artifact) in &self.map {
+                self.flowchart_edges(&mut output, artifact, &stable_id_map, "  ")?;
+            }
+
+            output.push_str("```\n");
+
+            Ok(output)
+        }
+
+        fn flowchart_artifact<W: Write>(
+            &self,
+            output: &mut W,
+            artifact: &Artifact,
+            stable_id_map: &FnvHashMap<ArtifactId, u32>,
+            prefix: &str,
+        ) -> std::fmt::Result {
+            // For now, only showing the source range.
+            fn code_ref_display(code_ref: &CodeRef) -> [usize; 3] {
+                [
+                    code_ref.range.start(),
+                    code_ref.range.end(),
+                    code_ref.range.module_id().as_usize(),
+                ]
+            }
+
+            let id = stable_id_map.get(&artifact.id()).unwrap();
+
+            match artifact {
+                Artifact::Plane(plane) => {
+                    writeln!(
+                        output,
+                        "{prefix}{}[\"Plane<br>{:?}\"]",
+                        id,
+                        code_ref_display(&plane.code_ref)
+                    )?;
+                }
+                Artifact::Path(path) => {
+                    writeln!(
+                        output,
+                        "{prefix}{}[\"Path<br>{:?}\"]",
+                        id,
+                        code_ref_display(&path.code_ref)
+                    )?;
+                }
+                Artifact::Segment(segment) => {
+                    writeln!(
+                        output,
+                        "{prefix}{}[\"Segment<br>{:?}\"]",
+                        id,
+                        code_ref_display(&segment.code_ref)
+                    )?;
+                }
+                Artifact::Solid2d(_solid2d) => {
+                    writeln!(output, "{prefix}{}[Solid2d]", id)?;
+                }
+                Artifact::StartSketchOnFace { .. } => {
+                    // TODO: This doesn't have an ID.
+                }
+                Artifact::StartSketchOnPlane { .. } => {
+                    // TODO: This doesn't have an ID.
+                }
+                Artifact::Sweep(sweep) => {
+                    writeln!(
+                        output,
+                        "{prefix}{}[\"Sweep {:?}<br>{:?}\"]",
+                        id,
+                        sweep.sub_type,
+                        code_ref_display(&sweep.code_ref)
+                    )?;
+                }
+                Artifact::Wall(_wall) => {
+                    writeln!(output, "{prefix}{}[Wall]", id)?;
+                }
+                Artifact::Cap(cap) => {
+                    writeln!(output, "{prefix}{}[\"Cap {:?}\"]", id, cap.sub_type)?;
+                }
+                Artifact::SweepEdge(sweep_edge) => {
+                    writeln!(output, "{prefix}{}[\"SweepEdge {:?}\"]", id, sweep_edge.sub_type)?;
+                }
+                Artifact::EdgeCut(edge_cut) => {
+                    writeln!(
+                        output,
+                        "{prefix}{}[\"EdgeCut {:?}<br>{:?}\"]",
+                        id,
+                        edge_cut.sub_type,
+                        code_ref_display(&edge_cut.code_ref)
+                    )?;
+                }
+                Artifact::EdgeCutEdge(_edge_cut_edge) => {
+                    writeln!(output, "{prefix}{}[EdgeCutEdge]", id)?;
+                }
+            }
+
+            Ok(())
+        }
+
+        fn flowchart_edges<W: Write>(
+            &self,
+            output: &mut W,
+            artifact: &Artifact,
+            stable_id_map: &FnvHashMap<ArtifactId, u32>,
+            prefix: &str,
+        ) -> std::fmt::Result {
+            let source_id = stable_id_map.get(&artifact.id()).unwrap();
+            for parent_id in artifact.back_edges() {
+                let Some(_) = self.map.get(&parent_id) else {
+                    continue;
+                };
+                let target_id = stable_id_map.get(&parent_id).unwrap();
+                writeln!(output, "{prefix}{source_id} --- {}", target_id)?;
+            }
+            for child_id in artifact.child_ids() {
+                let Some(_) = self.map.get(&child_id) else {
+                    continue;
+                };
+                let target_id = stable_id_map.get(&child_id).unwrap();
+                writeln!(output, "{prefix}{source_id} --- {}", target_id)?;
+            }
+
+            Ok(())
+        }
+
         pub(crate) fn to_mermaid_mind_map(&self) -> Result<String, std::fmt::Error> {
             let mut output = String::new();
             output.push_str("```mermaid\n");
