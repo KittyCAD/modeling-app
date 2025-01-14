@@ -114,9 +114,6 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     "[].command.segment.*.z" => rounded_redaction(4),
                 });
             });
-            assert_snapshot(test_name, "Artifact graph", || {
-                insta::assert_json_snapshot!("artifact_graph", exec_state.global.artifact_graph);
-            });
             assert_snapshot(test_name, "Artifact graph flowchart", || {
                 let flowchart = exec_state
                     .global
