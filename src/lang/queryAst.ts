@@ -977,7 +977,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   traverse(pipeExpression, {
     enter(node) {
       if (
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         (node.callee.name === 'extrude' || node.callee.name === 'revolve')
       ) {
         extruded = true
@@ -996,6 +996,17 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
             node.callee.name === 'loft') &&
           node.arguments?.[1]?.type === 'Identifier' &&
           node.arguments[1].name === varDec.id.name
+        ) {
+          extruded = true
+        }
+        if (
+          node.type === 'CallExpressionKw' &&
+          node.callee.type === 'Identifier' &&
+          (node.callee.name === 'extrude' ||
+            node.callee.name === 'revolve' ||
+            node.callee.name === 'loft') &&
+          node.unlabeled?.type === 'Identifier' &&
+          node.unlabeled?.name === varDec.id.name
         ) {
           extruded = true
         }
