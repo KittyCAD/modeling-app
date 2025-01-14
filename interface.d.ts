@@ -62,7 +62,6 @@ export interface IElectronAPI {
       TEST_SETTINGS_FILE_KEY: string
       IS_PLAYWRIGHT: string
       VITE_KC_DEV_TOKEN: string
-      VITE_KC_PROD_TOKEN: string
       VITE_KC_API_WS_MODELING_URL: string
       VITE_KC_API_BASE_URL: string
       VITE_KC_SITE_BASE_URL: string

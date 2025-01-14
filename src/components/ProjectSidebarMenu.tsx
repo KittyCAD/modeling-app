@@ -18,7 +18,6 @@ import Tooltip from './Tooltip'
 import { createCreateFileUrl, createShortlink } from 'lib/links'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import toast from 'react-hot-toast'
-import { DEV, VITE_KC_PROD_TOKEN } from 'env'
 import { err } from 'lib/trap'
 
 const ProjectSidebarMenu = ({

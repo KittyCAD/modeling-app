@@ -188,7 +188,6 @@ contextBridge.exposeInMainWorld('electron', {
         'VITE_KC_SKIP_AUTH',
         'VITE_KC_CONNECTION_TIMEOUT_MS',
         'VITE_KC_DEV_TOKEN',
-        'VITE_KC_PROD_TOKEN',
         'IS_PLAYWRIGHT',
 
         // Really we shouldn't use these and our code should use NODE_ENV
