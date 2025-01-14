@@ -1002,7 +1002,11 @@ fn artifacts_to_update(
 mod tests {
     use std::fmt::Write;
 
+    use fnv::FnvHashSet;
+
     use super::*;
+
+    type NodeId = u32;
 
     impl ArtifactGraph {
         pub(crate) fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
@@ -1010,7 +1014,7 @@ mod tests {
             output.push_str("```mermaid\n");
             output.push_str("flowchart LR\n");
 
-            let mut next_id = 1_u32;
+            let mut next_id = 1;
             let mut stable_id_map = FnvHashMap::default();
             for id in self.map.keys() {
                 stable_id_map.insert(*id, next_id);
@@ -1022,8 +1026,9 @@ mod tests {
             for (_, artifact) in &self.map {
                 self.flowchart_artifact(&mut output, artifact, &stable_id_map, "  ")?;
             }
+            let mut unique_edges = FnvHashSet::default();
             for (_, artifact) in &self.map {
-                self.flowchart_edges(&mut output, artifact, &stable_id_map, "  ")?;
+                self.flowchart_edges(&mut output, artifact, &stable_id_map, "  ", &mut unique_edges)?;
             }
 
             output.push_str("```\n");
@@ -1035,7 +1040,7 @@ mod tests {
             &self,
             output: &mut W,
             artifact: &Artifact,
-            stable_id_map: &FnvHashMap<ArtifactId, u32>,
+            stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
             prefix: &str,
         ) -> std::fmt::Result {
             // For now, only showing the source range.
@@ -1122,23 +1127,29 @@ mod tests {
             &self,
             output: &mut W,
             artifact: &Artifact,
-            stable_id_map: &FnvHashMap<ArtifactId, u32>,
+            stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
             prefix: &str,
+            mut edges: &mut FnvHashSet<(NodeId, NodeId)>,
         ) -> std::fmt::Result {
-            let source_id = stable_id_map.get(&artifact.id()).unwrap();
-            for parent_id in artifact.back_edges() {
-                let Some(_) = self.map.get(&parent_id) else {
-                    continue;
-                };
-                let target_id = stable_id_map.get(&parent_id).unwrap();
-                writeln!(output, "{prefix}{source_id} --- {}", target_id)?;
+            // Returns true if it's a new edge.
+            fn add_unique_edge(edges: &mut FnvHashSet<(NodeId, NodeId)>, source_id: NodeId, target_id: NodeId) -> bool {
+                // Insert in canonical order.
+                let a = source_id.min(target_id);
+                let b = source_id.max(target_id);
+                edges.insert((a, b))
             }
-            for child_id in artifact.child_ids() {
-                let Some(_) = self.map.get(&child_id) else {
+
+            let source_id = *stable_id_map.get(&artifact.id()).unwrap();
+            for target_id in artifact.back_edges().into_iter().chain(artifact.child_ids()) {
+                let Some(_) = self.map.get(&target_id) else {
                     continue;
                 };
-                let target_id = stable_id_map.get(&child_id).unwrap();
-                writeln!(output, "{prefix}{source_id} --- {}", target_id)?;
+                let target_id = *stable_id_map.get(&target_id).unwrap();
+                // Mermaid will display two edges if we don't deduplicate, even
+                // using the `---` edge type.
+                if add_unique_edge(&mut edges, source_id, target_id) {
+                    writeln!(output, "{prefix}{source_id} <---> {}", target_id)?;
+                }
             }
 
             Ok(())
