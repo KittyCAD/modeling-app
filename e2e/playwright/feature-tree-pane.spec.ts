@@ -35,6 +35,30 @@ sketch002 = startSketchOn(plane001)
 extrude001 = extrude(10, sketch002)
 `
 
+const FEAUTRE_TREE_SKETCH_CODE = `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> angledLine([0, 4], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       2
+     ], %, $rectangleSegmentB001)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %, $rectangleSegmentC001)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(10, sketch001)
+sketch002 = startSketchOn(extrude001, rectangleSegmentB001)
+  |> circle({
+       center = [-1, 2],
+       radius = .5
+     }, %)
+plane001 = offsetPlane('XZ', -5)
+sketch003 = startSketchOn(plane001)
+  |> circle({ center = [0, 0], radius = 5 }, %)
+`
+
 test.describe('Feature Tree pane', () => {
   test(
     'User can go to definition and go to function definition',
@@ -126,15 +150,15 @@ test.describe('Feature Tree pane', () => {
   )
 
   test(
-    `User can edit a sketch (on default plane) from the feature tree`,
+    `User can edit sketch (but not on offset plane yet) from the feature tree`,
     { tag: '@electron' },
-    async ({ context, homePage, scene, editor, toolbar }) => {
+    async ({ context, homePage, scene, editor, toolbar, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.writeFile(
           join(bracketDir, 'main.kcl'),
-          FEATURE_TREE_EXAMPLE_CODE,
+          FEAUTRE_TREE_SKETCH_CODE,
           'utf-8'
         )
       })
@@ -154,10 +178,8 @@ test.describe('Feature Tree pane', () => {
         await toolbar.openFeatureTreePane()
       })
 
-      await test.step('Double click on the sketch operation', async () => {
-        await (await toolbar.getFeatureTreeOperation('Sketch', 0))
-          .first()
-          .dblclick()
+      await test.step('On a default plane should work', async () => {
+        await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
         await expect(
           toolbar.exitSketchBtn,
           'We should be in sketch mode now'
@@ -167,12 +189,46 @@ test.describe('Feature Tree pane', () => {
           diagnostics: [],
           activeLines: ["sketch001 = startSketchOn('XZ')"],
         })
+        await toolbar.exitSketchBtn.click()
+      })
+
+      await test.step('On an extrude face should work', async () => {
+        // Tooltip is getting in the way of clicking, so I'm first closing the pane
+        await toolbar.closeFeatureTreePane()
+        await (await toolbar.getFeatureTreeOperation('Sketch', 1)).dblclick()
+        await expect(
+          toolbar.exitSketchBtn,
+          'We should be in sketch mode now'
+        ).toBeVisible()
+        await editor.expectState({
+          highlightedCode: '',
+          diagnostics: [],
+          activeLines: ['|>circle({center=[-1,2],radius=.5},%)'],
+        })
+        await toolbar.exitSketchBtn.click()
+      })
+
+      await test.step('On an offset plane should *not* work', async () => {
+        // Tooltip is getting in the way of clicking, so I'm first closing the pane
+        await toolbar.closeFeatureTreePane()
+        await (await toolbar.getFeatureTreeOperation('Sketch', 2)).dblclick()
+        await editor.expectState({
+          highlightedCode: '',
+          diagnostics: [],
+          activeLines: ['|>circle({center=[0,0],radius=5},%)'],
+        })
+        await expect(
+          toolbar.exitSketchBtn,
+          'We should not be in sketch mode now'
+        ).not.toBeVisible()
+        await expect(
+          page.getByText(
+            'sketches on offset planes through the feature tree is not yet supported'
+          ),
+          'We should see a toast message about this'
+        ).toBeVisible()
       })
     }
-  )
-  test.fixme(
-    'User can edit a sketch (on an offset plane) from the feature tree',
-    async () => {}
   )
   test(`User can edit an extrude operation from the feature tree`, async ({
     context,

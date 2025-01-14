@@ -127,7 +127,8 @@ export class ToolbarFixture {
   }
 
   /**
-   * Get a specific operation button from the Feature Tree pane
+   * Get a specific operation button from the Feature Tree pane.
+   * Index is 0-based.
    */
   async getFeatureTreeOperation(operationName: string, operationIndex: number) {
     await this.openFeatureTreePane()
