@@ -181,7 +181,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           }),
         icon: 'chamfer3d',
         status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
-        disabled: (state) => !state.can({ type: 'Chamfer' }),
         title: 'Chamfer',
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
