@@ -148,6 +148,7 @@ function HelpMenuItem({
   return (
     <li className="p-0 m-0">
       {as === 'a' ? (
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions
         <a
           {...(props as React.ComponentProps<'a'>)}
           onClick={openExternalBrowserIfDesktop(

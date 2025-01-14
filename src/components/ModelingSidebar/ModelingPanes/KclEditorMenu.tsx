@@ -18,6 +18,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
 
   return (
     <Menu>
+      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
       <div
         className="relative"
         onClick={(e) => {

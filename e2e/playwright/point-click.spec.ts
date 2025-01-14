@@ -1248,6 +1248,222 @@ extrude001 = extrude(-12, sketch001)
   })
 })
 
+test(`Chamfer point-and-click`, async ({
+  context,
+  page,
+  homePage,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  // TODO: fix this test on windows after the electron migration
+  test.skip(process.platform === 'win32', 'Skip on windows')
+
+  // Code samples
+  const initialCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-12, -6], %)
+  |> line([0, 12], %)
+  |> line([24, 0], %)
+  |> line([0, -12], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(-12, sketch001)
+`
+  const firstChamferDeclaration = 'chamfer({ length = 5, tags = [seg01] }, %)'
+  const secondChamferDeclaration =
+    'chamfer({       length = 5,       tags = [getOppositeEdge(seg01)]     }, %)'
+
+  // Locators
+  const firstEdgeLocation = { x: 600, y: 193 }
+  const secondEdgeLocation = { x: 600, y: 383 }
+  const bodyLocation = { x: 630, y: 290 }
+  const [clickOnFirstEdge] = scene.makeMouseHelpers(
+    firstEdgeLocation.x,
+    firstEdgeLocation.y
+  )
+  const [clickOnSecondEdge] = scene.makeMouseHelpers(
+    secondEdgeLocation.x,
+    secondEdgeLocation.y
+  )
+
+  // Colors
+  const edgeColorWhite: [number, number, number] = [248, 248, 248]
+  const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
+  const bodyColor: [number, number, number] = [155, 155, 155]
+  const chamferColor: [number, number, number] = [168, 168, 168]
+  const backgroundColor: [number, number, number] = [30, 30, 30]
+  const lowTolerance = 20
+  const highTolerance = 40
+
+  // Setup
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
+
+  await test.step(`Verify scene is loaded`, async () => {
+    // verify modeling scene is loaded
+    await scene.expectPixelColor(
+      backgroundColor,
+      secondEdgeLocation,
+      lowTolerance
+    )
+
+    // wait for stream to load
+    await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+  })
+
+  // Test 1: Command bar flow with preselected edges
+  await test.step(`Select first edge`, async () => {
+    await scene.expectPixelColor(
+      edgeColorWhite,
+      firstEdgeLocation,
+      lowTolerance
+    )
+    await clickOnFirstEdge()
+    await scene.expectPixelColor(
+      edgeColorYellow,
+      firstEdgeLocation,
+      highTolerance // Ubuntu color mismatch can require high tolerance
+    )
+  })
+
+  await test.step(`Apply chamfer to the preselected edge`, async () => {
+    await toolbar.chamferButton.click()
+    await cmdBar.expectState({
+      commandName: 'Chamfer',
+      highlightedHeaderArg: 'selection',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Length: '',
+      },
+      stage: 'arguments',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Chamfer',
+      highlightedHeaderArg: 'length',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Selection: '1 face',
+        Length: '',
+      },
+      stage: 'arguments',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Chamfer',
+      headerArguments: {
+        Selection: '1 face',
+        Length: '5',
+      },
+      stage: 'review',
+    })
+    await cmdBar.progressCmdBar()
+  })
+
+  await test.step(`Confirm code is added to the editor`, async () => {
+    await editor.expectEditor.toContain(firstChamferDeclaration)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: ['|>chamfer({length=5,tags=[seg01]},%)'],
+      highlightedCode: '',
+    })
+  })
+
+  await test.step(`Confirm scene has changed`, async () => {
+    await scene.expectPixelColor(chamferColor, firstEdgeLocation, lowTolerance)
+  })
+
+  // Test 2: Command bar flow without preselected edges
+  await test.step(`Open chamfer UI without selecting edges`, async () => {
+    await toolbar.chamferButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Length: '',
+      },
+      highlightedHeaderArg: 'selection',
+      commandName: 'Chamfer',
+    })
+  })
+
+  await test.step(`Select second edge`, async () => {
+    await scene.expectPixelColor(
+      edgeColorWhite,
+      secondEdgeLocation,
+      lowTolerance
+    )
+    await clickOnSecondEdge()
+    await scene.expectPixelColor(
+      edgeColorYellow,
+      secondEdgeLocation,
+      highTolerance // Ubuntu color mismatch can require high tolerance
+    )
+  })
+
+  await test.step(`Apply chamfer to the second edge`, async () => {
+    await cmdBar.expectState({
+      commandName: 'Chamfer',
+      highlightedHeaderArg: 'selection',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Length: '',
+      },
+      stage: 'arguments',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Chamfer',
+      highlightedHeaderArg: 'length',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Selection: '1 sweepEdge',
+        Length: '',
+      },
+      stage: 'arguments',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      commandName: 'Chamfer',
+      headerArguments: {
+        Selection: '1 sweepEdge',
+        Length: '5',
+      },
+      stage: 'review',
+    })
+    await cmdBar.progressCmdBar()
+  })
+
+  await test.step(`Confirm code is added to the editor`, async () => {
+    await editor.expectEditor.toContain(secondChamferDeclaration)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: ['length=5,'],
+      highlightedCode: '',
+    })
+  })
+
+  await test.step(`Confirm scene has changed`, async () => {
+    await scene.expectPixelColor(
+      backgroundColor,
+      secondEdgeLocation,
+      lowTolerance
+    )
+  })
+})
+
 const shellPointAndClickCapCases = [
   { shouldPreselect: true },
   { shouldPreselect: false },

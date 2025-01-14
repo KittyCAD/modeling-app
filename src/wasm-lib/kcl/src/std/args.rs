@@ -1108,7 +1108,7 @@ impl<'a> FromKclValue<'a> for super::helix::HelixData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, revolutions);
-        let_field_of!(obj, length);
+        let_field_of!(obj, length?);
         let_field_of!(obj, ccw?);
         let_field_of!(obj, radius);
         let_field_of!(obj, axis);
