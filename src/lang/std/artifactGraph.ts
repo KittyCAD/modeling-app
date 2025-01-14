@@ -463,7 +463,11 @@ export function getArtifactsToUpdate({
           const seg = getArtifact(curve_id)
           if (seg?.type !== 'segment') return
           const path = getArtifact(seg.pathId)
-          if (path?.type === 'path' && seg?.type === 'segment' && path.sweepId) {
+          if (
+            path?.type === 'path' &&
+            seg?.type === 'segment' &&
+            path.sweepId
+          ) {
             lastPath = path
             const extraArtifact = Object.values(execStateArtifacts).find(
               (a) => a?.type === 'StartSketchOnFace' && a.faceId === face_id
