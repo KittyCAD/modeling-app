@@ -270,7 +270,6 @@ pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64
     [x, y]
 }
 
-#[allow(dead_code)]
 pub struct CircleParams {
     pub center: Point2d,
     pub radius: f64,

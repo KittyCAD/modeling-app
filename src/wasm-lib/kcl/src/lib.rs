@@ -60,7 +60,7 @@ mod coredump;
 mod docs;
 mod engine;
 mod errors;
-pub mod execution;
+mod execution;
 mod fs;
 pub mod lint;
 mod log;
@@ -84,7 +84,7 @@ pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
 pub use execution::{
     cache::{CacheInformation, OldAstState},
-    ExecState, ExecutorContext, ExecutorSettings,
+    ExecState, ExecutorContext, ExecutorSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,

@@ -585,7 +585,7 @@ pub struct WasmCircleParams {
     pub radius: f64,
 }
 
-/// Calculate a distance.
+/// Calculate a circle from 3 points.
 #[wasm_bindgen]
 pub fn calculate_circle_from_3_points(ax: f64, ay: f64, bx: f64, by: f64, cx: f64, cy: f64) -> WasmCircleParams {
     let result = kcl_lib::std::utils::calculate_circle_from_3_points([
