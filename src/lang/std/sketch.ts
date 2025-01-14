@@ -479,7 +479,7 @@ export const line: SketchLineHelperKw = {
     }
   },
   getTag: getTagKwArg(),
-  addTag: addTag(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
       callExp,
@@ -627,7 +627,7 @@ export const lineTo: SketchLineHelperKw = {
     }
   },
   getTag: getTagKwArg(),
-  addTag: addTag(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
       callExp,
@@ -2450,6 +2450,38 @@ function addTag(tagIndex = 2): addTagFn {
     const isTagExisting = !!thirdArg
     if (!isTagExisting) {
       primaryCallExp.arguments[tagIndex] = tagDeclarator
+    }
+    if ('value' in tagDeclarator) {
+      // Now TypeScript knows tagDeclarator has a value property
+      return {
+        modifiedAst: _node,
+        tag: String(tagDeclarator.value),
+      }
+    } else {
+      return new Error('Unable to assign tag without value')
+    }
+  }
+}
+
+function addTagKw(): addTagFn {
+  return ({ node, pathToNode }) => {
+    const _node = { ...node }
+    const callExpr = getNodeFromPath<Node<CallExpressionKw>>(
+      _node,
+      pathToNode,
+      'CallExpressionKw'
+    )
+    if (err(callExpr)) return callExpr
+
+    const { node: primaryCallExp } = callExpr
+
+    const tagArg = findKwArg(ARG_TAG, primaryCallExp)
+    const tagDeclarator =
+      tagArg || createTagDeclarator(findUniqueName(_node, 'seg', 2))
+    const isTagExisting = !!tagArg
+    if (!isTagExisting) {
+      const labeledArg = createLabeledArg(ARG_TAG, tagDeclarator)
+      primaryCallExp.arguments.push(labeledArg)
     }
     if ('value' in tagDeclarator) {
       // Now TypeScript knows tagDeclarator has a value property
