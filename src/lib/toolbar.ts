@@ -173,10 +173,14 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/fillet' }],
       },
       {
-        id: 'chamfer',
-        onClick: () => console.error('Chamfer not yet implemented'),
+        id: 'chamfer3d',
+        onClick: ({ commandBarSend }) =>
+          commandBarSend({
+            type: 'Find and select command',
+            data: { name: 'Chamfer', groupId: 'modeling' },
+          }),
         icon: 'chamfer3d',
-        status: 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Chamfer',
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
