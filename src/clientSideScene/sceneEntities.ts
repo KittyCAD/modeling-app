@@ -113,7 +113,6 @@ import { SegmentInputs } from 'lang/std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { LabeledArg } from 'wasm-lib/kcl/bindings/LabeledArg'
 import { Literal } from 'wasm-lib/kcl/bindings/Literal'
-import { ArrayExpression } from 'wasm-lib/kcl/bindings/ArrayExpression'
 import { radToDeg } from 'three/src/math/MathUtils'
 import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
 
@@ -1275,7 +1274,7 @@ export class SceneEntities {
     this.scene.add(groupOfDrafts)
 
     // How large the points on the circle will render as
-    const DRAFT_POINT_RADIUS = 6 // px
+    const DRAFT_POINT_RADIUS = 10 // px
 
     // The target of our dragging
     let target: Object3D | undefined = undefined
@@ -1380,14 +1379,17 @@ export class SceneEntities {
       )
         return kclManager.ast
 
-
       const arg = (x: LabeledArg): Literal[] | undefined => {
-          if ("arg" in x && "elements" in x.arg && x.arg.type === "ArrayExpression") {
-            if (x.arg.elements.every(x => x.type === "Literal")) {
-              return x.arg.elements
-            }
+        if (
+          'arg' in x &&
+          'elements' in x.arg &&
+          x.arg.type === 'ArrayExpression'
+        ) {
+          if (x.arg.elements.every((x) => x.type === 'Literal')) {
+            return x.arg.elements
           }
-          return undefined
+        }
+        return undefined
       }
 
       const kclCircle3PointArgs =
