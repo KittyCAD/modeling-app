@@ -1041,9 +1041,6 @@ test(`Fillet point-and-click`, async ({
   toolbar,
   cmdBar,
 }) => {
-  // TODO: fix this test on windows after the electron migration
-  test.skip(process.platform === 'win32', 'Skip on windows')
-
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
@@ -1257,9 +1254,6 @@ test(`Chamfer point-and-click`, async ({
   toolbar,
   cmdBar,
 }) => {
-  // TODO: fix this test on windows after the electron migration
-  test.skip(process.platform === 'win32', 'Skip on windows')
-
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
