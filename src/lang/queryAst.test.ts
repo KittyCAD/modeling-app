@@ -585,7 +585,7 @@ sketch002 = startSketchOn(plane001)
     const extrudable = doesSceneHaveSweepableSketch(ast, 2)
     expect(extrudable).toBeTruthy()
   })
-  it('find sketch002 NOT pipe to be extruded', async () => {
+  it('should recognize that sketch001 has been extruded', async () => {
     const exampleCode = `sketch001 = startSketchOn('XZ')
   |> startProfileAt([3.29, 7.86], %)
   |> line(end = [2.48, 2.44])

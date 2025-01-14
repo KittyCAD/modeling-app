@@ -1002,21 +1002,31 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
         let hasCircle = false
         for (const pipe of node.init.body) {
           if (
-            pipe.type === 'CallExpression' &&
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
             pipe.callee.name === 'startProfileAt'
           ) {
             hasStartProfileAt = true
           }
           if (
-            pipe.type === 'CallExpression' &&
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
             pipe.callee.name === 'startSketchOn'
           ) {
             hasStartSketchOn = true
           }
-          if (pipe.type === 'CallExpression' && pipe.callee.name === 'close') {
+          if (
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
+            pipe.callee.name === 'close'
+          ) {
             hasClose = true
           }
-          if (pipe.type === 'CallExpression' && pipe.callee.name === 'circle') {
+          if (
+            (pipe.type === 'CallExpressionKw' ||
+              pipe.type === 'CallExpression') &&
+            pipe.callee.name === 'circle'
+          ) {
             hasCircle = true
           }
         }
@@ -1034,6 +1044,13 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
         theMap?.[node?.arguments?.[1]?.name]
       ) {
         delete theMap[node.arguments[1].name]
+      } else if (
+        node.type === 'CallExpressionKw' &&
+        (node.callee.name === 'extrude' || node.callee.name === 'revolve') &&
+        node.unlabeled?.type === 'Identifier' &&
+        theMap?.[node?.unlabeled?.name]
+      ) {
+        delete theMap[node.unlabeled.name]
       }
     },
   })
