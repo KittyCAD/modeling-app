@@ -1,4 +1,4 @@
-import { assertParse, recast, initPromise, VariableDeclaration } from './wasm'
+import { assertParse, recast, initPromise } from './wasm'
 import {
   createLiteral,
   createIdentifier,
@@ -16,13 +16,11 @@ import {
   deleteSegmentFromPipeExpression,
   removeSingleConstraintInfo,
   deleteFromSelection,
-  createCallExpressionStdLib,
 } from './modifyAst'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
 import { err } from 'lib/trap'
 import { SimplifiedArgDetails } from './std/stdTypes'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { Artifact, codeRefFromRange } from './std/artifactGraph'
 
 beforeAll(async () => {
