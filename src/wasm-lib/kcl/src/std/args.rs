@@ -707,6 +707,22 @@ impl<'a> FromKclValue<'a> for [f64; 2] {
     }
 }
 
+impl<'a> FromKclValue<'a> for [f32; 3] {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Array { value, meta: _ } = arg else {
+            return None;
+        };
+        if value.len() != 3 {
+            return None;
+        }
+        let v0 = value.first()?;
+        let v1 = value.get(1)?;
+        let v2 = value.get(2)?;
+        let array = [v0.as_f32()?, v1.as_f32()?, v2.as_f32()?];
+        Some(array)
+    }
+}
+
 impl<'a> FromKclValue<'a> for [usize; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Array { value, meta: _ } = arg else {
@@ -1086,6 +1102,23 @@ impl<'a> FromKclValue<'a> for super::appearance::AppearanceData {
             metalness,
             roughness,
         })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::transform::ScaleData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, scale);
+        Some(Self { scale })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::transform::TranslateData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, translate);
+        let_field_of!(obj, global?);
+        Some(Self { translate, global })
     }
 }
 
