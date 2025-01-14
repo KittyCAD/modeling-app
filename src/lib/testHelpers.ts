@@ -80,6 +80,7 @@ class MockEngineCommandManager {
 
 export async function enginelessExecutor(
   ast: Node<Program>,
+  path: string | null,
   pmo: ProgramMemory | Error = ProgramMemory.empty()
 ): Promise<ExecState> {
   if (pmo !== null && err(pmo)) return Promise.reject(pmo)
@@ -90,7 +91,7 @@ export async function enginelessExecutor(
   }) as any as EngineCommandManager
   // eslint-disable-next-line @typescript-eslint/no-floating-promises
   mockEngineCommandManager.startNewSession()
-  const execState = await executor(ast, mockEngineCommandManager, pmo)
+  const execState = await executor(ast, path, mockEngineCommandManager, pmo)
   await mockEngineCommandManager.waitForAllCommands()
   return execState
 }

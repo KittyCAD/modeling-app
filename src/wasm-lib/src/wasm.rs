@@ -58,6 +58,7 @@ pub async fn clear_scene_and_bust_cache(
 #[wasm_bindgen]
 pub async fn execute(
     program_ast_json: &str,
+    path: Option<&str>,
     program_memory_override_str: &str,
     settings: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,

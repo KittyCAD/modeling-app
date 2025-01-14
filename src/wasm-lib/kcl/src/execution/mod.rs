@@ -142,7 +142,7 @@ impl ExecState {
         // This is for the front end to keep track of the ids.
         id_generator.next_id = 0;
 
-        let mut global = GlobalState::new();
+        let mut global = GlobalState::new(PathBuf::default());
         global.id_generator = id_generator;
 
         *self = ExecState {
@@ -204,7 +204,7 @@ impl ExecState {
 }
 
 impl GlobalState {
-    fn new() -> Self {
+    fn new(root_path: PathBuf) -> Self {
         let mut global = GlobalState {
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
@@ -215,8 +215,6 @@ impl GlobalState {
             artifact_graph: Default::default(),
         };
 
-        // TODO(#4434): Use the top-level file's path.
-        let root_path = PathBuf::new();
         let root_id = ModuleId::default();
         global.module_infos.insert(
             root_id,
