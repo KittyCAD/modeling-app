@@ -156,5 +156,8 @@ async fn inner_loft(
     .await?;
 
     // Using the first sketch as the base curve, idk we might want to change this later.
-    do_post_extrude(sketches[0].clone(), 0.0, exec_state, args).await
+    let mut sketch = sketches[0].clone();
+    // Override its id with the loft id so we can get its faces later
+    sketch.id = id;
+    do_post_extrude(sketch, 0.0, exec_state, args).await
 }

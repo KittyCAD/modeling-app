@@ -185,7 +185,7 @@ impl Args {
         id: uuid::Uuid,
         cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+        self.ctx.engine.send_modeling_cmd(id, self.source_range, &cmd).await
     }
 
     fn get_tag_info_from_memory<'a, 'e>(
@@ -1108,7 +1108,7 @@ impl<'a> FromKclValue<'a> for super::helix::HelixData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, revolutions);
-        let_field_of!(obj, length);
+        let_field_of!(obj, length?);
         let_field_of!(obj, ccw?);
         let_field_of!(obj, radius);
         let_field_of!(obj, axis);

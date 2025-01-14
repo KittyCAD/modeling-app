@@ -1,14 +1,18 @@
 //! Cache testing framework.
 
 use anyhow::Result;
-use kcl_lib::ExecError;
+use kcl_lib::{ExecError, ExecState};
 
+#[derive(Debug)]
 struct Variation<'a> {
     code: &'a str,
     settings: &'a kcl_lib::ExecutorSettings,
 }
 
-async fn cache_test(test_name: &str, variations: Vec<Variation<'_>>) -> Result<Vec<(String, image::DynamicImage)>> {
+async fn cache_test(
+    test_name: &str,
+    variations: Vec<Variation<'_>>,
+) -> Result<Vec<(String, image::DynamicImage, ExecState)>> {
     let first = variations
         .first()
         .ok_or_else(|| anyhow::anyhow!("No variations provided for test '{}'", test_name))?;
@@ -42,7 +46,7 @@ async fn cache_test(test_name: &str, variations: Vec<Variation<'_>>) -> Result<V
         // Save the snapshot.
         let path = crate::assert_out(&format!("cache_{}_{}", test_name, index), &img);
 
-        img_results.push((path, img));
+        img_results.push((path, img, exec_state.clone()));
 
         // Prepare the last state.
         old_ast_state = Some(kcl_lib::OldAstState {
@@ -51,6 +55,8 @@ async fn cache_test(test_name: &str, variations: Vec<Variation<'_>>) -> Result<V
             settings: variation.settings.clone(),
         });
     }
+
+    ctx.close().await;
 
     Ok(img_results)
 }
@@ -213,4 +219,48 @@ async fn kcl_test_cache_change_highlight_edges_changes_visual() {
     let second = result.last().unwrap();
 
     assert!(first.1 != second.1);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_add_line_preserves_artifact_commands() {
+    let code = r#"sketch001 = startSketchOn('XY')
+  |> startProfileAt([5.5229, 5.25217], %)
+  |> line([10.50433, -1.19122], %)
+  |> line([8.01362, -5.48731], %)
+  |> line([-1.02877, -6.76825], %)
+  |> line([-11.53311, 2.81559], %)
+  |> close(%)
+"#;
+    // Use a new statement; don't extend the prior pipeline.  This allows us to
+    // detect a prefix.
+    let code_with_extrude = code.to_owned()
+        + r#"
+extrude(4, sketch001)
+"#;
+
+    let result = cache_test(
+        "add_line_preserves_artifact_commands",
+        vec![
+            Variation {
+                code,
+                settings: &Default::default(),
+            },
+            Variation {
+                code: code_with_extrude.as_str(),
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await
+    .unwrap();
+
+    let first = result.first().unwrap();
+    let second = result.last().unwrap();
+
+    assert!(
+        first.2.global.artifact_commands.len() < second.2.global.artifact_commands.len(),
+        "Second should have all the artifact commands of the first, plus more. first={:?}, second={:?}",
+        first.2.global.artifact_commands.len(),
+        second.2.global.artifact_commands.len()
+    );
 }

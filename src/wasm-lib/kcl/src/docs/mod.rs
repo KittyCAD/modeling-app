@@ -1024,6 +1024,36 @@ mod tests {
         assert_eq!(snippet, r#"hole(${0:holeSketch}, ${1:%})${}"#);
     }
 
+    #[test]
+    fn get_autocomplete_snippet_helix() {
+        let helix_fn: Box<dyn StdLibFn> = Box::new(crate::std::helix::Helix);
+        let snippet = helix_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"helix({
+	revolutions = ${0:3.14},
+	angleStart = ${1:3.14},
+	ccw = ${2:false},
+	radius = ${3:3.14},
+	axis = ${4:"X"},
+})${}"#
+        );
+    }
+
+    #[test]
+    fn get_autocomplete_snippet_helix_revolutions() {
+        let helix_fn: Box<dyn StdLibFn> = Box::new(crate::std::helix::HelixRevolutions);
+        let snippet = helix_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(
+            snippet,
+            r#"helixRevolutions({
+	revolutions = ${0:3.14},
+	angleStart = ${1:3.14},
+	ccw = ${2:false},
+}, ${3:%})${}"#
+        );
+    }
+
     // We want to test the snippets we compile at lsp start.
     #[test]
     fn get_all_stdlib_autocomplete_snippets() {

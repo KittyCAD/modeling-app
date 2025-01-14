@@ -41,13 +41,13 @@ export default function Export() {
             export to almost any CAD software.
           </p>
           <p className="my-4">
-            Our teammate David is working on the file format, check out{' '}
+            Our teammate Katie is working on the file format, check out{' '}
             <a
-              href="https://www.youtube.com/watch?v=8SuW0qkYCZo"
+              href="https://github.com/KhronosGroup/glTF/pull/2343"
               target="_blank"
               rel="noreferrer noopener"
             >
-              his talk with the Metaverse Standards Forum
+              her standards proposal on GitHub
             </a>
             !
           </p>
