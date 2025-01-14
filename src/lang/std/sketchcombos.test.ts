@@ -550,7 +550,7 @@ part001 = startSketchOn('XY')
         ['// base selection', '// xRelative'],
         'setVertDistance'
       )
-      expect(expectedCode).toContain(`|> line(%, endAbsolute = [
+      expect(expectedCode).toContain(`|> line(endAbsolute = [
        lastSegX(%) + myVar,
        segEndY(seg01) + 2.93
      ]) // xRelative`)
@@ -561,7 +561,7 @@ part001 = startSketchOn('XY')
         ['// base selection', '// yRelative'],
         'setHorzDistance'
       )
-      expect(expectedCode).toContain(`|> line(%, endAbsolute = [
+      expect(expectedCode).toContain(`|> line(endAbsolute = [
        segEndX(seg01) + 2.6,
        lastSegY(%) + myVar
      ]) // yRelative`)

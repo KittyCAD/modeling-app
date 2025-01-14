@@ -128,7 +128,7 @@ function createCallWrapper(
       return {
         callExp: createCallExpressionStdLibKw(
           'line',
-          createPipeSubstitution(),
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
           [createLabeledArg('end', createArrayExpression(val))]
         ),
         valueUsedInTransform,
@@ -138,7 +138,7 @@ function createCallWrapper(
       return {
         callExp: createCallExpressionStdLibKw(
           'line',
-          createPipeSubstitution(),
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
           [createLabeledArg('endAbsolute', createArrayExpression(val))]
         ),
         valueUsedInTransform,
