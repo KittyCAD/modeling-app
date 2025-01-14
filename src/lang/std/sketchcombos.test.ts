@@ -29,7 +29,7 @@ beforeAll(async () => {
 
 describe('testing getConstraintType', () => {
   const helper = getConstraintTypeFromSourceHelper
-  it.only('testing line', () => {
+  it('testing line', () => {
     expect(helper(`line(end = [5, myVar])`)).toBe('yRelative')
     expect(helper(`line(end = [myVar, 5])`)).toBe('xRelative')
   })

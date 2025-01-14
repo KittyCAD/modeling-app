@@ -294,7 +294,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
     // new line should start at the same place as the old line
     expect(originalRange[0]).toBe(newCode.indexOf(expectedLine))
   })
-  it.only('lineTo keeps variable when converted to xLineTo', async () => {
+  it('lineTo keeps variable when converted to xLineTo', async () => {
     const { newCode, originalRange } = await testingSwapSketchFnCall({
       inputCode: varExample,
       callToSwap: 'line(endAbsolute = [lineToX, 2.85])',
