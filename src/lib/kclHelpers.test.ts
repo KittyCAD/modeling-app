@@ -1,44 +1,69 @@
+import { ParseResult, ProgramMemory } from 'lang/wasm'
 import { getCalculatedKclExpressionValue } from './kclHelpers'
 
 describe('KCL expression calculations', () => {
   it('calculates a simple expression', async () => {
     const actual = await getCalculatedKclExpressionValue({
       value: '1 + 2',
-      variables: [],
+      programMemory: ProgramMemory.empty(),
     })
-    expect(actual?.valueAsString).toEqual('3')
-    expect(actual?.astNode).toBeDefined()
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual).not.toHaveProperty('errors')
+    expect(coercedActual.valueAsString).toEqual('3')
+    expect(coercedActual?.astNode).toBeDefined()
   })
   it('calculates a simple expression with a variable', async () => {
+    const programMemory = ProgramMemory.empty()
+    programMemory.set('x', {
+      type: 'Number',
+      value: 2,
+      __meta: [],
+    })
     const actual = await getCalculatedKclExpressionValue({
       value: '1 + x',
-      variables: [{ key: 'x', value: 2 }],
+      programMemory,
     })
-    expect(actual?.valueAsString).toEqual('3')
-    expect(actual?.astNode).toBeDefined()
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual.valueAsString).toEqual('3')
+    expect(coercedActual.astNode).toBeDefined()
   })
   it('returns NAN for an invalid expression', async () => {
     const actual = await getCalculatedKclExpressionValue({
       value: '1 + x',
-      variables: [],
+      programMemory: ProgramMemory.empty(),
     })
-    expect(actual?.valueAsString).toEqual('NAN')
-    expect(actual?.astNode).toBeDefined()
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual.valueAsString).toEqual('NAN')
+    expect(coercedActual.astNode).toBeDefined()
   })
   it('returns NAN for an expression with an invalid variable', async () => {
+    const programMemory = ProgramMemory.empty()
+    programMemory.set('y', {
+      type: 'Number',
+      value: 2,
+      __meta: [],
+    })
     const actual = await getCalculatedKclExpressionValue({
       value: '1 + x',
-      variables: [{ key: 'y', value: 2 }],
+      programMemory,
     })
-    expect(actual?.valueAsString).toEqual('NAN')
-    expect(actual?.astNode).toBeDefined()
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual.valueAsString).toEqual('NAN')
+    expect(coercedActual.astNode).toBeDefined()
   })
   it('calculates a more complex expression with a variable', async () => {
+    const programMemory = ProgramMemory.empty()
+    programMemory.set('x', {
+      type: 'Number',
+      value: 2,
+      __meta: [],
+    })
     const actual = await getCalculatedKclExpressionValue({
       value: '(1 + x * x) * 2',
-      variables: [{ key: 'x', value: 2 }],
+      programMemory,
     })
-    expect(actual?.valueAsString).toEqual('10')
-    expect(actual?.astNode).toBeDefined()
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual.valueAsString).toEqual('10')
+    expect(coercedActual.astNode).toBeDefined()
   })
 })
