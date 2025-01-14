@@ -1447,7 +1447,7 @@ export class SceneEntities {
       return astSnapshot
     }
 
-    const updateCircle3Point = async () => {
+    const updateCircle3Point = async (opts?: { execute?: true }) => {
       const points_ = Array.from(points.values())
       const circleParams = calculate_circle_from_3_points(
         points_[0].x,
@@ -1457,13 +1457,18 @@ export class SceneEntities {
         points_[2].x,
         points_[2].y
       )
+
+      if (Number.isNaN(circleParams.radius)) return
+
       await createCircle3PointGraphic(
         points_,
         new Vector2(circleParams.center_x, circleParams.center_y),
         circleParams.radius
       )
       const astWithNewCode = insertCircle3PointKclIntoAstSnapshot(points_)
-      await codeManager.updateEditorWithAstAndWriteToFile(astWithNewCode)
+      const codeAsString = recast(astWithNewCode)
+      if (err(codeAsString)) return
+      codeManager.updateCodeStateEditor(codeAsString)
     }
 
     const cleanupFn = () => {

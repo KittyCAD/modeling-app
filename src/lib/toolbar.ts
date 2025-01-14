@@ -449,7 +449,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             (!canRectangleOrCircleTool(state.context) &&
               !state.matches({ Sketch: 'Circle tool' }) &&
               !state.matches({ Sketch: 'circle3PointToolSelect' })),
-          isActive: (state) => state.matches({ Sketch: 'Circle tool' }) || state.matches({ Sketch: 'circle3PointToolSelect' }),
+          isActive: (state) =>
+            state.matches({ Sketch: 'Circle tool' }) ||
+            state.matches({ Sketch: 'circle3PointToolSelect' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
           showTitle: false,

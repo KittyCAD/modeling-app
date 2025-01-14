@@ -5,7 +5,7 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    exec::IdGenerator, execution::Point2d, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState,
+    exec::IdGenerator, Point2d, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState,
     Program,
 };
 use tokio::sync::RwLock;
