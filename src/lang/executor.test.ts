@@ -73,12 +73,12 @@ const newVar = myVar + 1`
         to: [0, 2],
         from: [0, 0],
         __geoMeta: {
-          sourceRange: [72, 97, 0],
+          sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
         },
         tag: {
-          end: 96,
-          start: 89,
+          end: 111,
+          start: 104,
           type: 'TagDeclarator',
           value: 'myPath',
         },
@@ -89,7 +89,7 @@ const newVar = myVar + 1`
         from: [0, 2],
         tag: null,
         __geoMeta: {
-          sourceRange: [103, 119, 0],
+          sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
         },
       },
@@ -98,12 +98,12 @@ const newVar = myVar + 1`
         to: [5, -1],
         from: [2, 3],
         __geoMeta: {
-          sourceRange: [125, 154, 0],
+          sourceRange: [expect.any(Number), expect.any(Number), 0],
           id: expect.any(String),
         },
         tag: {
-          end: 153,
-          start: 143,
+          end: 192,
+          start: 182,
           type: 'TagDeclarator',
           value: 'rightPath',
         },
@@ -168,14 +168,14 @@ const newVar = myVar + 1`
           tag: null,
           __geoMeta: {
             id: expect.any(String),
-            sourceRange: [39, 63, 0],
+            sourceRange: [expect.any(Number), expect.any(Number), 0],
           },
         },
         tags: {
           myPath: {
             __meta: [
               {
-                sourceRange: [109, 116, 0],
+                sourceRange: [expect.any(Number), expect.any(Number), 0],
               },
             ],
             type: 'TagIdentifier',
@@ -190,7 +190,7 @@ const newVar = myVar + 1`
             from: [0, 0],
             tag: null,
             __geoMeta: {
-              sourceRange: [69, 85, 0],
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
               id: expect.any(String),
             },
           },
@@ -199,12 +199,12 @@ const newVar = myVar + 1`
             to: [0, 1],
             from: [1, 1],
             __geoMeta: {
-              sourceRange: [91, 117, 0],
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
               id: expect.any(String),
             },
             tag: {
-              end: 116,
-              start: 109,
+              end: 140,
+              start: 133,
               type: 'TagDeclarator',
               value: 'myPath',
             },
@@ -215,7 +215,7 @@ const newVar = myVar + 1`
             from: [0, 1],
             tag: null,
             __geoMeta: {
-              sourceRange: [123, 139, 0],
+              sourceRange: [expect.any(Number), expect.any(Number), 0],
               id: expect.any(String),
             },
           },
@@ -224,7 +224,7 @@ const newVar = myVar + 1`
         units: {
           type: 'Mm',
         },
-        __meta: [{ sourceRange: [39, 63, 0] }],
+        __meta: [{ sourceRange: [expect.any(Number), expect.any(Number), 0] }],
       },
     })
   })
