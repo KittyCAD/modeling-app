@@ -77,7 +77,7 @@ pub struct GlobalState {
     pub artifact_commands: Vec<ArtifactCommand>,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ModuleState {
     /// Program variable bindings.
@@ -115,21 +115,15 @@ pub struct ExecOutcome {
     pub artifact_commands: Vec<ArtifactCommand>,
 }
 
-impl Default for ExecState {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
 impl ExecState {
-    pub fn new() -> Self {
+    pub fn new(exec_settings: &ExecutorSettings) -> Self {
         ExecState {
             global: GlobalState::new(),
-            mod_local: ModuleState::default(),
+            mod_local: ModuleState::new(exec_settings),
         }
     }
 
-    fn reset(&mut self) {
+    fn reset(&mut self, exec_settings: &ExecutorSettings) {
         let mut id_generator = self.global.id_generator.clone();
         // We do not pop the ids, since we want to keep the same id generator.
         // This is for the front end to keep track of the ids.
@@ -140,7 +134,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::default(),
+            mod_local: ModuleState::new(exec_settings),
         };
     }
 
@@ -232,21 +226,29 @@ impl GlobalState {
     }
 }
 
+impl ModuleState {
+    fn new(exec_settings: &ExecutorSettings) -> Self {
+        ModuleState {
+            memory: Default::default(),
+            dynamic_state: Default::default(),
+            pipe_value: Default::default(),
+            module_exports: Default::default(),
+            import_stack: Default::default(),
+            operations: Default::default(),
+            settings: MetaSettings {
+                default_length_units: exec_settings.units.into(),
+                default_angle_units: Default::default(),
+            },
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
     pub default_length_units: kcl_value::UnitLen,
     pub default_angle_units: kcl_value::UnitAngle,
-}
-
-impl Default for MetaSettings {
-    fn default() -> Self {
-        MetaSettings {
-            default_length_units: kcl_value::UnitLen::Mm,
-            default_angle_units: kcl_value::UnitAngle::Degrees,
-        }
-    }
 }
 
 impl MetaSettings {
@@ -1711,7 +1713,7 @@ pub struct ExecutorContext {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ExecutorSettings {
-    /// The unit to use in modeling dimensions.
+    /// The project-default unit to use in modeling dimensions.
     pub units: UnitLength,
     /// Highlight edges of 3D objects?
     pub highlight_edges: bool,
@@ -2214,7 +2216,7 @@ impl ExecutorContext {
 
         if cache_result.clear_scene && !self.is_mock() {
             // Pop the execution state, since we are starting fresh.
-            exec_state.reset();
+            exec_state.reset(&self.settings);
 
             // We don't do this in mock mode since there is no engine connection
             // anyways and from the TS side we override memory and don't want to clear it.
@@ -2457,7 +2459,7 @@ impl ExecutorContext {
 
         let mut local_state = ModuleState {
             import_stack: exec_state.mod_local.import_stack.clone(),
-            ..Default::default()
+            ..ModuleState::new(&self.settings)
         };
         local_state.import_stack.push(info.path.clone());
         std::mem::swap(&mut exec_state.mod_local, &mut local_state);
@@ -2830,7 +2832,7 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let mut exec_state = ExecState::default();
+        let mut exec_state = ExecState::new(&ctx.settings);
         ctx.run(program.clone().into(), &mut exec_state).await?;
 
         Ok((program, ctx, exec_state))
@@ -4045,7 +4047,7 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
             .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
         // Execute the program.
-        let mut exec_state = Default::default();
+        let mut exec_state = ExecState::new(&ctx.settings);
         let cache_info = crate::CacheInformation {
             old: None,
             new_ast: old_program.ast.clone(),
