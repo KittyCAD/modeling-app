@@ -313,6 +313,7 @@ export const Stream = () => {
   }
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
       className="absolute inset-0 z-0"

@@ -25,10 +25,12 @@ pub async fn execute_and_snapshot(
 ) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(units, true, project_directory).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    do_execute_and_snapshot(&ctx, program)
+    let res = do_execute_and_snapshot(&ctx, program)
         .await
         .map(|(_state, snap)| snap)
-        .map_err(|err| err.error)
+        .map_err(|err| err.error);
+    ctx.close().await;
+    res
 }
 
 /// Executes a kcl program and takes a snapshot of the result.
@@ -39,14 +41,16 @@ pub async fn execute_and_snapshot_ast(
     project_directory: Option<PathBuf>,
 ) -> Result<(ProgramMemory, Vec<Operation>, Vec<ArtifactCommand>, image::DynamicImage), ExecErrorWithState> {
     let ctx = new_context(units, true, project_directory).await?;
-    do_execute_and_snapshot(&ctx, ast).await.map(|(state, snap)| {
+    let res = do_execute_and_snapshot(&ctx, ast).await.map(|(state, snap)| {
         (
             state.mod_local.memory,
             state.mod_local.operations,
             state.global.artifact_commands,
             snap,
         )
-    })
+    });
+    ctx.close().await;
+    res
 }
 
 pub async fn execute_and_snapshot_no_auth(
@@ -56,10 +60,12 @@ pub async fn execute_and_snapshot_no_auth(
 ) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(units, false, project_directory).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    do_execute_and_snapshot(&ctx, program)
+    let res = do_execute_and_snapshot(&ctx, program)
         .await
         .map(|(_state, snap)| snap)
-        .map_err(|err| err.error)
+        .map_err(|err| err.error);
+    ctx.close().await;
+    res
 }
 
 async fn do_execute_and_snapshot(
@@ -80,6 +86,9 @@ async fn do_execute_and_snapshot(
         .map_err(|e| ExecError::BadPng(e.to_string()))
         .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
         .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?;
+
+    ctx.close().await;
+
     Ok((exec_state, img))
 }
 

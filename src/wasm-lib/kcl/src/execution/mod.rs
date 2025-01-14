@@ -2014,10 +2014,13 @@ impl ExecutorContext {
         // AND if we aren't in wasm it doesn't really matter.
         Ok(())
     }
-    // Given an old ast, old program memory and new ast, find the parts of the code that need to be
-    // re-executed.
-    // This function should never error, because in the case of any internal error, we should just pop
-    // the cache.
+    /// Given an old ast, old program memory and new ast, find the parts of the code that need to be
+    /// re-executed.
+    /// This function should never error, because in the case of any internal error, we should just pop
+    /// the cache.
+    ///
+    /// Returns `None` when there are no changes to the program, i.e. it is
+    /// fully cached.
     pub async fn get_changed_program(&self, info: CacheInformation) -> Option<CacheResult> {
         let Some(old) = info.old else {
             // We have no old info, we need to re-execute the whole thing.
@@ -2138,7 +2141,7 @@ impl ExecutorContext {
                 }
             }
             std::cmp::Ordering::Equal => {
-                // currently unreachable, but lets pretend like the code
+                // currently unreachable, but let's pretend like the code
                 // above can do something meaningful here for when we get
                 // to diffing and yanking chunks of the program apart.
 
@@ -2237,7 +2240,10 @@ impl ExecutorContext {
                 )
             })?;
         // Move the artifact commands to simplify cache management.
-        exec_state.global.artifact_commands = self.engine.take_artifact_commands();
+        exec_state
+            .global
+            .artifact_commands
+            .extend(self.engine.take_artifact_commands());
         let session_data = self.engine.get_session_data();
         Ok(session_data)
     }
@@ -2626,6 +2632,10 @@ impl ExecutorContext {
         self.run_with_ui_outputs(program.clone().into(), exec_state).await?;
 
         self.prepare_snapshot().await
+    }
+
+    pub async fn close(&self) {
+        self.engine.close().await;
     }
 }
 

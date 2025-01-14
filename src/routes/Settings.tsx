@@ -32,6 +32,8 @@ export const PACKAGE_NAME = isDesktop()
 
 export const IS_NIGHTLY = PACKAGE_NAME.indexOf('-nightly') > -1
 
+export const IS_NIGHTLY_OR_DEBUG = IS_NIGHTLY || APP_VERSION === '0.0.0'
+
 export function getReleaseUrl(version: string = APP_VERSION) {
   return `https://github.com/KittyCAD/modeling-app/releases/tag/${
     IS_NIGHTLY ? 'nightly-' : ''

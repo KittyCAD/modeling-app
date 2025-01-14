@@ -37,6 +37,10 @@ export type ModelingCommandSchema = {
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
+  Sweep: {
+    path: Selections
+    profile: Selections
+  }
   Loft: {
     selection: Selections
   }
@@ -47,7 +51,9 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
-    axis: Selections
+    axisOrEdge: string
+    axis: string
+    edge: Selections
   }
   Fillet: {
     // todo
@@ -290,6 +296,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  Sweep: {
+    description:
+      'Create a 3D body by moving a sketch region along an arbitrary path.',
+    icon: 'sweep',
+    status: 'development',
+    needsReview: true,
+    args: {
+      profile: {
+        inputType: 'selection',
+        selectionTypes: ['solid2D'],
+        required: true,
+        skip: true,
+        multiple: false,
+        // TODO: add dry-run validation
+        warningMessage:
+          'The sweep workflow is new and under tested. Please break it and report issues.',
+      },
+      path: {
+        inputType: 'selection',
+        selectionTypes: ['segment', 'path'],
+        required: true,
+        skip: true,
+        multiple: false,
+        // TODO: add dry-run validation
+      },
+    },
+  },
   Loft: {
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
@@ -324,10 +357,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
+    status: 'development',
     needsReview: true,
     args: {
       selection: {
@@ -336,9 +369,34 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+        warningMessage:
+          'The revolve workflow is new and under tested. Please break it and report issues.',
+      },
+      axisOrEdge: {
+        inputType: 'options',
+        required: true,
+        defaultValue: 'Axis',
+        options: [
+          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Edge', isCurrent: false, value: 'Edge' },
+        ],
       },
       axis: {
-        required: true,
+        required: (commandContext) =>
+          ['Axis'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'options',
+        options: [
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+        ],
+      },
+      edge: {
+        required: (commandContext) =>
+          ['Edge'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
