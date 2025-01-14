@@ -2393,6 +2393,10 @@ export function addTagForSketchOnFace(
   if (expressionName === 'chamfer') {
     return addTagToChamfer(tagInfo, edgeCutMeta)
   }
+  if (expressionName in sketchLineHelperMapKw) {
+    const { addTag } = sketchLineHelperMapKw[expressionName]
+    return addTag(tagInfo)
+  }
   if (expressionName in sketchLineHelperMap) {
     const { addTag } = sketchLineHelperMap[expressionName]
     return addTag(tagInfo)
