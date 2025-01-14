@@ -435,10 +435,10 @@ describe('testing math operators', () => {
       `const part001 = startSketchOn('XY')`,
       `  |> startProfileAt([0, 0], %)`,
       `  |> line(end = [3, 4], tag = $seg01)`,
-      `  |> line([`,
+      `  |> line(end = [`,
       `  min(segLen(seg01), myVar),`,
       `  -legLen(segLen(seg01), myVar)`,
-      `], %)`,
+      `])`,
       ``,
     ].join('\n')
     const mem = await exe(code)
