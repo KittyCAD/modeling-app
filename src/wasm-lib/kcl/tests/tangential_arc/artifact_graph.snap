@@ -6,53 +6,8 @@ snapshot_kind: text
 {
   "map": {
     "[uuid]": {
-      "type": "segment",
-      "id": "[uuid]",
-      "pathId": "[uuid]",
-      "surfaceId": "[uuid]",
-      "edgeIds": [
-        "[uuid]",
-        "[uuid]"
-      ],
-      "codeRef": {
-        "range": [
-          61,
-          106,
-          0
-        ],
-        "pathToNode": []
-      }
-    },
-    "[uuid]": {
       "type": "wall",
       "id": "[uuid]",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "adjacent",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "cap",
-      "id": "[uuid]",
-      "subType": "start",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "opposite",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "opposite",
       "segId": "[uuid]",
       "sweepId": "[uuid]"
     },
@@ -76,6 +31,38 @@ snapshot_kind: text
         ],
         "pathToNode": []
       }
+    },
+    "[uuid]": {
+      "type": "wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "path",
+      "id": "[uuid]",
+      "planeId": "[uuid]",
+      "segIds": [
+        "[uuid]",
+        "[uuid]",
+        "[uuid]"
+      ],
+      "sweepId": "[uuid]",
+      "codeRef": {
+        "range": [
+          12,
+          33,
+          0
+        ],
+        "pathToNode": []
+      }
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "adjacent",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
     },
     "[uuid]": {
       "type": "segment",
@@ -105,38 +92,13 @@ snapshot_kind: text
     "[uuid]": {
       "type": "cap",
       "id": "[uuid]",
-      "subType": "end",
+      "subType": "start",
       "sweepId": "[uuid]"
     },
     "[uuid]": {
       "type": "sweepEdge",
       "id": "[uuid]",
       "subType": "opposite",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "path",
-      "id": "[uuid]",
-      "planeId": "[uuid]",
-      "segIds": [
-        "[uuid]",
-        "[uuid]",
-        "[uuid]"
-      ],
-      "sweepId": "[uuid]",
-      "codeRef": {
-        "range": [
-          12,
-          33,
-          0
-        ],
-        "pathToNode": []
-      }
-    },
-    "[uuid]": {
-      "type": "wall",
-      "id": "[uuid]",
       "segId": "[uuid]",
       "sweepId": "[uuid]"
     },
@@ -151,12 +113,18 @@ snapshot_kind: text
       ],
       "codeRef": {
         "range": [
-          39,
-          55,
+          61,
+          106,
           0
         ],
         "pathToNode": []
       }
+    },
+    "[uuid]": {
+      "type": "cap",
+      "id": "[uuid]",
+      "subType": "end",
+      "sweepId": "[uuid]"
     },
     "[uuid]": {
       "type": "sweep",
@@ -191,6 +159,38 @@ snapshot_kind: text
       "type": "sweepEdge",
       "id": "[uuid]",
       "subType": "adjacent",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "edgeIds": [
+        "[uuid]",
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          39,
+          55,
+          0
+        ],
+        "pathToNode": []
+      }
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "opposite",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "opposite",
       "segId": "[uuid]",
       "sweepId": "[uuid]"
     }

@@ -6,9 +6,15 @@ snapshot_kind: text
 {
   "map": {
     "[uuid]": {
+      "type": "cap",
+      "id": "[uuid]",
+      "subType": "end",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
       "type": "sweepEdge",
       "id": "[uuid]",
-      "subType": "adjacent",
+      "subType": "opposite",
       "segId": "[uuid]",
       "sweepId": "[uuid]"
     },
@@ -29,6 +35,13 @@ snapshot_kind: text
         ],
         "pathToNode": []
       }
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "adjacent",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
     },
     "[uuid]": {
       "type": "sweep",
@@ -66,17 +79,6 @@ snapshot_kind: text
       "sweepId": "[uuid]"
     },
     "[uuid]": {
-      "type": "solid2d",
-      "id": "[uuid]",
-      "pathId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "cap",
-      "id": "[uuid]",
-      "subType": "end",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
       "type": "path",
       "id": "[uuid]",
       "planeId": "[uuid]",
@@ -110,11 +112,9 @@ snapshot_kind: text
       }
     },
     "[uuid]": {
-      "type": "sweepEdge",
+      "type": "solid2d",
       "id": "[uuid]",
-      "subType": "opposite",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
+      "pathId": "[uuid]"
     }
   }
 }

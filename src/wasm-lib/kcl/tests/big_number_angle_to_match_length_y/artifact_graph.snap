@@ -6,9 +6,41 @@ snapshot_kind: text
 {
   "map": {
     "[uuid]": {
-      "type": "cap",
+      "type": "wall",
       "id": "[uuid]",
-      "subType": "start",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "opposite",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "surfaceId": "[uuid]",
+      "edgeIds": [
+        "[uuid]",
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          98,
+          154,
+          0
+        ],
+        "pathToNode": []
+      }
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "adjacent",
+      "segId": "[uuid]",
       "sweepId": "[uuid]"
     },
     "[uuid]": {
@@ -32,9 +64,8 @@ snapshot_kind: text
       }
     },
     "[uuid]": {
-      "type": "sweepEdge",
+      "type": "wall",
       "id": "[uuid]",
-      "subType": "opposite",
       "segId": "[uuid]",
       "sweepId": "[uuid]"
     },
@@ -57,16 +88,42 @@ snapshot_kind: text
       }
     },
     "[uuid]": {
-      "type": "wall",
+      "type": "cap",
       "id": "[uuid]",
-      "segId": "[uuid]",
+      "subType": "end",
       "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "plane",
+      "id": "[uuid]",
+      "pathIds": [
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          10,
+          29,
+          0
+        ],
+        "pathToNode": []
+      }
     },
     "[uuid]": {
       "type": "sweepEdge",
       "id": "[uuid]",
       "subType": "adjacent",
       "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "solid2d",
+      "id": "[uuid]",
+      "pathId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "cap",
+      "id": "[uuid]",
+      "subType": "start",
       "sweepId": "[uuid]"
     },
     "[uuid]": {
@@ -99,28 +156,25 @@ snapshot_kind: text
       }
     },
     "[uuid]": {
-      "type": "cap",
+      "type": "sweepEdge",
       "id": "[uuid]",
-      "subType": "end",
+      "subType": "opposite",
+      "segId": "[uuid]",
       "sweepId": "[uuid]"
     },
     "[uuid]": {
-      "type": "segment",
+      "type": "sweepEdge",
       "id": "[uuid]",
-      "pathId": "[uuid]",
-      "surfaceId": "[uuid]",
-      "edgeIds": [
-        "[uuid]",
-        "[uuid]"
-      ],
-      "codeRef": {
-        "range": [
-          98,
-          154,
-          0
-        ],
-        "pathToNode": []
-      }
+      "subType": "opposite",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "adjacent",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
     },
     "[uuid]": {
       "type": "segment",
@@ -139,60 +193,6 @@ snapshot_kind: text
         ],
         "pathToNode": []
       }
-    },
-    "[uuid]": {
-      "type": "plane",
-      "id": "[uuid]",
-      "pathIds": [
-        "[uuid]"
-      ],
-      "codeRef": {
-        "range": [
-          10,
-          29,
-          0
-        ],
-        "pathToNode": []
-      }
-    },
-    "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "adjacent",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "opposite",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "solid2d",
-      "id": "[uuid]",
-      "pathId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "adjacent",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "wall",
-      "id": "[uuid]",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "opposite",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
     },
     "[uuid]": {
       "type": "wall",

@@ -6,6 +6,12 @@ snapshot_kind: text
 {
   "map": {
     "[uuid]": {
+      "type": "cap",
+      "id": "[uuid]",
+      "subType": "start",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
       "type": "sweep",
       "id": "[uuid]",
       "subType": "extrusion",
@@ -47,43 +53,6 @@ snapshot_kind: text
       }
     },
     "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "opposite",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "adjacent",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "solid2d",
-      "id": "[uuid]",
-      "pathId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "wall",
-      "id": "[uuid]",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "cap",
-      "id": "[uuid]",
-      "subType": "end",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "cap",
-      "id": "[uuid]",
-      "subType": "start",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
       "type": "plane",
       "id": "[uuid]",
       "pathIds": [
@@ -115,6 +84,37 @@ snapshot_kind: text
         ],
         "pathToNode": []
       }
+    },
+    "[uuid]": {
+      "type": "solid2d",
+      "id": "[uuid]",
+      "pathId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "opposite",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "adjacent",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "cap",
+      "id": "[uuid]",
+      "subType": "end",
+      "sweepId": "[uuid]"
     }
   }
 }

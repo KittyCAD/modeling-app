@@ -6,19 +6,22 @@ snapshot_kind: text
 {
   "map": {
     "[uuid]": {
-      "type": "plane",
+      "type": "sweepEdge",
       "id": "[uuid]",
-      "pathIds": [
-        "[uuid]"
-      ],
-      "codeRef": {
-        "range": [
-          0,
-          19,
-          1
-        ],
-        "pathToNode": []
-      }
+      "subType": "adjacent",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "cap",
+      "id": "[uuid]",
+      "subType": "start",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "solid2d",
+      "id": "[uuid]",
+      "pathId": "[uuid]"
     },
     "[uuid]": {
       "type": "segment",
@@ -33,6 +36,34 @@ snapshot_kind: text
         "range": [
           25,
           68,
+          1
+        ],
+        "pathToNode": []
+      }
+    },
+    "[uuid]": {
+      "type": "sweepEdge",
+      "id": "[uuid]",
+      "subType": "opposite",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "wall",
+      "id": "[uuid]",
+      "segId": "[uuid]",
+      "sweepId": "[uuid]"
+    },
+    "[uuid]": {
+      "type": "plane",
+      "id": "[uuid]",
+      "pathIds": [
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          0,
+          19,
           1
         ],
         "pathToNode": []
@@ -62,35 +93,10 @@ snapshot_kind: text
       }
     },
     "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "adjacent",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "sweepEdge",
-      "id": "[uuid]",
-      "subType": "opposite",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "wall",
-      "id": "[uuid]",
-      "segId": "[uuid]",
-      "sweepId": "[uuid]"
-    },
-    "[uuid]": {
       "type": "cap",
       "id": "[uuid]",
       "subType": "end",
       "sweepId": "[uuid]"
-    },
-    "[uuid]": {
-      "type": "solid2d",
-      "id": "[uuid]",
-      "pathId": "[uuid]"
     },
     "[uuid]": {
       "type": "path",
@@ -109,12 +115,6 @@ snapshot_kind: text
         ],
         "pathToNode": []
       }
-    },
-    "[uuid]": {
-      "type": "cap",
-      "id": "[uuid]",
-      "subType": "start",
-      "sweepId": "[uuid]"
     }
   }
 }

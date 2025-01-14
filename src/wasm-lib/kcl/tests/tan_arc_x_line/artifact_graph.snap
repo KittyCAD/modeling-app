@@ -11,8 +11,21 @@ snapshot_kind: text
       "pathId": "[uuid]",
       "codeRef": {
         "range": [
-          130,
-          185,
+          350,
+          437,
+          0
+        ],
+        "pathToNode": []
+      }
+    },
+    "[uuid]": {
+      "type": "segment",
+      "id": "[uuid]",
+      "pathId": "[uuid]",
+      "codeRef": {
+        "range": [
+          258,
+          344,
           0
         ],
         "pathToNode": []
@@ -33,6 +46,21 @@ snapshot_kind: text
         "range": [
           89,
           124,
+          0
+        ],
+        "pathToNode": []
+      }
+    },
+    "[uuid]": {
+      "type": "plane",
+      "id": "[uuid]",
+      "pathIds": [
+        "[uuid]"
+      ],
+      "codeRef": {
+        "range": [
+          64,
+          83,
           0
         ],
         "pathToNode": []
@@ -65,41 +93,13 @@ snapshot_kind: text
       }
     },
     "[uuid]": {
-      "type": "plane",
-      "id": "[uuid]",
-      "pathIds": [
-        "[uuid]"
-      ],
-      "codeRef": {
-        "range": [
-          64,
-          83,
-          0
-        ],
-        "pathToNode": []
-      }
-    },
-    "[uuid]": {
       "type": "segment",
       "id": "[uuid]",
       "pathId": "[uuid]",
       "codeRef": {
         "range": [
-          258,
-          344,
-          0
-        ],
-        "pathToNode": []
-      }
-    },
-    "[uuid]": {
-      "type": "segment",
-      "id": "[uuid]",
-      "pathId": "[uuid]",
-      "codeRef": {
-        "range": [
-          350,
-          437,
+          130,
+          185,
           0
         ],
         "pathToNode": []
