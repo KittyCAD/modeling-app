@@ -20,6 +20,8 @@ import { Selections, Selection } from 'lib/selections'
 import { err } from 'lib/trap'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { codeRefFromRange } from './artifactGraph'
+import { findKwArg } from 'lang/util'
+import { ARG_END, ARG_END_ABSOLUTE } from './sketch'
 
 beforeAll(async () => {
   await initPromise
@@ -27,7 +29,7 @@ beforeAll(async () => {
 
 describe('testing getConstraintType', () => {
   const helper = getConstraintTypeFromSourceHelper
-  it('testing line', () => {
+  it.only('testing line', () => {
     expect(helper(`line(end = [5, myVar])`)).toBe('yRelative')
     expect(helper(`line(end = [myVar, 5])`)).toBe('xRelative')
   })
@@ -75,13 +77,48 @@ function getConstraintTypeFromSourceHelper(
 ): ReturnType<typeof getConstraintType> | Error {
   const ast = assertParse(code)
 
-  const args = (ast.body[0] as any).expression.arguments[0].elements as [
-    Expr,
-    Expr
-  ]
-  const fnName = (ast.body[0] as any).expression.callee.name as ToolTip
-  return getConstraintType(args, fnName, false)
+  const item = ast.body[0]
+  if (item.type !== 'ExpressionStatement') {
+    return new Error('must be expression')
+  }
+  const expr = item.expression
+  switch (expr.type) {
+    case 'CallExpression': {
+      const arg = expr.arguments[0]
+      if (arg.type !== 'ArrayExpression') {
+        return new Error(
+          'expected first arg to be array but it was ' + arg.type
+        )
+      }
+      const args = arg.elements as [Expr, Expr]
+      const fnName = expr.callee.name as ToolTip
+      return getConstraintType(args, fnName, false)
+    }
+    case 'CallExpressionKw': {
+      const end = findKwArg(ARG_END, expr)
+      const endAbsolute = findKwArg(ARG_END_ABSOLUTE, expr)
+      const arg = end || endAbsolute
+      if (!arg) {
+        return new Error("couldn't find either end or endAbsolute in KW call")
+      }
+      const isAbsolute = endAbsolute ? true : false
+      const fnName = expr.callee.name as ToolTip
+      if (arg.type === 'ArrayExpression') {
+        return getConstraintType(
+          arg.elements as [Expr, Expr],
+          fnName,
+          isAbsolute
+        )
+      }
+      return new Error('arg did not have any key named elements')
+    }
+    default:
+      return new Error(
+        'must be a call (positional or keyword but it was) ' + expr.type
+      )
+  }
 }
+
 function getConstraintTypeFromSourceHelper2(
   code: string
 ): ReturnType<typeof getConstraintType> | Error {

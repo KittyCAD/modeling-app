@@ -1580,6 +1580,7 @@ export function getConstraintType(
   fnName: ToolTip,
   isAbsolute: boolean
 ): LineInputsType | null {
+  console.error('ADAM: getConstraintType', fnName, isAbsolute, val)
   // this function assumes that for two val sketch functions that one arg is locked down not both
   // and for one val sketch functions that the arg is NOT locked down
   // these conditions should have been checked previously.
