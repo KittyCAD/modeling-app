@@ -61,8 +61,10 @@ export function kclCommands(
 
         Promise.allSettled([fetch(sampleCodeUrl), fetch(sampleSettingsFileUrl)])
           .then((results) => {
-            const a = 'value' in results[0] ? results[0].value : results[0].reason
-            const b = 'value' in results[1] ? results[1].value : results[1].reason
+            const a =
+              'value' in results[0] ? results[0].value : results[0].reason
+            const b =
+              'value' in results[1] ? results[1].value : results[1].reason
             return [a, b]
           })
           .then(
