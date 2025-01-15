@@ -2466,15 +2466,30 @@ function addTag(tagIndex = 2): addTagFn {
 function addTagKw(): addTagFn {
   return ({ node, pathToNode }) => {
     const _node = { ...node }
-    const callExpr = getNodeFromPath<Node<CallExpressionKw>>(
+    // We have to allow for the possibility that the path is actually to a call expression.
+    // That's because if the parser reads something like `close()`, it doesn't know if this
+    // is a keyword or positional call.
+    // In fact, even something like `close(%)` could be either (because we allow 1 unlabeled
+    // starting param).
+    const callExpr = getNodeFromPath<Node<CallExpressionKw | CallExpression>>(
       _node,
       pathToNode,
-      'CallExpressionKw'
+      ['CallExpressionKw', 'CallExpression']
     )
     if (err(callExpr)) return callExpr
 
-    const { node: primaryCallExp } = callExpr
-
+    // If the original node is a call expression, we'll need to change it to a call with keyword args.
+    const primaryCallExp: CallExpressionKw =
+      callExpr.node.type === 'CallExpressionKw'
+        ? callExpr.node
+        : {
+            type: 'CallExpressionKw',
+            callee: callExpr.node.callee,
+            unlabeled: callExpr.node.arguments.length
+              ? callExpr.node.arguments[0]
+              : null,
+            arguments: [],
+          }
     const tagArg = findKwArg(ARG_TAG, primaryCallExp)
     const tagDeclarator =
       tagArg || createTagDeclarator(findUniqueName(_node, 'seg', 2))
@@ -2483,6 +2498,17 @@ function addTagKw(): addTagFn {
       const labeledArg = createLabeledArg(ARG_TAG, tagDeclarator)
       primaryCallExp.arguments.push(labeledArg)
     }
+
+    // If we changed the node, we must replace the old node with the new node in the AST.
+    const mustReplaceNode = primaryCallExp.type !== callExpr.node.type
+    if (mustReplaceNode) {
+      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, {
+        ...primaryCallExp,
+        start: callExpr.node.start,
+        end: callExpr.node.end,
+      })
+    }
+
     if ('value' in tagDeclarator) {
       // Now TypeScript knows tagDeclarator has a value property
       return {

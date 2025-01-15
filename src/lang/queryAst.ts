@@ -51,7 +51,8 @@ export function getNodeFromPath<T>(
   node: Program,
   path: PathToNode,
   stopAt?: SyntaxType | SyntaxType[],
-  returnEarly = false
+  returnEarly = false,
+  replacement?: any
 ):
   | {
       node: T
@@ -63,9 +64,14 @@ export function getNodeFromPath<T>(
   let stopAtNode = null
   let successfulPaths: PathToNode = []
   let pathsExplored: PathToNode = []
+  let parent = null as any
+  let parentEdge = null
   for (const pathItem of path) {
     if (typeof currentNode[pathItem[0]] !== 'object') {
       if (stopAtNode) {
+        if (replacement && parent && parentEdge) {
+          parent[parentEdge] = replacement
+        }
         return {
           node: stopAtNode,
           shallowPath: pathsExplored,
@@ -74,6 +80,8 @@ export function getNodeFromPath<T>(
       }
       return new Error('not an object')
     }
+    parent = currentNode
+    parentEdge = pathItem[0]
     currentNode = currentNode?.[pathItem[0]]
     successfulPaths.push(pathItem)
     if (!stopAtNode) {
@@ -96,6 +104,9 @@ export function getNodeFromPath<T>(
         }
       }
     }
+  }
+  if (replacement && parent && parentEdge) {
+    parent[parentEdge] = replacement
   }
   return {
     node: stopAtNode || currentNode,
