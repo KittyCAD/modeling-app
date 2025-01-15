@@ -1002,13 +1002,11 @@ fn artifacts_to_update(
 mod tests {
     use std::fmt::Write;
 
-    use fnv::FnvHashMap;
-
     use super::*;
 
     type NodeId = u32;
 
-    type Edges = FnvHashMap<(NodeId, NodeId), EdgeDirection>;
+    type Edges = IndexMap<(NodeId, NodeId), EdgeDirection>;
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
     enum EdgeDirection {
@@ -1187,7 +1185,7 @@ mod tests {
             }
 
             // Collect all edges to deduplicate them.
-            let mut edges = FnvHashMap::default();
+            let mut edges = IndexMap::default();
             for artifact in self.map.values() {
                 let source_id = *stable_id_map.get(&artifact.id()).unwrap();
                 for target_id in artifact.back_edges().into_iter().chain(artifact.child_ids()) {
