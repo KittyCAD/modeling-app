@@ -19,8 +19,42 @@ function CommandComboBox({
 
   const defaultOption =
     options.find((o) => 'isCurrent' in o && o.isCurrent) || null
+  // sort disabled commands to the bottom
+  const sortedOptions = options
+    .map((option) => ({
+      option,
+      disabled: optionIsDisabled(option),
+    }))
+    .sort((a, b) => {
+      // Disabled commands should be at the bottom
+      if (a.disabled && !b.disabled) {
+        return 1
+      }
+      if (b.disabled && !a.disabled) {
+        return -1
+      }
+      // Settings commands should be next-to-last
+      if (a.option.groupId === 'settings' && b.option.groupId !== 'settings') {
+        return 1
+      }
+      if (b.option.groupId === 'settings' && a.option.groupId !== 'settings') {
+        return -1
+      }
+      // Modeling commands should be first
+      if (a.option.groupId === 'modeling' && b.option.groupId !== 'modeling') {
+        return -1
+      }
+      if (b.option.groupId === 'modeling' && a.option.groupId !== 'modeling') {
+        return 1
+      }
+      // Sort alphabetically
+      return (a.option.displayName || a.option.name).localeCompare(
+        b.option.displayName || b.option.name
+      )
+    })
+    .map(({ option }) => option)
 
-  const fuse = new Fuse(options, {
+  const fuse = new Fuse(sortedOptions, {
     keys: ['displayName', 'name', 'description'],
     threshold: 0.3,
     ignoreLocation: true,
@@ -28,7 +62,7 @@ function CommandComboBox({
 
   useEffect(() => {
     const results = fuse.search(query).map((result) => result.item)
-    setFilteredOptions(query.length > 0 ? results : options)
+    setFilteredOptions(query.length > 0 ? results : sortedOptions)
   }, [query])
 
   function handleSelection(command: Command) {
