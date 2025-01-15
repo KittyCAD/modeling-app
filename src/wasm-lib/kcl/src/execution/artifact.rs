@@ -1037,6 +1037,7 @@ mod tests {
     }
 
     impl ArtifactGraph {
+        /// Output the Mermaid flowchart for the artifact graph.
         pub(crate) fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
             let mut output = String::new();
             output.push_str("```mermaid\n");
@@ -1216,6 +1217,13 @@ mod tests {
             Ok(())
         }
 
+        /// Output the Mermaid mind map for the artifact graph.
+        ///
+        /// This is sometimes easier to read than the flowchart.  But since it
+        /// does a depth-first traversal starting from all the planes, it may
+        /// not include all the artifacts.  It also doesn't show edge direction.
+        /// It's useful for a high-level overview of the graph, not for
+        /// including all the information.
         pub(crate) fn to_mermaid_mind_map(&self) -> Result<String, std::fmt::Error> {
             let mut output = String::new();
             output.push_str("```mermaid\n");
