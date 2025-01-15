@@ -212,6 +212,19 @@ Map {
     "type": "wall",
   },
   "UUID-10" => {
+    "codeRef": {
+      "pathToNode": [
+        [
+          "body",
+          "",
+        ],
+      ],
+      "range": [
+        312,
+        344,
+        true,
+      ],
+    },
     "edgeCutEdgeIds": [],
     "id": "UUID",
     "pathIds": [

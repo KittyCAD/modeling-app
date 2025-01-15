@@ -797,10 +797,6 @@ describe('testing getArtifactsToUpdate', () => {
         edgeCutEdgeIds: [],
         sweepId: expect.any(String),
         pathIds: [],
-        codeRef: {
-          pathToNode: [['body', '']],
-          range: [312, 344, true],
-        },
       },
       {
         type: 'segment',
@@ -832,6 +828,10 @@ describe('testing getArtifactsToUpdate', () => {
         edgeCutEdgeIds: [],
         sweepId: expect.any(String),
         pathIds: [],
+        codeRef: {
+          pathToNode: [['body', '']],
+          range: [312, 344, true],
+        },
       },
       {
         type: 'segment',
