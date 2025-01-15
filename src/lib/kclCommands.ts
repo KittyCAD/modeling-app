@@ -93,7 +93,7 @@ export function kclCommands(
               }
 
               return {
-                sampleName: data.sample,
+                sampleName: data.sample.split('/')[0] + FILE_EXT,
                 code,
                 method: data.method,
                 sampleUnits:

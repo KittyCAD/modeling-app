@@ -8,8 +8,8 @@ import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 
 test.describe('Testing in-app sample loading', () => {
   /**
-   * Note this test implicitly depends on the KCL sample "car-wheel",
-   * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/car-wheel/main.kcl
+   * Note this test implicitly depends on the KCL sample "a-parametric-bearing-pillow-block",
+   * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/a-parametric-bearing-pillow-block/main.kcl
    */
   test('Web: should overwrite current code, cannot create new file', async ({
     editor,
@@ -29,8 +29,8 @@ test.describe('Testing in-app sample loading', () => {
 
     // Locators and constants
     const newSample = {
-      file: 'main' + FILE_EXT,
-      title: 'Car Wheel',
+      file: 'a-parametric-bearing-pillow-block' + FILE_EXT,
+      title: 'A Parametric Bearing Pillow Block',
     }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const samplesCommandOption = page.getByRole('option', {
@@ -75,7 +75,7 @@ test.describe('Testing in-app sample loading', () => {
 
   /**
    * Note this test implicitly depends on the KCL samples:
-   * "car-wheel": https://github.com/KittyCAD/kcl-samples/blob/main/car-wheel/main.kcl
+   * "a-parametric-bearing-pillow-block": https://github.com/KittyCAD/kcl-samples/blob/main/a-parametric-bearing-pillow-block/main.kcl
    * "gear-rack": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/main.kcl
    */
   test(
@@ -93,11 +93,11 @@ test.describe('Testing in-app sample loading', () => {
 
       // Locators and constants
       const sampleOne = {
-        file: 'main' + FILE_EXT,
-        title: 'Car Wheel',
+        file: 'a-parametric-bearing-pillow-block' + FILE_EXT,
+        title: 'A Parametric Bearing Pillow Block',
       }
       const sampleTwo = {
-        file: 'main' + FILE_EXT,
+        file: 'gear-rack' + FILE_EXT,
         title: '100mm Gear Rack',
       }
       const projectCard = page.getByRole('link', { name: 'bracket' })

@@ -58,9 +58,7 @@ export const FileMachineProvider = ({
     markOnce('code/didLoadFile')
     async function fetchKclSamples() {
       const manifest = await getKclSamplesManifest()
-      const filteredFiles = manifest.filter(
-        (file) => isDesktop() || !file.multipleFiles
-      )
+      const filteredFiles = manifest.filter((file) => !file.multipleFiles)
       setKclSamples(filteredFiles)
     }
     fetchKclSamples().catch(reportError)
