@@ -24,7 +24,7 @@ function CommandComboBox({
   const sortedOptions = options
     .map((command) => ({
       command,
-      disabled: optionIsDisabled(option),
+      disabled: optionIsDisabled(command),
     }))
     .sort(sortCommands)
     .map(({ command }) => command)
