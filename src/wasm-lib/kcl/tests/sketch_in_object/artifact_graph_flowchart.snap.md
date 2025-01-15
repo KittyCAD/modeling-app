@@ -1,12 +1,22 @@
 ```mermaid
 flowchart LR
+  subgraph path2 [Path]
+    2["Path<br>[48, 73, 0]"]
+    3["Segment<br>[81, 96, 0]"]
+    4["Segment<br>[104, 119, 0]"]
+    5["Segment<br>[127, 143, 0]"]
+    6["Segment<br>[151, 159, 0]"]
+    7[Solid2d]
+  end
+  subgraph path24 [Path]
+    24["Path<br>[248, 273, 0]"]
+    25["Segment<br>[285, 300, 0]"]
+    26["Segment<br>[312, 327, 0]"]
+    27["Segment<br>[339, 355, 0]"]
+    28["Segment<br>[367, 375, 0]"]
+    29[Solid2d]
+  end
   1["Plane<br>[21, 40, 0]"]
-  2["Path<br>[48, 73, 0]"]
-  3["Segment<br>[81, 96, 0]"]
-  4["Segment<br>[104, 119, 0]"]
-  5["Segment<br>[127, 143, 0]"]
-  6["Segment<br>[151, 159, 0]"]
-  7[Solid2d]
   8["Sweep Extrusion<br>[407, 422, 0]"]
   9[Wall]
   10[Wall]
@@ -23,12 +33,6 @@ flowchart LR
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
   23["Plane<br>[217, 236, 0]"]
-  24["Path<br>[248, 273, 0]"]
-  25["Segment<br>[285, 300, 0]"]
-  26["Segment<br>[312, 327, 0]"]
-  27["Segment<br>[339, 355, 0]"]
-  28["Segment<br>[367, 375, 0]"]
-  29[Solid2d]
   30["Sweep Extrusion<br>[459, 473, 0]"]
   31[Wall]
   32[Wall]
@@ -49,7 +53,7 @@ flowchart LR
   2 --- 4
   2 --- 5
   2 --- 6
-  2 --- 8
+  2 ---- 8
   2 --- 7
   3 --- 12
   3 --- 21
@@ -82,7 +86,7 @@ flowchart LR
   24 --- 26
   24 --- 27
   24 --- 28
-  24 --- 30
+  24 ---- 30
   24 --- 29
   25 --- 34
   25 --- 43

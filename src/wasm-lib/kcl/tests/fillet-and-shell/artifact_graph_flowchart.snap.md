@@ -1,19 +1,75 @@
 ```mermaid
 flowchart LR
+  subgraph path2 [Path]
+    2["Path<br>[373, 461, 0]"]
+    3["Segment<br>[467, 549, 0]"]
+    4["Segment<br>[555, 637, 0]"]
+    5["Segment<br>[643, 727, 0]"]
+    6["Segment<br>[733, 741, 0]"]
+    7[Solid2d]
+  end
+  subgraph path9 [Path]
+    9["Path<br>[775, 800, 0]"]
+    10["Segment<br>[806, 839, 0]"]
+    11["Segment<br>[845, 887, 0]"]
+    12["Segment<br>[893, 927, 0]"]
+    13["Segment<br>[933, 949, 0]"]
+    14[Solid2d]
+  end
+  subgraph path31 [Path]
+    31["Path<br>[1260, 1285, 0]"]
+  end
+  subgraph path32 [Path]
+    32["Path<br>[1293, 1337, 0]"]
+    33["Segment<br>[1293, 1337, 0]"]
+    34[Solid2d]
+  end
+  subgraph path35 [Path]
+    35["Path<br>[1350, 1395, 0]"]
+    36["Segment<br>[1350, 1395, 0]"]
+    37[Solid2d]
+  end
+  subgraph path45 [Path]
+    45["Path<br>[1260, 1285, 0]"]
+  end
+  subgraph path46 [Path]
+    46["Path<br>[1293, 1337, 0]"]
+    47["Segment<br>[1293, 1337, 0]"]
+    48[Solid2d]
+  end
+  subgraph path49 [Path]
+    49["Path<br>[1350, 1395, 0]"]
+    50["Segment<br>[1350, 1395, 0]"]
+    51[Solid2d]
+  end
+  subgraph path59 [Path]
+    59["Path<br>[1260, 1285, 0]"]
+  end
+  subgraph path60 [Path]
+    60["Path<br>[1293, 1337, 0]"]
+    61["Segment<br>[1293, 1337, 0]"]
+    62[Solid2d]
+  end
+  subgraph path63 [Path]
+    63["Path<br>[1350, 1395, 0]"]
+    64["Segment<br>[1350, 1395, 0]"]
+    65[Solid2d]
+  end
+  subgraph path73 [Path]
+    73["Path<br>[1260, 1285, 0]"]
+  end
+  subgraph path74 [Path]
+    74["Path<br>[1293, 1337, 0]"]
+    75["Segment<br>[1293, 1337, 0]"]
+    76[Solid2d]
+  end
+  subgraph path77 [Path]
+    77["Path<br>[1350, 1395, 0]"]
+    78["Segment<br>[1350, 1395, 0]"]
+    79[Solid2d]
+  end
   1["Plane<br>[373, 461, 0]"]
-  2["Path<br>[373, 461, 0]"]
-  3["Segment<br>[467, 549, 0]"]
-  4["Segment<br>[555, 637, 0]"]
-  5["Segment<br>[643, 727, 0]"]
-  6["Segment<br>[733, 741, 0]"]
-  7[Solid2d]
   8["Plane<br>[750, 769, 0]"]
-  9["Path<br>[775, 800, 0]"]
-  10["Segment<br>[806, 839, 0]"]
-  11["Segment<br>[845, 887, 0]"]
-  12["Segment<br>[893, 927, 0]"]
-  13["Segment<br>[933, 949, 0]"]
-  14[Solid2d]
   15["Sweep Extrusion<br>[955, 977, 0]"]
   16[Wall]
   17[Wall]
@@ -30,13 +86,6 @@ flowchart LR
   28["SweepEdge Opposite"]
   29["SweepEdge Adjacent"]
   30["Plane<br>[1233, 1252, 0]"]
-  31["Path<br>[1260, 1285, 0]"]
-  32["Path<br>[1293, 1337, 0]"]
-  33["Segment<br>[1293, 1337, 0]"]
-  34[Solid2d]
-  35["Path<br>[1350, 1395, 0]"]
-  36["Segment<br>[1350, 1395, 0]"]
-  37[Solid2d]
   38["Sweep Extrusion<br>[1407, 1425, 0]"]
   39[Wall]
   40["Cap Start"]
@@ -44,13 +93,6 @@ flowchart LR
   42["SweepEdge Opposite"]
   43["SweepEdge Adjacent"]
   44["Plane<br>[1233, 1252, 0]"]
-  45["Path<br>[1260, 1285, 0]"]
-  46["Path<br>[1293, 1337, 0]"]
-  47["Segment<br>[1293, 1337, 0]"]
-  48[Solid2d]
-  49["Path<br>[1350, 1395, 0]"]
-  50["Segment<br>[1350, 1395, 0]"]
-  51[Solid2d]
   52["Sweep Extrusion<br>[1407, 1425, 0]"]
   53[Wall]
   54["Cap Start"]
@@ -58,13 +100,6 @@ flowchart LR
   56["SweepEdge Opposite"]
   57["SweepEdge Adjacent"]
   58["Plane<br>[1233, 1252, 0]"]
-  59["Path<br>[1260, 1285, 0]"]
-  60["Path<br>[1293, 1337, 0]"]
-  61["Segment<br>[1293, 1337, 0]"]
-  62[Solid2d]
-  63["Path<br>[1350, 1395, 0]"]
-  64["Segment<br>[1350, 1395, 0]"]
-  65[Solid2d]
   66["Sweep Extrusion<br>[1407, 1425, 0]"]
   67[Wall]
   68["Cap Start"]
@@ -72,13 +107,6 @@ flowchart LR
   70["SweepEdge Opposite"]
   71["SweepEdge Adjacent"]
   72["Plane<br>[1233, 1252, 0]"]
-  73["Path<br>[1260, 1285, 0]"]
-  74["Path<br>[1293, 1337, 0]"]
-  75["Segment<br>[1293, 1337, 0]"]
-  76[Solid2d]
-  77["Path<br>[1350, 1395, 0]"]
-  78["Segment<br>[1350, 1395, 0]"]
-  79[Solid2d]
   80["Sweep Extrusion<br>[1407, 1425, 0]"]
   81[Wall]
   82["Cap Start"]
@@ -100,7 +128,7 @@ flowchart LR
   9 --- 11
   9 --- 12
   9 --- 13
-  9 --- 15
+  9 ---- 15
   9 --- 14
   10 --- 16
   10 --- 22
@@ -132,7 +160,7 @@ flowchart LR
   30 --- 32
   30 --- 35
   32 --- 33
-  32 --- 38
+  32 ---- 38
   32 --- 34
   33 --- 39
   33 --- 42
@@ -148,7 +176,7 @@ flowchart LR
   44 --- 46
   44 --- 49
   46 --- 47
-  46 --- 52
+  46 ---- 52
   46 --- 48
   47 --- 53
   47 --- 56
@@ -164,7 +192,7 @@ flowchart LR
   58 --- 60
   58 --- 63
   60 --- 61
-  60 --- 66
+  60 ---- 66
   60 --- 62
   61 --- 67
   61 --- 70
@@ -180,7 +208,7 @@ flowchart LR
   72 --- 74
   72 --- 77
   74 --- 75
-  74 --- 80
+  74 ---- 80
   74 --- 76
   75 --- 81
   75 --- 84

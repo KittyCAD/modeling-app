@@ -1,13 +1,33 @@
 ```mermaid
 flowchart LR
+  subgraph path2 [Path]
+    2["Path<br>[37, 69, 0]"]
+    3["Segment<br>[105, 154, 0]"]
+    4["Segment<br>[160, 247, 0]"]
+    5["Segment<br>[253, 350, 0]"]
+    6["Segment<br>[356, 411, 0]"]
+    7["Segment<br>[417, 425, 0]"]
+    8[Solid2d]
+  end
+  subgraph path27 [Path]
+    27["Path<br>[712, 746, 0]"]
+    28["Segment<br>[752, 800, 0]"]
+    29["Segment<br>[806, 907, 0]"]
+    30["Segment<br>[913, 1033, 0]"]
+    31["Segment<br>[1039, 1086, 0]"]
+    32["Segment<br>[1092, 1100, 0]"]
+    33[Solid2d]
+  end
+  subgraph path34 [Path]
+    34["Path<br>[1151, 1186, 0]"]
+    35["Segment<br>[1192, 1240, 0]"]
+    36["Segment<br>[1246, 1348, 0]"]
+    37["Segment<br>[1354, 1474, 0]"]
+    38["Segment<br>[1480, 1527, 0]"]
+    39["Segment<br>[1533, 1541, 0]"]
+    40[Solid2d]
+  end
   1["Plane<br>[12, 31, 0]"]
-  2["Path<br>[37, 69, 0]"]
-  3["Segment<br>[105, 154, 0]"]
-  4["Segment<br>[160, 247, 0]"]
-  5["Segment<br>[253, 350, 0]"]
-  6["Segment<br>[356, 411, 0]"]
-  7["Segment<br>[417, 425, 0]"]
-  8[Solid2d]
   9["Sweep Extrusion<br>[439, 462, 0]"]
   10[Wall]
   11[Wall]
@@ -26,20 +46,6 @@ flowchart LR
   24["EdgeCut Fillet<br>[468, 510, 0]"]
   25["Plane<br>[1151, 1186, 0]"]
   26["Plane<br>[712, 746, 0]"]
-  27["Path<br>[712, 746, 0]"]
-  28["Segment<br>[752, 800, 0]"]
-  29["Segment<br>[806, 907, 0]"]
-  30["Segment<br>[913, 1033, 0]"]
-  31["Segment<br>[1039, 1086, 0]"]
-  32["Segment<br>[1092, 1100, 0]"]
-  33[Solid2d]
-  34["Path<br>[1151, 1186, 0]"]
-  35["Segment<br>[1192, 1240, 0]"]
-  36["Segment<br>[1246, 1348, 0]"]
-  37["Segment<br>[1354, 1474, 0]"]
-  38["Segment<br>[1480, 1527, 0]"]
-  39["Segment<br>[1533, 1541, 0]"]
-  40[Solid2d]
   41["Sweep Extrusion<br>[1555, 1577, 0]"]
   42[Wall]
   43[Wall]
@@ -60,7 +66,7 @@ flowchart LR
   2 --- 5
   2 --- 6
   2 --- 7
-  2 --- 9
+  2 ---- 9
   2 --- 8
   3 --- 13
   3 --- 22
@@ -103,7 +109,7 @@ flowchart LR
   34 --- 37
   34 --- 38
   34 --- 39
-  34 --- 41
+  34 ---- 41
   34 --- 40
   35 --- 45
   35 --- 53
