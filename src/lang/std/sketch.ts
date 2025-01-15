@@ -631,7 +631,7 @@ export const lineTo: SketchLineHelperKw = {
   getConstraintInfo: (callExp, ...args) =>
     commonConstraintInfoHelper(
       callExp,
-      ['xRelative', 'yRelative'],
+      ['xAbsolute', 'yAbsolute'],
       'line',
       [{ arrayInput: 0 }, { arrayInput: 1 }],
       ...args
@@ -2053,8 +2053,10 @@ export function getConstraintInfoKw(
   pathToNode: PathToNode
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
+  const isAbsolute = findKwArg('endAbsolute', callExpression) !== undefined
   if (!(fnName in sketchLineHelperMapKw)) return []
-  return sketchLineHelperMapKw[fnName].getConstraintInfo(
+  const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
+  return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
     callExpression,
     code,
     pathToNode

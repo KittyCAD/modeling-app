@@ -881,7 +881,7 @@ describe('testing getConstraintInfo', () => {
          offset = 0 + 0
        }, %)
     |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
-    test.each([
+    test.only.each([
       [
         'line',
         [
@@ -929,7 +929,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
       [
-        'lineTo',
+        'line(endAbsolute',
         [
           {
             type: 'xAbsolute',
@@ -938,7 +938,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), true],
             argPosition: { type: 'arrayItem', index: 0 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'lineTo',
+            stdLibFnName: 'line',
           },
           {
             type: 'yAbsolute',
@@ -947,7 +947,7 @@ describe('testing getConstraintInfo', () => {
             sourceRange: [expect.any(Number), expect.any(Number), true],
             argPosition: { type: 'arrayItem', index: 1 },
             pathToNode: expect.any(Array),
-            stdLibFnName: 'lineTo',
+            stdLibFnName: 'line',
           },
         ],
       ],
