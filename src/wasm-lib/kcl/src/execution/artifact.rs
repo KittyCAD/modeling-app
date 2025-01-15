@@ -1072,11 +1072,10 @@ mod tests {
         ) -> std::fmt::Result {
             // For now, only showing the source range.
             fn code_ref_display(code_ref: &CodeRef) -> [usize; 3] {
-                [
-                    code_ref.range.start(),
-                    code_ref.range.end(),
-                    code_ref.range.module_id().as_usize(),
-                ]
+                range_display(code_ref.range)
+            }
+            fn range_display(range: SourceRange) -> [usize; 3] {
+                [range.start(), range.end(), range.module_id().as_usize()]
             }
 
             let id = stable_id_map.get(&artifact.id()).unwrap();
@@ -1109,11 +1108,21 @@ mod tests {
                 Artifact::Solid2d(_solid2d) => {
                     writeln!(output, "{prefix}{}[Solid2d]", id)?;
                 }
-                Artifact::StartSketchOnFace { .. } => {
-                    // TODO: This doesn't have an ID.
+                Artifact::StartSketchOnFace { source_range, .. } => {
+                    writeln!(
+                        output,
+                        "{prefix}{}[\"StartSketchOnFace<br>{:?}\"]",
+                        id,
+                        range_display(*source_range)
+                    )?;
                 }
-                Artifact::StartSketchOnPlane { .. } => {
-                    // TODO: This doesn't have an ID.
+                Artifact::StartSketchOnPlane { source_range, .. } => {
+                    writeln!(
+                        output,
+                        "{prefix}{}[\"StartSketchOnPlane<br>{:?}\"]",
+                        id,
+                        range_display(*source_range)
+                    )?;
                 }
                 Artifact::Sweep(sweep) => {
                     writeln!(
