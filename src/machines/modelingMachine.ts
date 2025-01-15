@@ -53,6 +53,7 @@ import {
 } from 'lang/modifyAst'
 import {
   applyEdgeTreatmentToSelection,
+  ChamferParameters,
   EdgeTreatmentType,
   FilletParameters,
 } from 'lang/modifyAst/addEdgeTreatment'
@@ -274,6 +275,7 @@ export type ModelingMachineEvent =
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
+  | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
@@ -1803,6 +1805,33 @@ export const modelingMachine = setup({
         if (err(filletResult)) return filletResult
       }
     ),
+    chamferAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Chamfer'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection, length } = input
+        const parameters: ChamferParameters = {
+          type: EdgeTreatmentType.Chamfer,
+          length,
+        }
+
+        // Apply chamfer to selection
+        const chamferResult = await applyEdgeTreatmentToSelection(
+          ast,
+          selection,
+          parameters
+        )
+        if (err(chamferResult)) return chamferResult
+      }
+    ),
     'submit-prompt-edit': fromPromise(
       async ({ input }: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {
         console.log('doing thing', input)
@@ -1883,6 +1912,11 @@ export const modelingMachine = setup({
 
         Fillet: {
           target: 'Applying fillet',
+          reenter: true,
+        },
+
+        Chamfer: {
+          target: 'Applying chamfer',
           reenter: true,
         },
 
@@ -2724,6 +2758,19 @@ export const modelingMachine = setup({
         id: 'filletAstMod',
         input: ({ event }) => {
           if (event.type !== 'Fillet') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying chamfer': {
+      invoke: {
+        src: 'chamferAstMod',
+        id: 'chamferAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Chamfer') return undefined
           return event.data
         },
         onDone: ['idle'],
