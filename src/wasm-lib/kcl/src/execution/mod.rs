@@ -391,7 +391,7 @@ impl ProgramMemory {
                 env.bindings
                     .values()
                     .filter_map(|item| match item {
-                        KclValue::Solid(eg) if eg.sketch.id == sketch_id => Some(eg.clone()),
+                        KclValue::Solid { value } if value.sketch.id == sketch_id => Some(value.clone()),
                         _ => None,
                     })
                     .collect::<Vec<_>>()
@@ -505,8 +505,8 @@ impl DynamicState {
     fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
-                if let KclValue::Solid(eg) = item {
-                    self.solid_ids.push(SolidLazyIds::from(eg.as_ref()));
+                if let KclValue::Solid { value } = item {
+                    self.solid_ids.push(SolidLazyIds::from(value.as_ref()));
                 }
             }
         }

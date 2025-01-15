@@ -1,8 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 99
 description: Program memory after executing circle_three_point.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -30,26 +28,89 @@ snapshot_kind: text
         },
         "example": {
           "type": "Solid",
-          "type": "Solid",
-          "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                37,
-                98,
-                0
-              ],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
+          "value": {
+            "type": "Solid",
             "id": "[uuid]",
-            "paths": [
+            "value": [
               {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  37,
+                  98,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudeArc"
+              }
+            ],
+            "sketch": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      37,
+                      98,
+                      0
+                    ]
+                  },
+                  "ccw": true,
+                  "center": [
+                    24.749999999999996,
+                    19.749999999999996
+                  ],
+                  "from": [
+                    30.0059,
+                    19.75
+                  ],
+                  "radius": 5.255949010407163,
+                  "tag": null,
+                  "to": [
+                    30.0059,
+                    19.75
+                  ],
+                  "type": "Circle"
+                }
+              ],
+              "on": {
+                "type": "plane",
+                "id": "[uuid]",
+                "value": "XY",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "__meta": []
+              },
+              "start": {
+                "from": [
+                  30.00594901040716,
+                  19.749999999999996
+                ],
+                "to": [
+                  30.00594901040716,
+                  19.749999999999996
+                ],
+                "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
@@ -57,70 +118,21 @@ snapshot_kind: text
                     98,
                     0
                   ]
-                },
-                "ccw": true,
-                "center": [
-                  24.749999999999996,
-                  19.749999999999996
-                ],
-                "from": [
-                  30.0059,
-                  19.75
-                ],
-                "radius": 5.255949010407163,
-                "tag": null,
-                "to": [
-                  30.0059,
-                  19.75
-                ],
-                "type": "Circle"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "value": "XY",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
+                }
               },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "__meta": []
+              "__meta": [
+                {
+                  "sourceRange": [
+                    37,
+                    98,
+                    0
+                  ]
+                }
+              ]
             },
-            "start": {
-              "from": [
-                30.00594901040716,
-                19.749999999999996
-              ],
-              "to": [
-                30.00594901040716,
-                19.749999999999996
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  37,
-                  98,
-                  0
-                ]
-              }
-            },
+            "height": 10.0,
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
             "__meta": [
               {
                 "sourceRange": [
@@ -130,19 +142,7 @@ snapshot_kind: text
                 ]
               }
             ]
-          },
-          "height": 10.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                37,
-                98,
-                0
-              ]
-            }
-          ]
+          }
         },
         "sketch001": {
           "type": "Sketch",

@@ -72,56 +72,59 @@ const mySketch001 = startSketchOn('XY')
     const sketch001 = execState.memory.get('mySketch001')
     expect(sketch001).toEqual({
       type: 'Solid',
-      id: expect.any(String),
-      value: [
-        {
-          type: 'extrudePlane',
-          faceId: expect.any(String),
-          tag: null,
-          id: expect.any(String),
-          sourceRange: [77, 102, 0],
-        },
-        {
-          type: 'extrudePlane',
-          faceId: expect.any(String),
-          tag: null,
-          id: expect.any(String),
-          sourceRange: [108, 132, 0],
-        },
-      ],
-      sketch: {
+      value: {
+        type: 'Solid',
         id: expect.any(String),
-        __meta: expect.any(Array),
-        on: expect.any(Object),
-        start: expect.any(Object),
-        type: 'Sketch',
-        paths: [
+        value: [
           {
-            type: 'ToPoint',
-            from: [0, 0],
-            to: [-1.59, -1.54],
+            type: 'extrudePlane',
+            faceId: expect.any(String),
             tag: null,
-            __geoMeta: {
-              id: expect.any(String),
-              sourceRange: [77, 102, 0],
-            },
+            id: expect.any(String),
+            sourceRange: [77, 102, 0],
           },
           {
-            type: 'ToPoint',
-            from: [-1.59, -1.54],
-            to: [0.46, -5.82],
+            type: 'extrudePlane',
+            faceId: expect.any(String),
             tag: null,
-            __geoMeta: {
-              id: expect.any(String),
-              sourceRange: [108, 132, 0],
-            },
+            id: expect.any(String),
+            sourceRange: [108, 132, 0],
           },
         ],
+        sketch: {
+          id: expect.any(String),
+          __meta: expect.any(Array),
+          on: expect.any(Object),
+          start: expect.any(Object),
+          type: 'Sketch',
+          paths: [
+            {
+              type: 'ToPoint',
+              from: [0, 0],
+              to: [-1.59, -1.54],
+              tag: null,
+              __geoMeta: {
+                id: expect.any(String),
+                sourceRange: [77, 102, 0],
+              },
+            },
+            {
+              type: 'ToPoint',
+              from: [-1.59, -1.54],
+              to: [0.46, -5.82],
+              tag: null,
+              __geoMeta: {
+                id: expect.any(String),
+                sourceRange: [108, 132, 0],
+              },
+            },
+          ],
+        },
+        height: 2,
+        startCapId: expect.any(String),
+        endCapId: expect.any(String),
+        __meta: [{ sourceRange: [46, 71, 0] }],
       },
-      height: 2,
-      startCapId: expect.any(String),
-      endCapId: expect.any(String),
-      __meta: [{ sourceRange: [46, 71, 0] }],
     })
   })
   test('sketch extrude and sketch on one of the faces', async () => {
@@ -154,187 +157,193 @@ const sk2 = startSketchOn('XY')
     expect(geos).toEqual([
       {
         type: 'Solid',
-        id: expect.any(String),
-        value: [
-          {
-            type: 'extrudePlane',
-            faceId: expect.any(String),
-            tag: null,
-            id: expect.any(String),
-            sourceRange: [69, 89, 0],
-          },
-          {
-            type: 'extrudePlane',
-            faceId: expect.any(String),
-            tag: {
-              end: 116,
-              start: 114,
-              type: 'TagDeclarator',
-              value: 'p',
-            },
-            id: expect.any(String),
-            sourceRange: [95, 117, 0],
-          },
-          {
-            type: 'extrudePlane',
-            faceId: expect.any(String),
-            tag: null,
-            id: expect.any(String),
-            sourceRange: [123, 142, 0],
-          },
-        ],
-        sketch: {
+        value: {
+          type: 'Solid',
           id: expect.any(String),
-          __meta: expect.any(Array),
-          on: expect.any(Object),
-          start: expect.any(Object),
-          type: 'Sketch',
-          tags: {
-            p: {
-              __meta: [
-                {
-                  sourceRange: [114, 116, 0],
-                },
-              ],
-              type: 'TagIdentifier',
-              value: 'p',
-              info: expect.any(Object),
-            },
-          },
-          paths: [
+          value: [
             {
-              type: 'ToPoint',
-              from: [0, 0],
-              to: [-2.5, 0],
+              type: 'extrudePlane',
+              faceId: expect.any(String),
               tag: null,
-              __geoMeta: {
-                id: expect.any(String),
-                sourceRange: [69, 89, 0],
-              },
+              id: expect.any(String),
+              sourceRange: [69, 89, 0],
             },
             {
-              type: 'ToPoint',
-              from: [-2.5, 0],
-              to: [0, 10],
+              type: 'extrudePlane',
+              faceId: expect.any(String),
               tag: {
                 end: 116,
                 start: 114,
                 type: 'TagDeclarator',
                 value: 'p',
               },
-              __geoMeta: {
-                id: expect.any(String),
-                sourceRange: [95, 117, 0],
-              },
+              id: expect.any(String),
+              sourceRange: [95, 117, 0],
             },
             {
-              type: 'ToPoint',
-              from: [0, 10],
-              to: [2.5, 0],
+              type: 'extrudePlane',
+              faceId: expect.any(String),
               tag: null,
-              __geoMeta: {
-                id: expect.any(String),
-                sourceRange: [123, 142, 0],
-              },
+              id: expect.any(String),
+              sourceRange: [123, 142, 0],
             },
           ],
+          sketch: {
+            id: expect.any(String),
+            __meta: expect.any(Array),
+            on: expect.any(Object),
+            start: expect.any(Object),
+            type: 'Sketch',
+            tags: {
+              p: {
+                __meta: [
+                  {
+                    sourceRange: [114, 116, 0],
+                  },
+                ],
+                type: 'TagIdentifier',
+                value: 'p',
+                info: expect.any(Object),
+              },
+            },
+            paths: [
+              {
+                type: 'ToPoint',
+                from: [0, 0],
+                to: [-2.5, 0],
+                tag: null,
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [69, 89, 0],
+                },
+              },
+              {
+                type: 'ToPoint',
+                from: [-2.5, 0],
+                to: [0, 10],
+                tag: {
+                  end: 116,
+                  start: 114,
+                  type: 'TagDeclarator',
+                  value: 'p',
+                },
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [95, 117, 0],
+                },
+              },
+              {
+                type: 'ToPoint',
+                from: [0, 10],
+                to: [2.5, 0],
+                tag: null,
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [123, 142, 0],
+                },
+              },
+            ],
+          },
+          height: 2,
+          startCapId: expect.any(String),
+          endCapId: expect.any(String),
+          __meta: [{ sourceRange: [38, 63, 0] }],
         },
-        height: 2,
-        startCapId: expect.any(String),
-        endCapId: expect.any(String),
-        __meta: [{ sourceRange: [38, 63, 0] }],
       },
       {
         type: 'Solid',
-        id: expect.any(String),
-        value: [
-          {
-            type: 'extrudePlane',
-            faceId: expect.any(String),
-            tag: null,
-            id: expect.any(String),
-            sourceRange: [373, 393, 0],
-          },
-          {
-            type: 'extrudePlane',
-            faceId: expect.any(String),
-            tag: {
-              end: 419,
-              start: 417,
-              type: 'TagDeclarator',
-              value: 'o',
-            },
-            id: expect.any(String),
-            sourceRange: [399, 420, 0],
-          },
-          {
-            type: 'extrudePlane',
-            faceId: expect.any(String),
-            tag: null,
-            id: expect.any(String),
-            sourceRange: [426, 445, 0],
-          },
-        ],
-        sketch: {
+        value: {
+          type: 'Solid',
           id: expect.any(String),
-          __meta: expect.any(Array),
-          on: expect.any(Object),
-          start: expect.any(Object),
-          type: 'Sketch',
-          tags: {
-            o: {
-              __meta: [
-                {
-                  sourceRange: [417, 419, 0],
-                },
-              ],
-              type: 'TagIdentifier',
-              value: 'o',
-              info: expect.any(Object),
-            },
-          },
-          paths: [
+          value: [
             {
-              type: 'ToPoint',
-              from: [0, 0],
-              to: [-2.5, 0],
+              type: 'extrudePlane',
+              faceId: expect.any(String),
               tag: null,
-              __geoMeta: {
-                id: expect.any(String),
-                sourceRange: [373, 393, 0],
-              },
+              id: expect.any(String),
+              sourceRange: [373, 393, 0],
             },
             {
-              type: 'ToPoint',
-              from: [-2.5, 0],
-              to: [0, 3],
+              type: 'extrudePlane',
+              faceId: expect.any(String),
               tag: {
                 end: 419,
                 start: 417,
                 type: 'TagDeclarator',
                 value: 'o',
               },
-              __geoMeta: {
-                id: expect.any(String),
-                sourceRange: [399, 420, 0],
-              },
+              id: expect.any(String),
+              sourceRange: [399, 420, 0],
             },
             {
-              type: 'ToPoint',
-              from: [0, 3],
-              to: [2.5, 0],
+              type: 'extrudePlane',
+              faceId: expect.any(String),
               tag: null,
-              __geoMeta: {
-                id: expect.any(String),
-                sourceRange: [426, 445, 0],
-              },
+              id: expect.any(String),
+              sourceRange: [426, 445, 0],
             },
           ],
+          sketch: {
+            id: expect.any(String),
+            __meta: expect.any(Array),
+            on: expect.any(Object),
+            start: expect.any(Object),
+            type: 'Sketch',
+            tags: {
+              o: {
+                __meta: [
+                  {
+                    sourceRange: [417, 419, 0],
+                  },
+                ],
+                type: 'TagIdentifier',
+                value: 'o',
+                info: expect.any(Object),
+              },
+            },
+            paths: [
+              {
+                type: 'ToPoint',
+                from: [0, 0],
+                to: [-2.5, 0],
+                tag: null,
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [373, 393, 0],
+                },
+              },
+              {
+                type: 'ToPoint',
+                from: [-2.5, 0],
+                to: [0, 3],
+                tag: {
+                  end: 419,
+                  start: 417,
+                  type: 'TagDeclarator',
+                  value: 'o',
+                },
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [399, 420, 0],
+                },
+              },
+              {
+                type: 'ToPoint',
+                from: [0, 3],
+                to: [2.5, 0],
+                tag: null,
+                __geoMeta: {
+                  id: expect.any(String),
+                  sourceRange: [426, 445, 0],
+                },
+              },
+            ],
+          },
+          height: 2,
+          startCapId: expect.any(String),
+          endCapId: expect.any(String),
+          __meta: [{ sourceRange: [342, 367, 0] }],
         },
-        height: 2,
-        startCapId: expect.any(String),
-        endCapId: expect.any(String),
-        __meta: [{ sourceRange: [342, 367, 0] }],
       },
     ])
   })

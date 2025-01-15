@@ -955,8 +955,8 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
     let (data, tag): (SketchData, Option<FaceTag>) = args.get_data_and_optional_tag()?;
 
     match inner_start_sketch_on(data, tag, exec_state, &args).await? {
-        SketchSurface::Plane(plane) => Ok(KclValue::Plane(plane)),
-        SketchSurface::Face(face) => Ok(KclValue::Face(face)),
+        SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),
+        SketchSurface::Face(value) => Ok(KclValue::Face { value }),
     }
 }
 

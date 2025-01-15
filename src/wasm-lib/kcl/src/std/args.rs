@@ -1238,12 +1238,12 @@ impl<'a> FromKclValue<'a> for crate::execution::Point3d {
 impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 0: actual plane
-        if let KclValue::Plane(p) = arg {
+        if let KclValue::Plane { value } = arg {
             return Some(Self::Plane {
-                origin: Box::new(p.origin),
-                x_axis: Box::new(p.x_axis),
-                y_axis: Box::new(p.y_axis),
-                z_axis: Box::new(p.z_axis),
+                origin: Box::new(value.origin),
+                x_axis: Box::new(value.x_axis),
+                y_axis: Box::new(value.y_axis),
+                z_axis: Box::new(value.z_axis),
             });
         }
         // Case 1: predefined plane
@@ -1612,7 +1612,7 @@ impl<'a> FromKclValue<'a> for Sketch {
 
 impl<'a> FromKclValue<'a> for Helix {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Helix(value) = arg else {
+        let KclValue::Helix { value } = arg else {
             return None;
         };
         Some(value.as_ref().to_owned())
@@ -1668,10 +1668,10 @@ impl<'a> FromKclValue<'a> for SketchSet {
 
 impl<'a> FromKclValue<'a> for Box<Solid> {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::Solid(s) = arg else {
+        let KclValue::Solid { value } = arg else {
             return None;
         };
-        Some(s.to_owned())
+        Some(value.to_owned())
     }
 }
 
@@ -1691,8 +1691,8 @@ impl<'a> FromKclValue<'a> for SketchOrSurface {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Sketch { value: sg } => Some(Self::Sketch(sg.to_owned())),
-            KclValue::Plane(sg) => Some(Self::SketchSurface(SketchSurface::Plane(sg.clone()))),
-            KclValue::Face(sg) => Some(Self::SketchSurface(SketchSurface::Face(sg.clone()))),
+            KclValue::Plane { value } => Some(Self::SketchSurface(SketchSurface::Plane(value.clone()))),
+            KclValue::Face { value } => Some(Self::SketchSurface(SketchSurface::Face(value.clone()))),
             _ => None,
         }
     }
@@ -1700,8 +1700,8 @@ impl<'a> FromKclValue<'a> for SketchOrSurface {
 impl<'a> FromKclValue<'a> for SketchSurface {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::Plane(sg) => Some(Self::Plane(sg.clone())),
-            KclValue::Face(sg) => Some(Self::Face(sg.clone())),
+            KclValue::Plane { value } => Some(Self::Plane(value.clone())),
+            KclValue::Face { value } => Some(Self::Face(value.clone())),
             _ => None,
         }
     }
