@@ -2,7 +2,7 @@ import { isDesktop } from 'lib/isDesktop'
 
 // Polyfill window.electron fs functions as needed when in a nodejs context
 // (INTENDED FOR VITEST SHINANGANS.)
-if (process !== undefined && process.env.VITEST) {
+if (process.env.NODE_ENV === 'test' && process.env.VITEST) {
   const fs = require('node:fs/promises')
   const path = require('node:path')
   Object.assign(window, {
