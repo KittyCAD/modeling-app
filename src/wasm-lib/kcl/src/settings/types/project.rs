@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::settings::types::{
-    AppColor, AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings,
+    AppColor, AppSettings, AppTheme, CommandBarSettings, ModelingSettings, TextEditorSettings, NamedView
 };
 
 /// High level project configuration.
@@ -82,7 +82,7 @@ mod tests {
 
     use super::{
         AppSettings, AppTheme, CommandBarSettings, ModelingSettings, PerProjectSettings, ProjectConfiguration,
-        TextEditorSettings,
+        TextEditorSettings, NamedView
     };
     use crate::settings::types::{AppearanceSettings, UnitLength};
 
@@ -133,6 +133,7 @@ includeSettings = false
                         show_debug_panel: true,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
+                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -185,6 +186,95 @@ color = 1567.4"#;
         assert!(result
             .unwrap_err()
             .to_string()
-            .contains("color: Validation error: color"));
+                .contains("color: Validation error: color"));
+    }
+
+    #[test]
+    fn test_project_settings_named_views () {
+        let conf = ProjectConfiguration {
+                settings: PerProjectSettings {
+                    app: AppSettings {
+                        appearance: AppearanceSettings {
+                            theme: AppTheme::Dark,
+                            color: 138.0.into()
+                        },
+                        onboarding_status: Default::default(),
+                        project_directory: None,
+                        theme: None,
+                        theme_color: None,
+                        dismiss_web_banner: false,
+                        enable_ssao: None,
+                        stream_idle_mode: false,
+                    },
+                    modeling: ModelingSettings {
+                        base_unit: UnitLength::Yd,
+                        camera_projection: Default::default(),
+                        mouse_controls: Default::default(),
+                        highlight_edges: Default::default(),
+                        show_debug_panel: true,
+                        enable_ssao: true.into(),
+                        show_scale_grid: false,
+                        named_views: vec![
+                            NamedView {
+                                name: String::from("Hello"),
+                                position: [1.0,2.0,3.0],
+                                fov: 42.0,
+                                near: 41.0,
+                                far: 43.0,
+                                orientation: [4.0,5.0,6.0,7.0]
+                            },
+                            NamedView {
+                                name: String::from("Goodbye"),
+                                position: [1.0,2.0,3.0],
+                                fov: 42.0,
+                                near: 41.0,
+                                far: 43.0,
+                                orientation: [4.0,5.0,6.0,7.0]
+                            }
+                        ]
+                    },
+                    text_editor: TextEditorSettings {
+                        text_wrapping: false.into(),
+                        blinking_cursor: false.into()
+                    },
+                    command_bar: CommandBarSettings {
+                        include_settings: false.into()
+                    },
+                }
+            };
+        let serialized = toml::to_string(&conf).unwrap();
+        let old_project_file = r#"[settings.app.appearance]
+theme = "dark"
+color = 138.0
+
+[settings.modeling]
+base_unit = "yd"
+show_debug_panel = true
+
+[[settings.modeling.named_views]]
+name = "Hello"
+position = [1.0, 2.0, 3.0]
+fov = 42.0
+near = 41.0
+far = 43.0
+orientation = [4.0, 5.0, 6.0, 7.0]
+
+[[settings.modeling.named_views]]
+name = "Goodbye"
+position = [1.0, 2.0, 3.0]
+fov = 42.0
+near = 41.0
+far = 43.0
+orientation = [4.0, 5.0, 6.0, 7.0]
+
+[settings.text_editor]
+text_wrapping = false
+blinking_cursor = false
+
+[settings.command_bar]
+include_settings = false
+"#;
+
+        assert_eq!(serialized, old_project_file)
     }
 }

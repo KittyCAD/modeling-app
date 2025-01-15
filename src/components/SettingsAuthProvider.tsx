@@ -42,6 +42,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { codeManager } from 'lib/singletons'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
+import { createNamedViewsCommand } from 'lib/commandBarConfigs/namedViewsConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -141,7 +142,7 @@ export const SettingsAuthProviderBase = ({
           if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
-            string
+            string,
           ]
           const truncatedNewValue = event.data.value?.toString().slice(0, 28)
           const message =
@@ -383,6 +384,15 @@ export const SettingsAuthProviderBase = ({
       },
     })
   )
+
+  useEffect(() => {
+    // TODO: only add in the modeling page
+    const { createNamedViewCommand } = createNamedViewsCommand()
+    commandBarSend({
+      type: 'Add commands',
+      data: { commands: [createNamedViewCommand] },
+    })
+  }, [])
 
   useStateMachineCommands({
     machineId: 'auth',

@@ -272,7 +272,43 @@ pub struct ModelingSettings {
     /// Whether or not to show a scale grid in the 3D modeling view
     #[serde(default, alias = "showScaleGrid", skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
+    /// Settings that affect the behavior of the command bar.
+    #[serde(default, alias = "namedViews")]
+    #[validate(nested)]
+    pub named_views: Vec<NamedView>,
 }
+
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, Validate)]
+#[serde(rename_all = "snake_case")]
+#[ts(export)]
+pub struct NamedView {
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "name", skip_serializing_if = "is_default")]
+    pub name: String,
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "position", skip_serializing_if = "is_default")]
+    pub position: [f64; 3],
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "fov", skip_serializing_if = "is_default")]
+    pub fov: f64,
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "near", skip_serializing_if = "is_default")]
+    pub near: f64,
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "far", skip_serializing_if = "is_default")]
+    pub far: f64,
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "orientation", skip_serializing_if = "is_default")]
+    pub orientation: [f64;4]
+}
+
+impl PartialEq for NamedView {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
+    }
+}
+
+impl Eq for NamedView {}
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Eq)]
 #[ts(export)]
@@ -595,6 +631,7 @@ textWrapping = true
                         show_debug_panel: true,
                         enable_ssao: false.into(),
                         show_scale_grid: false,
+                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
@@ -656,6 +693,7 @@ includeSettings = false
                         show_debug_panel: true,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
+                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -722,6 +760,7 @@ defaultProjectName = "projects-$nnn"
                         show_debug_panel: true,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
+                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: false.into(),
@@ -800,6 +839,7 @@ projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
                         show_debug_panel: false,
                         enable_ssao: true.into(),
                         show_scale_grid: false,
+                        named_views: Vec::default()
                     },
                     text_editor: TextEditorSettings {
                         text_wrapping: true.into(),
