@@ -45,31 +45,34 @@ export function revolveSketch(
   const sketchNode = getNodeFromPath(clonedAst, pathToSketchNode)
   if (err(sketchNode)) return sketchNode
 
-  // testing code
-  const pathToAxisSelection = getNodePathFromSourceRange(
-    clonedAst,
-    axis.graphSelections[0]?.codeRef.range
-  )
+  let generatedAxis
 
-  const lineNode = getNodeFromPath<CallExpression>(
-    clonedAst,
-    pathToAxisSelection,
-    'CallExpression'
-  )
-  if (err(lineNode)) return lineNode
+  if (axisOrEdge === 'Edge') {
+    const pathToAxisSelection = getNodePathFromSourceRange(
+      clonedAst,
+      edge.graphSelections[0]?.codeRef.range
+    )
+    const lineNode = getNodeFromPath<CallExpression>(
+      clonedAst,
+      pathToAxisSelection,
+      'CallExpression'
+    )
+    if (err(lineNode)) return lineNode
 
-  // TODO Kevin: What if |> close(%)?
-  // TODO Kevin: What if opposite edge
-  // TODO Kevin: What if the edge isn't planar to the sketch?
-  // TODO Kevin: add a tag.
-  const tagResult = mutateAstWithTagForSketchSegment(
-    clonedAst,
-    pathToAxisSelection
-  )
+    const tagResult = mutateAstWithTagForSketchSegment(
+      clonedAst,
+      pathToAxisSelection
+    )
 
-  // Have the tag whether it is already created or a new one is generated
-  if (err(tagResult)) return tagResult
-  const { tag } = tagResult
+    // Have the tag whether it is already created or a new one is generated
+    if (err(tagResult)) return tagResult
+    const { tag } = tagResult
+    const axisSelection = edge?.graphSelections[0]?.artifact
+    if (!axisSelection) return new Error('Generated axis selection is missing.')
+    generatedAxis = getEdgeTagCall(tag, axisSelection)
+  } else {
+    generatedAxis = createLiteral(axis)
+  }
 
   const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
     clonedAst,
@@ -79,14 +82,12 @@ export function revolveSketch(
   if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
   const { node: sketchVariableDeclarator } = sketchVariableDeclaratorNode
 
-  const axisSelection = axis?.graphSelections[0]?.artifact
-
-  if (!axisSelection) return new Error('Axis selection is missing.')
+  if (!generatedAxis) return new Error('Generated axis selection is missing.')
 
   const revolveCall = createCallExpressionStdLib('revolve', [
     createObjectExpression({
       angle: angle,
-      axis: getEdgeTagCall(tag, axisSelection),
+      axis: generatedAxis,
     }),
     createIdentifier(sketchVariableDeclarator.id.name),
   ])

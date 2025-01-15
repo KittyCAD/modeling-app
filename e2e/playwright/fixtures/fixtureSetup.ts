@@ -121,18 +121,23 @@ export class AuthenticatedTronApp {
 
 export const fixtures = {
   cmdBar: async ({ page }: { page: Page }, use: any) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(new CmdBarFixture(page))
   },
   editor: async ({ page }: { page: Page }, use: any) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(new EditorFixture(page))
   },
   toolbar: async ({ page }: { page: Page }, use: any) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(new ToolbarFixture(page))
   },
   scene: async ({ page }: { page: Page }, use: any) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(new SceneFixture(page))
   },
   homePage: async ({ page }: { page: Page }, use: any) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     await use(new HomePageFixture(page))
   },
 }

@@ -137,7 +137,7 @@ See later source ranges for more context. about the sweep`,
             { key: artifact.pathId, types: ['path'] },
             artifactGraph
           )
-          if (!err(path)) {
+          if (!err(path) && path.sweepId) {
             const sweep = getArtifactOfTypes(
               { key: path.sweepId, types: ['sweep'] },
               artifactGraph

@@ -669,6 +669,7 @@ export function codeToIdSelections(
           }
         }
         if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
+          if (!entry.artifact.surfaceId) return
           const wall = engineCommandManager.artifactGraph.get(
             entry.artifact.surfaceId
           )
@@ -713,6 +714,7 @@ export function codeToIdSelections(
           (type === 'end-cap' || type === 'start-cap') &&
           entry.artifact.type === 'path'
         ) {
+          if (!entry.artifact.sweepId) return
           const extrusion = getArtifactOfTypes(
             {
               key: entry.artifact.sweepId,
