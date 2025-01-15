@@ -49,20 +49,26 @@ export function kclCommands(
         if (!data?.sample) {
           return
         }
+        const pathParts = data.sample.split('/')
+        const projectPathPart = pathParts[0]
+        const primaryKclFile = pathParts[1]
         const sampleCodeUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
-          data.sample.replace(FILE_EXT, '')
-        )}/${encodeURIComponent(data.sample)}`
+          projectPathPart
+        )}/${encodeURIComponent(primaryKclFile)}`
         const sampleSettingsFileUrl = `https://raw.githubusercontent.com/KittyCAD/kcl-samples/main/${encodeURIComponent(
-          data.sample.replace(FILE_EXT, '')
+          projectPathPart
         )}/${PROJECT_SETTINGS_FILE_NAME}`
 
-        Promise.all([fetch(sampleCodeUrl), fetch(sampleSettingsFileUrl)])
+        Promise.allSettled([fetch(sampleCodeUrl), fetch(sampleSettingsFileUrl)])
+          .then((results) => {
+            return [results[0]?.value, results[1]?.value]
+          })
           .then(
             async ([
               codeResponse,
               settingsResponse,
             ]): Promise<OnSubmitProps> => {
-              if (!(codeResponse.ok && settingsResponse.ok)) {
+              if (!codeResponse.ok) {
                 console.error(
                   'Failed to fetch sample code:',
                   codeResponse.statusText
@@ -70,16 +76,20 @@ export function kclCommands(
                 return Promise.reject(new Error('Failed to fetch sample code'))
               }
               const code = await codeResponse.text()
-              const parsedProjectSettings = parseProjectSettings(
-                await settingsResponse.text()
-              )
+
+              // It's possible that a sample doesn't have a project.toml
+              // associated with it.
               let projectSettingsPayload: ReturnType<
                 typeof projectConfigurationToSettingsPayload
               > = {}
-              if (!err(parsedProjectSettings)) {
-                projectSettingsPayload = projectConfigurationToSettingsPayload(
-                  parsedProjectSettings
+              if (settingsResponse.ok) {
+                const parsedProjectSettings = parseProjectSettings(
+                  await settingsResponse.text()
                 )
+                if (!err(parsedProjectSettings)) {
+                  projectSettingsPayload =
+                    projectConfigurationToSettingsPayload(parsedProjectSettings)
+                }
               }
 
               return {

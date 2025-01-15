@@ -8,8 +8,8 @@ import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 
 test.describe('Testing in-app sample loading', () => {
   /**
-   * Note this test implicitly depends on the KCL sample "car-wheel.kcl",
-   * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/car-wheel/car-wheel.kcl
+   * Note this test implicitly depends on the KCL sample "car-wheel",
+   * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/car-wheel/main.kcl
    */
   test('Web: should overwrite current code, cannot create new file', async ({
     editor,
@@ -29,7 +29,7 @@ test.describe('Testing in-app sample loading', () => {
 
     // Locators and constants
     const newSample = {
-      file: 'car-wheel' + FILE_EXT,
+      file: 'main' + FILE_EXT,
       title: 'Car Wheel',
     }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
@@ -75,8 +75,8 @@ test.describe('Testing in-app sample loading', () => {
 
   /**
    * Note this test implicitly depends on the KCL samples:
-   * "car-wheel.kcl": https://github.com/KittyCAD/kcl-samples/blob/main/car-wheel/car-wheel.kcl
-   * "gear-rack.kcl": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/gear-rack.kcl
+   * "car-wheel": https://github.com/KittyCAD/kcl-samples/blob/main/car-wheel/main.kcl
+   * "gear-rack": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/main.kcl
    */
   test(
     'Desktop: should create new file by default, optionally overwrite',
@@ -93,11 +93,11 @@ test.describe('Testing in-app sample loading', () => {
 
       // Locators and constants
       const sampleOne = {
-        file: 'car-wheel' + FILE_EXT,
+        file: 'main' + FILE_EXT,
         title: 'Car Wheel',
       }
       const sampleTwo = {
-        file: 'gear-rack' + FILE_EXT,
+        file: 'main' + FILE_EXT,
         title: '100mm Gear Rack',
       }
       const projectCard = page.getByRole('link', { name: 'bracket' })
