@@ -21,7 +21,6 @@ import {
   ArtifactGraph,
   EngineCommand,
   ResponseMap,
-  createArtifactGraph,
 } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
@@ -2087,19 +2086,8 @@ export class EngineCommandManager extends EventTarget {
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
   }
-  updateArtifactGraph(
-    ast: Node<Program>,
-    artifactCommands: ArtifactCommand[],
-    execStateArtifacts: ExecState['artifacts'],
-    execStateArtifactGraph: ExecState['artifactGraph']
-  ) {
-    this.artifactGraph = createArtifactGraph({
-      artifactCommands,
-      responseMap: this.responseMap,
-      ast,
-      execStateArtifacts,
-      execStateArtifactGraph,
-    })
+  updateArtifactGraph(execStateArtifactGraph: ExecState['artifactGraph']) {
+    this.artifactGraph = execStateArtifactGraph
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)

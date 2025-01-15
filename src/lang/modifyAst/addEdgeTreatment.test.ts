@@ -8,6 +8,7 @@ import {
   makeDefaultPlanes,
   PipeExpression,
   VariableDeclarator,
+  SourceRange,
 } from '../wasm'
 import {
   EdgeTreatmentType,
@@ -77,10 +78,10 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     code: string,
     expectedExtrudeSnippet: string
   ): CallExpression | PipeExpression | Error {
-    const extrudeRange: [number, number, boolean] = [
+    const extrudeRange: SourceRange = [
       code.indexOf(expectedExtrudeSnippet),
       code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length,
-      true,
+      0,
     ]
     const expectedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
     const expectedExtrudeNodeResult = getNodeFromPath<
@@ -112,10 +113,10 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   const ast = assertParse(code)
 
   // selection
-  const segmentRange: [number, number, boolean] = [
+  const segmentRange: SourceRange = [
     code.indexOf(selectedSegmentSnippet),
     code.indexOf(selectedSegmentSnippet) + selectedSegmentSnippet.length,
-    true,
+    0,
   ]
   const selection: Selection = {
     codeRef: codeRefFromRange(segmentRange, ast),
@@ -260,11 +261,11 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   const ast = assertParse(code)
 
   // selection
-  const segmentRanges: Array<[number, number, boolean]> = selectionSnippets.map(
+  const segmentRanges: Array<SourceRange> = selectionSnippets.map(
     (selectionSnippet) => [
       code.indexOf(selectionSnippet),
       code.indexOf(selectionSnippet) + selectionSnippet.length,
-      true,
+      0,
     ]
   )
 
@@ -596,10 +597,10 @@ extrude001 = extrude(-5, sketch001)
   it('should correctly identify getOppositeEdge and baseEdge edges', () => {
     const ast = assertParse(code)
     const lineOfInterest = `line([7.11, 3.48], %, $seg01)`
-    const range: [number, number, boolean] = [
+    const range: SourceRange = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
-      true,
+      0,
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
@@ -615,10 +616,10 @@ extrude001 = extrude(-5, sketch001)
   it('should correctly identify getPreviousAdjacentEdge edges', () => {
     const ast = assertParse(code)
     const lineOfInterest = `line([-6.37, 3.88], %, $seg02)`
-    const range: [number, number, boolean] = [
+    const range: SourceRange = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
-      true,
+      0,
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
@@ -634,10 +635,10 @@ extrude001 = extrude(-5, sketch001)
   it('should correctly identify no edges', () => {
     const ast = assertParse(code)
     const lineOfInterest = `line([-3.29, -13.85], %)`
-    const range: [number, number, boolean] = [
+    const range: SourceRange = [
       code.indexOf(lineOfInterest),
       code.indexOf(lineOfInterest) + lineOfInterest.length,
-      true,
+      0,
     ]
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
@@ -660,13 +661,13 @@ describe('Testing button states', () => {
   ) => {
     const ast = assertParse(code)
 
-    const range: [number, number, boolean] = segmentSnippet
+    const range: SourceRange = segmentSnippet
       ? [
           code.indexOf(segmentSnippet),
           code.indexOf(segmentSnippet) + segmentSnippet.length,
-          true,
+          0,
         ]
-      : [ast.end, ast.end, true] // empty line in the end of the code
+      : [ast.end, ast.end, 0] // empty line in the end of the code
 
     const selectionRanges: Selections = {
       graphSelections: [

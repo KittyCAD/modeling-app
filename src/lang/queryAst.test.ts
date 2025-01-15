@@ -4,6 +4,7 @@ import {
   initPromise,
   PathToNode,
   Identifier,
+  SourceRange,
 } from './wasm'
 import {
   findAllPreviousVariables,
@@ -57,7 +58,7 @@ variableBelowShouldNotBeIncluded = 3
     const { variables, bodyPath, insertIndex } = findAllPreviousVariables(
       ast,
       execState.memory,
-      [rangeStart, rangeStart, true]
+      [rangeStart, rangeStart, 0]
     )
     expect(variables).toEqual([
       { key: 'baseThick', value: 1 },
@@ -87,7 +88,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe binaryExpression', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('100 + 100') + 2
-    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, true])
+    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, 0])
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('BinaryExpression')
@@ -100,7 +101,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe Identifier', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('abc')
-    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, true])
+    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, 0])
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('Identifier')
@@ -109,7 +110,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe CallExpression', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('def')
-    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, true])
+    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, 0])
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('CallExpression')
@@ -122,7 +123,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find an UNsafe CallExpression, as it has a PipeSubstitution', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('ghi')
-    const range: [number, number, boolean] = [rangeStart, rangeStart, true]
+    const range: SourceRange = [rangeStart, rangeStart, 0]
     const result = isNodeSafeToReplace(ast, range)
     if (err(result)) throw result
     expect(result.isSafe).toBe(false)
@@ -132,7 +133,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find an UNsafe Identifier, as it is a callee', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('ine([2.8,')
-    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, true])
+    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, 0])
     if (err(result)) throw result
     expect(result.isSafe).toBe(false)
     expect(result.value?.type).toBe('CallExpression')
@@ -143,7 +144,7 @@ yo2 = hmm([identifierGuy + 5])`
   it("find a safe BinaryExpression that's assigned to a variable", () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('5 + 6') + 1
-    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, true])
+    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, 0])
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('BinaryExpression')
@@ -156,7 +157,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe BinaryExpression that has a CallExpression within', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('jkl') + 1
-    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, true])
+    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, 0])
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
     expect(result.value?.type).toBe('BinaryExpression')
@@ -173,7 +174,7 @@ yo2 = hmm([identifierGuy + 5])`
     const ast = assertParse(code)
 
     const rangeStart = code.indexOf('identifierGuy') + 1
-    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, true])
+    const result = isNodeSafeToReplace(ast, [rangeStart, rangeStart, 0])
     if (err(result)) throw result
 
     expect(result.isSafe).toBe(true)
@@ -225,7 +226,7 @@ describe('testing getNodePathFromSourceRange', () => {
     const result = getNodePathFromSourceRange(ast, [
       sourceIndex,
       sourceIndex,
-      true,
+      0,
     ])
     expect(result).toEqual([
       ['body', ''],
@@ -244,7 +245,7 @@ describe('testing getNodePathFromSourceRange', () => {
     const result = getNodePathFromSourceRange(ast, [
       sourceIndex,
       sourceIndex,
-      true,
+      0,
     ])
     const expected = [
       ['body', ''],
@@ -260,14 +261,14 @@ describe('testing getNodePathFromSourceRange', () => {
     const startResult = getNodePathFromSourceRange(ast, [
       startSourceIndex,
       startSourceIndex,
-      true,
+      0,
     ])
     expect(startResult).toEqual([...expected, ['callee', 'CallExpression']])
     // expect similar result when whole line is selected
     const selectWholeThing = getNodePathFromSourceRange(ast, [
       startSourceIndex,
       sourceIndex,
-      true,
+      0,
     ])
     expect(selectWholeThing).toEqual(expected)
   })
@@ -286,7 +287,7 @@ describe('testing getNodePathFromSourceRange', () => {
     const result = getNodePathFromSourceRange(ast, [
       sourceIndex,
       sourceIndex,
-      true,
+      0,
     ])
     expect(result).toEqual([
       ['body', ''],
@@ -316,7 +317,7 @@ describe('testing getNodePathFromSourceRange', () => {
     const result = getNodePathFromSourceRange(ast, [
       sourceIndex,
       sourceIndex,
-      true,
+      0,
     ])
     expect(result).toEqual([
       ['body', ''],
@@ -344,7 +345,7 @@ describe('testing getNodePathFromSourceRange', () => {
     const result = getNodePathFromSourceRange(ast, [
       sourceIndex,
       sourceIndex,
-      true,
+      0,
     ])
     expect(result).toEqual([
       ['body', ''],
@@ -375,7 +376,7 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = hasExtrudeSketch({
       ast,
       selection: {
-        codeRef: codeRefFromRange([100, 101, true], ast),
+        codeRef: codeRefFromRange([100, 101, 0], ast),
       },
       programMemory: execState.memory,
     })
@@ -395,7 +396,7 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = hasExtrudeSketch({
       ast,
       selection: {
-        codeRef: codeRefFromRange([100, 101, true], ast),
+        codeRef: codeRefFromRange([100, 101, 0], ast),
       },
       programMemory: execState.memory,
     })
@@ -409,7 +410,7 @@ part001 = startSketchAt([-1.41, 3.46])
     const result = hasExtrudeSketch({
       ast,
       selection: {
-        codeRef: codeRefFromRange([10, 11, true], ast),
+        codeRef: codeRefFromRange([10, 11, 0], ast),
       },
       programMemory: execState.memory,
     })
@@ -434,7 +435,7 @@ describe('Testing findUsesOfTagInPipe', () => {
     const pathToNode = getNodePathFromSourceRange(ast, [
       characterIndex,
       characterIndex,
-      true,
+      0,
     ])
     const result = findUsesOfTagInPipe(ast, pathToNode)
     expect(result).toHaveLength(2)
@@ -451,7 +452,7 @@ describe('Testing findUsesOfTagInPipe', () => {
     const pathToNode = getNodePathFromSourceRange(ast, [
       characterIndex,
       characterIndex,
-      true,
+      0,
     ])
     const result = findUsesOfTagInPipe(ast, pathToNode)
     expect(result).toHaveLength(0)
@@ -498,7 +499,7 @@ sketch003 = startSketchOn(extrude001, 'END')
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        codeRef: codeRefFromRange([characterIndex, characterIndex, true], ast),
+        codeRef: codeRefFromRange([characterIndex, characterIndex, 0], ast),
       },
       ast
     )
@@ -511,7 +512,7 @@ sketch003 = startSketchOn(extrude001, 'END')
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        codeRef: codeRefFromRange([characterIndex, characterIndex, true], ast),
+        codeRef: codeRefFromRange([characterIndex, characterIndex, 0], ast),
       },
       ast
     )
@@ -524,7 +525,7 @@ sketch003 = startSketchOn(extrude001, 'END')
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
     const extruded = hasSketchPipeBeenExtruded(
       {
-        codeRef: codeRefFromRange([characterIndex, characterIndex, true], ast),
+        codeRef: codeRefFromRange([characterIndex, characterIndex, 0], ast),
       },
       ast
     )
@@ -654,7 +655,7 @@ myNestedVar = [
     const pathToNode2 = getNodePathFromSourceRange(ast, [
       literalIndex + 2,
       literalIndex + 2,
-      true,
+      0,
     ])
     expect(pathToNode).toEqual(pathToNode2)
   })

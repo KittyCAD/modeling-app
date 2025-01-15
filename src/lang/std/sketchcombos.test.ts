@@ -1,4 +1,11 @@
-import { assertParse, Expr, recast, initPromise, Program } from '../wasm'
+import {
+  assertParse,
+  Expr,
+  recast,
+  initPromise,
+  Program,
+  SourceRange,
+} from '../wasm'
 import {
   getConstraintType,
   getTransformInfos,
@@ -125,7 +132,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
         )
       }
       const start = codeBeforeLine + line.indexOf('|> ' + 5)
-      const range: [number, number, boolean] = [start, start, true]
+      const range: SourceRange = [start, start, 0]
       return {
         codeRef: codeRefFromRange(range, ast),
       }
@@ -297,7 +304,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start, true], ast),
+          codeRef: codeRefFromRange([start, start, 0], ast),
         }
       })
 
@@ -386,7 +393,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start, true], ast),
+          codeRef: codeRefFromRange([start, start, 0], ast),
         }
       })
 
@@ -446,7 +453,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start, true], ast),
+          codeRef: codeRefFromRange([start, start, 0], ast),
         }
       })
 
@@ -541,7 +548,7 @@ async function helperThing(
       const comment = ln.split('//')[1]
       const start = inputScript.indexOf('//' + comment) - 7
       return {
-        codeRef: codeRefFromRange([start, start, true], ast),
+        codeRef: codeRefFromRange([start, start, 0], ast),
       }
     })
 
@@ -610,7 +617,7 @@ part001 = startSketchOn('XY')
         }
         const offsetIndex = index - 7
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
-          [offsetIndex, offsetIndex, true],
+          [offsetIndex, offsetIndex, 0],
           ast
         )
         if (err(expectedConstraintLevel)) {
