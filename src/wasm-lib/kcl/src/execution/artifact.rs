@@ -1193,13 +1193,13 @@ mod tests {
             for ((source_id, target_id), direction) in edges {
                 match direction {
                     EdgeDirection::Forward => {
-                        writeln!(output, "{prefix}{source_id} --> {}", target_id)?;
+                        writeln!(output, "{prefix}{source_id} x--> {}", target_id)?;
                     }
                     EdgeDirection::Backward => {
-                        writeln!(output, "{prefix}{target_id} --> {}", source_id)?;
+                        writeln!(output, "{prefix}{target_id} x--> {}", source_id)?;
                     }
                     EdgeDirection::Bidirectional => {
-                        writeln!(output, "{prefix}{source_id} <---> {}", target_id)?;
+                        writeln!(output, "{prefix}{source_id} --- {}", target_id)?;
                     }
                 }
             }
