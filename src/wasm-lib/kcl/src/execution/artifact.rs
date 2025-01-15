@@ -1002,11 +1002,39 @@ fn artifacts_to_update(
 mod tests {
     use std::fmt::Write;
 
-    use fnv::FnvHashSet;
+    use fnv::FnvHashMap;
 
     use super::*;
 
     type NodeId = u32;
+
+    type Edges = FnvHashMap<(NodeId, NodeId), EdgeDirection>;
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+    enum EdgeDirection {
+        Forward,
+        Backward,
+        Bidirectional,
+    }
+
+    impl EdgeDirection {
+        #[must_use]
+        fn merge(&self, other: EdgeDirection) -> EdgeDirection {
+            match self {
+                EdgeDirection::Forward => match other {
+                    EdgeDirection::Forward => EdgeDirection::Forward,
+                    EdgeDirection::Backward => EdgeDirection::Bidirectional,
+                    EdgeDirection::Bidirectional => EdgeDirection::Bidirectional,
+                },
+                EdgeDirection::Backward => match other {
+                    EdgeDirection::Forward => EdgeDirection::Bidirectional,
+                    EdgeDirection::Backward => EdgeDirection::Backward,
+                    EdgeDirection::Bidirectional => EdgeDirection::Bidirectional,
+                },
+                EdgeDirection::Bidirectional => EdgeDirection::Bidirectional,
+            }
+        }
+    }
 
     impl ArtifactGraph {
         pub(crate) fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
@@ -1021,21 +1049,20 @@ mod tests {
                 next_id += 1;
             }
 
-            // Output all nodes first in sorted order since an edge to a node
-            // can change its structure.
-            for (_, artifact) in &self.map {
+            // Output all nodes first since edge order can change how Mermaid
+            // lays out nodes.  This is also where we output more details about
+            // the nodes, like their labels.
+            for artifact in self.map.values() {
                 self.flowchart_artifact(&mut output, artifact, &stable_id_map, "  ")?;
             }
-            let mut unique_edges = FnvHashSet::default();
-            for (_, artifact) in &self.map {
-                self.flowchart_edges(&mut output, artifact, &stable_id_map, "  ", &mut unique_edges)?;
-            }
+            self.flowchart_edges(&mut output, &stable_id_map, "  ")?;
 
             output.push_str("```\n");
 
             Ok(output)
         }
 
+        /// Output the Mermaid flowchart node for the given artifact.
         fn flowchart_artifact<W: Write>(
             &self,
             output: &mut W,
@@ -1126,29 +1153,54 @@ mod tests {
         fn flowchart_edges<W: Write>(
             &self,
             output: &mut W,
-            artifact: &Artifact,
             stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
             prefix: &str,
-            mut edges: &mut FnvHashSet<(NodeId, NodeId)>,
-        ) -> std::fmt::Result {
-            // Returns true if it's a new edge.
-            fn add_unique_edge(edges: &mut FnvHashSet<(NodeId, NodeId)>, source_id: NodeId, target_id: NodeId) -> bool {
-                // Insert in canonical order.
+        ) -> Result<(), std::fmt::Error> {
+            // Mermaid will display two edges in either direction, even using
+            // the `---` edge type. So we need to deduplicate them.
+            fn add_unique_edge(edges: &mut Edges, source_id: NodeId, target_id: NodeId) {
+                if source_id == target_id {
+                    // Self edge.  Skip it.
+                    return;
+                }
+                // The key is the node IDs in canonical order.
                 let a = source_id.min(target_id);
                 let b = source_id.max(target_id);
-                edges.insert((a, b))
+                let new_direction = if a == source_id {
+                    EdgeDirection::Forward
+                } else {
+                    EdgeDirection::Backward
+                };
+                let direction = edges.entry((a, b)).or_insert(new_direction);
+                // Merge with existing edge.
+                *direction = direction.merge(new_direction);
             }
 
-            let source_id = *stable_id_map.get(&artifact.id()).unwrap();
-            for target_id in artifact.back_edges().into_iter().chain(artifact.child_ids()) {
-                let Some(_) = self.map.get(&target_id) else {
-                    continue;
-                };
-                let target_id = *stable_id_map.get(&target_id).unwrap();
-                // Mermaid will display two edges if we don't deduplicate, even
-                // using the `---` edge type.
-                if add_unique_edge(&mut edges, source_id, target_id) {
-                    writeln!(output, "{prefix}{source_id} <---> {}", target_id)?;
+            // Collect all edges to deduplicate them.
+            let mut edges = FnvHashMap::default();
+            for artifact in self.map.values() {
+                let source_id = *stable_id_map.get(&artifact.id()).unwrap();
+                for target_id in artifact.back_edges().into_iter().chain(artifact.child_ids()) {
+                    let Some(_) = self.map.get(&target_id) else {
+                        continue;
+                    };
+                    let target_id = *stable_id_map.get(&target_id).unwrap();
+                    add_unique_edge(&mut edges, source_id, target_id)
+                }
+            }
+
+            // Output the edges.
+            for ((source_id, target_id), direction) in edges {
+                match direction {
+                    EdgeDirection::Forward => {
+                        writeln!(output, "{prefix}{source_id} --> {}", target_id)?;
+                    }
+                    EdgeDirection::Backward => {
+                        writeln!(output, "{prefix}{target_id} --> {}", source_id)?;
+                    }
+                    EdgeDirection::Bidirectional => {
+                        writeln!(output, "{prefix}{source_id} <---> {}", target_id)?;
+                    }
                 }
             }
 
