@@ -117,6 +117,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
         revolutions: data.revolutions,
         angle_start: data.angle_start,
         ccw: data.ccw,
+        units: exec_state.length_unit(),
         meta: vec![args.source_range.into()],
     });
 

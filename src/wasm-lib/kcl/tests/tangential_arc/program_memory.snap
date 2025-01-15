@@ -160,6 +160,9 @@ description: Program memory after executing tangential_arc.kcl
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -181,6 +184,9 @@ description: Program memory after executing tangential_arc.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -194,6 +200,9 @@ description: Program memory after executing tangential_arc.kcl
             "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

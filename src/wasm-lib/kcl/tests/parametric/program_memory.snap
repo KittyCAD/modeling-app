@@ -261,6 +261,9 @@ description: Program memory after executing parametric.kcl
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -282,6 +285,9 @@ description: Program memory after executing parametric.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -295,6 +301,9 @@ description: Program memory after executing parametric.kcl
             "height": 9.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

@@ -333,6 +333,9 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -354,6 +357,9 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -367,6 +373,9 @@ description: Program memory after executing parametric_with_tan_arc.kcl
             "height": 11.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

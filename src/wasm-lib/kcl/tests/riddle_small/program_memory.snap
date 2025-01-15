@@ -295,6 +295,9 @@ description: Program memory after executing riddle_small.kcl
                   "y": -1.0,
                   "z": 0.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -316,6 +319,9 @@ description: Program memory after executing riddle_small.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -329,6 +335,9 @@ description: Program memory after executing riddle_small.kcl
             "height": 1.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

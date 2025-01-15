@@ -256,6 +256,9 @@ description: Program memory after executing sketch_on_face.kcl
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -338,6 +341,9 @@ description: Program memory after executing sketch_on_face.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -351,6 +357,9 @@ description: Program memory after executing sketch_on_face.kcl
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -685,6 +694,9 @@ description: Program memory after executing sketch_on_face.kcl
                         "y": 0.0,
                         "z": 1.0
                       },
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": []
                     },
                     "start": {
@@ -767,6 +779,9 @@ description: Program memory after executing sketch_on_face.kcl
                         ]
                       }
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -780,6 +795,9 @@ description: Program memory after executing sketch_on_face.kcl
                   "height": 5.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -789,6 +807,9 @@ description: Program memory after executing sketch_on_face.kcl
                       ]
                     }
                   ]
+                },
+                "units": {
+                  "type": "Mm"
                 },
                 "__meta": [
                   {
@@ -819,6 +840,9 @@ description: Program memory after executing sketch_on_face.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -832,6 +856,9 @@ description: Program memory after executing sketch_on_face.kcl
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

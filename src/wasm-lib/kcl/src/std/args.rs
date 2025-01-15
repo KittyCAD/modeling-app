@@ -863,27 +863,7 @@ impl<'a> FromKclValue<'a> for crate::std::planes::StandardPlane {
 
 impl<'a> FromKclValue<'a> for crate::execution::Plane {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        if let Some(plane) = arg.as_plane() {
-            return Some(plane.clone());
-        }
-
-        let obj = arg.as_object()?;
-        let_field_of!(obj, id);
-        let_field_of!(obj, value);
-        let_field_of!(obj, origin);
-        let_field_of!(obj, x_axis "xAxis");
-        let_field_of!(obj, y_axis "yAxis");
-        let_field_of!(obj, z_axis "zAxis");
-        let_field_of!(obj, meta "__meta");
-        Some(Self {
-            id,
-            value,
-            origin,
-            x_axis,
-            y_axis,
-            z_axis,
-            meta,
-        })
+        arg.as_plane().cloned()
     }
 }
 

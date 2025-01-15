@@ -165,6 +165,9 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -247,6 +250,9 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -260,6 +266,9 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
             "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

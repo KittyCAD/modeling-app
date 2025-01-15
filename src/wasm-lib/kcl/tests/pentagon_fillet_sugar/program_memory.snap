@@ -506,6 +506,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       "y": 0.0,
                       "z": 1.0
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": []
                   },
                   "start": {
@@ -706,6 +709,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ]
                     }
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -719,6 +725,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "height": 200.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -728,6 +737,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     ]
                   }
                 ]
+              },
+              "units": {
+                "type": "Mm"
               },
               "__meta": [
                 {
@@ -824,6 +836,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   }
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -1070,6 +1085,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       "y": 0.0,
                       "z": 1.0
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": []
                   },
                   "start": {
@@ -1270,6 +1288,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ]
                     }
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -1283,6 +1304,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "height": 200.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -1292,6 +1316,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                     ]
                   }
                 ]
+              },
+              "units": {
+                "type": "Mm"
               },
               "__meta": [
                 {
@@ -1388,6 +1415,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   }
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -2072,6 +2102,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                             "y": 0.0,
                             "z": 1.0
                           },
+                          "units": {
+                            "type": "Mm"
+                          },
                           "__meta": []
                         },
                         "start": {
@@ -2272,6 +2305,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                             ]
                           }
                         },
+                        "units": {
+                          "type": "Mm"
+                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -2285,6 +2321,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       "height": 200.0,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": [
                         {
                           "sourceRange": [
@@ -2524,6 +2563,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -2724,6 +2766,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -2737,6 +2782,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
             "height": 200.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -3003,6 +3051,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         "y": 0.0,
                         "z": 1.0
                       },
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": []
                     },
                     "start": {
@@ -3203,6 +3254,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         ]
                       }
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -3216,6 +3270,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "height": 200.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -3225,6 +3282,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ]
                     }
                   ]
+                },
+                "units": {
+                  "type": "Mm"
                 },
                 "__meta": [
                   {
@@ -3322,6 +3382,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -3351,6 +3414,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "tag": null
               }
             ],
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -3617,6 +3683,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         "y": 0.0,
                         "z": 1.0
                       },
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": []
                     },
                     "start": {
@@ -3817,6 +3886,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                         ]
                       }
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -3830,6 +3902,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "height": 200.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -3839,6 +3914,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                       ]
                     }
                   ]
+                },
+                "units": {
+                  "type": "Mm"
                 },
                 "__meta": [
                   {
@@ -3936,6 +4014,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -3965,6 +4046,9 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                 "tag": null
               }
             ],
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

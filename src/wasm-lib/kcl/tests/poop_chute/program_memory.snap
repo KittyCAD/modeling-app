@@ -592,6 +592,9 @@ description: Program memory after executing poop_chute.kcl
                   "y": 0.0,
                   "z": 0.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -674,6 +677,9 @@ description: Program memory after executing poop_chute.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -687,6 +693,9 @@ description: Program memory after executing poop_chute.kcl
             "height": 0.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -1114,6 +1123,9 @@ description: Program memory after executing poop_chute.kcl
                 "y": 0.0,
                 "z": 0.0
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": []
             },
             "start": {
@@ -1195,6 +1207,9 @@ description: Program memory after executing poop_chute.kcl
                   }
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -1656,6 +1671,9 @@ description: Program memory after executing poop_chute.kcl
                   "y": 0.0,
                   "z": 0.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -1738,6 +1756,9 @@ description: Program memory after executing poop_chute.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -1751,6 +1772,9 @@ description: Program memory after executing poop_chute.kcl
             "height": 1.5,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

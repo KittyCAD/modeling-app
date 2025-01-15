@@ -268,6 +268,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   "y": -1.0,
                   "z": 0.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -538,6 +541,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -584,6 +590,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                 }
               }
             ],
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -1040,6 +1049,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                         "y": -1.0,
                         "z": 0.0
                       },
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": []
                     },
                     "start": {
@@ -1310,6 +1322,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                         ]
                       }
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -1356,6 +1371,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                       }
                     }
                   ],
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -1365,6 +1383,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                       ]
                     }
                   ]
+                },
+                "units": {
+                  "type": "Mm"
                 },
                 "__meta": [
                   {
@@ -1574,6 +1595,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -1587,6 +1611,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
             "height": 50.0,
             "startCapId": null,
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -2311,6 +2338,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                 "y": -1.0,
                 "z": 0.0
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": []
             },
             "start": {
@@ -2580,6 +2610,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   }
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -2973,6 +3006,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                       "y": -1.0,
                       "z": 0.0
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": []
                   },
                   "start": {
@@ -3243,6 +3279,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                       ]
                     }
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -3289,6 +3328,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                     }
                   }
                 ],
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -3298,6 +3340,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                     ]
                   }
                 ]
+              },
+              "units": {
+                "type": "Mm"
               },
               "__meta": [
                 {
@@ -3506,6 +3551,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   }
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -3899,6 +3947,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                       "y": -1.0,
                       "z": 0.0
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": []
                   },
                   "start": {
@@ -4169,6 +4220,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                       ]
                     }
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -4215,6 +4269,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                     }
                   }
                 ],
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -4224,6 +4281,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                     ]
                   }
                 ]
+              },
+              "units": {
+                "type": "Mm"
               },
               "__meta": [
                 {
@@ -4387,6 +4447,9 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   }
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {

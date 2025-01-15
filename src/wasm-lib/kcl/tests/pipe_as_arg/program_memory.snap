@@ -1718,6 +1718,9 @@ description: Program memory after executing pipe_as_arg.kcl
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -1739,6 +1742,9 @@ description: Program memory after executing pipe_as_arg.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -1752,6 +1758,9 @@ description: Program memory after executing pipe_as_arg.kcl
             "height": 400.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

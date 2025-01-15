@@ -508,6 +508,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -529,6 +532,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -542,6 +548,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
             "height": 20.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -866,6 +875,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                         "y": 0.0,
                         "z": 1.0
                       },
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": []
                     },
                     "start": {
@@ -887,6 +899,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                         ]
                       }
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": [
                       {
                         "sourceRange": [
@@ -900,6 +915,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "height": 20.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -909,6 +927,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                       ]
                     }
                   ]
+                },
+                "units": {
+                  "type": "Mm"
                 },
                 "__meta": [
                   {
@@ -939,6 +960,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -952,6 +976,9 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
             "height": -5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

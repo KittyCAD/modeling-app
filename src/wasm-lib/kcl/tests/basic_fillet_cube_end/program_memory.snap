@@ -206,6 +206,9 @@ description: Program memory after executing basic_fillet_cube_end.kcl
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -347,6 +350,9 @@ description: Program memory after executing basic_fillet_cube_end.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -376,6 +382,9 @@ description: Program memory after executing basic_fillet_cube_end.kcl
                 "tag": null
               }
             ],
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

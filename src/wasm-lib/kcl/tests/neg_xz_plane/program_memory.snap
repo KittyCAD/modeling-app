@@ -155,6 +155,9 @@ description: Program memory after executing neg_xz_plane.kcl
                   "y": 1.0,
                   "z": 0.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -176,6 +179,9 @@ description: Program memory after executing neg_xz_plane.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -189,6 +195,9 @@ description: Program memory after executing neg_xz_plane.kcl
             "height": 12.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

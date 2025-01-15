@@ -99,6 +99,9 @@ description: Program memory after executing circle_three_point.kcl
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -120,6 +123,9 @@ description: Program memory after executing circle_three_point.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -133,6 +139,9 @@ description: Program memory after executing circle_three_point.kcl
             "height": 10.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -201,6 +210,9 @@ description: Program memory after executing circle_three_point.kcl
                 "y": 0.0,
                 "z": 1.0
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": []
             },
             "start": {
@@ -221,6 +233,9 @@ description: Program memory after executing circle_three_point.kcl
                   0
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {

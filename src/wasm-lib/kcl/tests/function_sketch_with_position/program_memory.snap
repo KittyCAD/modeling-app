@@ -573,6 +573,9 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "y": 0.0,
                   "z": 1.0
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": []
               },
               "start": {
@@ -594,6 +597,9 @@ description: Program memory after executing function_sketch_with_position.kcl
                   ]
                 }
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -607,6 +613,9 @@ description: Program memory after executing function_sketch_with_position.kcl
             "height": 3.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [

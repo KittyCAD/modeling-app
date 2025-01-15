@@ -54,6 +54,9 @@ const mySketch001 = startSketchOn('XY')
           },
         ],
         id: expect.any(String),
+        units: {
+          type: 'Mm',
+        },
         __meta: [{ sourceRange: [46, 71, 0] }],
       },
     })
@@ -93,6 +96,9 @@ const mySketch001 = startSketchOn('XY')
         ],
         sketch: {
           id: expect.any(String),
+          units: {
+            type: 'Mm',
+          },
           __meta: expect.any(Array),
           on: expect.any(Object),
           start: expect.any(Object),
@@ -123,6 +129,9 @@ const mySketch001 = startSketchOn('XY')
         height: 2,
         startCapId: expect.any(String),
         endCapId: expect.any(String),
+        units: {
+          type: 'Mm',
+        },
         __meta: [{ sourceRange: [46, 71, 0] }],
       },
     })
@@ -194,6 +203,9 @@ const sk2 = startSketchOn('XY')
             on: expect.any(Object),
             start: expect.any(Object),
             type: 'Sketch',
+            units: {
+              type: 'Mm',
+            },
             tags: {
               p: {
                 __meta: [
@@ -247,6 +259,9 @@ const sk2 = startSketchOn('XY')
           height: 2,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
+          units: {
+            type: 'Mm',
+          },
           __meta: [{ sourceRange: [38, 63, 0] }],
         },
       },
@@ -285,6 +300,9 @@ const sk2 = startSketchOn('XY')
           ],
           sketch: {
             id: expect.any(String),
+            units: {
+              type: 'Mm',
+            },
             __meta: expect.any(Array),
             on: expect.any(Object),
             start: expect.any(Object),
@@ -343,6 +361,9 @@ const sk2 = startSketchOn('XY')
           startCapId: expect.any(String),
           endCapId: expect.any(String),
           __meta: [{ sourceRange: [342, 367, 0] }],
+          units: {
+            type: 'Mm',
+          },
         },
       },
     ])
