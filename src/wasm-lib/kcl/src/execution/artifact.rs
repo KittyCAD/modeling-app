@@ -1006,13 +1006,25 @@ mod tests {
 
     type NodeId = u32;
 
-    type Edges = IndexMap<(NodeId, NodeId), EdgeDirection>;
+    type Edges = IndexMap<(NodeId, NodeId), EdgeInfo>;
+
+    #[derive(Debug, Clone, PartialEq, Eq)]
+    struct EdgeInfo {
+        direction: EdgeDirection,
+        kind: EdgeKind,
+    }
 
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
     enum EdgeDirection {
         Forward,
         Backward,
         Bidirectional,
+    }
+
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+    enum EdgeKind {
+        PathToSweep,
+        Other,
     }
 
     impl EdgeDirection {
@@ -1041,19 +1053,17 @@ mod tests {
             output.push_str("```mermaid\n");
             output.push_str("flowchart LR\n");
 
-            let mut next_id = 1;
+            let mut next_id = 1_u32;
             let mut stable_id_map = FnvHashMap::default();
             for id in self.map.keys() {
                 stable_id_map.insert(*id, next_id);
-                next_id += 1;
+                next_id = next_id.checked_add(1).unwrap();
             }
 
             // Output all nodes first since edge order can change how Mermaid
             // lays out nodes.  This is also where we output more details about
             // the nodes, like their labels.
-            for artifact in self.map.values() {
-                self.flowchart_artifact(&mut output, artifact, &stable_id_map, "  ")?;
-            }
+            self.flowchart_nodes(&mut output, &stable_id_map, "  ")?;
             self.flowchart_edges(&mut output, &stable_id_map, "  ")?;
 
             output.push_str("```\n");
@@ -1061,12 +1071,77 @@ mod tests {
             Ok(output)
         }
 
-        /// Output the Mermaid flowchart node for the given artifact.
-        fn flowchart_artifact<W: Write>(
+        /// Output the Mermaid flowchart nodes, one for each artifact.
+        fn flowchart_nodes<W: Write>(
+            &self,
+            output: &mut W,
+            stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
+            prefix: &str,
+        ) -> std::fmt::Result {
+            // Artifact ID of the path is the key.  The value is a list of
+            // artifact IDs in that group.
+            let mut groups = IndexMap::new();
+            let mut ungrouped = Vec::new();
+
+            for artifact in self.map.values() {
+                let id = artifact.id();
+
+                let grouped = match artifact {
+                    Artifact::Plane(_) => false,
+                    Artifact::Path(_) => {
+                        groups.entry(id).or_insert_with(Vec::new).push(id);
+                        true
+                    }
+                    Artifact::Segment(segment) => {
+                        let path_id = segment.path_id;
+                        groups.entry(path_id).or_insert_with(Vec::new).push(id);
+                        true
+                    }
+                    Artifact::Solid2d(solid2d) => {
+                        let path_id = solid2d.path_id;
+                        groups.entry(path_id).or_insert_with(Vec::new).push(id);
+                        true
+                    }
+                    Artifact::StartSketchOnFace { .. }
+                    | Artifact::StartSketchOnPlane { .. }
+                    | Artifact::Sweep(_)
+                    | Artifact::Wall(_)
+                    | Artifact::Cap(_)
+                    | Artifact::SweepEdge(_)
+                    | Artifact::EdgeCut(_)
+                    | Artifact::EdgeCutEdge(_) => false,
+                };
+                if !grouped {
+                    ungrouped.push(id);
+                }
+            }
+
+            for (group_id, artifact_ids) in groups {
+                let group_id = *stable_id_map.get(&group_id).unwrap();
+                writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
+                let indented = format!("{}  ", prefix);
+                for artifact_id in artifact_ids {
+                    let artifact = self.map.get(&artifact_id).unwrap();
+                    let id = *stable_id_map.get(&artifact_id).unwrap();
+                    self.flowchart_node(output, artifact, id, &indented)?;
+                }
+                writeln!(output, "{prefix}end")?;
+            }
+
+            for artifact_id in ungrouped {
+                let artifact = self.map.get(&artifact_id).unwrap();
+                let id = *stable_id_map.get(&artifact_id).unwrap();
+                self.flowchart_node(output, artifact, id, prefix)?;
+            }
+
+            Ok(())
+        }
+
+        fn flowchart_node<W: Write>(
             &self,
             output: &mut W,
             artifact: &Artifact,
-            stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
+            id: NodeId,
             prefix: &str,
         ) -> std::fmt::Result {
             // For now, only showing the source range.
@@ -1076,8 +1151,6 @@ mod tests {
             fn range_display(range: SourceRange) -> [usize; 3] {
                 [range.start(), range.end(), range.module_id().as_usize()]
             }
-
-            let id = stable_id_map.get(&artifact.id()).unwrap();
 
             match artifact {
                 Artifact::Plane(plane) => {
@@ -1154,7 +1227,6 @@ mod tests {
                     writeln!(output, "{prefix}{}[EdgeCutEdge]", id)?;
                 }
             }
-
             Ok(())
         }
 
@@ -1166,7 +1238,7 @@ mod tests {
         ) -> Result<(), std::fmt::Error> {
             // Mermaid will display two edges in either direction, even using
             // the `---` edge type. So we need to deduplicate them.
-            fn add_unique_edge(edges: &mut Edges, source_id: NodeId, target_id: NodeId) {
+            fn add_unique_edge(edges: &mut Edges, source_id: NodeId, target_id: NodeId, kind: EdgeKind) {
                 if source_id == target_id {
                     // Self edge.  Skip it.
                     return;
@@ -1179,9 +1251,12 @@ mod tests {
                 } else {
                     EdgeDirection::Backward
                 };
-                let direction = edges.entry((a, b)).or_insert(new_direction);
+                let edge = edges.entry((a, b)).or_insert(EdgeInfo {
+                    direction: new_direction,
+                    kind,
+                });
                 // Merge with existing edge.
-                *direction = direction.merge(new_direction);
+                edge.direction = edge.direction.merge(new_direction);
             }
 
             // Collect all edges to deduplicate them.
@@ -1189,25 +1264,36 @@ mod tests {
             for artifact in self.map.values() {
                 let source_id = *stable_id_map.get(&artifact.id()).unwrap();
                 for target_id in artifact.back_edges().into_iter().chain(artifact.child_ids()) {
-                    let Some(_) = self.map.get(&target_id) else {
+                    let Some(target) = self.map.get(&target_id) else {
                         continue;
                     };
+                    let edge_kind = match (artifact, target) {
+                        (Artifact::Path(_), Artifact::Sweep(_)) | (Artifact::Sweep(_), Artifact::Path(_)) => {
+                            EdgeKind::PathToSweep
+                        }
+                        _ => EdgeKind::Other,
+                    };
                     let target_id = *stable_id_map.get(&target_id).unwrap();
-                    add_unique_edge(&mut edges, source_id, target_id)
+                    add_unique_edge(&mut edges, source_id, target_id, edge_kind);
                 }
             }
 
             // Output the edges.
-            for ((source_id, target_id), direction) in edges {
-                match direction {
+            for ((source_id, target_id), edge) in edges {
+                let extra = match edge.kind {
+                    // Extra length.
+                    EdgeKind::PathToSweep => "-",
+                    EdgeKind::Other => "",
+                };
+                match edge.direction {
                     EdgeDirection::Forward => {
-                        writeln!(output, "{prefix}{source_id} x--> {}", target_id)?;
+                        writeln!(output, "{prefix}{source_id} x{}--> {}", extra, target_id)?;
                     }
                     EdgeDirection::Backward => {
-                        writeln!(output, "{prefix}{target_id} x--> {}", source_id)?;
+                        writeln!(output, "{prefix}{target_id} x{}--> {}", extra, source_id)?;
                     }
                     EdgeDirection::Bidirectional => {
-                        writeln!(output, "{prefix}{source_id} --- {}", target_id)?;
+                        writeln!(output, "{prefix}{source_id} {}--- {}", extra, target_id)?;
                     }
                 }
             }
