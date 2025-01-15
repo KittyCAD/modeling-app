@@ -2,7 +2,7 @@ mod walk;
 
 use crate::{
     parsing::ast::types,
-    walk::{Node, Visitable, Visitor},
+    walk::{Node, Visitable},
 };
 use std::sync::{Arc, Mutex};
 
@@ -21,9 +21,6 @@ type RefEdge<'tree> = (Option<Declaration<'tree>>, Reference<'tree>);
 #[derive(Clone, Debug)]
 pub struct Scope<'tree> {
     ///
-    pub program: types::NodeRef<'tree, types::Program>,
-
-    ///
     pub declarations: Vec<Declaration<'tree>>,
 
     ///
@@ -34,9 +31,8 @@ pub struct Scope<'tree> {
 }
 
 impl<'tree> Scope<'tree> {
-    pub fn new(program: types::NodeRef<'tree, types::Program>) -> Self {
+    pub fn new() -> Self {
         Scope {
-            program,
             declarations: vec![],
             references: vec![],
             children: vec![],
@@ -50,7 +46,7 @@ impl<'tree> Scope<'tree> {
         for child in &self.children {
             for (declaration, (ref_node, ref_id)) in child.edges() {
                 match declaration {
-                    Some((mut decl_node, decl_id)) => {
+                    Some((decl_node, decl_id)) => {
                         edges.push((Some((decl_node.clone(), decl_id)), (ref_node.clone(), ref_id)));
                     }
                     None => {
@@ -82,9 +78,9 @@ pub struct ScopeVisitor<'tree> {
 }
 
 impl<'tree> ScopeVisitor<'tree> {
-    pub fn new(program: types::NodeRef<'tree, types::Program>) -> Self {
+    pub fn new() -> Self {
         Self {
-            scope: Arc::new(Mutex::new(Scope::new(program))),
+            scope: Arc::new(Mutex::new(Scope::new())),
         }
     }
 }
@@ -92,7 +88,7 @@ impl<'tree> ScopeVisitor<'tree> {
 impl<'tree> ScopeVisitor<'tree> {
     fn visit(&self, path: Vec<Node<'tree>>, node: Node<'tree>) -> Result<bool, std::convert::Infallible> {
         if let Node::Program(program) = node {
-            let csv = ScopeVisitor::new(program);
+            let csv = ScopeVisitor::new();
             for child in node.children() {
                 let mut path = path.clone();
                 path.push(node.clone());
@@ -138,7 +134,7 @@ impl<'tree> ScopeVisitor<'tree> {
 pub fn extract_refgraph<'a, 'tree>(
     program: types::NodeRef<'tree, types::Program>,
 ) -> Result<Scope<'tree>, std::convert::Infallible> {
-    let sv = ScopeVisitor::new(program);
+    let sv = ScopeVisitor::new();
     let node: Node = (program).into();
 
     for child in node.children() {
