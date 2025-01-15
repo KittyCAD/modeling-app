@@ -37,7 +37,6 @@ const Home = () => {
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
-    console.log('oop we got a query string', argDefaultValues)
     commandBarSend({
       type: 'Find and select command',
       data: {

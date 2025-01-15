@@ -36,6 +36,7 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
   'Open project': {
     icon: 'arrowRight',
     description: 'Open a project',
+    status: isDesktop() ? 'active' : 'inactive',
     args: {
       name: {
         inputType: 'options',
@@ -52,6 +53,7 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
   'Create project': {
     icon: 'folderPlus',
     description: 'Create a project',
+    status: isDesktop() ? 'active' : 'inactive',
     args: {
       name: {
         inputType: 'string',
@@ -63,6 +65,7 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
   'Delete project': {
     icon: 'close',
     description: 'Delete a project',
+    status: isDesktop() ? 'active' : 'inactive',
     needsReview: true,
     reviewMessage: ({ argumentsToSubmit }) =>
       CommandBarOverwriteWarning({
@@ -85,6 +88,7 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
     icon: 'folder',
     description: 'Rename a project',
     needsReview: true,
+    status: isDesktop() ? 'active' : 'inactive',
     args: {
       oldName: {
         inputType: 'options',
@@ -106,6 +110,7 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
     icon: 'file',
     description: 'Create a file',
     needsReview: true,
+    status: 'active',
     args: {
       method: {
         inputType: 'options',

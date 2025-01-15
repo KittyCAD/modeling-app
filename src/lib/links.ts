@@ -1,8 +1,5 @@
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
-import {
-  ASK_TO_OPEN_QUERY_PARAM,
-  CREATE_FILE_URL_PARAM,
-} from './constants'
+import { ASK_TO_OPEN_QUERY_PARAM, CREATE_FILE_URL_PARAM } from './constants'
 import { stringToBase64 } from './base64'
 import { DEV, VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from 'env'
 export interface FileLinkParams {

@@ -38,6 +38,7 @@ import {
   saveSettings,
   setSettingsAtLevel,
 } from 'lib/settings/settingsUtils'
+import { Project } from 'lib/project'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -67,12 +68,110 @@ export const ProjectsContextProvider = ({
   )
 }
 
+/**
+ * We need some of the functionality of the ProjectsContextProvider in the web version
+ * but we can't perform file system operations in the browser,
+ * so most of the behavior of this machine is stubbed out.
+ */
 const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const clearImportSearchParams = useCallback(() => {
+    // Clear the search parameters related to the "Import file from URL" command
+    // or we'll never be able cancel or submit it.
+    searchParams.delete(CREATE_FILE_URL_PARAM)
+    searchParams.delete('code')
+    searchParams.delete('name')
+    searchParams.delete('units')
+    setSearchParams(searchParams)
+  }, [searchParams, setSearchParams])
+  const {
+    settings: { context: settings, send: settingsSend },
+  } = useSettingsAuthContext()
+
+  const [state, send, actor] = useMachine(
+    projectsMachine.provide({
+      actions: {
+        navigateToProject: () => {},
+        navigateToProjectIfNeeded: () => {},
+        navigateToFile: () => {},
+        toastSuccess: ({ event }) =>
+          toast.success(
+            ('data' in event && typeof event.data === 'string' && event.data) ||
+              ('output' in event &&
+                'message' in event.output &&
+                typeof event.output.message === 'string' &&
+                event.output.message) ||
+              ''
+          ),
+        toastError: ({ event }) =>
+          toast.error(
+            ('data' in event && typeof event.data === 'string' && event.data) ||
+              ('output' in event &&
+                typeof event.output === 'string' &&
+                event.output) ||
+              ''
+          ),
+      },
+      actors: {
+        readProjects: fromPromise(async () => [] as Project[]),
+        createProject: fromPromise(async () => ({
+          message: 'not implemented on web',
+        })),
+        renameProject: fromPromise(async () => ({
+          message: 'not implemented on web',
+          oldName: '',
+          newName: '',
+        })),
+        deleteProject: fromPromise(async () => ({
+          message: 'not implemented on web',
+          name: '',
+        })),
+        createFile: fromPromise(async ({ input }) => {
+          // Browser version doesn't navigate, just overwrites the current file
+          clearImportSearchParams()
+          codeManager.updateCodeStateEditor(input.code || '')
+          await codeManager.writeToFile()
+
+          settingsSend({
+            type: 'set.modeling.defaultUnit',
+            data: {
+              level: 'project',
+              value: input.units,
+            },
+          })
+
+          return {
+            message: 'File and units overwritten successfully',
+            fileName: input.name,
+            projectName: '',
+          }
+        }),
+      },
+    }),
+    {
+      input: {
+        projects: [],
+        defaultProjectName: settings.projects.defaultProjectName.current,
+        defaultDirectory: settings.app.projectDirectory.current,
+      },
+    }
+  )
+
+  // register all project-related command palette commands
+  useStateMachineCommands({
+    machineId: 'projects',
+    send,
+    state,
+    commandBarConfig: projectsCommandBarConfig,
+    actor,
+    onCancel: clearImportSearchParams,
+  })
+
   return (
     <ProjectsMachineContext.Provider
       value={{
-        state: undefined,
-        send: () => {},
+        state,
+        send,
       }}
     >
       {children}
@@ -100,7 +199,7 @@ const ProjectsContextDesktop = ({
   const { commandBarSend } = useCommandsContext()
   const { onProjectOpen } = useLspContext()
   const {
-    settings: { context: settings, send: settingsSend },
+    settings: { context: settings },
   } = useSettingsAuthContext()
 
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
@@ -264,8 +363,6 @@ const ProjectsContextDesktop = ({
             name = interpolateProjectNameWithIndex(name, nextIndex)
           }
 
-          console.log('from Project')
-
           await renameProjectDirectory(
             window.electron.path.join(defaultDirectory, oldName),
             name
@@ -310,69 +407,53 @@ const ProjectsContextDesktop = ({
             },
           }
 
-          if (isDesktop()) {
-            const needsInterpolated =
-              doesProjectNameNeedInterpolated(projectName)
-            if (needsInterpolated) {
-              const nextIndex = getNextProjectIndex(projectName, input.projects)
-              projectName = interpolateProjectNameWithIndex(
-                projectName,
-                nextIndex
-              )
-            }
+          const needsInterpolated = doesProjectNameNeedInterpolated(projectName)
+          if (needsInterpolated) {
+            const nextIndex = getNextProjectIndex(projectName, input.projects)
+            projectName = interpolateProjectNameWithIndex(
+              projectName,
+              nextIndex
+            )
+          }
 
-            // Create the project around the file if newProject
-            if (input.method === 'newProject') {
-              await createNewProjectDirectory(
-                projectName,
-                input.code,
-                unitsConfiguration
-              )
-              message = `Project "${projectName}" created successfully with link contents`
-            } else {
-              let projectPath = window.electron.join(
-                settings.app.projectDirectory.current,
-                projectName
-              )
-
-              message = `File "${fileName}" created successfully`
-              const existingConfiguration = await loadAndValidateSettings(
-                projectPath
-              )
-              const settingsToSave = setSettingsAtLevel(
-                existingConfiguration.settings,
-                'project',
-                projectConfigurationToSettingsPayload(unitsConfiguration)
-              )
-              await saveSettings(settingsToSave, projectPath)
-            }
-
-            // Create the file
-            let baseDir = window.electron.join(
+          // Create the project around the file if newProject
+          if (input.method === 'newProject') {
+            await createNewProjectDirectory(
+              projectName,
+              input.code,
+              unitsConfiguration
+            )
+            message = `Project "${projectName}" created successfully with link contents`
+          } else {
+            let projectPath = window.electron.join(
               settings.app.projectDirectory.current,
               projectName
             )
-            const { name, path } = getNextFileName({
-              entryName: fileName,
-              baseDir,
-            })
-            fileName = name
 
-            await window.electron.writeFile(path, input.code || '')
-          } else {
-            // Browser version doesn't navigate, just overwrites the current file
-            clearImportSearchParams()
-            codeManager.updateCodeStateEditor(input.code || '')
-            await codeManager.writeToFile()
-            message = 'File successfully overwritten with link contents'
-            settingsSend({
-              type: 'set.modeling.defaultUnit',
-              data: {
-                level: 'project',
-                value: input.units,
-              },
-            })
+            message = `File "${fileName}" created successfully`
+            const existingConfiguration = await loadAndValidateSettings(
+              projectPath
+            )
+            const settingsToSave = setSettingsAtLevel(
+              existingConfiguration.settings,
+              'project',
+              projectConfigurationToSettingsPayload(unitsConfiguration)
+            )
+            await saveSettings(settingsToSave, projectPath)
           }
+
+          // Create the file
+          let baseDir = window.electron.join(
+            settings.app.projectDirectory.current,
+            projectName
+          )
+          const { name, path } = getNextFileName({
+            entryName: fileName,
+            baseDir,
+          })
+
+          fileName = name
+          await window.electron.writeFile(path, input.code || '')
 
           return {
             message,
@@ -380,13 +461,6 @@ const ProjectsContextDesktop = ({
             projectName,
           }
         }),
-      },
-      guards: {
-        'Has at least 1 project': ({ event }) => {
-          if (event.type !== 'xstate.done.actor.read-projects') return false
-          console.log(`from has at least 1 project: ${event.output.length}`)
-          return event.output.length ? event.output.length >= 1 : false
-        },
       },
     }),
     {
