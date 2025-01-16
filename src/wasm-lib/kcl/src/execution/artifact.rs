@@ -551,9 +551,8 @@ fn merge_ids(base: &mut Vec<ArtifactId>, new: Vec<ArtifactId>) {
 }
 
 fn merge_opt_id(base: &mut Option<ArtifactId>, new: Option<ArtifactId>) {
-    if let Some(new) = new {
-        *base = Some(new);
-    }
+    // Always use the new one, even if it clears it.
+    *base = new;
 }
 
 fn artifacts_to_update(
