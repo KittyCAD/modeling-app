@@ -7,7 +7,7 @@ import {
 } from 'lang/std/artifactGraph'
 import { DebugDisplayArray, GenericObj } from './DebugDisplayObj'
 
-export function DebugFeatureTree() {
+export function DebugArtifactGraph() {
   const artifactGraphTree = useMemo(() => {
     return computeTree(engineCommandManager.artifactGraph)
   }, [engineCommandManager.artifactGraph])
