@@ -1546,7 +1546,7 @@ export const modelingMachine = setup({
         let insertIndex: number | undefined = undefined
         let planeName: string | undefined = undefined
 
-        // If this is an edit flow, first we're going to remove the old extrusion
+        // If this is an edit flow, first we're going to remove the old plane
         if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
           // Extract the plane name from the node to edit
           const planeNameNode = getNodeFromPath<VariableDeclaration>(
