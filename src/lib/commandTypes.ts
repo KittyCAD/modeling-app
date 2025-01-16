@@ -76,6 +76,7 @@ export type Command<
     | ((
         commandBarContext: { argumentsToSubmit: Record<string, unknown> } // Should be the commandbarMachine's context, but it creates a circular dependency
       ) => string | ReactNode)
+  machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema) => void
   onCancel?: () => void
   args?: {
