@@ -2246,37 +2246,54 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
+        self.execute_and_build_graph(&cache_result.program, exec_state)
             .await
             .map_err(|e| {
                 KclErrorWithOutputs::new(
                     e,
                     exec_state.mod_local.operations.clone(),
-                    self.engine.take_artifact_commands(),
+                    exec_state.global.artifact_commands.clone(),
                 )
             })?;
-        // Move the artifact commands to simplify cache management.
+
+        let session_data = self.engine.get_session_data();
+        Ok(session_data)
+    }
+
+    /// Execute an AST's program and build auxiliary outputs like the artifact
+    /// graph.
+    async fn execute_and_build_graph<'a>(
+        &self,
+        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<KclValue>, KclError> {
+        // Don't early return!  We need to build other outputs regardless of
+        // whether execution failed.
+        let exec_result = self
+            .inner_execute(program, exec_state, crate::execution::BodyType::Root)
+            .await;
+        // Move the artifact commands to simplify cache management and error
+        // creation.
         exec_state
             .global
             .artifact_commands
             .extend(self.engine.take_artifact_commands());
         // Build the artifact graph.
-        exec_state.global.artifact_graph = build_artifact_graph(
+        match build_artifact_graph(
             &exec_state.global.artifact_commands,
             &self.engine.responses(),
-            &cache_result.program,
+            program,
             &exec_state.global.artifacts,
-        )
-        .map_err(|e| {
-            KclErrorWithOutputs::new(
-                e,
-                exec_state.mod_local.operations.clone(),
-                self.engine.take_artifact_commands(),
-            )
-        })?;
-
-        let session_data = self.engine.get_session_data();
-        Ok(session_data)
+        ) {
+            Ok(artifact_graph) => {
+                exec_state.global.artifact_graph = artifact_graph;
+                exec_result
+            }
+            Err(err) => {
+                // Prefer the exec error.
+                exec_result.and(Err(err))
+            }
+        }
     }
 
     /// Execute an AST's program.
