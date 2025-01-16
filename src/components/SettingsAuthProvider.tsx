@@ -138,6 +138,11 @@ export const SettingsAuthProviderBase = ({
           sceneInfra.theme = opposingTheme
           sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
         },
+        setAllowOrbitInSketchMode: ({ context }) => {
+          sceneInfra.camControls._setting_allowOrbitInSketchMode =
+            context.app.allowOrbitInSketchMode.current
+          // ModelingMachineProvider will do a use effect to trigger the camera engine sync
+        },
         toastSuccess: ({ event }) => {
           if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [

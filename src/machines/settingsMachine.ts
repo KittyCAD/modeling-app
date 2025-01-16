@@ -43,6 +43,7 @@ export const settingsMachine = setup({
     'Execute AST': () => {},
     toastSuccess: () => {},
     setClientSideSceneUnits: () => {},
+    setAllowOrbitInSketchMode: () => {},
     persistSettings: () => {},
     resetSettings: assign(({ context, event }) => {
       if (!('level' in event)) return {}
@@ -157,6 +158,15 @@ export const settingsMachine = setup({
           actions: ['setSettingAtLevel', 'toastSuccess'],
         },
 
+        'set.app.allowOrbitInSketchMode': {
+          target: 'persisting settings',
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            'setAllowOrbitInSketchMode',
+          ],
+        },
+
         'set.modeling.cameraProjection': {
           target: 'persisting settings',
 
@@ -183,6 +193,7 @@ export const settingsMachine = setup({
             'setClientSideSceneUnits',
             'Execute AST',
             'setClientTheme',
+            'setAllowOrbitInSketchMode',
           ],
         },
 
@@ -194,6 +205,7 @@ export const settingsMachine = setup({
             'setClientSideSceneUnits',
             'Execute AST',
             'setClientTheme',
+            'setAllowOrbitInSketchMode',
           ],
         },
 
