@@ -244,7 +244,8 @@ export const commandBarMachine = setup({
   guards: {
     'Command needs review': ({ context }) =>
       context.selectedCommand?.needsReview ||
-      'nodeToEdit' in context.argumentsToSubmit ||
+      ('nodeToEdit' in context.argumentsToSubmit &&
+        context.argumentsToSubmit.nodeToEdit !== undefined) ||
       false,
     'Command has no arguments': () => false,
     'All arguments are skippable': () => false,
