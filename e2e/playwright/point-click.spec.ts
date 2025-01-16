@@ -1301,6 +1301,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
         await clickOnCap()
         await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
+        await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
@@ -1321,6 +1322,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
       await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
         await toolbar.shellButton.click()
         await cmdBar.progressCmdBar()
+        await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
@@ -1402,6 +1404,7 @@ extrude001 = extrude(40, sketch001)
     await page.waitForTimeout(500)
     await page.keyboard.up('Shift')
     await cmdBar.progressCmdBar()
+    await page.waitForTimeout(500)
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',

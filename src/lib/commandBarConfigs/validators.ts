@@ -174,7 +174,7 @@ export const shellValidator = async ({
   // TODO: This is one cheap way to make sketch-on-face supported now but will likely fail multiple solids
   const object_id = engineCommandManager.artifactGraph
     .values()
-    .find((v) => v.type === 'sweep')?.id
+    .find((v) => v.type === 'sweep')?.pathId
 
   if (!object_id) {
     return "Unable to shell, couldn't find the solid"
