@@ -329,7 +329,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Loft: {
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
-    needsReview: true,
+    needsReview: false,
     args: {
       selection: {
         inputType: 'selection',
