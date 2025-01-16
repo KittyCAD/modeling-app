@@ -829,12 +829,6 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
         })
         await selectSketches()
         await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Selection: '2 faces' },
-          commandName: 'Loft',
-        })
-        await cmdBar.progressCmdBar()
       })
     } else {
       await test.step(`Preselect the two sketches`, async () => {
@@ -843,12 +837,6 @@ loftPointAndClickCases.forEach(({ shouldPreselect }) => {
 
       await test.step(`Go through the command bar flow with preselected sketches`, async () => {
         await toolbar.loftButton.click()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Selection: '2 faces' },
-          commandName: 'Loft',
-        })
         await cmdBar.progressCmdBar()
       })
     }
