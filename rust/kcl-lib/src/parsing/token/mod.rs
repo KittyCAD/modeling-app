@@ -162,7 +162,9 @@ impl IntoIterator for TokenStream {
 #[derive(Debug, Clone)]
 pub(crate) struct TokenSlice<'a> {
     stream: &'a TokenStream,
+    /// Current position of the leading Token in the stream
     start: usize,
+    /// The number of total Tokens in the stream
     end: usize,
 }
 
@@ -189,6 +191,15 @@ impl<'a> TokenSlice<'a> {
             end: self.end - 1,
             stream: self.stream,
         }
+    }
+
+    pub fn as_source_range(&self) -> SourceRange {
+        let first_token = self.token(0);
+        SourceRange::new(
+            first_token.start,
+            self.stream.tokens[self.end].end,
+            first_token.module_id,
+        )
     }
 }
 
@@ -291,6 +302,14 @@ impl<'a> winnow::stream::StreamIsPartial for TokenSlice<'a> {
 
     fn is_partial_supported() -> bool {
         false
+    }
+}
+
+impl<'a> winnow::stream::FindSlice<&str> for TokenSlice<'a> {
+    fn find_slice(&self, substr: &str) -> Option<std::ops::Range<usize>> {
+        self.iter()
+            .enumerate()
+            .find_map(|(i, b)| if b.value == substr { Some(i..self.end) } else { None })
     }
 }
 

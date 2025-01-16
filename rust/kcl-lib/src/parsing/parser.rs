@@ -9,7 +9,7 @@ use winnow::{
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
     stream::Stream,
-    token::{any, one_of, take_till},
+    token::{any, one_of, take_till, take_until},
 };
 
 use super::{
@@ -746,20 +746,38 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
     .context(expected("array contents, a list of elements (like [1, 2, 3])"))
     .parse_next(i)?;
     ignore_whitespace(i);
-    let end = close_bracket(i)
-        .map_err(|e| {
-            if let Some(mut err) = e.clone().into_inner() {
-                err.cause = Some(CompilationError::fatal(
-                    open.as_source_range(),
-                    "Array is missing a closing bracket(`]`)",
-                ));
-                ErrMode::Cut(err)
-            } else {
-                // ErrMode::Incomplete, not sure if it's actually possible to end up with this here
-                e
-            }
-        })?
-        .end;
+
+    let maybe_closing_bracket: PResult<TokenSlice<'_>> = peek(take_until(0.., "]")).parse_next(i);
+    let has_closing_bracket = maybe_closing_bracket.is_ok();
+    let maybe_end = close_bracket(i).map_err(|e| {
+        if let Some(mut err) = e.clone().into_inner() {
+            err.cause = Some(CompilationError::fatal(
+                open.as_source_range(),
+                "Array is missing a closing bracket(`]`)",
+            ));
+            ErrMode::Cut(err)
+        } else {
+            // ErrMode::Incomplete, not sure if it's actually possible to end up with this here
+            e
+        }
+    });
+
+    // if there is a closing bracket at some point, but it's not the next token after skipping the
+    // whitespace and ignoring a trailing comma, it's likely that they forgot a comma between some
+    // of the elements
+    if has_closing_bracket && maybe_end.is_err() {
+        // safe to unwrap here because we checked it was Ok above
+        let start_range = maybe_closing_bracket.unwrap().as_source_range();
+        let e = ContextError {
+            context: vec![],
+            cause: Some(CompilationError::fatal(
+                start_range,
+                "Array is missing a comma in between elements",
+            )),
+        };
+        return Err(ErrMode::Cut(e));
+    }
+    let end = maybe_end?.end;
 
     // Sort the array's elements (i.e. expression nodes) from the noncode nodes.
     let (elements, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = elements.into_iter().enumerate().fold(
@@ -818,7 +836,7 @@ fn array_end_start(i: &mut TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
 }
 
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
-    let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     Ok(Node {
         start: key.start,
@@ -845,7 +863,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     ignore_whitespace(i);
     let expr = expression
         .context(expected(
-            "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
+            "the value which you're setting the property to, e.g. in 'height = 4', the value is 4",
         ))
         .parse_next(i)?;
 
@@ -879,7 +897,7 @@ fn property_separator(i: &mut TokenSlice) -> PResult<()> {
     alt((
         // Normally you need a comma.
         comma_sep,
-        // But, if the array is ending, no need for a comma.
+        // But, if the object is ending, no need for a comma.
         peek(preceded(opt(whitespace), close_brace)).void(),
     ))
     .parse_next(i)
@@ -913,10 +931,45 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
         )),
     )
     .context(expected(
-        "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
+        "a comma-separated list of key-value pairs, e.g. 'height = 4, width = 3'",
     ))
     .parse_next(i)?;
+    ignore_trailing_comma(i);
+    ignore_whitespace(i);
 
+    let maybe_closing_brace: PResult<TokenSlice<'_>> = peek(take_until(0.., "}")).parse_next(i);
+    let has_closing_brace = maybe_closing_brace.is_ok();
+    // This will be an error if the next token is not a `}`, this can be because they forgot to
+    // include a `}` entirely or they forgot a comma somewhere in the object
+    let maybe_end = close_brace(i).map_err(|e| {
+        if let Some(mut err) = e.clone().into_inner() {
+            err.cause = Some(CompilationError::fatal(
+                open.as_source_range(),
+                "Object is missing a closing brace(`}`)",
+            ));
+            ErrMode::Cut(err)
+        } else {
+            // ErrMode::Incomplete, not sure if it's actually possible to end up with this here
+            e
+        }
+    });
+    // if there is a closing brace at some point, but it's not the next token after skipping the
+    // whitespace and ignoring a trailing comma, it's likely that they forgot a comma between some
+    // of the properties
+    if has_closing_brace && maybe_end.is_err() {
+        // okay to unwrap here because we checked it was Ok above
+        let start_range = maybe_closing_brace.unwrap().as_source_range();
+        let e = ContextError {
+            context: vec![],
+            cause: Some(CompilationError::fatal(
+                start_range,
+                "Object is missing a comma in between properties",
+            )),
+        };
+        return Err(ErrMode::Cut(e));
+    }
+
+    let end = maybe_end?.end;
     // Sort the object's properties from the noncode nodes.
     let (properties, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = properties.into_iter().enumerate().fold(
         (Vec::new(), BTreeMap::new()),
@@ -932,9 +985,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
             (properties, non_code_nodes)
         },
     );
-    ignore_trailing_comma(i);
-    ignore_whitespace(i);
-    let end = close_brace(i)?.end;
+
     let non_code_meta = NonCodeMeta {
         non_code_nodes,
         ..Default::default()
@@ -3810,7 +3861,7 @@ mySk1 = startSketchOn(XY)
         assert_eq!(
             src_expected,
             src_actual,
-            "expected error would highlight {} but it actually highlighted {}",
+            "expected error would highlight `{}` but it actually highlighted `{}`",
             &p[src_expected[0]..src_expected[1]],
             &p[src_actual[0]..src_actual[1]],
         );
@@ -3885,7 +3936,7 @@ height = [obj["a"] - 1, 0]"#;
     #[test]
     fn test_parse_member_expression_binary_expression_in_array_number_second_missing_space() {
         let code = r#"obj = { a: 1, b: 2 }
-height = [obj["a"] -1, 0]"#;
+    height = [obj["a"] -1, 0]"#;
         crate::parsing::top_level_parse(code).unwrap();
     }
 
@@ -4001,7 +4052,11 @@ z(-[["#,
 
     #[test]
     fn test_parse_weird_lots_of_fancy_brackets() {
-        assert_err(r#"zz({{{{{{{{)iegAng{{{{{{{##"#, "Unexpected token: (", [2, 3]);
+        assert_err(
+            r#"zz({{{{{{{{)iegAng{{{{{{{##"#,
+            "Object is missing a closing brace(`}`)",
+            [2, 3],
+        );
     }
 
     #[test]
@@ -4554,10 +4609,43 @@ let myBox = box([0,0], -3, -16, -10)
     }
 
     #[test]
-    fn test_parse_missing_closing_bracket() {
+    fn test_parse_array_missing_closing_bracket() {
         let some_program_string = r#"
 sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
         assert_err(some_program_string, "Array is missing a closing bracket(`]`)", [51, 52]);
+    }
+    #[test]
+    fn test_parse_array_missing_comma() {
+        let some_program_string = r#"
+sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
+        assert_err(
+            some_program_string,
+            "Array is missing a comma in between elements",
+            [52, 65],
+        );
+    }
+
+    #[test]
+    fn test_parse_object_missing_closing_brace() {
+        let some_program_string = r#"{
+            foo = bar,
+        "#;
+
+        assert_err(some_program_string, "Object is missing a closing brace(`}`)", [0, 1]);
+    }
+    #[test]
+    fn test_parse_object_missing_comma() {
+        let some_program_string = r#"{
+            foo = bar,
+            bar = foo
+            bat = man
+        }"#;
+
+        assert_err(
+            some_program_string,
+            "Object is missing a comma in between properties",
+            [37, 78],
+        );
     }
 
     #[test]
