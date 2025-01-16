@@ -622,10 +622,7 @@ fn artifacts_to_update(
     let uuid = artifact_command.cmd_id;
     let id = ArtifactId::new(uuid);
 
-    let Some(response) = responses.get(&uuid) else {
-        // Response not found or not successful.
-        return Ok(Vec::new());
-    };
+    let response = responses.get(&uuid);
 
     let cmd = &artifact_command.command;
 
@@ -757,7 +754,7 @@ fn artifacts_to_update(
                 new_path.seg_ids = vec![id];
                 return_arr.push(Artifact::Path(new_path));
             }
-            if let OkModelingCmdResponse::ClosePath(close_path) = response {
+            if let Some(OkModelingCmdResponse::ClosePath(close_path)) = response {
                 return_arr.push(Artifact::Solid2d(Solid2d {
                     id: close_path.face_id.into(),
                     path_id,
@@ -800,7 +797,7 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Loft(loft_cmd) => {
-            let OkModelingCmdResponse::Loft(_) = response else {
+            let Some(OkModelingCmdResponse::Loft(_)) = response else {
                 return Ok(Vec::new());
             };
             let mut return_arr = Vec::new();
@@ -830,7 +827,7 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dGetExtrusionFaceInfo(_) => {
-            let OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info) = response else {
+            let Some(OkModelingCmdResponse::Solid3dGetExtrusionFaceInfo(face_info)) = response else {
                 return Ok(Vec::new());
             };
             let mut return_arr = Vec::new();
@@ -954,6 +951,11 @@ fn artifacts_to_update(
                 ModelingCmd::Solid3dGetOppositeEdge(_) => SweepEdgeSubType::Opposite,
                 _ => unreachable!(),
             };
+            // We need a response to continue.  If we're in sketch mode doing
+            // mock execution, we won't have one.
+            if response.is_none() {
+                return Ok(Vec::new());
+            }
             let face_id = ArtifactId::new(*face_id);
             let edge_id = ArtifactId::new(*edge_id);
             let Some(Artifact::Wall(wall)) = artifacts.get(&face_id) else {
@@ -969,7 +971,7 @@ fn artifacts_to_update(
                 return Ok(Vec::new());
             };
             let response_edge_id = match response {
-                OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(r) => {
+                Some(OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(r)) => {
                     let Some(edge_id) = r.edge else {
                         return Err(KclError::Internal(KclErrorDetails {
                             message:format!(
@@ -980,7 +982,7 @@ fn artifacts_to_update(
                     };
                     edge_id.into()
                 }
-                OkModelingCmdResponse::Solid3dGetOppositeEdge(r) => r.edge.into(),
+                Some(OkModelingCmdResponse::Solid3dGetOppositeEdge(r)) => r.edge.into(),
                 _ => {
                     return Err(KclError::Internal(KclErrorDetails {
                         message:format!(
