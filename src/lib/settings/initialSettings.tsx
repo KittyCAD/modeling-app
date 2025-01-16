@@ -88,8 +88,8 @@ export class Setting<T = unknown> {
     return this._project !== undefined
       ? this._project
       : this._user !== undefined
-      ? this._user
-      : this._default
+        ? this._user
+        : this._default
   }
   /**
    * @param {SettingsLevel} level - The level to get the fallback for
@@ -442,6 +442,10 @@ export function createSettings() {
       //     inputType: 'boolean',
       //   },
       // }),
+      namedViews: new Setting<[]>({
+        defaultValue: [],
+        validate: (v) => true,
+      }),
     },
     /**
      * Settings that affect the behavior of the KCL text editor.

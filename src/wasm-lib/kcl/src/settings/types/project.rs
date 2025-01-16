@@ -206,6 +206,7 @@ color = 1567.4"#;
                         dismiss_web_banner: false,
                         enable_ssao: None,
                         stream_idle_mode: false,
+                        allow_orbit_in_sketch_mode: false,
                     },
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,

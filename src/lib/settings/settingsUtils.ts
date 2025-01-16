@@ -93,6 +93,7 @@ export function projectConfigurationToSettingsPayload(
       ),
       highlightEdges: configuration?.settings?.modeling?.highlight_edges,
       showDebugPanel: configuration?.settings?.modeling?.show_debug_panel,
+      namedViews: configuration?.settings?.modeling?.named_views,
     },
     textEditor: {
       textWrapping: configuration?.settings?.text_editor?.text_wrapping,
@@ -204,11 +205,18 @@ export async function loadAndValidateSettings(
       return Promise.reject(new Error('Invalid project settings'))
 
     const projectSettingsPayload = projectSettings
+    console.log('[][]projectSettings', projectSettings)
+    console.log(
+      '[][]transform',
+      projectConfigurationToSettingsPayload(projectSettingsPayload)
+    )
+    // TODO Kevin
     settingsNext = setSettingsAtLevel(
       settingsNext,
       'project',
       projectConfigurationToSettingsPayload(projectSettingsPayload)
     )
+    console.log('[][]settings next', settingsNext)
   }
 
   // Return the settings object
@@ -322,6 +330,8 @@ export function setSettingsAtLevel(
     Object.entries(settingsCategory).forEach(([settingKey, settingValue]) => {
       // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
       // it seems to always collapses to `never`, which is not correct
+      console.log(settingKey, settingValue, allSettings)
+      // TODO Kevin: allSettings
       // @ts-ignore
       if (!allSettings[categoryKey][settingKey]) return // ignore unrecognized settings
       // @ts-ignore
