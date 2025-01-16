@@ -2,7 +2,13 @@
 
 use anyhow::Result;
 use derive_docs::stdlib;
-use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared, ModelingCmd};
+use kcmc::{
+    each_cmd as mcmd,
+    length_unit::LengthUnit,
+    shared,
+    shared::{Point3d, Point4d},
+    ModelingCmd,
+};
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -19,14 +25,14 @@ use crate::{
 #[ts(export)]
 pub struct ScaleData {
     /// The scale factor for the x, y, and z axes.
-    pub scale: [f32; 3],
+    pub scale: [f64; 3],
 }
 
 /// Scale a solid.
-pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn transform_scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid): (ScaleData, Box<Solid>) = args.get_data_and_solid()?;
 
-    let solid = inner_scale(data, solid, exec_state, args).await?;
+    let solid = inner_transform_scale(data, solid, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
 }
 
@@ -66,15 +72,15 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> sweep({
 ///         path: sweepPath,
 ///     }, %)   
-///     |> scale({
+///     |> transformScale({
 ///     scale: [1.0, 1.0, 2.5],
 ///     }, %)
 /// ```
 #[stdlib {
-    name = "scale",
+    name = "transformScale",
     feature_tree_operation = false,
 }]
-async fn inner_scale(
+async fn inner_transform_scale(
     data: ScaleData,
     solid: Box<Solid>,
     exec_state: &mut ExecState,
@@ -87,8 +93,8 @@ async fn inner_scale(
         ModelingCmd::from(mcmd::SetObjectTransform {
             object_id: solid.id,
             transforms: vec![shared::ComponentTransform {
-                scale: Some(shared::TransformByPoint3d {
-                    property: shared::Point3d {
+                scale: Some(shared::TransformBy::<Point3d<f64>> {
+                    property: Point3d {
                         x: data.scale[0],
                         y: data.scale[1],
                         z: data.scale[2],
@@ -112,7 +118,7 @@ async fn inner_scale(
 #[ts(export)]
 pub struct TranslateData {
     /// The amount to move the solid in all three axes.
-    pub translate: [f32; 3],
+    pub translate: [f64; 3],
     /// If true, the transform is applied in global space. If false, the transform is applied in local sketch axis.
     /// Default is false.
     /// Meaning, if you were sketching on 'XY' and you wanted to move the solid in the z direction,
@@ -124,10 +130,10 @@ pub struct TranslateData {
 }
 
 /// Move a solid.
-pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn transform_translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid): (TranslateData, Box<Solid>) = args.get_data_and_solid()?;
 
-    let solid = inner_translate(data, solid, exec_state, args).await?;
+    let solid = inner_transform_translate(data, solid, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
 }
 
@@ -167,15 +173,15 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     |> sweep({
 ///         path: sweepPath,
 ///     }, %)   
-///     |> translate({
+///     |> transformTranslate({
 ///     translate: [1.0, 1.0, 2.5],
 ///     }, %)
 /// ```
 #[stdlib {
-    name = "translate",
+    name = "transformTranslate",
     feature_tree_operation = false,
 }]
-async fn inner_translate(
+async fn inner_transform_translate(
     data: TranslateData,
     solid: Box<Solid>,
     exec_state: &mut ExecState,
@@ -188,12 +194,11 @@ async fn inner_translate(
         ModelingCmd::from(mcmd::SetObjectTransform {
             object_id: solid.id,
             transforms: vec![shared::ComponentTransform {
-                translate: Some(shared::TransformByPoint3d {
-                    // TODO: THIS NEEDS TO BE A LENGTH UNIT.
+                translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
                     property: shared::Point3d {
-                        x: data.translate[0],
-                        y: data.translate[1],
-                        z: data.translate[2],
+                        x: LengthUnit(data.translate[0]),
+                        y: LengthUnit(data.translate[1]),
+                        z: LengthUnit(data.translate[2]),
                     },
                     set: false,
                     is_local: !data.global.unwrap_or(false),
@@ -214,14 +219,14 @@ async fn inner_translate(
 #[ts(export)]
 pub struct RotateAboutAxisData {
     /// The axis.
-    pub axis: [f32; 3],
+    pub axis: [f64; 3],
     /// Angle (in degrees).
     #[schemars(range(min = -360.0, max = 360.0))]
-    pub angle: f32,
+    pub angle: f64,
 }
 
 /// Rotate a solid around an axis with an angle.
-pub async fn rotate_about_axis(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn transform_rotate_about_axis(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid): (RotateAboutAxisData, Box<Solid>) = args.get_data_and_solid()?;
 
     // Return an error if the angle is zero.
@@ -237,7 +242,7 @@ pub async fn rotate_about_axis(exec_state: &mut ExecState, args: Args) -> Result
         }));
     }
 
-    let solid = inner_rotate_about_axis(data, solid, exec_state, args).await?;
+    let solid = inner_transform_rotate_about_axis(data, solid, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
 }
 
@@ -277,16 +282,16 @@ pub async fn rotate_about_axis(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> sweep({
 ///         path: sweepPath,
 ///     }, %)   
-///     |> rotateAboutAxis({
+///     |> transformRotateAboutAxis({
 ///     axis: [0, 0, 1.0],
 ///     angle: 90,
 ///     }, %)
 /// ```
 #[stdlib {
-    name = "rotateAboutAxis",
+    name = "transformRotateAboutAxis",
     feature_tree_operation = false,
 }]
-async fn inner_rotate_about_axis(
+async fn inner_transform_rotate_about_axis(
     data: RotateAboutAxisData,
     solid: Box<Solid>,
     exec_state: &mut ExecState,
@@ -299,7 +304,7 @@ async fn inner_rotate_about_axis(
         ModelingCmd::from(mcmd::SetObjectTransform {
             object_id: solid.id,
             transforms: vec![shared::ComponentTransform {
-                rotate_angle_axis: Some(shared::TransformByPoint4d {
+                rotate_angle_axis: Some(shared::TransformBy::<Point4d<f64>> {
                     property: shared::Point4d {
                         x: data.axis[0],
                         y: data.axis[1],
@@ -326,20 +331,20 @@ async fn inner_rotate_about_axis(
 pub struct RotateData {
     /// The roll.
     #[validate(range(min = -360.0, max = 360.0))]
-    pub roll: f32,
+    pub roll: f64,
     /// The pitch.
     #[validate(range(min = -360.0, max = 360.0))]
-    pub pitch: f32,
+    pub pitch: f64,
     /// The yaw.
     #[validate(range(min = -360.0, max = 360.0))]
-    pub yaw: f32,
+    pub yaw: f64,
     /// If true, the transform is applied in global space. If false, the transform is applied in local sketch axis.
     #[serde(default)]
     pub global: Option<bool>,
 }
 
 /// Rotate a solid with roll, pitch, and yaw.
-pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn transform_rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid): (RotateData, Box<Solid>) = args.get_data_and_solid()?;
 
     // Validate the data.
@@ -350,7 +355,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         })
     })?;
 
-    let solid = inner_rotate(data, solid, exec_state, args).await?;
+    let solid = inner_transform_rotate(data, solid, exec_state, args).await?;
     Ok(KclValue::Solid(solid))
 }
 
@@ -403,17 +408,17 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> sweep({
 ///         path: sweepPath,
 ///     }, %)   
-///     |> rotate({
+///     |> transformRotate({
 ///         roll: 10,
 ///         pitch: 10,
 ///         yaw: 90,
 ///     }, %)
 /// ```
 #[stdlib {
-    name = "rotate",
+    name = "transformRotate",
     feature_tree_operation = false,
 }]
-async fn inner_rotate(
+async fn inner_transform_rotate(
     data: RotateData,
     solid: Box<Solid>,
     exec_state: &mut ExecState,
@@ -426,7 +431,7 @@ async fn inner_rotate(
         ModelingCmd::from(mcmd::SetObjectTransform {
             object_id: solid.id,
             transforms: vec![shared::ComponentTransform {
-                rotate_rpy: Some(shared::TransformByPoint3d {
+                rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
                     property: shared::Point3d {
                         x: data.roll,
                         y: data.pitch,

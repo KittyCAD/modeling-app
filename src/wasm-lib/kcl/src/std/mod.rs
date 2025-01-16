@@ -162,10 +162,10 @@ lazy_static! {
         Box::new(crate::std::assert::AssertGreaterThan),
         Box::new(crate::std::assert::AssertLessThanOrEq),
         Box::new(crate::std::assert::AssertGreaterThanOrEq),
-        Box::new(crate::std::transform::Scale),
-        Box::new(crate::std::transform::Translate),
-        Box::new(crate::std::transform::Rotate),
-        Box::new(crate::std::transform::RotateAboutAxis),
+        Box::new(crate::std::transform::TransformScale),
+        Box::new(crate::std::transform::TransformTranslate),
+        Box::new(crate::std::transform::TransformRotate),
+        Box::new(crate::std::transform::TransformRotateAboutAxis),
     ];
 }
 
