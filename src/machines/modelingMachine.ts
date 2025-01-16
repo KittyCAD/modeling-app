@@ -133,6 +133,8 @@ export interface SketchDetails {
   zAxis: [number, number, number]
   yAxis: [number, number, number]
   origin: [number, number, number]
+  // face id or plane id, both are strings
+  animateTargetId?: string
 }
 
 export interface SegmentOverlay {
