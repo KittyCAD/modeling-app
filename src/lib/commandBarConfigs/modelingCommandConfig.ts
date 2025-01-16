@@ -60,9 +60,12 @@ export type ModelingCommandSchema = {
     edge: Selections
   }
   Fillet: {
-    // todo
     selection: Selections
     radius: KclCommandValue
+  }
+  Chamfer: {
+    selection: Selections
+    length: KclCommandValue
   }
   'Offset plane': {
     plane: Selections
@@ -434,7 +437,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Fillet: {
     description: 'Fillet edge',
-    icon: 'fillet',
+    icon: 'fillet3d',
     status: 'development',
     needsReview: true,
     args: {
@@ -448,6 +451,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'Fillets cannot touch other fillets yet. This is under development.',
       },
       radius: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  Chamfer: {
+    description: 'Chamfer edge',
+    icon: 'chamfer3d',
+    status: 'development',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        multiple: true,
+        required: true,
+        skip: false,
+        warningMessage:
+          'Chamfers cannot touch other chamfers yet. This is under development.',
+      },
+      length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
