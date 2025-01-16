@@ -4,6 +4,8 @@ excerpt: "Convert a number to an integer."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated.
+
 Convert a number to an integer.
 
 DEPRECATED use floor(), ceil(), or round().
