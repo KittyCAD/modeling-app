@@ -44,7 +44,7 @@ import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
-import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+import { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
@@ -89,7 +89,7 @@ export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
 export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
-export type { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+export type { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type SyntaxType =
   | 'Program'
@@ -119,19 +119,12 @@ export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 /**
- * The first two items are the start and end points (byte offsets from the start of the file).
- * The third item is whether the source range belongs to the 'main' file, i.e., the file currently
- * being rendered/displayed in the editor (TODO we need to handle modules better in the frontend).
- */
-export type SourceRange = [number, number, number]
-
-/**
  * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
  * frontend (essentially we're eagerly checking whether the frontend should care about the SourceRange
  * so as not to expose details of the interpreter's current representation of module ids throughout
  * the frontend).
  */
-export function sourceRangeFromRust(s: RustSourceRange): SourceRange {
+export function sourceRangeFromRust(s: SourceRange): SourceRange {
   return [s[0], s[1], s[2]]
 }
 
@@ -145,8 +138,16 @@ export function defaultSourceRange(): SourceRange {
 /**
  * Create a default RustSourceRange for testing or as a placeholder.
  */
-export function defaultRustSourceRange(): RustSourceRange {
+export function defaultRustSourceRange(): SourceRange {
   return [0, 0, 0]
+}
+
+/**
+ * Returns true if this source range is from the file being executed.  Returns
+ * false if it's from a file that was imported.
+ */
+export function isTopLevelModule(range: SourceRange): boolean {
+  return range[2] === 0
 }
 
 export const wasmUrl = () => {

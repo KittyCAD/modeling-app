@@ -5,8 +5,6 @@ import {
   PathToNode,
   Program,
   SourceRange,
-  sourceRangeFromRust,
-  RustSourceRange,
   PathArtifact,
   PlaneArtifact,
   WallArtifact,
@@ -28,7 +26,7 @@ interface BaseArtifact {
 }
 
 export interface CodeRef {
-  range: RustSourceRange
+  range: SourceRange
   pathToNode: PathToNode
 }
 
@@ -404,13 +402,10 @@ export function getCodeRefsByArtifactId(
   }
 }
 
-export function codeRefFromRange(
-  range: RustSourceRange,
-  ast: Program
-): CodeRef {
+export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
   return {
     range,
-    pathToNode: getNodePathFromSourceRange(ast, sourceRangeFromRust(range)),
+    pathToNode: getNodePathFromSourceRange(ast, range),
   }
 }
 

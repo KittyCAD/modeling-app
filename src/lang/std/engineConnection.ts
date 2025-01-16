@@ -2,7 +2,6 @@ import {
   ArtifactGraph,
   defaultRustSourceRange,
   ExecState,
-  RustSourceRange,
   SourceRange,
 } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
@@ -1302,8 +1301,8 @@ export enum EngineCommandManagerEvents {
 
 interface PendingMessage {
   command: EngineCommand
-  range: RustSourceRange
-  idToRangeMap: { [key: string]: RustSourceRange }
+  range: SourceRange
+  idToRangeMap: { [key: string]: SourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
@@ -2018,9 +2017,9 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(new Error('rangeStr is undefined'))
     if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    const range: RustSourceRange = JSON.parse(rangeStr)
+    const range: SourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
-    const idToRangeMap: { [key: string]: RustSourceRange } =
+    const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger

@@ -9,6 +9,7 @@ import {
   ArtifactCommand,
   ArtifactGraph,
   defaultArtifactGraph,
+  isTopLevelModule,
   SourceRange,
 } from 'lang/wasm'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
@@ -255,7 +256,7 @@ export function kclErrorsToDiagnostics(
   errors: KCLError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => err.sourceRange[2] === 0)
+    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .map((err) => {
       return {
         from: err.sourceRange[0],
@@ -270,7 +271,7 @@ export function complilationErrorsToDiagnostics(
   errors: CompilationError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => err.sourceRange[2] === 0)
+    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .map((err) => {
       let severity: any = 'error'
       if (err.severity === 'Warning') {
