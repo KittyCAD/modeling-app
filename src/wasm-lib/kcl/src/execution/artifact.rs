@@ -839,7 +839,7 @@ fn artifacts_to_update(
                 let path = artifacts.get(&ArtifactId::new(*section_id));
                 if let Some(Artifact::Path(path)) = path {
                     let mut new_path = path.clone();
-                    new_path.id = id;
+                    new_path.sweep_id = Some(id);
                     return_arr.push(Artifact::Path(new_path));
                 }
             }
