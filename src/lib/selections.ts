@@ -10,6 +10,7 @@ import {
   SourceRange,
   Expr,
   defaultSourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { isNonNullable, uuidv4 } from 'lib/utils'
@@ -269,7 +270,7 @@ export function getEventForSegmentSelection(
         selectionType: 'singleCodeCursor',
         selection: {
           codeRef: {
-            range: [node.node.start, node.node.end, 0],
+            range: topLevelRange(node.node.start, node.node.end),
             pathToNode: group.userData.pathToNode,
           },
         },
@@ -381,10 +382,13 @@ export function processCodeMirrorRanges({
   if (!isChange) return null
   const codeBasedSelections: Selections['graphSelections'] =
     codeMirrorRanges.map(({ from, to }) => {
-      const pathToNode = getNodePathFromSourceRange(ast, [from, to, 0])
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        topLevelRange(from, to)
+      )
       return {
         codeRef: {
-          range: [from, to, 0],
+          range: topLevelRange(from, to),
           pathToNode,
         },
       }
@@ -447,7 +451,10 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     if (err(nodeMeta)) return
     const node = nodeMeta.node
     const groupHasCursor = codeBasedSelections.some((selection) => {
-      return isOverlap(selection?.codeRef?.range, [node.start, node.end, 0])
+      return isOverlap(
+        selection?.codeRef?.range,
+        topLevelRange(node.start, node.end)
+      )
     })
 
     const color = groupHasCursor
@@ -873,7 +880,7 @@ export function updateSelections(
       return {
         artifact: artifact,
         codeRef: {
-          range: [node.start, node.end, 0],
+          range: topLevelRange(node.start, node.end),
           pathToNode: pathToNode,
         },
       }
@@ -887,7 +894,7 @@ export function updateSelections(
     if (err(node)) return node
     pathToNodeBasedSelections.push({
       codeRef: {
-        range: [node.node.start, node.node.end, 0],
+        range: topLevelRange(node.node.start, node.node.end),
         pathToNode: pathToNode,
       },
     })

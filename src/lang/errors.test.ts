@@ -1,5 +1,5 @@
 import { kclErrorsToDiagnostics, KCLError } from './errors'
-import { defaultArtifactGraph } from 'lang/wasm'
+import { defaultArtifactGraph, topLevelRange } from 'lang/wasm'
 
 describe('test kclErrToDiagnostic', () => {
   it('converts KCL errors to CodeMirror diagnostics', () => {
@@ -9,7 +9,7 @@ describe('test kclErrToDiagnostic', () => {
         message: '',
         kind: 'semantic',
         msg: 'Semantic error',
-        sourceRange: [0, 1, 0],
+        sourceRange: topLevelRange(0, 1),
         operations: [],
         artifactCommands: [],
         artifactGraph: defaultArtifactGraph(),
@@ -19,7 +19,7 @@ describe('test kclErrToDiagnostic', () => {
         message: '',
         kind: 'type',
         msg: 'Type error',
-        sourceRange: [4, 5, 0],
+        sourceRange: topLevelRange(4, 5),
         operations: [],
         artifactCommands: [],
         artifactGraph: defaultArtifactGraph(),

@@ -5,6 +5,7 @@ import {
   initPromise,
   sketchFromKclValue,
   SourceRange,
+  topLevelRange,
 } from '../wasm'
 import {
   ConstraintType,
@@ -34,7 +35,7 @@ async function testingSwapSketchFnCall({
   originalRange: SourceRange
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
-  const range: SourceRange = [startIndex, startIndex + callToSwap.length, 0]
+  const range = topLevelRange(startIndex, startIndex + callToSwap.length)
   const ast = assertParse(inputCode)
 
   const execState = await enginelessExecutor(ast)
@@ -375,7 +376,10 @@ part001 = startSketchOn('XY')
       execState.memory.get('part001'),
       'part001'
     ) as Sketch
-    const _segment = getSketchSegmentFromSourceRange(sg, [index, index, 0])
+    const _segment = getSketchSegmentFromSourceRange(
+      sg,
+      topLevelRange(index, index)
+    )
     if (err(_segment)) throw _segment
     const { __geoMeta, ...segment } = _segment.segment
     expect(segment).toEqual({
@@ -390,7 +394,7 @@ part001 = startSketchOn('XY')
     const index = code.indexOf('// segment-in-start') - 7
     const _segment = getSketchSegmentFromSourceRange(
       sketchFromKclValue(execState.memory.get('part001'), 'part001') as Sketch,
-      [index, index, 0]
+      topLevelRange(index, index)
     )
     if (err(_segment)) throw _segment
     const { __geoMeta, ...segment } = _segment.segment

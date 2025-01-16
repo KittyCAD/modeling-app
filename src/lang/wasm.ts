@@ -136,6 +136,13 @@ export function defaultSourceRange(): SourceRange {
 }
 
 /**
+ * Create a SourceRange for the top-level module.
+ */
+export function topLevelRange(start: number, end: number): SourceRange {
+  return [start, end, 0]
+}
+
+/**
  * Returns true if this source range is from the file being executed.  Returns
  * false if it's from a file that was imported.
  */

@@ -18,6 +18,7 @@ import {
   sketchFromKclValueOptional,
   SourceRange,
   SyntaxType,
+  topLevelRange,
   VariableDeclaration,
   VariableDeclarator,
 } from './wasm'
@@ -936,7 +937,8 @@ export function findUsesOfTagInPipe(
         return
       const tagArgValue =
         tagArg.type === 'TagDeclarator' ? String(tagArg.value) : tagArg.name
-      if (tagArgValue === tag) dependentRanges.push([node.start, node.end, 0])
+      if (tagArgValue === tag)
+        dependentRanges.push(topLevelRange(node.start, node.end))
     },
   })
   return dependentRanges

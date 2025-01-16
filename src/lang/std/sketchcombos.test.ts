@@ -5,6 +5,7 @@ import {
   initPromise,
   Program,
   SourceRange,
+  topLevelRange,
 } from '../wasm'
 import {
   getConstraintType,
@@ -132,7 +133,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
         )
       }
       const start = codeBeforeLine + line.indexOf('|> ' + 5)
-      const range: SourceRange = [start, start, 0]
+      const range = topLevelRange(start, start)
       return {
         codeRef: codeRefFromRange(range, ast),
       }
@@ -304,7 +305,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start, 0], ast),
+          codeRef: codeRefFromRange(topLevelRange(start, start), ast),
         }
       })
 
@@ -393,7 +394,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start, 0], ast),
+          codeRef: codeRefFromRange(topLevelRange(start, start), ast),
         }
       })
 
@@ -453,7 +454,7 @@ part001 = startSketchOn('XY')
         const comment = ln.split('//')[1]
         const start = inputScript.indexOf('//' + comment) - 7
         return {
-          codeRef: codeRefFromRange([start, start, 0], ast),
+          codeRef: codeRefFromRange(topLevelRange(start, start), ast),
         }
       })
 
@@ -548,7 +549,7 @@ async function helperThing(
       const comment = ln.split('//')[1]
       const start = inputScript.indexOf('//' + comment) - 7
       return {
-        codeRef: codeRefFromRange([start, start, 0], ast),
+        codeRef: codeRefFromRange(topLevelRange(start, start), ast),
       }
     })
 
@@ -617,7 +618,7 @@ part001 = startSketchOn('XY')
         }
         const offsetIndex = index - 7
         const expectedConstraintLevel = getConstraintLevelFromSourceRange(
-          [offsetIndex, offsetIndex, 0],
+          topLevelRange(offsetIndex, offsetIndex),
           ast
         )
         if (err(expectedConstraintLevel)) {

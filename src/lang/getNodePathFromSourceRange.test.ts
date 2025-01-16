@@ -5,6 +5,7 @@ import {
   initPromise,
   Parameter,
   SourceRange,
+  topLevelRange,
 } from './wasm'
 import { err } from 'lib/trap'
 
@@ -23,11 +24,10 @@ const sk3 = startSketchAt([0, 0])
 `
     const subStr = 'lineTo([3, 4], %, $yo)'
     const lineToSubstringIndex = code.indexOf(subStr)
-    const sourceRange: SourceRange = [
+    const sourceRange = topLevelRange(
       lineToSubstringIndex,
-      lineToSubstringIndex + subStr.length,
-      0,
-    ]
+      lineToSubstringIndex + subStr.length
+    )
 
     const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
@@ -35,7 +35,7 @@ const sk3 = startSketchAt([0, 0])
     if (err(_node)) throw _node
     const { node } = _node
 
-    expect([node.start, node.end, 0]).toEqual(sourceRange)
+    expect(topLevelRange(node.start, node.end)).toEqual(sourceRange)
     expect(node.type).toBe('CallExpression')
   })
   it('gets path right for function definition params', () => {
@@ -51,11 +51,7 @@ const sk3 = startSketchAt([0, 0])
 const b1 = cube([0,0], 10)`
     const subStr = 'pos, scale'
     const subStrIndex = code.indexOf(subStr)
-    const sourceRange: SourceRange = [
-      subStrIndex,
-      subStrIndex + 'pos'.length,
-      0,
-    ]
+    const sourceRange = topLevelRange(subStrIndex, subStrIndex + 'pos'.length)
 
     const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)
@@ -87,11 +83,7 @@ const b1 = cube([0,0], 10)`
 const b1 = cube([0,0], 10)`
     const subStr = 'scale, 0'
     const subStrIndex = code.indexOf(subStr)
-    const sourceRange: SourceRange = [
-      subStrIndex,
-      subStrIndex + 'scale'.length,
-      0,
-    ]
+    const sourceRange = topLevelRange(subStrIndex, subStrIndex + 'scale'.length)
 
     const ast = assertParse(code)
     const nodePath = getNodePathFromSourceRange(ast, sourceRange)

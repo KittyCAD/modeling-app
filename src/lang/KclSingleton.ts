@@ -22,6 +22,7 @@ import {
   ProgramMemory,
   recast,
   SourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
@@ -469,7 +470,7 @@ export class KclManager {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,
-            range: [node.start, node.end, 0],
+            range: topLevelRange(node.start, node.end),
           },
         })
       }
@@ -590,7 +591,7 @@ export class KclManager {
         if (start && end) {
           returnVal.graphSelections.push({
             codeRef: {
-              range: [start, end, 0],
+              range: topLevelRange(start, end),
               pathToNode: path,
             },
           })
