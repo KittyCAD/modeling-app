@@ -209,6 +209,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         description: 'Create a hole in a 3D solid.',
         links: [],
       },
+      {
+        id: 'helix',
+        onClick: () => console.error('Helix not yet implemented'),
+        icon: 'helix',
+        status: 'kcl-only',
+        title: 'Helix',
+        description: 'Create a helix or spiral in 3D about an axis.',
+        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
+      },
       'break',
       [
         {

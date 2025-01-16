@@ -212,6 +212,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Fillet',
     icon: 'fillet3d',
   },
+  helix: {
+    label: 'Helix',
+    icon: 'helix',
+  },
   hole: {
     label: 'Hole',
     icon: 'hole',

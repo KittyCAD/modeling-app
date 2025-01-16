@@ -34,6 +34,7 @@ pub async fn int(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "int",
     tags = ["convert"],
+    deprecated = true,
 }]
 fn inner_int(num: f64) -> Result<f64, KclError> {
     Ok(num)
