@@ -3,7 +3,6 @@ import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
-import { SweepArtifact } from 'lang/std/artifactGraph'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -169,17 +168,17 @@ export const shellValidator = async ({
     s.artifact ? s.artifact.id : []
   )
 
-  const solids: SweepArtifact[] = []
-  engineCommandManager.artifactGraph.forEach(
-    (a) => a.type == 'sweep' && solids.push(a)
-  )
-  if (!solids[0]) {
-    return "Unable to shell, couldn't find sweep"
-  }
-
-  // Taking the first solid, as in Rust
+  // We don't have the concept of solid3ds in TS yet.
+  // So we're listing out the sweeps as if they were solids and taking the first one, just like in Rust for Shell:
   // https://github.com/KittyCAD/modeling-app/blob/e61fff115b9fa94aaace6307b1842cc15d41655e/src/wasm-lib/kcl/src/std/shell.rs#L237-L238
-  const object_id = solids[0].pathId
+  // TODO: This is one cheap way to make sketch-on-face supported now but will likely fail multiple solids
+  const object_id = engineCommandManager.artifactGraph
+    .values()
+    .find((v) => v.type === 'sweep')?.id
+
+  if (!object_id) {
+    return "Unable to shell, couldn't find the solid"
+  }
 
   const shellCommand = async () => {
     // TODO: figure out something better than an arbitrarily small value
@@ -200,10 +199,11 @@ export const shellValidator = async ({
       },
     })
   }
+
   const attemptShell = await dryRunWrapper(shellCommand)
   if (attemptShell?.success) {
     return true
-  } else {
-    return 'Unable to shell with the provided selection'
   }
+
+  return 'Unable to shell with the provided selection'
 }

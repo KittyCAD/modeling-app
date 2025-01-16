@@ -75,7 +75,7 @@ interface SegmentArtifactRich extends BaseArtifact {
 }
 
 /** A Sweep is a more generic term for extrude, revolve, loft and sweep*/
-export interface SweepArtifact extends BaseArtifact {
+interface SweepArtifact extends BaseArtifact {
   type: 'sweep'
   subType: 'extrusion' | 'revolve' | 'loft' | 'sweep'
   pathId: string
