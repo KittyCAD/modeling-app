@@ -652,12 +652,23 @@ export const isTagUsedInEdgeTreatment = ({
   ast: Node<Program>
   callExp: CallExpression | CallExpressionKw
 }): Array<EdgeTypes> => {
-  const tag = (() => {
+  const tag: string | undefined = (() => {
     switch (callExp.type) {
-      case 'CallExpression':
-        return getTagFromCallExpression(callExp)
-      case 'CallExpressionKw':
-        return findKwArg(ARG_TAG, callExp)
+      case 'CallExpression': {
+        const tag = getTagFromCallExpression(callExp)
+        if (err(tag)) return undefined
+        return tag
+      }
+      case 'CallExpressionKw': {
+        const tag = findKwArg(ARG_TAG, callExp)
+        if (tag === undefined) {
+          return undefined
+        }
+        if (tag.type !== 'TagDeclarator') {
+          return undefined
+        }
+        return tag.value
+      }
     }
   })()
   if (err(tag)) return []
@@ -667,7 +678,6 @@ export const isTagUsedInEdgeTreatment = ({
   let inTagHelper: EdgeTypes | '' = ''
   const edges: Array<EdgeTypes> = []
 
-  console.error('ADAM: tag', tag)
   traverse(ast, {
     enter: (node) => {
       // Check if we are entering an edge treatment call
@@ -693,7 +703,6 @@ export const isTagUsedInEdgeTreatment = ({
         (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         isEdgeType(node.callee.name)
       ) {
-        console.error('ADAM: in tag helper', node.callee.name)
         inTagHelper = node.callee.name
       }
       if (
