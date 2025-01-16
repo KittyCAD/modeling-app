@@ -8,17 +8,17 @@ import {
 import { DebugDisplayArray, GenericObj } from './DebugDisplayObj'
 
 export function DebugFeatureTree() {
-  const featureTree = useMemo(() => {
+  const artifactGraphTree = useMemo(() => {
     return computeTree(engineCommandManager.artifactGraph)
   }, [engineCommandManager.artifactGraph])
 
   const filterKeys: string[] = ['__meta', 'codeRef', 'pathToNode']
   return (
     <details data-testid="debug-feature-tree" className="relative">
-      <summary>Feature Tree</summary>
-      {featureTree.length > 0 ? (
+      <summary>Artifact Graph</summary>
+      {artifactGraphTree.length > 0 ? (
         <pre className="text-xs">
-          <DebugDisplayArray arr={featureTree} filterKeys={filterKeys} />
+          <DebugDisplayArray arr={artifactGraphTree} filterKeys={filterKeys} />
         </pre>
       ) : (
         <p>(Empty)</p>
