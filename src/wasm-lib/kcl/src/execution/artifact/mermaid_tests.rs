@@ -379,7 +379,10 @@ impl ArtifactGraph {
         // Output the edges.
         for ((source_id, target_id), edge) in edges {
             let extra = match edge.kind {
-                // Extra length.
+                // Extra length.  This is needed to make the graph layout more
+                // legible.  Without it, the sweep will be at the same rank as
+                // the path's segments, and the sweep's edges overlap with the
+                // segment edges a lot.
                 EdgeKind::PathToSweep => "-",
                 EdgeKind::Other => "",
             };
