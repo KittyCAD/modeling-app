@@ -69,27 +69,6 @@ export const FeatureTreePane = () => {
               )
             : null
 
-          console.log(
-            'artifact',
-            context.targetSourceRange,
-            `target code: ${codeManager.code.slice(
-              context.targetSourceRange[0],
-              context.targetSourceRange[1]
-            )}`,
-            artifact,
-            Array.from(engineCommandManager.artifactGraph.values()).map(
-              (a) => ({
-                code:
-                  'codeRef' in a && a.codeRef
-                    ? codeManager.code.slice(
-                        a.codeRef.range[0],
-                        a.codeRef.range[1]
-                      )
-                    : undefined,
-                ...a,
-              })
-            )
-          )
           if (!artifact || !('codeRef' in artifact)) {
             modelingSend({
               type: 'Set selection',

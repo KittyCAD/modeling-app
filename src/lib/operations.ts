@@ -414,7 +414,6 @@ export async function enterEditFlow({
         operation,
         artifact,
       })
-      console.log('eventPayload', eventPayload)
       if ('reason' in eventPayload) {
         return new Error(eventPayload.reason)
       }
