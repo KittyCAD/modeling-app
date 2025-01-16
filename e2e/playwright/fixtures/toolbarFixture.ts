@@ -17,6 +17,7 @@ export class ToolbarFixture {
   sweepButton!: Locator
   chamferButton!: Locator
   shellButton!: Locator
+  revolveButton!: Locator
   offsetPlaneButton!: Locator
   startSketchBtn!: Locator
   lineBtn!: Locator
@@ -45,6 +46,7 @@ export class ToolbarFixture {
     this.sweepButton = page.getByTestId('sweep')
     this.chamferButton = page.getByTestId('chamfer3d')
     this.shellButton = page.getByTestId('shell')
+    this.revolveButton = page.getByTestId('revolve')
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.startSketchBtn = page.getByTestId('sketch')
     this.lineBtn = page.getByTestId('line')

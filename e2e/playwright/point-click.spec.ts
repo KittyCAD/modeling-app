@@ -1525,3 +1525,62 @@ shellSketchOnFacesCases.forEach((initialCode, index) => {
     })
   })
 })
+
+test('Revolve point and click', async ({
+  context,
+  page,
+  homePage,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  const initialCode = `
+sketch001 = startSketchOn('XZ')
+|> startProfileAt([-100.0, 100.0], %)
+|> angledLine([0, 200.0], %, $rectangleSegmentA001)
+|> angledLine([segAng(rectangleSegmentA001) - 90, 200], %, $rectangleSegmentB001)
+|> angledLine([
+segAng(rectangleSegmentA001),
+-segLen(rectangleSegmentA001)
+], %, $rectangleSegmentC001)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+extrude001 = extrude(200, sketch001)
+
+sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
+|> startProfileAt([-66.77, 84.81], %)
+|> angledLine([180, 27.08], %, $rectangleSegmentA002)
+|> angledLine([
+segAng(rectangleSegmentA002) - 90,
+27.8
+], %, $rectangleSegmentB002)
+|> angledLine([
+segAng(rectangleSegmentA002),
+-segLen(rectangleSegmentA002)
+], %, $rectangleSegmentC002)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> close(%)
+
+`
+
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
+  await scene.waitForExecutionDone()
+
+  // select line of code
+  const codeToSelecton = `segAng(rectangleSegmentA002) - 90,`
+  // revolve
+  await page.getByText(codeToSelecton).click()
+  await toolbar.revolveButton.click()
+  await cmdBar.progressCmdBar()
+  await cmdBar.progressCmdBar()
+  await cmdBar.progressCmdBar()
+  await cmdBar.progressCmdBar()
+
+  const newCodeToFind = `revolve001 = revolve({ angle = 360, axis = 'X' }, sketch002)`
+  expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
+})
