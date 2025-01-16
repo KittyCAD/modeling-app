@@ -14,6 +14,7 @@ import {
   setSettingsAtLevel,
 } from 'lib/settings/settingsUtils'
 import { sceneInfra } from 'lib/singletons'
+import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
 
 export const settingsMachine = setup({
   types: {
@@ -35,6 +36,7 @@ export const settingsMachine = setup({
           level: SettingsLevel
         }
       | { type: 'Set all settings'; settings: typeof settings }
+      | { type: 'set.modeling.namedViews'; value: NamedView }
     ) & { doNotPersist?: boolean },
   },
   actions: {
@@ -113,6 +115,12 @@ export const settingsMachine = setup({
         '*': {
           target: 'persisting settings',
           actions: ['setSettingAtLevel', 'toastSuccess'],
+        },
+
+        'set.modeling.namedViews': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel'],
         },
 
         'set.app.onboardingStatus': {

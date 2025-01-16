@@ -391,11 +391,15 @@ export const SettingsAuthProviderBase = ({
   )
 
   useEffect(() => {
-    // TODO: only add in the modeling page
-    const { createNamedViewCommand } = createNamedViewsCommand()
+    // TODO: only add in the modeling
+    const { createNamedViewCommand, deleteNamedViewCommand } =
+      createNamedViewsCommand({
+        settingsState,
+        settingsSend,
+      })
     commandBarSend({
       type: 'Add commands',
-      data: { commands: [createNamedViewCommand] },
+      data: { commands: [createNamedViewCommand, deleteNamedViewCommand] },
     })
   }, [])
 
