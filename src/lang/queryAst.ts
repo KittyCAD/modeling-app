@@ -429,6 +429,7 @@ export function getNodePathFromSourceRange(
   previousPath: PathToNode = [['body', '']]
 ): PathToNode {
   const [start, end] = sourceRange || []
+  expect(start).toBeGreaterThan(-1)
   let path: PathToNode = [...previousPath]
   const _node = { ...node }
 

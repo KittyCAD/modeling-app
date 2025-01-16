@@ -10,6 +10,7 @@ import {
   VariableDeclarator,
   SourceRange,
   topLevelRange,
+  CallExpressionKw,
 } from '../wasm'
 import {
   EdgeTreatmentType,
@@ -78,14 +79,14 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     ast: Program,
     code: string,
     expectedExtrudeSnippet: string
-  ): CallExpression | PipeExpression | Error {
+  ): CallExpression | CallExpressionKw | PipeExpression | Error {
     const extrudeRange = topLevelRange(
       code.indexOf(expectedExtrudeSnippet),
       code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length
     )
     const expectedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
     const expectedExtrudeNodeResult = getNodeFromPath<
-      VariableDeclarator | CallExpression
+      VariableDeclarator | CallExpression | CallExpressionKw
     >(ast, expectedExtrudePath)
     if (err(expectedExtrudeNodeResult)) {
       return expectedExtrudeNodeResult
@@ -93,7 +94,9 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     const expectedExtrudeNode = expectedExtrudeNodeResult.node
 
     // check whether extrude is in the sketch pipe
-    const extrudeInSketchPipe = expectedExtrudeNode.type === 'CallExpression'
+    const extrudeInSketchPipe =
+      expectedExtrudeNode.type === 'CallExpression' ||
+      expectedExtrudeNode.type === 'CallExpressionKw'
     if (extrudeInSketchPipe) {
       return expectedExtrudeNode
     }
@@ -506,7 +509,7 @@ extrude001 = extrude(sketch001, length = -15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)`
-        const segmentSnippets = ['line(end = [20, 0], %)', 'line([-20, 0])']
+        const segmentSnippets = ['line(end = [20, 0])', 'line(end = [-20, 0])']
         const expectedCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line(end = [20, 0], tag = $seg01)
@@ -632,9 +635,11 @@ extrude001 = extrude(sketch001, length = -5)
   it('should correctly identify no edges', () => {
     const ast = assertParse(code)
     const lineOfInterest = `line(end = [-3.29, -13.85])`
-    const range = topLevelRange(
-      code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length
+      const start = code.indexOf(lineOfInterest)
+      expect(start).toBeGreaterThan(-1)
+      const range = topLevelRange(
+        start,
+        start + lineOfInterest.length
     )
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
@@ -657,10 +662,12 @@ describe('Testing button states', () => {
   ) => {
     const ast = assertParse(code)
 
+    const start = code.indexOf(segmentSnippet)
+    expect(start).toBeGreaterThan(-1)
     const range = segmentSnippet
       ? topLevelRange(
-          code.indexOf(segmentSnippet),
-          code.indexOf(segmentSnippet) + segmentSnippet.length
+          start,
+          start + segmentSnippet.length
         )
       : topLevelRange(ast.end, ast.end) // empty line in the end of the code
 
