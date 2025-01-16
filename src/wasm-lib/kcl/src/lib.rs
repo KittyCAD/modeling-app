@@ -71,7 +71,7 @@ mod settings;
 #[cfg(test)]
 mod simulation_tests;
 mod source_range;
-mod std;
+pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
 mod thread;
@@ -85,7 +85,7 @@ pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
 pub use execution::{
     cache::{CacheInformation, OldAstState},
-    ExecState, ExecutorContext, ExecutorSettings,
+    ExecState, ExecutorContext, ExecutorSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
