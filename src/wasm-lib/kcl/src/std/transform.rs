@@ -175,6 +175,7 @@ pub async fn transform_translate(exec_state: &mut ExecState, args: Args) -> Resu
 ///     }, %)   
 ///     |> transformTranslate({
 ///     translate: [1.0, 1.0, 2.5],
+///     global: true,
 ///     }, %)
 /// ```
 #[stdlib {
@@ -412,6 +413,7 @@ pub async fn transform_rotate(exec_state: &mut ExecState, args: Args) -> Result<
 ///         roll: 10,
 ///         pitch: 10,
 ///         yaw: 90,
+///         global: true,
 ///     }, %)
 /// ```
 #[stdlib {

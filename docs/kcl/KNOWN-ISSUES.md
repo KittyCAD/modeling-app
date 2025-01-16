@@ -24,3 +24,6 @@ once fixed in engine will just start working here with no language changes.
     chamfer cases work currently.
 
 - **Appearance**: Changing the appearance on a loft does not work.
+
+- **Transforms**: `transformTranslate` and `transformRotate` do not currently work
+    when `global = false` is passed.
