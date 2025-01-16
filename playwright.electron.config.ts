@@ -9,7 +9,7 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: false,
+  forbidOnly: true,
   /* Do not retry */
   retries: 0,
   /* Different amount of parallelism on CI and local. */
