@@ -26,6 +26,11 @@ use crate::{
 pub struct ScaleData {
     /// The scale factor for the x, y, and z axes.
     pub scale: [f64; 3],
+    /// If true, the transform is applied in global space. The origin of the model will move.
+    /// By default, the transform is applied in local sketch axis, therefore the origin will not
+    /// move.
+    #[serde(default)]
+    pub global: Option<bool>,
 }
 
 /// Scale a solid.
@@ -100,7 +105,7 @@ async fn inner_transform_scale(
                         z: data.scale[2],
                     },
                     set: false,
-                    is_local: false,
+                    is_local: !data.global.unwrap_or(false),
                 }),
                 translate: None,
                 rotate_rpy: None,

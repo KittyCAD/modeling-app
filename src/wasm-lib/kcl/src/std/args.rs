@@ -1109,7 +1109,8 @@ impl<'a> FromKclValue<'a> for super::transform::ScaleData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
         let_field_of!(obj, scale);
-        Some(Self { scale })
+        let_field_of!(obj, global?);
+        Some(Self { scale, global })
     }
 }
 
