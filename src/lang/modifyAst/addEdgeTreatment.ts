@@ -29,6 +29,7 @@ import {
   addTagForSketchOnFace,
   getTagFromCallExpression,
   sketchLineHelperMap,
+  sketchLineHelperMapKw,
 } from '../std/sketch'
 import { err, trap } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
@@ -561,7 +562,12 @@ export const hasValidEdgeTreatmentSelection = ({
     ) {
       return false
     }
-    if (!(segmentNode.node.callee.name in sketchLineHelperMap)) {
+    if (
+      !(
+        segmentNode.node.callee.name in sketchLineHelperMap ||
+        segmentNode.node.callee.name in sketchLineHelperMapKw
+      )
+    ) {
       return false
     }
 
