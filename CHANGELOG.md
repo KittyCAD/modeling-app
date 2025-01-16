@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -
 
+## [v0.36.1] - 2025-01-16
+
+##### Fixed
+* KCL samples not loading in v0.36.0 since 2024-01-14
+
+**Full Changelog**: https://github.com/KittyCAD/modeling-app/compare/v0.36.0...v0.36.1
+
 ## [v0.36.0] - 2025-01-14
 
 ##### Added
