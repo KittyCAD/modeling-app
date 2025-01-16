@@ -1,6 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
+assertion_line: 99
 description: Program memory after executing array_elem_push.kcl
 snapshot_kind: text
 ---
@@ -81,7 +81,7 @@ snapshot_kind: text
             }
           ]
         },
-        "new_arr1": {
+        "newArr1": {
           "type": "Array",
           "value": [
             {
@@ -129,8 +129,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    37,
-                    38,
+                    43,
+                    44,
                     0
                   ]
                 }
@@ -140,14 +140,14 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                27,
-                39,
+                26,
+                45,
                 0
               ]
             }
           ]
         },
-        "new_arr2": {
+        "newArr2": {
           "type": "Array",
           "value": [
             {
@@ -195,8 +195,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    37,
-                    38,
+                    43,
+                    44,
                     0
                   ]
                 }
@@ -208,8 +208,8 @@ snapshot_kind: text
               "__meta": [
                 {
                   "sourceRange": [
-                    66,
-                    67,
+                    77,
+                    78,
                     0
                   ]
                 }
@@ -219,8 +219,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                51,
-                68,
+                56,
+                79,
                 0
               ]
             }

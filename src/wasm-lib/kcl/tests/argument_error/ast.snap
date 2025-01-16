@@ -1,6 +1,8 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 55
 description: Result of parsing argument_error.kcl
+snapshot_kind: text
 ---
 {
   "Ok": {
@@ -61,39 +63,39 @@ description: Result of parsing argument_error.kcl
         "type": "VariableDeclaration"
       },
       {
-        "end": 38,
+        "end": 47,
         "expression": {
           "arguments": [
             {
-              "end": 29,
-              "name": "f",
-              "start": 28,
-              "type": "Identifier",
-              "type": "Identifier"
-            },
-            {
-              "elements": [
-                {
-                  "end": 33,
-                  "raw": "0",
-                  "start": 32,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 0.0
-                },
-                {
-                  "end": 36,
-                  "raw": "1",
-                  "start": 35,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": 1.0
-                }
-              ],
-              "end": 37,
-              "start": 31,
-              "type": "ArrayExpression",
-              "type": "ArrayExpression"
+              "type": "LabeledArg",
+              "label": {
+                "type": "Identifier",
+                "name": "map_fn"
+              },
+              "arg": {
+                "elements": [
+                  {
+                    "end": 42,
+                    "raw": "0",
+                    "start": 41,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 0.0
+                  },
+                  {
+                    "end": 45,
+                    "raw": "1",
+                    "start": 44,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": 1.0
+                  }
+                ],
+                "end": 46,
+                "start": 40,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
             }
           ],
           "callee": {
@@ -102,17 +104,24 @@ description: Result of parsing argument_error.kcl
             "start": 24,
             "type": "Identifier"
           },
-          "end": 38,
+          "end": 47,
           "start": 24,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "end": 29,
+            "name": "f",
+            "start": 28,
+            "type": "Identifier",
+            "type": "Identifier"
+          }
         },
         "start": 24,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 39,
+    "end": 48,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [

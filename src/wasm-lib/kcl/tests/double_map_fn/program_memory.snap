@@ -1,5 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
+assertion_line: 99
 description: Program memory after executing double_map_fn.kcl
 snapshot_kind: text
 ---
@@ -261,8 +262,8 @@ snapshot_kind: text
           "__meta": [
             {
               "sourceRange": [
-                84,
-                101,
+                93,
+                119,
                 0
               ]
             }
