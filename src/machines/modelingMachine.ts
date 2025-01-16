@@ -1913,7 +1913,7 @@ export const modelingMachine = setup({
           entry: [
             'show default planes',
             'reset camera position',
-            'set selection filter to curves only',
+            //'set selection filter to curves only',
           ],
           description: `We want to disable selections and hover highlights here, because users can't do anything with that information until they actually add something to the scene. The planes are just for orientation here.`,
           exit: 'set selection filter to defaults',

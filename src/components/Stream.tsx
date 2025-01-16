@@ -259,14 +259,14 @@ export const Stream = () => {
     // If we're in sketch mode, don't send a engine-side select event
     if (state.matches('Sketch')) return
     // Only respect default plane selection if we're on a selection command argument
-    if (
-      state.matches({ idle: 'showPlanes' }) &&
-      !(
-        commandBarState.matches('Gathering arguments') &&
-        commandBarState.context.currentArgument?.inputType === 'selection'
-      )
-    )
-      return
+    // if (
+    //   state.matches({ idle: 'showPlanes' }) &&
+    //   !(
+    //     commandBarState.matches('Gathering arguments') &&
+    //     commandBarState.context.currentArgument?.inputType === 'selection'
+    //   )
+    // )
+      // return
     // If we're mousing up from a camera drag, don't send a select event
     if (sceneInfra.camControls.wasDragging === true) return
 
