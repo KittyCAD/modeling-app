@@ -27,6 +27,7 @@ import {
 } from '../queryAst'
 import {
   addTagForSketchOnFace,
+  ARG_TAG,
   getTagFromCallExpression,
   sketchLineHelperMap,
   sketchLineHelperMapKw,
@@ -42,6 +43,7 @@ import {
   codeManager,
 } from 'lib/singletons'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { findKwArg } from 'lang/util'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -648,9 +650,16 @@ export const isTagUsedInEdgeTreatment = ({
   callExp,
 }: {
   ast: Node<Program>
-  callExp: CallExpression
+  callExp: CallExpression | CallExpressionKw
 }): Array<EdgeTypes> => {
-  const tag = getTagFromCallExpression(callExp)
+  const tag = (() => {
+    switch (callExp.type) {
+      case 'CallExpression':
+        return getTagFromCallExpression(callExp)
+      case 'CallExpressionKw':
+        return findKwArg(ARG_TAG, callExp)
+    }
+  })()
   if (err(tag)) return []
 
   let inEdgeTreatment = false
@@ -658,6 +667,7 @@ export const isTagUsedInEdgeTreatment = ({
   let inTagHelper: EdgeTypes | '' = ''
   const edges: Array<EdgeTypes> = []
 
+  console.error('ADAM: tag', tag)
   traverse(ast, {
     enter: (node) => {
       // Check if we are entering an edge treatment call
@@ -683,6 +693,7 @@ export const isTagUsedInEdgeTreatment = ({
         (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         isEdgeType(node.callee.name)
       ) {
+        console.error('ADAM: in tag helper', node.callee.name)
         inTagHelper = node.callee.name
       }
       if (

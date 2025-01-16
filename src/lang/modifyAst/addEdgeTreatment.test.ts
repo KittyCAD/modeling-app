@@ -623,10 +623,10 @@ extrude001 = extrude(sketch001, length = -5)
     )
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression>(
+    const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
       ast,
       pathToNode,
-      'CallExpression'
+      ['CallExpression', 'CallExpressionKw']
     )
     if (err(callExp)) return
     const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
