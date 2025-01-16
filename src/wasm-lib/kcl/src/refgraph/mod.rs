@@ -3,6 +3,7 @@ mod walk;
 use crate::{
     parsing::ast::types,
     walk::{Node, Visitable},
+    FormatOptions,
 };
 use std::sync::{Arc, Mutex};
 
@@ -14,8 +15,6 @@ type Reference<'tree> = (Vec<Node<'tree>>, &'tree types::Identifier);
 
 ///
 type RefEdge<'tree> = (Option<Declaration<'tree>>, Reference<'tree>);
-
-// TODO change to a list of all parents of the node instead
 
 ///
 #[derive(Clone, Debug)]
@@ -251,6 +250,47 @@ fn myfn = () => {
                 .map(|(_, id)| id.name.as_str())
                 .collect::<Vec<_>>()
                 .as_slice()
+        );
+    }
+
+    #[test]
+    fn ast_eq() {
+        const program_str: &str = "\
+foo = 1
+bar = 2
+
+fn myfn() {
+  sin(foo)
+}
+
+baz = myfn()
+";
+
+        let program = kcl!(program_str);
+
+        // if this fails its because the code above is no longer of the
+        // style of the day
+        assert_eq!(program_str, program.recast(&FormatOptions::new(), 0));
+
+        let refgraph = extract_refgraph(&program).unwrap();
+        let edges = refgraph.edges().into_iter().collect::<Vec<_>>();
+
+        // lets say "foo" changed here
+        let tainted_node = program.body.get(0).unwrap();
+
+        let program_min = &program; // minimize_ast(&program, &[tainted_node]);
+        assert_eq!(
+            "\
+foo = 1
+bar = 2
+
+fn myfn() {
+  sin(foo)
+}
+
+baz = myfn()
+",
+            program_min.recast(&FormatOptions::new(), 0)
         );
     }
 }
