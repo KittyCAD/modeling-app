@@ -946,7 +946,7 @@ fn artifacts_to_update(
                 OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(r) => {
                     let Some(edge_id) = r.edge else {
                         return Err(KclError::internal(format!(
-                            "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: {response:?}"
+                            "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: id={id:?}, {response:?}"
                         )));
                     };
                     edge_id.into()
@@ -954,7 +954,7 @@ fn artifacts_to_update(
                 OkModelingCmdResponse::Solid3dGetOppositeEdge(r) => r.edge.into(),
                 _ => {
                     return Err(KclError::internal(format!(
-                        "Expected Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge response, but got: {response:?}"
+                        "Expected Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge response, but got: id={id:?}, {response:?}"
                     )));
                 }
             };
