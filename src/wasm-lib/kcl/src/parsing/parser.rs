@@ -30,7 +30,6 @@ use crate::{
         token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    unparser::ExprContext,
     SourceRange,
 };
 
@@ -2611,23 +2610,6 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
-    // This should really be done with resolved names, but we don't have warning support there
-    // so we'll hack this in here.
-    if fn_name.name == "int" {
-        assert_eq!(args.len(), 1);
-        let mut arg_str = args[0].recast(&crate::FormatOptions::default(), 0, ExprContext::Other);
-        if arg_str.contains('.') && !arg_str.ends_with(".0") {
-            arg_str = format!("round({arg_str})");
-        }
-        ParseContext::warn(CompilationError::with_suggestion(
-            SourceRange::new(fn_name.start, end, fn_name.module_id),
-            None,
-            "`int` function is deprecated. You may not need it at all. If you need to round, consider `round`, `ceil`, or `floor`.",
-            Some(("Remove call to `int`", arg_str)),
-            Tag::Deprecated,
-        ));
-    }
-
     Ok(Node {
         start: fn_name.start,
         end,
@@ -4344,17 +4326,6 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
         let (_, errs) = assert_no_err(some_program_string);
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].apply_suggestion(some_program_string).unwrap(), "{ foo = bar }")
-    }
-
-    #[test]
-    fn warn_fn_int() {
-        let some_program_string = r#"int(1.0)
-int(42.3)"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2);
-        let replaced = errs[1].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[0].apply_suggestion(&replaced).unwrap();
-        assert_eq!(replaced, "1.0\nround(42.3)");
     }
 
     #[test]
