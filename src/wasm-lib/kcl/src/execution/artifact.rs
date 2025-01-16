@@ -444,7 +444,7 @@ pub struct ArtifactGraph {
     map: IndexMap<ArtifactId, Artifact>,
 }
 
-pub(crate) fn build_artifact_graph(
+pub(super) fn build_artifact_graph(
     artifact_commands: &[ArtifactCommand],
     responses: &IndexMap<Uuid, WebSocketResponse>,
     ast: &Node<Program>,
