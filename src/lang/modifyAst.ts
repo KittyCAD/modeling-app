@@ -624,7 +624,7 @@ export function addOffsetPlane({
     insertIndex !== undefined
       ? insertIndex
       : modifiedAst.body.length
-      ? modifiedAst.body.length - 1
+      ? modifiedAst.body.length
       : 0
 
   modifiedAst.body.length
