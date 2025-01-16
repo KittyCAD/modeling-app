@@ -67,7 +67,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a helix around an edge.
 /// helper001 = startSketchOn('XZ')
 ///  |> startProfileAt([0, 0], %)
-///  |> line([0, 10], %, $edge001)
+///  |> line(end = [0, 10], tag = $edge001)
 ///
 /// helixPath = helix({
 ///     angleStart = 0,

@@ -225,17 +225,17 @@ async fn kcl_test_cache_change_highlight_edges_changes_visual() {
 async fn kcl_test_cache_add_line_preserves_artifact_commands() {
     let code = r#"sketch001 = startSketchOn('XY')
   |> startProfileAt([5.5229, 5.25217], %)
-  |> line([10.50433, -1.19122], %)
-  |> line([8.01362, -5.48731], %)
-  |> line([-1.02877, -6.76825], %)
-  |> line([-11.53311, 2.81559], %)
-  |> close(%)
+  |> line(end = [10.50433, -1.19122])
+  |> line(end = [8.01362, -5.48731])
+  |> line(end = [-1.02877, -6.76825])
+  |> line(end = [-11.53311, 2.81559])
+  |> close()
 "#;
     // Use a new statement; don't extend the prior pipeline.  This allows us to
     // detect a prefix.
     let code_with_extrude = code.to_owned()
         + r#"
-extrude(4, sketch001)
+extrude(sketch001, length = 4)
 "#;
 
     let result = cache_test(
