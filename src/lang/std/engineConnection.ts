@@ -1,8 +1,7 @@
 import {
-  ArtifactCommand,
+  ArtifactGraph,
   defaultRustSourceRange,
   ExecState,
-  Program,
   RustSourceRange,
   SourceRange,
 } from 'lang/wasm'
@@ -17,11 +16,7 @@ import {
   darkModeMatcher,
 } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
-import {
-  ArtifactGraph,
-  EngineCommand,
-  ResponseMap,
-} from 'lang/std/artifactGraph'
+import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
@@ -35,7 +30,6 @@ import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 // TODO(paultag): This ought to be tweakable.
 const pingIntervalMs = 5_000

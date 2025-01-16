@@ -1,4 +1,5 @@
 import { kclErrorsToDiagnostics, KCLError } from './errors'
+import { defaultArtifactGraph } from 'lang/wasm'
 
 describe('test kclErrToDiagnostic', () => {
   it('converts KCL errors to CodeMirror diagnostics', () => {
@@ -11,6 +12,7 @@ describe('test kclErrToDiagnostic', () => {
         sourceRange: [0, 1, 0],
         operations: [],
         artifactCommands: [],
+        artifactGraph: defaultArtifactGraph(),
       },
       {
         name: '',
@@ -20,6 +22,7 @@ describe('test kclErrToDiagnostic', () => {
         sourceRange: [4, 5, 0],
         operations: [],
         artifactCommands: [],
+        artifactGraph: defaultArtifactGraph(),
       },
     ]
     const diagnostics = kclErrorsToDiagnostics(errors)

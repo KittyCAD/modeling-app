@@ -1,7 +1,7 @@
 import {
   Artifact,
+  ArtifactGraph,
   ArtifactId,
-  ExecState,
   PathToNode,
   Program,
   SourceRange,
@@ -66,8 +66,6 @@ interface SweepArtifactRich extends BaseArtifact {
   edges: Array<SweepEdge>
   codeRef: CodeRef
 }
-
-export type ArtifactGraph = ExecState['artifactGraph']
 
 export type EngineCommand = Models['WebSocketRequest_type']
 

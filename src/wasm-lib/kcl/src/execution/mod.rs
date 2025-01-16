@@ -2253,6 +2253,7 @@ impl ExecutorContext {
                     e,
                     exec_state.mod_local.operations.clone(),
                     exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
                 )
             })?;
 

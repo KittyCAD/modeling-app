@@ -247,7 +247,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
       [],
-      []
+      [],
+      defaultArtifactGraph()
     )
   }
 }
@@ -273,7 +274,7 @@ export interface ExecState {
   operations: Operation[]
   artifacts: { [key in ArtifactId]?: RustArtifact }
   artifactCommands: ArtifactCommand[]
-  artifactGraph: Map<ArtifactId, Artifact>
+  artifactGraph: ArtifactGraph
 }
 
 /**
@@ -286,7 +287,7 @@ export function emptyExecState(): ExecState {
     operations: [],
     artifacts: {},
     artifactCommands: [],
-    artifactGraph: new Map(),
+    artifactGraph: defaultArtifactGraph(),
   }
 }
 
@@ -315,9 +316,11 @@ function execStateFromRust(
   }
 }
 
+export type ArtifactGraph = Map<ArtifactId, Artifact>
+
 function rustArtifactGraphToMap(
   rustArtifactGraph: RustArtifactGraph
-): Map<ArtifactId, Artifact> {
+): ArtifactGraph {
   const map = new Map<ArtifactId, Artifact>()
   for (const [id, artifact] of Object.entries(rustArtifactGraph.map)) {
     if (!artifact) continue
@@ -325,6 +328,10 @@ function rustArtifactGraphToMap(
   }
 
   return map
+}
+
+export function defaultArtifactGraph(): ArtifactGraph {
+  return new Map()
 }
 
 interface Memory {
@@ -595,7 +602,8 @@ export const executor = async (
       parsed.error.msg,
       sourceRangeFromRust(parsed.error.sourceRanges[0]),
       parsed.operations,
-      parsed.artifactCommands
+      parsed.artifactCommands,
+      rustArtifactGraphToMap(parsed.artifactGraph)
     )
 
     return Promise.reject(kclError)
@@ -656,7 +664,8 @@ export const modifyAstForSketch = async (
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
       [],
-      []
+      [],
+      defaultArtifactGraph()
     )
 
     console.log(kclError)
@@ -726,7 +735,8 @@ export function programMemoryInit(): ProgramMemory | Error {
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
       [],
-      []
+      [],
+      defaultArtifactGraph()
     )
   }
 }

@@ -2,6 +2,7 @@ import { ToolTip } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
 import {
   ArrayExpression,
+  ArtifactGraph,
   BinaryExpression,
   CallExpression,
   Expr,
@@ -16,7 +17,6 @@ import {
   sketchFromKclValue,
   sketchFromKclValueOptional,
   SourceRange,
-  sourceRangeFromRust,
   SyntaxType,
   VariableDeclaration,
   VariableDeclarator,
@@ -32,7 +32,7 @@ import {
 import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
+import { codeRefFromRange } from './std/artifactGraph'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
