@@ -10,6 +10,7 @@ type Edges = IndexMap<(NodeId, NodeId), EdgeInfo>;
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct EdgeInfo {
     direction: EdgeDirection,
+    flow: EdgeFlow,
     kind: EdgeKind,
 }
 
@@ -18,6 +19,22 @@ enum EdgeDirection {
     Forward,
     Backward,
     Bidirectional,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+enum EdgeFlow {
+    SourceToTarget,
+    TargetToSource,
+}
+
+impl EdgeFlow {
+    #[must_use]
+    fn reverse(&self) -> EdgeFlow {
+        match self {
+            EdgeFlow::SourceToTarget => EdgeFlow::TargetToSource,
+            EdgeFlow::TargetToSource => EdgeFlow::SourceToTarget,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -336,7 +353,7 @@ impl ArtifactGraph {
     ) -> Result<(), std::fmt::Error> {
         // Mermaid will display two edges in either direction, even using
         // the `---` edge type. So we need to deduplicate them.
-        fn add_unique_edge(edges: &mut Edges, source_id: NodeId, target_id: NodeId, kind: EdgeKind) {
+        fn add_unique_edge(edges: &mut Edges, source_id: NodeId, target_id: NodeId, flow: EdgeFlow, kind: EdgeKind) {
             if source_id == target_id {
                 // Self edge.  Skip it.
                 return;
@@ -349,8 +366,10 @@ impl ArtifactGraph {
             } else {
                 EdgeDirection::Backward
             };
+            let initial_flow = if a == source_id { flow } else { flow.reverse() };
             let edge = edges.entry((a, b)).or_insert(EdgeInfo {
                 direction: new_direction,
+                flow: initial_flow,
                 kind,
             });
             // Merge with existing edge.
@@ -361,7 +380,22 @@ impl ArtifactGraph {
         let mut edges = IndexMap::default();
         for artifact in self.map.values() {
             let source_id = *stable_id_map.get(&artifact.id()).unwrap();
-            for target_id in artifact.back_edges().into_iter().chain(artifact.child_ids()) {
+            // In Mermaid, the textual order defines the rank, even though the
+            // edge arrow can go in either direction.
+            //
+            // Back edges: parent <- self
+            // Child edges: self -> child
+            for (target_id, flow) in artifact
+                .back_edges()
+                .into_iter()
+                .zip(std::iter::repeat(EdgeFlow::TargetToSource))
+                .chain(
+                    artifact
+                        .child_ids()
+                        .into_iter()
+                        .zip(std::iter::repeat(EdgeFlow::SourceToTarget)),
+                )
+            {
                 let Some(target) = self.map.get(&target_id) else {
                     continue;
                 };
@@ -372,7 +406,7 @@ impl ArtifactGraph {
                     _ => EdgeKind::Other,
                 };
                 let target_id = *stable_id_map.get(&target_id).unwrap();
-                add_unique_edge(&mut edges, source_id, target_id, edge_kind);
+                add_unique_edge(&mut edges, source_id, target_id, flow, edge_kind);
             }
         }
 
@@ -386,16 +420,29 @@ impl ArtifactGraph {
                 EdgeKind::PathToSweep => "-",
                 EdgeKind::Other => "",
             };
-            match edge.direction {
-                EdgeDirection::Forward => {
-                    writeln!(output, "{prefix}{source_id} x{}--> {}", extra, target_id)?;
-                }
-                EdgeDirection::Backward => {
-                    writeln!(output, "{prefix}{target_id} x{}--> {}", extra, source_id)?;
-                }
-                EdgeDirection::Bidirectional => {
-                    writeln!(output, "{prefix}{source_id} {}--- {}", extra, target_id)?;
-                }
+            match edge.flow {
+                EdgeFlow::SourceToTarget => match edge.direction {
+                    EdgeDirection::Forward => {
+                        writeln!(output, "{prefix}{source_id} x{}--> {}", extra, target_id)?;
+                    }
+                    EdgeDirection::Backward => {
+                        writeln!(output, "{prefix}{source_id} <{}--x {}", extra, target_id)?;
+                    }
+                    EdgeDirection::Bidirectional => {
+                        writeln!(output, "{prefix}{source_id} {}--- {}", extra, target_id)?;
+                    }
+                },
+                EdgeFlow::TargetToSource => match edge.direction {
+                    EdgeDirection::Forward => {
+                        writeln!(output, "{prefix}{target_id} x{}--> {}", extra, source_id)?;
+                    }
+                    EdgeDirection::Backward => {
+                        writeln!(output, "{prefix}{target_id} <{}--x {}", extra, source_id)?;
+                    }
+                    EdgeDirection::Bidirectional => {
+                        writeln!(output, "{prefix}{target_id} {}--- {}", extra, source_id)?;
+                    }
+                },
             }
         }
 
