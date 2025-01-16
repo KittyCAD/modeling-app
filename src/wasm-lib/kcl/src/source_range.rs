@@ -76,6 +76,12 @@ impl SourceRange {
         self.0[0]
     }
 
+    /// Get the start of the range as a zero-length SourceRange, effectively collapse `self` to it's
+    /// start.
+    pub fn start_as_range(&self) -> Self {
+        Self([self.0[0], self.0[0], self.0[2]])
+    }
+
     /// Get the end of the range.
     pub fn end(&self) -> usize {
         self.0[1]
