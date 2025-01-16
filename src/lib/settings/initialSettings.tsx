@@ -20,6 +20,7 @@ import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
 
 /**
  * A setting that can be set at the user or project level
@@ -442,7 +443,7 @@ export function createSettings() {
       //     inputType: 'boolean',
       //   },
       // }),
-      namedViews: new Setting<[]>({
+      namedViews: new Setting<NamedView[]>({
         defaultValue: [],
         validate: (v) => true,
       }),

@@ -330,8 +330,6 @@ export function setSettingsAtLevel(
     Object.entries(settingsCategory).forEach(([settingKey, settingValue]) => {
       // TODO: How do you get a valid type for allSettings[categoryKey][settingKey]?
       // it seems to always collapses to `never`, which is not correct
-      console.log(settingKey, settingValue, allSettings)
-      // TODO Kevin: allSettings
       // @ts-ignore
       if (!allSettings[categoryKey][settingKey]) return // ignore unrecognized settings
       // @ts-ignore
