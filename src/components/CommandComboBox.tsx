@@ -5,6 +5,7 @@ import { Command } from 'lib/commandTypes'
 import { useEffect, useState } from 'react'
 import { CustomIcon } from './CustomIcon'
 import { getActorNextEvents } from 'lib/utils'
+import { sortCommands } from 'lib/commandUtils'
 
 function CommandComboBox({
   options,
@@ -19,8 +20,16 @@ function CommandComboBox({
 
   const defaultOption =
     options.find((o) => 'isCurrent' in o && o.isCurrent) || null
+  // sort disabled commands to the bottom
+  const sortedOptions = options
+    .map((command) => ({
+      command,
+      disabled: optionIsDisabled(command),
+    }))
+    .sort(sortCommands)
+    .map(({ command }) => command)
 
-  const fuse = new Fuse(options, {
+  const fuse = new Fuse(sortedOptions, {
     keys: ['displayName', 'name', 'description'],
     threshold: 0.3,
     ignoreLocation: true,
@@ -28,7 +37,7 @@ function CommandComboBox({
 
   useEffect(() => {
     const results = fuse.search(query).map((result) => result.item)
-    setFilteredOptions(query.length > 0 ? results : options)
+    setFilteredOptions(query.length > 0 ? results : sortedOptions)
   }, [query])
 
   function handleSelection(command: Command) {

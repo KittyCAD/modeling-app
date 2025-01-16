@@ -6,7 +6,7 @@ use crate::{
     errors::ExecErrorWithState,
     execution::{new_zoo_client, ArtifactCommand, ExecutorContext, ExecutorSettings, Operation, ProgramMemory},
     settings::types::UnitLength,
-    ConnectionError, ExecError, KclErrorWithOutputs, Program,
+    ConnectionError, ExecError, ExecState, KclErrorWithOutputs, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -72,7 +72,7 @@ async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
 ) -> Result<(crate::execution::ExecState, image::DynamicImage), ExecErrorWithState> {
-    let mut exec_state = Default::default();
+    let mut exec_state = ExecState::new(&ctx.settings);
     let snapshot_png_bytes = ctx
         .execute_and_prepare_snapshot(&program, &mut exec_state)
         .await
