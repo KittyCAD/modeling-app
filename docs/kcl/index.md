@@ -53,7 +53,6 @@ layout: manual
 * [`hollow`](kcl/hollow)
 * [`import`](kcl/import)
 * [`inch`](kcl/inch)
-* [`int`](kcl/int)
 * [`lastSegX`](kcl/lastSegX)
 * [`lastSegY`](kcl/lastSegY)
 * [`legAngX`](kcl/legAngX)
