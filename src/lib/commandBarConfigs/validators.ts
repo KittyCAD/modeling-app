@@ -3,6 +3,7 @@ import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
+import { SweepArtifact } from 'lang/std/artifactGraph'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -157,44 +158,36 @@ export const loftValidator = async ({
 export const shellValidator = async ({
   data,
 }: {
-  data: any
+  data: { selection: Selections }
 }): Promise<boolean | string> => {
   if (!isSelections(data.selection)) {
     return 'Unable to shell, selections are missing'
   }
-  const selection = data.selection as Selections
-  const firstArtifact = selection.graphSelections[0].artifact
 
-  if (!firstArtifact) {
-    return 'Unable to shell, no artifact found'
-  }
+  // No validation on the faces, filtering is done upstream and we have the dry run validation just below
+  const face_ids = data.selection.graphSelections.flatMap((s) =>
+    s.artifact ? s.artifact.id : []
+  )
 
-  if (!(firstArtifact.type === 'cap' || firstArtifact.type === 'wall')) {
-    return 'Unable to shell, first artifact is not a cap or a wall'
-  }
-
-  const sweep = engineCommandManager.artifactGraph.get(firstArtifact.sweepId)
-  if (!sweep || sweep?.type !== 'sweep') {
+  const solids: SweepArtifact[] = []
+  engineCommandManager.artifactGraph.forEach(
+    (a) => a.type == 'sweep' && solids.push(a)
+  )
+  if (!solids[0]) {
     return "Unable to shell, couldn't find sweep"
   }
 
-  const faceId = firstArtifact.id
-  const hasOtherObjectIds = selection.graphSelections.some(
-    (s) =>
-      (s.artifact?.type === 'cap' || s.artifact?.type === 'wall') &&
-      s.artifact.sweepId !== firstArtifact.sweepId
-  )
-  if (hasOtherObjectIds) {
-    return 'Unable to shell, selection is across solids'
-  }
+  // Taking the first solid, as in Rust
+  // https://github.com/KittyCAD/modeling-app/blob/e61fff115b9fa94aaace6307b1842cc15d41655e/src/wasm-lib/kcl/src/std/shell.rs#L237-L238
+  const object_id = solids[0].pathId
 
   const shellCommand = async () => {
     // TODO: figure out something better than an arbitrarily small value
     const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 1e-9
     const DEFAULT_HOLLOW = false
     const cmdArgs = {
-      face_ids: [faceId],
-      object_id: sweep.pathId,
+      face_ids,
+      object_id,
       hollow: DEFAULT_HOLLOW,
       shell_thickness: DEFAULT_THICKNESS,
     }
@@ -211,7 +204,6 @@ export const shellValidator = async ({
   if (attemptShell?.success) {
     return true
   } else {
-    // return error message for the toast
     return 'Unable to shell with the provided selection'
   }
 }
