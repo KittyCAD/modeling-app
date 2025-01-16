@@ -136,13 +136,6 @@ export function defaultSourceRange(): SourceRange {
 }
 
 /**
- * Create a default RustSourceRange for testing or as a placeholder.
- */
-export function defaultRustSourceRange(): SourceRange {
-  return [0, 0, 0]
-}
-
-/**
  * Returns true if this source range is from the file being executed.  Returns
  * false if it's from a file that was imported.
  */

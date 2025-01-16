@@ -1,6 +1,6 @@
 import {
   ArtifactGraph,
-  defaultRustSourceRange,
+  defaultSourceRange,
   ExecState,
   SourceRange,
 } from 'lang/wasm'
@@ -1986,7 +1986,7 @@ export class EngineCommandManager extends EventTarget {
       {
         command,
         idToRangeMap: {},
-        range: defaultRustSourceRange(),
+        range: defaultSourceRange(),
       },
       true // isSceneCommand
     )
