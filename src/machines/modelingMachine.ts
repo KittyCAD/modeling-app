@@ -134,6 +134,8 @@ export interface SketchDetails {
   zAxis: [number, number, number]
   yAxis: [number, number, number]
   origin: [number, number, number]
+  // face id or plane id, both are strings
+  animateTargetId?: string
 }
 
 export interface SegmentOverlay {
@@ -423,6 +425,8 @@ export const modelingMachine = setup({
     },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
+    'is editing 3-point circle': ({ context: { sketchDetails } }) =>
+      isEditing3PointCircle({ sketchDetails }),
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
       const info = horzVertInfo(selectionRanges, 'horizontal')
       if (trap(info)) return false
@@ -2251,6 +2255,10 @@ export const modelingMachine = setup({
               target: 'SketchIdle',
               guard: 'is editing existing sketch',
             },
+            {
+              target: 'circle3PointToolSelect',
+              guard: 'is editing 3-point circle',
+            },
             'Line tool',
           ],
         },
@@ -2582,13 +2590,8 @@ export const modelingMachine = setup({
         circle3PointToolSelect: {
           invoke: {
             id: 'actor-circle-3-point',
-            input: function ({ context, event }) {
-              // These are not really necessary but I believe they are needed
-              // to satisfy TypeScript type narrowing or undefined check.
-              if (event.type !== 'change tool') return
-              if (event.data?.tool !== 'circle3Points') return
+            input: function ({ context }) {
               if (!context.sketchDetails) return
-
               return context.sketchDetails
             },
             src: 'actorCircle3Point',
@@ -2862,6 +2865,34 @@ export function isEditingExistingSketch({
   )
   return (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle
 }
+export function isEditing3PointCircle({
+  sketchDetails,
+}: {
+  sketchDetails: SketchDetails | null
+}): boolean {
+  if (!sketchDetails?.sketchPathToNode) return false
+  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
+    kclManager.ast,
+    sketchDetails.sketchPathToNode,
+    'VariableDeclarator'
+  )
+  if (err(variableDeclaration)) return false
+  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
+  const pipeExpression = variableDeclaration.node.init
+  if (pipeExpression.type !== 'PipeExpression') return false
+  const hasStartProfileAt = pipeExpression.body.some(
+    (item) =>
+      item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
+  )
+  const hasCircle3Point = pipeExpression.body.some(
+    (item) =>
+      item.type === 'CallExpressionKw' &&
+      item.callee.name === 'circleThreePoint'
+  )
+  return (
+    (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle3Point
+  )
+}
 export function pipeHasCircle({
   sketchDetails,
 }: {
@@ -2879,6 +2910,27 @@ export function pipeHasCircle({
   if (pipeExpression.type !== 'PipeExpression') return false
   const hasCircle = pipeExpression.body.some(
     (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+  )
+  return hasCircle
+}
+export function pipeHasCircleThreePoint({
+  sketchDetails,
+}: {
+  sketchDetails: SketchDetails | null
+}): boolean {
+  if (!sketchDetails?.sketchPathToNode) return false
+  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
+    kclManager.ast,
+    sketchDetails.sketchPathToNode,
+    'VariableDeclarator'
+  )
+  if (err(variableDeclaration)) return false
+  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
+  const pipeExpression = variableDeclaration.node.init
+  if (pipeExpression.type !== 'PipeExpression') return false
+  const hasCircle = pipeExpression.body.some(
+    (item) =>
+      item.type === 'CallExpression' && item.callee.name === 'circleThreePoint'
   )
   return hasCircle
 }

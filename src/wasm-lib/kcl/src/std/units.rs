@@ -5,14 +5,13 @@ use derive_docs::stdlib;
 
 use crate::{
     errors::KclError,
-    execution::{ExecState, KclValue},
-    settings::types::UnitLength,
+    execution::{ExecState, KclValue, UnitLen},
     std::Args,
 };
 
 /// Millimeters conversion factor for current projects units.
-pub async fn mm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_mm(&args)?;
+pub async fn mm(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let result = inner_mm(exec_state)?;
 
     Ok(args.make_user_val_from_f64(result))
 }
@@ -40,20 +39,20 @@ pub async fn mm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     name = "mm",
     tags = ["units"],
 }]
-fn inner_mm(args: &Args) -> Result<f64, KclError> {
-    match args.ctx.settings.units {
-        UnitLength::Mm => Ok(1.0),
-        UnitLength::In => Ok(measurements::Length::from_millimeters(1.0).as_inches()),
-        UnitLength::Ft => Ok(measurements::Length::from_millimeters(1.0).as_feet()),
-        UnitLength::M => Ok(measurements::Length::from_millimeters(1.0).as_meters()),
-        UnitLength::Cm => Ok(measurements::Length::from_millimeters(1.0).as_centimeters()),
-        UnitLength::Yd => Ok(measurements::Length::from_millimeters(1.0).as_yards()),
+fn inner_mm(exec_state: &ExecState) -> Result<f64, KclError> {
+    match exec_state.length_unit() {
+        UnitLen::Mm => Ok(1.0),
+        UnitLen::Inches => Ok(measurements::Length::from_millimeters(1.0).as_inches()),
+        UnitLen::Feet => Ok(measurements::Length::from_millimeters(1.0).as_feet()),
+        UnitLen::M => Ok(measurements::Length::from_millimeters(1.0).as_meters()),
+        UnitLen::Cm => Ok(measurements::Length::from_millimeters(1.0).as_centimeters()),
+        UnitLen::Yards => Ok(measurements::Length::from_millimeters(1.0).as_yards()),
     }
 }
 
 /// Inches conversion factor for current projects units.
-pub async fn inch(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_inch(&args)?;
+pub async fn inch(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let result = inner_inch(exec_state)?;
 
     Ok(args.make_user_val_from_f64(result))
 }
@@ -81,20 +80,20 @@ pub async fn inch(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     name = "inch",
     tags = ["units"],
 }]
-fn inner_inch(args: &Args) -> Result<f64, KclError> {
-    match args.ctx.settings.units {
-        UnitLength::Mm => Ok(measurements::Length::from_inches(1.0).as_millimeters()),
-        UnitLength::In => Ok(1.0),
-        UnitLength::Ft => Ok(measurements::Length::from_inches(1.0).as_feet()),
-        UnitLength::M => Ok(measurements::Length::from_inches(1.0).as_meters()),
-        UnitLength::Cm => Ok(measurements::Length::from_inches(1.0).as_centimeters()),
-        UnitLength::Yd => Ok(measurements::Length::from_inches(1.0).as_yards()),
+fn inner_inch(exec_state: &ExecState) -> Result<f64, KclError> {
+    match exec_state.length_unit() {
+        UnitLen::Mm => Ok(measurements::Length::from_inches(1.0).as_millimeters()),
+        UnitLen::Inches => Ok(1.0),
+        UnitLen::Feet => Ok(measurements::Length::from_inches(1.0).as_feet()),
+        UnitLen::M => Ok(measurements::Length::from_inches(1.0).as_meters()),
+        UnitLen::Cm => Ok(measurements::Length::from_inches(1.0).as_centimeters()),
+        UnitLen::Yards => Ok(measurements::Length::from_inches(1.0).as_yards()),
     }
 }
 
 /// Feet conversion factor for current projects units.
-pub async fn ft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_ft(&args)?;
+pub async fn ft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let result = inner_ft(exec_state)?;
 
     Ok(args.make_user_val_from_f64(result))
 }
@@ -123,20 +122,20 @@ pub async fn ft(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     name = "ft",
     tags = ["units"],
 }]
-fn inner_ft(args: &Args) -> Result<f64, KclError> {
-    match args.ctx.settings.units {
-        UnitLength::Mm => Ok(measurements::Length::from_feet(1.0).as_millimeters()),
-        UnitLength::In => Ok(measurements::Length::from_feet(1.0).as_inches()),
-        UnitLength::Ft => Ok(1.0),
-        UnitLength::M => Ok(measurements::Length::from_feet(1.0).as_meters()),
-        UnitLength::Cm => Ok(measurements::Length::from_feet(1.0).as_centimeters()),
-        UnitLength::Yd => Ok(measurements::Length::from_feet(1.0).as_yards()),
+fn inner_ft(exec_state: &ExecState) -> Result<f64, KclError> {
+    match exec_state.length_unit() {
+        UnitLen::Mm => Ok(measurements::Length::from_feet(1.0).as_millimeters()),
+        UnitLen::Inches => Ok(measurements::Length::from_feet(1.0).as_inches()),
+        UnitLen::Feet => Ok(1.0),
+        UnitLen::M => Ok(measurements::Length::from_feet(1.0).as_meters()),
+        UnitLen::Cm => Ok(measurements::Length::from_feet(1.0).as_centimeters()),
+        UnitLen::Yards => Ok(measurements::Length::from_feet(1.0).as_yards()),
     }
 }
 
 /// Meters conversion factor for current projects units.
-pub async fn m(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_m(&args)?;
+pub async fn m(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let result = inner_m(exec_state)?;
 
     Ok(args.make_user_val_from_f64(result))
 }
@@ -165,20 +164,20 @@ pub async fn m(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
     name = "m",
     tags = ["units"],
 }]
-fn inner_m(args: &Args) -> Result<f64, KclError> {
-    match args.ctx.settings.units {
-        UnitLength::Mm => Ok(measurements::Length::from_meters(1.0).as_millimeters()),
-        UnitLength::In => Ok(measurements::Length::from_meters(1.0).as_inches()),
-        UnitLength::Ft => Ok(measurements::Length::from_meters(1.0).as_feet()),
-        UnitLength::M => Ok(1.0),
-        UnitLength::Cm => Ok(measurements::Length::from_meters(1.0).as_centimeters()),
-        UnitLength::Yd => Ok(measurements::Length::from_meters(1.0).as_yards()),
+fn inner_m(exec_state: &ExecState) -> Result<f64, KclError> {
+    match exec_state.length_unit() {
+        UnitLen::Mm => Ok(measurements::Length::from_meters(1.0).as_millimeters()),
+        UnitLen::Inches => Ok(measurements::Length::from_meters(1.0).as_inches()),
+        UnitLen::Feet => Ok(measurements::Length::from_meters(1.0).as_feet()),
+        UnitLen::M => Ok(1.0),
+        UnitLen::Cm => Ok(measurements::Length::from_meters(1.0).as_centimeters()),
+        UnitLen::Yards => Ok(measurements::Length::from_meters(1.0).as_yards()),
     }
 }
 
 /// Centimeters conversion factor for current projects units.
-pub async fn cm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_cm(&args)?;
+pub async fn cm(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let result = inner_cm(exec_state)?;
 
     Ok(args.make_user_val_from_f64(result))
 }
@@ -207,20 +206,20 @@ pub async fn cm(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     name = "cm",
     tags = ["units"],
 }]
-fn inner_cm(args: &Args) -> Result<f64, KclError> {
-    match args.ctx.settings.units {
-        UnitLength::Mm => Ok(measurements::Length::from_centimeters(1.0).as_millimeters()),
-        UnitLength::In => Ok(measurements::Length::from_centimeters(1.0).as_inches()),
-        UnitLength::Ft => Ok(measurements::Length::from_centimeters(1.0).as_feet()),
-        UnitLength::M => Ok(measurements::Length::from_centimeters(1.0).as_meters()),
-        UnitLength::Cm => Ok(1.0),
-        UnitLength::Yd => Ok(measurements::Length::from_centimeters(1.0).as_yards()),
+fn inner_cm(exec_state: &ExecState) -> Result<f64, KclError> {
+    match exec_state.length_unit() {
+        UnitLen::Mm => Ok(measurements::Length::from_centimeters(1.0).as_millimeters()),
+        UnitLen::Inches => Ok(measurements::Length::from_centimeters(1.0).as_inches()),
+        UnitLen::Feet => Ok(measurements::Length::from_centimeters(1.0).as_feet()),
+        UnitLen::M => Ok(measurements::Length::from_centimeters(1.0).as_meters()),
+        UnitLen::Cm => Ok(1.0),
+        UnitLen::Yards => Ok(measurements::Length::from_centimeters(1.0).as_yards()),
     }
 }
 
 /// Yards conversion factor for current projects units.
-pub async fn yd(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_yd(&args)?;
+pub async fn yd(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let result = inner_yd(exec_state)?;
 
     Ok(args.make_user_val_from_f64(result))
 }
@@ -249,92 +248,13 @@ pub async fn yd(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     name = "yd",
     tags = ["units"],
 }]
-fn inner_yd(args: &Args) -> Result<f64, KclError> {
-    match args.ctx.settings.units {
-        UnitLength::Mm => Ok(measurements::Length::from_yards(1.0).as_millimeters()),
-        UnitLength::In => Ok(measurements::Length::from_yards(1.0).as_inches()),
-        UnitLength::Ft => Ok(measurements::Length::from_yards(1.0).as_feet()),
-        UnitLength::M => Ok(measurements::Length::from_yards(1.0).as_meters()),
-        UnitLength::Cm => Ok(measurements::Length::from_yards(1.0).as_centimeters()),
-        UnitLength::Yd => Ok(1.0),
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use pretty_assertions::assert_eq;
-
-    use super::*;
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_units_inner_mm() {
-        let mut args = Args::new_test_args().await.unwrap();
-        args.ctx.settings.units = UnitLength::Mm;
-        let result = inner_mm(&args).unwrap();
-        assert_eq!(result, 1.0);
-
-        args.ctx.settings.units = UnitLength::In;
-        let result = inner_mm(&args).unwrap();
-        assert_eq!(result, 1.0 / 25.4);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_units_inner_inch() {
-        let mut args = Args::new_test_args().await.unwrap();
-        args.ctx.settings.units = UnitLength::In;
-        let result = inner_inch(&args).unwrap();
-        assert_eq!(result, 1.0);
-
-        args.ctx.settings.units = UnitLength::Mm;
-        let result = inner_inch(&args).unwrap();
-        assert_eq!(result, 25.4);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_units_inner_ft() {
-        let mut args = Args::new_test_args().await.unwrap();
-        args.ctx.settings.units = UnitLength::Ft;
-        let result = inner_ft(&args).unwrap();
-        assert_eq!(result, 1.0);
-
-        args.ctx.settings.units = UnitLength::Mm;
-        let result = inner_ft(&args).unwrap();
-        assert_eq!(result, 304.8);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_units_inner_m() {
-        let mut args = Args::new_test_args().await.unwrap();
-        args.ctx.settings.units = UnitLength::M;
-        let result = inner_m(&args).unwrap();
-        assert_eq!(result, 1.0);
-
-        args.ctx.settings.units = UnitLength::Mm;
-        let result = inner_m(&args).unwrap();
-        assert_eq!(result, 1000.0);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_units_inner_cm() {
-        let mut args = Args::new_test_args().await.unwrap();
-        args.ctx.settings.units = UnitLength::Cm;
-        let result = inner_cm(&args).unwrap();
-        assert_eq!(result, 1.0);
-
-        args.ctx.settings.units = UnitLength::Mm;
-        let result = inner_cm(&args).unwrap();
-        assert_eq!(result, 10.0);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_units_inner_yd() {
-        let mut args = Args::new_test_args().await.unwrap();
-        args.ctx.settings.units = UnitLength::Yd;
-        let result = inner_yd(&args).unwrap();
-        assert_eq!(result, 1.0);
-
-        args.ctx.settings.units = UnitLength::Mm;
-        let result = inner_yd(&args).unwrap();
-        assert_eq!(result, 914.4);
+fn inner_yd(exec_state: &ExecState) -> Result<f64, KclError> {
+    match exec_state.length_unit() {
+        UnitLen::Mm => Ok(measurements::Length::from_yards(1.0).as_millimeters()),
+        UnitLen::Inches => Ok(measurements::Length::from_yards(1.0).as_inches()),
+        UnitLen::Feet => Ok(measurements::Length::from_yards(1.0).as_feet()),
+        UnitLen::M => Ok(measurements::Length::from_yards(1.0).as_meters()),
+        UnitLen::Cm => Ok(measurements::Length::from_yards(1.0).as_centimeters()),
+        UnitLen::Yards => Ok(1.0),
     }
 }

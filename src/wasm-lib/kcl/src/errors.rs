@@ -30,13 +30,16 @@ impl From<KclErrorWithOutputs> for ExecError {
 #[derive(Debug)]
 pub struct ExecErrorWithState {
     pub error: ExecError,
-    pub exec_state: crate::ExecState,
+    pub exec_state: Option<crate::ExecState>,
 }
 
 impl ExecErrorWithState {
     #[cfg_attr(target_arch = "wasm32", expect(dead_code))]
     pub fn new(error: ExecError, exec_state: crate::ExecState) -> Self {
-        Self { error, exec_state }
+        Self {
+            error,
+            exec_state: Some(exec_state),
+        }
     }
 }
 
@@ -44,7 +47,7 @@ impl From<ExecError> for ExecErrorWithState {
     fn from(error: ExecError) -> Self {
         Self {
             error,
-            exec_state: Default::default(),
+            exec_state: None,
         }
     }
 }
@@ -53,7 +56,7 @@ impl From<ConnectionError> for ExecErrorWithState {
     fn from(error: ConnectionError) -> Self {
         Self {
             error: error.into(),
-            exec_state: Default::default(),
+            exec_state: None,
         }
     }
 }
