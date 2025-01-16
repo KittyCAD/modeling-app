@@ -893,6 +893,8 @@ fn artifacts_to_update(
                 let mut new_segment = consumed_edge.clone();
                 new_segment.edge_cut_id = Some(id);
                 return_arr.push(Artifact::Segment(new_segment));
+            } else {
+                // TODO: Handle other types like SweepEdge.
             }
             return Ok(return_arr);
         }
