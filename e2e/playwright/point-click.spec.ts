@@ -1503,6 +1503,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
         await clickOnCap()
         await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
+        await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
@@ -1523,6 +1524,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
       await test.step(`Go through the command bar flow with a preselected face (cap)`, async () => {
         await toolbar.shellButton.click()
         await cmdBar.progressCmdBar()
+        await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
@@ -1604,6 +1606,7 @@ extrude001 = extrude(40, sketch001)
     await page.waitForTimeout(500)
     await page.keyboard.up('Shift')
     await cmdBar.progressCmdBar()
+    await page.waitForTimeout(500)
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -1725,5 +1728,63 @@ shellSketchOnFacesCases.forEach((initialCode, index) => {
       await toolbar.closePane('code')
       await scene.expectPixelColor([73, 73, 73], testPoint, 15)
     })
+  })
+})
+
+test(`Shell dry-run validation rejects sweeps`, async ({
+  context,
+  page,
+  homePage,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  const initialCode = `sketch001 = startSketchOn('YZ')
+  |> circle({
+       center = [0, 0],
+       radius = 500
+     }, %)
+sketch002 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> xLine(-2000, %)
+sweep001 = sweep({ path = sketch002 }, sketch001)
+`
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
+  await scene.waitForExecutionDone()
+
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 500, y: 250 }
+  const [clickOnSweep] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+
+  await test.step(`Confirm sweep exists`, async () => {
+    await toolbar.closePane('code')
+    await scene.expectPixelColor([231, 231, 231], testPoint, 15)
+  })
+
+  await test.step(`Go through the Shell flow and fail validation with a toast`, async () => {
+    await toolbar.shellButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'selection',
+      currentArgValue: '',
+      headerArguments: {
+        Selection: '',
+        Thickness: '',
+      },
+      highlightedHeaderArg: 'selection',
+      commandName: 'Shell',
+    })
+    await clickOnSweep()
+    await page.waitForTimeout(500)
+    await cmdBar.progressCmdBar()
+    await expect(
+      page.getByText('Unable to shell with the provided selection')
+    ).toBeVisible()
+    await page.waitForTimeout(1000)
   })
 })
