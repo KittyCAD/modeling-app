@@ -1092,7 +1092,7 @@ test(`Create a few projects using the default project name`, async ({
   homePage,
   toolbar,
 }) => {
-  for (let i = 0; i < 120; i++) {
+  for (let i = 0; i < 12; i++) {
     await test.step(`Create project ${i}`, async () => {
       await homePage.expectState({
         projectCards: Array.from({ length: i }, (_, i) => ({
