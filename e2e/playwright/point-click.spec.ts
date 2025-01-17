@@ -1033,11 +1033,12 @@ test(`Fillet point-and-click`, async ({
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
   |> line([0, 12], %)
-  |> line([24, 0], %)
+  |> line([24, 0], %, $seg02)
   |> line([0, -12], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-12, sketch001)
+fillet01 = fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, extrude001)
 `
   const firstFilletDeclaration = 'fillet({ radius = 5, tags = [seg01] }, %)'
   const secondFilletDeclaration =
@@ -1233,6 +1234,33 @@ extrude001 = extrude(-12, sketch001)
       lowTolerance
     )
   })
+
+  // Test 3: Delete fillet via feature tree selection
+  await test.step('Open Feature Tree Pane', async () => {
+    await toolbar.openPane('feature-tree')
+    await page.waitForTimeout(500)
+  })
+  await test.step('Delete (not piped) fillet via feature tree selection', async () => {
+    const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 2)
+    await operationButton.click({ button: 'left' })
+    await page.keyboard.press('Backspace')
+    await page.waitForTimeout(500)
+    await editor.expectEditor.not.toContain('fillet01 = fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, extrude001)')
+    await scene.expectPixelColor(filletColor, firstEdgeLocation, lowTolerance) // stayed
+    await scene.expectPixelColor(
+      backgroundColor,
+      secondEdgeLocation,
+      lowTolerance
+    ) // stayed
+  })
+  await test.step('Delete (piped) fillet via feature tree selection', async () => {
+    const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 1)
+    await operationButton.click({ button: 'left' })
+    await page.keyboard.press('Backspace')
+    await page.waitForTimeout(500)
+    await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
+    await scene.expectPixelColor(filletColor, firstEdgeLocation, 15) // stayed
+  })
 })
 
 test(`Chamfer point-and-click`, async ({
@@ -1248,11 +1276,12 @@ test(`Chamfer point-and-click`, async ({
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
   |> line([0, 12], %)
-  |> line([24, 0], %)
+  |> line([24, 0], %, $seg02)
   |> line([0, -12], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-12, sketch001)
+chamfer01 = chamfer({ length = 5, tags = [getOppositeEdge(seg02)] }, extrude001)
 `
   const firstChamferDeclaration = 'chamfer({ length = 5, tags = [seg01] }, %)'
   const secondChamferDeclaration =
@@ -1447,6 +1476,33 @@ extrude001 = extrude(-12, sketch001)
       secondEdgeLocation,
       lowTolerance
     )
+  })
+
+  // Test 3: Delete chamfer via feature tree selection
+  await test.step('Open Feature Tree Pane', async () => {
+    await toolbar.openPane('feature-tree')
+    await page.waitForTimeout(500)
+  })
+  await test.step('Delete (not piped) chamfer via feature tree selection', async () => {
+    const operationButton = await toolbar.getFeatureTreeOperation('Chamfer', 2)
+    await operationButton.click({ button: 'left' })
+    await page.keyboard.press('Backspace')
+    await page.waitForTimeout(500)
+    await editor.expectEditor.not.toContain('chamfer01 = chamfer({ length = 5, tags = [getOppositeEdge(seg02)] }, extrude001)')
+    await scene.expectPixelColor(chamferColor, firstEdgeLocation, lowTolerance) // stayed
+    await scene.expectPixelColor(
+      backgroundColor,
+      secondEdgeLocation,
+      lowTolerance
+    ) // stayed
+  })
+  await test.step('Delete (piped) chamfer via feature tree selection', async () => {
+    const operationButton = await toolbar.getFeatureTreeOperation('Chamfer', 1)
+    await operationButton.click({ button: 'left' })
+    await page.keyboard.press('Backspace')
+    await page.waitForTimeout(500)
+    await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
+    await scene.expectPixelColor(chamferColor, firstEdgeLocation, 15) // stayed
   })
 })
 
