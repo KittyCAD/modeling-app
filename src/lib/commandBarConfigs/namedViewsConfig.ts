@@ -1,7 +1,11 @@
 import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
 import { Command } from '../commandTypes'
 import toast from 'react-hot-toast'
-export function createNamedViewsCommand({ settingsState, settingsSend }) {
+export function createNamedViewsCommand({
+  settingsState,
+  settingsSend,
+  settingsActor,
+}) {
   const createNamedViewCommand: Command = {
     name: 'Create named view',
     displayName: `Create named view`,
@@ -10,7 +14,9 @@ export function createNamedViewsCommand({ settingsState, settingsSend }) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      const namedViews = [...settingsState.context.modeling.namedViews.current]
+      const namedViews = [
+        ...settingsActor.getSnapshot().context.modeling.namedViews.current,
+      ]
       // Get the value of the flow
       // Get all the current ones
       // Set it as a setting
@@ -56,7 +62,26 @@ export function createNamedViewsCommand({ settingsState, settingsSend }) {
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      toast.success('Deleted named view!')
+      const nameToDelete = data.name
+      const namedViews = [
+        ...settingsActor.getSnapshot().context.modeling.namedViews.current,
+      ]
+      const indexToDelete = namedViews.findIndex(
+        (view) => view.name === nameToDelete
+      )
+      if (indexToDelete >= 0) {
+        namedViews.splice(indexToDelete, 1)
+        settingsSend({
+          type: `set.modeling.namedViews`,
+          data: {
+            level: 'project',
+            value: namedViews,
+          },
+        })
+        toast.success(`Deleted ${data.name} named view.`)
+      } else {
+        toast.error(`Unable to delete ${data.name}, something went wrong.`)
+      }
     },
     args: {
       name: {
@@ -64,8 +89,9 @@ export function createNamedViewsCommand({ settingsState, settingsSend }) {
         inputType: 'options',
         options: () => {
           const namedViews = [
-            ...settingsState.context.modeling.namedViews.current,
+            ...settingsActor.getSnapshot().context.modeling.namedViews.current,
           ]
+          console.log('LOADING VIEWS!', namedViews)
           return namedViews.map((view, index) => {
             return {
               name: view.name,

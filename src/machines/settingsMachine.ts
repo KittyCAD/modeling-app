@@ -75,6 +75,8 @@ export const settingsMachine = setup({
       // @ts-ignore
       context[category][setting][level] = value
 
+      console.log('SETTING NEW VALUE!', value)
+
       const newContext = {
         ...context,
         [category]: {
@@ -83,6 +85,8 @@ export const settingsMachine = setup({
           [setting]: context[category][setting],
         },
       }
+
+      console.log('NEW CONTEXT!', newContext)
 
       return newContext
     }),

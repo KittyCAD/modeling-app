@@ -396,6 +396,7 @@ export const SettingsAuthProviderBase = ({
       createNamedViewsCommand({
         settingsState,
         settingsSend,
+        settingsActor,
       })
     commandBarSend({
       type: 'Add commands',

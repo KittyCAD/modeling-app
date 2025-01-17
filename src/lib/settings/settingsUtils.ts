@@ -205,18 +205,11 @@ export async function loadAndValidateSettings(
       return Promise.reject(new Error('Invalid project settings'))
 
     const projectSettingsPayload = projectSettings
-    console.log('[][]projectSettings', projectSettings)
-    console.log(
-      '[][]transform',
-      projectConfigurationToSettingsPayload(projectSettingsPayload)
-    )
-    // TODO Kevin
     settingsNext = setSettingsAtLevel(
       settingsNext,
       'project',
       projectConfigurationToSettingsPayload(projectSettingsPayload)
     )
-    console.log('[][]settings next', settingsNext)
   }
 
   // Return the settings object
