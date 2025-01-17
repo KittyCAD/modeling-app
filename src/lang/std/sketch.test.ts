@@ -358,7 +358,6 @@ describe('testing getConstraintInfo', () => {
     offset = 0
   }, %)
   |> tangentialArcTo([3.14, 13.14], %)`
-    const ast = assertParse(code)
     test.each([
       [
         'line',
@@ -681,6 +680,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
+      const ast = assertParse(code)
       const sourceRange = topLevelRange(
         code.indexOf(functionName),
         code.indexOf(functionName) + functionName.length
@@ -717,7 +717,6 @@ describe('testing getConstraintInfo', () => {
          offset = 0
        }, %)
     |> tangentialArcTo([3.14, 13.14], %)`
-    const ast = assertParse(code)
     test.each([
       [
         `angledLine(`,
@@ -835,6 +834,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
+      const ast = assertParse(code)
       const sourceRange = topLevelRange(
         code.indexOf(functionName),
         code.indexOf(functionName) + functionName.length
@@ -871,7 +871,6 @@ describe('testing getConstraintInfo', () => {
          offset = 0 + 0
        }, %)
     |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
-    const ast = assertParse(code)
     test.each([
       [
         'line',
@@ -1191,6 +1190,7 @@ describe('testing getConstraintInfo', () => {
         ],
       ],
     ])('testing %s when inputs are unconstrained', (functionName, expected) => {
+      const ast = assertParse(code)
       const sourceRange = topLevelRange(
         code.indexOf(functionName),
         code.indexOf(functionName) + functionName.length
