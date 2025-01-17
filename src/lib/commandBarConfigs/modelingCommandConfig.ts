@@ -43,8 +43,8 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
   }
   Sweep: {
-    path: Selections
-    profile: Selections
+    target: Selections
+    trajectory: Selections
   }
   Loft: {
     selection: Selections
@@ -311,7 +311,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     status: 'development',
     needsReview: false,
     args: {
-      profile: {
+      target: {
         inputType: 'selection',
         selectionTypes: ['solid2D'],
         required: true,
@@ -320,7 +320,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         warningMessage:
           'The sweep workflow is new and under tested. Please break it and report issues.',
       },
-      path: {
+      trajectory: {
         inputType: 'selection',
         selectionTypes: ['segment', 'path'],
         required: true,

@@ -213,15 +213,15 @@ export const sweepValidator = async ({
   data,
 }: {
   context: CommandBarContext
-  data: { path: Selections }
+  data: { trajectory: Selections }
 }): Promise<boolean | string> => {
-  if (!isSelections(data.path)) {
+  if (!isSelections(data.trajectory)) {
     console.log('Unable to sweep, selections are missing')
     return 'Unable to sweep, selections are missing'
   }
 
   // Retrieve the parent path from the segment selection directly
-  const trajectoryArtifact = data.path.graphSelections[0].artifact
+  const trajectoryArtifact = data.trajectory.graphSelections[0].artifact
   if (!trajectoryArtifact) {
     return "Unable to sweep, couldn't find the trajectory artifact"
   }
@@ -231,15 +231,15 @@ export const sweepValidator = async ({
   const trajectory = trajectoryArtifact.pathId
 
   // Get the former arg in the command bar flow, and retrieve the path from the solid2d directly
-  const profileArg = context.argumentsToSubmit['profile'] as Selections
-  const profileArtifact = profileArg.graphSelections[0].artifact
-  if (!profileArtifact) {
+  const targetArg = context.argumentsToSubmit['target'] as Selections
+  const targetArtifact = targetArg.graphSelections[0].artifact
+  if (!targetArtifact) {
     return "Unable to sweep, couldn't find the profile artifact"
   }
-  if (profileArtifact.type !== 'solid2D') {
+  if (targetArtifact.type !== 'solid2D') {
     return "Unable to sweep, couldn't find the target from a non-solid2d selection"
   }
-  const target = profileArtifact.pathId
+  const target = targetArtifact.pathId
 
   const sweepCommand = async () => {
     // TODO: second look on defaults here
