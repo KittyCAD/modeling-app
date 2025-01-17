@@ -507,7 +507,6 @@ export function getArtifactsToUpdate({
             returnArr.push({
               id: face_id,
               artifact: wallArtifact,
-
             })
             returnArr.push({
               id: curve_id,

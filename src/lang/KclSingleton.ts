@@ -381,7 +381,7 @@ export class KclManager {
       this.ast,
       execState.artifactCommands,
       execState.artifacts,
-      args.isPartialExecution,
+      args.isPartialExecution
     )
     this._executeCallback()
     if (!isInterrupted)
@@ -485,7 +485,10 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(opts?: { zoomToFit?: true, isPartialExecution?: true }): Promise<void> {
+  async executeCode(opts?: {
+    zoomToFit?: true
+    isPartialExecution?: true
+  }): Promise<void> {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {

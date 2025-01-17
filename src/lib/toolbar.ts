@@ -447,10 +447,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Center circle',
           disabled: (state) =>
-            state.matches('Sketch no face') ||
-            (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Circle tool' }) &&
-              !state.matches({ Sketch: 'circle3PointToolSelect' })),
+            state.matches('Sketch no face'),
           isActive: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ||
             state.matches({ Sketch: 'circle3PointToolSelect' }),

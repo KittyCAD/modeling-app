@@ -194,8 +194,26 @@ export const ModelingMachineProvider = ({
 
           store.videoElement?.pause()
 
+          return kclManager.executeCode().then(() => {
+            if (engineCommandManager.engineConnection?.idleMode) return
+
+            store.videoElement?.play().catch((e) => {
+              console.warn('Video playing was prevented', e)
+            })
+          })
+
+          sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+          if (cameraProjection.current === 'perspective') {
+            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+          }
+
+          sceneInfra.camControls.syncDirection = 'engineToClient'
+
+          store.videoElement?.pause()
+
           return kclManager
-            .executeCode({ isPartialExecution: true })
+            .executeCode()
             .then(() => {
               if (engineCommandManager.engineConnection?.idleMode) return
 
@@ -203,28 +221,7 @@ export const ModelingMachineProvider = ({
                 console.warn('Video playing was prevented', e)
               })
             })
-
-            sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-            if (cameraProjection.current === 'perspective') {
-              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
-            }
-
-            sceneInfra.camControls.syncDirection = 'engineToClient'
-
-            store.videoElement?.pause()
-
-            return kclManager
-              .executeCode()
-              .then(() => {
-                if (engineCommandManager.engineConnection?.idleMode) return
-
-                store.videoElement?.play().catch((e) => {
-                  console.warn('Video playing was prevented', e)
-                })
-              })
-              .catch(reportRejection)
-          })().catch(reportRejection)
+            .catch(reportRejection)
         },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}

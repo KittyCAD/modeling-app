@@ -1431,7 +1431,8 @@ export class SceneEntities {
     let target: Object3D | undefined = undefined
 
     // The KCL this will generate.
-    const kclCircle3Point = parse(`circleThreePoint(
+    const kclCircle3Point = parse(`profileVarNameToBeReplaced = circleThreePoint(
+      sketchVarNameToBeReplaced,
       p1 = [0.0, 0.0],
       p2 = [0.0, 0.0],
       p3 = [0.0, 0.0],
@@ -1519,17 +1520,19 @@ export class SceneEntities {
     }
 
     const insertCircle3PointKclIntoAstSnapshot = (
-      points: Vector2[]
+      points: Vector2[],
+      sketchVarName: string
     ): Program => {
       if (err(kclCircle3Point) || kclCircle3Point.program === null)
         return kclManager.ast
-      if (kclCircle3Point.program.body[0].type !== 'ExpressionStatement')
+      if (kclCircle3Point.program.body[0].type !== 'VariableDeclaration')
         return kclManager.ast
       if (
-        kclCircle3Point.program.body[0].expression.type !== 'CallExpressionKw'
+        kclCircle3Point.program.body[0].declaration.init.type !== 'CallExpressionKw'
       )
         return kclManager.ast
 
+      // Make accessing the labeled arguments easier / less verbose
       const arg = (x: LabeledArg): Literal[] | undefined => {
         if (
           'arg' in x &&
@@ -1543,8 +1546,18 @@ export class SceneEntities {
         return undefined
       }
 
+      // Set the `profileXXX =` variable name if not set
+      if (kclCircle3Point.program.body[0].declaration.id.name === 'profileVarNameToBeReplaced') {
+        const profileVarName = findUniqueName(_ast, 'profile')
+        kclCircle3Point.program.body[0].declaration.id.name = profileVarName
+      }
+
+      // Set the sketch variable name
+      kclCircle3Point.program.body[0].declaration.init.unlabeled.name = sketchVarName
+
+      // Set the points 1-3
       const kclCircle3PointArgs =
-        kclCircle3Point.program.body[0].expression.arguments
+        kclCircle3Point.program.body[0].declaration.init.arguments
 
       const arg0 = arg(kclCircle3PointArgs[0])
       if (!arg0) return kclManager.ast
@@ -1575,8 +1588,8 @@ export class SceneEntities {
       )
       if (err(startSketchOnASTNode)) return astSnapshot
 
-      // It's possible we're already dealing with a PipeExpression.
-      // Modify the current one.
+      // It's possible we're not the first profile on this sketch!
+      // It's also possible we've already added this profile, so modify it.
       if (
         startSketchOnASTNode.node.declaration.init.type === 'PipeExpression' &&
         startSketchOnASTNode.node.declaration.init.body[1].type ===
@@ -1641,7 +1654,7 @@ export class SceneEntities {
 
     const maybeCallExpressionKw = maybeVariableDeclaration.node.declaration.init
     if (
-      maybeCallExpressionKw.type === 'PipeExpression' &&
+      maybeCallExpressionKw.type === 'VariableDeclaration' &&
       maybeCallExpressionKw.body[1].type === 'CallExpressionKw' &&
       maybeCallExpressionKw.body[1]?.callee.name === 'circleThreePoint'
     ) {

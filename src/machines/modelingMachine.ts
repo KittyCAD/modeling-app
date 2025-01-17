@@ -1826,6 +1826,8 @@ export const modelingMachine = setup({
     'split-sketch-pipe-if-needed': fromPromise(
       async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
         return {} as SketchDetailsUpdate
+      }
+    ),
     chamferAstMod: fromPromise(
       async ({
         input,
@@ -1874,7 +1876,7 @@ export const modelingMachine = setup({
       const cleanupFn = sceneEntitiesManager.entryDraftCircle3Point(
         // I make it clear that the stop is coming from an internal call
         () => sendBack({ type: 'stop-internal' }),
-        sketchDetails.sketchPathToNode,
+        sketchDetails.planeNodePath,
         new Vector3(...sketchDetails.zAxis),
         new Vector3(...sketchDetails.yAxis),
         new Vector3(...sketchDetails.origin)
@@ -3031,10 +3033,10 @@ export function isEditing3PointCircle({
 }: {
   sketchDetails: SketchDetails | null
 }): boolean {
-  if (!sketchDetails?.sketchPathToNode) return false
+  if (!sketchDetails?.sketchEntryNodePath) return false
   const variableDeclaration = getNodeFromPath<VariableDeclarator>(
     kclManager.ast,
-    sketchDetails.sketchPathToNode,
+    sketchDetails.sketchEntryNodePath,
     'VariableDeclarator'
   )
   if (err(variableDeclaration)) return false
