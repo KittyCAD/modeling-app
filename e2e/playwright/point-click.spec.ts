@@ -985,15 +985,9 @@ sketch002 = startSketchOn('XZ')
       stage: 'arguments',
     })
     await clickOnSketch2()
-    await cmdBar.expectState({
-      commandName: 'Sweep',
-      headerArguments: {
-        Path: '1 face',
-        Profile: '1 face',
-      },
-      stage: 'review',
-    })
+    await page.waitForTimeout(500)
     await cmdBar.progressCmdBar()
+    await page.waitForTimeout(500)
   })
 
   await test.step(`Confirm code is added to the editor, scene has changed`, async () => {

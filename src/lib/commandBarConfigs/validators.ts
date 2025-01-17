@@ -207,3 +207,64 @@ export const shellValidator = async ({
 
   return 'Unable to shell with the provided selection'
 }
+
+export const sweepValidator = async ({
+  context,
+  data,
+}: {
+  context: CommandBarContext
+  data: { path: Selections }
+}): Promise<boolean | string> => {
+  if (!isSelections(data.path)) {
+    console.log('Unable to sweep, selections are missing')
+    return 'Unable to sweep, selections are missing'
+  }
+
+  // Retrieve the parent path from the segment selection directly
+  const trajectoryArtifact = data.path.graphSelections[0].artifact
+  if (!trajectoryArtifact) {
+    return "Unable to sweep, couldn't find the trajectory artifact"
+  }
+  if (trajectoryArtifact.type !== 'segment') {
+    return "Unable to sweep, couldn't find the target from a non-segment selection"
+  }
+  const trajectory = trajectoryArtifact.pathId
+
+  // Get the former arg in the command bar flow, and retrieve the path from the solid2d directly
+  const profileArg = context.argumentsToSubmit['profile'] as Selections
+  const profileArtifact = profileArg.graphSelections[0].artifact
+  if (!profileArtifact) {
+    return "Unable to sweep, couldn't find the profile artifact"
+  }
+  if (profileArtifact.type !== 'solid2D') {
+    return "Unable to sweep, couldn't find the target from a non-solid2d selection"
+  }
+  const target = profileArtifact.pathId
+
+  const sweepCommand = async () => {
+    // TODO: second look on defaults here
+    const DEFAULT_TOLERANCE: Models['LengthUnit_type'] = 1e-7
+    const DEFAULT_SECTIONAL = false
+    const cmdArgs = {
+      target,
+      trajectory,
+      sectional: DEFAULT_SECTIONAL,
+      tolerance: DEFAULT_TOLERANCE,
+    }
+    return await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'sweep',
+        ...cmdArgs,
+      },
+    })
+  }
+
+  const attemptSweep = await dryRunWrapper(sweepCommand)
+  if (attemptSweep?.success) {
+    return true
+  }
+
+  return 'Unable to sweep with the provided selection'
+}
