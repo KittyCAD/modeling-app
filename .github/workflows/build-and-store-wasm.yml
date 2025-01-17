@@ -27,7 +27,7 @@ jobs:
 
 
       # Upload the WASM bundle as an artifact
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: wasm-bundle
           path: src/wasm-lib/pkg

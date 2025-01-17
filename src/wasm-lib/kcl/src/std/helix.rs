@@ -50,7 +50,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 5,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Z',
@@ -59,8 +59,8 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('YZ')
-///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> circle({ center = [0, 0], radius = 0.5 }, %)
+///     |> sweep({ path = helixPath }, %)
 /// ```
 ///
 /// ```no_run
@@ -72,7 +72,7 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 5,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = edge001,
@@ -80,8 +80,30 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('XY')
+///     |> circle({ center = [0, 0], radius = 0.5 }, %)
+///     |> sweep({ path = helixPath }, %)
+/// ```
+///
+/// ```no_run
+/// // Create a helix around a custom axis.
+/// helixPath = helix({
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 5,
+///     length = 10,
+///     radius = 5,
+///     axis = {
+///         custom = {
+///             axis = [0, 0, 1.0],
+///             origin = [0, 0.25, 0]
+///             }
+///         }
+///  })
+///
+/// // Create a spring by sweeping around the helix path.
+/// springSketch = startSketchOn('XY')
 ///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> sweep({ path = helixPath }, %)
 /// ```
 #[stdlib {
     name = "helix",
@@ -115,7 +137,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             };
 
             args.batch_modeling_cmd(
-                exec_state.next_uuid(),
+                id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
                     radius: data.radius,
                     is_clockwise: !data.ccw,
@@ -132,7 +154,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
             args.batch_modeling_cmd(
-                exec_state.next_uuid(),
+                id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
                     radius: data.radius,
                     is_clockwise: !data.ccw,
