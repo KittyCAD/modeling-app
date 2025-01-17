@@ -3,7 +3,7 @@ use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
-    execution::{ArtifactCommand, Operation},
+    execution::{ArtifactCommand, ArtifactGraph, Operation},
     lsp::IntoDiagnostic,
     source_range::{ModuleId, SourceRange},
 };
@@ -114,14 +114,21 @@ pub struct KclErrorWithOutputs {
     pub error: KclError,
     pub operations: Vec<Operation>,
     pub artifact_commands: Vec<ArtifactCommand>,
+    pub artifact_graph: ArtifactGraph,
 }
 
 impl KclErrorWithOutputs {
-    pub fn new(error: KclError, operations: Vec<Operation>, artifact_commands: Vec<ArtifactCommand>) -> Self {
+    pub fn new(
+        error: KclError,
+        operations: Vec<Operation>,
+        artifact_commands: Vec<ArtifactCommand>,
+        artifact_graph: ArtifactGraph,
+    ) -> Self {
         Self {
             error,
             operations,
             artifact_commands,
+            artifact_graph,
         }
     }
     pub fn no_outputs(error: KclError) -> Self {
@@ -129,6 +136,7 @@ impl KclErrorWithOutputs {
             error,
             operations: Default::default(),
             artifact_commands: Default::default(),
+            artifact_graph: Default::default(),
         }
     }
 }
