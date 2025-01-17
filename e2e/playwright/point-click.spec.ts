@@ -963,25 +963,25 @@ sketch002 = startSketchOn('XZ')
     await toolbar.sweepButton.click()
     await cmdBar.expectState({
       commandName: 'Sweep',
-      currentArgKey: 'profile',
+      currentArgKey: 'target',
       currentArgValue: '',
       headerArguments: {
-        Path: '',
-        Profile: '',
+        Target: '',
+        Trajectory: '',
       },
-      highlightedHeaderArg: 'profile',
+      highlightedHeaderArg: 'target',
       stage: 'arguments',
     })
     await clickOnSketch1()
     await cmdBar.expectState({
       commandName: 'Sweep',
-      currentArgKey: 'path',
+      currentArgKey: 'trajectory',
       currentArgValue: '',
       headerArguments: {
-        Path: '',
-        Profile: '1 face',
+        Target: '1 face',
+        Trajectory: '',
       },
-      highlightedHeaderArg: 'path',
+      highlightedHeaderArg: 'trajectory',
       stage: 'arguments',
     })
     await clickOnSketch2()
@@ -1053,25 +1053,25 @@ sketch002 = startSketchOn('XZ')
     await toolbar.sweepButton.click()
     await cmdBar.expectState({
       commandName: 'Sweep',
-      currentArgKey: 'profile',
+      currentArgKey: 'target',
       currentArgValue: '',
       headerArguments: {
-        Path: '',
-        Profile: '',
+        Target: '',
+        Trajectory: '',
       },
-      highlightedHeaderArg: 'profile',
+      highlightedHeaderArg: 'target',
       stage: 'arguments',
     })
     await clickOnSketch1()
     await cmdBar.expectState({
       commandName: 'Sweep',
-      currentArgKey: 'path',
+      currentArgKey: 'trajectory',
       currentArgValue: '',
       headerArguments: {
-        Path: '',
-        Profile: '1 face',
+        Target: '1 face',
+        Trajectory: '',
       },
-      highlightedHeaderArg: 'path',
+      highlightedHeaderArg: 'trajectory',
       stage: 'arguments',
     })
     await clickOnSketch2()
