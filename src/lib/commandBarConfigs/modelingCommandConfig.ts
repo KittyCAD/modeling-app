@@ -313,11 +313,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       target: {
         inputType: 'selection',
-        selectionTypes: ['
-                         
-                         
-                         
-                         ', 'plane'],
+        selectionTypes: ['solid2d', 'plane'],
         required: true,
         skip: true,
         multiple: false,
