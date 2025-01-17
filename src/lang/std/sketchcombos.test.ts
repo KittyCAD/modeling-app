@@ -4,7 +4,6 @@ import {
   recast,
   initPromise,
   Program,
-  SourceRange,
   topLevelRange,
 } from '../wasm'
 import {

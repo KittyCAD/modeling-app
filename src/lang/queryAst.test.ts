@@ -4,7 +4,6 @@ import {
   initPromise,
   PathToNode,
   Identifier,
-  SourceRange,
   topLevelRange,
 } from './wasm'
 import {
