@@ -11,7 +11,6 @@ import {
   assertParse,
   recast,
   initPromise,
-  SourceRange,
   CallExpression,
   topLevelRange,
 } from '../wasm'
