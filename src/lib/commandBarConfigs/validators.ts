@@ -236,7 +236,7 @@ export const sweepValidator = async ({
   if (!targetArtifact) {
     return "Unable to sweep, couldn't find the profile artifact"
   }
-  if (targetArtifact.type !== 'solid2D') {
+  if (targetArtifact.type !== 'solid2d') {
     return "Unable to sweep, couldn't find the target from a non-solid2d selection"
   }
   const target = targetArtifact.pathId
