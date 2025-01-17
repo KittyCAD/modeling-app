@@ -44,17 +44,30 @@ import { EnvironmentRef } from '../wasm-lib/kcl/bindings/EnvironmentRef'
 import { Environment } from '../wasm-lib/kcl/bindings/Environment'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { CompilationError } from 'wasm-lib/kcl/bindings/CompilationError'
-import { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+import { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { KclErrorWithOutputs } from 'wasm-lib/kcl/bindings/KclErrorWithOutputs'
-import { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
-import { ArtifactId } from 'wasm-lib/kcl/bindings/ArtifactId'
-import { ArtifactCommand } from 'wasm-lib/kcl/bindings/ArtifactCommand'
+import { Artifact as RustArtifact } from 'wasm-lib/kcl/bindings/Artifact'
+import { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
+import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
+import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
+import { Artifact } from './std/artifactGraph'
+import { getNodePathFromSourceRange } from './queryAst'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
-export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/ArtifactCommand'
-export type { ArtifactId } from 'wasm-lib/kcl/bindings/ArtifactId'
+export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
+export type { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
+export type { Cap as CapArtifact } from 'wasm-lib/kcl/bindings/Artifact'
+export type { CodeRef } from 'wasm-lib/kcl/bindings/Artifact'
+export type { EdgeCut } from 'wasm-lib/kcl/bindings/Artifact'
+export type { Path as PathArtifact } from 'wasm-lib/kcl/bindings/Artifact'
+export type { Plane as PlaneArtifact } from 'wasm-lib/kcl/bindings/Artifact'
+export type { Segment as SegmentArtifact } from 'wasm-lib/kcl/bindings/Artifact'
+export type { Solid2d as Solid2dArtifact } from 'wasm-lib/kcl/bindings/Artifact'
+export type { Sweep as SweepArtifact } from 'wasm-lib/kcl/bindings/Artifact'
+export type { SweepEdge } from 'wasm-lib/kcl/bindings/Artifact'
+export type { Wall as WallArtifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { Configuration } from 'wasm-lib/kcl/bindings/Configuration'
 export type { Program } from '../wasm-lib/kcl/bindings/Program'
 export type { Expr } from '../wasm-lib/kcl/bindings/Expr'
@@ -76,7 +89,7 @@ export type { BinaryPart } from '../wasm-lib/kcl/bindings/BinaryPart'
 export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
 export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
-export type { SourceRange as RustSourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+export type { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
 
 export type SyntaxType =
   | 'Program'
@@ -106,34 +119,35 @@ export type { KclValue } from '../wasm-lib/kcl/bindings/KclValue'
 export type { ExtrudeSurface } from '../wasm-lib/kcl/bindings/ExtrudeSurface'
 
 /**
- * The first two items are the start and end points (byte offsets from the start of the file).
- * The third item is whether the source range belongs to the 'main' file, i.e., the file currently
- * being rendered/displayed in the editor (TODO we need to handle modules better in the frontend).
- */
-export type SourceRange = [number, number, boolean]
-
-/**
  * Convert a SourceRange as used inside the KCL interpreter into the above one for use in the
  * frontend (essentially we're eagerly checking whether the frontend should care about the SourceRange
  * so as not to expose details of the interpreter's current representation of module ids throughout
  * the frontend).
  */
-export function sourceRangeFromRust(s: RustSourceRange): SourceRange {
-  return [s[0], s[1], s[2] === 0]
+export function sourceRangeFromRust(s: SourceRange): SourceRange {
+  return [s[0], s[1], s[2]]
 }
 
 /**
  * Create a default SourceRange for testing or as a placeholder.
  */
 export function defaultSourceRange(): SourceRange {
-  return [0, 0, true]
+  return [0, 0, 0]
 }
 
 /**
- * Create a default RustSourceRange for testing or as a placeholder.
+ * Create a SourceRange for the top-level module.
  */
-export function defaultRustSourceRange(): RustSourceRange {
-  return [0, 0, 0]
+export function topLevelRange(start: number, end: number): SourceRange {
+  return [start, end, 0]
+}
+
+/**
+ * Returns true if this source range is from the file being executed.  Returns
+ * false if it's from a file that was imported.
+ */
+export function isTopLevelModule(range: SourceRange): boolean {
+  return range[2] === 0
 }
 
 export const wasmUrl = () => {
@@ -234,7 +248,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
       [],
-      []
+      [],
+      defaultArtifactGraph()
     )
   }
 }
@@ -258,8 +273,9 @@ export const isPathToNodeNumber = (
 export interface ExecState {
   memory: ProgramMemory
   operations: Operation[]
-  artifacts: { [key in ArtifactId]?: Artifact }
+  artifacts: { [key in ArtifactId]?: RustArtifact }
   artifactCommands: ArtifactCommand[]
+  artifactGraph: ArtifactGraph
 }
 
 /**
@@ -272,16 +288,51 @@ export function emptyExecState(): ExecState {
     operations: [],
     artifacts: {},
     artifactCommands: [],
+    artifactGraph: defaultArtifactGraph(),
   }
 }
 
-function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
+function execStateFromRust(
+  execOutcome: RustExecOutcome,
+  program: Node<Program>
+): ExecState {
+  const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
+  // We haven't ported pathToNode logic to Rust yet, so we need to fill it in.
+  for (const [id, artifact] of artifactGraph) {
+    if (!artifact) continue
+    if (!('codeRef' in artifact)) continue
+    const pathToNode = getNodePathFromSourceRange(
+      program,
+      sourceRangeFromRust(artifact.codeRef.range)
+    )
+    artifact.codeRef.pathToNode = pathToNode
+  }
+
   return {
     memory: ProgramMemory.fromRaw(execOutcome.memory),
     operations: execOutcome.operations,
     artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
+    artifactGraph,
   }
+}
+
+export type ArtifactGraph = Map<ArtifactId, Artifact>
+
+function rustArtifactGraphToMap(
+  rustArtifactGraph: RustArtifactGraph
+): ArtifactGraph {
+  const map = new Map<ArtifactId, Artifact>()
+  for (const [id, artifact] of Object.entries(rustArtifactGraph.map)) {
+    if (!artifact) continue
+    map.set(id, artifact)
+  }
+
+  return map
+}
+
+export function defaultArtifactGraph(): ArtifactGraph {
+  return new Map()
 }
 
 interface Memory {
@@ -543,7 +594,7 @@ export const executor = async (
       engineCommandManager,
       fileSystemManager
     )
-    return execStateFromRust(execOutcome)
+    return execStateFromRust(execOutcome, node)
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
@@ -552,7 +603,8 @@ export const executor = async (
       parsed.error.msg,
       sourceRangeFromRust(parsed.error.sourceRanges[0]),
       parsed.operations,
-      parsed.artifactCommands
+      parsed.artifactCommands,
+      rustArtifactGraphToMap(parsed.artifactGraph)
     )
 
     return Promise.reject(kclError)
@@ -613,7 +665,8 @@ export const modifyAstForSketch = async (
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
       [],
-      []
+      [],
+      defaultArtifactGraph()
     )
 
     console.log(kclError)
@@ -683,7 +736,8 @@ export function programMemoryInit(): ProgramMemory | Error {
       parsed.msg,
       sourceRangeFromRust(parsed.sourceRanges[0]),
       [],
-      []
+      [],
+      defaultArtifactGraph()
     )
   }
 }

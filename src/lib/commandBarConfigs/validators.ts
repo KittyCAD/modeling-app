@@ -116,16 +116,16 @@ export const loftValidator = async ({
   }
   const { selection } = data
 
-  if (selection.graphSelections.some((s) => s.artifact?.type !== 'solid2D')) {
-    return 'Unable to loft, some selection are not solid2Ds'
+  if (selection.graphSelections.some((s) => s.artifact?.type !== 'solid2d')) {
+    return 'Unable to loft, some selection are not solid2ds'
   }
 
   const sectionIds = data.selection.graphSelections.flatMap((s) =>
-    s.artifact?.type === 'solid2D' ? s.artifact.pathId : []
+    s.artifact?.type === 'solid2d' ? s.artifact.pathId : []
   )
 
   if (sectionIds.length < 2) {
-    return 'Unable to loft, selection contains less than two solid2Ds'
+    return 'Unable to loft, selection contains less than two solid2ds'
   }
 
   const loftCommand = async () => {

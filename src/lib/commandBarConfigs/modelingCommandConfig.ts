@@ -281,7 +281,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -313,7 +313,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       target: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'plane'],
+        selectionTypes: ['
+                         
+                         
+                         
+                         ', 'plane'],
         required: true,
         skip: true,
         multiple: false,
@@ -337,7 +341,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D'],
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         skip: false,
@@ -373,7 +377,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -578,7 +582,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         inputType: 'selection',
         selectionTypes: [
-          'solid2D',
+          'solid2d',
           'segment',
           'sweepEdge',
           'cap',
