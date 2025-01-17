@@ -1245,7 +1245,9 @@ fillet01 = fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, extrude001)
     await operationButton.click({ button: 'left' })
     await page.keyboard.press('Backspace')
     await page.waitForTimeout(500)
-    await editor.expectEditor.not.toContain('fillet01 = fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, extrude001)')
+    await editor.expectEditor.not.toContain(
+      'fillet01 = fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, extrude001)'
+    )
     await scene.expectPixelColor(filletColor, firstEdgeLocation, lowTolerance) // stayed
     await scene.expectPixelColor(
       backgroundColor,
@@ -1488,7 +1490,9 @@ chamfer01 = chamfer({ length = 5, tags = [getOppositeEdge(seg02)] }, extrude001)
     await operationButton.click({ button: 'left' })
     await page.keyboard.press('Backspace')
     await page.waitForTimeout(500)
-    await editor.expectEditor.not.toContain('chamfer01 = chamfer({ length = 5, tags = [getOppositeEdge(seg02)] }, extrude001)')
+    await editor.expectEditor.not.toContain(
+      'chamfer01 = chamfer({ length = 5, tags = [getOppositeEdge(seg02)] }, extrude001)'
+    )
     await scene.expectPixelColor(chamferColor, firstEdgeLocation, lowTolerance) // stayed
     await scene.expectPixelColor(
       backgroundColor,
