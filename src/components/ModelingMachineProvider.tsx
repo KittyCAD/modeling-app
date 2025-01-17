@@ -111,7 +111,7 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme, enableSSAO },
+        app: { theme, enableSSAO, allowOrbitInSketchMode },
         modeling: {
           defaultUnit,
           cameraProjection,
@@ -121,6 +121,7 @@ export const ModelingMachineProvider = ({
       },
     },
   } = useSettingsAuthContext()
+  const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
@@ -634,7 +635,8 @@ export const ModelingMachineProvider = ({
             input.plane
           )
           await kclManager.updateAst(modifiedAst, false)
-          sceneInfra.camControls.enableRotate = false
+          sceneInfra.camControls.enableRotate =
+            sceneInfra.camControls._setting_allowOrbitInSketchMode
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
           await letEngineAnimateAndSyncCamAfter(
@@ -647,6 +649,7 @@ export const ModelingMachineProvider = ({
             zAxis: input.zAxis,
             yAxis: input.yAxis,
             origin: [0, 0, 0],
+            animateTargetId: input.planeId,
           }
         }),
         'animate-to-sketch': fromPromise(
@@ -671,6 +674,7 @@ export const ModelingMachineProvider = ({
               origin: info.sketchDetails.origin.map(
                 (a) => a / sceneInfra._baseUnitMultiplier
               ) as [number, number, number],
+              animateTargetId: info?.sketchDetails?.faceId || '',
             }
           }
         ),
@@ -1187,6 +1191,41 @@ export const ModelingMachineProvider = ({
       )
     }
   }, [engineCommandManager.engineConnection, modelingSend])
+
+  useEffect(() => {
+    // Only trigger this if the state actually changes, if it stays the same do not reload the camera
+    if (
+      previousAllowOrbitInSketchMode.current === allowOrbitInSketchMode.current
+    ) {
+      //no op
+      previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
+      return
+    }
+    const inSketchMode = modelingState.matches('Sketch')
+
+    // If you are in sketch mode and you disable the orbit, return back to the normal view to the target
+    if (!allowOrbitInSketchMode.current) {
+      const targetId = modelingState.context.sketchDetails?.animateTargetId
+      if (inSketchMode && targetId) {
+        letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
+          .then(() => {})
+          .catch((e) => {
+            console.error(
+              'failed to sync engine and client scene after disabling allow orbit in sketch mode'
+            )
+            console.error(e)
+          })
+      }
+    }
+
+    // While you are in sketch mode you should be able to control the enable rotate
+    // Once you exit it goes back to normal
+    if (inSketchMode) {
+      sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
+    }
+
+    previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
+  }, [allowOrbitInSketchMode])
 
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {

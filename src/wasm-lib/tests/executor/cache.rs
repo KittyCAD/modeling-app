@@ -18,7 +18,7 @@ async fn cache_test(
         .ok_or_else(|| anyhow::anyhow!("No variations provided for test '{}'", test_name))?;
 
     let mut ctx = kcl_lib::ExecutorContext::new_with_client(first.settings.clone(), None, None).await?;
-    let mut exec_state = kcl_lib::ExecState::default();
+    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
 
     let mut old_ast_state = None;
     let mut img_results = Vec::new();
