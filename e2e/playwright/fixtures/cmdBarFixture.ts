@@ -136,6 +136,22 @@ export class CmdBarFixture {
     }
   }
 
+  get cmdSearchInput() {
+    return this.page.getByTestId('cmd-bar-search')
+  }
+
+  get argumentInput() {
+    return this.page.getByTestId('cmd-bar-arg-value')
+  }
+
+  get cmdOptions() {
+    return this.page.getByTestId('cmd-bar-option')
+  }
+
+  chooseCommand = async (commandName: string) => {
+    await this.cmdOptions.getByText(commandName).click()
+  }
+
   /**
    * Select an option from the command bar
    */

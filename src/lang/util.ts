@@ -5,8 +5,9 @@ import {
   Literal,
   ArrayExpression,
   BinaryExpression,
+  ArtifactGraph,
 } from './wasm'
-import { ArtifactGraph, filterArtifacts } from 'lang/std/artifactGraph'
+import { filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
 
 export function updatePathToNodeFromMap(
