@@ -1,0 +1,13 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing artifact_graph_example_code_offset_planes.kcl
+snapshot_kind: text
+---
+KCL Semantic error
+
+  × semantic: Expected a kcl_lib::execution::Sketch but found array (list)
+   ╭─[7:11]
+ 6 │   |> startProfileAt([0, 0], %)
+ 7 │   |> line([6.78, 15.01], %)
+   ·           ─────────────
+   ╰────

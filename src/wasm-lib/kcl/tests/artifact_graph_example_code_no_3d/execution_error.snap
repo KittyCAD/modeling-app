@@ -1,0 +1,14 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing artifact_graph_example_code_no_3d.kcl
+snapshot_kind: text
+---
+KCL UndefinedValue error
+
+  × undefined value: memory item key `lineTo` is not defined
+    ╭─[12:6]
+ 11 │      ], %, $rectangleSegmentC001)
+ 12 │   |> lineTo([profileStartX(%), profileStartY(%)], %)
+    ·      ───────────────────────────────────────────────
+ 13 │   |> close(%)
+    ╰────

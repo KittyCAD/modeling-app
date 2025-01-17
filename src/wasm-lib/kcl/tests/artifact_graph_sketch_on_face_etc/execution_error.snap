@@ -1,0 +1,14 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Error from executing artifact_graph_sketch_on_face_etc.kcl
+snapshot_kind: text
+---
+KCL Semantic error
+
+  × semantic: Expected a kcl_lib::execution::Sketch but found array (list)
+   ╭─[3:11]
+ 2 │   |> startProfileAt([0, 0], %)
+ 3 │   |> line([4, 8], %)
+   ·           ──────
+ 4 │   |> line([5, -8], %, $seg01)
+   ╰────
