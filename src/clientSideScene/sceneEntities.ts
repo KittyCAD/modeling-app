@@ -59,6 +59,7 @@ import {
   sourceRangeFromRust,
   resultIsOk,
   SourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import { calculate_circle_from_3_points } from '../wasm-lib/pkg/wasm_lib'
 import {
@@ -628,7 +629,7 @@ export class SceneEntities {
 
       const startRange = _node1.node.start
       const endRange = _node1.node.end
-      const sourceRange: SourceRange = [startRange, endRange, true]
+      const sourceRange = topLevelRange(startRange, endRange)
       const selection: Selections = computeSelectionFromSourceRangeAndAST(
         sourceRange,
         maybeModdedAst
@@ -2012,7 +2013,7 @@ export class SceneEntities {
         kclManager.programMemory,
         {
           type: 'sourceRange',
-          sourceRange: [node.start, node.end, true],
+          sourceRange: topLevelRange(node.start, node.end),
         },
         getChangeSketchInput()
       )
@@ -2263,7 +2264,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          editorManager.setHighlightRange([[node.start, node.end, true]])
+          editorManager.setHighlightRange([topLevelRange(node.start, node.end)])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)

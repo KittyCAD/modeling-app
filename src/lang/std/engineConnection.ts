@@ -1,9 +1,7 @@
 import {
-  ArtifactCommand,
-  defaultRustSourceRange,
+  ArtifactGraph,
+  defaultSourceRange,
   ExecState,
-  Program,
-  RustSourceRange,
   SourceRange,
 } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
@@ -17,12 +15,7 @@ import {
   darkModeMatcher,
 } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
-import {
-  ArtifactGraph,
-  EngineCommand,
-  ResponseMap,
-  createArtifactGraph,
-} from 'lang/std/artifactGraph'
+import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
@@ -36,7 +29,6 @@ import { KclManager } from 'lang/KclSingleton'
 import { err, reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { DefaultPlaneStr } from 'lib/planes'
 import { defaultPlaneStrToKey } from 'lib/planes'
 
@@ -1311,8 +1303,8 @@ export enum EngineCommandManagerEvents {
 
 interface PendingMessage {
   command: EngineCommand
-  range: RustSourceRange
-  idToRangeMap: { [key: string]: RustSourceRange }
+  range: SourceRange
+  idToRangeMap: { [key: string]: SourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
@@ -1996,7 +1988,7 @@ export class EngineCommandManager extends EventTarget {
       {
         command,
         idToRangeMap: {},
-        range: defaultRustSourceRange(),
+        range: defaultSourceRange(),
       },
       true // isSceneCommand
     )
@@ -2027,9 +2019,9 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(new Error('rangeStr is undefined'))
     if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    const range: RustSourceRange = JSON.parse(rangeStr)
+    const range: SourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
-    const idToRangeMap: { [key: string]: RustSourceRange } =
+    const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger
@@ -2089,17 +2081,8 @@ export class EngineCommandManager extends EventTarget {
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
   }
-  updateArtifactGraph(
-    ast: Node<Program>,
-    artifactCommands: ArtifactCommand[],
-    execStateArtifacts: ExecState['artifacts']
-  ) {
-    this.artifactGraph = createArtifactGraph({
-      artifactCommands,
-      responseMap: this.responseMap,
-      ast,
-      execStateArtifacts,
-    })
+  updateArtifactGraph(execStateArtifactGraph: ExecState['artifactGraph']) {
+    this.artifactGraph = execStateArtifactGraph
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)

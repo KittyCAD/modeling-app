@@ -9,7 +9,11 @@ import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
-import { loftValidator, revolveAxisValidator } from './validators'
+import {
+  loftValidator,
+  revolveAxisValidator,
+  shellValidator,
+} from './validators'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -287,7 +291,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -319,7 +323,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       profile: {
         inputType: 'selection',
-        selectionTypes: ['solid2D'],
+        selectionTypes: ['solid2d'],
         required: true,
         skip: true,
         multiple: false,
@@ -340,11 +344,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Loft: {
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
-    needsReview: true,
+    needsReview: false,
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D'],
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         skip: false,
@@ -362,12 +366,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
-        skip: false,
+        validation: shellValidator,
       },
       thickness: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+        // TODO: add dry-run validation on thickness param
       },
     },
   },
@@ -379,7 +384,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -591,7 +596,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         inputType: 'selection',
         selectionTypes: [
-          'solid2D',
+          'solid2d',
           'segment',
           'sweepEdge',
           'cap',
