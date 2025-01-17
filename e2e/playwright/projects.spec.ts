@@ -985,6 +985,69 @@ test.describe(`Project management commands`, () => {
       })
     }
   )
+  test(`Create a new project with a colliding name`, async ({
+    context,
+    homePage,
+    toolbar,
+    cmdBar,
+  }) => {
+    const projectName = 'test-project'
+    await test.step(`Setup`, async () => {
+      await context.folderSetupFn(async (dir) => {
+        const projectDir = path.join(dir, projectName)
+        await Promise.all([fsp.mkdir(projectDir, { recursive: true })])
+        await Promise.all([
+          fsp.copyFile(
+            executorInputPath('router-template-slate.kcl'),
+            path.join(projectDir, 'main.kcl')
+          ),
+        ])
+      })
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: projectName,
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+
+    await test.step('Create a new project with the same name', async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('create project')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Create project',
+        currentArgKey: 'name',
+        currentArgValue: '',
+        headerArguments: {
+          Name: '',
+        },
+        highlightedHeaderArg: 'name',
+      })
+      await cmdBar.argumentInput.fill(projectName)
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Check the project was created with a non-colliding name`, async () => {
+      await toolbar.logoLink.click()
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: projectName,
+            fileCount: 1,
+          },
+          {
+            title: projectName + '-1',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+  })
 })
 
 test(
