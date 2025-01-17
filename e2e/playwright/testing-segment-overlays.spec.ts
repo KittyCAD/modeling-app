@@ -332,7 +332,8 @@ test.describe('Testing segment overlays', () => {
       await clickConstrained({
         hoverPos: { x: lineTo.x, y: lineTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: 'line(endAbsolute = [5 + 33, 20 + 11.5 + 0])',
+        expectBeforeUnconstrained:
+          'line(endAbsolute = [5 + 33, 20 + 11.5 + 0])',
         expectAfterUnconstrained: 'line(endAbsolute = [5 + 33, 31.5], %)',
         expectFinal: 'line(endAbsolute = [5 + 33, yAbs001])',
         steps: 8,

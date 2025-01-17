@@ -80,7 +80,9 @@ test.describe('Code pane and errors', () => {
     // Delete a character to break the KCL
     await editor.openPane()
     await editor.scrollToText('bracketLeg1Sketch, length = thickness)')
-    await page.getByText('extrude(bracketLeg1Sketch, length = thickness)').click()
+    await page
+      .getByText('extrude(bracketLeg1Sketch, length = thickness)')
+      .click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
