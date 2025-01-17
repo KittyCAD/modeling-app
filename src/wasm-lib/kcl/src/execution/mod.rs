@@ -12,8 +12,8 @@ use kcmc::{
     websocket::{ModelingSessionData, OkWebSocketResponseData},
     ImageFormat, ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::{self as kcmc, websocket::WebSocketResponse};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -54,14 +54,14 @@ pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 pub use cad_op::Operation;
 
 /// State for executing a program.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecState {
     pub global: GlobalState,
     pub mod_local: ModuleState,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalState {
     /// The stable artifact ID generator.
@@ -76,6 +76,11 @@ pub struct GlobalState {
     /// These are accumulated in the [`ExecutorContext`] but moved here for
     /// convenience of the execution cache.
     pub artifact_commands: Vec<ArtifactCommand>,
+    /// Responses from the engine for `artifact_commands`.  We need to cache
+    /// this so that we can build the artifact graph.  These are accumulated in
+    /// the [`ExecutorContext`] but moved here for convenience of the execution
+    /// cache.
+    pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
 }
@@ -222,6 +227,7 @@ impl GlobalState {
             module_infos: Default::default(),
             artifacts: Default::default(),
             artifact_commands: Default::default(),
+            artifact_responses: Default::default(),
             artifact_graph: Default::default(),
         };
 
@@ -2273,16 +2279,17 @@ impl ExecutorContext {
         let exec_result = self
             .inner_execute(program, exec_state, crate::execution::BodyType::Root)
             .await;
-        // Move the artifact commands to simplify cache management and error
-        // creation.
+        // Move the artifact commands and responses to simplify cache management
+        // and error creation.
         exec_state
             .global
             .artifact_commands
             .extend(self.engine.take_artifact_commands());
+        exec_state.global.artifact_responses.extend(self.engine.responses());
         // Build the artifact graph.
         match build_artifact_graph(
             &exec_state.global.artifact_commands,
-            &self.engine.responses(),
+            &exec_state.global.artifact_responses,
             program,
             &exec_state.global.artifacts,
         ) {

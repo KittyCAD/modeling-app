@@ -263,4 +263,10 @@ extrude(4, sketch001)
         first.2.global.artifact_commands.len(),
         second.2.global.artifact_commands.len()
     );
+    assert!(
+        first.2.global.artifact_responses.len() < second.2.global.artifact_responses.len(),
+        "Second should have all the artifact responses of the first, plus more. first={:?}, second={:?}",
+        first.2.global.artifact_responses.len(),
+        second.2.global.artifact_responses.len()
+    );
 }
