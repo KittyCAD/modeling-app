@@ -65,7 +65,6 @@ test(
   async ({ page }, testInfo) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     // click ? button
     await page.getByTestId('help-button').click()
@@ -92,7 +91,6 @@ test(
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     // expect to see the text bracket
     await expect(page.getByText('bracket')).toBeVisible()
@@ -136,7 +134,6 @@ test(
     await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
-    page.on('console', console.log)
 
     const pointOnModel = { x: 630, y: 280 }
 
@@ -217,7 +214,6 @@ test(
     await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
-    page.on('console', console.log)
 
     const pointOnModel = { x: 630, y: 280 }
 
@@ -293,7 +289,6 @@ test(
     await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
-    page.on('console', console.log)
 
     const pointOnModel = { x: 630, y: 280 }
 
@@ -469,7 +464,6 @@ test.describe('Can export from electron app', () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
         const u = await getUtils(page)
 
-        page.on('console', console.log)
 
         const pointOnModel = { x: 630, y: 280 }
 
@@ -574,7 +568,6 @@ test(
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     await page.waitForTimeout(1_000)
 
@@ -753,7 +746,6 @@ test(
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     await expect(page.getByText('router-template-slate')).toBeVisible()
     await expect(page.getByText('Your Projects')).toBeVisible()
@@ -800,7 +792,6 @@ test.describe(`Project management commands`, () => {
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
-        page.on('console', console.log)
 
         await projectHomeLink.click()
         await u.waitForPageLoad()
@@ -858,7 +849,6 @@ test.describe(`Project management commands`, () => {
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
-        page.on('console', console.log)
 
         await projectHomeLink.click()
         await u.waitForPageLoad()
@@ -910,7 +900,6 @@ test.describe(`Project management commands`, () => {
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
-        page.on('console', console.log)
         await expect(projectHomeLink).toBeVisible()
       })
 
@@ -963,7 +952,6 @@ test.describe(`Project management commands`, () => {
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
-        page.on('console', console.log)
         await expect(projectHomeLink).toBeVisible()
       })
 
@@ -1007,7 +995,6 @@ test(
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     await page.getByText(projectName).click()
     await u.waitForPageLoad()
@@ -1051,7 +1038,6 @@ test(
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     await test.step('Open the project', async () => {
       await page.getByText('router-template-slate').click()
@@ -1112,7 +1098,6 @@ test.fixme(
       }
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
-    page.on('console', console.log)
 
     await test.step('delete the middle project, i.e. the bracket project', async () => {
       const project = page.getByTestId('project-link').getByText('bracket')
@@ -1190,7 +1175,6 @@ test(
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     await page.getByText('router-template-slate').click()
     await expect(page.getByTestId('loading')).toBeAttached()
@@ -1230,7 +1214,6 @@ test(
 
     const getAllProjects = () => page.getByTestId('project-link').all()
 
-    page.on('console', console.log)
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
@@ -1318,7 +1301,6 @@ test.fixme(
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     // Locators and constants
     const gizmo = page.locator('[aria-label*=gizmo]')
@@ -1439,7 +1421,6 @@ test(
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     const pointOnModel = { x: 630, y: 280 }
 
@@ -1521,7 +1502,6 @@ test(
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     // we'll grab this from the settings on screen before we switch
     let originalProjectDirName: string
@@ -1622,7 +1602,6 @@ test(
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     // Our locator constants
     const searchInput = page.getByPlaceholder('Search projects')
@@ -1733,7 +1712,6 @@ test(
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     await test.step('setup, open file pane', async () => {
       await page.getByText('testProject').click()
@@ -1777,7 +1755,6 @@ test(
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    page.on('console', console.log)
 
     await page.getByText('mike_stress_test').click()
 
@@ -1825,7 +1802,6 @@ test(
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      page.on('console', console.log)
 
       await page.getByTestId('user-sidebar-toggle').click()
 
@@ -1840,7 +1816,6 @@ test(
       await page.reload()
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      page.on('console', console.log)
       await expect(page.getByTestId('app-theme')).toHaveValue('light')
     })
   }
@@ -1854,7 +1829,6 @@ test.fixme(
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
-    page.on('console', console.log)
 
     await test.step('Should create and name a project called wrist brace', async () => {
       await createProject({ name: 'wrist brace', page, returnHome: true })
@@ -1904,7 +1878,6 @@ test(
     await page.setBodyDimensions({ width: 1200, height: 500 })
     const u = await getUtils(page)
 
-    page.on('console', console.log)
 
     const pointOnModel = { x: 630, y: 280 }
 

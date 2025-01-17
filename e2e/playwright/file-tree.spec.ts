@@ -98,7 +98,6 @@ test.describe('when using the file tree to', () => {
         await getUtils(page, test)
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
 
@@ -141,7 +140,6 @@ test.describe('when using the file tree to', () => {
       const { panesOpen, createNewFile } = await getUtils(page, test)
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       await panesOpen(['files'])
 
@@ -237,7 +235,6 @@ test.describe('when using the file tree to', () => {
         await getUtils(page, test)
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
 
@@ -275,7 +272,6 @@ test.describe('when using the file tree to', () => {
       } = await getUtils(page, test)
 
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       await panesOpen(['files', 'code'])
       await createProject({ name: 'project-000', page })
@@ -347,7 +343,6 @@ test.describe('Renaming in the file tree', () => {
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       // Constants and locators
       const projectLink = page.getByText('Test Project')
@@ -436,7 +431,6 @@ test.describe('Renaming in the file tree', () => {
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       // Constants and locators
       const newFileName = 'newFileName'
@@ -526,7 +520,6 @@ test.describe('Renaming in the file tree', () => {
 
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       // Constants and locators
       const projectLink = page.getByText('Test Project')
@@ -608,7 +601,6 @@ test.describe('Renaming in the file tree', () => {
 
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       // Constants and locators
       const projectLink = page.getByText('Test Project')
@@ -708,7 +700,6 @@ test.describe('Deleting items from the file pane', () => {
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
@@ -775,7 +766,6 @@ test.describe('Deleting items from the file pane', () => {
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       // Constants and locators
       const projectCard = page.getByText('Test Project')
@@ -829,7 +819,6 @@ test.describe('Deleting items from the file pane', () => {
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       // Constants and locators
       const projectCard = page.getByText('Test Project')
@@ -1034,7 +1023,6 @@ test.describe('Undo and redo do not keep history when navigating between files',
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       // Constants and locators
       const projectCard = page.getByText('testProject')
@@ -1104,7 +1092,6 @@ test.describe('Undo and redo do not keep history when navigating between files',
       })
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
-      page.on('console', console.log)
 
       // Constants and locators
       const projectCard = page.getByText('testProject')

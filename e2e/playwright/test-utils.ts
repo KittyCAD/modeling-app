@@ -973,7 +973,6 @@ export async function setupElectron({
     context = electronApp.context()
     page = await electronApp.firstWindow()
     context.on('console', console.log)
-    page.on('console', console.log)
   }
 
   if (cleanProjectDir) {
