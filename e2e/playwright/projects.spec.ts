@@ -172,7 +172,7 @@ test(
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('broken-code')).toBeVisible()
       await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
     await test.step('opening broken code project should clear the scene and show the error', async () => {
       // Go back home.
@@ -253,7 +253,7 @@ test(
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('empty')).toBeVisible()
       await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
     await test.step('opening empty code project should clear the scene', async () => {
       // Go back home.
@@ -1454,7 +1454,7 @@ extrude001 = extrude(200, sketch001)`)
     await page.getByTestId('app-logo').click()
 
     await expect(
-      page.getByRole('button', { name: 'New project' })
+      page.getByRole('button', { name: 'Create project' })
     ).toBeVisible()
 
     for (let i = 1; i <= 10; i++) {
@@ -1528,7 +1528,7 @@ test(
 
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
 
     await test.step('Opening the router-template project should load the stream', async () => {
@@ -1557,7 +1557,7 @@ test(
 
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
   }
 )
