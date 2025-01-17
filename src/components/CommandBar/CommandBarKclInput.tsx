@@ -7,7 +7,6 @@ import {
 } from '@codemirror/autocomplete'
 import { EditorView, keymap, ViewUpdate } from '@codemirror/view'
 import { CustomIcon } from 'components/CustomIcon'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { CommandArgument, KclCommandValue } from 'lib/commandTypes'
 import { getSystemTheme } from 'lib/theme'
@@ -20,6 +19,7 @@ import styles from './CommandBarKclInput.module.css'
 import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
 import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
 import { useSelector } from '@xstate/react'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 
 const machineContextSelector = (snapshot?: {
   context: Record<string, unknown>
@@ -37,7 +37,7 @@ function CommandBarKclInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commandBarSend, commandBarState } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as KclCommandValue | undefined
@@ -82,7 +82,7 @@ function CommandBarKclInput({
       false
   )
   const [canSubmit, setCanSubmit] = useState(true)
-  useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
+  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const editorRef = useRef<HTMLDivElement>(null)
 
   const {
