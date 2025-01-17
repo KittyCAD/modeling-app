@@ -82,7 +82,7 @@ test('verify extruding circle works', async ({
     })
     await cmdBar.progressCmdBar()
 
-    const expectString = 'extrude001 = extrude(5, sketch001)'
+    const expectString = 'extrude001 = extrude(sketch001, length = 5)'
     await editor.expectEditor.not.toContain(expectString)
 
     await cmdBar.expectState({
@@ -228,7 +228,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA002),
          -segLen(rectangleSegmentA002)
        ], %, $rectangleSegmentC001)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close(%)`,
     })
 
@@ -259,7 +259,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA003),
          -segLen(rectangleSegmentA003)
        ], %, $rectangleSegmentC002)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close(%)`,
     })
     await sketchOnAChamfer({
@@ -284,7 +284,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA003),
          -segLen(rectangleSegmentA003)
        ], %, $rectangleSegmentC002)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close(%)`,
     })
     /// last one
@@ -308,7 +308,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA005),
          -segLen(rectangleSegmentA005)
        ], %, $rectangleSegmentC004)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close(%)`,
     })
 
@@ -326,9 +326,9 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA001),
            -segLen(rectangleSegmentA001)
          ], %, $yo)
-      |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
       |> close(%)
-    extrude001 = extrude(100, sketch001)
+    extrude001 = extrude(sketch001, length = 100)
       |> chamfer({
            length = 30,
            tags = [getOppositeEdge(seg01)]
@@ -353,7 +353,7 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA005),
            -segLen(rectangleSegmentA005)
          ], %, $rectangleSegmentC004)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close(%)
     sketch004 = startSketchOn(extrude001, seg05)
       |> startProfileAt([82.57,322.96], %)
@@ -366,7 +366,7 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA004),
            -segLen(rectangleSegmentA004)
          ], %, $rectangleSegmentC003)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close(%)
     sketch003 = startSketchOn(extrude001, seg04)
       |> startProfileAt([-209.64,255.28], %)
@@ -379,7 +379,7 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA003),
            -segLen(rectangleSegmentA003)
          ], %, $rectangleSegmentC002)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close(%)
     sketch002 = startSketchOn(extrude001, seg03)
       |> startProfileAt([205.96,254.59], %)
@@ -392,7 +392,7 @@ test.describe('verify sketch on chamfer works', () => {
            segAng(rectangleSegmentA002),
            -segLen(rectangleSegmentA002)
          ], %, $rectangleSegmentC001)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close(%)
     `,
         { shouldNormalise: true }
@@ -447,7 +447,7 @@ test.describe('verify sketch on chamfer works', () => {
          segAng(rectangleSegmentA002),
          -segLen(rectangleSegmentA002)
        ], %, $rectangleSegmentC001)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close(%)`,
     })
     await editor.expectEditor.toContain(
@@ -462,9 +462,9 @@ test.describe('verify sketch on chamfer works', () => {
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %, $yo)
-  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close(%)
-extrude001 = extrude(100, sketch001)
+extrude001 = extrude(sketch001, length = 100)
 chamf = chamfer({
        length = 30,
        tags = [getOppositeEdge(seg01)]
@@ -488,7 +488,7 @@ sketch002 = startSketchOn(extrude001, seg03)
        segAng(rectangleSegmentA002),
        -segLen(rectangleSegmentA002)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
 `,
       { shouldNormalise: true }
@@ -615,7 +615,7 @@ test(`Verify user can double-click to edit a sketch`, async ({
   |> circle({ center = [8, 5], radius = 2 }, %)
 openSketch = startSketchOn('XY')
   |> startProfileAt([-5, 0], %)
-  |> lineTo([0, 5], %)
+  |> line(endAbsolute = [0, 5])
   |> xLine(5, %)
   |> tangentialArcTo([10, 0], %)
 `
@@ -1310,12 +1310,12 @@ test(`Chamfer point-and-click`, async ({
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
-  |> line([0, 12], %)
-  |> line([24, 0], %)
-  |> line([0, -12], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line(end = [0, 12])
+  |> line(end = [24, 0])
+  |> line(end = [0, -12])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
-extrude001 = extrude(-12, sketch001)
+extrude001 = extrude(sketch001, length = -12)
 `
   const firstChamferDeclaration = 'chamfer({ length = 5, tags = [seg01] }, %)'
   const secondChamferDeclaration =
@@ -1531,7 +1531,7 @@ shellPointAndClickCapCases.forEach(({ shouldPreselect }) => {
     test.skip(process.platform === 'win32', 'Skip on windows')
     const initialCode = `sketch001 = startSketchOn('XZ')
     |> circle({ center = [0, 0], radius = 30 }, %)
-    extrude001 = extrude(30, sketch001)
+    extrude001 = extrude(sketch001, length = 30)
     `
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -1627,9 +1627,9 @@ test('Shell point-and-click wall', async ({
   |> xLine(40, %)
   |> yLine(-60, %)
   |> xLine(-40, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
-extrude001 = extrude(40, sketch001)
+extrude001 = extrude(sketch001, length = 40)
   `
   await context.addInitScript((initialCode) => {
     localStorage.setItem('persistCode', initialCode)
@@ -1705,19 +1705,19 @@ extrude001 = extrude(40, sketch001)
 const shellSketchOnFacesCases = [
   `sketch001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 100 }, %)
-  |> extrude(100, %)
+  |> extrude(length = 100)
 
 sketch002 = startSketchOn(sketch001, 'END')
   |> circle({ center = [0, 0], radius = 50 }, %)
-  |> extrude(50, %)
+  |> extrude(length = 50)
   `,
   `sketch001 = startSketchOn('XZ')
   |> circle({ center = [0, 0], radius = 100 }, %)
-extrude001 = extrude(100, sketch001)
+extrude001 = extrude(sketch001, length = 100)
 
 sketch002 = startSketchOn(extrude001, 'END')
   |> circle({ center = [0, 0], radius = 50 }, %)
-extrude002 = extrude(50, sketch002)
+extrude002 = extrude(sketch002, length = 50)
   `,
 ]
 shellSketchOnFacesCases.forEach((initialCode, index) => {

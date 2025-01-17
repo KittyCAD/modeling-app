@@ -23,9 +23,9 @@ test.describe('Editor tests', () => {
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
+    |> line(end = [20, 0])
+    |> line(end = [0, 20])
+    |> line(end = [-20, 0])
     |> close(%)`)
 
     await page.keyboard.down('ControlOrMeta')
@@ -35,9 +35,9 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   // |> close(%)`)
 
     // uncomment the code
@@ -48,9 +48,9 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close(%)`)
   })
 
@@ -67,9 +67,9 @@ test.describe('Editor tests', () => {
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close(%)`)
 
     // Ensure we execute the first time.
@@ -116,9 +116,9 @@ test.describe('Editor tests', () => {
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close(%)`)
 
     // Ensure we execute the first time.
@@ -171,9 +171,9 @@ test.describe('Editor tests', () => {
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
+    |> line(end = [20, 0])
+    |> line(end = [0, 20])
+    |> line(end = [-20, 0])
     |> close(%)`)
     await page.locator('#code-pane button:first-child').click()
     await page.locator('button:has-text("Format code")').click()
@@ -181,9 +181,9 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close(%)`)
   })
 
@@ -202,9 +202,9 @@ test.describe('Editor tests', () => {
     await u.codeLocator.click()
     await page.keyboard.type(`sketch_001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
+    |> line(end = [20, 0])
+    |> line(end = [0, 20])
+    |> line(end = [-20, 0])
     |> close(%)`)
 
     await u.openDebugPanel()
@@ -230,9 +230,9 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch_001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close(%)`)
 
     // error in guter
@@ -248,18 +248,18 @@ test.describe('Editor tests', () => {
   test('fold gutters work', async ({ page, homePage }) => {
     const fullCode = `sketch001 = startSketchOn('XY')
    |> startProfileAt([-10, -10], %)
-   |> line([20, 0], %)
-   |> line([0, 20], %)
-   |> line([-20, 0], %)
+   |> line(end = [20, 0])
+   |> line(end = [0, 20])
+   |> line(end = [-20, 0])
    |> close(%)`
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XY')
    |> startProfileAt([-10, -10], %)
-   |> line([20, 0], %)
-   |> line([0, 20], %)
-   |> line([-20, 0], %)
+   |> line(end = [20, 0])
+   |> line(end = [0, 20])
+   |> line(end = [-20, 0])
    |> close(%)`
       )
     })
@@ -326,9 +326,9 @@ test.describe('Editor tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
+    |> line(end = [20, 0])
+    |> line(end = [0, 20])
+    |> line(end = [-20, 0])
     |> close(%)`
       )
     })
@@ -371,9 +371,9 @@ test.describe('Editor tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
+    |> line(end = [20, 0])
+    |> line(end = [0, 20])
+    |> line(end = [-20, 0])
     |> close(%)`
       )
       localStorage.setItem('disableAxis', 'true')
@@ -398,9 +398,9 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close(%)`)
   })
 
@@ -414,9 +414,9 @@ test.describe('Editor tests', () => {
         'persistCode',
         `sketch_001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
-    |> line([-20, 0], %)
+    |> line(end = [20, 0])
+    |> line(end = [0, 20])
+    |> line(end = [-20, 0])
     |> close(%)`
       )
       localStorage.setItem('disableAxis', 'true')
@@ -451,9 +451,9 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch_001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close(%)`)
 
     // error in guter
@@ -519,8 +519,8 @@ test.describe('Editor tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([3.29, 7.86], %)
-    |> line([2.48, 2.44], %)
-    |> line([2.66, 1.17], %)
+    |> line(end = [2.48, 2.44])
+    |> line(end = [2.66, 1.17])
     |> close(%)
     `
       )
@@ -535,7 +535,7 @@ test.describe('Editor tests', () => {
 
     await u.codeLocator.click()
 
-    await page.getByText(' |> line([2.48, 2.44], %)').click()
+    await page.getByText(' |> line(end = [2.48, 2.44])').click()
 
     await expect(
       page.locator('.cm-lint-marker-error').first()
@@ -643,9 +643,9 @@ test.describe('Editor tests', () => {
     fn squareHole = (l, w) => {
   squareHoleSketch = startSketchOn('XY')
   |> startProfileAt([-width / 2, -length / 2], %)
-  |> lineTo([width / 2, -length / 2], %)
-  |> lineTo([width / 2, length / 2], %)
-  |> lineTo([-width / 2, length / 2], %)
+  |> line(endAbsolute = [width / 2, -length / 2])
+  |> line(endAbsolute = [width / 2, length / 2])
+  |> line(endAbsolute = [-width / 2, length / 2])
   |> close(%)
   return squareHoleSketch
     }
@@ -684,7 +684,7 @@ test.describe('Editor tests', () => {
       await page.keyboard.type(`extrusion = startSketchOn('XY')
   |> circle({ center: [0, 0], radius: dia/2 }, %)
     |> hole(squareHole(length, width, height), %)
-    |> extrude(height, %)`)
+    |> extrude(length = height)`)
 
       // error in gutter
       await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
@@ -707,17 +707,17 @@ test.describe('Editor tests', () => {
         'persistCode',
         `box = startSketchOn('XY')
     |> startProfileAt([0, 0], %)
-    |> line([0, 10], %)
-    |> line([10, 0], %)
-    |> line([0, -10], %, $revolveAxis)
+    |> line(end = [0, 10])
+    |> line(end = [10, 0])
+    |> line(end = [0, -10], tag = $revolveAxis)
     |> close(%)
-    |> extrude(10, %)
+    |> extrude(length = 10)
   
     sketch001 = startSketchOn(box, revolveAxis)
     |> startProfileAt([5, 10], %)
-    |> line([0, -10], %)
-    |> line([2, 0], %)
-    |> line([0, -10], %)
+    |> line(end = [0, -10])
+    |> line(end = [2, 0])
+    |> line(end = [0, -10])
     |> close(%)
     |> revolve({
     axis: revolveAxis,
@@ -899,7 +899,7 @@ test.describe('Editor tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
+  |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
   |> close(%)`
       )
@@ -949,7 +949,7 @@ test.describe('Editor tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line([12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38], %)  |> close(%)extrude001 = extrude(5, sketch001)`
+      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38])  |> close(%)extrude001 = extrude(sketch001, length = 5)`
     )
 
     // Now hit undo
@@ -961,7 +961,7 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
+  |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
   |> close(%)`)
   })
@@ -976,10 +976,10 @@ test.describe('Editor tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -10.01], %)
-  |> line([12.73, -0.09], %)
+  |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
   |> close(%)
-  |> extrude(5, %)`
+  |> extrude(length = 5)`
       )
     })
 
@@ -1067,10 +1067,10 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([2.71, -2.71], %)
-    |> line([15.4, -2.78], %)
+    |> line(end = [15.4, -2.78])
     |> tangentialArcTo([27.6, -3.05], %)
     |> close(%)
-    |> extrude(5, %)
+    |> extrude(length = 5)
   `)
 
     // Hit undo
@@ -1081,10 +1081,10 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([2.71, -2.71], %)
-    |> line([15.4, -2.78], %)
+    |> line(end = [15.4, -2.78])
     |> tangentialArcTo([24.95, -0.38], %)
     |> close(%)
-    |> extrude(5, %)`)
+    |> extrude(length = 5)`)
 
     // Hit undo again.
     await page.keyboard.down('Control')
@@ -1094,10 +1094,10 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([2.71, -2.71], %)
-    |> line([12.73, -0.09], %)
+    |> line(end = [12.73, -0.09])
     |> tangentialArcTo([24.95, -0.38], %)
     |> close(%)
-    |> extrude(5, %)
+    |> extrude(length = 5)
   `)
 
     // Hit undo again.
@@ -1109,10 +1109,10 @@ test.describe('Editor tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -10.01], %)
-  |> line([12.73, -0.09], %)
+  |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
   |> close(%)
-  |> extrude(5, %)`)
+  |> extrude(length = 5)`)
   })
 
   test.fixme(

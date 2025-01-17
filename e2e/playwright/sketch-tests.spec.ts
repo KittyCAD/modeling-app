@@ -50,7 +50,7 @@ test.describe('Sketch tests', () => {
   |> xLine(-width * .5, %)
   |> close(%)
   |> hole(screwHole, %)
-  |> extrude(thickness, %)
+  |> extrude(length = thickness)
   
     part002 = startSketchOn('-XZ')
   ${startProfileAt3}
@@ -66,7 +66,7 @@ test.describe('Sketch tests', () => {
   |> yLine(-wireOffset, %)
   |> xLine(-width / 4, %)
   |> close(%)
-  |> extrude(-height, %)
+  |> extrude(length = -height)
     `
         )
       },
@@ -188,7 +188,7 @@ test.describe('Sketch tests', () => {
           'persistCode',
           `sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
-      |> line([12.73, -0.09], %)
+      |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
       |> close(%)`
         )
@@ -228,7 +228,7 @@ test.describe('Sketch tests', () => {
       if (openPanes.includes('code')) {
         await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
       |> startProfileAt([4.61, -14.01], %)
-      |> line([12.73, -0.09], %)
+      |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
       |> close(%)`)
       } else {
@@ -305,9 +305,9 @@ test.describe('Sketch tests', () => {
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
       |> startProfileAt([6.44, -12.07], %)
-      |> line([14.72, 1.97], %)
+      |> line(end = [14.72, 1.97])
       |> tangentialArcTo([24.95, -5.38], %)
-      |> line([1.97, 2.06], %)
+      |> line(end = [1.97, 2.06])
       |> close(%)`)
     }
     test('code pane open at start-handles', async ({ page, homePage }) => {
@@ -439,10 +439,10 @@ test.describe('Sketch tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -10.01], %)
-  |> line([12.73, -0.09], %)
+  |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
   |> close(%)
-  |> extrude(5, %)`
+  |> extrude(length = 5)`
       )
     })
 
@@ -525,10 +525,10 @@ test.describe('Sketch tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([7.12, -12.68], %)
-    |> line([12.68, -1.09], %)
+    |> line(end = [12.68, -1.09])
     |> tangentialArcTo([24.89, 0.68], %)
     |> close(%)
-    |> extrude(5, %)
+    |> extrude(length = 5)
   `)
   })
 
@@ -542,7 +542,7 @@ test.describe('Sketch tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([4.61, -14.01], %)
-  |> line([12.73, -0.09], %)
+  |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
   |> close(%)
   |> revolve({ axis = "X",}, %)`
@@ -627,9 +627,9 @@ test.describe('Sketch tests', () => {
     await expect(page.locator('.cm-content'))
       .toHaveText(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([6.44, -12.07], %)
-  |> line([14.72, 1.97], %)
+  |> line(end = [14.72, 1.97])
   |> tangentialArcTo([24.95, -5.38], %)
-  |> line([1.97, 2.06], %)
+  |> line(end = [1.97, 2.06])
   |> close(%)
   |> revolve({ axis = "X" }, %)`)
   })
@@ -744,7 +744,7 @@ test.describe('Sketch tests', () => {
     |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
     |> xLine(${roundOff(scale * 139.19)}, %)
     |> yLine(-${roundOff(scale * 139.2)}, %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close(%)`
 
       await expect(
@@ -841,10 +841,10 @@ test.describe('Sketch tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([-0.45, 0.87], %)
-    |> line([1.32, 0.38], %)
-    |> line([1.02, -1.32], %, $seg01)
-    |> line([-1.01, -0.77], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(end = [1.32, 0.38])
+    |> line(end = [1.02, -1.32], tag = $seg01)
+    |> line(end = [-1.01, -0.77])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
   `
       )
@@ -899,12 +899,12 @@ test.describe('Sketch tests', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([-0.45, 0.87], %)
-    |> line([1.32, 0.38], %)
-    |> line([1.02, -1.32], %, $seg01)
-    |> line([-1.01, -0.77], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(end = [1.32, 0.38])
+    |> line(end = [1.02, -1.32], tag = $seg01)
+    |> line(end = [-1.01, -0.77])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close(%)
-  extrude001 = extrude(5, sketch001)
+  extrude001 = extrude(sketch001, length = 5)
   `
       )
     })
@@ -939,12 +939,12 @@ test.describe('Sketch tests', () => {
     await expect((await u.codeLocator.innerText()).replace(/\s/g, '')).toBe(
       `sketch001 = startSketchOn('XZ')
     |> startProfileAt([-0.45, 0.87], %)
-    |> line([1.32, 0.38], %)
-    |> line([1.02, -1.32], %, $seg01)
-    |> line([-1.01, -0.77], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(end = [1.32, 0.38])
+    |> line(end = [1.02, -1.32], tag = $seg01)
+    |> line(end = [-1.01, -0.77])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close(%)
-  extrude001 = extrude(5, sketch001)
+  extrude001 = extrude(sketch001, length = 5)
   sketch002 = startSketchOn(extrude001, 'END')
     |>
   `.replace(/\s/g, '')
@@ -990,8 +990,8 @@ test.describe('Sketch tests', () => {
 
       await u.codeLocator.fill(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
-    |> line([20, 0], %)
-    |> line([0, 20], %)
+    |> line(end = [20, 0])
+    |> line(end = [0, 20])
     |> xLine(-20, %)
   `)
 
@@ -1029,7 +1029,7 @@ test.describe('Sketch tests', () => {
       await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
       await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([11.8, 9.09], %)
-    |> line([3.39, -3.39], %)
+    |> line(end = [3.39, -3.39])
   `)
 
       await page.addInitScript(async () => {
@@ -1037,7 +1037,7 @@ test.describe('Sketch tests', () => {
           'persistCode',
           `sketch001 = startSketchOn('XZ')
     |> startProfileAt([11.8, 9.09], %)
-    |> line([3.39, -3.39], %)
+    |> line(end = [3.39, -3.39])
   `
         )
       })
@@ -1148,12 +1148,12 @@ test.describe('Sketch tests', () => {
      railWideWidth / 2,
      railClampable / 2 + railBaseLength
    ], %, $seg01)
-    |> lineTo([railTop / 2, railBaseLength], %)
-    |> lineTo([railBaseWidth / 2, railBaseLength], %)
-    |> lineTo([railBaseWidth / 2, 0], %)
-    |> lineTo([-railBaseWidth / 2, 0], %)
-    |> lineTo([-railBaseWidth / 2, railBaseLength], %)
-    |> lineTo([-railTop / 2, railBaseLength], %)
+    |> line(endAbsolute = [railTop / 2, railBaseLength])
+    |> line(endAbsolute = [railBaseWidth / 2, railBaseLength])
+    |> line(endAbsolute = [railBaseWidth / 2, 0])
+    |> line(endAbsolute = [-railBaseWidth / 2, 0])
+    |> line(endAbsolute = [-railBaseWidth / 2, railBaseLength])
+    |> line(endAbsolute = [-railTop / 2, railBaseLength])
     |> lineTo([
      -railWideWidth / 2,
      railClampable / 2 + railBaseLength
@@ -1163,7 +1163,7 @@ test.describe('Sketch tests', () => {
      railClampable + railBaseLength
    ], %)
     |> close(%)
-    |> extrude(in2mm(2), %)`
+    |> extrude(length = in2mm(2))`
       )
     })
 
@@ -1340,7 +1340,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
         'persistCode',
         `sketch001 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([3.14, 3.14], %)
+  |> line(end = [3.14, 3.14])
   |> arcTo({
   end = [4, 2],
   interior = [1, 2]

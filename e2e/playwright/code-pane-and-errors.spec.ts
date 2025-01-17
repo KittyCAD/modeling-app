@@ -20,11 +20,11 @@ test.describe('Code pane and errors', () => {
         `// Extruded Triangle
   sketch001 = startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
-    |> line([10, 0], %)
-    |> line([-5, 10], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
+    |> line(end = [10, 0])
+    |> line(end = [-5, 10])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close(%)
-  extrude001 = extrude(5, sketch001)`
+  extrude001 = extrude(sketch001, length = 5)`
       )
     })
 

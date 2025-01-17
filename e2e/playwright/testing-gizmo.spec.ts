@@ -275,7 +275,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
                center: [818.33, 168.1],
                radius: 182.8
              }, %)
-          |> extrude(50, %)
+          |> extrude(length = 50)
       `
       )
     })

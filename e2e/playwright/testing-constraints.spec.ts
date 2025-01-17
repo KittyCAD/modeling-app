@@ -16,8 +16,8 @@ test.describe('Testing constraints', () => {
         'persistCode',
         `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
   |> xLine(-20, %)
     `
       )
@@ -57,7 +57,7 @@ test.describe('Testing constraints', () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line([20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20, %)`
+      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -83,16 +83,16 @@ test.describe('Testing constraints', () => {
         `yo = 79
   part001 = startSketchOn('XZ')
     |> startProfileAt([-7.54, -26.74], %)
-    |> line([74.36, 130.4], %, $seg01)
-    |> line([78.92, -120.11], %)
+    |> line(end = [74.36, 130.4], tag = $seg01)
+    |> line(end = [78.92, -120.11])
     |> angledLine([segAng(seg01), yo], %)
-    |> line([41.19, 58.97 + 5], %)
+    |> line(end = [41.19, 58.97 + 5])
   part002 = startSketchOn('XZ')
     |> startProfileAt([299.05, 120], %)
     |> xLine(-385.34, %, $seg_what)
     |> yLine(-170.06, %)
     |> xLine(segLen(seg_what), %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)`
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
       )
     })
     const u = await getUtils(page)
@@ -121,7 +121,7 @@ test.describe('Testing constraints', () => {
     await page.getByText('line([39.13, 68.63], %)').click()
     await pollEditorLinesSelectedLength(page, 1)
     const activeLinesContent = await page.locator('.cm-activeLine').all()
-    await expect(activeLinesContent[0]).toHaveText('|> line([39.13, 68.63], %)')
+    await expect(activeLinesContent[0]).toHaveText('|> line(end = [39.13, 68.63])')
 
     // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
     await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
@@ -147,16 +147,16 @@ test.describe('Testing constraints', () => {
             `yo = 5
       part001 = startSketchOn('XZ')
         |> startProfileAt([-7.54, -26.74], %)
-        |> line([74.36, 130.4], %, $seg01)
-        |> line([78.92, -120.11], %)
+        |> line(end = [74.36, 130.4], tag = $seg01)
+        |> line(end = [78.92, -120.11])
         |> angledLine([segAng(seg01), 78.33], %)
-        |> line([51.19, 48.97], %)
+        |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> lineTo([profileStartX(%), profileStartY(%)], %)`
+        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
 
           const isChecked = await createNewVariableCheckbox.isChecked()
@@ -177,7 +177,7 @@ test.describe('Testing constraints', () => {
           await pollEditorLinesSelectedLength(page, 2)
           const activeLinesContent = await page.locator('.cm-activeLine').all()
           await expect(activeLinesContent[0]).toHaveText(
-            `|> line([74.36, 130.4], %, $seg01)`
+            `|> line(end = [74.36, 130.4], tag = $seg01)`
           )
           await expect(activeLinesContent[1]).toHaveText(`}, %)`)
 
@@ -239,7 +239,7 @@ test.describe('Testing constraints', () => {
         await pollEditorLinesSelectedLength(page, 2)
         const activeLinesContent = await page.locator('.cm-activeLine').all()
         await expect(activeLinesContent[0]).toHaveText(
-          `|> line([74.36, 130.4], %, $seg01)`
+          `|> line(end = [74.36, 130.4], tag = $seg01)`
         )
         await expect(activeLinesContent[1]).toHaveText(`}, %)`)
 
@@ -281,16 +281,16 @@ test.describe('Testing constraints', () => {
             `yo = 5
       part001 = startSketchOn('XZ')
         |> startProfileAt([-7.54, -26.74], %)
-        |> line([74.36, 130.4], %)
-        |> line([78.92, -120.11], %)
-        |> line([9.16, 77.79], %)
-        |> line([51.19, 48.97], %)
+        |> line(end = [74.36, 130.4])
+        |> line(end = [78.92, -120.11])
+        |> line(end = [9.16, 77.79])
+        |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> lineTo([profileStartX(%), profileStartY(%)], %)`
+        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
         const u = await getUtils(page)
@@ -336,8 +336,8 @@ test.describe('Testing constraints', () => {
 
         // checking activeLines assures the cursors are where they should be
         const codeAfter = [
-          `|> line([74.36, 130.4], %, $seg01)`,
-          `|> lineTo([${value}], %)`,
+          `|> line(end = [74.36, 130.4], tag = $seg01)`,
+          `|> line(endAbsolute = [${value}])`,
         ]
 
         const activeLinesContent = await page.locator('.cm-activeLine').all()
@@ -391,16 +391,16 @@ test.describe('Testing constraints', () => {
             `yo = 5
       part001 = startSketchOn('XZ')
         |> startProfileAt([-7.54, -26.74], %)
-        |> line([74.36, 130.4], %)
-        |> line([78.92, -120.11], %)
-        |> line([9.16, 77.79], %)
-        |> line([51.19, 48.97], %)
+        |> line(end = [74.36, 130.4])
+        |> line(end = [78.92, -120.11])
+        |> line(end = [9.16, 77.79])
+        |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> lineTo([profileStartX(%), profileStartY(%)], %)`
+        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
         const u = await getUtils(page)
@@ -451,7 +451,7 @@ test.describe('Testing constraints', () => {
           .click()
 
         // checking activeLines assures the cursors are where they should be
-        const codeAfter = [`|> lineTo([${value}], %)`]
+        const codeAfter = [`|> line(endAbsolute = [${value}])`]
 
         const activeLinesContent = await page.locator('.cm-activeLine').all()
         await Promise.all(
@@ -506,16 +506,16 @@ test.describe('Testing constraints', () => {
             `yo = 5
       part001 = startSketchOn('XZ')
         |> startProfileAt([-7.54, -26.74], %)
-        |> line([74.36, 130.4], %)
-        |> line([78.92, -120.11], %)
-        |> line([9.16, 77.79], %)
-        |> line([51.19, 48.97], %)
+        |> line(end = [74.36, 130.4])
+        |> line(end = [78.92, -120.11])
+        |> line(end = [9.16, 77.79])
+        |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> lineTo([profileStartX(%), profileStartY(%)], %)`
+        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
         const u = await getUtils(page)
@@ -564,7 +564,7 @@ test.describe('Testing constraints', () => {
 
         // checking activeLines assures the cursors are where they should be
         const codeAfter = [
-          '|> line([74.36, 130.4], %, $seg01)',
+          '|> line(end = [74.36, 130.4], tag = $seg01)',
           `|> angledLine([${value}, 78.33], %)`,
         ]
         if (axisSelect) codeAfter.shift()
@@ -608,16 +608,16 @@ test.describe('Testing constraints', () => {
             `yo = 5
       part001 = startSketchOn('XZ')
         |> startProfileAt([-7.54, -26.74], %)
-        |> line([74.36, 130.4], %)
-        |> line([78.92, -120.11], %)
-        |> line([9.16, 77.79], %)
-        |> line([51.19, 48.97], %)
+        |> line(end = [74.36, 130.4])
+        |> line(end = [78.92, -120.11])
+        |> line(end = [9.16, 77.79])
+        |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> lineTo([profileStartX(%), profileStartY(%)], %)`
+        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
         const u = await getUtils(page)
@@ -696,16 +696,16 @@ test.describe('Testing constraints', () => {
             `yo = 5
 part001 = startSketchOn('XZ')
   |> startProfileAt([-7.54, -26.74], %)
-  |> line([74.36, 130.4], %)
-  |> line([78.92, -120.11], %)
-  |> line([9.16, 77.79], %)
-  |> line([51.19, 48.97], %)
+  |> line(end = [74.36, 130.4])
+  |> line(end = [78.92, -120.11])
+  |> line(end = [9.16, 77.79])
+  |> line(end = [51.19, 48.97])
 part002 = startSketchOn('XZ')
   |> startProfileAt([299.05, 231.45], %)
   |> xLine(-425.34, %, $seg_what)
   |> yLine(-264.06, %)
   |> xLine(segLen(seg_what), %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)`
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
         const u = await getUtils(page)
@@ -774,16 +774,16 @@ part002 = startSketchOn('XZ')
             `yo = 5
       part001 = startSketchOn('XZ')
         |> startProfileAt([-7.54, -26.74], %)
-        |> line([74.36, 130.4], %)
-        |> line([78.92, -120.11], %)
-        |> line([9.16, 77.79], %)
-        |> line([51.19, 48.97], %)
+        |> line(end = [74.36, 130.4])
+        |> line(end = [78.92, -120.11])
+        |> line(end = [9.16, 77.79])
+        |> line(end = [51.19, 48.97])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> lineTo([profileStartX(%), profileStartY(%)], %)`
+        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
         const u = await getUtils(page)
@@ -861,11 +861,11 @@ part002 = startSketchOn('XZ')
         constraintName: 'Parallel',
       },
       {
-        codeAfter: `|> lineTo([segEndX(seg01), 61.34], %)`,
+        codeAfter: `|> line(endAbsolute = [segEndX(seg01), 61.34])`,
         constraintName: 'Vertically Align',
       },
       {
-        codeAfter: `|> lineTo([154.9, segEndY(seg01)], %)`,
+        codeAfter: `|> line(endAbsolute = [154.9, segEndY(seg01)])`,
         constraintName: 'Horizontally Align',
       },
     ] as const
@@ -877,15 +877,15 @@ part002 = startSketchOn('XZ')
             `yo = 5
       part001 = startSketchOn('XZ')
         |> startProfileAt([-7.54, -26.74], %)
-        |> line([74.36, 130.4], %)
-        |> line([78.92, -120.11], %)
-        |> line([9.16, 77.79], %)
+        |> line(end = [74.36, 130.4])
+        |> line(end = [78.92, -120.11])
+        |> line(end = [9.16, 77.79])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> lineTo([profileStartX(%), profileStartY(%)], %)`
+        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
         const u = await getUtils(page)
@@ -931,7 +931,7 @@ part002 = startSketchOn('XZ')
 
         // check both cursors are where they should be after constraint is applied
         await expect(activeLinesContent[0]).toHaveText(
-          '|> line([74.36, 130.4], %, $seg01)'
+          '|> line(end = [74.36, 130.4], tag = $seg01)'
         )
         await expect(activeLinesContent[1]).toHaveText(codeAfter)
       })
@@ -940,12 +940,12 @@ part002 = startSketchOn('XZ')
   test.describe('Axis & segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> lineTo([154.9, ZERO], %)`,
+        codeAfter: `|> line(endAbsolute = [154.9, ZERO])`,
         axisClick: { x: 950, y: 250 },
         constraintName: 'Snap To X',
       },
       {
-        codeAfter: `|> lineTo([ZERO, 61.34], %)`,
+        codeAfter: `|> line(endAbsolute = [ZERO, 61.34])`,
         axisClick: { x: 600, y: 150 },
         constraintName: 'Snap To Y',
       },
@@ -958,15 +958,15 @@ part002 = startSketchOn('XZ')
             `yo = 5
       part001 = startSketchOn('XZ')
         |> startProfileAt([-7.54, -26.74], %)
-        |> line([74.36, 130.4], %)
-        |> line([78.92, -120.11], %)
-        |> line([9.16, 77.79], %)
+        |> line(end = [74.36, 130.4])
+        |> line(end = [78.92, -120.11])
+        |> line(end = [9.16, 77.79])
       part002 = startSketchOn('XZ')
         |> startProfileAt([299.05, 231.45], %)
         |> xLine(-425.34, %, $seg_what)
         |> yLine(-264.06, %)
         |> xLine(segLen(seg_what), %)
-        |> lineTo([profileStartX(%), profileStartY(%)], %)`
+        |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
         })
         const u = await getUtils(page)
@@ -1020,8 +1020,8 @@ part002 = startSketchOn('XZ')
           'persistCode',
           `sketch001 = startSketchOn('XY')
     |> startProfileAt([-1.05, -1.07], %)
-    |> line([3.79, 2.68], %, $seg01)
-    |> line([3.13, -2.4], %)`
+    |> line(end = [3.79, 2.68], tag = $seg01)
+    |> line(end = [3.13, -2.4])`
         )
       })
       const u = await getUtils(page)
