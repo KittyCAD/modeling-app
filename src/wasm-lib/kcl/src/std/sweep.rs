@@ -94,7 +94,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// helixPath = helix({
 ///     angleStart = 0,
 ///     ccw = true,
-///     revolutions = 16,
+///     revolutions = 4,
 ///     length = 10,
 ///     radius = 5,
 ///     axis = 'Z',
@@ -104,7 +104,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a spring by sweeping around the helix path.
 /// springSketch = startSketchOn('YZ')
 ///     |> circle({ center = [0, 0], radius = 1 }, %)
-///     //|> sweep({ path = helixPath }, %)
+///     |> sweep({ path = helixPath }, %)
 /// ```
 #[stdlib {
     name = "sweep",
