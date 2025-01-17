@@ -222,24 +222,31 @@ export const sweepValidator = async ({
 
   // Retrieve the parent path from the segment selection directly
   const trajectoryArtifact = data.trajectory.graphSelections[0].artifact
-  if (!trajectoryArtifact) {
+  let trajectory: string | undefined = undefined
+  if (trajectoryArtifact && trajectoryArtifact.type === 'segment') {
+    trajectory = trajectoryArtifact.pathId
+  } else if (trajectoryArtifact && trajectoryArtifact.type === 'plane') {
+    // TODO: check again after multi profile
+    trajectory = trajectoryArtifact.pathIds[0]
+  }
+
+  if (!trajectory) {
     return "Unable to sweep, couldn't find the trajectory artifact"
   }
-  if (trajectoryArtifact.type !== 'segment') {
-    return "Unable to sweep, couldn't find the target from a non-segment selection"
-  }
-  const trajectory = trajectoryArtifact.pathId
 
   // Get the former arg in the command bar flow, and retrieve the path from the solid2d directly
   const targetArg = context.argumentsToSubmit['target'] as Selections
   const targetArtifact = targetArg.graphSelections[0].artifact
-  if (!targetArtifact) {
+  let target: string | undefined = undefined
+  if (targetArtifact && targetArtifact.type === 'solid2D') {
+    target = targetArtifact.pathId
+  } else if (targetArtifact && targetArtifact.type === 'plane') {
+    target = targetArtifact.pathIds[0]
+  }
+
+  if (!target) {
     return "Unable to sweep, couldn't find the profile artifact"
   }
-  if (targetArtifact.type !== 'solid2D') {
-    return "Unable to sweep, couldn't find the target from a non-solid2d selection"
-  }
-  const target = targetArtifact.pathId
 
   const sweepCommand = async () => {
     // TODO: second look on defaults here

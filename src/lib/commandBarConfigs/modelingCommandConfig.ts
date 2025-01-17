@@ -313,7 +313,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       target: {
         inputType: 'selection',
-        selectionTypes: ['solid2D'],
+        selectionTypes: ['solid2D', 'plane'],
         required: true,
         skip: true,
         multiple: false,
@@ -322,7 +322,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
       trajectory: {
         inputType: 'selection',
-        selectionTypes: ['segment', 'path'],
+        selectionTypes: ['segment', 'plane'],
         required: true,
         skip: false,
         multiple: false,
