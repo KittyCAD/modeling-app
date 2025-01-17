@@ -2,10 +2,41 @@ import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { ASK_TO_OPEN_QUERY_PARAM, CREATE_FILE_URL_PARAM } from './constants'
 import { stringToBase64 } from './base64'
 import { DEV, VITE_KC_SITE_BASE_URL, VITE_KC_API_BASE_URL } from 'env'
+import toast from 'react-hot-toast'
+import { err } from './trap'
 export interface FileLinkParams {
   code: string
   name: string
   units: UnitLength_type
+}
+
+export async function copyFileShareLink(
+  args: FileLinkParams & { token: string }
+) {
+  const token = args.token
+  if (!token) {
+    toast.error('You need to be signed in to share a file.', {
+      duration: 5000,
+    })
+    return
+  }
+  const shareUrl = createCreateFileUrl(args)
+  const shortlink = await createShortlink(token, shareUrl.toString())
+
+  if (err(shortlink)) {
+    toast.error(shortlink.message, {
+      duration: 5000,
+    })
+    return
+  }
+
+  await globalThis.navigator.clipboard.writeText(shortlink.url)
+  toast.success(
+    'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!',
+    {
+      duration: 5000,
+    }
+  )
 }
 
 /**

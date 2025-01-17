@@ -15,10 +15,8 @@ import { MachineManagerContext } from 'components/MachineManagerProvider'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
-import { createCreateFileUrl, createShortlink } from 'lib/links'
+import { copyFileShareLink } from 'lib/links'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import toast from 'react-hot-toast'
-import { err } from 'lib/trap'
 
 const ProjectSidebarMenu = ({
   project,
@@ -190,40 +188,12 @@ function ProjectMenuPopover({
           Element: 'button',
           children: 'Share link to file',
           onClick: async () => {
-            /**
-             * We don't have a dev shortlink API service,
-             * so we need to hit the prod API even in local dev.
-             * This override allows us to shim in an environment variable
-             * for the prod token.
-             */
-            const token = auth.context.token
-            if (!token) {
-              toast.error('You need to be signed in to share a file.', {
-                duration: 5000,
-              })
-              return
-            }
-            const shareUrl = createCreateFileUrl({
+            await copyFileShareLink({
+              token: auth?.context.token || '',
               code: codeManager.code,
               name: project?.name || '',
               units: settings.context.modeling.defaultUnit.current,
             })
-            const shortlink = await createShortlink(token, shareUrl.toString())
-
-            if (err(shortlink)) {
-              toast.error(shortlink.message, {
-                duration: 5000,
-              })
-              return
-            }
-
-            await globalThis.navigator.clipboard.writeText(shortlink.url)
-            toast.success(
-              'Link copied to clipboard. Anyone who clicks this link will get a copy of this file. Share carefully!',
-              {
-                duration: 5000,
-              }
-            )
           },
         },
         'break',
