@@ -1047,6 +1047,44 @@ test.describe(`Project management commands`, () => {
         sortBy: 'last-modified-desc',
       })
     })
+
+    await test.step('Create another project with the same name', async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('create project')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Create project',
+        currentArgKey: 'name',
+        currentArgValue: '',
+        headerArguments: {
+          Name: '',
+        },
+        highlightedHeaderArg: 'name',
+      })
+      await cmdBar.argumentInput.fill(projectName)
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Check the second project was created with a non-colliding name`, async () => {
+      await toolbar.logoLink.click()
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: projectName + '-2',
+            fileCount: 1,
+          },
+          {
+            title: projectName + '-1',
+            fileCount: 1,
+          },
+          {
+            title: projectName,
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
   })
 })
 
