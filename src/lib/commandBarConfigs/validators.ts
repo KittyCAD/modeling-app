@@ -153,3 +153,57 @@ export const loftValidator = async ({
     return 'Unable to loft with selected sketches'
   }
 }
+
+export const shellValidator = async ({
+  data,
+}: {
+  data: { selection: Selections }
+}): Promise<boolean | string> => {
+  if (!isSelections(data.selection)) {
+    return 'Unable to shell, selections are missing'
+  }
+
+  // No validation on the faces, filtering is done upstream and we have the dry run validation just below
+  const face_ids = data.selection.graphSelections.flatMap((s) =>
+    s.artifact ? s.artifact.id : []
+  )
+
+  // We don't have the concept of solid3ds in TS yet.
+  // So we're listing out the sweeps as if they were solids and taking the first one, just like in Rust for Shell:
+  // https://github.com/KittyCAD/modeling-app/blob/e61fff115b9fa94aaace6307b1842cc15d41655e/src/wasm-lib/kcl/src/std/shell.rs#L237-L238
+  // TODO: This is one cheap way to make sketch-on-face supported now but will likely fail multiple solids
+  const object_id = engineCommandManager.artifactGraph
+    .values()
+    .find((v) => v.type === 'sweep')?.pathId
+
+  if (!object_id) {
+    return "Unable to shell, couldn't find the solid"
+  }
+
+  const shellCommand = async () => {
+    // TODO: figure out something better than an arbitrarily small value
+    const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 1e-9
+    const DEFAULT_HOLLOW = false
+    const cmdArgs = {
+      face_ids,
+      object_id,
+      hollow: DEFAULT_HOLLOW,
+      shell_thickness: DEFAULT_THICKNESS,
+    }
+    return await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'solid3d_shell_face',
+        ...cmdArgs,
+      },
+    })
+  }
+
+  const attemptShell = await dryRunWrapper(shellCommand)
+  if (attemptShell?.success) {
+    return true
+  }
+
+  return 'Unable to shell with the provided selection'
+}
