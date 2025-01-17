@@ -71,11 +71,11 @@ const prepareToEditExtrude: PrepareToEditCallback =
     const solid2DArtifact = getArtifactOfTypes(
       {
         key: pathArtifact.solid2dId,
-        types: ['solid2D'],
+        types: ['solid2d'],
       },
       engineCommandManager.artifactGraph
     )
-    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2D') {
+    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
       return baseCommand
     }
 
