@@ -1,6 +1,6 @@
 import { err } from './trap'
 import { engineCommandManager } from 'lib/singletons'
-import { parse, ProgramMemory, resultIsOk } from 'lang/wasm'
+import { parse, ProgramMemory, programMemoryInit, resultIsOk } from 'lang/wasm'
 import { PrevVariable } from 'lang/queryAst'
 import { executeAst } from 'lang/langHelpers'
 import { KclExpression } from './commandTypes'
@@ -10,7 +10,8 @@ const DUMMY_VARIABLE_NAME = '__result__'
 export function programMemoryFromVariables(
   variables: PrevVariable<string | number>[]
 ): ProgramMemory | Error {
-  const memory: ProgramMemory = ProgramMemory.empty()
+  const memory = programMemoryInit()
+  if (err(memory)) return memory
   for (const { key, value } of variables) {
     const error = memory.set(
       key,
