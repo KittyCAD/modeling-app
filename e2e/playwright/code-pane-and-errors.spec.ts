@@ -280,7 +280,7 @@ test(
 
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
     })
 
     await test.step('Opening the router-template project should load', async () => {

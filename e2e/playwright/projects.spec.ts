@@ -172,7 +172,7 @@ test(
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('broken-code')).toBeVisible()
       await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
     })
     await test.step('opening broken code project should clear the scene and show the error', async () => {
       // Go back home.
@@ -253,7 +253,7 @@ test(
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('empty')).toBeVisible()
       await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
     })
     await test.step('opening empty code project should clear the scene', async () => {
       // Go back home.
@@ -985,107 +985,6 @@ test.describe(`Project management commands`, () => {
       })
     }
   )
-  test(`Create a new project with a colliding name`, async ({
-    context,
-    homePage,
-    toolbar,
-    cmdBar,
-  }) => {
-    const projectName = 'test-project'
-    await test.step(`Setup`, async () => {
-      await context.folderSetupFn(async (dir) => {
-        const projectDir = path.join(dir, projectName)
-        await Promise.all([fsp.mkdir(projectDir, { recursive: true })])
-        await Promise.all([
-          fsp.copyFile(
-            executorInputPath('router-template-slate.kcl'),
-            path.join(projectDir, 'main.kcl')
-          ),
-        ])
-      })
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: projectName,
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
-      })
-    })
-
-    await test.step('Create a new project with the same name', async () => {
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('create project')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Create project',
-        currentArgKey: 'name',
-        currentArgValue: '',
-        headerArguments: {
-          Name: '',
-        },
-        highlightedHeaderArg: 'name',
-      })
-      await cmdBar.argumentInput.fill(projectName)
-      await cmdBar.progressCmdBar()
-    })
-
-    await test.step(`Check the project was created with a non-colliding name`, async () => {
-      await toolbar.logoLink.click()
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: projectName + '-1',
-            fileCount: 1,
-          },
-          {
-            title: projectName,
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
-      })
-    })
-
-    await test.step('Create another project with the same name', async () => {
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('create project')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Create project',
-        currentArgKey: 'name',
-        currentArgValue: '',
-        headerArguments: {
-          Name: '',
-        },
-        highlightedHeaderArg: 'name',
-      })
-      await cmdBar.argumentInput.fill(projectName)
-      await cmdBar.progressCmdBar()
-    })
-
-    await test.step(`Check the second project was created with a non-colliding name`, async () => {
-      await toolbar.logoLink.click()
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: projectName + '-2',
-            fileCount: 1,
-          },
-          {
-            title: projectName + '-1',
-            fileCount: 1,
-          },
-          {
-            title: projectName,
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
-      })
-    })
-  })
 })
 
 test(
@@ -1492,7 +1391,7 @@ extrude001 = extrude(200, sketch001)`)
     await page.getByTestId('app-logo').click()
 
     await expect(
-      page.getByRole('button', { name: 'Create project' })
+      page.getByRole('button', { name: 'New project' })
     ).toBeVisible()
 
     for (let i = 1; i <= 10; i++) {
@@ -1566,7 +1465,7 @@ test(
 
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
     })
 
     await test.step('Opening the router-template project should load the stream', async () => {
@@ -1595,7 +1494,7 @@ test(
 
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
+      await expect(page.getByText('New Project')).toBeVisible()
     })
   }
 )

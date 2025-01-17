@@ -134,7 +134,6 @@ function CommandArgOptionInput({
           </label>
           <Combobox.Input
             id="option-input"
-            data-testid="cmd-bar-arg-value"
             ref={inputRef}
             onChange={(event) =>
               !event.target.disabled && setQuery(event.target.value)

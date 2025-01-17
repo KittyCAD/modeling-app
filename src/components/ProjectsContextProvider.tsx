@@ -18,7 +18,6 @@ import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
-  getUniqueProjectName,
 } from 'lib/desktopFS'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
@@ -196,11 +195,15 @@ const ProjectsContextDesktop = ({
               : settings.projects.defaultProjectName.current
           ).trim()
 
-          const uniqueName = getUniqueProjectName(name, input.projects)
-          await createNewProjectDirectory(uniqueName)
+          if (doesProjectNameNeedInterpolated(name)) {
+            const nextIndex = getNextProjectIndex(name, input.projects)
+            name = interpolateProjectNameWithIndex(name, nextIndex)
+          }
+
+          await createNewProjectDirectory(name)
 
           return {
-            message: `Successfully created "${uniqueName}"`,
+            message: `Successfully created "${name}"`,
             name,
           }
         }),
