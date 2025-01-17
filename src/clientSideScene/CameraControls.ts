@@ -108,6 +108,7 @@ export class CameraControls {
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
+  totalZoom = 0
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
   get isPerspective() {
@@ -211,6 +212,7 @@ export class CameraControls {
 
   doZoom = (zoom: number) => {
     this.handleStart()
+    this.totalZoom += -1 * zoom
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -286,12 +288,14 @@ export class CameraControls {
         camSettings.up.y,
         camSettings.up.z
       )
+
       this.camera.quaternion.set(
         orientation.x,
         orientation.y,
         orientation.z,
         orientation.w
       )
+
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {

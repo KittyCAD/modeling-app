@@ -27,8 +27,9 @@ export function createNamedViewsCommand({
       const far = sceneInfra.camControls.camera.far
       const position = sceneInfra.camControls.camera.position.toArray()
       const orientation = sceneInfra.camControls.camera.quaternion.toArray()
+      // const orientation = [...sceneInfra.camControls.camera.up, 0]
       const target = sceneInfra.camControls.target.toArray()
-      const zoom = sceneInfra.camControls.camera.zoom
+      const zoom = sceneInfra.camControls.totalZoom
 
       const requestedView: NamedView = {
         name: data.name,
@@ -128,20 +129,48 @@ export function createNamedViewsCommand({
       ]
       const viewToLoad = namedViews.find((view) => view.name === nameToLoad)
       if (viewToLoad) {
+        // await engineCommandManager.sendSceneCommand({
+        //   type: 'modeling_cmd_req',
+        //   cmd_id: uuidv4(),
+        //   cmd: {
+        //     type: 'default_camera_look_at',
+        //     center: new Vector3().fromArray(viewToLoad.target),
+        //     vantage: new Vector3().fromArray(viewToLoad.position),
+        //     up: new Vector3(
+        //       viewToLoad.orientation[0],
+        //       viewToLoad.orientation[1],
+        //       viewToLoad.orientation[2]
+        //     ),
+        //   },
+        // })
+
+        const cam = convertThreeCamValuesToEngineCam({
+          // isPerspective: viewToLoad.fov !== undefined,
+          isPerspective: true,
+          position: new Vector3().fromArray(viewToLoad.position),
+          quaternion: new Quaternion().fromArray(viewToLoad.orientation),
+          target: new Vector3().fromArray(viewToLoad.target),
+          zoom: -1,
+        })
+        console.log(cam)
         await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'default_camera_look_at',
-            ...convertThreeCamValuesToEngineCam({
-              isPerspective: true,
-              position: new Vector3().fromArray(viewToLoad.position),
-              quaternion: new Quaternion().fromArray(viewToLoad.orientation),
-              zoom: viewToLoad.zoom,
-              target: new Vector3().fromArray(viewToLoad.target),
-            }),
+            center: cam.center,
+            up: cam.up,
+            vantage: cam.vantage,
           },
         })
+        // await engineCommandManager.sendSceneCommand({
+        //   type: 'modeling_cmd_req',
+        //   cmd_id: uuidv4(),
+        //   cmd: {
+        //     type: 'default_camera_zoom',
+        //     magnitude: viewToLoad.zoom / window.devicePixelRatio,
+        //   },
+        // })
         settingsSend({
           type: 'set.modeling.cameraProjection',
           data: {
