@@ -195,10 +195,13 @@ const ProjectsContextDesktop = ({
               : settings.projects.defaultProjectName.current
           ).trim()
 
-          if (doesProjectNameNeedInterpolated(name)) {
+          // Append `-1` until there is a unique project name
+          do {
             const nextIndex = getNextProjectIndex(name, input.projects)
-            name = interpolateProjectNameWithIndex(name, nextIndex)
-          }
+            name = doesProjectNameNeedInterpolated(name)
+              ? interpolateProjectNameWithIndex(name, nextIndex)
+              : `${name}-${nextIndex}`
+          } while (input.projects.some((p) => p.name === name))
 
           await createNewProjectDirectory(name)
 

@@ -1036,11 +1036,11 @@ test.describe(`Project management commands`, () => {
       await homePage.expectState({
         projectCards: [
           {
-            title: projectName,
+            title: projectName + '-1',
             fileCount: 1,
           },
           {
-            title: projectName + '-1',
+            title: projectName,
             fileCount: 1,
           },
         ],

@@ -54,8 +54,10 @@ export function getNextProjectIndex(
   const matches = projects.map((project) => project.name?.match(regex))
   const indices = matches
     .filter(Boolean)
-    .map((match) => match![1])
-    .map(Number)
+    .map((match) => (match !== null ? match[1] : '-1'))
+    .map((maybeMatchIndex) => {
+      return parseInt(maybeMatchIndex || '0', 10)
+    })
   const maxIndex = Math.max(...indices, -1)
   return maxIndex + 1
 }
