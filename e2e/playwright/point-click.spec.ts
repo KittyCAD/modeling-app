@@ -1098,7 +1098,7 @@ test(`Fillet point-and-click`, async ({
   |> line([0, 12], %)
   |> line([24, 0], %)
   |> line([0, -12], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
 extrude001 = extrude(-12, sketch001)
 `

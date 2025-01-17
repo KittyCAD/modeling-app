@@ -332,9 +332,9 @@ test.describe('Testing segment overlays', () => {
       await clickConstrained({
         hoverPos: { x: lineTo.x, y: lineTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: 'lineTo([5 + 33, 20 + 11.5 + 0], %)',
-        expectAfterUnconstrained: 'lineTo([5 + 33, 31.5], %)',
-        expectFinal: 'lineTo([5 + 33, yAbs001], %)',
+        expectBeforeUnconstrained: 'line(endAbsolute = [5 + 33, 20 + 11.5 + 0])',
+        expectAfterUnconstrained: 'line(endAbsolute = [5 + 33, 31.5], %)',
+        expectFinal: 'line(endAbsolute = [5 + 33, yAbs001])',
         steps: 8,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="2"]',
@@ -343,9 +343,9 @@ test.describe('Testing segment overlays', () => {
       await clickConstrained({
         hoverPos: { x: lineTo.x, y: lineTo.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: 'lineTo([5 + 33, yAbs001], %)',
-        expectAfterUnconstrained: 'lineTo([38, yAbs001], %)',
-        expectFinal: 'lineTo([xAbs001, yAbs001], %)',
+        expectBeforeUnconstrained: 'line(endAbsolute = [5 + 33, yAbs001])',
+        expectAfterUnconstrained: 'line(endAbsolute = [38, yAbs001])',
+        expectFinal: 'line(endAbsolute = [xAbs001, yAbs001])',
         steps: 8,
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="2"]',
@@ -1110,7 +1110,7 @@ test.describe('Testing segment overlays', () => {
       )
       await page.mouse.move(hoverPos.x, hoverPos.y)
 
-      const codeToBeDeleted = 'lineTo([33, 11.5 + 0], %)'
+      const codeToBeDeleted = 'lineTo(endAbsolute = [33, 11.5 + 0])'
       await editor.expectEditor.toContain(codeToBeDeleted, {
         shouldNormalise: true,
       })

@@ -79,8 +79,8 @@ test.describe('Code pane and errors', () => {
 
     // Delete a character to break the KCL
     await editor.openPane()
-    await editor.scrollToText('thickness, bracketLeg1Sketch)')
-    await page.getByText('extrude(thickness, bracketLeg1Sketch)').click()
+    await editor.scrollToText('bracketLeg1Sketch, length = thickness)')
+    await page.getByText('extrude(bracketLeg1Sketch, length = thickness)').click()
     await page.keyboard.press('Backspace')
 
     // Ensure that a badge appears on the button
@@ -107,7 +107,7 @@ test.describe('Code pane and errors', () => {
     await editor.openPane()
 
     // Go to our problematic code again (missing closing paren!)
-    await editor.scrollToText('extrude(thickness, bracketLeg1Sketch')
+    await editor.scrollToText('extrude(bracketLeg1Sketch, length = thickness')
 
     // Ensure that a badge appears on the button
     await expect(codePaneButtonHolder).toContainText('notification')

@@ -1140,28 +1140,28 @@ test.describe('Sketch tests', () => {
      -railTop / 2,
      railClampable + railBaseLength
    ], %)
-    |> lineTo([
+    |> line(endAbsolute = [
      railTop / 2,
      railClampable + railBaseLength
-   ], %)
-    |> lineTo([
+   ])
+    |> line(endAbsolute = [
      railWideWidth / 2,
      railClampable / 2 + railBaseLength
-   ], %, $seg01)
+   ], $seg01)
     |> line(endAbsolute = [railTop / 2, railBaseLength])
     |> line(endAbsolute = [railBaseWidth / 2, railBaseLength])
     |> line(endAbsolute = [railBaseWidth / 2, 0])
     |> line(endAbsolute = [-railBaseWidth / 2, 0])
     |> line(endAbsolute = [-railBaseWidth / 2, railBaseLength])
     |> line(endAbsolute = [-railTop / 2, railBaseLength])
-    |> lineTo([
+    |> line(endAbsolute = [
      -railWideWidth / 2,
      railClampable / 2 + railBaseLength
-   ], %)
-    |> lineTo([
+   ])
+    |> line(endAbsolute = [
      -railTop / 2,
      railClampable + railBaseLength
-   ], %)
+   ])
     |> close(%)
     |> extrude(length = in2mm(2))`
       )
@@ -1250,7 +1250,7 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
       })
 
       await test.step('Make typo and check the segments have Disappeared and there is a syntax error', async () => {
-        await editor.replaceCode('lineTo([pro', 'badBadBadFn([pro')
+        await editor.replaceCode('line(endAbsolute = [pro', 'badBadBadFn([pro')
         await editor.expectState({
           activeLines: [],
           diagnostics: ['memoryitemkey`badBadBadFn`isnotdefined'],
@@ -1261,7 +1261,7 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
       })
 
       await test.step('', async () => {
-        await editor.replaceCode('badBadBadFn([pro', 'lineTo([pro')
+        await editor.replaceCode('badBadBadFn([pro', 'line(endAbsolute = [pro')
         await editor.expectState({
           activeLines: [],
           diagnostics: [],
