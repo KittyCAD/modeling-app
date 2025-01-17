@@ -121,7 +121,9 @@ test.describe('Testing constraints', () => {
     await page.getByText('line([39.13, 68.63], %)').click()
     await pollEditorLinesSelectedLength(page, 1)
     const activeLinesContent = await page.locator('.cm-activeLine').all()
-    await expect(activeLinesContent[0]).toHaveText('|> line(end = [39.13, 68.63])')
+    await expect(activeLinesContent[0]).toHaveText(
+      '|> line(end = [39.13, 68.63])'
+    )
 
     // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
     await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
