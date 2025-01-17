@@ -201,7 +201,7 @@ const ProjectsContextDesktop = ({
 
           return {
             message: `Successfully created "${uniqueName}"`,
-            name,
+            name: uniqueName,
           }
         }),
         renameProject: fromPromise(async ({ input }) => {
