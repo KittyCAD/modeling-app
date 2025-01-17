@@ -1,6 +1,10 @@
 import { NamedView } from 'wasm-lib/kcl/bindings/NamedView'
 import { Command } from '../commandTypes'
 import toast from 'react-hot-toast'
+import { engineCommandManager, sceneInfra } from 'lib/singletons'
+import { convertThreeCamValuesToEngineCam } from 'clientSideScene/CameraControls'
+import { uuidv4 } from 'lib/utils'
+import { Vector3, Quaternion } from 'three'
 export function createNamedViewsCommand({
   settingsState,
   settingsSend,
@@ -17,17 +21,24 @@ export function createNamedViewsCommand({
       const namedViews = [
         ...settingsActor.getSnapshot().context.modeling.namedViews.current,
       ]
-      // Get the value of the flow
-      // Get all the current ones
-      // Set it as a setting
-      // send()
+
+      const fov = sceneInfra.camControls.camera.fov // undefined if ortho
+      const near = sceneInfra.camControls.camera.near
+      const far = sceneInfra.camControls.camera.far
+      const position = sceneInfra.camControls.camera.position.toArray()
+      const orientation = sceneInfra.camControls.camera.quaternion.toArray()
+      const target = sceneInfra.camControls.target.toArray()
+      const zoom = sceneInfra.camControls.camera.zoom
+
       const requestedView: NamedView = {
         name: data.name,
-        fov: 1,
-        near: 2,
-        far: 3,
-        position: [1, 2, 3],
-        orientation: [1, 2, 3, 4],
+        fov,
+        near,
+        far,
+        position,
+        orientation,
+        target,
+        zoom,
       }
 
       const requestedNamedViews = [...namedViews, requestedView]
@@ -91,7 +102,6 @@ export function createNamedViewsCommand({
           const namedViews = [
             ...settingsActor.getSnapshot().context.modeling.namedViews.current,
           ]
-          console.log('LOADING VIEWS!', namedViews)
           return namedViews.map((view, index) => {
             return {
               name: view.name,
@@ -104,5 +114,70 @@ export function createNamedViewsCommand({
     },
   }
 
-  return { createNamedViewCommand, deleteNamedViewCommand }
+  const loadNamedViewCommand: Command = {
+    name: 'Load named view',
+    displayName: `Load named view`,
+    description: 'Load a named view',
+    groupId: 'namedViews',
+    icon: 'settings',
+    needsReview: false,
+    onSubmit: async (data) => {
+      const nameToLoad = data.name
+      const namedViews = [
+        ...settingsActor.getSnapshot().context.modeling.namedViews.current,
+      ]
+      const viewToLoad = namedViews.find((view) => view.name === nameToLoad)
+      if (viewToLoad) {
+        await engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_look_at',
+            ...convertThreeCamValuesToEngineCam({
+              isPerspective: true,
+              position: new Vector3().fromArray(viewToLoad.position),
+              quaternion: new Quaternion().fromArray(viewToLoad.orientation),
+              zoom: viewToLoad.zoom,
+              target: new Vector3().fromArray(viewToLoad.target),
+            }),
+          },
+        })
+        settingsSend({
+          type: 'set.modeling.cameraProjection',
+          data: {
+            level: 'user',
+            value:
+              viewToLoad.fov !== undefined ? 'perspective' : 'orthographic',
+          },
+        })
+        toast.success(`Loaded ${data.name} named view.`)
+      } else {
+        toast.error(`Unable to load ${data.name}, something went wrong.`)
+      }
+    },
+    args: {
+      name: {
+        required: true,
+        inputType: 'options',
+        options: () => {
+          const namedViews = [
+            ...settingsActor.getSnapshot().context.modeling.namedViews.current,
+          ]
+          return namedViews.map((view, index) => {
+            return {
+              name: view.name,
+              isCurrent: index === 0,
+              value: view.name,
+            }
+          })
+        },
+      },
+    },
+  }
+
+  return {
+    createNamedViewCommand,
+    deleteNamedViewCommand,
+    loadNamedViewCommand,
+  }
 }

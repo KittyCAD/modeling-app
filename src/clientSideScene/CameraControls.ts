@@ -1208,7 +1208,7 @@ function calculateNearFarFromFOV(fov: number) {
   return { z_near: 0.01, z_far: 1000 }
 }
 
-function convertThreeCamValuesToEngineCam({
+export function convertThreeCamValuesToEngineCam({
   target,
   position,
   quaternion,

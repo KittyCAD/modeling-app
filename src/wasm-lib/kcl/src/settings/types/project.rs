@@ -223,7 +223,9 @@ color = 1567.4"#;
                                 fov: 42.0,
                                 near: 41.0,
                                 far: 43.0,
-                                orientation: [4.0,5.0,6.0,7.0]
+                                orientation: [4.0,5.0,6.0,7.0],
+                                target:[1.0,2.0,3.0],
+                                zoom:1.0
                             },
                             NamedView {
                                 name: String::from("Goodbye"),
@@ -231,7 +233,9 @@ color = 1567.4"#;
                                 fov: 42.0,
                                 near: 41.0,
                                 far: 43.0,
-                                orientation: [4.0,5.0,6.0,7.0]
+                                orientation: [4.0,5.0,6.0,7.0],
+                                target:[1.0,2.0,3.0],
+                                zoom:1.0
                             }
                         ]
                     },
@@ -260,6 +264,8 @@ fov = 42.0
 near = 41.0
 far = 43.0
 orientation = [4.0, 5.0, 6.0, 7.0]
+target = [1.0, 2.0, 3.0]
+zoom = 1.0
 
 [[settings.modeling.named_views]]
 name = "Goodbye"
@@ -268,6 +274,8 @@ fov = 42.0
 near = 41.0
 far = 43.0
 orientation = [4.0, 5.0, 6.0, 7.0]
+target = [1.0, 2.0, 3.0]
+zoom = 1.0
 
 [settings.text_editor]
 text_wrapping = false

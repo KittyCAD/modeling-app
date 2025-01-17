@@ -302,7 +302,13 @@ pub struct NamedView {
     pub far: f64,
     /// The default unit to use in modeling dimensions.
     #[serde(default, alias = "orientation", skip_serializing_if = "is_default")]
-    pub orientation: [f64;4]
+    pub orientation: [f64;4],
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "target", skip_serializing_if = "is_default")]
+    pub target: [f64;3],
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "zoom", skip_serializing_if = "is_default")]
+    pub zoom: f64,
 }
 
 impl PartialEq for NamedView {

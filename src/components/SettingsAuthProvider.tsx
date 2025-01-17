@@ -147,7 +147,7 @@ export const SettingsAuthProviderBase = ({
           if (!('data' in event)) return
           const eventParts = event.type.replace(/^set./, '').split('.') as [
             keyof typeof settings,
-            string,
+            string
           ]
           const truncatedNewValue = event.data.value?.toString().slice(0, 28)
           const message =
@@ -392,15 +392,24 @@ export const SettingsAuthProviderBase = ({
 
   useEffect(() => {
     // TODO: only add in the modeling
-    const { createNamedViewCommand, deleteNamedViewCommand } =
-      createNamedViewsCommand({
-        settingsState,
-        settingsSend,
-        settingsActor,
-      })
+    const {
+      createNamedViewCommand,
+      deleteNamedViewCommand,
+      loadNamedViewCommand,
+    } = createNamedViewsCommand({
+      settingsState,
+      settingsSend,
+      settingsActor,
+    })
     commandBarSend({
       type: 'Add commands',
-      data: { commands: [createNamedViewCommand, deleteNamedViewCommand] },
+      data: {
+        commands: [
+          createNamedViewCommand,
+          deleteNamedViewCommand,
+          loadNamedViewCommand,
+        ],
+      },
     })
   }, [])
 
