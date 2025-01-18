@@ -78,13 +78,6 @@ const ProjectsContextDesktop = ({
     settings: { context: settings },
   } = useSettingsAuthContext()
 
-  useEffect(() => {
-    console.log(
-      'project directory changed',
-      settings.app.projectDirectory.current
-    )
-  }, [settings.app.projectDirectory.current])
-
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectPaths, projectsDir } = useProjectsLoader([
     projectsLoaderTrigger,
