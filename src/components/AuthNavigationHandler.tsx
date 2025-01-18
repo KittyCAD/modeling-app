@@ -1,5 +1,7 @@
+import { authCommands } from 'lib/commandBarConfigs/authCommandConfig'
 import { PATHS } from 'lib/paths'
 import { useAuthState } from 'machines/appMachine'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -15,16 +17,6 @@ export function AuthNavigationHandler({
   const navigate = useNavigate()
   const location = useLocation()
   const authState = useAuthState()
-
-  // TODO: Reactivate this once I fix up the command
-  // type plumbing.
-  // useStateMachineCommands({
-  //     machineId: 'auth',
-  //     state: authState,
-  //     send: authActor.send,
-  //     commandBarConfig: authCommandBarConfig,
-  //     actor: authActor,
-  //   })
 
   // Subscribe to the auth state of the app and navigate accordingly.
   useEffect(() => {
