@@ -1,10 +1,7 @@
 import { ActorRefFrom, createActor, setup } from 'xstate'
 import { authMachine } from './authMachine'
 import { useSelector } from '@xstate/react'
-
-export const ACTOR_IDS = {
-  AUTH: 'auth',
-}
+import { ACTOR_IDS } from './machineConstants'
 
 const appMachine = setup({
   actors: {
