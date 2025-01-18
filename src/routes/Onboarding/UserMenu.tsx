@@ -1,15 +1,14 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEffect, useState } from 'react'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { useUser } from 'machines/appMachine'
 
 export default function UserMenu() {
-  const { auth } = useSettingsAuthContext()
+  const user = useUser()
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.PROJECT_MENU)
   const [avatarErrored, setAvatarErrored] = useState(false)
 
-  const user = auth?.context?.user
   const errorOrNoImage = !user?.image || avatarErrored
   const buttonDescription = errorOrNoImage ? 'the menu button' : 'your avatar'
 

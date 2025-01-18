@@ -25,6 +25,7 @@ import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { maybeWriteToDisk } from 'lib/telemetry'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -60,8 +61,8 @@ export function App() {
 
   useHotKeyListener()
 
-  const { auth, settings } = useSettingsAuthContext()
-  const token = auth?.context?.token
+  const { settings } = useSettingsAuthContext()
+  const token = useToken()
 
   const coreDumpManager = useMemo(
     () => new CoreDumpManager(engineCommandManager, codeManager, token),
