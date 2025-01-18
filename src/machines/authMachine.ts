@@ -15,7 +15,7 @@ import {
 } from 'lib/desktop'
 import { COOKIE_NAME } from 'lib/constants'
 import { markOnce } from 'lib/performance'
-import { ACTOR_IDS } from './appMachine'
+import { ACTOR_IDS } from './machineConstants'
 import withBaseUrl from '../lib/withBaseURL'
 
 const SKIP_AUTH = VITE_KC_SKIP_AUTH === 'true' && DEV
