@@ -4,6 +4,8 @@ use insta::rounded_redaction;
 
 use crate::{
     errors::KclError,
+    exec::ArtifactCommand,
+    execution::{ArtifactGraph, Operation},
     parsing::ast::types::{Node, Program},
     source_range::ModuleId,
 };
@@ -104,36 +106,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     ".environments[].**[].z[]" => rounded_redaction(4),
                 });
             });
-            assert_snapshot(test_name, "Operations executed", || {
-                insta::assert_json_snapshot!("ops", exec_state.mod_local.operations);
-            });
-            assert_snapshot(test_name, "Artifact commands", || {
-                insta::assert_json_snapshot!("artifact_commands", exec_state.global.artifact_commands, {
-                    "[].command.segment.*.x" => rounded_redaction(4),
-                    "[].command.segment.*.y" => rounded_redaction(4),
-                    "[].command.segment.*.z" => rounded_redaction(4),
-                });
-            });
-            assert_snapshot(test_name, "Artifact graph flowchart", || {
-                let flowchart = exec_state
-                    .global
-                    .artifact_graph
-                    .to_mermaid_flowchart()
-                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
-                // Change the snapshot suffix so that it is rendered as a
-                // Markdown file in GitHub.
-                insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
-            });
-            assert_snapshot(test_name, "Artifact graph mind map", || {
-                let mind_map = exec_state
-                    .global
-                    .artifact_graph
-                    .to_mermaid_mind_map()
-                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
-                // Change the snapshot suffix so that it is rendered as a
-                // Markdown file in GitHub.
-                insta::assert_binary_snapshot!("artifact_graph_mind_map.md", mind_map.as_bytes().to_owned());
-            });
+            snapshot_common(
+                test_name,
+                exec_state.mod_local.operations,
+                exec_state.global.artifact_commands,
+                exec_state.global.artifact_graph,
+            );
         }
         Err(e) => {
             match e.error {
@@ -153,17 +131,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
                         insta::assert_snapshot!("execution_error", report);
                     });
 
-                    assert_snapshot(test_name, "Operations executed", || {
-                        insta::assert_json_snapshot!("ops", error.operations);
-                    });
-
-                    assert_snapshot(test_name, "Artifact commands", || {
-                        insta::assert_json_snapshot!("artifact_commands", error.artifact_commands, {
-                            "[].command.segment.*.x" => rounded_redaction(4),
-                            "[].command.segment.*.y" => rounded_redaction(4),
-                            "[].command.segment.*.z" => rounded_redaction(4),
-                        });
-                    });
+                    snapshot_common(
+                        test_name,
+                        error.operations,
+                        error.artifact_commands,
+                        error.artifact_graph,
+                    );
                 }
                 e => {
                     // These kinds of errors aren't expected to occur. We don't
@@ -174,6 +147,42 @@ async fn execute(test_name: &str, render_to_png: bool) {
             };
         }
     }
+}
+
+/// Assert snapshots that should happen both when KCL execution succeeds and
+/// when it results in an error.
+fn snapshot_common(
+    test_name: &str,
+    operations: Vec<Operation>,
+    artifact_commands: Vec<ArtifactCommand>,
+    artifact_graph: ArtifactGraph,
+) {
+    assert_snapshot(test_name, "Operations executed", || {
+        insta::assert_json_snapshot!("ops", operations);
+    });
+    assert_snapshot(test_name, "Artifact commands", || {
+        insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
+            "[].command.segment.*.x" => rounded_redaction(4),
+            "[].command.segment.*.y" => rounded_redaction(4),
+            "[].command.segment.*.z" => rounded_redaction(4),
+        });
+    });
+    assert_snapshot(test_name, "Artifact graph flowchart", || {
+        let flowchart = artifact_graph
+            .to_mermaid_flowchart()
+            .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
+        // Change the snapshot suffix so that it is rendered as a Markdown file
+        // in GitHub.
+        insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
+    });
+    assert_snapshot(test_name, "Artifact graph mind map", || {
+        let mind_map = artifact_graph
+            .to_mermaid_mind_map()
+            .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
+        // Change the snapshot suffix so that it is rendered as a Markdown file
+        // in GitHub.
+        insta::assert_binary_snapshot!("artifact_graph_mind_map.md", mind_map.as_bytes().to_owned());
+    });
 }
 
 mod cube {
