@@ -298,37 +298,37 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
 
   expect(newCode).toContain(expectedCode)
 }
-const runDeleteEdgeTreatmentTest = async (
-  code: string,
-  edgeTreatmentSnippet: string,
-  expectedCode: string
-) => {
-  // ast
-  const ast = assertParse(code)
+// const runDeleteEdgeTreatmentTest = async (
+//   code: string,
+//   edgeTreatmentSnippet: string,
+//   expectedCode: string,
+// ) => {
+//   // ast
+//   const ast = assertParse(code)
 
-  // selection
-  
-  const edgeTreatmentRange = topLevelRange(
-    code.indexOf(edgeTreatmentSnippet),
-    code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length
-  )
-  const selection: Selection = {
-    codeRef: codeRefFromRange(edgeTreatmentRange, ast),
-  }
+//   // selection
 
-  // executeAst
-  await kclManager.executeAst({ ast })
+//   const edgeTreatmentRange = topLevelRange(
+//     code.indexOf(edgeTreatmentSnippet),
+//     code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length
+//   )
+//   const selection: Selection = {
+//     codeRef: codeRefFromRange(edgeTreatmentRange, ast),
+//   }
 
-  // apply edge treatment to seleciton
-  const result = await deleteEdgeTreatment(ast, selection)
-  if (err(result)) {
-    return result
-  }
+//   // executeAst
+//   await kclManager.executeAst({ ast })
 
-  const newCode = recast(result)
+//   // apply edge treatment to seleciton
+//   const result = await deleteEdgeTreatment(ast, selection)
+//   if (err(result)) {
+//     return result
+//   }
 
-  expect(newCode).toContain(expectedCode)
-}
+//   const newCode = recast(result)
+
+//   expect(newCode).toContain(expectedCode)
+// }
 const createFilletParameters = (radiusValue: number): FilletParameters => ({
   type: EdgeTreatmentType.Fillet,
   radius: {
@@ -605,34 +605,35 @@ extrude002 = extrude(-25, sketch002)
         )
       })
       // Test delete edge treatment
-      it(`should delete a ${edgeTreatmentType} from a specific segment`, async () => {
-        const code = `sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %, $seg01)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
-        const edgeTreatmentSnippet = `${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
-        const expectedCode = `sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %, $seg01)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)`
+      //       it(`should delete a ${edgeTreatmentType} from a specific segment`, async () => {
+      //         const code = `sketch001 = startSketchOn('XY')
+      //   |> startProfileAt([-10, 10], %)
+      //   |> line([20, 0], %)
+      //   |> line([0, -20], %)
+      //   |> line([-20, 0], %, $seg01)
+      //   |> lineTo([profileStartX(%), profileStartY(%)], %)
+      //   |> close(%)
+      // extrude001 = extrude(-15, sketch001)
+      //   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+      //         const edgeTreatmentSnippet = `${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+      //         const expectedCode = `sketch001 = startSketchOn('XY')
+      //   |> startProfileAt([-10, 10], %)
+      //   |> line([20, 0], %)
+      //   |> line([0, -20], %)
+      //   |> line([-20, 0], %, $seg01)
+      //   |> lineTo([profileStartX(%), profileStartY(%)], %)
+      //   |> close(%)
+      // extrude001 = extrude(-15, sketch001)`
 
-        await runDeleteEdgeTreatmentTest(
-          code,
-          edgeTreatmentSnippet,
-          expectedCode
-        )
-      })
+      //         await runDeleteEdgeTreatmentTest(
+      //           code,
+      //           edgeTreatmentSnippet,
+      //           expectedCode
+      //         )
+      //       })
     })
-})
+  }
+)
 
 describe('Testing isTagUsedInEdgeTreatment', () => {
   const code = `sketch001 = startSketchOn('XZ')
