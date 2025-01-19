@@ -307,11 +307,11 @@ const runDeleteEdgeTreatmentTest = async (
   const ast = assertParse(code)
 
   // selection
-  const edgeTreatmentRange: [number, number, boolean] = [
+  
+  const edgeTreatmentRange = topLevelRange(
     code.indexOf(edgeTreatmentSnippet),
-    code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length,
-    true,
-  ]
+    code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length
+  )
   const selection: Selection = {
     codeRef: codeRefFromRange(edgeTreatmentRange, ast),
   }
