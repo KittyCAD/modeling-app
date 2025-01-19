@@ -1,4 +1,5 @@
 import {
+  ArtifactGraph,
   CallExpression,
   Expr,
   Identifier,
@@ -32,11 +33,7 @@ import {
 import { err, trap } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
-import {
-  Artifact,
-  ArtifactGraph,
-  getSweepFromSuspectedPath,
-} from 'lang/std/artifactGraph'
+import { Artifact, getSweepFromSuspectedPath } from 'lang/std/artifactGraph'
 import {
   kclManager,
   engineCommandManager,

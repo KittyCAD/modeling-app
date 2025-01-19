@@ -3,6 +3,7 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
+use artifact::build_artifact_graph;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 use kcmc::{
@@ -11,8 +12,8 @@ use kcmc::{
     websocket::{ModelingSessionData, OkWebSocketResponseData},
     ImageFormat, ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::{self as kcmc, websocket::WebSocketResponse};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -49,18 +50,18 @@ use crate::{
 };
 
 // Re-exports.
-pub use artifact::{Artifact, ArtifactCommand, ArtifactId, ArtifactInner};
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 pub use cad_op::Operation;
 
 /// State for executing a program.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecState {
     pub global: GlobalState,
     pub mod_local: ModuleState,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalState {
     /// The stable artifact ID generator.
@@ -75,6 +76,13 @@ pub struct GlobalState {
     /// These are accumulated in the [`ExecutorContext`] but moved here for
     /// convenience of the execution cache.
     pub artifact_commands: Vec<ArtifactCommand>,
+    /// Responses from the engine for `artifact_commands`.  We need to cache
+    /// this so that we can build the artifact graph.  These are accumulated in
+    /// the [`ExecutorContext`] but moved here for convenience of the execution
+    /// cache.
+    pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -113,6 +121,8 @@ pub struct ExecOutcome {
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
     pub artifact_commands: Vec<ArtifactCommand>,
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
 impl ExecState {
@@ -149,6 +159,7 @@ impl ExecState {
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
+            artifact_graph: self.global.artifact_graph,
         }
     }
 
@@ -165,7 +176,7 @@ impl ExecState {
     }
 
     pub fn add_artifact(&mut self, artifact: Artifact) {
-        let id = artifact.id;
+        let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
     }
 
@@ -216,6 +227,8 @@ impl GlobalState {
             module_infos: Default::default(),
             artifacts: Default::default(),
             artifact_commands: Default::default(),
+            artifact_responses: Default::default(),
+            artifact_graph: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.
@@ -2239,22 +2252,56 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
+        self.execute_and_build_graph(&cache_result.program, exec_state)
             .await
             .map_err(|e| {
                 KclErrorWithOutputs::new(
                     e,
                     exec_state.mod_local.operations.clone(),
-                    self.engine.take_artifact_commands(),
+                    exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
                 )
             })?;
-        // Move the artifact commands to simplify cache management.
+
+        let session_data = self.engine.get_session_data();
+        Ok(session_data)
+    }
+
+    /// Execute an AST's program and build auxiliary outputs like the artifact
+    /// graph.
+    async fn execute_and_build_graph<'a>(
+        &self,
+        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<KclValue>, KclError> {
+        // Don't early return!  We need to build other outputs regardless of
+        // whether execution failed.
+        let exec_result = self
+            .inner_execute(program, exec_state, crate::execution::BodyType::Root)
+            .await;
+        // Move the artifact commands and responses to simplify cache management
+        // and error creation.
         exec_state
             .global
             .artifact_commands
             .extend(self.engine.take_artifact_commands());
-        let session_data = self.engine.get_session_data();
-        Ok(session_data)
+        exec_state.global.artifact_responses.extend(self.engine.responses());
+        // Build the artifact graph.
+        match build_artifact_graph(
+            &exec_state.global.artifact_commands,
+            &exec_state.global.artifact_responses,
+            program,
+            &exec_state.global.artifacts,
+        ) {
+            Ok(artifact_graph) => {
+                exec_state.global.artifact_graph = artifact_graph;
+                exec_result
+            }
+            Err(err) => {
+                // Prefer the exec error.
+                exec_result.and(Err(err))
+            }
+        }
     }
 
     /// Execute an AST's program.
