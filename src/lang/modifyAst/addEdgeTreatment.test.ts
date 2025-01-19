@@ -298,6 +298,37 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
 
   expect(newCode).toContain(expectedCode)
 }
+const runDeleteEdgeTreatmentTest = async (
+  code: string,
+  edgeTreatmentSnippet: string,
+  expectedCode: string
+) => {
+  // ast
+  const ast = assertParse(code)
+
+  // selection
+  const edgeTreatmentRange: [number, number, boolean] = [
+    code.indexOf(edgeTreatmentSnippet),
+    code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length,
+    true,
+  ]
+  const selection: Selection = {
+    codeRef: codeRefFromRange(edgeTreatmentRange, ast),
+  }
+
+  // executeAst
+  await kclManager.executeAst({ ast })
+
+  // apply edge treatment to seleciton
+  const result = await deleteEdgeTreatment(ast, selection)
+  if (err(result)) {
+    return result
+  }
+
+  const newCode = recast(result)
+
+  expect(newCode).toContain(expectedCode)
+}
 const createFilletParameters = (radiusValue: number): FilletParameters => ({
   type: EdgeTreatmentType.Fillet,
   radius: {
@@ -573,9 +604,35 @@ extrude002 = extrude(-25, sketch002)
           expectedCode
         )
       })
+      // Test delete edge treatment
+      it(`should delete a ${edgeTreatmentType} from a specific segment`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(-15, sketch001)
+  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+        const edgeTreatmentSnippet = `${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+        const expectedCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(-15, sketch001)`
+
+        await runDeleteEdgeTreatmentTest(
+          code,
+          edgeTreatmentSnippet,
+          expectedCode
+        )
+      })
     })
-  }
-)
+})
 
 describe('Testing isTagUsedInEdgeTreatment', () => {
   const code = `sketch001 = startSketchOn('XZ')
@@ -725,83 +782,3 @@ describe('Testing button states', () => {
     await runButtonStateTest(codeWithBody, `close(%)`, false)
   })
 })
-
-// Test delete edge treatment
-const runDeleteEdgeTreatmentTest = async (
-  code: string,
-  edgeTreatmentSnippet: string,
-  expectedCode: string
-) => {
-  // ast
-  const ast = assertParse(code)
-
-  // selection
-  const edgeTreatmentRange: [number, number, boolean] = [
-    code.indexOf(edgeTreatmentSnippet),
-    code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length,
-    true,
-  ]
-  const selection: Selection = {
-    codeRef: codeRefFromRange(edgeTreatmentRange, ast),
-  }
-
-  // executeAst
-  await kclManager.executeAst({ ast })
-
-  // apply edge treatment to seleciton
-  const result = await deleteEdgeTreatment(ast, selection)
-  if (err(result)) {
-    return result
-  }
-
-  const newCode = recast(result)
-
-  expect(newCode).toContain(expectedCode)
-}
-Object.values(EdgeTreatmentType).forEach(
-  (edgeTreatmentType: EdgeTreatmentType) => {
-    // create parameters based on the edge treatment type
-    let parameterName: string
-    let parameters: EdgeTreatmentParameters
-    if (edgeTreatmentType === EdgeTreatmentType.Fillet) {
-      parameterName = 'radius'
-      parameters = createFilletParameters(3)
-    } else if (edgeTreatmentType === EdgeTreatmentType.Chamfer) {
-      parameterName = 'length'
-      parameters = createChamferParameters(3)
-    } else {
-      // Handle future edge treatments
-      return new Error(`Unsupported edge treatment type: ${edgeTreatmentType}`)
-    }
-
-    // run tests
-    describe(`Testing deleteEdgeTreatment with a single ${edgeTreatmentType} in the extrude pipe`, () => {
-      it(`should delete a ${edgeTreatmentType} from a specific segment`, async () => {
-        const code = `sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %, $seg01)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)
-  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
-        const edgeTreatmentSnippet = `${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
-        const expectedCode = `sketch001 = startSketchOn('XY')
-  |> startProfileAt([-10, 10], %)
-  |> line([20, 0], %)
-  |> line([0, -20], %)
-  |> line([-20, 0], %, $seg01)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(-15, sketch001)`
-
-        await runDeleteEdgeTreatmentTest(
-          code,
-          edgeTreatmentSnippet,
-          expectedCode
-        )
-      })
-    })
-  }
-)
