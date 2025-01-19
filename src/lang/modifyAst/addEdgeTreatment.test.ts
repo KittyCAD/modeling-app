@@ -20,7 +20,7 @@ import {
   FilletParameters,
   ChamferParameters,
   EdgeTreatmentParameters,
-  deleteEdgeTreatment,
+  // deleteEdgeTreatment,
 } from './addEdgeTreatment'
 import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
 import { createLiteral } from 'lang/modifyAst'

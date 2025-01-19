@@ -41,8 +41,6 @@ import {
   codeManager,
 } from 'lib/singletons'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import exp from 'node:constants'
-import { c } from 'vite/dist/node/types.d-aGj9QkWt'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
