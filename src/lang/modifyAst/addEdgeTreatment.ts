@@ -767,7 +767,7 @@ export async function deleteEdgeTreatment(
   // 3: Check if edge treatment is in a pipe
   const inPipe = varDec.node.init.type === 'PipeExpression'
 
-  // 4A. Handle stanalone edge treatment
+  // 4A. Handle standalone edge treatment
   if (!inPipe) {
     const varDecPathStep = varDec.shallowPath[1]
 
