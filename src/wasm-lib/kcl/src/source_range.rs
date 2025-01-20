@@ -23,6 +23,13 @@ impl ModuleId {
     }
 }
 
+/// The first two items are the start and end points (byte offsets from the start of the file).
+/// The third item is whether the source range belongs to the 'main' file, i.e., the file currently
+/// being rendered/displayed in the editor.
+//
+// Don't use a doc comment for the below since the above goes in the website docs.
+// @see isTopLevelModule() in wasm.ts.
+// TODO we need to handle modules better in the frontend.
 #[derive(Debug, Default, Deserialize, Serialize, PartialEq, Copy, Clone, ts_rs::TS, JsonSchema, Hash, Eq)]
 #[ts(export, type = "[number, number, number]")]
 pub struct SourceRange([usize; 3]);
@@ -56,6 +63,12 @@ impl SourceRange {
     /// A source range that doesn't correspond to any source code.
     pub fn synthetic() -> Self {
         Self::default()
+    }
+
+    /// True if this is a source range that doesn't correspond to any source
+    /// code.
+    pub fn is_synthetic(&self) -> bool {
+        self.start() == 0 && self.end() == 0
     }
 
     /// Get the start of the range.

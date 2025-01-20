@@ -6,16 +6,16 @@ import {
   hasLeadingZero,
   hasDigitsLeftOfDecimal,
 } from './utils'
-import { SourceRange } from '../lang/wasm'
+import { SourceRange, topLevelRange } from '../lang/wasm'
 
 describe('testing isOverlapping', () => {
-  testBothOrders([0, 3, true], [3, 10, true])
-  testBothOrders([0, 5, true], [3, 4, true])
-  testBothOrders([0, 5, true], [5, 10, true])
-  testBothOrders([0, 5, true], [6, 10, true], false)
-  testBothOrders([0, 5, true], [-1, 1, true])
-  testBothOrders([0, 5, true], [-1, 0, true])
-  testBothOrders([0, 5, true], [-2, -1, true], false)
+  testBothOrders(topLevelRange(0, 3), topLevelRange(3, 10))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(3, 4))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(5, 10))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(6, 10), false)
+  testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 1))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(-1, 0))
+  testBothOrders(topLevelRange(0, 5), topLevelRange(-2, -1), false)
 })
 
 function testBothOrders(a: SourceRange, b: SourceRange, result = true) {
