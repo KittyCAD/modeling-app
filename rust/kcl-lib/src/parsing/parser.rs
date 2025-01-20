@@ -4649,6 +4649,23 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
     }
 
     #[test]
+    fn test_parse_object_shorthand_missing_comma() {
+        let some_program_string = r#"
+bar = 1
+        {
+            foo = bar,
+            bar
+            bat = man
+        }"#;
+
+        assert_err(
+            some_program_string,
+            "Object is missing a comma in between properties",
+            [54, 89],
+        );
+    }
+
+    #[test]
     fn warn_object_expr() {
         let some_program_string = "{ foo: bar }";
         let (_, errs) = assert_no_err(some_program_string);
