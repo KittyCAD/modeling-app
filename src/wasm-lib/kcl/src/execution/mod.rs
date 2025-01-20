@@ -2388,7 +2388,15 @@ impl ExecutorContext {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
                     let source_range = SourceRange::from(import_stmt);
-                    let module_id = self.open_module(&import_stmt.path, exec_state, source_range).await?;
+                    let module_id = match &import_stmt.path {
+                        ImportPath::Kcl { filename } => self.open_module(filename, exec_state, source_range).await?,
+                        i => {
+                            return Err(KclError::Semantic(KclErrorDetails {
+                                message: format!("Unsupported import: `{i}`"),
+                                source_ranges: vec![statement.into()],
+                            }))
+                        }
+                    };
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
