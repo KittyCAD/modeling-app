@@ -1,0 +1,11 @@
+```mermaid
+mindmap
+  root
+    Plane
+      Path
+        Segment
+        Segment
+        Segment
+        Segment
+        Segment
+```

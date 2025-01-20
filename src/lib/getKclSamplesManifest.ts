@@ -3,6 +3,8 @@ import { isDesktop } from './isDesktop'
 
 export type KclSamplesManifestItem = {
   file: string
+  pathFromProjectDirectoryToFirstFile: string
+  multipleFiles: boolean
   title: string
   description: string
 }

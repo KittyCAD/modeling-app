@@ -55,6 +55,10 @@ impl KwArgs {
     pub fn len(&self) -> usize {
         self.labeled.len() + if self.unlabeled.is_some() { 1 } else { 0 }
     }
+    /// Are there no arguments?
+    pub fn is_empty(&self) -> bool {
+        self.labeled.len() == 0 && self.unlabeled.is_none()
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -90,25 +94,6 @@ impl Args {
             ctx,
             pipe_value,
         }
-    }
-
-    #[cfg(test)]
-    pub(crate) async fn new_test_args() -> Result<Self> {
-        use std::sync::Arc;
-
-        Ok(Self {
-            args: Vec::new(),
-            kw_args: Default::default(),
-            source_range: SourceRange::default(),
-            ctx: ExecutorContext {
-                engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
-                fs: Arc::new(crate::fs::FileManager::new()),
-                stdlib: Arc::new(crate::std::StdLib::new()),
-                settings: Default::default(),
-                context_type: crate::execution::ContextType::Mock,
-            },
-            pipe_value: None,
-        })
     }
 
     /// Get a keyword argument. If not set, returns None.

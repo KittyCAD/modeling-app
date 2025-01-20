@@ -17,6 +17,7 @@ use kittycad_modeling_cmds::{
     websocket::{ModelingBatch, ModelingCmdReq, OkWebSocketResponseData, WebSocketRequest, WebSocketResponse},
 };
 use tokio::sync::RwLock;
+use uuid::Uuid;
 
 const CPP_PREFIX: &str = "const double scaleFactor = 100;\n";
 const NEED_PLANES: bool = true;
@@ -367,6 +368,10 @@ impl kcl_lib::EngineManager for EngineConnection {
 
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
+        IndexMap::new()
     }
 
     fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {

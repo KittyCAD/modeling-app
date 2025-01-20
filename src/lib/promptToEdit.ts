@@ -3,8 +3,8 @@ import { VITE_KC_API_BASE_URL } from 'env'
 import crossPlatformFetch from './crossPlatformFetch'
 import { err, reportRejection } from './trap'
 import { Selections } from './selections'
-import { ArtifactGraph, getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { SourceRange } from 'lang/wasm'
+import { getArtifactOfTypes } from 'lang/std/artifactGraph'
+import { ArtifactGraph, SourceRange, topLevelRange } from 'lang/wasm'
 import toast from 'react-hot-toast'
 import { codeManager, editorManager, kclManager } from './singletons'
 import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
@@ -334,7 +334,7 @@ const reBuildNewCodeWithRanges = (
     } else if (change.added && !change.removed) {
       const start = newCodeWithRanges.length
       const end = start + change.value.length
-      insertRanges.push([start, end, true])
+      insertRanges.push(topLevelRange(start, end))
       newCodeWithRanges += change.value
     }
   }

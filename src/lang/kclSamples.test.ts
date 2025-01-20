@@ -1,79 +1,81 @@
 import { assertParse, initPromise, programMemoryInit } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
-// These unit tests makes web requests to a public github repository.
+
+import path from 'node:path'
+import fs from 'node:fs/promises'
+import child_process from 'node:child_process'
+
+// The purpose of these tests is to act as a first line of defense
+// if something gets real screwy with our KCL ecosystem.
+// THESE TESTS ONLY RUN UNDER A NODEJS ENVIRONMENT. They DO NOT
+// test under our application.
+
+const DIR_KCL_SAMPLES = 'kcl-samples'
+const URL_GIT_KCL_SAMPLES = 'https://github.com/KittyCAD/kcl-samples.git'
 
 interface KclSampleFile {
   file: string
+  pathFromProjectDirectoryToFirstFile: string
   title: string
   filename: string
   description: string
 }
 
+try {
+  // @ts-expect-error
+  await fs.rm(DIR_KCL_SAMPLES, { recursive: true })
+} catch (e) {
+  console.log(e)
+}
+
+child_process.spawnSync('git', ['clone', URL_GIT_KCL_SAMPLES, DIR_KCL_SAMPLES])
+
+// @ts-expect-error
+let files = await fs.readdir(DIR_KCL_SAMPLES)
+// @ts-expect-error
+const manifestJsonStr = await fs.readFile(
+  path.resolve(DIR_KCL_SAMPLES, 'manifest.json'),
+  'utf-8'
+)
+const manifest = JSON.parse(manifestJsonStr)
+
+process.chdir(DIR_KCL_SAMPLES)
+
 beforeAll(async () => {
   await initPromise
 })
 
-// Only used to actually fetch an older version of KCL code that will break in the parser.
-/* eslint-disable @typescript-eslint/no-unused-vars */
-async function getBrokenSampleCodeForLocalTesting() {
-  const result = await fetch(
-    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/5ccd04a1773ebdbfd02684057917ce5dbe0eaab3/80-20-rail.kcl'
-  )
-  const text = await result.text()
-  return text
-}
+afterAll(async () => {
+  try {
+    process.chdir('..')
+    await fs.rm(DIR_KCL_SAMPLES, { recursive: true })
+  } catch (e) {}
+})
 
-async function getKclSampleCodeFromGithub(file: string): Promise<string> {
-  const result = await fetch(
-    `https://raw.githubusercontent.com/KittyCAD/kcl-samples/refs/heads/main/${file}/${file}.kcl`
-  )
-  const text = await result.text()
-  return text
-}
+afterEach(() => {
+  process.chdir('..')
+})
 
-async function getFileNamesFromManifestJSON(): Promise<KclSampleFile[]> {
-  const result = await fetch(
-    'https://raw.githubusercontent.com/KittyCAD/kcl-samples/refs/heads/main/manifest.json'
-  )
-  const json = await result.json()
-  json.forEach((file: KclSampleFile) => {
-    const filenameWithoutExtension = file.file.split('.')[0]
-    file.filename = filenameWithoutExtension
-  })
-  return json
-}
-
-// Value to use across all tests!
-let files: KclSampleFile[] = []
-
-describe('Test KCL Samples from public Github repository', () => {
-  describe('When parsing source code', () => {
-    // THIS RUNS ACROSS OTHER TESTS!
-    it('should fetch files', async () => {
-      files = await getFileNamesFromManifestJSON()
-    })
-    // Run through all of the files in the manifest json. This will allow us to be automatically updated
-    // with the latest changes in github. We won't be hard coding the filenames
-    files.forEach((file: KclSampleFile) => {
-      it(`should parse ${file.filename} without errors`, async () => {
-        const code = await getKclSampleCodeFromGithub(file.filename)
-        assertParse(code)
-      }, 1000)
-    })
-  })
-
-  describe('when performing enginelessExecutor', () => {
-    it(
-      'should run through all the files',
-      async () => {
-        for (let i = 0; i < files.length; i++) {
-          const file: KclSampleFile = files[i]
-          const code = await getKclSampleCodeFromGithub(file.filename)
+// The tests have to be sequential because we need to change directories
+// to support `import` working properly.
+// @ts-expect-error
+describe.sequential('Test KCL Samples from public Github repository', () => {
+  // @ts-expect-error
+  describe.sequential('when performing enginelessExecutor', () => {
+    manifest.forEach((file: KclSampleFile) => {
+      // @ts-expect-error
+      it.sequential(
+        `should execute ${file.title} (${file.file}) successfully`,
+        async () => {
+          const [dirProject, fileKcl] =
+            file.pathFromProjectDirectoryToFirstFile.split('/')
+          process.chdir(dirProject)
+          const code = await fs.readFile(fileKcl, 'utf-8')
           const ast = assertParse(code)
           await enginelessExecutor(ast, programMemoryInit())
-        }
-      },
-      files.length * 1000
-    )
+        },
+        files.length * 1000
+      )
+    })
   })
 })

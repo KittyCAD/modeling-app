@@ -52,6 +52,7 @@ pub struct EngineConnection {
     manager: Arc<EngineCommandManager>,
     batch: Arc<Mutex<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    responses: Arc<Mutex<IndexMap<Uuid, WebSocketResponse>>>,
     artifact_commands: Arc<Mutex<Vec<ArtifactCommand>>>,
     execution_kind: Arc<Mutex<ExecutionKind>>,
 }
@@ -66,6 +67,7 @@ impl EngineConnection {
             manager: Arc::new(manager),
             batch: Arc::new(Mutex::new(Vec::new())),
             batch_end: Arc::new(Mutex::new(IndexMap::new())),
+            responses: Arc::new(Mutex::new(IndexMap::new())),
             artifact_commands: Arc::new(Mutex::new(Vec::new())),
             execution_kind: Default::default(),
         })
@@ -104,6 +106,11 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
         self.batch_end.clone()
+    }
+
+    fn responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
+        let responses = self.responses.lock().unwrap();
+        responses.clone()
     }
 
     fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
@@ -264,6 +271,9 @@ impl crate::engine::EngineManager for EngineConnection {
                 source_ranges: vec![source_range],
             })
         })?;
+
+        let mut responses = self.responses.lock().unwrap();
+        responses.insert(id, ws_result.clone());
 
         Ok(ws_result)
     }

@@ -25,13 +25,13 @@ import {
   CallExpression,
   PathToNode,
   Program,
-  SourceRange,
   Expr,
   parse,
   recast,
   defaultSourceRange,
   resultIsOk,
   ProgramMemory,
+  topLevelRange,
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
@@ -600,8 +600,8 @@ const ConstraintSymbol = ({
   if (err(_node)) return
   const node = _node.node
 
-  const range: SourceRange = node
-    ? [node.start, node.end, true]
+  const range = node
+    ? topLevelRange(node.start, node.end)
     : defaultSourceRange()
 
   if (_type === 'intersectionTag') return null

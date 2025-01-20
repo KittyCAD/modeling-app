@@ -1078,7 +1078,7 @@ export async function createProject({
   returnHome?: boolean
 }) {
   await test.step(`Create project and navigate to it`, async () => {
-    await page.getByRole('button', { name: 'New project' }).click()
+    await page.getByRole('button', { name: 'Create project' }).click()
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 

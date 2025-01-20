@@ -1,0 +1,6 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Artifact graph flowchart fillet-and-shell.kcl
+extension: md
+snapshot_kind: binary
+---

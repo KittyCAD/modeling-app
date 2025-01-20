@@ -17,7 +17,7 @@ import { StateFrom } from 'xstate'
 const semanticEntityNames: {
   [key: string]: Array<Artifact['type'] | 'defaultPlane'>
 } = {
-  face: ['wall', 'cap', 'solid2D'],
+  face: ['wall', 'cap', 'solid2d'],
   edge: ['segment', 'sweepEdge', 'edgeCutEdge'],
   point: [],
   plane: ['defaultPlane'],

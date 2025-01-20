@@ -57,7 +57,9 @@ export const FileMachineProvider = ({
   useEffect(() => {
     markOnce('code/didLoadFile')
     async function fetchKclSamples() {
-      setKclSamples(await getKclSamplesManifest())
+      const manifest = await getKclSamplesManifest()
+      const filteredFiles = manifest.filter((file) => !file.multipleFiles)
+      setKclSamples(filteredFiles)
     }
     fetchKclSamples().catch(reportError)
   }, [])
@@ -324,7 +326,7 @@ export const FileMachineProvider = ({
           }
         },
         kclSamples.map((sample) => ({
-          value: sample.file,
+          value: sample.pathFromProjectDirectoryToFirstFile,
           name: sample.title,
         }))
       ).filter(

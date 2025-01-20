@@ -205,6 +205,7 @@ export function OnboardingButtons({
         </p>
       )}
       <ActionButton
+        autoFocus
         Element="button"
         onClick={next}
         iconStart={{ icon: 'arrowRight', bgClassName: 'dark:bg-chalkboard-80' }}

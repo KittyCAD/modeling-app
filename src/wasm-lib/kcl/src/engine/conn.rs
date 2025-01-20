@@ -383,6 +383,16 @@ impl EngineManager for EngineConnection {
         self.batch_end.clone()
     }
 
+    fn responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
+        self.responses
+            .iter()
+            .map(|entry| {
+                let (k, v) = entry.pair();
+                (*k, v.clone())
+            })
+            .collect()
+    }
+
     fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
         let mut artifact_commands = self.artifact_commands.lock().unwrap();
         std::mem::take(&mut *artifact_commands)

@@ -108,6 +108,8 @@ export class CameraControls {
   interactionGuards: MouseGuard = cameraMouseDragGuards.Zoo
   isFovAnimationInProgress = false
   perspectiveFovBeforeOrtho = 45
+  // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
+  _setting_allowOrbitInSketchMode = false
   get isPerspective() {
     return this.camera instanceof PerspectiveCamera
   }

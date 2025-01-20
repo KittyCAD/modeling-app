@@ -164,7 +164,7 @@ async fn snapshot_endpoint(body: Bytes, state: ExecutorContext) -> Response<Body
     };
 
     eprintln!("Executing {test_name}");
-    let mut exec_state = ExecState::new();
+    let mut exec_state = ExecState::new(&state.settings);
     // This is a shitty source range, I don't know what else to use for it though.
     // There's no actual KCL associated with this reset_scene call.
     if let Err(e) = state

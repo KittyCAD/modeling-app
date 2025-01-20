@@ -1,9 +1,8 @@
-import { ArtifactGraph } from 'lang/std/artifactGraph'
 import { Selections } from 'lib/selections'
 import { Expr } from 'wasm-lib/kcl/bindings/Expr'
 import { Program } from 'wasm-lib/kcl/bindings/Program'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { PathToNode, VariableDeclarator } from 'lang/wasm'
+import { ArtifactGraph, PathToNode, VariableDeclarator } from 'lang/wasm'
 import {
   getPathToExtrudeForSegmentSelection,
   mutateAstWithTagForSketchSegment,

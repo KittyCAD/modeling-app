@@ -3,6 +3,7 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
+use artifact::build_artifact_graph;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 use kcmc::{
@@ -11,8 +12,8 @@ use kcmc::{
     websocket::{ModelingSessionData, OkWebSocketResponseData},
     ImageFormat, ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::{self as kcmc, websocket::WebSocketResponse};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -21,7 +22,7 @@ type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use function_param::FunctionParam;
-pub use kcl_value::{KclObjectFields, KclValue};
+pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use uuid::Uuid;
 
 mod annotations;
@@ -49,18 +50,18 @@ use crate::{
 };
 
 // Re-exports.
-pub use artifact::{Artifact, ArtifactCommand, ArtifactId, ArtifactInner};
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 pub use cad_op::Operation;
 
 /// State for executing a program.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecState {
     pub global: GlobalState,
     pub mod_local: ModuleState,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalState {
     /// The stable artifact ID generator.
@@ -75,9 +76,16 @@ pub struct GlobalState {
     /// These are accumulated in the [`ExecutorContext`] but moved here for
     /// convenience of the execution cache.
     pub artifact_commands: Vec<ArtifactCommand>,
+    /// Responses from the engine for `artifact_commands`.  We need to cache
+    /// this so that we can build the artifact graph.  These are accumulated in
+    /// the [`ExecutorContext`] but moved here for convenience of the execution
+    /// cache.
+    pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 pub struct ModuleState {
     /// Program variable bindings.
@@ -113,23 +121,19 @@ pub struct ExecOutcome {
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
     pub artifact_commands: Vec<ArtifactCommand>,
-}
-
-impl Default for ExecState {
-    fn default() -> Self {
-        Self::new()
-    }
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
 impl ExecState {
-    pub fn new() -> Self {
+    pub fn new(exec_settings: &ExecutorSettings) -> Self {
         ExecState {
             global: GlobalState::new(),
-            mod_local: ModuleState::default(),
+            mod_local: ModuleState::new(exec_settings),
         }
     }
 
-    fn reset(&mut self) {
+    fn reset(&mut self, exec_settings: &ExecutorSettings) {
         let mut id_generator = self.global.id_generator.clone();
         // We do not pop the ids, since we want to keep the same id generator.
         // This is for the front end to keep track of the ids.
@@ -140,7 +144,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::default(),
+            mod_local: ModuleState::new(exec_settings),
         };
     }
 
@@ -155,6 +159,7 @@ impl ExecState {
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
+            artifact_graph: self.global.artifact_graph,
         }
     }
 
@@ -171,7 +176,7 @@ impl ExecState {
     }
 
     pub fn add_artifact(&mut self, artifact: Artifact) {
-        let id = artifact.id;
+        let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
     }
 
@@ -204,6 +209,14 @@ impl ExecState {
 
         Ok(id)
     }
+
+    pub fn length_unit(&self) -> UnitLen {
+        self.mod_local.settings.default_length_units
+    }
+
+    pub fn angle_unit(&self) -> UnitAngle {
+        self.mod_local.settings.default_angle_units
+    }
 }
 
 impl GlobalState {
@@ -214,6 +227,8 @@ impl GlobalState {
             module_infos: Default::default(),
             artifacts: Default::default(),
             artifact_commands: Default::default(),
+            artifact_responses: Default::default(),
+            artifact_graph: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.
@@ -232,21 +247,29 @@ impl GlobalState {
     }
 }
 
+impl ModuleState {
+    fn new(exec_settings: &ExecutorSettings) -> Self {
+        ModuleState {
+            memory: Default::default(),
+            dynamic_state: Default::default(),
+            pipe_value: Default::default(),
+            module_exports: Default::default(),
+            import_stack: Default::default(),
+            operations: Default::default(),
+            settings: MetaSettings {
+                default_length_units: exec_settings.units.into(),
+                default_angle_units: Default::default(),
+            },
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
     pub default_length_units: kcl_value::UnitLen,
     pub default_angle_units: kcl_value::UnitAngle,
-}
-
-impl Default for MetaSettings {
-    fn default() -> Self {
-        MetaSettings {
-            default_length_units: kcl_value::UnitLen::Mm,
-            default_angle_units: kcl_value::UnitAngle::Degrees,
-        }
-    }
 }
 
 impl MetaSettings {
@@ -1711,7 +1734,7 @@ pub struct ExecutorContext {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct ExecutorSettings {
-    /// The unit to use in modeling dimensions.
+    /// The project-default unit to use in modeling dimensions.
     pub units: UnitLength,
     /// Highlight edges of 3D objects?
     pub highlight_edges: bool,
@@ -2214,7 +2237,7 @@ impl ExecutorContext {
 
         if cache_result.clear_scene && !self.is_mock() {
             // Pop the execution state, since we are starting fresh.
-            exec_state.reset();
+            exec_state.reset(&self.settings);
 
             // We don't do this in mock mode since there is no engine connection
             // anyways and from the TS side we override memory and don't want to clear it.
@@ -2229,22 +2252,56 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
+        self.execute_and_build_graph(&cache_result.program, exec_state)
             .await
             .map_err(|e| {
                 KclErrorWithOutputs::new(
                     e,
                     exec_state.mod_local.operations.clone(),
-                    self.engine.take_artifact_commands(),
+                    exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
                 )
             })?;
-        // Move the artifact commands to simplify cache management.
+
+        let session_data = self.engine.get_session_data();
+        Ok(session_data)
+    }
+
+    /// Execute an AST's program and build auxiliary outputs like the artifact
+    /// graph.
+    async fn execute_and_build_graph<'a>(
+        &self,
+        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<KclValue>, KclError> {
+        // Don't early return!  We need to build other outputs regardless of
+        // whether execution failed.
+        let exec_result = self
+            .inner_execute(program, exec_state, crate::execution::BodyType::Root)
+            .await;
+        // Move the artifact commands and responses to simplify cache management
+        // and error creation.
         exec_state
             .global
             .artifact_commands
             .extend(self.engine.take_artifact_commands());
-        let session_data = self.engine.get_session_data();
-        Ok(session_data)
+        exec_state.global.artifact_responses.extend(self.engine.responses());
+        // Build the artifact graph.
+        match build_artifact_graph(
+            &exec_state.global.artifact_commands,
+            &exec_state.global.artifact_responses,
+            program,
+            &exec_state.global.artifacts,
+        ) {
+            Ok(artifact_graph) => {
+                exec_state.global.artifact_graph = artifact_graph;
+                exec_result
+            }
+            Err(err) => {
+                // Prefer the exec error.
+                exec_result.and(Err(err))
+            }
+        }
     }
 
     /// Execute an AST's program.
@@ -2457,7 +2514,7 @@ impl ExecutorContext {
 
         let mut local_state = ModuleState {
             import_stack: exec_state.mod_local.import_stack.clone(),
-            ..Default::default()
+            ..ModuleState::new(&self.settings)
         };
         local_state.import_stack.push(info.path.clone());
         std::mem::swap(&mut exec_state.mod_local, &mut local_state);
@@ -2830,7 +2887,7 @@ mod tests {
             settings: Default::default(),
             context_type: ContextType::Mock,
         };
-        let mut exec_state = ExecState::default();
+        let mut exec_state = ExecState::new(&ctx.settings);
         ctx.run(program.clone().into(), &mut exec_state).await?;
 
         Ok((program, ctx, exec_state))
@@ -3300,6 +3357,25 @@ let shape = layer() |> patternTransform(10, transform, %)
         let ast = r#"let thing = .4 + 7"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(7.4, mem_get_json(exec_state.memory(), "thing").as_f64().unwrap());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_default() {
+        let ast = r#"const inMm = 25.4 * mm()
+const inInches = 1.0 * inch()"#;
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(25.4, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap());
+        assert_eq!(25.4, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_overriden() {
+        let ast = r#"@settings(defaultLengthUnit = inch)
+const inMm = 25.4 * mm()
+const inInches = 1.0 * inch()"#;
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap().round());
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -4045,7 +4121,7 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
             .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
         // Execute the program.
-        let mut exec_state = Default::default();
+        let mut exec_state = ExecState::new(&ctx.settings);
         let cache_info = crate::CacheInformation {
             old: None,
             new_ast: old_program.ast.clone(),

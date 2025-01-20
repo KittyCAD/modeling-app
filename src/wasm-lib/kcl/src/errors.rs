@@ -3,7 +3,7 @@ use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
-    execution::{ArtifactCommand, Operation},
+    execution::{ArtifactCommand, ArtifactGraph, Operation},
     lsp::IntoDiagnostic,
     source_range::{ModuleId, SourceRange},
 };
@@ -30,13 +30,16 @@ impl From<KclErrorWithOutputs> for ExecError {
 #[derive(Debug)]
 pub struct ExecErrorWithState {
     pub error: ExecError,
-    pub exec_state: crate::ExecState,
+    pub exec_state: Option<crate::ExecState>,
 }
 
 impl ExecErrorWithState {
     #[cfg_attr(target_arch = "wasm32", expect(dead_code))]
     pub fn new(error: ExecError, exec_state: crate::ExecState) -> Self {
-        Self { error, exec_state }
+        Self {
+            error,
+            exec_state: Some(exec_state),
+        }
     }
 }
 
@@ -44,7 +47,7 @@ impl From<ExecError> for ExecErrorWithState {
     fn from(error: ExecError) -> Self {
         Self {
             error,
-            exec_state: Default::default(),
+            exec_state: None,
         }
     }
 }
@@ -53,7 +56,7 @@ impl From<ConnectionError> for ExecErrorWithState {
     fn from(error: ConnectionError) -> Self {
         Self {
             error: error.into(),
-            exec_state: Default::default(),
+            exec_state: None,
         }
     }
 }
@@ -111,14 +114,21 @@ pub struct KclErrorWithOutputs {
     pub error: KclError,
     pub operations: Vec<Operation>,
     pub artifact_commands: Vec<ArtifactCommand>,
+    pub artifact_graph: ArtifactGraph,
 }
 
 impl KclErrorWithOutputs {
-    pub fn new(error: KclError, operations: Vec<Operation>, artifact_commands: Vec<ArtifactCommand>) -> Self {
+    pub fn new(
+        error: KclError,
+        operations: Vec<Operation>,
+        artifact_commands: Vec<ArtifactCommand>,
+        artifact_graph: ArtifactGraph,
+    ) -> Self {
         Self {
             error,
             operations,
             artifact_commands,
+            artifact_graph,
         }
     }
     pub fn no_outputs(error: KclError) -> Self {
@@ -126,6 +136,7 @@ impl KclErrorWithOutputs {
             error,
             operations: Default::default(),
             artifact_commands: Default::default(),
+            artifact_graph: Default::default(),
         }
     }
 }

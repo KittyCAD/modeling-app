@@ -210,6 +210,7 @@ export function Toolbar({
                 <ToolbarItemTooltip
                   itemConfig={maybeIconConfig[0]}
                   configCallbackProps={configCallbackProps}
+                  className="ui-open:!hidden"
                 />
               </ActionButtonDropdown>
             )
@@ -277,9 +278,11 @@ export function Toolbar({
 const ToolbarItemTooltip = memo(function ToolbarItemContents({
   itemConfig,
   configCallbackProps,
+  className,
 }: {
   itemConfig: ToolbarItemResolved
   configCallbackProps: ToolbarItemCallbackProps
+  className?: string
 }) {
   const { state } = useModelingContext()
 
@@ -305,8 +308,9 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
           ? ({ '-webkit-app-region': 'no-drag' } as React.CSSProperties)
           : {}
       }
+      hoverOnly
       position="bottom"
-      wrapperClassName="!p-4 !pointer-events-auto"
+      wrapperClassName={'!p-4 !pointer-events-auto ' + className}
       contentClassName="!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch"
     >
       <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">

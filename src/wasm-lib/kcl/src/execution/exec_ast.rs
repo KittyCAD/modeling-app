@@ -21,8 +21,6 @@ use crate::{
 
 use super::cad_op::{OpArg, Operation};
 
-const FLOAT_TO_INT_MAX_DELTA: f64 = 0.01;
-
 impl BinaryPart {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
@@ -974,10 +972,9 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
             if num < 0.0 {
                 return make_err(format!("'{num}' is negative, so you can't index an array with it"))
             }
-            let nearest_int = num.round();
-            let delta = num-nearest_int;
-            if delta < FLOAT_TO_INT_MAX_DELTA {
-                Ok(Property::UInt(nearest_int as usize))
+            let nearest_int = crate::try_f64_to_usize(num);
+            if let Some(nearest_int) = nearest_int {
+                Ok(Property::UInt(nearest_int))
             } else {
                 make_err(format!("'{num}' is not an integer, so you can't index an array with it"))
             }
@@ -988,6 +985,7 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
         }
     }
 }
+
 impl Property {
     fn type_name(&self) -> &'static str {
         match self {

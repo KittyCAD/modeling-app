@@ -54,8 +54,10 @@ export function getNextProjectIndex(
   const matches = projects.map((project) => project.name?.match(regex))
   const indices = matches
     .filter(Boolean)
-    .map((match) => match![1])
-    .map(Number)
+    .map((match) => (match !== null ? match[1] : '-1'))
+    .map((maybeMatchIndex) => {
+      return parseInt(maybeMatchIndex || '0', 10)
+    })
   const maxIndex = Math.max(...indices, -1)
   return maxIndex + 1
 }
@@ -81,6 +83,33 @@ export function interpolateProjectNameWithIndex(
 
 export function doesProjectNameNeedInterpolated(projectName: string) {
   return projectName.includes(INDEX_IDENTIFIER)
+}
+
+/**
+ * Given a target name, which may include our magic index interpolation string,
+ * and a list of projects, return a unique name that doesn't conflict with any
+ * of the existing projects, incrementing any ending number if necessary.
+ * @param name
+ * @param projects
+ * @returns
+ */
+export function getUniqueProjectName(name: string, projects: FileEntry[]) {
+  // The name may have our magic index interpolation string in it
+  const needsInterpolation = doesProjectNameNeedInterpolated(name)
+
+  if (needsInterpolation) {
+    const nextIndex = getNextProjectIndex(name, projects)
+    return interpolateProjectNameWithIndex(name, nextIndex)
+  } else {
+    let newName = name
+    while (projects.some((project) => project.name === newName)) {
+      const nameEndsWithNumber = newName.match(/\d+$/)
+      newName = nameEndsWithNumber
+        ? newName.replace(/\d+$/, (num) => `${parseInt(num, 10) + 1}`)
+        : `${name}-1`
+    }
+    return newName
+  }
 }
 
 function escapeRegExpChars(string: string) {

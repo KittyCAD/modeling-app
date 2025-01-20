@@ -126,7 +126,13 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'yarn' # Set this to npm, yarn or pnpm.
 
-      - run: yarn install
+      - name: yarn install
+        # Windows is picky sometimes and fails on fetch. Step takes about ~30s
+        uses: nick-fields/retry@v3.0.0
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          command: yarn install
 
       - run: yarn tronb:vite
 

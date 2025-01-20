@@ -22,6 +22,7 @@ import {
   ProgramMemory,
   recast,
   SourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
@@ -376,11 +377,7 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/programMemory
-    await this.engineCommandManager.updateArtifactGraph(
-      this.ast,
-      execState.artifactCommands,
-      execState.artifacts
-    )
+    this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
@@ -473,7 +470,7 @@ export class KclManager {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,
-            range: [node.start, node.end, true],
+            range: topLevelRange(node.start, node.end),
           },
         })
       }
@@ -594,7 +591,7 @@ export class KclManager {
         if (start && end) {
           returnVal.graphSelections.push({
             codeRef: {
-              range: [start, end, true],
+              range: topLevelRange(start, end),
               pathToNode: path,
             },
           })

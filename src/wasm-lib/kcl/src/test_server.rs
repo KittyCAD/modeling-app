@@ -4,9 +4,9 @@ use std::path::PathBuf;
 
 use crate::{
     errors::ExecErrorWithState,
-    execution::{new_zoo_client, ArtifactCommand, ExecutorContext, ExecutorSettings, Operation, ProgramMemory},
+    execution::{new_zoo_client, ExecutorContext, ExecutorSettings},
     settings::types::UnitLength,
-    ConnectionError, ExecError, KclErrorWithOutputs, Program,
+    ConnectionError, ExecError, ExecState, KclErrorWithOutputs, Program,
 };
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -39,16 +39,9 @@ pub async fn execute_and_snapshot_ast(
     ast: Program,
     units: UnitLength,
     project_directory: Option<PathBuf>,
-) -> Result<(ProgramMemory, Vec<Operation>, Vec<ArtifactCommand>, image::DynamicImage), ExecErrorWithState> {
+) -> Result<(ExecState, image::DynamicImage), ExecErrorWithState> {
     let ctx = new_context(units, true, project_directory).await?;
-    let res = do_execute_and_snapshot(&ctx, ast).await.map(|(state, snap)| {
-        (
-            state.mod_local.memory,
-            state.mod_local.operations,
-            state.global.artifact_commands,
-            snap,
-        )
-    });
+    let res = do_execute_and_snapshot(&ctx, ast).await;
     ctx.close().await;
     res
 }
@@ -71,8 +64,8 @@ pub async fn execute_and_snapshot_no_auth(
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
-) -> Result<(crate::execution::ExecState, image::DynamicImage), ExecErrorWithState> {
-    let mut exec_state = Default::default();
+) -> Result<(ExecState, image::DynamicImage), ExecErrorWithState> {
+    let mut exec_state = ExecState::new(&ctx.settings);
     let snapshot_png_bytes = ctx
         .execute_and_prepare_snapshot(&program, &mut exec_state)
         .await
