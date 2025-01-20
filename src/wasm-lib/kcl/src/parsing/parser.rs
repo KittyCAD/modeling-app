@@ -12,7 +12,10 @@ use winnow::{
     token::{any, one_of, take_till},
 };
 
-use super::{ast::types::LabelledExpression, token::NumericSuffix};
+use super::{
+    ast::types::{ImportPath, LabelledExpression},
+    token::NumericSuffix,
+};
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
@@ -1570,16 +1573,16 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         LiteralValue::String(s) => s,
         _ => unreachable!(),
     };
-    let kind = validate_path_string(
-        path_string.clone(),
+    let path = validate_path_string(
+        path_string,
         selector.exposes_imported_name(),
         SourceRange::new(path.start, path.end, path.module_id),
     )?;
 
-    if matches!(kind, ImportPath::Foreign(_)) && selector.imports_items() {
+    if matches!(path, ImportPath::Foreign { .. }) && selector.imports_items() {
         return Err(ErrMode::Cut(
             CompilationError::fatal(
-                SourceRange::new(start, path.end, path.module_id),
+                SourceRange::new(start, end, module_id),
                 "individual items can only be imported from KCL files",
             )
             .into(),
@@ -1590,20 +1593,13 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         ImportStatement {
             selector,
             visibility,
-            path: path_string,
+            path,
             digest: None,
         },
         start,
         end,
         module_id,
     ))
-}
-
-#[derive(Clone, Eq, PartialEq, Debug)]
-enum ImportPath {
-    Kcl(String),
-    Foreign(String),
-    Std,
 }
 
 const FOREIGN_IMPORT_EXTENSIONS: [&str; 8] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "step", "stl"];
@@ -1642,7 +1638,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             ));
         }
 
-        ImportPath::Kcl(path_string)
+        ImportPath::Kcl { filename: path_string }
     } else if path_string.starts_with("std") {
         ParseContext::warn(CompilationError::err(
             path_range,
@@ -1658,7 +1654,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
                 format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
             ))
         }
-        ImportPath::Foreign(path_string)
+        ImportPath::Foreign { path: path_string }
     } else {
         return Err(ErrMode::Cut(
             CompilationError::fatal(
