@@ -1256,6 +1256,20 @@ impl ImportSelector {
             ImportSelector::None { alias: Some(alias) } => alias.rename(old_name, new_name),
         }
     }
+
+    pub fn exposes_imported_name(&self) -> bool {
+        match self {
+            ImportSelector::None { alias: None } => true,
+            _ => false,
+        }
+    }
+
+    pub fn imports_items(&self) -> bool {
+        match self {
+            ImportSelector::None { .. } => false,
+            _ => true,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
