@@ -3,6 +3,7 @@ import { engineCommandManager } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { CommandBarContext } from 'machines/commandBarMachine'
 import { Selections } from 'lib/selections'
+import { KclCommandValue } from 'lib/commandTypes'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
   for (let tries = 0; tries < numberOfRetries; tries++) {
@@ -155,16 +156,21 @@ export const loftValidator = async ({
 }
 
 export const shellValidator = async ({
+  context,
   data,
 }: {
-  data: { selection: Selections }
+  context: CommandBarContext
+  data: { thickness: KclCommandValue }
 }): Promise<boolean | string> => {
-  if (!isSelections(data.selection)) {
+  const thicknessArg = data.thickness
+  const selectionArg = context.argumentsToSubmit['selection'] as Selections
+  if (!isSelections(selectionArg)) {
     return 'Unable to shell, selections are missing'
   }
 
-  // No validation on the faces, filtering is done upstream and we have the dry run validation just below
-  const face_ids = data.selection.graphSelections.flatMap((s) =>
+  // No validation on the args, filtering is done upstream and we have the dry run validation just below
+  const shell_thickness = Number(thicknessArg.valueCalculated)
+  const face_ids = selectionArg.graphSelections.flatMap((s) =>
     s.artifact ? s.artifact.id : []
   )
 
@@ -181,14 +187,12 @@ export const shellValidator = async ({
   }
 
   const shellCommand = async () => {
-    // TODO: figure out something better than an arbitrarily small value
-    const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 1e-9
     const DEFAULT_HOLLOW = false
     const cmdArgs = {
       face_ids,
       object_id,
+      shell_thickness,
       hollow: DEFAULT_HOLLOW,
-      shell_thickness: DEFAULT_THICKNESS,
     }
     return await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
