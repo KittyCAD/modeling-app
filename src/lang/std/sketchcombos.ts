@@ -81,10 +81,7 @@ export type ConstraintType =
 const REF_NUM_ERR = new Error('Referenced segment does not have a to value')
 
 function asNum(val: LiteralValue): number | Error {
-  if (typeof val === 'undefined') return REF_NUM_ERR
-  if (typeof val === 'number') return val
-  if ((val as any).value != undefined && typeof (val as any).value === 'number')
-    return (val as any).value
+  if (typeof val === 'object') return val.value
   return REF_NUM_ERR
 }
 
