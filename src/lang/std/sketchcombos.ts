@@ -24,9 +24,9 @@ import {
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
-  getNodePathFromSourceRange,
   isValueZero,
-} from '../queryAst'
+} from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   createArrayExpression,
   createBinaryExpression,

@@ -26,10 +26,10 @@ import {
   findAllPreviousVariables,
   findAllPreviousVariablesPath,
   getNodeFromPath,
-  getNodePathFromSourceRange,
   isNodeSafeToReplace,
   traverse,
 } from './queryAst'
+import { getNodePathFromSourceRange } from './queryAstNodePathUtils'
 import { addTagForSketchOnFace, getConstraintInfo } from './std/sketch'
 import {
   PathToNodeMap,

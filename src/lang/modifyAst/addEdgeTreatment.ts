@@ -10,7 +10,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   sketchFromKclValue,
-} from '../wasm'
+} from 'lang/wasm'
 import {
   createCallExpressionStdLib,
   createPipeSubstitution,
@@ -18,13 +18,13 @@ import {
   createArrayExpression,
   createIdentifier,
   createPipeExpression,
-} from '../modifyAst'
+} from 'lang/modifyAst'
 import {
   getNodeFromPath,
-  getNodePathFromSourceRange,
   hasSketchPipeBeenExtruded,
   traverse,
-} from '../queryAst'
+} from 'lang/queryAst'
+import  { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
   getTagFromCallExpression,

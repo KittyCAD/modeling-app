@@ -1,6 +1,7 @@
 import { useModelingContext } from 'hooks/useModelingContext'
 import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useEffect, useRef, useState } from 'react'
 import { trap } from 'lib/trap'
 import { codeToIdSelections } from 'lib/selections'

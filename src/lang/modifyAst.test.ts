@@ -25,7 +25,8 @@ import {
   deleteFromSelection,
 } from './modifyAst'
 import { enginelessExecutor } from '../lib/testHelpers'
-import { findUsesOfTagInPipe, getNodePathFromSourceRange } from './queryAst'
+import { findUsesOfTagInPipe } from './queryAst'
+import { getNodePathFromSourceRange } from './queryAstNodePathUtils'
 import { err } from 'lib/trap'
 import { SimplifiedArgDetails } from './std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
