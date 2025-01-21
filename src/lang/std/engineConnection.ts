@@ -1016,6 +1016,11 @@ class EngineConnection extends EventTarget {
               this.pingPongSpan.pong = new Date()
               break
 
+            case 'modeling_session_data':
+              let api_call_id = resp.data?.session?.api_call_id
+              console.log(`API Call ID: ${api_call_id}`)
+              break
+
             // Only fires on successful authentication.
             case 'ice_server_info':
               let ice_servers = resp.data?.ice_servers
