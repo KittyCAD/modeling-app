@@ -929,13 +929,13 @@ impl Property {
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::Number(x) => {
-                        if let Some(x) = crate::try_f64_to_usize(x) {
+                    LiteralValue::Number { value, .. } => {
+                        if let Some(x) = crate::try_f64_to_usize(value) {
                             Ok(Property::UInt(x))
                         } else {
                             Err(KclError::Semantic(KclErrorDetails {
                                 source_ranges: property_sr,
-                                message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
+                                message: format!("{value} is not a valid index, indices must be whole numbers >= 0"),
                             }))
                         }
                     }

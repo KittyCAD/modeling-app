@@ -8,7 +8,7 @@ use crate::{
 };
 
 /// Information for the caching an AST and smartly re-executing it if we can.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct CacheInformation {
     /// The old information.
     pub old: Option<OldAstState>,
@@ -17,7 +17,7 @@ pub struct CacheInformation {
 }
 
 /// The old ast and program memory.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct OldAstState {
     /// The ast.
     pub ast: Node<Program>,

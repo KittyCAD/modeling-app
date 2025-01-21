@@ -1,8 +1,6 @@
 ---
 source: kcl/src/parsing/parser.rs
-assertion_line: 3861
 expression: actual
-snapshot_kind: text
 ---
 {
   "type": "BinaryExpression",
@@ -10,7 +8,10 @@ snapshot_kind: text
   "left": {
     "type": "Literal",
     "type": "Literal",
-    "value": 2.0,
+    "value": {
+      "value": 2.0,
+      "suffix": "None"
+    },
     "raw": "2",
     "start": 0,
     "end": 1
@@ -18,7 +19,10 @@ snapshot_kind: text
   "right": {
     "type": "Literal",
     "type": "Literal",
-    "value": 3.0,
+    "value": {
+      "value": 3.0,
+      "suffix": "None"
+    },
     "raw": "3",
     "start": 7,
     "end": 8

@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing riddle_small.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -377,7 +376,10 @@ snapshot_kind: text
                         "start": 49,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 12345.0
+                        "value": {
+                          "value": 12345.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 36,
                       "type": "BinaryExpression",
@@ -390,7 +392,10 @@ snapshot_kind: text
                       "start": 58,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 214748.0
+                      "value": {
+                        "value": 214748.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 36,
                     "type": "BinaryExpression",

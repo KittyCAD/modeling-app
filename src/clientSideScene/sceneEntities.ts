@@ -59,6 +59,7 @@ import {
   sourceRangeFromRust,
   resultIsOk,
   SourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import { calculate_circle_from_3_points } from '../wasm-lib/pkg/wasm_lib'
 import {
@@ -628,7 +629,7 @@ export class SceneEntities {
 
       const startRange = _node1.node.start
       const endRange = _node1.node.end
-      const sourceRange: SourceRange = [startRange, endRange, true]
+      const sourceRange = topLevelRange(startRange, endRange)
       const selection: Selections = computeSelectionFromSourceRangeAndAST(
         sourceRange,
         maybeModdedAst
@@ -1397,23 +1398,23 @@ export class SceneEntities {
 
       const arg0 = arg(kclCircle3PointArgs[0])
       if (!arg0) return kclManager.ast
-      arg0[0].value = points[0].x
+      arg0[0].value = { value: points[0].x, suffix: 'None' }
       arg0[0].raw = points[0].x.toString()
-      arg0[1].value = points[0].y
+      arg0[1].value = { value: points[0].y, suffix: 'None' }
       arg0[1].raw = points[0].y.toString()
 
       const arg1 = arg(kclCircle3PointArgs[1])
       if (!arg1) return kclManager.ast
-      arg1[0].value = points[1].x
+      arg1[0].value = { value: points[1].x, suffix: 'None' }
       arg1[0].raw = points[1].x.toString()
-      arg1[1].value = points[1].y
+      arg1[1].value = { value: points[1].y, suffix: 'None' }
       arg1[1].raw = points[1].y.toString()
 
       const arg2 = arg(kclCircle3PointArgs[2])
       if (!arg2) return kclManager.ast
-      arg2[0].value = points[2].x
+      arg2[0].value = { value: points[2].x, suffix: 'None' }
       arg2[0].raw = points[2].x.toString()
-      arg2[1].value = points[2].y
+      arg2[1].value = { value: points[2].y, suffix: 'None' }
       arg2[1].raw = points[2].y.toString()
 
       const astSnapshot = structuredClone(kclManager.ast)
@@ -2012,7 +2013,7 @@ export class SceneEntities {
         kclManager.programMemory,
         {
           type: 'sourceRange',
-          sourceRange: [node.start, node.end, true],
+          sourceRange: topLevelRange(node.start, node.end),
         },
         getChangeSketchInput()
       )
@@ -2263,7 +2264,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          editorManager.setHighlightRange([[node.start, node.end, true]])
+          editorManager.setHighlightRange([topLevelRange(node.start, node.end)])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)

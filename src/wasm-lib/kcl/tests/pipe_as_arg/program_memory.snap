@@ -56,7 +56,10 @@ description: Program memory after executing pipe_as_arg.kcl
                         "start": 41,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 32,
                       "type": "BinaryExpression",
@@ -96,7 +99,10 @@ description: Program memory after executing pipe_as_arg.kcl
                         "start": 56,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 49,
                       "type": "MemberExpression",
@@ -136,7 +142,10 @@ description: Program memory after executing pipe_as_arg.kcl
                         "start": 72,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 65,
                       "type": "MemberExpression",
@@ -747,7 +756,10 @@ description: Program memory after executing pipe_as_arg.kcl
                       "start": 352,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 2.0
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 348,
                     "type": "BinaryExpression",
@@ -831,7 +843,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                   "start": 41,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 2.0
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "start": 32,
                                 "type": "BinaryExpression",
@@ -871,7 +886,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                   "start": 56,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "start": 49,
                                 "type": "MemberExpression",
@@ -911,7 +929,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                   "start": 72,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 1.0
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "start": 65,
                                 "type": "MemberExpression",
@@ -1752,7 +1773,10 @@ description: Program memory after executing pipe_as_arg.kcl
                     "start": 378,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 200.0
+                    "value": {
+                      "value": 200.0,
+                      "suffix": "None"
+                    }
                   },
                   "end": 381,
                   "start": 371,
@@ -1822,7 +1846,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                   "start": 41,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 2.0
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "start": 32,
                                 "type": "BinaryExpression",
@@ -1862,7 +1889,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                   "start": 56,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "start": 49,
                                 "type": "MemberExpression",
@@ -1902,7 +1932,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                   "start": 72,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 1.0
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "start": 65,
                                 "type": "MemberExpression",
@@ -2513,7 +2546,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                 "start": 352,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 2.0
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
                               },
                               "start": 348,
                               "type": "BinaryExpression",
@@ -2597,7 +2633,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                             "start": 41,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 2.0
+                                            "value": {
+                                              "value": 2.0,
+                                              "suffix": "None"
+                                            }
                                           },
                                           "start": 32,
                                           "type": "BinaryExpression",
@@ -2637,7 +2676,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                             "start": 56,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 0.0
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
                                           },
                                           "start": 49,
                                           "type": "MemberExpression",
@@ -2677,7 +2719,10 @@ description: Program memory after executing pipe_as_arg.kcl
                                             "start": 72,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 1.0
+                                            "value": {
+                                              "value": 1.0,
+                                              "suffix": "None"
+                                            }
                                           },
                                           "start": 65,
                                           "type": "MemberExpression",
