@@ -28,7 +28,6 @@ import {
   fileLoader,
   homeLoader,
   onboardingRedirectLoader,
-  settingsLoader,
   telemetryLoader,
 } from 'lib/routeLoaders'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
@@ -52,7 +51,6 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
 const router = createRouter([
   {
-    loader: settingsLoader,
     id: PATHS.INDEX,
     // TODO: Re-evaluate if this is true
     /* Make sure auth is the outermost provider or else we will have
@@ -111,7 +109,6 @@ const router = createRouter([
         children: [
           {
             id: PATHS.FILE + 'SETTINGS',
-            loader: settingsLoader,
             children: [
               {
                 loader: onboardingRedirectLoader,
@@ -157,11 +154,9 @@ const router = createRouter([
             index: true,
             element: <></>,
             id: PATHS.HOME + 'SETTINGS',
-            loader: settingsLoader,
           },
           {
             path: makeUrlPathRelative(PATHS.SETTINGS),
-            loader: settingsLoader,
             element: <Settings />,
           },
           {
