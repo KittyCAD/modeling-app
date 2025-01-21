@@ -1617,7 +1617,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
     if var_name
         && (path_string.starts_with("_")
             || path_string.contains('-')
-            || path_string[0..path_string.len() - 4].contains('.'))
+            || path_string.chars().filter(|c| *c == '.').count() > 1)
     {
         return Err(ErrMode::Cut(
             CompilationError::fatal(path_range, "import path is not a valid identifier and must be aliased.").into(),
@@ -4080,6 +4080,10 @@ e
         assert_eq!(errs.len(), 1, "{errs:#?}");
 
         let some_program_string = r#"import "foo.obj""#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+
+        let some_program_string = r#"import "foo.sldprt""#;
         let (_, errs) = assert_no_err(some_program_string);
         assert_eq!(errs.len(), 1, "{errs:#?}");
 

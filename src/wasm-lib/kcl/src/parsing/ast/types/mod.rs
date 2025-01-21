@@ -1258,17 +1258,11 @@ impl ImportSelector {
     }
 
     pub fn exposes_imported_name(&self) -> bool {
-        match self {
-            ImportSelector::None { alias: None } => true,
-            _ => false,
-        }
+        matches!(self, ImportSelector::None { alias: None })
     }
 
     pub fn imports_items(&self) -> bool {
-        match self {
-            ImportSelector::None { .. } => false,
-            _ => true,
-        }
+        !matches!(self, ImportSelector::None { .. })
     }
 }
 
