@@ -1,4 +1,4 @@
-import { assign, fromPromise, setup } from 'xstate'
+import { assign, createActor, fromPromise, setup } from 'xstate'
 import {
   Themes,
   getOppositeTheme,
@@ -31,6 +31,7 @@ import toast from 'react-hot-toast'
 import decamelize from 'decamelize'
 import { reportRejection } from 'lib/trap'
 import { Project } from 'lib/project'
+import { useSelector } from '@xstate/react'
 
 type SettingsMachineContext = ReturnType<typeof createSettings>
 
@@ -141,7 +142,7 @@ export const settingsMachine = setup({
         }
 
         const allSettingsIncludesUnitChange =
-          event.type === 'Set all settings' && relevantSetting(event.settings)
+          event.type === 'Set all settings' && relevantSetting(event.settings || context)
         const resetSettingsIncludesUnitChange =
           event.type === 'Reset settings' && relevantSetting(settings)
 
@@ -179,9 +180,10 @@ export const settingsMachine = setup({
 
       return newSettings
     }),
-    setAllSettings: assign(({ event }) => {
-      if (!('settings' in event)) return {}
-      return event.settings
+    setAllSettings: assign(({ event, context }) => {
+      if ('settings' in event) return event.settings
+      else if ('output' in event) return event.output || context
+      else return context
     }),
     setSettingAtLevel: assign(({ context, event }) => {
       if (!('data' in event)) return {}
@@ -216,7 +218,7 @@ export const settingsMachine = setup({
     },
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IAzAA4x+AIyaAbJoCsAFl1njAJmOaANCACeiXQHZ1+a7bdWDATnUxawBfYIdUDB4CIlIKKjoGNAALMABbMABhRmJGDnEpJBBZeUVsZTUELR19IzMLUy97J0RfTXxDBr8DAxtdMSs-UPD0LFxoknJKNHxUxggwYh58eYAzakFiNABVbAV85WKFTCVCiqq9QxNzSxsm50qDU3wrMXV1V2M-bT8xV6GQCKjPCECZxaYJfDJNJgfaFQ6lcoabQXWrXBq3Bz3YzqPz4AyvL7qYw1TS6Az-QFREGxKY0ej4WBoDhgaipACSEwAsnMYZIDnIjidQGdkSS6jdbJjEK5zHi-PouqYiQZjBSRlSYpN4vTqMQcgB3ADyHBYCjZ2GQAGt0ABjJLc+awmQChGnJHVS7i9GS5oIQweVxueVWVz4mW6NWRMbUrXTWbzRa4fA21lgDjUAAKHEYACswDbSk6ii7jmU3ZVRZ60Y0pQg+rorPglQ2rKZ-FY3DLI0DxjSqPGFkskpgoElFqO0ABRaBwIvw0uIise1H1Gu+3Rk3R6Uydaz47qqsIA9XRzVkABKcHQAAIpj25yWhap3SirquMevAriTK4urYBhYViaN2GqghE166sQt4nngD4lAu5Zkni1yaKG2i6OoBgblYtY7sYniGNYmjqKYmjyropggaeoK0gOiZQAySSMPqyApqQADiHBEHBgplsKL5itWH73BYKr4OoLzmBhHahlRwJngAVDxrr8Uur5emuImBk8rzvKSZH9KYrjAUelLRrQabyIyPDQVGeBkBAzBgIQ2AAG6MNa+BmcCFkcFZQK2T2CA4O5KaFpIykIapRm4iRQQ7u48p+EZpi1vobz4EEfifEqv4kSZwx2QQvn+TZd5RGQabZhw+C0MQAgrLkqReTBxWWZg1m4IFUTBW5jBhaW+SRU+FSkToRhiFhBjvEEPr3KSFyuCGnxmHhJFyQQOTUNwSbCGmDlOS57med5m3sDtDF7RwvWhQIg0RXycKPnxz4IAAtG27Skdl7iPMYBjuL4takgY+B+PKP49ODrYRqZrX4FtF34FdlUcNVtX1WgjUcM1p0I+dSxXTd-V3cwQ2Pc68EjYgb1WCGniuGIug-F8fgvGROG+uDuJkmIATynzHaUf82A8vAhSnfyVMvRUb1vKDAGmK2WFaMYs21m9oO-NrIYvNYbYYRtMZS7xi5GcDoZgxDxihgMbPmEbJUdQF5VjCbKmvWRTwUQ0WEysYnxYcD4N4vUB5fKYQSw4VPb49thOUBw7tRa9tOaG0ivKxhJjq766e4l8xGR4z2IkeoRuI0stDZnmBbJ9T70hgXUPc79fi-sYaUUaD8pGUBPTqBRFGhKEQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IAzAA4x+AIyaAbJoCsAFl1njAJmOaANCACeiXQHZ1+a7bdWDATnUxawBfYIdUDB4CIlIKKjoGNAALMABbMABhRmJGDnEpJBBZeUVsZTUELR19IzMLUy97J0RfTXxDBr8DAxtdMSs-UPD0LFxoknJKNHxUxggwYh58eYAzakFiNABVbAV85WKFTCVCiqq9QxNzSxsm50qDU3wrMXV1V2M-bT8xV6GQCKjPCECZxaYJfDJNJgfaFQ6lcoabQXWrXBq3Bz3YzqPz4AyvL7qYw1TS6Az-QFREGxKY0ej4WBoDhgaipACSEwAsnMYZIDnIjidQGdkSS6jdbJjEK5zHi-PouqYiQZjBSRlSYpN4vTqMQcgB3ADyHBYCjZ2GQAGt0ABjJLc+awmQChGnJHVS7i9GS5oIQweVxueVWVz4mW6NWRMbUrXTWbzRa4fA21lgDjUAAKHEYACswDbSk6ii7jmU3ZVRZ60Y0pQg+rorPglQ2rKZ-FY3DLI0DxjSqPGFkskpgoElFqO0ABRaBwIvw0uIise1H1Gu+3Rk3R6Uydaz47qqsIA9XRzVkABKcHQAAIpj25yWhap3SirquMevAriTK4urYBhYViaN2GqghE166sQt4nngD4lAu5Zkni1yaKG2i6OoBgblYtY7sYniGNYmjqKYmjyropggaeoK0gOiZQAySSMPqyApqQADiHBEHBgplsKL5itWH73BYKr4OoLzmBhHahlRwJnjk1AQPgtDZnmBY8a6-EIKYVgePopEfKRmhAQ2xi1m8FyuCGnxmHhJFyb25AAFSaQh2nnIJ74+iJgZPK87ykmR-SmK4wFHpS0a0Gm8iMjw0FRngZAQMwYCENgABujDWvgkXAtFHCxUCCU9ggOBZSmhaSG5T4VKFuIkUEO7uPKfihaYtb6JZQR+J8Sq-iR4XDIlBAFUV8V3lEZBptmHAqcQAgrLkqS5TBo0xZgcW4CVURlZljCVaW+Q1Xxz46ciRhiFhBjvEEPmIKSVk2b1O4NA5EVrfgincLgWyUBwyWpelWU5XlBDfTwf1pntFUCEd1V8nCj6nWczyfPiYgfL4xhhZoqGdR8OhXT0xJiL1HxaI5X3sD9UBQwDM25PNi3LatI3U0pkP-TDB1w8wx2I868G1RomEEURGHWZjrydV0Hjym2bw3bY2LqFTEO4Fmub5mggPYGl5XZWlYMc7TWvqWgPOHfzCMFELvGLkSW5iKYfg2NigZk+85m+i8j3ESqYj+irRLqzTPDmzr00cLNzNoEtHArSbGtQJHBZW3z2AC3bxbCyjGjEvgLtu8YHt9AEHy1h2pg6L+MpthhIeHke2A8vAhRg-yeeLgAtOoui4h23T9GIFFfmStY92YRe-K8bhYX4fiBlYVOal3DvlqFtaoQY+CL-oOM9IvrYRh97NjZtxWTWM69aWdZFPBRDRYTKpddLo2+L3i9QHl8NfEmHTmv1-q33cmdHuIYtxD3xC8MeZMJ7rh3I2P+PRpZvE+K4QBZs1I61ASLBAYgq4bh0HpDsbhUK4zVqEYIQA */
   id: 'Settings',
   initial: "loadingUser",
   context: ({ input }) => {
@@ -364,14 +366,20 @@ export const settingsMachine = setup({
     "loadingUser": {
       invoke: [{
         src: "loadUserSettings",
-        onDone: ["idle", "idle"],
-        onError: ["idle", "idle"]
+        onDone: {
+          target: "idle",
+          actions: "setAllSettings"
+        },
+        onError: "idle"
       }]
     },
     "loadingProject": {
       invoke: {
         src: "loadProjectSettings",
-        onDone: "idle",
+        onDone: {
+          target: "idle",
+          actions: "setAllSettings"
+        },
         onError: "idle",
         input: ({ event }) => {
             return {
@@ -382,3 +390,9 @@ export const settingsMachine = setup({
     }
   },
 })
+
+export const settingsActor = createActor(settingsMachine, {
+  input: createSettings(),
+}).start()
+
+export const useSettings = () => useSelector(settingsActor, (state) => state.context)
