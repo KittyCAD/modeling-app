@@ -1,6 +1,5 @@
 import {
   Expr,
-  ImportStatement,
   ExpressionStatement,
   VariableDeclaration,
   ReturnStatement,
@@ -8,7 +7,7 @@ import {
   PathToNode,
   Program,
 } from './wasm'
-
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 
 function moreNodePathFromSourceRange(

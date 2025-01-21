@@ -31,7 +31,6 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err, Reason } from 'lib/trap'
-import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { codeRefFromRange } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from './queryAstNodePathUtils'
