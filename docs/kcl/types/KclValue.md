@@ -168,7 +168,6 @@ Any KCL value.
 
 
 ----
-A plane.
 
 **Type:** `object`
 
@@ -181,17 +180,10 @@ A plane.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Plane`](/docs/kcl/types/Plane)|  | No |
-| `id` |`string`| The id of the plane. | No |
-| `value` |[`PlaneType`](/docs/kcl/types/PlaneType)| Any KCL value. | No |
-| `origin` |[`Point3d`](/docs/kcl/types/Point3d)| Origin of the plane. | No |
-| `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane’s X axis be? | No |
-| `yAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane’s Y axis be? | No |
-| `zAxis` |[`Point3d`](/docs/kcl/types/Point3d)| The z-axis (normal). | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+| `value` |[`Plane`](/docs/kcl/types/Plane)| Any KCL value. | No |
 
 
 ----
-A face.
 
 **Type:** `object`
 
@@ -203,14 +195,8 @@ A face.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `Face`|  | No |
-| `id` |`string`| The id of the face. | No |
-| `value` |`string`| The tag of the face. | No |
-| `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face’s X axis be? | No |
-| `yAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the face’s Y axis be? | No |
-| `zAxis` |[`Point3d`](/docs/kcl/types/Point3d)| The z-axis (normal). | No |
-| `solid` |[`Solid`](/docs/kcl/types/Solid)| The solid the face is on. | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+| `type` |enum: [`Face`](/docs/kcl/types/Face)|  | No |
+| `value` |[`Face`](/docs/kcl/types/Face)| Any KCL value. | No |
 
 
 ----
@@ -246,7 +232,6 @@ A face.
 
 
 ----
-An solid is a collection of extrude surfaces.
 
 **Type:** `object`
 
@@ -259,14 +244,7 @@ An solid is a collection of extrude surfaces.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Solid`](/docs/kcl/types/Solid)|  | No |
-| `id` |`string`| The id of the solid. | No |
-| `value` |`[` [`ExtrudeSurface`](/docs/kcl/types/ExtrudeSurface) `]`| The extrude surfaces. | No |
-| `sketch` |[`Sketch`](/docs/kcl/types/Sketch)| The sketch. | No |
-| `height` |`number`| The height of the solid. | No |
-| `startCapId` |`string`| The id of the extrusion start cap | No |
-| `endCapId` |`string`| The id of the extrusion end cap | No |
-| `edgeCuts` |`[` [`EdgeCut`](/docs/kcl/types/EdgeCut) `]`| Chamfers or fillets on this solid. | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`| Metadata. | No |
+| `value` |[`Solid`](/docs/kcl/types/Solid)| Any KCL value. | No |
 
 
 ----
@@ -286,7 +264,6 @@ An solid is a collection of extrude surfaces.
 
 
 ----
-A helix.
 
 **Type:** `object`
 
@@ -299,11 +276,7 @@ A helix.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: [`Helix`](/docs/kcl/types/Helix)|  | No |
-| `value` |`string`| The id of the helix. | No |
-| `revolutions` |`number`| Number of revolutions. | No |
-| `angleStart` |`number`| Start angle (in degrees). | No |
-| `ccw` |`boolean`| Is the helix rotation counter clockwise? | No |
-| `__meta` |`[` [`Metadata`](/docs/kcl/types/Metadata) `]`|  | No |
+| `value` |[`Helix`](/docs/kcl/types/Helix)| Any KCL value. | No |
 
 
 ----

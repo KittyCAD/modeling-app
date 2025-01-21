@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing comparisons.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -18,7 +17,10 @@ snapshot_kind: text
                 "start": 7,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "operator": "==",
               "right": {
@@ -27,7 +29,10 @@ snapshot_kind: text
                 "start": 12,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "start": 7,
               "type": "BinaryExpression",
@@ -69,7 +74,10 @@ snapshot_kind: text
                 "start": 34,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "operator": "==",
               "right": {
@@ -78,7 +86,10 @@ snapshot_kind: text
                 "start": 41,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "start": 34,
               "type": "BinaryExpression",
@@ -120,7 +131,10 @@ snapshot_kind: text
                 "start": 75,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "operator": "!=",
               "right": {
@@ -129,7 +143,10 @@ snapshot_kind: text
                 "start": 80,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "start": 75,
               "type": "BinaryExpression",
@@ -171,7 +188,10 @@ snapshot_kind: text
                 "start": 106,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "operator": "!=",
               "right": {
@@ -180,7 +200,10 @@ snapshot_kind: text
                 "start": 113,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "start": 106,
               "type": "BinaryExpression",
@@ -222,7 +245,10 @@ snapshot_kind: text
                 "start": 151,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "operator": "<",
               "right": {
@@ -231,7 +257,10 @@ snapshot_kind: text
                 "start": 155,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "start": 151,
               "type": "BinaryExpression",
@@ -273,7 +302,10 @@ snapshot_kind: text
                 "start": 171,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "operator": "<=",
               "right": {
@@ -282,7 +314,10 @@ snapshot_kind: text
                 "start": 176,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "start": 171,
               "type": "BinaryExpression",
@@ -324,7 +359,10 @@ snapshot_kind: text
                 "start": 209,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "operator": "<=",
               "right": {
@@ -333,7 +371,10 @@ snapshot_kind: text
                 "start": 214,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "start": 209,
               "type": "BinaryExpression",
@@ -375,7 +416,10 @@ snapshot_kind: text
                 "start": 247,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "operator": ">",
               "right": {
@@ -384,7 +428,10 @@ snapshot_kind: text
                 "start": 251,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "start": 247,
               "type": "BinaryExpression",
@@ -426,7 +473,10 @@ snapshot_kind: text
                 "start": 267,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "operator": ">=",
               "right": {
@@ -435,7 +485,10 @@ snapshot_kind: text
                 "start": 272,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "start": 267,
               "type": "BinaryExpression",
@@ -477,7 +530,10 @@ snapshot_kind: text
                 "start": 305,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "operator": ">=",
               "right": {
@@ -486,7 +542,10 @@ snapshot_kind: text
                 "start": 310,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "start": 305,
               "type": "BinaryExpression",
@@ -528,7 +587,10 @@ snapshot_kind: text
                 "start": 344,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0.0
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               },
               "operator": "==",
               "right": {
@@ -537,7 +599,10 @@ snapshot_kind: text
                 "start": 351,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0.0
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               },
               "start": 344,
               "type": "BinaryExpression",
@@ -579,7 +644,10 @@ snapshot_kind: text
                 "start": 383,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0.0
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               },
               "operator": "==",
               "right": {
@@ -589,7 +657,10 @@ snapshot_kind: text
                   "start": 391,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 0.0
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
                 },
                 "end": 394,
                 "operator": "-",

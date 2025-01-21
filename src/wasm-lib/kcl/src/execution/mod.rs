@@ -391,7 +391,7 @@ impl ProgramMemory {
                 env.bindings
                     .values()
                     .filter_map(|item| match item {
-                        KclValue::Solid(eg) if eg.sketch.id == sketch_id => Some(eg.clone()),
+                        KclValue::Solid { value } if value.sketch.id == sketch_id => Some(value.clone()),
                         _ => None,
                     })
                     .collect::<Vec<_>>()
@@ -505,8 +505,8 @@ impl DynamicState {
     fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
-                if let KclValue::Solid(eg) = item {
-                    self.solid_ids.push(SolidLazyIds::from(eg.as_ref()));
+                if let KclValue::Solid { value } = item {
+                    self.solid_ids.push(SolidLazyIds::from(value.as_ref()));
                 }
             }
         }
@@ -759,6 +759,7 @@ pub struct Helix {
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     pub ccw: bool,
+    pub units: UnitLen,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -780,6 +781,7 @@ pub struct Plane {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
+    pub units: UnitLen,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -795,6 +797,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
                 z_axis: Point3d::new(0.0, 0.0, 1.0),
                 value: PlaneType::XY,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::NegXY => Plane {
@@ -804,6 +807,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
                 z_axis: Point3d::new(0.0, 0.0, -1.0),
                 value: PlaneType::XY,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::XZ => Plane {
@@ -813,6 +817,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(0.0, -1.0, 0.0),
                 value: PlaneType::XZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::NegXZ => Plane {
@@ -822,6 +827,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(0.0, 1.0, 0.0),
                 value: PlaneType::XZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::YZ => Plane {
@@ -831,6 +837,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(1.0, 0.0, 0.0),
                 value: PlaneType::YZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::NegYZ => Plane {
@@ -840,6 +847,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(-1.0, 0.0, 0.0),
                 value: PlaneType::YZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::Plane {
@@ -854,6 +862,7 @@ impl Plane {
                 y_axis: *y_axis,
                 z_axis: *z_axis,
                 value: PlaneType::Custom,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
         }
@@ -900,6 +909,7 @@ pub struct Face {
     pub z_axis: Point3d,
     /// The solid the face is on.
     pub solid: Box<Solid>,
+    pub units: UnitLen,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -1018,6 +1028,7 @@ pub struct Sketch {
     /// is sketched on face etc.
     #[serde(skip)]
     pub original_id: uuid::Uuid,
+    pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -1141,6 +1152,7 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,

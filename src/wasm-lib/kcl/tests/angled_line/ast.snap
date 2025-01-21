@@ -48,7 +48,10 @@ description: Result of parsing angled_line.kcl
                         "start": 51,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 4.83
+                        "value": {
+                          "value": 4.83,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 62,
@@ -56,7 +59,10 @@ description: Result of parsing angled_line.kcl
                         "start": 57,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 12.56
+                        "value": {
+                          "value": 12.56,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 63,
@@ -92,7 +98,10 @@ description: Result of parsing angled_line.kcl
                         "start": 79,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 15.1
+                        "value": {
+                          "value": 15.1,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 89,
@@ -100,7 +109,10 @@ description: Result of parsing angled_line.kcl
                         "start": 85,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.48
+                        "value": {
+                          "value": 2.48,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 90,
@@ -136,7 +148,10 @@ description: Result of parsing angled_line.kcl
                         "start": 106,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 3.15
+                        "value": {
+                          "value": 3.15,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -145,7 +160,10 @@ description: Result of parsing angled_line.kcl
                           "start": 113,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 9.85
+                          "value": {
+                            "value": 9.85,
+                            "suffix": "None"
+                          }
                         },
                         "end": 117,
                         "operator": "-",
@@ -195,7 +213,10 @@ description: Result of parsing angled_line.kcl
                           "start": 143,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 15.17
+                          "value": {
+                            "value": 15.17,
+                            "suffix": "None"
+                          }
                         },
                         "end": 148,
                         "operator": "-",
@@ -210,7 +231,10 @@ description: Result of parsing angled_line.kcl
                           "start": 151,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 4.1
+                          "value": {
+                            "value": 4.1,
+                            "suffix": "None"
+                          }
                         },
                         "end": 154,
                         "operator": "-",
@@ -273,7 +297,10 @@ description: Result of parsing angled_line.kcl
                         "start": 192,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 12.35
+                        "value": {
+                          "value": 12.35,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 198,
@@ -310,7 +337,10 @@ description: Result of parsing angled_line.kcl
                           "start": 215,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 13.02
+                          "value": {
+                            "value": 13.02,
+                            "suffix": "None"
+                          }
                         },
                         "end": 220,
                         "operator": "-",
@@ -324,7 +354,10 @@ description: Result of parsing angled_line.kcl
                         "start": 222,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 10.03
+                        "value": {
+                          "value": 10.03,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 228,
@@ -378,7 +411,10 @@ description: Result of parsing angled_line.kcl
                     "start": 260,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 4.0
+                    "value": {
+                      "value": 4.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 264,

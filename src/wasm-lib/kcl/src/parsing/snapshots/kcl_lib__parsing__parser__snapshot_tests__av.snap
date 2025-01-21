@@ -32,7 +32,10 @@ expression: actual
                       "start": 43,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 360.0
+                      "value": {
+                        "value": 360.0,
+                        "suffix": "None"
+                      }
                     }
                   ],
                   "callee": {
