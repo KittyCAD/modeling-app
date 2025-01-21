@@ -8,6 +8,11 @@ use crate::{
     source_range::SourceRange,
 };
 
+/// Get the distance between two points.
+pub fn distance(a: Point2d, b: Point2d) -> f64 {
+    ((b.x - a.x).powi(2) + (b.y - a.y).powi(2)).sqrt()
+}
+
 /// Get the angle between these points
 pub fn between(a: Point2d, b: Point2d) -> Angle {
     let x = b.x - a.x;
@@ -227,6 +232,55 @@ pub fn is_on_circumference(center: Point2d, point: Point2d, radius: f64) -> bool
     // Due to potential floating point inaccuracies, we'll check if the difference
     // is very small (e.g., 1e-9) rather than checking for strict equality.
     (distance_squared - radius.powi(2)).abs() < 1e-9
+}
+
+// Calculate the center of 3 points
+// To calculate the center of the 3 point circle 2 perpendicular lines are created
+// These perpendicular lines will intersect at the center of the circle.
+pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64; 2] {
+    // y2 - y1
+    let y_2_1 = p2[1] - p1[1];
+    // y3 - y2
+    let y_3_2 = p3[1] - p2[1];
+    // x2 - x1
+    let x_2_1 = p2[0] - p1[0];
+    // x3 - x2
+    let x_3_2 = p3[0] - p2[0];
+
+    // Slope of two perpendicular lines
+    let slope_a = y_2_1 / x_2_1;
+    let slope_b = y_3_2 / x_3_2;
+
+    // Values for line intersection
+    // y1 - y3
+    let y_1_3 = p1[1] - p3[1];
+    // x1 + x2
+    let x_1_2 = p1[0] + p2[0];
+    // x2 + x3
+    let x_2_3 = p2[0] + p3[0];
+    // y1 + y2
+    let y_1_2 = p1[1] + p2[1];
+
+    // Solve for the intersection of these two lines
+    let numerator = (slope_a * slope_b * y_1_3) + (slope_b * x_1_2) - (slope_a * x_2_3);
+    let x = numerator / (2.0 * (slope_b - slope_a));
+
+    let y = ((-1.0 / slope_a) * (x - (x_1_2 / 2.0))) + (y_1_2 / 2.0);
+
+    [x, y]
+}
+
+pub struct CircleParams {
+    pub center: Point2d,
+    pub radius: f64,
+}
+
+pub fn calculate_circle_from_3_points(points: [Point2d; 3]) -> CircleParams {
+    let center: Point2d = calculate_circle_center(points[0].into(), points[1].into(), points[2].into()).into();
+    CircleParams {
+        center,
+        radius: distance(center, points[1]),
+    }
 }
 
 #[cfg(test)]

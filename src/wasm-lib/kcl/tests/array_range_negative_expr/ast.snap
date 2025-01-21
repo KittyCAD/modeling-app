@@ -22,7 +22,10 @@ description: Result of parsing array_range_negative_expr.kcl
               "start": 17,
               "type": "Literal",
               "type": "Literal",
-              "value": 5.0
+              "value": {
+                "value": 5.0,
+                "suffix": "None"
+              }
             },
             "endInclusive": true,
             "start": 5,
@@ -35,7 +38,10 @@ description: Result of parsing array_range_negative_expr.kcl
                     "start": 11,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 5.0
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
                   },
                   "end": 12,
                   "operator": "-",
@@ -87,7 +93,10 @@ description: Result of parsing array_range_negative_expr.kcl
                 "start": 35,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0.0
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               },
               "start": 32,
               "type": "MemberExpression",
@@ -100,7 +109,10 @@ description: Result of parsing array_range_negative_expr.kcl
                 "start": 40,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 5.0
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               },
               "end": 41,
               "operator": "-",
@@ -114,7 +126,10 @@ description: Result of parsing array_range_negative_expr.kcl
               "start": 43,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.001
+              "value": {
+                "value": 0.001,
+                "suffix": "None"
+              }
             },
             {
               "end": 71,

@@ -46,16 +46,9 @@ import {
   applyConstraintLength,
 } from './Toolbar/setAngleLength'
 import {
-  canSweepSelection,
   handleSelectionBatch,
-  isSelectionLastLine,
-  isRangeBetweenCharacters,
-  isSketchPipe,
   Selections,
   updateSelections,
-  canLoftSelection,
-  canRevolveSelection,
-  canShellSelection,
 } from 'lib/selections'
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
@@ -75,21 +68,17 @@ import {
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
 import {
-  doesSceneHaveExtrudedSketch,
-  doesSceneHaveSweepableSketch,
+  artifactIsPlaneWithPaths,
   getNodePathFromSourceRange,
   isSingleCursorInPipe,
 } from 'lang/queryAst'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
-import { EditorSelection, Transaction } from '@codemirror/state'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
 import { useCommandsContext } from 'hooks/useCommandsContext'
-import { modelingMachineEvent } from 'editor/manager'
-import { hasValidEdgeTreatmentSelection } from 'lang/modifyAst/addEdgeTreatment'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -100,6 +89,8 @@ import { useFileContext } from 'hooks/useFileContext'
 import { uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { promptToEditFlow } from 'lib/promptToEdit'
+import { kclEditorActor } from 'machines/kclEditorMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -120,7 +111,7 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme, enableSSAO },
+        app: { theme, enableSSAO, allowOrbitInSketchMode },
         modeling: {
           defaultUnit,
           cameraProjection,
@@ -131,6 +122,7 @@ export const ModelingMachineProvider = ({
       },
     },
   } = useSettingsAuthContext()
+  const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
@@ -167,39 +159,38 @@ export const ModelingMachineProvider = ({
         'enable copilot': () => {
           editorManager.setCopilotEnabled(true)
         },
-        // tsc reports this typing as perfectly fine, but eslint is complaining.
-        // It's actually nonsensical, so I'm quieting.
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        'sketch exit execute': async ({
-          context: { store },
-        }): Promise<void> => {
-          // When cancelling the sketch mode we should disable sketch mode within the engine.
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'sketch_mode_disable' },
-          })
-
-          sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-          if (cameraProjection.current === 'perspective') {
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
-          }
-
-          sceneInfra.camControls.syncDirection = 'engineToClient'
-
-          store.videoElement?.pause()
-
-          return kclManager
-            .executeCode()
-            .then(() => {
-              if (engineCommandManager.engineConnection?.idleMode) return
-
-              store.videoElement?.play().catch((e) => {
-                console.warn('Video playing was prevented', e)
-              })
+        'sketch exit execute': ({ context: { store } }) => {
+          // TODO: Remove this async callback.  For some reason eslint wouldn't
+          // let me disable @typescript-eslint/no-misused-promises for the line.
+          ;(async () => {
+            // When cancelling the sketch mode we should disable sketch mode within the engine.
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'sketch_mode_disable' },
             })
-            .catch(reportRejection)
+
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
+
+            sceneInfra.camControls.syncDirection = 'engineToClient'
+
+            store.videoElement?.pause()
+
+            return kclManager
+              .executeCode()
+              .then(() => {
+                if (engineCommandManager.engineConnection?.idleMode) return
+
+                store.videoElement?.play().catch((e) => {
+                  console.warn('Video playing was prevented', e)
+                })
+              })
+              .catch(reportRejection)
+          })().catch(reportRejection)
         },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}
@@ -281,6 +272,7 @@ export const ModelingMachineProvider = ({
               cmd_id: uuidv4(),
               cmd: {
                 type: 'default_camera_center_to_selection',
+                camera_movement: 'vantage',
               },
             })
             .catch(reportRejection)
@@ -309,22 +301,6 @@ export const ModelingMachineProvider = ({
                 event.output) ||
               null
             if (!setSelections) return {}
-
-            const dispatchSelection = (selection?: EditorSelection) => {
-              if (!selection) return // TODO less of hack for the below please
-              if (!editorManager.editorView) return
-
-              setTimeout(() => {
-                if (!editorManager.editorView) return
-                editorManager.editorView.dispatch({
-                  selection,
-                  annotations: [
-                    modelingMachineEvent,
-                    Transaction.addToHistory.of(false),
-                  ],
-                })
-              })
-            }
 
             let selections: Selections = {
               graphSelections: [],
@@ -365,7 +341,15 @@ export const ModelingMachineProvider = ({
               } = handleSelectionBatch({
                 selections,
               })
-              codeMirrorSelection && dispatchSelection(codeMirrorSelection)
+              if (codeMirrorSelection) {
+                kclEditorActor.send({
+                  type: 'setLastSelectionEvent',
+                  data: {
+                    codeMirrorSelection,
+                    scrollIntoView: setSelections.scrollIntoView ?? false,
+                  },
+                })
+              }
               engineEvents &&
                 engineEvents.forEach((event) => {
                   // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -557,78 +541,6 @@ export const ModelingMachineProvider = ({
         },
       },
       guards: {
-        'has valid sweep selection': ({ context: { selectionRanges } }) => {
-          // A user can begin extruding if they either have 1+ faces selected or nothing selected
-          // TODO: I believe this guard only allows for extruding a single face at a time
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            // they have no selection, we should enable the button
-            // so they can select the face through the cmdbar
-            // BUT only if there's extrudable geometry
-            return doesSceneHaveSweepableSketch(kclManager.ast)
-          }
-          if (!isSketchPipe(selectionRanges)) return false
-
-          const canSweep = canSweepSelection(selectionRanges)
-          if (err(canSweep)) return false
-          return canSweep
-        },
-        'has valid revolve selection': ({ context: { selectionRanges } }) => {
-          // A user can begin extruding if they either have 1+ faces selected or nothing selected
-          // TODO: I believe this guard only allows for extruding a single face at a time
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            // they have no selection, we should enable the button
-            // so they can select the face through the cmdbar
-            // BUT only if there's extrudable geometry
-            return doesSceneHaveSweepableSketch(kclManager.ast)
-          }
-          if (!isSketchPipe(selectionRanges)) return false
-
-          const canSweep = canRevolveSelection(selectionRanges)
-          if (err(canSweep)) return false
-          return canSweep
-        },
-        'has valid loft selection': ({ context: { selectionRanges } }) => {
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            const count = 2
-            return doesSceneHaveSweepableSketch(kclManager.ast, count)
-          }
-
-          const canLoft = canLoftSelection(selectionRanges)
-          if (err(canLoft)) return false
-          return canLoft
-        },
-        'has valid shell selection': ({
-          context: { selectionRanges },
-          event,
-        }) => {
-          const hasNoSelection =
-            selectionRanges.graphSelections.length === 0 ||
-            isRangeBetweenCharacters(selectionRanges) ||
-            isSelectionLastLine(selectionRanges, codeManager.code)
-
-          if (hasNoSelection) {
-            return doesSceneHaveExtrudedSketch(kclManager.ast)
-          }
-
-          const canShell = canShellSelection(selectionRanges)
-          if (err(canShell)) return false
-          return canShell
-        },
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
@@ -636,18 +548,12 @@ export const ModelingMachineProvider = ({
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
-        'has valid edge treatment selection': ({
-          context: { selectionRanges },
-        }) => {
-          return hasValidEdgeTreatmentSelection({
-            selectionRanges,
-            ast: kclManager.ast,
-            code: codeManager.code,
-          })
-        },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
           if (event.data?.forceNewSketch) return false
+          if (artifactIsPlaneWithPaths(selectionRanges)) {
+            return true
+          }
           if (!isSingleCursorInPipe(selectionRanges, kclManager.ast))
             return false
           return !!isCursorInSketchCommandRange(
@@ -730,7 +636,8 @@ export const ModelingMachineProvider = ({
             input.plane
           )
           await kclManager.updateAst(modifiedAst, false)
-          sceneInfra.camControls.enableRotate = false
+          sceneInfra.camControls.enableRotate =
+            sceneInfra.camControls._setting_allowOrbitInSketchMode
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
           await letEngineAnimateAndSyncCamAfter(
@@ -743,6 +650,7 @@ export const ModelingMachineProvider = ({
             zAxis: input.zAxis,
             yAxis: input.yAxis,
             origin: [0, 0, 0],
+            animateTargetId: input.planeId,
           }
         }),
         'animate-to-sketch': fromPromise(
@@ -767,6 +675,7 @@ export const ModelingMachineProvider = ({
               origin: info.sketchDetails.origin.map(
                 (a) => a / sceneInfra._baseUnitMultiplier
               ) as [number, number, number],
+              animateTargetId: info?.sketchDetails?.faceId || '',
             }
           }
         ),
@@ -1199,6 +1108,15 @@ export const ModelingMachineProvider = ({
             }
           }
         ),
+        'submit-prompt-edit': fromPromise(async ({ input }) => {
+          return await promptToEditFlow({
+            code: codeManager.code,
+            prompt: input.prompt,
+            selections: input.selection,
+            token,
+            artifactGraph: engineCommandManager.artifactGraph,
+          })
+        }),
       },
     }),
     {
@@ -1282,6 +1200,41 @@ export const ModelingMachineProvider = ({
       )
     }
   }, [engineCommandManager.engineConnection, modelingSend])
+
+  useEffect(() => {
+    // Only trigger this if the state actually changes, if it stays the same do not reload the camera
+    if (
+      previousAllowOrbitInSketchMode.current === allowOrbitInSketchMode.current
+    ) {
+      //no op
+      previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
+      return
+    }
+    const inSketchMode = modelingState.matches('Sketch')
+
+    // If you are in sketch mode and you disable the orbit, return back to the normal view to the target
+    if (!allowOrbitInSketchMode.current) {
+      const targetId = modelingState.context.sketchDetails?.animateTargetId
+      if (inSketchMode && targetId) {
+        letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
+          .then(() => {})
+          .catch((e) => {
+            console.error(
+              'failed to sync engine and client scene after disabling allow orbit in sketch mode'
+            )
+            console.error(e)
+          })
+      }
+    }
+
+    // While you are in sketch mode you should be able to control the enable rotate
+    // Once you exit it goes back to normal
+    if (inSketchMode) {
+      sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
+    }
+
+    previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
+  }, [allowOrbitInSketchMode])
 
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {

@@ -391,7 +391,9 @@ const getAppFolderName = () => {
 
 export const getAppSettingsFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
-  const testSettingsPath = window.electron.process.env.TEST_SETTINGS_FILE_KEY
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
     ? testSettingsPath
@@ -408,7 +410,9 @@ export const getAppSettingsFilePath = async () => {
 }
 const getTokenFilePath = async () => {
   const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
-  const testSettingsPath = window.electron.process.env.TEST_SETTINGS_FILE_KEY
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
     ? testSettingsPath

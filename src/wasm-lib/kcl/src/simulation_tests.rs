@@ -91,12 +91,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
     )
     .await;
     match exec_res {
-        Ok((program_memory, ops, png)) => {
+        Ok((exec_state, png)) => {
             if render_to_png {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
             assert_snapshot(test_name, "Program memory after executing", || {
-                insta::assert_json_snapshot!("program_memory", program_memory, {
+                insta::assert_json_snapshot!("program_memory", exec_state.mod_local.memory, {
                     ".environments[].**[].from[]" => rounded_redaction(4),
                     ".environments[].**[].to[]" => rounded_redaction(4),
                     ".environments[].**[].x[]" => rounded_redaction(4),
@@ -105,7 +105,34 @@ async fn execute(test_name: &str, render_to_png: bool) {
                 });
             });
             assert_snapshot(test_name, "Operations executed", || {
-                insta::assert_json_snapshot!("ops", ops);
+                insta::assert_json_snapshot!("ops", exec_state.mod_local.operations);
+            });
+            assert_snapshot(test_name, "Artifact commands", || {
+                insta::assert_json_snapshot!("artifact_commands", exec_state.global.artifact_commands, {
+                    "[].command.segment.*.x" => rounded_redaction(4),
+                    "[].command.segment.*.y" => rounded_redaction(4),
+                    "[].command.segment.*.z" => rounded_redaction(4),
+                });
+            });
+            assert_snapshot(test_name, "Artifact graph flowchart", || {
+                let flowchart = exec_state
+                    .global
+                    .artifact_graph
+                    .to_mermaid_flowchart()
+                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
+                // Change the snapshot suffix so that it is rendered as a
+                // Markdown file in GitHub.
+                insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
+            });
+            assert_snapshot(test_name, "Artifact graph mind map", || {
+                let mind_map = exec_state
+                    .global
+                    .artifact_graph
+                    .to_mermaid_mind_map()
+                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
+                // Change the snapshot suffix so that it is rendered as a
+                // Markdown file in GitHub.
+                insta::assert_binary_snapshot!("artifact_graph_mind_map.md", mind_map.as_bytes().to_owned());
             });
         }
         Err(e) => {
@@ -115,7 +142,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     // This looks like a Cargo compile error, with arrows pointing
                     // to source code, underlines, etc.
                     let report = crate::errors::Report {
-                        error,
+                        error: error.error,
                         filename: format!("{test_name}.kcl"),
                         kcl_source: read("input.kcl", test_name),
                     };
@@ -127,7 +154,15 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     });
 
                     assert_snapshot(test_name, "Operations executed", || {
-                        insta::assert_json_snapshot!("ops", e.exec_state.mod_local.operations);
+                        insta::assert_json_snapshot!("ops", error.operations);
+                    });
+
+                    assert_snapshot(test_name, "Artifact commands", || {
+                        insta::assert_json_snapshot!("artifact_commands", error.artifact_commands, {
+                            "[].command.segment.*.x" => rounded_redaction(4),
+                            "[].command.segment.*.y" => rounded_redaction(4),
+                            "[].command.segment.*.z" => rounded_redaction(4),
+                        });
                     });
                 }
                 e => {
@@ -143,6 +178,90 @@ async fn execute(test_name: &str, render_to_png: bool) {
 
 mod cube {
     const TEST_NAME: &str = "cube";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod artifact_graph_example_code1 {
+    const TEST_NAME: &str = "artifact_graph_example_code1";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod artifact_graph_example_code_no_3d {
+    const TEST_NAME: &str = "artifact_graph_example_code_no_3d";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod artifact_graph_example_code_offset_planes {
+    const TEST_NAME: &str = "artifact_graph_example_code_offset_planes";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod artifact_graph_sketch_on_face_etc {
+    const TEST_NAME: &str = "artifact_graph_sketch_on_face_etc";
 
     /// Test parsing KCL.
     #[test]
@@ -1637,6 +1756,90 @@ mod boolean_logical_or {
 }
 mod boolean_logical_multiple {
     const TEST_NAME: &str = "boolean_logical_multiple";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod circle_three_point {
+    const TEST_NAME: &str = "circle_three_point";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod array_elem_pop {
+    const TEST_NAME: &str = "array_elem_pop";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod array_elem_pop_empty_fail {
+    const TEST_NAME: &str = "array_elem_pop_empty_fail";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod array_elem_pop_fail {
+    const TEST_NAME: &str = "array_elem_pop_fail";
 
     /// Test parsing KCL.
     #[test]

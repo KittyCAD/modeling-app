@@ -26,7 +26,10 @@ description: Result of parsing tangential_arc.kcl
                         "start": 27,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 31,
@@ -34,7 +37,10 @@ description: Result of parsing tangential_arc.kcl
                         "start": 30,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 32,
@@ -64,7 +70,10 @@ description: Result of parsing tangential_arc.kcl
                         "start": 45,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 50,
@@ -72,7 +81,10 @@ description: Result of parsing tangential_arc.kcl
                         "start": 48,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 10.0
+                        "value": {
+                          "value": 10.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 51,
@@ -119,7 +131,10 @@ description: Result of parsing tangential_arc.kcl
                           "start": 86,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 5.0
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
@@ -138,7 +153,10 @@ description: Result of parsing tangential_arc.kcl
                           "start": 98,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 90.0
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
                         }
                       }
                     ],
@@ -174,7 +192,10 @@ description: Result of parsing tangential_arc.kcl
                         "start": 118,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 5.0
+                        "value": {
+                          "value": 5.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -183,7 +204,10 @@ description: Result of parsing tangential_arc.kcl
                           "start": 122,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 15.0
+                          "value": {
+                            "value": 15.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 124,
                         "operator": "-",
@@ -223,7 +247,10 @@ description: Result of parsing tangential_arc.kcl
                     "start": 143,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 10.0
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 148,

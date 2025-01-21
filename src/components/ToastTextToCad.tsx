@@ -4,7 +4,10 @@ import { useFileContext } from 'hooks/useFileContext'
 import { isDesktop } from 'lib/isDesktop'
 import { PATHS } from 'lib/paths'
 import toast from 'react-hot-toast'
-import { TextToCad_type } from '@kittycad/lib/dist/types/src/models'
+import {
+  TextToCad_type,
+  TextToCadIteration_type,
+} from '@kittycad/lib/dist/types/src/models'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Box3,
@@ -29,6 +32,7 @@ import { commandBarMachine } from 'machines/commandBarMachine'
 import { EventFrom } from 'xstate'
 import { fileMachine } from 'machines/fileMachine'
 import { reportRejection } from 'lib/trap'
+import { codeManager, kclManager } from 'lib/singletons'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -410,4 +414,79 @@ function traverseSceneToStyleObjects({
       scene.add(lines)
     }
   })
+}
+
+export function ToastPromptToEditCadSuccess({
+  toastId,
+  token,
+  data,
+  oldCode,
+}: {
+  toastId: string
+  oldCode: string
+  data: TextToCadIteration_type
+  token?: string
+}) {
+  const modelId = data.id
+
+  return (
+    <div className="flex gap-4 min-w-80">
+      <div className="flex flex-col justify-between gap-6">
+        <section>
+          <h2>Prompt to edit successful</h2>
+          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+            Prompt: "
+            {data?.prompt && data?.prompt?.length > PROMPT_TRUNCATE_LENGTH
+              ? data.prompt.slice(0, PROMPT_TRUNCATE_LENGTH) + '...'
+              : data.prompt}
+            "
+          </p>
+          <p>Do you want to keep the change?</p>
+        </section>
+        <div className="flex justify-between gap-8">
+          <ActionButton
+            Element="button"
+            iconStart={{
+              icon: 'close',
+            }}
+            data-negative-button={'reject'}
+            name={'Reject'}
+            onClick={() => {
+              sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
+              codeManager.updateCodeEditor(oldCode)
+              kclManager.executeCode().catch(reportRejection)
+              toast.dismiss(toastId)
+            }}
+          >
+            {'Reject'}
+          </ActionButton>
+
+          <ActionButton
+            Element="button"
+            iconStart={{
+              icon: 'checkmark',
+            }}
+            name="Accept"
+            onClick={() => {
+              sendTelemetry(modelId, 'accepted', token).catch(reportRejection)
+              toast.dismiss(toastId)
+
+              // Write new content to disk since they have accepted.
+              codeManager
+                .writeToFile()
+                .then(() => {
+                  // no-op
+                })
+                .catch((e) => {
+                  console.error('Failed to save prompt-to-edit to disk')
+                  console.error(e)
+                })
+            }}
+          >
+            Accept
+          </ActionButton>
+        </div>
+      </div>
+    </div>
+  )
 }

@@ -1,6 +1,5 @@
 //! Functions for helping with caching an ast and finding the parts the changed.
 
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use crate::{
@@ -9,8 +8,7 @@ use crate::{
 };
 
 /// Information for the caching an AST and smartly re-executing it if we can.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct CacheInformation {
     /// The old information.
     pub old: Option<OldAstState>,
@@ -19,8 +17,7 @@ pub struct CacheInformation {
 }
 
 /// The old ast and program memory.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct OldAstState {
     /// The ast.
     pub ast: Node<Program>,
@@ -40,8 +37,7 @@ impl From<crate::Program> for CacheInformation {
 }
 
 /// The result of a cache check.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
 pub struct CacheResult {
     /// Should we clear the scene and start over?
     pub clear_scene: bool,

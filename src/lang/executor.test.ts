@@ -6,6 +6,8 @@ import {
   Sketch,
   initPromise,
   sketchFromKclValue,
+  defaultArtifactGraph,
+  topLevelRange,
 } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
@@ -480,8 +482,10 @@ const theExtrude = startSketchOn('XY')
       new KCLError(
         'undefined_value',
         'memory item key `myVarZ` is not defined',
-        [129, 135, true],
-        []
+        topLevelRange(129, 135),
+        [],
+        [],
+        defaultArtifactGraph()
       )
     )
   })

@@ -42,7 +42,10 @@ description: Result of parsing cube.kcl
                         "start": 41,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 32,
                       "type": "BinaryExpression",
@@ -82,7 +85,10 @@ description: Result of parsing cube.kcl
                         "start": 56,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 49,
                       "type": "MemberExpression",
@@ -122,7 +128,10 @@ description: Result of parsing cube.kcl
                         "start": 72,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 65,
                       "type": "MemberExpression",
@@ -697,7 +706,10 @@ description: Result of parsing cube.kcl
                 "start": 338,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 40.0
+                "value": {
+                  "value": 40.0,
+                  "suffix": "None"
+                }
               },
               {
                 "elements": [
@@ -707,7 +719,10 @@ description: Result of parsing cube.kcl
                     "start": 343,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0.0
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 347,
@@ -715,7 +730,10 @@ description: Result of parsing cube.kcl
                     "start": 346,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0.0
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   }
                 ],
                 "end": 348,

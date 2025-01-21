@@ -53,6 +53,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   SKETCH: 'sketch',
   EXTRUDE: 'extrude',
   LOFT: 'loft',
+  SWEEP: 'sweep',
   SHELL: 'shell',
   SEGMENT: 'seg',
   REVOLVE: 'revolve',
@@ -136,3 +137,5 @@ export const VIEW_NAMES_SEMANTIC = {
   [AxisNames.NEG_Y]: 'Front',
   [AxisNames.NEG_Z]: 'Bottom',
 } as const
+/** The modeling sidebar buttons' IDs get a suffix to prevent collisions */
+export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'

@@ -21,7 +21,10 @@ expression: actual
               "start": 28,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 80,
@@ -29,7 +32,10 @@ expression: actual
               "start": 79,
               "type": "Literal",
               "type": "Literal",
-              "value": 3.0
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
             }
           ],
           "end": 91,

@@ -13,7 +13,7 @@ export default defineConfig({
   /* Do not retry */
   retries: 0,
   /* Different amount of parallelism on CI and local. */
-  workers: 1,
+  workers: 8,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['dot'],
@@ -32,10 +32,9 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'Google Chrome',
+      name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        channel: 'chrome',
         contextOptions: {
           /* Chromium is the only one with these permission types */
           permissions: ['clipboard-write', 'clipboard-read'],

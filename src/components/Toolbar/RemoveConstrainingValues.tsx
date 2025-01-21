@@ -1,6 +1,6 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
-import { PathToNode, Program, Expr } from '../../lang/wasm'
+import { PathToNode, Program, Expr, topLevelRange } from '../../lang/wasm'
 import { getNodeFromPath } from '../../lang/queryAst'
 import {
   PathToNodeMap,
@@ -41,7 +41,7 @@ export function removeConstrainingValuesInfo({
         graphSelections: nodes.map(
           (node): Selection => ({
             codeRef: codeRefFromRange(
-              [node.start, node.end, true],
+              topLevelRange(node.start, node.end),
               kclManager.ast
             ),
           })

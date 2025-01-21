@@ -8,12 +8,12 @@ use super::shapes::PolygonType;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ExecState, ExecutorContext, ExtrudeSurface, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
+        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSet,
         SketchSurface, Solid, SolidSet, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
-    std::{shapes::SketchOrSurface, sketch::FaceTag, FnAsArg},
+    std::{shapes::SketchOrSurface, sketch::FaceTag, sweep::SweepPath, FnAsArg},
     ModuleId,
 };
 
@@ -55,6 +55,10 @@ impl KwArgs {
     pub fn len(&self) -> usize {
         self.labeled.len() + if self.unlabeled.is_some() { 1 } else { 0 }
     }
+    /// Are there no arguments?
+    pub fn is_empty(&self) -> bool {
+        self.labeled.len() == 0 && self.unlabeled.is_none()
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -90,25 +94,6 @@ impl Args {
             ctx,
             pipe_value,
         }
-    }
-
-    #[cfg(test)]
-    pub(crate) async fn new_test_args() -> Result<Self> {
-        use std::sync::Arc;
-
-        Ok(Self {
-            args: Vec::new(),
-            kw_args: Default::default(),
-            source_range: SourceRange::default(),
-            ctx: ExecutorContext {
-                engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
-                fs: Arc::new(crate::fs::FileManager::new()),
-                stdlib: Arc::new(crate::std::StdLib::new()),
-                settings: Default::default(),
-                context_type: crate::execution::ContextType::Mock,
-            },
-            pipe_value: None,
-        })
     }
 
     /// Get a keyword argument. If not set, returns None.
@@ -185,7 +170,7 @@ impl Args {
         id: uuid::Uuid,
         cmd: ModelingCmd,
     ) -> Result<OkWebSocketResponseData, KclError> {
-        self.ctx.engine.send_modeling_cmd(id, self.source_range, cmd).await
+        self.ctx.engine.send_modeling_cmd(id, self.source_range, &cmd).await
     }
 
     fn get_tag_info_from_memory<'a, 'e>(
@@ -320,15 +305,6 @@ impl Args {
                 source_range: self.source_range,
             }],
         )
-    }
-
-    pub(crate) fn make_user_val_from_i64(&self, n: i64) -> KclValue {
-        KclValue::Int {
-            value: n,
-            meta: vec![Metadata {
-                source_range: self.source_range,
-            }],
-        }
     }
 
     pub(crate) fn make_user_val_from_f64_array(&self, f: Vec<f64>) -> Result<KclValue, KclError> {
@@ -643,7 +619,7 @@ where
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
                     type_name::<T>(),
-                    arg.value.human_friendly_type()
+                    arg.value.human_friendly_type(),
                 ),
                 source_ranges: arg.source_ranges(),
             }));
@@ -1119,8 +1095,29 @@ impl<'a> FromKclValue<'a> for super::helix::HelixData {
         let_field_of!(obj, revolutions);
         let_field_of!(obj, length?);
         let_field_of!(obj, ccw?);
+        let_field_of!(obj, radius);
+        let_field_of!(obj, axis);
         let ccw = ccw.unwrap_or_default();
-        let angle_start = obj.get("angleStart").or_else(|| obj.get("angle_start"))?.as_f64()?;
+        let angle_start = obj.get("angleStart")?.as_f64()?;
+        Some(Self {
+            revolutions,
+            angle_start,
+            ccw,
+            length,
+            radius,
+            axis,
+        })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::helix::HelixRevolutionsData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, revolutions);
+        let_field_of!(obj, length?);
+        let_field_of!(obj, ccw?);
+        let ccw = ccw.unwrap_or_default();
+        let angle_start = obj.get("angleStart")?.as_f64()?;
         Some(Self {
             revolutions,
             angle_start,
@@ -1168,8 +1165,8 @@ impl<'a> FromKclValue<'a> for super::sketch::ArcData {
         let obj = arg.as_object()?;
         let_field_of!(obj, radius);
         let case1 = || {
-            let angle_start = obj.get("angleStart").or_else(|| obj.get("angle_start"))?.as_f64()?;
-            let angle_end = obj.get("angleEnd").or_else(|| obj.get("angle_end"))?.as_f64()?;
+            let angle_start = obj.get("angleStart")?.as_f64()?;
+            let angle_end = obj.get("angleEnd")?.as_f64()?;
             Some(Self::AnglesAndRadius {
                 angle_start,
                 angle_end,
@@ -1265,21 +1262,9 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         let obj = arg.as_object()?;
         let_field_of!(obj, plane, &KclObjectFields);
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
-        let x_axis = plane
-            .get("xAxis")
-            .or_else(|| plane.get("x_axis"))
-            .and_then(FromKclValue::from_kcl_val)
-            .map(Box::new)?;
-        let y_axis = plane
-            .get("yAxis")
-            .or_else(|| plane.get("y_axis"))
-            .and_then(FromKclValue::from_kcl_val)
-            .map(Box::new)?;
-        let z_axis = plane
-            .get("zAxis")
-            .or_else(|| plane.get("z_axis"))
-            .and_then(FromKclValue::from_kcl_val)
-            .map(Box::new)?;
+        let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
+        let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
+        let z_axis = plane.get("zAxis").and_then(FromKclValue::from_kcl_val).map(Box::new)?;
         Some(Self::Plane {
             origin,
             x_axis,
@@ -1451,7 +1436,7 @@ impl<'a> FromKclValue<'a> for super::sketch::SketchData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::revolve::AxisAndOrigin {
+impl<'a> FromKclValue<'a> for super::axis_or_reference::AxisAndOrigin2d {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 1: predefined planes.
         if let Some(s) = arg.as_str() {
@@ -1472,6 +1457,29 @@ impl<'a> FromKclValue<'a> for super::revolve::AxisAndOrigin {
     }
 }
 
+impl<'a> FromKclValue<'a> for super::axis_or_reference::AxisAndOrigin3d {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        // Case 1: predefined planes.
+        if let Some(s) = arg.as_str() {
+            return match s {
+                "X" | "x" => Some(Self::X),
+                "Y" | "y" => Some(Self::Y),
+                "Z" | "z" => Some(Self::Z),
+                "-X" | "-x" => Some(Self::NegX),
+                "-Y" | "-y" => Some(Self::NegY),
+                "-Z" | "-z" => Some(Self::NegZ),
+                _ => None,
+            };
+        }
+        // Case 2: custom planes.
+        let obj = arg.as_object()?;
+        let_field_of!(obj, custom, &KclObjectFields);
+        let_field_of!(custom, origin);
+        let_field_of!(custom, axis);
+        Some(Self::Custom { axis, origin })
+    }
+}
+
 impl<'a> FromKclValue<'a> for super::fillet::EdgeReference {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let id = arg.as_uuid().map(Self::Uuid);
@@ -1480,9 +1488,17 @@ impl<'a> FromKclValue<'a> for super::fillet::EdgeReference {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::revolve::AxisOrEdgeReference {
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let case1 = super::revolve::AxisAndOrigin::from_kcl_val;
+        let case1 = super::axis_or_reference::AxisAndOrigin2d::from_kcl_val;
+        let case2 = super::fillet::EdgeReference::from_kcl_val;
+        case1(arg).map(Self::Axis).or_else(|| case2(arg).map(Self::Edge))
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = super::axis_or_reference::AxisAndOrigin3d::from_kcl_val;
         let case2 = super::fillet::EdgeReference::from_kcl_val;
         case1(arg).map(Self::Axis).or_else(|| case2(arg).map(Self::Edge))
     }
@@ -1591,6 +1607,24 @@ impl<'a> FromKclValue<'a> for Sketch {
             return None;
         };
         Some(value.as_ref().to_owned())
+    }
+}
+
+impl<'a> FromKclValue<'a> for Helix {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Helix(value) = arg else {
+            return None;
+        };
+        Some(value.as_ref().to_owned())
+    }
+}
+impl<'a> FromKclValue<'a> for SweepPath {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let case1 = Sketch::from_kcl_val;
+        let case2 = Helix::from_kcl_val;
+        case1(arg)
+            .map(Self::Sketch)
+            .or_else(|| case2(arg).map(|arg0: Helix| Self::Helix(Box::new(arg0))))
     }
 }
 impl<'a> FromKclValue<'a> for String {

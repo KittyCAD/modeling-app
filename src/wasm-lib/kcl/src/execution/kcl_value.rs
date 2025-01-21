@@ -7,7 +7,9 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
-    execution::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
+    execution::{
+        Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier,
+    },
     parsing::{
         ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
         token::NumericSuffix,
@@ -72,6 +74,7 @@ pub enum KclValue {
     Solids {
         value: Vec<Box<Solid>>,
     },
+    Helix(Box<Helix>),
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     Function {
@@ -141,6 +144,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Helix(e) => to_vec_sr(&e.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
             KclValue::Plane(p) => to_vec_sr(&p.meta),
@@ -171,6 +175,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Helix(x) => to_vec_sr(&x.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
             KclValue::Plane(p) => to_vec_sr(&p.meta),
@@ -206,6 +211,7 @@ impl KclValue {
             KclValue::Sketches { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
             KclValue::Solid(x) => x.meta.clone(),
             KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
+            KclValue::Helix(x) => x.meta.clone(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
@@ -264,6 +270,7 @@ impl KclValue {
             KclValue::Solids { .. } => "Solids",
             KclValue::Sketch { .. } => "Sketch",
             KclValue::Sketches { .. } => "Sketches",
+            KclValue::Helix(_) => "Helix",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
             KclValue::Function { .. } => "Function",
             KclValue::Plane(_) => "Plane",
@@ -281,7 +288,7 @@ impl KclValue {
 
     pub(crate) fn from_literal(literal: LiteralValue, meta: Vec<Metadata>) -> Self {
         match literal {
-            LiteralValue::Number(value) => KclValue::Number { value, meta },
+            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }
@@ -594,10 +601,24 @@ impl TryFrom<NumericSuffix> for UnitLen {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+impl From<crate::UnitLength> for UnitLen {
+    fn from(unit: crate::UnitLength) -> Self {
+        match unit {
+            crate::UnitLength::Cm => UnitLen::Cm,
+            crate::UnitLength::Ft => UnitLen::Feet,
+            crate::UnitLength::In => UnitLen::Inches,
+            crate::UnitLength::M => UnitLen::M,
+            crate::UnitLength::Mm => UnitLen::Mm,
+            crate::UnitLength::Yd => UnitLen::Yards,
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitAngle {
+    #[default]
     Degrees,
     Radians,
 }

@@ -4,6 +4,7 @@ pub mod appearance;
 pub mod args;
 pub mod array;
 pub mod assert;
+pub mod axis_or_reference;
 pub mod chamfer;
 pub mod convert;
 pub mod extrude;
@@ -69,6 +70,7 @@ lazy_static! {
         Box::new(crate::std::segment::AngleToMatchLengthX),
         Box::new(crate::std::segment::AngleToMatchLengthY),
         Box::new(crate::std::shapes::Circle),
+        Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
         Box::new(crate::std::sketch::LineTo),
         Box::new(crate::std::sketch::Line),
@@ -106,12 +108,14 @@ lazy_static! {
         Box::new(crate::std::array::Reduce),
         Box::new(crate::std::array::Map),
         Box::new(crate::std::array::Push),
+        Box::new(crate::std::array::Pop),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::fillet::GetOppositeEdge),
         Box::new(crate::std::fillet::GetNextAdjacentEdge),
         Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
         Box::new(crate::std::helix::Helix),
+        Box::new(crate::std::helix::HelixRevolutions),
         Box::new(crate::std::shell::Shell),
         Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::revolve::Revolve),

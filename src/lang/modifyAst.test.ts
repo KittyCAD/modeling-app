@@ -1,4 +1,11 @@
-import { assertParse, recast, initPromise, Identifier } from './wasm'
+import {
+  assertParse,
+  recast,
+  initPromise,
+  Identifier,
+  SourceRange,
+  topLevelRange,
+} from './wasm'
 import {
   createLiteral,
   createIdentifier,
@@ -32,7 +39,7 @@ describe('Testing createLiteral', () => {
   it('should create a literal', () => {
     const result = createLiteral(5)
     expect(result.type).toBe('Literal')
-    expect(result.value).toBe(5)
+    expect((result as any).value.value).toBe(5)
   })
 })
 describe('Testing createIdentifier', () => {
@@ -49,7 +56,7 @@ describe('Testing createCallExpression', () => {
     expect(result.callee.type).toBe('Identifier')
     expect(result.callee.name).toBe('myFunc')
     expect(result.arguments[0].type).toBe('Literal')
-    expect((result.arguments[0] as any).value).toBe(5)
+    expect((result.arguments[0] as any).value.value).toBe(5)
   })
 })
 describe('Testing createObjectExpression', () => {
@@ -61,7 +68,7 @@ describe('Testing createObjectExpression', () => {
     expect(result.properties[0].type).toBe('ObjectProperty')
     expect(result.properties[0].key.name).toBe('myProp')
     expect(result.properties[0].value.type).toBe('Literal')
-    expect((result.properties[0].value as any).value).toBe(5)
+    expect((result.properties[0].value as any).value.value).toBe(5)
   })
 })
 describe('Testing createArrayExpression', () => {
@@ -69,7 +76,7 @@ describe('Testing createArrayExpression', () => {
     const result = createArrayExpression([createLiteral(5)])
     expect(result.type).toBe('ArrayExpression')
     expect(result.elements[0].type).toBe('Literal')
-    expect((result.elements[0] as any).value).toBe(5)
+    expect((result.elements[0] as any).value.value).toBe(5)
   })
 })
 describe('Testing createPipeSubstitution', () => {
@@ -86,7 +93,7 @@ describe('Testing createVariableDeclaration', () => {
     expect(result.declaration.id.type).toBe('Identifier')
     expect(result.declaration.id.name).toBe('myVar')
     expect(result.declaration.init.type).toBe('Literal')
-    expect((result.declaration.init as any).value).toBe(5)
+    expect((result.declaration.init as any).value.value).toBe(5)
   })
 })
 describe('Testing createPipeExpression', () => {
@@ -94,7 +101,7 @@ describe('Testing createPipeExpression', () => {
     const result = createPipeExpression([createLiteral(5)])
     expect(result.type).toBe('PipeExpression')
     expect(result.body[0].type).toBe('Literal')
-    expect((result.body[0] as any).value).toBe(5)
+    expect((result.body[0] as any).value.value).toBe(5)
   })
 })
 
@@ -148,11 +155,7 @@ function giveSketchFnCallTagTestHelper(
   // making it more of an integration test, but easier to read the test intention is the goal
   const ast = assertParse(code)
   const start = code.indexOf(searchStr)
-  const range: [number, number, boolean] = [
-    start,
-    start + searchStr.length,
-    true,
-  ]
+  const range = topLevelRange(start, start + searchStr.length)
   const sketchRes = giveSketchFnCallTag(ast, range)
   if (err(sketchRes)) throw sketchRes
   const { modifiedAst, tag, isTagExisting } = sketchRes
@@ -230,7 +233,7 @@ yo2 = hmm([identifierGuy + 5])`
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex, true],
+      topLevelRange(startIndex, startIndex),
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -244,7 +247,7 @@ yo2 = hmm([identifierGuy + 5])`
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex, true],
+      topLevelRange(startIndex, startIndex),
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -258,7 +261,7 @@ yo2 = hmm([identifierGuy + 5])`
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex, true],
+      topLevelRange(startIndex, startIndex),
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -272,7 +275,7 @@ yo2 = hmm([identifierGuy + 5])`
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex, true],
+      topLevelRange(startIndex, startIndex),
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -286,7 +289,7 @@ yo2 = hmm([identifierGuy + 5])`
     const { modifiedAst } = moveValueIntoNewVariable(
       ast,
       execState.memory,
-      [startIndex, startIndex, true],
+      topLevelRange(startIndex, startIndex),
       'newVar'
     )
     const newCode = recast(modifiedAst)
@@ -306,18 +309,16 @@ describe('testing sketchOnExtrudedFace', () => {
     const ast = assertParse(code)
 
     const segmentSnippet = `line([9.7, 9.19], %)`
-    const segmentRange: [number, number, boolean] = [
+    const segmentRange = topLevelRange(
       code.indexOf(segmentSnippet),
-      code.indexOf(segmentSnippet) + segmentSnippet.length,
-      true,
-    ]
+      code.indexOf(segmentSnippet) + segmentSnippet.length
+    )
     const segmentPathToNode = getNodePathFromSourceRange(ast, segmentRange)
     const extrudeSnippet = `extrude(5 + 7, %)`
-    const extrudeRange: [number, number, boolean] = [
+    const extrudeRange = topLevelRange(
       code.indexOf(extrudeSnippet),
-      code.indexOf(extrudeSnippet) + extrudeSnippet.length,
-      true,
-    ]
+      code.indexOf(extrudeSnippet) + extrudeSnippet.length
+    )
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
     const extruded = sketchOnExtrudedFace(
@@ -346,18 +347,16 @@ sketch001 = startSketchOn(part001, seg01)`)
   |> extrude(5 + 7, %)`
     const ast = assertParse(code)
     const segmentSnippet = `close(%)`
-    const segmentRange: [number, number, boolean] = [
+    const segmentRange = topLevelRange(
       code.indexOf(segmentSnippet),
-      code.indexOf(segmentSnippet) + segmentSnippet.length,
-      true,
-    ]
+      code.indexOf(segmentSnippet) + segmentSnippet.length
+    )
     const segmentPathToNode = getNodePathFromSourceRange(ast, segmentRange)
     const extrudeSnippet = `extrude(5 + 7, %)`
-    const extrudeRange: [number, number, boolean] = [
+    const extrudeRange = topLevelRange(
       code.indexOf(extrudeSnippet),
-      code.indexOf(extrudeSnippet) + extrudeSnippet.length,
-      true,
-    ]
+      code.indexOf(extrudeSnippet) + extrudeSnippet.length
+    )
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
     const extruded = sketchOnExtrudedFace(
@@ -386,18 +385,16 @@ sketch001 = startSketchOn(part001, seg01)`)
   |> extrude(5 + 7, %)`
     const ast = assertParse(code)
     const sketchSnippet = `startProfileAt([3.58, 2.06], %)`
-    const sketchRange: [number, number, boolean] = [
+    const sketchRange = topLevelRange(
       code.indexOf(sketchSnippet),
-      code.indexOf(sketchSnippet) + sketchSnippet.length,
-      true,
-    ]
+      code.indexOf(sketchSnippet) + sketchSnippet.length
+    )
     const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
     const extrudeSnippet = `extrude(5 + 7, %)`
-    const extrudeRange: [number, number, boolean] = [
+    const extrudeRange = topLevelRange(
       code.indexOf(extrudeSnippet),
-      code.indexOf(extrudeSnippet) + extrudeSnippet.length,
-      true,
-    ]
+      code.indexOf(extrudeSnippet) + extrudeSnippet.length
+    )
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
     const extruded = sketchOnExtrudedFace(
@@ -435,18 +432,16 @@ sketch001 = startSketchOn(part001, 'END')`)
     part001 = extrude(5 + 7, sketch001)`
     const ast = assertParse(code)
     const segmentSnippet = `line([4.99, -0.46], %)`
-    const segmentRange: [number, number, boolean] = [
+    const segmentRange = topLevelRange(
       code.indexOf(segmentSnippet),
-      code.indexOf(segmentSnippet) + segmentSnippet.length,
-      true,
-    ]
+      code.indexOf(segmentSnippet) + segmentSnippet.length
+    )
     const segmentPathToNode = getNodePathFromSourceRange(ast, segmentRange)
     const extrudeSnippet = `extrude(5 + 7, sketch001)`
-    const extrudeRange: [number, number, boolean] = [
+    const extrudeRange = topLevelRange(
       code.indexOf(extrudeSnippet),
-      code.indexOf(extrudeSnippet) + extrudeSnippet.length,
-      true,
-    ]
+      code.indexOf(extrudeSnippet) + extrudeSnippet.length
+    )
     const extrudePathToNode = getNodePathFromSourceRange(ast, extrudeRange)
 
     const updatedAst = sketchOnExtrudedFace(
@@ -471,11 +466,10 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const lineOfInterest = 'line([306.21, 198.85], %, $a)'
-    const range: [number, number, boolean] = [
+    const range = topLevelRange(
       code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length,
-      true,
-    ]
+      code.indexOf(lineOfInterest) + lineOfInterest.length
+    )
     const pathToNode = getNodePathFromSourceRange(ast, range)
     const modifiedAst = deleteSegmentFromPipeExpression(
       [],
@@ -549,11 +543,10 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine([-65, ${
       const ast = assertParse(code)
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = line
-      const range: [number, number, boolean] = [
+      const range = topLevelRange(
         code.indexOf(lineOfInterest),
-        code.indexOf(lineOfInterest) + lineOfInterest.length,
-        true,
-      ]
+        code.indexOf(lineOfInterest) + lineOfInterest.length
+      )
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
       const modifiedAst = deleteSegmentFromPipeExpression(
@@ -638,11 +631,10 @@ describe('Testing removeSingleConstraintInfo', () => {
 
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
-      const range: [number, number, boolean] = [
+      const range = topLevelRange(
         code.indexOf(lineOfInterest) + 1,
-        code.indexOf(lineOfInterest) + lineOfInterest.length,
-        true,
-      ]
+        code.indexOf(lineOfInterest) + lineOfInterest.length
+      )
       const pathToNode = getNodePathFromSourceRange(ast, range)
       let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {
@@ -692,11 +684,10 @@ describe('Testing removeSingleConstraintInfo', () => {
 
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
-      const range: [number, number, boolean] = [
+      const range = topLevelRange(
         code.indexOf(lineOfInterest) + 1,
-        code.indexOf(lineOfInterest) + lineOfInterest.length,
-        true,
-      ]
+        code.indexOf(lineOfInterest) + lineOfInterest.length
+      )
       let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {
         argPosition = {
@@ -806,9 +797,9 @@ sketch001 = startSketchOn('XZ')
 sketch002 = startSketchOn({
        plane = {
          origin = { x = 1, y = 2, z = 3 },
-         x_axis = { x = 4, y = 5, z = 6 },
-         y_axis = { x = 7, y = 8, z = 9 },
-         z_axis = { x = 10, y = 11, z = 12 }
+         xAxis = { x = 4, y = 5, z = 6 },
+         yAxis = { x = 7, y = 8, z = 9 },
+         zAxis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)
@@ -862,9 +853,9 @@ sketch001 = startSketchOn('XZ')
 sketch002 = startSketchOn({
        plane = {
          origin = { x = 1, y = 2, z = 3 },
-         x_axis = { x = 4, y = 5, z = 6 },
-         y_axis = { x = 7, y = 8, z = 9 },
-         z_axis = { x = 10, y = 11, z = 12 }
+         xAxis = { x = 4, y = 5, z = 6 },
+         yAxis = { x = 7, y = 8, z = 9 },
+         zAxis = { x = 10, y = 11, z = 12 }
        }
      })
   |> startProfileAt([-12.55, 2.89], %)
@@ -889,11 +880,10 @@ sketch002 = startSketchOn({
       const execState = await enginelessExecutor(ast)
 
       // deleteFromSelection
-      const range: [number, number, boolean] = [
+      const range = topLevelRange(
         codeBefore.indexOf(lineOfInterest),
-        codeBefore.indexOf(lineOfInterest) + lineOfInterest.length,
-        true,
-      ]
+        codeBefore.indexOf(lineOfInterest) + lineOfInterest.length
+      )
       const artifact = { type } as Artifact
       const newAst = await deleteFromSelection(
         ast,

@@ -36,7 +36,8 @@ type DragFromHandler = (
 
 export class SceneFixture {
   public page: Page
-
+  public streamWrapper!: Locator
+  public loadingIndicator!: Locator
   private exeIndicator!: Locator
 
   constructor(page: Page) {
@@ -53,8 +54,9 @@ export class SceneFixture {
 
   expectState = async (expected: SceneSerialised) => {
     return expect
-      .poll(() => this._serialiseScene(), {
-        message: `Expected scene state to match`,
+      .poll(async () => await this._serialiseScene(), {
+        intervals: [1_000, 2_000, 10_000],
+        timeout: 60000,
       })
       .toEqual(expected)
   }
@@ -63,6 +65,8 @@ export class SceneFixture {
     this.page = page
 
     this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
+    this.streamWrapper = page.getByTestId('stream')
+    this.loadingIndicator = this.streamWrapper.getByTestId('loading')
   }
 
   makeMouseHelpers = (
@@ -187,7 +191,10 @@ export class SceneFixture {
         type: 'default_camera_get_settings',
       },
     })
-    await this.waitForExecutionDone()
+    await this.page
+      .locator(`[data-receive-command-type="default_camera_get_settings"]`)
+      .first()
+      .waitFor()
     const position = await Promise.all([
       this.page.getByTestId('cam-x-position').inputValue().then(Number),
       this.page.getByTestId('cam-y-position').inputValue().then(Number),
@@ -222,6 +229,7 @@ export class SceneFixture {
   }
 
   async clickGizmoMenuItem(name: string) {
+    await this.gizmo.hover()
     await this.gizmo.click({ button: 'right' })
     const buttonToTest = this.page.getByRole('button', {
       name: name,
