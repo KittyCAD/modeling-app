@@ -288,7 +288,7 @@ impl KclValue {
 
     pub(crate) fn from_literal(literal: LiteralValue, meta: Vec<Metadata>) -> Self {
         match literal {
-            LiteralValue::Number(value) => KclValue::Number { value, meta },
+            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }
@@ -601,10 +601,24 @@ impl TryFrom<NumericSuffix> for UnitLen {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+impl From<crate::UnitLength> for UnitLen {
+    fn from(unit: crate::UnitLength) -> Self {
+        match unit {
+            crate::UnitLength::Cm => UnitLen::Cm,
+            crate::UnitLength::Ft => UnitLen::Feet,
+            crate::UnitLength::In => UnitLen::Inches,
+            crate::UnitLength::M => UnitLen::M,
+            crate::UnitLength::Mm => UnitLen::Mm,
+            crate::UnitLength::Yd => UnitLen::Yards,
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitAngle {
+    #[default]
     Degrees,
     Radians,
 }

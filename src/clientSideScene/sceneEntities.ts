@@ -1,5 +1,6 @@
 import {
   BoxGeometry,
+  Color,
   DoubleSide,
   Group,
   Intersection,
@@ -58,7 +59,9 @@ import {
   sourceRangeFromRust,
   resultIsOk,
   SourceRange,
+  topLevelRange,
 } from 'lang/wasm'
+import { calculate_circle_from_3_points } from '../wasm-lib/pkg/wasm_lib'
 import {
   engineCommandManager,
   kclManager,
@@ -70,7 +73,7 @@ import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
 import { executeAst, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
-  createArcGeometry,
+  createCircleGeometry,
   SegmentUtils,
   segmentUtils,
 } from './segments'
@@ -109,6 +112,8 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { Point3d } from 'wasm-lib/kcl/bindings/Point3d'
 import { SegmentInputs } from 'lang/std/stdTypes'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { LabeledArg } from 'wasm-lib/kcl/bindings/LabeledArg'
+import { Literal } from 'wasm-lib/kcl/bindings/Literal'
 import { radToDeg } from 'three/src/math/MathUtils'
 import { getArtifactFromRange, codeRefFromRange } from 'lang/std/artifactGraph'
 
@@ -624,7 +629,7 @@ export class SceneEntities {
 
       const startRange = _node1.node.start
       const endRange = _node1.node.end
-      const sourceRange: SourceRange = [startRange, endRange, true]
+      const sourceRange = topLevelRange(startRange, endRange)
       const selection: Selections = computeSelectionFromSourceRangeAndAST(
         sourceRange,
         maybeModdedAst
@@ -1261,110 +1266,98 @@ export class SceneEntities {
     const groupOfDrafts = new Group()
     groupOfDrafts.name = 'circle-3-point-group'
     groupOfDrafts.position.copy(sketchOrigin)
+
     // lee: I'm keeping this here as a developer gotchya:
-    // Do not reorient your surfaces to the intersection plane. Your points are
-    // already in 3D space, not 2D. If you intersect say XZ, you want the points
-    // to continue to live at the 3D intersection point, not be rotated to end
-    // up elsewhere!
-    // groupOfDrafts.setRotationFromQuaternion(orientation)
+    // If you use 3D points, do not rotate anything.
+    // If you use 2D points (easier to deal with, generally do this!), then
+    // rotate the group just like this! Remember to rotate other groups too!
+    groupOfDrafts.setRotationFromQuaternion(orientation)
     this.scene.add(groupOfDrafts)
 
-    const DRAFT_POINT_RADIUS = 6
+    // How large the points on the circle will render as
+    const DRAFT_POINT_RADIUS = 10 // px
 
-    const createPoint = (center: Vector3): number => {
+    // The target of our dragging
+    let target: Object3D | undefined = undefined
+
+    // The KCL this will generate.
+    const kclCircle3Point = parse(`circleThreePoint(
+      p1 = [0.0, 0.0],
+      p2 = [0.0, 0.0],
+      p3 = [0.0, 0.0],
+    )`)
+
+    const createPoint = (
+      center: Vector3,
+      opts?: { noInteraction?: boolean }
+    ): Mesh => {
       const geometry = new SphereGeometry(DRAFT_POINT_RADIUS)
       const color = getThemeColorForThreeJs(sceneInfra._theme)
-      const material = new MeshBasicMaterial({ color })
+
+      const material = new MeshBasicMaterial({
+        color: opts?.noInteraction
+          ? sceneInfra._theme === 'light'
+            ? new Color(color).multiplyScalar(0.15)
+            : new Color(0x010101).multiplyScalar(2000)
+          : color,
+      })
 
       const mesh = new Mesh(geometry, material)
-      mesh.userData = { type: CIRCLE_3_POINT_DRAFT_POINT }
+      mesh.userData = {
+        type: opts?.noInteraction ? 'ghost' : CIRCLE_3_POINT_DRAFT_POINT,
+      }
+      mesh.renderOrder = 1000
       mesh.layers.set(SKETCH_LAYER)
       mesh.position.copy(center)
       mesh.scale.set(scale, scale, scale)
       mesh.renderOrder = 100
 
-      groupOfDrafts.add(mesh)
-
-      return mesh.id
+      return mesh
     }
 
-    const circle3Point = (
-      points: Vector2[]
-    ): undefined | { center: Vector3; radius: number } => {
-      // A 3-point circle is undefined if it doesn't have 3 points :)
-      if (points.length !== 3) return undefined
-
-      // y = (i/j)(x-h) + b
-      // i and j variables for the slopes
-      const i = [points[1].x - points[0].x, points[2].x - points[1].x]
-      const j = [points[1].y - points[0].y, points[2].y - points[1].y]
-
-      // Our / threejs coordinate system affects this a lot. If you take this
-      // code into a different code base, you may have to adjust a/b to being
-      // -1/a/b, b/a, etc! In this case, a/-b did the trick.
-      const m = [i[0] / -j[0], i[1] / -j[1]]
-
-      const h = [
-        (points[0].x + points[1].x) / 2,
-        (points[1].x + points[2].x) / 2,
-      ]
-      const b = [
-        (points[0].y + points[1].y) / 2,
-        (points[1].y + points[2].y) / 2,
-      ]
-
-      // Algebraically derived
-      const x = (-m[0] * h[0] + b[0] - b[1] + m[1] * h[1]) / (m[1] - m[0])
-      const y = m[0] * (x - h[0]) + b[0]
-
-      const center = new Vector3(x, y, 0)
-      const radius = Math.sqrt((points[1].x - x) ** 2 + (points[1].y - y) ** 2)
-
-      return {
-        center,
-        radius,
-      }
-    }
-
-    // TO BE SHORT LIVED: unused function to draw the circle and lines.
-    // @ts-ignore
-    // eslint-disable-next-line
-    const createCircle3Point = (points: Vector2[]) => {
-      const circleParams = circle3Point(points)
-
-      // A circle cannot be created for these points.
-      if (!circleParams) return
+    const createCircle3PointGraphic = async (
+      points: Vector2[],
+      center: Vector2,
+      radius: number
+    ) => {
+      if (
+        Number.isNaN(radius) ||
+        Number.isNaN(center.x) ||
+        Number.isNaN(center.y)
+      )
+        return
 
       const color = getThemeColorForThreeJs(sceneInfra._theme)
-      const geometryCircle = createArcGeometry({
-        center: [circleParams.center.x, circleParams.center.y],
-        radius: circleParams.radius,
-        startAngle: 0,
-        endAngle: Math.PI * 2,
-        ccw: true,
-        isDashed: true,
-        scale,
+      const lineCircle = createCircleGeometry({
+        center: [center.x, center.y],
+        radius,
+        color,
+        isDashed: false,
+        scale: 1,
       })
-      const materialCircle = new MeshBasicMaterial({ color })
+      lineCircle.userData = { type: CIRCLE_3_POINT_DRAFT_CIRCLE }
+      lineCircle.layers.set(SKETCH_LAYER)
+      // devnote: it's a mistake to use these with EllipseCurve :)
+      // lineCircle.position.set(center.x, center.y, 0)
+      // lineCircle.scale.set(scale, scale, scale)
 
       if (groupCircle) groupOfDrafts.remove(groupCircle)
       groupCircle = new Group()
       groupCircle.renderOrder = 1
+      groupCircle.add(lineCircle)
 
-      const meshCircle = new Mesh(geometryCircle, materialCircle)
-      meshCircle.userData = { type: CIRCLE_3_POINT_DRAFT_CIRCLE }
-      meshCircle.layers.set(SKETCH_LAYER)
-      meshCircle.position.set(circleParams.center.x, circleParams.center.y, 0)
-      meshCircle.scale.set(scale, scale, scale)
-      groupCircle.add(meshCircle)
+      const pointMesh = createPoint(new Vector3(center.x, center.y, 0), {
+        noInteraction: true,
+      })
+      groupCircle.add(pointMesh)
 
       const geometryPolyLine = new BufferGeometry().setFromPoints([
-        ...points,
-        points[0],
+        ...points.map((p) => new Vector3(p.x, p.y, 0)),
+        new Vector3(points[0].x, points[0].y, 0),
       ])
       const materialPolyLine = new LineDashedMaterial({
         color,
-        scale,
+        scale: 1 / scale,
         dashSize: 6,
         gapSize: 6,
       })
@@ -1375,11 +1368,144 @@ export class SceneEntities {
       groupOfDrafts.add(groupCircle)
     }
 
-    // The target of our dragging
-    let target: Object3D | undefined = undefined
+    const insertCircle3PointKclIntoAstSnapshot = (
+      points: Vector2[]
+    ): Program => {
+      if (err(kclCircle3Point) || kclCircle3Point.program === null)
+        return kclManager.ast
+      if (kclCircle3Point.program.body[0].type !== 'ExpressionStatement')
+        return kclManager.ast
+      if (
+        kclCircle3Point.program.body[0].expression.type !== 'CallExpressionKw'
+      )
+        return kclManager.ast
+
+      const arg = (x: LabeledArg): Literal[] | undefined => {
+        if (
+          'arg' in x &&
+          'elements' in x.arg &&
+          x.arg.type === 'ArrayExpression'
+        ) {
+          if (x.arg.elements.every((x) => x.type === 'Literal')) {
+            return x.arg.elements
+          }
+        }
+        return undefined
+      }
+
+      const kclCircle3PointArgs =
+        kclCircle3Point.program.body[0].expression.arguments
+
+      const arg0 = arg(kclCircle3PointArgs[0])
+      if (!arg0) return kclManager.ast
+      arg0[0].value = { value: points[0].x, suffix: 'None' }
+      arg0[0].raw = points[0].x.toString()
+      arg0[1].value = { value: points[0].y, suffix: 'None' }
+      arg0[1].raw = points[0].y.toString()
+
+      const arg1 = arg(kclCircle3PointArgs[1])
+      if (!arg1) return kclManager.ast
+      arg1[0].value = { value: points[1].x, suffix: 'None' }
+      arg1[0].raw = points[1].x.toString()
+      arg1[1].value = { value: points[1].y, suffix: 'None' }
+      arg1[1].raw = points[1].y.toString()
+
+      const arg2 = arg(kclCircle3PointArgs[2])
+      if (!arg2) return kclManager.ast
+      arg2[0].value = { value: points[2].x, suffix: 'None' }
+      arg2[0].raw = points[2].x.toString()
+      arg2[1].value = { value: points[2].y, suffix: 'None' }
+      arg2[1].raw = points[2].y.toString()
+
+      const astSnapshot = structuredClone(kclManager.ast)
+      const startSketchOnASTNode = getNodeFromPath<VariableDeclaration>(
+        astSnapshot,
+        startSketchOnASTNodePath,
+        'VariableDeclaration'
+      )
+      if (err(startSketchOnASTNode)) return astSnapshot
+
+      // It's possible we're already dealing with a PipeExpression.
+      // Modify the current one.
+      if (
+        startSketchOnASTNode.node.declaration.init.type === 'PipeExpression' &&
+        startSketchOnASTNode.node.declaration.init.body[1].type ===
+          'CallExpressionKw' &&
+        startSketchOnASTNode.node.declaration.init.body.length >= 2
+      ) {
+        startSketchOnASTNode.node.declaration.init.body[1].arguments =
+          kclCircle3Point.program.body[0].expression.arguments
+      } else {
+        // Clone a new node based on the old, and replace the old with the new.
+        const clonedStartSketchOnASTNode = structuredClone(startSketchOnASTNode)
+        startSketchOnASTNode.node.declaration.init = createPipeExpression([
+          clonedStartSketchOnASTNode.node.declaration.init,
+          kclCircle3Point.program.body[0].expression,
+        ])
+      }
+
+      // Return the `Program`
+      return astSnapshot
+    }
+
+    const updateCircle3Point = async (opts?: { execute?: true }) => {
+      const points_ = Array.from(points.values())
+      const circleParams = calculate_circle_from_3_points(
+        points_[0].x,
+        points_[0].y,
+        points_[1].x,
+        points_[1].y,
+        points_[2].x,
+        points_[2].y
+      )
+
+      if (Number.isNaN(circleParams.radius)) return
+
+      await createCircle3PointGraphic(
+        points_,
+        new Vector2(circleParams.center_x, circleParams.center_y),
+        circleParams.radius
+      )
+      const astWithNewCode = insertCircle3PointKclIntoAstSnapshot(points_)
+      const codeAsString = recast(astWithNewCode)
+      if (err(codeAsString)) return
+      codeManager.updateCodeStateEditor(codeAsString)
+    }
 
     const cleanupFn = () => {
       this.scene.remove(groupOfDrafts)
+    }
+
+    // The AST node we extracted earlier may already have a circleThreePoint!
+    // Use the points in the AST as starting points.
+    const astSnapshot = structuredClone(kclManager.ast)
+    const maybeVariableDeclaration = getNodeFromPath<VariableDeclaration>(
+      astSnapshot,
+      startSketchOnASTNodePath,
+      'VariableDeclaration'
+    )
+    if (err(maybeVariableDeclaration))
+      return () => {
+        done()
+      }
+
+    const maybeCallExpressionKw = maybeVariableDeclaration.node.declaration.init
+    if (
+      maybeCallExpressionKw.type === 'PipeExpression' &&
+      maybeCallExpressionKw.body[1].type === 'CallExpressionKw' &&
+      maybeCallExpressionKw.body[1]?.callee.name === 'circleThreePoint'
+    ) {
+      maybeCallExpressionKw?.body[1].arguments
+        .map(
+          ({ arg }: any) =>
+            new Vector2(arg.elements[0].value, arg.elements[1].value)
+        )
+        .forEach((point: Vector2) => {
+          const pointMesh = createPoint(new Vector3(point.x, point.y, 0))
+          groupOfDrafts.add(pointMesh)
+          points.set(pointMesh.id, point)
+        })
+      void updateCircle3Point()
     }
 
     sceneInfra.setCallbacks({
@@ -1397,8 +1523,18 @@ export class SceneEntities {
         // The user was off their mark! Missed the object to select.
         if (!target) return
 
-        target.position.copy(args.intersectionPoint.threeD)
+        target.position.copy(
+          new Vector3(
+            args.intersectionPoint.twoD.x,
+            args.intersectionPoint.twoD.y,
+            0
+          )
+        )
         points.set(target.id, args.intersectionPoint.twoD)
+
+        if (points.size <= 2) return
+
+        await updateCircle3Point()
       },
       async onDragEnd(_args) {
         target = undefined
@@ -1407,45 +1543,19 @@ export class SceneEntities {
         if (points.size >= 3) return
         if (!args.intersectionPoint) return
 
-        const id = createPoint(args.intersectionPoint.threeD)
-        points.set(id, args.intersectionPoint.twoD)
-
-        if (points.size < 2) return
-
-        // We've now got 3 points, let's create our circle!
-        const astSnapshot = structuredClone(kclManager.ast)
-        let nodeQueryResult
-        nodeQueryResult = getNodeFromPath<VariableDeclaration>(
-          astSnapshot,
-          startSketchOnASTNodePath,
-          'VariableDeclaration'
+        const pointMesh = createPoint(
+          new Vector3(
+            args.intersectionPoint.twoD.x,
+            args.intersectionPoint.twoD.y,
+            0
+          )
         )
-        if (err(nodeQueryResult)) return Promise.reject(nodeQueryResult)
-        const startSketchOnASTNode = nodeQueryResult
+        groupOfDrafts.add(pointMesh)
+        points.set(pointMesh.id, args.intersectionPoint.twoD)
 
-        const circleParams = circle3Point(Array.from(points.values()))
+        if (points.size <= 2) return
 
-        if (!circleParams) return
-
-        const kclCircle3Point = parse(`circle({
-            center = [${circleParams.center.x}, ${circleParams.center.y}],
-            radius = ${circleParams.radius},
-          }, %)`)
-
-        if (err(kclCircle3Point) || kclCircle3Point.program === null) return
-        if (kclCircle3Point.program.body[0].type !== 'ExpressionStatement')
-          return
-
-        const clonedStartSketchOnASTNode = structuredClone(startSketchOnASTNode)
-        startSketchOnASTNode.node.declaration.init = createPipeExpression([
-          clonedStartSketchOnASTNode.node.declaration.init,
-          kclCircle3Point.program.body[0].expression,
-        ])
-
-        await kclManager.executeAstMock(astSnapshot)
-        await codeManager.updateEditorWithAstAndWriteToFile(astSnapshot)
-
-        done()
+        await updateCircle3Point()
       },
     })
 
@@ -1903,7 +2013,7 @@ export class SceneEntities {
         kclManager.programMemory,
         {
           type: 'sourceRange',
-          sourceRange: [node.start, node.end, true],
+          sourceRange: topLevelRange(node.start, node.end),
         },
         getChangeSketchInput()
       )
@@ -2154,7 +2264,7 @@ export class SceneEntities {
           )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
-          editorManager.setHighlightRange([[node.start, node.end, true]])
+          editorManager.setHighlightRange([topLevelRange(node.start, node.end)])
           const yellow = 0xffff00
           colorSegment(selected, yellow)
           const extraSegmentGroup = parent.getObjectByName(EXTRA_SEGMENT_HANDLE)

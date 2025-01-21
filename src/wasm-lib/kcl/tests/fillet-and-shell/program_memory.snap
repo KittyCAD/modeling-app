@@ -951,7 +951,10 @@ description: Program memory after executing fillet-and-shell.kcl
                                   "start": 1276,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "end": 1280,
@@ -959,7 +962,10 @@ description: Program memory after executing fillet-and-shell.kcl
                                   "start": 1279,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 }
                               ],
                               "end": 1281,
@@ -1039,7 +1045,10 @@ description: Program memory after executing fillet-and-shell.kcl
                                     "start": 1328,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 2.5
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "None"
+                                    }
                                   }
                                 }
                               ],
@@ -1121,7 +1130,10 @@ description: Program memory after executing fillet-and-shell.kcl
                                         "start": 1385,
                                         "type": "Literal",
                                         "type": "Literal",
-                                        "value": 1.25
+                                        "value": {
+                                          "value": 1.25,
+                                          "suffix": "None"
+                                        }
                                       }
                                     }
                                   ],

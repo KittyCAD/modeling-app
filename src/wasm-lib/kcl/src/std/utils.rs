@@ -270,6 +270,19 @@ pub fn calculate_circle_center(p1: [f64; 2], p2: [f64; 2], p3: [f64; 2]) -> [f64
     [x, y]
 }
 
+pub struct CircleParams {
+    pub center: Point2d,
+    pub radius: f64,
+}
+
+pub fn calculate_circle_from_3_points(points: [Point2d; 3]) -> CircleParams {
+    let center: Point2d = calculate_circle_center(points[0].into(), points[1].into(), points[2].into()).into();
+    CircleParams {
+        center,
+        radius: distance(center, points[1]),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     // Here you can bring your functions into scope

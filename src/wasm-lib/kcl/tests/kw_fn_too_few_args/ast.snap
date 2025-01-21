@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing kw_fn_too_few_args.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -106,7 +105,10 @@ snapshot_kind: text
                   "start": 49,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
                 }
               }
             ],

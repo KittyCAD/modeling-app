@@ -67,6 +67,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of end commands to be sent to the engine.
     fn batch_end(&self) -> Arc<Mutex<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>;
 
+    /// Get the command responses from the engine.
+    fn responses(&self) -> IndexMap<Uuid, WebSocketResponse>;
+
     /// Take the artifact commands generated up to this point and clear them.
     fn take_artifact_commands(&self) -> Vec<ArtifactCommand>;
 

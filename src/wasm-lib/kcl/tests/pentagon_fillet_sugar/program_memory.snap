@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing pentagon_fillet_sugar.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -1531,7 +1530,10 @@ snapshot_kind: text
                                   "start": 511,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 2.0
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "start": 494,
                                 "type": "BinaryExpression",

@@ -49,7 +49,7 @@ use crate::{
         token::TokenStream,
         PIPE_OPERATOR,
     },
-    CacheInformation, ModuleId, OldAstState, Program, SourceRange,
+    CacheInformation, ExecState, ModuleId, OldAstState, Program, SourceRange,
 };
 const SEMANTIC_TOKEN_TYPES: [SemanticTokenType; 10] = [
     SemanticTokenType::NUMBER,
@@ -693,7 +693,7 @@ impl Backend {
         let mut exec_state = if let Some(last_successful_ast_state) = last_successful_ast_state.clone() {
             last_successful_ast_state.exec_state
         } else {
-            Default::default()
+            ExecState::new(&executor_ctx.settings)
         };
 
         if let Err(err) = executor_ctx

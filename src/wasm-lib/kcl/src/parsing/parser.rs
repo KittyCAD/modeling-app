@@ -30,7 +30,6 @@ use crate::{
         token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    unparser::ExprContext,
     SourceRange,
 };
 
@@ -484,7 +483,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                let x: f64 = token.numeric_value().ok_or_else(|| {
+                let value: f64 = token.numeric_value().ok_or_else(|| {
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
@@ -495,7 +494,13 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                     ));
                 }
 
-                Ok((LiteralValue::Number(x), token))
+                Ok((
+                    LiteralValue::Number {
+                        value,
+                        suffix: token.numeric_suffix(),
+                    },
+                    token,
+                ))
             }
             _ => Err(CompilationError::fatal(token.as_source_range(), "invalid literal")),
         })
@@ -845,13 +850,13 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     };
 
     if sep.token_type == TokenType::Colon {
-        ParseContext::warn(CompilationError::with_suggestion(
-            sep.into(),
-            Some(result.as_source_range()),
-            "Using `:` to initialize objects is deprecated, prefer using `=`.",
-            Some(("Replace `:` with `=`", " =")),
-            Tag::Deprecated,
-        ));
+        ParseContext::warn(
+            CompilationError::err(
+                sep.into(),
+                "Using `:` to initialize objects is deprecated, prefer using `=`.",
+            )
+            .with_suggestion("Replace `:` with `=`", " =", Tag::Deprecated),
+        );
     }
 
     Ok(result)
@@ -1070,9 +1075,19 @@ fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
     let (result, has_arrow) = function_decl.parse_next(i)?;
-    if fn_tok.is_none() && !has_arrow {
-        let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
-        return Err(ErrMode::Cut(err.into()));
+    if fn_tok.is_none() {
+        if has_arrow {
+            ParseContext::warn(
+                CompilationError::err(
+                    result.as_source_range().start_as_range(),
+                    "Missing `fn` in function declaration",
+                )
+                .with_suggestion("Add `fn`", "fn", Tag::None),
+            );
+        } else {
+            let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
+            return Err(ErrMode::Cut(err.into()));
+        }
     }
     Ok(Expr::FunctionExpression(Box::new(result)))
 }
@@ -1114,18 +1129,16 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
         open.module_id,
     );
 
-    let has_arrow = if let Some(arrow) = arrow {
-        ParseContext::warn(CompilationError::with_suggestion(
-            arrow.as_source_range(),
-            Some(result.as_source_range()),
-            "Unnecessary `=>` in function declaration",
-            Some(("Remove `=>`", "")),
-            Tag::Unnecessary,
-        ));
-        true
-    } else {
-        false
-    };
+    let has_arrow =
+        if let Some(arrow) = arrow {
+            ParseContext::warn(
+                CompilationError::err(arrow.as_source_range(), "Unnecessary `=>` in function declaration")
+                    .with_suggestion("Remove `=>`", "", Tag::Unnecessary),
+            );
+            true
+        } else {
+            false
+        };
 
     Ok((result, has_arrow))
 }
@@ -1826,67 +1839,60 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
 
     ignore_whitespace(i);
 
-    let val = if kind == VariableKind::Fn {
-        let eq = opt(equals).parse_next(i)?;
-        ignore_whitespace(i);
+    let val =
+        if kind == VariableKind::Fn {
+            let eq = opt(equals).parse_next(i)?;
+            ignore_whitespace(i);
 
-        let val = function_decl
-            .map(|t| Box::new(t.0))
-            .map(Expr::FunctionExpression)
-            .context(expected("a KCL function expression, like () { return 1 }"))
-            .parse_next(i);
+            let val = function_decl
+                .map(|t| Box::new(t.0))
+                .map(Expr::FunctionExpression)
+                .context(expected("a KCL function expression, like () { return 1 }"))
+                .parse_next(i);
 
-        if let Some(t) = eq {
-            let ctxt_end = val.as_ref().map(|e| e.end()).unwrap_or(t.end);
-            ParseContext::warn(CompilationError::with_suggestion(
-                t.as_source_range(),
-                Some(SourceRange::new(id.start, ctxt_end, id.module_id)),
-                "Unnecessary `=` in function declaration",
-                Some(("Remove `=`", "")),
-                Tag::Unnecessary,
-            ));
+            if let Some(t) = eq {
+                ParseContext::warn(
+                    CompilationError::err(t.as_source_range(), "Unnecessary `=` in function declaration")
+                        .with_suggestion("Remove `=`", "", Tag::Unnecessary),
+                );
+            }
+
+            val
+        } else {
+            equals(i)?;
+            ignore_whitespace(i);
+
+            let val = expression
+                .try_map(|val| {
+                    // Function bodies can be used if and only if declaring a function.
+                    // Check the 'if' direction:
+                    if matches!(val, Expr::FunctionExpression(_)) {
+                        return Err(CompilationError::fatal(
+                            SourceRange::new(start, dec_end, id.module_id),
+                            format!("Expected a `fn` variable kind, found: `{}`", kind),
+                        ));
+                    }
+                    Ok(val)
+                })
+                .context(expected("a KCL value, which is being bound to a variable"))
+                .parse_next(i);
+
+            if let Some((_, tok)) = decl_token {
+                ParseContext::warn(
+                    CompilationError::err(
+                        tok.as_source_range(),
+                        format!(
+                            "Using `{}` to declare constants is deprecated; no keyword is required",
+                            tok.value
+                        ),
+                    )
+                    .with_suggestion(format!("Remove `{}`", tok.value), "", Tag::Deprecated),
+                );
+            }
+
+            val
         }
-
-        val
-    } else {
-        equals(i)?;
-        ignore_whitespace(i);
-
-        let val = expression
-            .try_map(|val| {
-                // Function bodies can be used if and only if declaring a function.
-                // Check the 'if' direction:
-                if matches!(val, Expr::FunctionExpression(_)) {
-                    return Err(CompilationError::fatal(
-                        SourceRange::new(start, dec_end, id.module_id),
-                        format!("Expected a `fn` variable kind, found: `{}`", kind),
-                    ));
-                }
-                Ok(val)
-            })
-            .context(expected("a KCL value, which is being bound to a variable"))
-            .parse_next(i);
-
-        if let Some((_, tok)) = decl_token {
-            ParseContext::warn(CompilationError::with_suggestion(
-                tok.as_source_range(),
-                Some(SourceRange::new(
-                    id.start,
-                    val.as_ref().map(|e| e.end()).unwrap_or(dec_end),
-                    id.module_id,
-                )),
-                format!(
-                    "Using `{}` to declare constants is deprecated; no keyword is required",
-                    tok.value
-                ),
-                Some((format!("Remove `{}`", tok.value), "")),
-                Tag::Deprecated,
-            ));
-        }
-
-        val
-    }
-    .map_err(|e| e.cut())?;
+        .map_err(|e| e.cut())?;
 
     let end = val.end();
     Ok(Box::new(Node {
@@ -2611,23 +2617,6 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
-    // This should really be done with resolved names, but we don't have warning support there
-    // so we'll hack this in here.
-    if fn_name.name == "int" {
-        assert_eq!(args.len(), 1);
-        let mut arg_str = args[0].recast(&crate::FormatOptions::default(), 0, ExprContext::Other);
-        if arg_str.contains('.') && !arg_str.ends_with(".0") {
-            arg_str = format!("round({arg_str})");
-        }
-        ParseContext::warn(CompilationError::with_suggestion(
-            SourceRange::new(fn_name.start, end, fn_name.module_id),
-            None,
-            "`int` function is deprecated. You may not need it at all. If you need to round, consider `round`, `ceil`, or `floor`.",
-            Some(("Remove call to `int`", arg_str)),
-            Tag::Deprecated,
-        ));
-    }
-
     Ok(Node {
         start: fn_name.start,
         end,
@@ -2874,7 +2863,10 @@ mySk1 = startSketchAt([0, 0])"#;
                                 ReturnStatement {
                                     argument: Expr::Literal(Box::new(Node::new(
                                         Literal {
-                                            value: 2u32.into(),
+                                            value: LiteralValue::Number {
+                                                value: 2.0,
+                                                suffix: NumericSuffix::None
+                                            },
                                             raw: "2".to_owned(),
                                             digest: None,
                                         },
@@ -3075,7 +3067,15 @@ mySk1 = startSketchAt([0, 0])"#;
         match &rhs.right {
             BinaryPart::Literal(lit) => {
                 assert!(lit.start == 9 && lit.end == 10);
-                assert!(lit.value == 3u32.into() && &lit.raw == "3" && lit.digest.is_none());
+                assert!(
+                    lit.value
+                        == LiteralValue::Number {
+                            value: 3.0,
+                            suffix: NumericSuffix::None
+                        }
+                        && &lit.raw == "3"
+                        && lit.digest.is_none()
+                );
             }
             _ => panic!(),
         }
@@ -3146,11 +3146,23 @@ mySk1 = startSketchAt([0, 0])"#;
             let BinaryPart::Literal(left) = actual.inner.left else {
                 panic!("should be expression");
             };
-            assert_eq!(left.value, 1u32.into());
+            assert_eq!(
+                left.value,
+                LiteralValue::Number {
+                    value: 1.0,
+                    suffix: NumericSuffix::None
+                }
+            );
             let BinaryPart::Literal(right) = actual.inner.right else {
                 panic!("should be expression");
             };
-            assert_eq!(right.value, 2u32.into());
+            assert_eq!(
+                right.value,
+                LiteralValue::Number {
+                    value: 2.0,
+                    suffix: NumericSuffix::None
+                }
+            );
         }
     }
 
@@ -3467,7 +3479,10 @@ mySk1 = startSketchAt([0, 0])"#;
                 operator: BinaryOperator::Add,
                 left: BinaryPart::Literal(Box::new(Node::new(
                     Literal {
-                        value: 5u32.into(),
+                        value: LiteralValue::Number {
+                            value: 5.0,
+                            suffix: NumericSuffix::None,
+                        },
                         raw: "5".to_owned(),
                         digest: None,
                     },
@@ -3516,7 +3531,10 @@ mySk1 = startSketchAt([0, 0])"#;
                             BinaryExpression {
                                 left: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
-                                        value: 5u32.into(),
+                                        value: LiteralValue::Number {
+                                            value: 5.0,
+                                            suffix: NumericSuffix::None,
+                                        },
                                         raw: "5".to_string(),
                                         digest: None,
                                     },
@@ -3527,7 +3545,10 @@ mySk1 = startSketchAt([0, 0])"#;
                                 operator: BinaryOperator::Add,
                                 right: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
-                                        value: 6u32.into(),
+                                        value: LiteralValue::Number {
+                                            value: 6.0,
+                                            suffix: NumericSuffix::None,
+                                        },
                                         raw: "6".to_string(),
                                         digest: None,
                                     },
@@ -4347,17 +4368,6 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
     }
 
     #[test]
-    fn warn_fn_int() {
-        let some_program_string = r#"int(1.0)
-int(42.3)"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2);
-        let replaced = errs[1].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[0].apply_suggestion(&replaced).unwrap();
-        assert_eq!(replaced, "1.0\nround(42.3)");
-    }
-
-    #[test]
     fn warn_fn_decl() {
         let some_program_string = r#"fn foo = () => {
     return 0
@@ -4373,6 +4383,20 @@ int(42.3)"#;
             r#"fn foo  ()  {
     return 0
 }"#
+        );
+
+        let some_program_string = r#"myMap = map([0..5], (n) => {
+    return n * 2
+})"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 2);
+        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
+        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
+        assert_eq!(
+            replaced,
+            r#"myMap = map([0..5], fn(n)  {
+    return n * 2
+})"#
         );
     }
 
