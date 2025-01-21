@@ -4,9 +4,11 @@ excerpt: "Return the value of Euler’s number `e`."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated.
+
 Return the value of Euler’s number `e`.
 
-
+**DEPRECATED** use E
 
 ```js
 e() -> number

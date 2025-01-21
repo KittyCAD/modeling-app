@@ -4,9 +4,11 @@ excerpt: "Return the value of `pi`. Archimedes’ constant (π)."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated.
+
 Return the value of `pi`. Archimedes’ constant (π).
 
-
+**DEPRECATED** use PI
 
 ```js
 pi() -> number

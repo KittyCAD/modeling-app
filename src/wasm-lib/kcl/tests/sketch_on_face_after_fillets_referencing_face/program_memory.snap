@@ -1,12 +1,16 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing sketch_on_face_after_fillets_referencing_face.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
     {
       "bindings": {
+        "E": {
+          "type": "Number",
+          "value": 2.718281828459045,
+          "__meta": []
+        },
         "FOS": {
           "type": "Number",
           "value": 2.0,
@@ -65,9 +69,19 @@ snapshot_kind: text
             }
           ]
         },
+        "PI": {
+          "type": "Number",
+          "value": 3.141592653589793,
+          "__meta": []
+        },
         "QUARTER_TURN": {
           "type": "Number",
           "value": 90.0,
+          "__meta": []
+        },
+        "TAU": {
+          "type": "Number",
+          "value": 6.283185307179586,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {

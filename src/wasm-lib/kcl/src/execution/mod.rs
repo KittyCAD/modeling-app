@@ -434,10 +434,13 @@ impl Environment {
         Self {
             // Prelude
             bindings: IndexMap::from([
-                ("ZERO".to_string(), KclValue::from_number(0.0, NO_META)),
-                ("QUARTER_TURN".to_string(), KclValue::from_number(90.0, NO_META)),
-                ("HALF_TURN".to_string(), KclValue::from_number(180.0, NO_META)),
-                ("THREE_QUARTER_TURN".to_string(), KclValue::from_number(270.0, NO_META)),
+                ("ZERO".to_owned(), KclValue::from_number(0.0, NO_META)),
+                ("QUARTER_TURN".to_owned(), KclValue::from_number(90.0, NO_META)),
+                ("HALF_TURN".to_owned(), KclValue::from_number(180.0, NO_META)),
+                ("THREE_QUARTER_TURN".to_owned(), KclValue::from_number(270.0, NO_META)),
+                ("PI".to_owned(), KclValue::from_number(std::f64::consts::PI, NO_META)),
+                ("E".to_owned(), KclValue::from_number(std::f64::consts::E, NO_META)),
+                ("TAU".to_owned(), KclValue::from_number(std::f64::consts::TAU, NO_META)),
             ]),
             parent: None,
         }
@@ -3344,7 +3347,7 @@ let shape = layer() |> patternTransform(10, transform, %)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
-        let ast = r#"const myVar = pi() * 2"#;
+        let ast = r#"const myVar = PI * 2"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,

@@ -1,21 +1,34 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 92
 description: Program memory after executing if_else.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
     {
       "bindings": {
+        "E": {
+          "type": "Number",
+          "value": 2.718281828459045,
+          "__meta": []
+        },
         "HALF_TURN": {
           "type": "Number",
           "value": 180.0,
           "__meta": []
         },
+        "PI": {
+          "type": "Number",
+          "value": 3.141592653589793,
+          "__meta": []
+        },
         "QUARTER_TURN": {
           "type": "Number",
           "value": 90.0,
+          "__meta": []
+        },
+        "TAU": {
+          "type": "Number",
+          "value": 6.283185307179586,
           "__meta": []
         },
         "THREE_QUARTER_TURN": {

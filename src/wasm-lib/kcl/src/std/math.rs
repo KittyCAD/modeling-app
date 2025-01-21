@@ -145,6 +145,8 @@ pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 
 /// Return the value of `pi`. Archimedes’ constant (π).
 ///
+/// **DEPRECATED** use PI
+///
 /// ```no_run
 /// circumference = 70
 ///
@@ -156,6 +158,7 @@ pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 #[stdlib {
     name = "pi",
     tags = ["math"],
+    deprecated = true,
 }]
 fn inner_pi() -> Result<f64, KclError> {
     Ok(std::f64::consts::PI)
@@ -693,6 +696,8 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 
 /// Return the value of Euler’s number `e`.
 ///
+/// **DEPRECATED** use E
+///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
@@ -708,6 +713,7 @@ pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 #[stdlib {
     name = "e",
     tags = ["math"],
+    deprecated = true,
 }]
 fn inner_e() -> Result<f64, KclError> {
     Ok(std::f64::consts::E)
@@ -721,6 +727,8 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 }
 
 /// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
+///
+/// **DEPRECATED** use TAU
 ///
 /// ```no_run
 /// exampleSketch = startSketchOn("XZ")
@@ -737,6 +745,7 @@ pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 #[stdlib {
     name = "tau",
     tags = ["math"],
+    deprecated = true,
 }]
 fn inner_tau() -> Result<f64, KclError> {
     Ok(std::f64::consts::TAU)
@@ -787,7 +796,7 @@ pub async fn to_degrees(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine({
 ///     angle = 50,
-///     length = 70 * cos(toDegrees(pi()/4)),
+///     length = 70 * cos(toDegrees(PI/4)),
 ///   }, %)
 ///   |> yLineTo(0, %)
 ///   |> close(%)
