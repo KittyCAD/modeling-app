@@ -3335,7 +3335,7 @@ part001 = startSketchOn('XY')
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
   |> close()
-  |> ^^^extrude(3.14, %)"#;
+  |> ^^^extrude(length = 3.14)"#;
 
     // Send open file.
     server

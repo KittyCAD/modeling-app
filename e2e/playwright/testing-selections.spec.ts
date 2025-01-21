@@ -646,14 +646,14 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'flatExtrusionFace',
       flatExtrusionFace,
-      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)extrude(5+7,%)`,
+      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)extrude(length=5+7)`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'tangentialArcTo',
       tangentialArcTo,
-      'tangentialArcTo([13.14+0,13.14],%)extrude(5+7,%)',
+      'tangentialArcTo([13.14+0,13.14],%)extrude(length=5+7)',
       'tangentialArcTo([13.14 + 0, 13.14], %)'
     )
     await checkCodeAtHoverPosition(
@@ -678,15 +678,10 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'close',
       close,
-      'close()extrude(5+7,%)',
+      'close()extrude(length=5+7)',
       'close()'
     )
-    await checkCodeAtHoverPosition(
-      'closeEdge',
-      closeEdge,
-      `close()`,
-      'close()'
-    )
+    await checkCodeAtHoverPosition('closeEdge', closeEdge, `close()`, 'close()')
     await checkCodeAtHoverPosition(
       'closeAdjacentEdge',
       closeAdjacentEdge,

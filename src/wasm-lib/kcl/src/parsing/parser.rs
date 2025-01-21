@@ -3731,7 +3731,7 @@ firstExtrude = startSketchOn('XY')
   |> line([20, 0], %)
   |> line([0, -8], %)
   |> close(%)
-  |> extrude(2, %)
+  |> extrude(length=2)
 
 secondExtrude = startSketchOn('XY')
   |> startProfileAt([0,0], %)
@@ -4208,7 +4208,7 @@ let other_thing = 2 * cos(3)"#;
     |> line([w, 0], %)
     |> line([0, -l], %)
     |> close(%)
-    |> extrude(h, %)
+    |> extrude(length=h)
 
   return myBox
 }
@@ -4509,7 +4509,7 @@ mod snapshot_tests {
     |> line([0, 10], %)
     |> tangentialArc([-5, 5], %)
     |> line([5, -15], %)
-    |> extrude(10, %)
+    |> extrude(length=10)
 "#
     );
     snapshot_test!(b, "myVar = min(5 , -legLen(5, 4))"); // Space before comma
