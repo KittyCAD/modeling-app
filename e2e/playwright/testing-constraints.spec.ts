@@ -57,7 +57,7 @@ test.describe('Testing constraints', () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0], %)  |> angledLine([90, length001], %)  |> xLine(-20)`
+      `length001 = 20sketch001 = startSketchOn('XY')  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine([90, length001], %)  |> xLine(-20, %)`
     )
 
     // Make sure we didn't pop out of sketch mode.

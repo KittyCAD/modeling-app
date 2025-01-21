@@ -12,8 +12,11 @@ import {
   Expr,
   topLevelRange,
   LabeledArg,
+  CallExpressionKw,
 } from '../wasm'
 import { err } from 'lib/trap'
+import { findKwArgAny } from 'lang/util'
+import { ARG_END, ARG_END_ABSOLUTE } from './sketch'
 
 export function getSketchSegmentFromPathToNode(
   sketch: Sketch,
@@ -107,18 +110,33 @@ export function isSketchVariablesLinked(
   const { init } = secondaryVarDec
   if (
     !init ||
-    !(init.type === 'CallExpression' || init.type === 'PipeExpression')
+    !(
+      init.type === 'CallExpression' ||
+      init.type === 'CallExpressionKw' ||
+      init.type === 'PipeExpression'
+    )
   )
     return false
   const firstCallExp = // first in pipe expression or just the call expression
-    init?.type === 'CallExpression' ? init : (init?.body[0] as CallExpression)
+    init?.type === 'PipeExpression'
+      ? (init?.body[0] as CallExpression | CallExpressionKw)
+      : init
   if (
     !firstCallExp ||
     !toolTips.includes(firstCallExp?.callee?.name as ToolTip)
   )
     return false
   // convention for sketch fns is that the second argument is the sketch
-  const secondArg = firstCallExp?.arguments[1]
+  // This is not the convention for kw arg calls, so, TODO at some point,
+  // rename this var.
+  const secondArg = (() => {
+    switch (firstCallExp.type) {
+      case 'CallExpression':
+        return firstCallExp?.arguments[1]
+      case 'CallExpressionKw':
+        return findKwArgAny([ARG_END, ARG_END_ABSOLUTE], firstCallExp)
+    }
+  })()
   if (!secondArg || secondArg?.type !== 'Identifier') return false
   if (secondArg.name === primaryVarDec?.id?.name) return true
 
