@@ -24,7 +24,10 @@ description: Result of parsing argument_error.kcl
                     "start": 19,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 5.0
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
                   },
                   "end": 20,
                   "start": 12,
@@ -79,7 +82,10 @@ description: Result of parsing argument_error.kcl
                   "start": 32,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 0.0
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
                 },
                 {
                   "end": 36,
@@ -87,7 +93,10 @@ description: Result of parsing argument_error.kcl
                   "start": 35,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
                 }
               ],
               "end": 37,

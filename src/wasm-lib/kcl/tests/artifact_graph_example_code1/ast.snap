@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing artifact_graph_example_code1.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -50,7 +49,10 @@ snapshot_kind: text
                           "start": 54,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 5.0
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 55,
                         "operator": "-",
@@ -65,7 +67,10 @@ snapshot_kind: text
                           "start": 58,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 5.0
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 59,
                         "operator": "-",
@@ -107,7 +112,10 @@ snapshot_kind: text
                         "start": 76,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 81,
@@ -115,7 +123,10 @@ snapshot_kind: text
                         "start": 79,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 10.0
+                        "value": {
+                          "value": 10.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 82,
@@ -151,7 +162,10 @@ snapshot_kind: text
                         "start": 98,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 10.55
+                        "value": {
+                          "value": 10.55,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 106,
@@ -159,7 +173,10 @@ snapshot_kind: text
                         "start": 105,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 107,
@@ -202,7 +219,10 @@ snapshot_kind: text
                         "start": 131,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -211,7 +231,10 @@ snapshot_kind: text
                           "start": 135,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 10.0
+                          "value": {
+                            "value": 10.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 137,
                         "operator": "-",
@@ -373,7 +396,10 @@ snapshot_kind: text
                       "start": 240,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 10.0
+                      "value": {
+                        "value": 10.0,
+                        "suffix": "None"
+                      }
                     },
                     "end": 242,
                     "operator": "-",
@@ -421,7 +447,10 @@ snapshot_kind: text
                           "start": 278,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 5.0
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
@@ -538,7 +567,10 @@ snapshot_kind: text
                           "start": 369,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2.0
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 370,
                         "operator": "-",
@@ -553,7 +585,10 @@ snapshot_kind: text
                           "start": 373,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 6.0
+                          "value": {
+                            "value": 6.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 374,
                         "operator": "-",
@@ -595,7 +630,10 @@ snapshot_kind: text
                         "start": 391,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 395,
@@ -603,7 +641,10 @@ snapshot_kind: text
                         "start": 394,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 3.0
+                        "value": {
+                          "value": 3.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 396,
@@ -639,7 +680,10 @@ snapshot_kind: text
                         "start": 412,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -648,7 +692,10 @@ snapshot_kind: text
                           "start": 416,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 3.0
+                          "value": {
+                            "value": 3.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 417,
                         "operator": "-",
@@ -800,7 +847,10 @@ snapshot_kind: text
                 "start": 511,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 5.0
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 523,

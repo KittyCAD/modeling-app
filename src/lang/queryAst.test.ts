@@ -660,7 +660,7 @@ myNestedVar = [
       enter: (node, path) => {
         if (
           node.type === 'Literal' &&
-          String(node.value) === literalOfInterest
+          String((node as any).value.value) === literalOfInterest
         ) {
           pathToNode = path
         } else if (
