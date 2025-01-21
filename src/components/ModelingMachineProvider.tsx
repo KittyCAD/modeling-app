@@ -67,10 +67,7 @@ import {
   startSketchOnDefault,
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
-import {
-  artifactIsPlaneWithPaths,
-  isSingleCursorInPipe,
-} from 'lang/queryAst'
+import { artifactIsPlaneWithPaths, isSingleCursorInPipe } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'

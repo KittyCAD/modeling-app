@@ -21,7 +21,7 @@ import {
 } from 'lib/wasm_lib_wrapper'
 
 import { Coords2d } from './std/sketch'
-import { getNodePathFromSourceRange  } from 'lang/queryAstNodePathUtils'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { KCLError } from './errors'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'

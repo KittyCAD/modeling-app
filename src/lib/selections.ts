@@ -18,13 +18,8 @@ import { EditorSelection, SelectionRange } from '@codemirror/state'
 import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { Program } from 'lang/wasm'
-import {
-  getNodeFromPath,
-  isSingleCursorInPipe,
-} from 'lang/queryAst'
-import {
-  getNodePathFromSourceRange,
-} from 'lang/queryAstNodePathUtils'
+import { getNodeFromPath, isSingleCursorInPipe } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { CommandArgument } from './commandTypes'
 import {
   DefaultPlaneStr,

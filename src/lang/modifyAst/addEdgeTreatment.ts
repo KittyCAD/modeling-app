@@ -24,7 +24,7 @@ import {
   hasSketchPipeBeenExtruded,
   traverse,
 } from 'lang/queryAst'
-import  { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
   getTagFromCallExpression,

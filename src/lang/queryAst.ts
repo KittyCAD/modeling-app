@@ -126,8 +126,6 @@ export function getNodeFromPathCurry(
   }
 }
 
-
-
 type KCLNode = Node<
   | Expr
   | ExpressionStatement

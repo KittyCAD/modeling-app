@@ -1,7 +1,7 @@
 import { toolTips } from 'lang/langHelpers'
 import { Selections } from 'lib/selections'
 import { Program, Expr, VariableDeclarator } from '../../lang/wasm'
-import { getNodeFromPath, } from 'lang/queryAst'
+import { getNodeFromPath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { isSketchVariablesLinked } from '../../lang/std/sketchConstraints'
 import {
