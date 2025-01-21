@@ -282,9 +282,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           description: 'Create a plane parallel to an existing plane.',
           links: [
             {
-              label: "KCL docs",
-              url: "https://zoo.dev/docs/kcl/offsetPlane",
-            }
+              label: 'KCL docs',
+              url: 'https://zoo.dev/docs/kcl/offsetPlane',
+            },
           ],
         },
         {
@@ -310,10 +310,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Text-to-CAD',
           description: 'Generate geometry from a text prompt.',
-          links: [{
-            label: 'API docs',
-            url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
-          }],
+          links: [
+            {
+              label: 'API docs',
+              url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
+            },
+          ],
         },
         {
           id: 'prompt-to-edit',
