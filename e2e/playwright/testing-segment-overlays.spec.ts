@@ -290,7 +290,7 @@ test.describe('Testing segment overlays', () => {
         hoverPos: { x: line.x, y: line.y },
         constraintType: 'xRelative',
         expectBeforeUnconstrained: '|> line(end = [0.5, yRel001])',
-        expectAfterUnconstrained: 'line([xRel001, yRel001], %)',
+        expectAfterUnconstrained: 'line(end = [xRel001, yRel001])',
         expectFinal: '|> line(end = [0.5, yRel001])',
         ang: ang + 180,
         locator: '[data-overlay-index="0"]',
@@ -1137,7 +1137,7 @@ test.describe('Testing segment overlays', () => {
       ang = await u.getAngle(`[data-overlay-index="${0}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'line([0.5, -14 + 0], %)',
+        codeToBeDeleted: 'line(end = [0.5, -14 + 0])',
         stdLibFnName: 'line',
         ang: ang + 180,
       })
@@ -1147,7 +1147,7 @@ test.describe('Testing segment overlays', () => {
   })
   test.describe('Testing delete with dependent segments', () => {
     const cases = [
-      'line([22, 2], %, $seg01)',
+      'line(end = [22, 2], tag = $seg01)',
       'angledLine([5, 23.03], %, $seg01)',
       'xLine(23, %, $seg01)',
       'yLine(-8, %, $seg01)',
@@ -1283,45 +1283,45 @@ test.describe('Testing segment overlays', () => {
   test.describe('Testing remove constraints segments', () => {
     const cases = [
       {
-        before: `line([22 + 0, 2 + 0], %, $seg01)`,
-        after: `line([22, 2], %, $seg01)`,
+        before: `line(end = [22 + 0, 2 + 0], tag = $seg01)`,
+        after: `line(end = [22, 2], tag = $seg01)`,
       },
 
       {
         before: `angledLine([5 + 0, 23.03 + 0], %, $seg01)`,
-        after: `line([22.94, 2.01], %, $seg01)`,
+        after: `line(end = [22.94, 2.01], tag = $seg01)`,
       },
       {
         before: `xLine(23 + 0, %, $seg01)`,
-        after: `line([23, 0], %, $seg01)`,
+        after: `line(end = [23, 0], tag = $seg01)`,
       },
       {
         before: `yLine(-8 + 0, %, $seg01)`,
-        after: `line([0, -8], %, $seg01)`,
+        after: `line(end = [0, -8], tag = $seg01)`,
       },
       {
         before: `xLineTo(30 + 0, %, $seg01)`,
-        after: `line([25, 0], %, $seg01)`,
+        after: `line(end = [25, 0], tag = $seg01)`,
       },
       {
         before: `yLineTo(-4 + 0, %, $seg01)`,
-        after: `line([0, -10], %, $seg01)`,
+        after: `line(end = [0, -10], tag = $seg01)`,
       },
       {
         before: `angledLineOfXLength({ angle = 3 + 0, length = 30 + 0 }, %, $seg01)`,
-        after: `line([30, 1.57], %, $seg01)`,
+        after: `line(end = [30, 1.57], tag = $seg01)`,
       },
       {
         before: `angledLineOfYLength({ angle = 3 + 0, length = 1.5 + 0 }, %, $seg01)`,
-        after: `line([28.62, 1.5], %, $seg01)`,
+        after: `line(end = [28.62, 1.5], tag = $seg01)`,
       },
       {
         before: `angledLineToX({ angle = 3 + 0, to = 30 + 0 }, %, $seg01)`,
-        after: `line([25, 1.31], %, $seg01)`,
+        after: `line(end = [25, 1.31], tag = $seg01)`,
       },
       {
         before: `angledLineToY({ angle = 3 + 0, to = 7 + 0 }, %, $seg01)`,
-        after: `line([19.08, 1], %, $seg01)`,
+        after: `line(end = [19.08, 1], tag = $seg01)`,
       },
     ]
 

@@ -26,7 +26,7 @@ test.describe('Editor tests', () => {
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
-    |> close(%)`)
+    |> close()`)
 
     await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('/')
@@ -38,7 +38,7 @@ test.describe('Editor tests', () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  // |> close(%)`)
+  // |> close()`)
 
     // uncomment the code
     await page.keyboard.down('ControlOrMeta')
@@ -51,7 +51,7 @@ test.describe('Editor tests', () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)`)
+  |> close()`)
   })
 
   test('ensure we use the cache, and do not re-execute', async ({
@@ -70,7 +70,7 @@ test.describe('Editor tests', () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)`)
+  |> close()`)
 
     // Ensure we execute the first time.
     await u.openDebugPanel()
@@ -119,7 +119,7 @@ test.describe('Editor tests', () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)`)
+  |> close()`)
 
     // Ensure we execute the first time.
     await u.openDebugPanel()
@@ -174,7 +174,7 @@ test.describe('Editor tests', () => {
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
-    |> close(%)`)
+    |> close()`)
     await page.locator('#code-pane button:first-child').click()
     await page.locator('button:has-text("Format code")').click()
 
@@ -184,7 +184,7 @@ test.describe('Editor tests', () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)`)
+  |> close()`)
   })
 
   test('if you click the format button it formats your code and executes so lints are still there', async ({
@@ -205,7 +205,7 @@ test.describe('Editor tests', () => {
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
-    |> close(%)`)
+    |> close()`)
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -233,7 +233,7 @@ test.describe('Editor tests', () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)`)
+  |> close()`)
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -251,7 +251,7 @@ test.describe('Editor tests', () => {
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
-   |> close(%)`
+   |> close()`
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
@@ -260,7 +260,7 @@ test.describe('Editor tests', () => {
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
-   |> close(%)`
+   |> close()`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -329,7 +329,7 @@ test.describe('Editor tests', () => {
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
-    |> close(%)`
+    |> close()`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -374,7 +374,7 @@ test.describe('Editor tests', () => {
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
-    |> close(%)`
+    |> close()`
       )
       localStorage.setItem('disableAxis', 'true')
     })
@@ -401,7 +401,7 @@ test.describe('Editor tests', () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)`)
+  |> close()`)
   })
 
   test('if you use the format keyboard binding it formats your code and executes so lints are shown', async ({
@@ -417,7 +417,7 @@ test.describe('Editor tests', () => {
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
-    |> close(%)`
+    |> close()`
       )
       localStorage.setItem('disableAxis', 'true')
     })
@@ -454,7 +454,7 @@ test.describe('Editor tests', () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)`)
+  |> close()`)
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
@@ -521,7 +521,7 @@ test.describe('Editor tests', () => {
     |> startProfileAt([3.29, 7.86], %)
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
-    |> close(%)
+    |> close()
     `
       )
     })
@@ -646,7 +646,7 @@ test.describe('Editor tests', () => {
   |> line(endAbsolute = [width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, length / 2])
   |> line(endAbsolute = [-width / 2, length / 2])
-  |> close(%)
+  |> close()
   return squareHoleSketch
     }
     `
@@ -710,7 +710,7 @@ test.describe('Editor tests', () => {
     |> line(end = [0, 10])
     |> line(end = [10, 0])
     |> line(end = [0, -10], tag = $revolveAxis)
-    |> close(%)
+    |> close()
     |> extrude(length = 10)
   
     sketch001 = startSketchOn(box, revolveAxis)
@@ -718,7 +718,7 @@ test.describe('Editor tests', () => {
     |> line(end = [0, -10])
     |> line(end = [2, 0])
     |> line(end = [0, -10])
-    |> close(%)
+    |> close()
     |> revolve({
     axis: revolveAxis,
     angle: 90
@@ -901,7 +901,7 @@ test.describe('Editor tests', () => {
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)`
+  |> close()`
       )
     })
 
@@ -949,7 +949,7 @@ test.describe('Editor tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38])  |> close(%)extrude001 = extrude(sketch001, length = 5)`
+      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5)`
     )
 
     // Now hit undo
@@ -963,7 +963,7 @@ test.describe('Editor tests', () => {
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)`)
+  |> close()`)
   })
 
   test('Can undo a sketch modification with ctrl+z', async ({
@@ -978,7 +978,7 @@ test.describe('Editor tests', () => {
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
-  |> close(%)
+  |> close()
   |> extrude(length = 5)`
       )
     })
@@ -1069,7 +1069,7 @@ test.describe('Editor tests', () => {
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
     |> tangentialArcTo([27.6, -3.05], %)
-    |> close(%)
+    |> close()
     |> extrude(length = 5)
   `)
 
@@ -1083,7 +1083,7 @@ test.describe('Editor tests', () => {
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
     |> tangentialArcTo([24.95, -0.38], %)
-    |> close(%)
+    |> close()
     |> extrude(length = 5)`)
 
     // Hit undo again.
@@ -1096,7 +1096,7 @@ test.describe('Editor tests', () => {
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [12.73, -0.09])
     |> tangentialArcTo([24.95, -0.38], %)
-    |> close(%)
+    |> close()
     |> extrude(length = 5)
   `)
 
@@ -1111,7 +1111,7 @@ test.describe('Editor tests', () => {
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
-  |> close(%)
+  |> close()
   |> extrude(length = 5)`)
   })
 

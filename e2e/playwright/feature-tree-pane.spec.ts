@@ -11,7 +11,7 @@ export fn triangle() {
     |> xLine(10, %)
     |> line(end = [-10, -5])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
 }
 
 length001 = timesFive(1) * 5
@@ -20,7 +20,7 @@ sketch001 = startSketchOn('XZ')
   |> line(end = [10, 10])
   |> angledLine([-45, length001], %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
+  |> close()
 revolve001 = revolve({ axis = "X" }, sketch001)
 triangle()
   |> extrude(length = 30)
@@ -31,7 +31,7 @@ sketch002 = startSketchOn(plane001)
   |> xLine(-10, %)
   |> line(endAbsolute = [-40, 0])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
+  |> close()
 extrude001 = extrude(sketch002, length = 10)
 `
 

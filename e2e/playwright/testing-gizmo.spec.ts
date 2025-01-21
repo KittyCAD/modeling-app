@@ -269,7 +269,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
                segAng(rectangleSegmentA001),
                -segLen(rectangleSegmentA001)
              ], %)
-          |> close(%)
+          |> close()
         const sketch001 = startSketchOn('XZ')
           |> circle({
                center: [818.33, 168.1],

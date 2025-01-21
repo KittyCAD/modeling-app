@@ -105,7 +105,7 @@ part001 = startSketchOn('-XZ')
       }, %)
   |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
   |> xLineTo(ZERO, %)
-  |> close(%)
+  |> close()
   |> extrude(length = 4)`
       )
     })
@@ -344,7 +344,7 @@ const extrudeDefaultPlane = async (context: any, page: any, plane: string) => {
   |> line(end = [2.80, 5.00])
   |> line(end = [-5.60, 4.40])
   |> line(end = [-5.40, -3.80])
-  |> close(%)
+  |> close()
   |> extrude(length = 10.00)
 `
   await page.addInitScript(async (code: string) => {
@@ -816,13 +816,13 @@ test(
   |> startProfileAt([1.4, 2.47], %)
   |> line(end = [9.31, 10.55], tag = $seg01)
   |> line(end = [11.91, -10.42])
-  |> close(%)
+  |> close()
   |> extrude(length = ${KCL_DEFAULT_LENGTH})
 part002 = startSketchOn(part001, seg01)
   |> startProfileAt([8, 8], %)
   |> line(end = [4.68, 3.05])
   |> line(end = [0, -7.79])
-  |> close(%)
+  |> close()
   |> extrude(length = ${KCL_DEFAULT_LENGTH})
 `
       )
@@ -882,7 +882,7 @@ test(
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)
+  |> close()
 `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -925,7 +925,7 @@ test(
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)
+  |> close()
   |> extrude(length = 10)
 `
       )
@@ -1114,7 +1114,7 @@ test.fixme('theme persists', async ({ page, context }) => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close(%)
+  |> close()
   |> extrude(length = 10)
 `
     )

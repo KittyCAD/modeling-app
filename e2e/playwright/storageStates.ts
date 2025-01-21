@@ -92,7 +92,7 @@ export const TEST_CODE_GIZMO = `part001 = startSketchOn('XZ')
   offset: 0
 }, %)
 |> tangentialArcTo([13.14 + 0, 13.14], %)
-|> close(%)
+|> close()
 |> extrude(length = 5 + 7)
 `
 
@@ -106,7 +106,7 @@ keychain = startSketchOn("XY")
   |> line(endAbsolute = [width, 0])
   |> line(endAbsolute = [width, height])
   |> line(endAbsolute = [0, height])
-  |> close(%)
+  |> close()
   |> extrude(length = thickness)
 
 keychain1 = startSketchOn("XY")
@@ -114,7 +114,7 @@ keychain1 = startSketchOn("XY")
   |> line(endAbsolute = [width, 0])
   |> line(endAbsolute = [width, height])
   |> line(endAbsolute = [0, height])
-  |> close(%)
+  |> close()
   |> extrude(length = thickness)
 
 keychain2 = startSketchOn("XY")
@@ -122,7 +122,7 @@ keychain2 = startSketchOn("XY")
   |> line(endAbsolute = [width, 0])
   |> line(endAbsolute = [width, height])
   |> line(endAbsolute = [0, height])
-  |> close(%)
+  |> close()
   |> extrude(length = thickness)
 
 box = startSketchOn('XY')
@@ -130,7 +130,7 @@ box = startSketchOn('XY')
   |> line(end = [0, 10])
   |> line(end = [10, 0])
   |> line(end = [0, -10], tag = $revolveAxis)
-  |> close(%)
+  |> close()
   |> extrude(length = 10)
 
 sketch001 = startSketchOn(box, revolveAxis)
@@ -138,7 +138,7 @@ sketch001 = startSketchOn(box, revolveAxis)
   |> line(end = [0, -10])
   |> line(end = [2, 0])
   |> line(end = [0, -10])
-  |> close(%)
+  |> close()
   |> revolve({
   axis: revolveAxis,
   angle: 90
@@ -147,7 +147,7 @@ sketch001 = startSketchOn(box, revolveAxis)
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([0.0, 0.0], %)
   |> xLine(0.0, %)
-  |> close(%)
+  |> close()
 
 `
 

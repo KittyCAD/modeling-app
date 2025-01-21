@@ -24,7 +24,7 @@ test.describe('Regression tests', () => {
     |> line(end = [0, 0])
     |> line(end = [-4.84, -5.29])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)`
+    |> close()`
       )
     })
 
@@ -68,7 +68,7 @@ test.describe('Regression tests', () => {
        -segLen(rectangleSegmentA001)
      ], %, $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
+  |> close()
 extrude001 = extrude(sketch001, length = 50)
 `
       )
@@ -190,7 +190,7 @@ extrude001 = extrude(sketch001, length = 50)
   |> line(end = [0, 1])
   |> line(end = [1, 0])
   |> line(end = [0, -1])
-  |> close(%)
+  |> close()
   |> extrude(length = 1)
   |> patternLinear3d({
         axis: [1, 0, 1],
@@ -255,7 +255,7 @@ extrude001 = extrude(sketch001, length = 50)
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
       |> yLineTo(0, %)
-      |> close(%)
+      |> close()
       |>
   
     example = extrude(exampleSketch, length = 5)
@@ -311,7 +311,7 @@ extrude001 = extrude(sketch001, length = 50)
       |> startProfileAt([0, 0], %)
       |> angledLine({ angle: 50, length: 45 }, %)
       |> yLineTo(0, %)
-      |> close(%)
+      |> close()
   
       thing: "blah"`)
 

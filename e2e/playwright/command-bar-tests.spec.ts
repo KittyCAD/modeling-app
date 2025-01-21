@@ -17,7 +17,7 @@ test.describe('Command bar tests', () => {
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> xLine(-20, %)
-  |> close(%)
+  |> close()
     `
       )
     })
@@ -32,7 +32,7 @@ test.describe('Command bar tests', () => {
     await u.closeDebugPanel()
 
     // Click the line of code for xLine.
-    await page.getByText(`close(%)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.getByText(`close()`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
     await page.waitForTimeout(100)
 
     await page.getByRole('button', { name: 'Extrude' }).click()
@@ -69,7 +69,7 @@ test.describe('Command bar tests', () => {
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    const selectSegment = () => page.getByText(`line([0, -10], %)`).click()
+    const selectSegment = () => page.getByText(`line(end = [0, -10])`).click()
 
     await selectSegment()
     await page.waitForTimeout(100)
@@ -226,7 +226,7 @@ test.describe('Command bar tests', () => {
     |> line(end = [25.1, 0.41])
     |> line(end = [0.73, -20.93])
     |> line(end = [-23.44, 0.52])
-    |> close(%)
+    |> close()
         `
       )
     })

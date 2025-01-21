@@ -92,14 +92,14 @@ export function isSketchVariablesLinked(
   that way it can find fn calls that are linked to each other through variables eg:
   const part001 = startSketchAt([0, 0])
     |> xLineTo(1.69, %)
-    |> line([myVar, 0.38], %) // ❗️ <- cursor in this fn call (the primary)
-    |> line([0.41, baz], %)
+    |> line(end = [myVar, 0.38]) // ❗️ <- cursor in this fn call (the primary)
+    |> line(end = [0.41, baz])
     |> xLine(0.91, %)
     |> angledLine([37, 2], %)
   const yo = line([myVar, 0.38], part001)
-    |> line([1, 1], %)
+    |> line(end = [1, 1])
   const yo2 = line([myVar, 0.38], yo)
-    |> line([1, 1], %) // ❗️ <- and cursor here (secondary) is linked to the one above through variables
+    |> line(end = [1, 1]) // ❗️ <- and cursor here (secondary) is linked to the one above through variables
   */
   const secondaryVarName = secondaryVarDec?.id?.name
   if (!secondaryVarName) return false

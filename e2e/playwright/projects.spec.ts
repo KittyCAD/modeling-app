@@ -1465,7 +1465,7 @@ test.fixme(
   |> line(end = [118.328, -291.754])
   |> line(end = [-180.04, -202.08])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
+  |> close()
 extrude001 = extrude(sketch001, length = 200)`)
     await page.waitForTimeout(800)
 

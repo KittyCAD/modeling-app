@@ -27,7 +27,7 @@ import {
  *  |> angledLine([0, 0], %, $a)
  *  |> angledLine([segAng(a) - 90, 0], %, $b)
  *  |> angledLine([segAng(a), -segLen(a)], %, $c)
- *  |> close(%)
+ *  |> close()
  */
 export const getRectangleCallExpressions = (
   rectangleOrigin: [number, number],

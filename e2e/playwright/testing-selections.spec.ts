@@ -267,7 +267,7 @@ test.describe('Testing selections', () => {
       |> line(end = [112.54, 127.64], tag = $seg02)
       |> line(end = [170.36, -121.61], tag = $seg01)
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-      |> close(%)
+      |> close()
   extrude001 = extrude(sketch001, length = 50)
   sketch005 = startSketchOn(extrude001, 'END')
     |> startProfileAt([23.24, 136.52], %)
@@ -275,19 +275,19 @@ test.describe('Testing selections', () => {
     |> line(end = [49.4, 2.05])
     |> line(end = [29.69, -46.95])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   sketch003 = startSketchOn(extrude001, seg01)
     |> startProfileAt([21.23, 17.81], %)
     |> line(end = [51.97, 21.32])
     |> line(end = [4.07, -22.75])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   sketch002 = startSketchOn(extrude001, seg02)
     |> startProfileAt([-100.54, 16.99], %)
     |> line(end = [0, 20.03])
     |> line(end = [62.61, 0], tag = $seg03)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   extrude002 = extrude(sketch002, length = 50)
   sketch004 = startSketchOn(extrude002, seg03)
     |> startProfileAt([57.07, 134.77], %)
@@ -295,7 +295,7 @@ test.describe('Testing selections', () => {
     |> line(end = [28.8, 6.71])
     |> line(end = [9.19, -25.33])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   extrude003 = extrude(sketch004, length = 20)
   pipeLength = 40
   pipeSmallDia = 10
@@ -320,7 +320,7 @@ test.describe('Testing selections', () => {
     |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
     |> line(end = [0, pipeLength])
     |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
-    |> close(%)
+    |> close()
   rev = revolve({ axis: 'y' }, part009)
   `
       )
@@ -436,7 +436,7 @@ test.describe('Testing selections', () => {
     |> line(end = [112.54, 127.64], tag = $seg02)
     |> line(end = [170.36, -121.61], tag = $seg01)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   extrude001 = extrude(sketch001, length = 50)
   launderExtrudeThroughVar = extrude001
   sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
@@ -444,7 +444,7 @@ test.describe('Testing selections', () => {
     |> line(end = [0, 20.03])
     |> line(end = [62.61, 0], tag = $seg03)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -516,7 +516,7 @@ test.describe('Testing selections', () => {
         offset = 0
       }, %)
   |> tangentialArcTo([13.14 + 0, 13.14], %)
-  |> close(%)
+  |> close()
   |> extrude(length = 5 + 7)
     `
       )
@@ -678,26 +678,26 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'close',
       close,
-      'close(%)extrude(5+7,%)',
-      'close(%)'
+      'close()extrude(5+7,%)',
+      'close()'
     )
     await checkCodeAtHoverPosition(
       'closeEdge',
       closeEdge,
-      `close(%)`,
-      'close(%)'
+      `close()`,
+      'close()'
     )
     await checkCodeAtHoverPosition(
       'closeAdjacentEdge',
       closeAdjacentEdge,
-      `close(%)`,
-      'close(%)'
+      `close()`,
+      'close()'
     )
     await checkCodeAtHoverPosition(
       'closeOppositeEdge',
       closeOppositeEdge,
-      `close(%)`,
-      'close(%)'
+      `close()`,
+      'close()'
     )
 
     await checkCodeAtHoverPosition(
@@ -734,7 +734,7 @@ test.describe('Testing selections', () => {
      -segLen(rectangleSegmentA001)
    ], %, $yo)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
-    |> close(%)
+    |> close()
   extrude001 = extrude(sketch001, length = 100)
     |> chamfer({
      length = 30,
@@ -853,7 +853,7 @@ test.describe('Testing selections', () => {
     |> line(end = [-0.18, -3.36])
     |> line(end = [-3.86, -2.73])
     |> line(end = [-17.67, 0.85])
-    |> close(%)
+    |> close()
   extrude001 = extrude(sketch001, length = 10)
     `
       )
@@ -869,8 +869,8 @@ test.describe('Testing selections', () => {
     await u.closeDebugPanel()
 
     const selectUnExtrudable = async () => {
-      await editor.scrollToText(`line([4.99, -0.46], %, $seg01)`)
-      await page.getByText(`line([4.99, -0.46], %, $seg01)`).click()
+      await editor.scrollToText(`line(end = [4.99, -0.46], tag = $seg01)`)
+      await page.getByText(`line(end = [4.99, -0.46], tag = $seg01)`).click()
     }
     const clickEmpty = () => page.mouse.click(700, 460)
     await selectUnExtrudable()
@@ -889,7 +889,7 @@ test.describe('Testing selections', () => {
     |> line(end = [2.45, -0.2])
     |> line(end = [-2, -1.25])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   `
     await u.codeLocator.fill(codeToAdd)
 
@@ -921,7 +921,7 @@ test.describe('Testing selections', () => {
     const cases = [
       {
         pos: [694, 185],
-        expectedCode: 'line([74.36, 130.4], %, $seg01)',
+        expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
       },
       {
         pos: [816, 244],
@@ -994,7 +994,7 @@ test.describe('Testing selections', () => {
     |> line(end = [112.54, 127.64])
     |> line(end = [170.36, -121.61], tag = $seg01)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   extrude001 = extrude(sketch001, length = 50)
       `
       )
@@ -1025,7 +1025,7 @@ test.describe('Testing selections', () => {
     let selectColor: [number, number, number] = [155, 155, 105]
 
     const extrudeWall = { x: 670, y: 275 }
-    const extrudeText = `line([170.36, -121.61], %, $seg01)`
+    const extrudeText = `line(end = [170.36, -121.61], tag = $seg01)`
 
     const cap = { x: 594, y: 283 }
     const capText = `startProfileAt([-79.26, 95.04], %)`
@@ -1109,7 +1109,7 @@ test.describe('Testing selections', () => {
   |> line(end = [5.25, -5.72])
   |> line(end = [-2.01, -10.35])
   |> line(end = [-27.65, -2.78])
-  |> close(%)
+  |> close()
   |> extrude(length = 5)
     sketch002 = startSketchOn('XZ')
   ${extrudeAndEditAllowed}
@@ -1117,7 +1117,7 @@ test.describe('Testing selections', () => {
   |> line(end = [9.71, -6.16])
   |> line(end = [-3.08, -9.86])
   |> line(end = [-12.02, -1.54])
-  |> close(%)
+  |> close()
     sketch003 = startSketchOn('XZ')
   ${editOnly}
   |> line(end = [27.55, -1.65])

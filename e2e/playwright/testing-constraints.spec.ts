@@ -35,7 +35,7 @@ test.describe('Testing constraints', () => {
     await u.closeDebugPanel()
 
     // Click the line of code for line.
-    await page.getByText(`line([0, 20], %)`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
+    await page.getByText(`line(end = [0, 20])`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
     await page.waitForTimeout(100)
 
     // enter sketch again
@@ -46,7 +46,7 @@ test.describe('Testing constraints', () => {
 
     const startXPx = 500
 
-    await page.getByText(`line([0, 20], %)`).click()
+    await page.getByText(`line(end = [0, 20])`).click()
     await page.waitForTimeout(100)
     await page.getByTestId('constraint-length').click()
     await page.getByTestId('cmd-bar-arg-value').getByRole('textbox').fill('20')
@@ -101,7 +101,7 @@ test.describe('Testing constraints', () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await page.getByText('line([74.36, 130.4], %, $seg01)').click()
+    await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
     // Wait for overlays to populate
@@ -118,7 +118,7 @@ test.describe('Testing constraints', () => {
       .click()
     await page.getByRole('button', { name: 'remove constraints' }).click()
 
-    await page.getByText('line([39.13, 68.63], %)').click()
+    await page.getByText('line(end = [39.13, 68.63])').click()
     await pollEditorLinesSelectedLength(page, 1)
     const activeLinesContent = await page.locator('.cm-activeLine').all()
     await expect(activeLinesContent[0]).toHaveText(
@@ -192,7 +192,7 @@ test.describe('Testing constraints', () => {
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await page.getByText('line([74.36, 130.4], %, $seg01)').click()
+        await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         // Give time for overlays to populate
@@ -301,7 +301,7 @@ test.describe('Testing constraints', () => {
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         // Wait for overlays to populate
@@ -411,7 +411,7 @@ test.describe('Testing constraints', () => {
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         // Wait for overlays to populate
@@ -526,7 +526,7 @@ test.describe('Testing constraints', () => {
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         // Wait for overlays to populate
@@ -628,7 +628,7 @@ test.describe('Testing constraints', () => {
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         // Wait for overlays to populate
@@ -715,7 +715,7 @@ part002 = startSketchOn('XZ')
 
         await homePage.goToModelingScene()
 
-        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         const line3 = await u.getSegmentBodyCoords(
@@ -794,7 +794,7 @@ part002 = startSketchOn('XZ')
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         // Wait for overlays to populate
@@ -896,7 +896,7 @@ part002 = startSketchOn('XZ')
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         // Wait for overlays to populate
@@ -977,7 +977,7 @@ part002 = startSketchOn('XZ')
         await homePage.goToModelingScene()
         await u.waitForPageLoad()
 
-        await page.getByText('line([74.36, 130.4], %)').click()
+        await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         // Wait for overlays to populate
@@ -1032,7 +1032,7 @@ part002 = startSketchOn('XZ')
       await homePage.goToModelingScene()
       await u.waitForPageLoad()
 
-      await page.getByText('line([3.79, 2.68], %, $seg01)').click()
+      await page.getByText('line(end = [3.79, 2.68], tag = $seg01)').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeEnabled({ timeout: 10_000 })

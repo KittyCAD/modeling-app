@@ -76,7 +76,7 @@ part001 = startSketchOn('-XZ')
     }, %)
 |> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
 |> xLineTo(ZERO, %)
-|> close(%)
+|> close()
 |> extrude(length = 4)`
     )
   })
@@ -462,7 +462,7 @@ test('Sketch on face', async ({ page, homePage }) => {
 |> line(end = [-0.18, -3.36])
 |> line(end = [-3.86, -2.73])
 |> line(end = [-17.67, 0.85])
-|> close(%)
+|> close()
 extrude001 = extrude(sketch001, length = 5 + 7)`
     )
   })
@@ -523,7 +523,7 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
   |> line(end = [2.45, -0.2])
   |> line(end = [-2.6, -1.25])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
+  |> close()
 `)
   )
 
@@ -561,7 +561,7 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
 |> line(end = [${[2.28, 2.35]}, -${0.07}])
 |> line(end = [-3.05, -1.47])
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-|> close(%)`
+|> close()`
 
   await expect(page.locator('.cm-content')).toHaveText(result.regExp)
 

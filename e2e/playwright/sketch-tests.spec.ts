@@ -48,7 +48,7 @@ test.describe('Sketch tests', () => {
   |> xLine(width * .5, %)
   |> yLine(height, %)
   |> xLine(-width * .5, %)
-  |> close(%)
+  |> close()
   |> hole(screwHole, %)
   |> extrude(length = thickness)
   
@@ -65,7 +65,7 @@ test.describe('Sketch tests', () => {
       }, %)
   |> yLine(-wireOffset, %)
   |> xLine(-width / 4, %)
-  |> close(%)
+  |> close()
   |> extrude(length = -height)
     `
         )
@@ -190,7 +190,7 @@ test.describe('Sketch tests', () => {
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
-      |> close(%)`
+      |> close()`
         )
       })
 
@@ -230,7 +230,7 @@ test.describe('Sketch tests', () => {
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
-      |> close(%)`)
+      |> close()`)
       } else {
         // Ensure we don't see the code.
         await expect(u.codeLocator).not.toBeVisible()
@@ -308,7 +308,7 @@ test.describe('Sketch tests', () => {
       |> line(end = [14.72, 1.97])
       |> tangentialArcTo([24.95, -5.38], %)
       |> line(end = [1.97, 2.06])
-      |> close(%)`)
+      |> close()`)
     }
     test('code pane open at start-handles', async ({ page, homePage }) => {
       // Load the app with the code panes
@@ -441,7 +441,7 @@ test.describe('Sketch tests', () => {
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
-  |> close(%)
+  |> close()
   |> extrude(length = 5)`
       )
     })
@@ -527,7 +527,7 @@ test.describe('Sketch tests', () => {
     |> startProfileAt([7.12, -12.68], %)
     |> line(end = [12.68, -1.09])
     |> tangentialArcTo([24.89, 0.68], %)
-    |> close(%)
+    |> close()
     |> extrude(length = 5)
   `)
   })
@@ -544,7 +544,7 @@ test.describe('Sketch tests', () => {
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
-  |> close(%)
+  |> close()
   |> revolve({ axis = "X",}, %)`
       )
     })
@@ -630,7 +630,7 @@ test.describe('Sketch tests', () => {
   |> line(end = [14.72, 1.97])
   |> tangentialArcTo([24.95, -5.38], %)
   |> line(end = [1.97, 2.06])
-  |> close(%)
+  |> close()
   |> revolve({ axis = "X" }, %)`)
   })
   test('Can add multiple sketches', async ({ page, homePage }) => {
@@ -745,7 +745,7 @@ test.describe('Sketch tests', () => {
     |> xLine(${roundOff(scale * 139.19)}, %)
     |> yLine(-${roundOff(scale * 139.2)}, %)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)`
+    |> close()`
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
@@ -845,7 +845,7 @@ test.describe('Sketch tests', () => {
     |> line(end = [1.02, -1.32], tag = $seg01)
     |> line(end = [-1.01, -0.77])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
+  |> close()
   `
       )
     })
@@ -860,8 +860,8 @@ test.describe('Sketch tests', () => {
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    // click "line([1.32, 0.38], %)"
-    await page.getByText(`line([1.32, 0.38], %)`).click()
+    // click "line(end = [1.32, 0.38])"
+    await page.getByText(`line(end = [1.32, 0.38])`).click()
     await page.waitForTimeout(100)
     await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
       { timeout: 10_000 }
@@ -903,7 +903,7 @@ test.describe('Sketch tests', () => {
     |> line(end = [1.02, -1.32], tag = $seg01)
     |> line(end = [-1.01, -0.77])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   extrude001 = extrude(sketch001, length = 5)
   `
       )
@@ -943,7 +943,7 @@ test.describe('Sketch tests', () => {
     |> line(end = [1.02, -1.32], tag = $seg01)
     |> line(end = [-1.01, -0.77])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close(%)
+    |> close()
   extrude001 = extrude(sketch001, length = 5)
   sketch002 = startSketchOn(extrude001, 'END')
     |>
@@ -1070,7 +1070,7 @@ test.describe('Sketch tests', () => {
           |> angledLineOfYLength({ angle = 60, length = lugHeadLength }, %)
           |> xLineTo(0 + .001, %)
           |> yLineTo(0, %)
-          |> close(%)
+          |> close()
           |> revolve({ axis = "Y" }, %)
   
         return lugSketch
@@ -1162,7 +1162,7 @@ test.describe('Sketch tests', () => {
      -railTop / 2,
      railClampable + railBaseLength
    ])
-    |> close(%)
+    |> close()
     |> extrude(length = in2mm(2))`
       )
     })
