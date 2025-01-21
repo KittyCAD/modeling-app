@@ -199,7 +199,7 @@ test.describe('Testing segment overlays', () => {
         })
       }
     test.setTimeout(120000)
-    test('for segments [line, angledLine, lineTo, xLineTo]', async ({
+    test('for segments [line, angledLine, xLineTo]', async ({
       page,
       editor,
       homePage,
@@ -1111,7 +1111,7 @@ test.describe('Testing segment overlays', () => {
       )
       await page.mouse.move(hoverPos.x, hoverPos.y)
 
-      const codeToBeDeleted = 'lineTo(endAbsolute = [33, 11.5 + 0])'
+      const codeToBeDeleted = 'line(endAbsolute = [33, 11.5 + 0])'
       await editor.expectEditor.toContain(codeToBeDeleted, {
         shouldNormalise: true,
       })

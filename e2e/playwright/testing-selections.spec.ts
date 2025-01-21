@@ -815,7 +815,7 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'adjacentChamfer1',
       adjacentChamfer1,
-      `lineTo([profileStartX(%),profileStartY(%)],%,$seg02)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `line(endAbsolute=[profileStartX(%),profileStartY(%)],tag=$seg02)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 

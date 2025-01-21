@@ -3385,7 +3385,7 @@ mySk1 = startSketchAt([0, 0])"#;
     #[test]
     fn pipes_on_pipes_minimal() {
         let test_program = r#"startSketchAt([0, 0])
-        |> lineTo([0, -0], %) // MoveRelative
+        |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
@@ -3730,7 +3730,7 @@ firstExtrude = startSketchOn('XY')
   |> line([0, 8], %)
   |> line([20, 0], %)
   |> line([0, -8], %)
-  |> close(%)
+  |> close()
   |> extrude(length=2)
 
 secondExtrude = startSketchOn('XY')
@@ -4207,7 +4207,7 @@ let other_thing = 2 * cos(3)"#;
     |> line([0, l], %)
     |> line([w, 0], %)
     |> line([0, -l], %)
-    |> close(%)
+    |> close()
     |> extrude(length=h)
 
   return myBox
@@ -4574,7 +4574,7 @@ mod snapshot_tests {
     snapshot_test!(y, "sg = startSketchAt(pos)");
     snapshot_test!(z, "sg = startSketchAt(pos) |> line([0, -scale], %)");
     snapshot_test!(aa, r#"sg = -scale"#);
-    snapshot_test!(ab, "lineTo({ to: [0, -1] })");
+    snapshot_test!(ab, "line(endAbsolute = [0, -1])");
     snapshot_test!(ac, "myArray = [0..10]");
     snapshot_test!(
         ad,
@@ -4594,20 +4594,16 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"mySketch = startSketchAt([0,0])
-        |> lineTo([0, 1], %, $myPath)
-        |> lineTo([1, 1], %)
-        |> lineTo([1, 0], %, $rightPath)
-        |> close(%)"#
+        |> line(endAbsolute = [0, 1], tag = $myPath)
+        |> line(endAbsolute = [1, 1])
+        |> line(endAbsolute = [1, 0], tag = $rightPath)
+        |> close()"#
     );
-    snapshot_test!(ag, "mySketch = startSketchAt([0,0]) |> lineTo([1, 1], %) |> close(%)");
+    snapshot_test!(ag, "mySketch = startSketchAt([0,0]) |> line(endAbsolute = [1, 1]) |> close()");
     snapshot_test!(ah, "myBox = startSketchAt(p)");
     snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
-    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line([0, l], %)"#);
-    snapshot_test!(ak, "lineTo({ to: [0, 1] })");
-    snapshot_test!(al, "lineTo({ to: [0, 1], from: [3, 3] })");
-    snapshot_test!(am, "lineTo({to:[0, 1]})");
-    snapshot_test!(an, "lineTo({ to: [0, 1], from: [3, 3]})");
-    snapshot_test!(ao, "lineTo({ to: [0, 1],from: [3, 3] })");
+    snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line(end = [0, l])"#);
+    snapshot_test!(ak, "line(endAbsolute = [0, 1])");
     snapshot_test!(ap, "mySketch = startSketchAt([0,0])");
     snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);
