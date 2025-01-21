@@ -4,6 +4,7 @@ import { CustomIcon } from './CustomIcon'
 
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
   name?: string
+  dropdownTooltipText?: string
   splitMenuItems: {
     id: string
     label: string
@@ -17,6 +18,7 @@ type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
 export function ActionButtonDropdown({
   splitMenuItems,
   className,
+  dropdownTooltipText = 'More tools',
   children,
   ...props
 }: ActionButtonSplitProps) {
@@ -37,6 +39,14 @@ export function ActionButtonDropdown({
             <span className="sr-only">
               {props.name ? props.name + ': ' : ''}open menu
             </span>
+            <Tooltip
+              delay={0}
+              position="bottom"
+              hoverOnly
+              wrapperClassName="ui-open:!hidden"
+            >
+              {dropdownTooltipText}
+            </Tooltip>
           </Popover.Button>
           <Popover.Panel
             as="ul"
