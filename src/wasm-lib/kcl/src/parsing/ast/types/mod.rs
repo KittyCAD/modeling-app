@@ -1284,24 +1284,6 @@ impl fmt::Display for ImportPath {
     }
 }
 
-#[derive(Clone, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum ImportPath {
-    Kcl { filename: String },
-    Foreign { path: String },
-    Std,
-}
-
-impl fmt::Display for ImportPath {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => write!(f, "{s}"),
-            ImportPath::Std => write!(f, "std"),
-        }
-    }
-}
-
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
