@@ -28,26 +28,92 @@ description: Program memory after executing import_whole.kcl
         },
         "bar": {
           "type": "Solid",
-          "type": "Solid",
-          "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                25,
-                68,
-                1
-              ],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
+          "value": {
+            "type": "Solid",
             "id": "[uuid]",
-            "paths": [
+            "value": [
               {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  25,
+                  68,
+                  1
+                ],
+                "tag": null,
+                "type": "extrudeArc"
+              }
+            ],
+            "sketch": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      25,
+                      68,
+                      1
+                    ]
+                  },
+                  "ccw": true,
+                  "center": [
+                    5.0,
+                    5.0
+                  ],
+                  "from": [
+                    15.0,
+                    5.0
+                  ],
+                  "radius": 10.0,
+                  "tag": null,
+                  "to": [
+                    15.0,
+                    5.0
+                  ],
+                  "type": "Circle"
+                }
+              ],
+              "on": {
+                "type": "plane",
+                "id": "[uuid]",
+                "value": "XY",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "units": {
+                  "type": "Mm"
+                },
+                "__meta": []
+              },
+              "start": {
+                "from": [
+                  15.0,
+                  5.0
+                ],
+                "to": [
+                  15.0,
+                  5.0
+                ],
+                "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
@@ -55,69 +121,26 @@ description: Program memory after executing import_whole.kcl
                     68,
                     1
                   ]
-                },
-                "ccw": true,
-                "center": [
-                  5.0,
-                  5.0
-                ],
-                "from": [
-                  15.0,
-                  5.0
-                ],
-                "radius": 10.0,
-                "tag": null,
-                "to": [
-                  15.0,
-                  5.0
-                ],
-                "type": "Circle"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "value": "XY",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
+                }
               },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
+              "units": {
+                "type": "Mm"
               },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "__meta": []
+              "__meta": [
+                {
+                  "sourceRange": [
+                    25,
+                    68,
+                    1
+                  ]
+                }
+              ]
             },
-            "start": {
-              "from": [
-                15.0,
-                5.0
-              ],
-              "to": [
-                15.0,
-                5.0
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  25,
-                  68,
-                  1
-                ]
-              }
+            "height": 10.0,
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -128,19 +151,7 @@ description: Program memory after executing import_whole.kcl
                 ]
               }
             ]
-          },
-          "height": 10.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                25,
-                68,
-                1
-              ]
-            }
-          ]
+          }
         },
         "foo": {
           "type": "Module",
