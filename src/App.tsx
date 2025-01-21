@@ -6,7 +6,6 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { codeManager, engineCommandManager } from 'lib/singletons'
@@ -24,6 +23,7 @@ import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
 import { maybeWriteToDisk } from 'lib/telemetry'
 import { useToken } from 'machines/appMachine'
+import { useSettings } from 'machines/settingsMachine'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -46,7 +46,7 @@ export function App() {
 
   useHotKeyListener()
 
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const token = useToken()
 
   const coreDumpManager = useMemo(
@@ -56,7 +56,7 @@ export function App() {
 
   const {
     app: { onboardingStatus },
-  } = settings.context
+  } = settings
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()

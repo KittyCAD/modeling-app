@@ -10,7 +10,6 @@ import {
 import { TEST, VITE_KC_API_BASE_URL } from 'env'
 import { kcl } from 'editor/plugins/lsp/kcl/language'
 import { copilotPlugin } from 'editor/plugins/lsp/copilot'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Extension } from '@codemirror/state'
 import { LanguageSupport } from '@codemirror/language'
 import { useNavigate } from 'react-router-dom'
@@ -70,7 +69,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
-  const token = useToken()
+  const token = ''
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.

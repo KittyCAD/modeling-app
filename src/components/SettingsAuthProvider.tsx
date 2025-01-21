@@ -20,7 +20,7 @@ import {
   sceneEntitiesManager,
 } from 'lib/singletons'
 import { IndexLoaderData } from 'lib/types'
-import { settings } from 'lib/settings/initialSettings'
+import { createSettings, settings } from 'lib/settings/initialSettings'
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
@@ -66,7 +66,7 @@ export const SettingsAuthProvider = ({
 }: {
   children: React.ReactNode
 }) => {
-  const loadedSettings = useRouteLoaderData(PATHS.INDEX) as typeof settings
+  const loadedSettings = createSettings()
   const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   return (
     <SettingsAuthProviderBase

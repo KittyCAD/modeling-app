@@ -1,6 +1,5 @@
 import { OnboardingButtons, useDemoCode, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracket } from 'lib/exampleKcl'
 import { createAndOpenNewTutorialProject } from 'lib/desktopFS'
@@ -15,6 +14,7 @@ import { useFileContext } from 'hooks/useFileContext'
 import { useLspContext } from 'components/LspProvider'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
+import { useSettings } from 'machines/settingsMachine'
 
 /**
  * Show either a welcome screen or a warning screen
@@ -123,14 +123,8 @@ function OnboardingIntroductionInner() {
   useDemoCode()
 
   const {
-    settings: {
-      state: {
-        context: {
-          app: { theme },
-        },
-      },
-    },
-  } = useSettingsAuthContext()
+    app: { theme },
+  } = useSettings()
   const getLogoTheme = () =>
     theme.current === Themes.Light ||
     (theme.current === Themes.System && getSystemTheme() === Themes.Light)

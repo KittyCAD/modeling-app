@@ -1,9 +1,9 @@
 import { Popover } from '@headlessui/react'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
+import { settingsActor, useSettings } from 'machines/settingsMachine'
 
 export function UnitsMenu() {
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   return (
     <Popover className="relative pointer-events-auto">
       {({ close }) => (
@@ -18,7 +18,7 @@ export function UnitsMenu() {
               <div className="absolute w-[1px] h-[1em] bg-primary right-0 top-1/2 -translate-y-1/2"></div>
             </div>
             <span className="sr-only">Current units are:&nbsp;</span>
-            {settings.context.modeling.defaultUnit.current}
+            {settings.modeling.defaultUnit.current}
           </Popover.Button>
           <Popover.Panel
             className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
@@ -31,7 +31,7 @@ export function UnitsMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      settings.send({
+                      settingsActor.send({
                         type: 'set.modeling.defaultUnit',
                         data: {
                           level: 'project',
@@ -42,7 +42,7 @@ export function UnitsMenu() {
                     }}
                   >
                     <span className="flex-1">{baseUnitLabels[unit]}</span>
-                    {unit === settings.context.modeling.defaultUnit.current && (
+                    {unit === settings.modeling.defaultUnit.current && (
                       <span className="text-chalkboard-60">current</span>
                     )}
                   </button>

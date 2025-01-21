@@ -2,10 +2,10 @@ import { Combobox } from '@headlessui/react'
 import { CustomIcon } from 'components/CustomIcon'
 import decamelize from 'decamelize'
 import Fuse from 'fuse.js'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { interactionMap } from 'lib/settings/initialKeybindings'
 import { Setting } from 'lib/settings/initialSettings'
 import { SettingsLevel } from 'lib/settings/settingsTypes'
+import { useSettings } from 'machines/settingsMachine'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { useNavigate } from 'react-router-dom'
@@ -32,10 +32,10 @@ export function SettingsSearchBar() {
   )
   const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
   const settingsAsSearchable: SettingsSearchItem[] = useMemo(
     () => [
-      ...Object.entries(settings.state.context).flatMap(
+      ...Object.entries(settings).flatMap(
         ([category, categorySettings]) =>
           Object.entries(categorySettings).flatMap(([settingName, setting]) => {
             const s = setting as Setting
@@ -61,7 +61,7 @@ export function SettingsSearchBar() {
           }))
       ),
     ],
-    [settings.state.context]
+    [settings]
   )
   const [searchResults, setSearchResults] = useState(settingsAsSearchable)
 
