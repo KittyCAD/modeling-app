@@ -87,7 +87,10 @@ description: Result of parsing import_whole.kcl
                           "start": 86,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.25
+                          "value": {
+                            "value": 0.25,
+                            "suffix": "None"
+                          }
                         }
                       }
                     ],

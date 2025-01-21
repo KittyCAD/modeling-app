@@ -101,7 +101,10 @@ description: Program memory after executing sketch_on_face_end.kcl
                                   "start": 92,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "end": 100,
@@ -151,7 +154,10 @@ description: Program memory after executing sketch_on_face_end.kcl
                                   "start": 126,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 }
                               ],
                               "end": 128,
@@ -187,7 +193,10 @@ description: Program memory after executing sketch_on_face_end.kcl
                                   "start": 146,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "argument": {

@@ -373,11 +373,11 @@ impl VariableDeclaration {
 impl Literal {
     fn recast(&self) -> String {
         match self.value {
-            LiteralValue::Number(x) => {
-                if self.raw.contains('.') && x.fract() == 0.0 {
-                    format!("{x:?}")
+            LiteralValue::Number { value, suffix } => {
+                if self.raw.contains('.') && value.fract() == 0.0 {
+                    format!("{value:?}{suffix}")
                 } else {
-                    self.raw.clone()
+                    format!("{}{suffix}", self.raw)
                 }
             }
             LiteralValue::String(ref s) => {

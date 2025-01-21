@@ -20,7 +20,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
             "start": 13,
             "type": "Literal",
             "type": "Literal",
-            "value": 15000.0
+            "value": {
+              "value": 15000.0,
+              "suffix": "None"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -46,7 +49,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
             "start": 34,
             "type": "Literal",
             "type": "Literal",
-            "value": 11.0
+            "value": {
+              "value": 11.0,
+              "suffix": "None"
+            }
           },
           "start": 26,
           "type": "VariableDeclarator"
@@ -72,7 +78,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
             "start": 49,
             "type": "Literal",
             "type": "Literal",
-            "value": 150.0
+            "value": {
+              "value": 150.0,
+              "suffix": "None"
+            }
           },
           "start": 45,
           "type": "VariableDeclarator"
@@ -98,7 +107,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
             "start": 88,
             "type": "Literal",
             "type": "Literal",
-            "value": 12.0
+            "value": {
+              "value": 12.0,
+              "suffix": "None"
+            }
           },
           "start": 77,
           "type": "VariableDeclarator"
@@ -124,7 +136,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
             "start": 107,
             "type": "Literal",
             "type": "Literal",
-            "value": 2.0
+            "value": {
+              "value": 2.0,
+              "suffix": "None"
+            }
           },
           "start": 101,
           "type": "VariableDeclarator"
@@ -192,7 +207,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                     "start": 147,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 6.0
+                    "value": {
+                      "value": 6.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 126,
                   "type": "BinaryExpression",
@@ -270,7 +288,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "start": 195,
               "type": "Literal",
               "type": "Literal",
-              "value": 2.0
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             },
             "start": 183,
             "type": "BinaryExpression",
@@ -300,7 +321,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
             "start": 211,
             "type": "Literal",
             "type": "Literal",
-            "value": 9.0
+            "value": {
+              "value": 9.0,
+              "suffix": "None"
+            }
           },
           "start": 197,
           "type": "VariableDeclarator"
@@ -326,7 +350,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
             "start": 226,
             "type": "Literal",
             "type": "Literal",
-            "value": 8.0
+            "value": {
+              "value": 8.0,
+              "suffix": "None"
+            }
           },
           "start": 213,
           "type": "VariableDeclarator"
@@ -358,7 +385,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "start": 254,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 258,
@@ -366,7 +396,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "start": 257,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 259,
@@ -396,7 +429,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "start": 272,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 285,
@@ -468,7 +504,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           "start": 339,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 90.0
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
                         }
                       }
                     ],
@@ -518,7 +557,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "start": 373,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 375,
@@ -554,7 +596,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "start": 391,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -611,7 +656,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "start": 434,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 436,
@@ -691,7 +739,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                             "start": 516,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 90.0
+                            "value": {
+                              "value": 90.0,
+                              "suffix": "None"
+                            }
                           },
                           "end": 518,
                           "operator": "-",
@@ -733,7 +784,10 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         "start": 541,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {

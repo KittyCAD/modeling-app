@@ -483,7 +483,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
     let (value, token) = any
         .try_map(|token: Token| match token.token_type {
             TokenType::Number => {
-                let x: f64 = token.numeric_value().ok_or_else(|| {
+                let value: f64 = token.numeric_value().ok_or_else(|| {
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
@@ -494,7 +494,13 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                     ));
                 }
 
-                Ok((LiteralValue::Number(x), token))
+                Ok((
+                    LiteralValue::Number {
+                        value,
+                        suffix: token.numeric_suffix(),
+                    },
+                    token,
+                ))
             }
             _ => Err(CompilationError::fatal(token.as_source_range(), "invalid literal")),
         })
@@ -2857,7 +2863,10 @@ mySk1 = startSketchAt([0, 0])"#;
                                 ReturnStatement {
                                     argument: Expr::Literal(Box::new(Node::new(
                                         Literal {
-                                            value: 2u32.into(),
+                                            value: LiteralValue::Number {
+                                                value: 2.0,
+                                                suffix: NumericSuffix::None
+                                            },
                                             raw: "2".to_owned(),
                                             digest: None,
                                         },
@@ -3058,7 +3067,15 @@ mySk1 = startSketchAt([0, 0])"#;
         match &rhs.right {
             BinaryPart::Literal(lit) => {
                 assert!(lit.start == 9 && lit.end == 10);
-                assert!(lit.value == 3u32.into() && &lit.raw == "3" && lit.digest.is_none());
+                assert!(
+                    lit.value
+                        == LiteralValue::Number {
+                            value: 3.0,
+                            suffix: NumericSuffix::None
+                        }
+                        && &lit.raw == "3"
+                        && lit.digest.is_none()
+                );
             }
             _ => panic!(),
         }
@@ -3129,11 +3146,23 @@ mySk1 = startSketchAt([0, 0])"#;
             let BinaryPart::Literal(left) = actual.inner.left else {
                 panic!("should be expression");
             };
-            assert_eq!(left.value, 1u32.into());
+            assert_eq!(
+                left.value,
+                LiteralValue::Number {
+                    value: 1.0,
+                    suffix: NumericSuffix::None
+                }
+            );
             let BinaryPart::Literal(right) = actual.inner.right else {
                 panic!("should be expression");
             };
-            assert_eq!(right.value, 2u32.into());
+            assert_eq!(
+                right.value,
+                LiteralValue::Number {
+                    value: 2.0,
+                    suffix: NumericSuffix::None
+                }
+            );
         }
     }
 
@@ -3450,7 +3479,10 @@ mySk1 = startSketchAt([0, 0])"#;
                 operator: BinaryOperator::Add,
                 left: BinaryPart::Literal(Box::new(Node::new(
                     Literal {
-                        value: 5u32.into(),
+                        value: LiteralValue::Number {
+                            value: 5.0,
+                            suffix: NumericSuffix::None,
+                        },
                         raw: "5".to_owned(),
                         digest: None,
                     },
@@ -3499,7 +3531,10 @@ mySk1 = startSketchAt([0, 0])"#;
                             BinaryExpression {
                                 left: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
-                                        value: 5u32.into(),
+                                        value: LiteralValue::Number {
+                                            value: 5.0,
+                                            suffix: NumericSuffix::None,
+                                        },
                                         raw: "5".to_string(),
                                         digest: None,
                                     },
@@ -3510,7 +3545,10 @@ mySk1 = startSketchAt([0, 0])"#;
                                 operator: BinaryOperator::Add,
                                 right: BinaryPart::Literal(Box::new(Node::new(
                                     Literal {
-                                        value: 6u32.into(),
+                                        value: LiteralValue::Number {
+                                            value: 6.0,
+                                            suffix: NumericSuffix::None,
+                                        },
                                         raw: "6".to_string(),
                                         digest: None,
                                     },

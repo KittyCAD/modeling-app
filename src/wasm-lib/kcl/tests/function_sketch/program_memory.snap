@@ -74,7 +74,10 @@ description: Program memory after executing function_sketch.kcl
                                   "start": 71,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "end": 75,
@@ -82,7 +85,10 @@ description: Program memory after executing function_sketch.kcl
                                   "start": 74,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 }
                               ],
                               "end": 76,
@@ -118,7 +124,10 @@ description: Program memory after executing function_sketch.kcl
                                   "start": 94,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "end": 98,
@@ -168,7 +177,10 @@ description: Program memory after executing function_sketch.kcl
                                   "start": 120,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 }
                               ],
                               "end": 122,
@@ -204,7 +216,10 @@ description: Program memory after executing function_sketch.kcl
                                   "start": 140,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "argument": {
