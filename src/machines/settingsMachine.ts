@@ -15,6 +15,7 @@ import {
 } from 'lib/settings/settingsTypes'
 import {
   configurationToSettingsPayload,
+  loadAndValidateSettings,
   projectConfigurationToSettingsPayload,
   saveSettings,
   setSettingsAtLevel,
@@ -29,6 +30,7 @@ import {
 import toast from 'react-hot-toast'
 import decamelize from 'decamelize'
 import { reportRejection } from 'lib/trap'
+import { Project } from 'lib/project'
 
 type SettingsMachineContext = ReturnType<typeof createSettings>
 
@@ -52,6 +54,7 @@ export const settingsMachine = setup({
           level: SettingsLevel
         }
       | { type: 'Set all settings'; settings: typeof settings }
+      | { type: 'load.project'; project?: Project }
     ) & { doNotPersist?: boolean },
   },
   actors: {
@@ -69,6 +72,14 @@ export const settingsMachine = setup({
 
       return saveSettings(input.context, currentProjectFromParent)
     }),
+    loadUserSettings: fromPromise<SettingsMachineContext, void>(async () => {
+      const { settings } = await loadAndValidateSettings()
+      return settings
+    }),
+    loadProjectSettings: fromPromise<SettingsMachineContext, { project?: Project }>(async ({ input }) => {
+      const { settings } = await loadAndValidateSettings(input.project?.path)
+      return settings
+    })
   },
   actions: {
     setClientSideSceneUnits: ({ context, event }) => {
@@ -205,9 +216,9 @@ export const settingsMachine = setup({
     },
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IAzAA4x+AIyaAbJoCsAFl1njAJmOaANCACeiXQHZ1+a7bdWDATnUxawBfYIdUDB4CIlIKKjoGNAALMABbMABhRmJGDnEpJBBZeUVsZTUELR19IzMLUy97J0RfTXxDBr8DAxtdMSs-UPD0LFxoknJKNHxUxggwYh58eYAzakFiNABVbAV85WKFTCVCiqq9QxNzSxsm50qDU3wrMXV1V2M-bT8xV6GQCKjPCECZxaYJfDJNJgfaFQ6lcoabQXWrXBq3Bz3YzqPz4AyvL7qYw1TS6Az-QFREGxKY0ej4WBoDhgaipACSEwAsnMYZIDnIjidQGdkSS6jdbJjEK5zHi-PouqYiQZjBSRlSYpN4vTqMQcgB3ADyHBYCjZ2GQAGt0ABjJLc+awmQChGnJHVS7i9GS5oIQweVxueVWVz4mW6NWRMbUrXTWbzRa4fA21lgDjUAAKHEYACswDbSk6ii7jmU3ZVRZ60Y0pQg+rorPglQ2rKZ-FY3DLI0DxjSqPGFkskpgoElFqO0ABRaBwIvw0uIise1H1Gu+3Rk3R6Uydaz47qqsIA9XRzVkABKcHQAAIpj25yWhap3SirquMevAriTK4urYBhYViaN2GqghE166sQt4nngD4lAu5Zkni1yaKG2i6OoBgblYtY7sYniGNYmjqKYmjyropggaeoK0gOiZQAySSMPqyApqQADiHBEHBgplsKL5itWH73BYKr4OoLzmBhHahlRwJngAVDxrr8Uur5emuImBk8rzvKSZH9KYrjAUelLRrQabyIyPDQVGeBkBAzBgIQ2AAG6MNa+BmcCFkcFZQK2T2CA4O5KaFpIykIapRm4iRQQ7u48p+EZpi1vobz4EEfifEqv4kSZwx2QQvn+TZd5RGQabZhw+C0MQAgrLkqReTBxWWZg1m4IFUTBW5jBhaW+SRU+FSkToRhiFhBjvEEPr3KSFyuCGnxmHhJGhEe2A8vAhTeTtzrwSNiAALTqFuRKaOYVhnV802aPdtbHQYmW-L8xiuIGl1oTYcm9mA-KHXxz4IEZtaoc9fjyj+PSQ62Eama1tXtZ1UDdWMAO8YuZFPBRDRYTKxifFhYOQ3i9QHl8phBPDoRAA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IAzAA4x+AIyaAbJoCsAFl1njAJmOaANCACeiXQHZ1+a7bdWDATnUxawBfYIdUDB4CIlIKKjoGNAALMABbMABhRmJGDnEpJBBZeUVsZTUELR19IzMLUy97J0RfTXxDBr8DAxtdMSs-UPD0LFxoknJKNHxUxggwYh58eYAzakFiNABVbAV85WKFTCVCiqq9QxNzSxsm50qDU3wrMXV1V2M-bT8xV6GQCKjPCECZxaYJfDJNJgfaFQ6lcoabQXWrXBq3Bz3YzqPz4AyvL7qYw1TS6Az-QFREGxKY0ej4WBoDhgaipACSEwAsnMYZIDnIjidQGdkSS6jdbJjEK5zHi-PouqYiQZjBSRlSYpN4vTqMQcgB3ADyHBYCjZ2GQAGt0ABjJLc+awmQChGnJHVS7i9GS5oIQweVxueVWVz4mW6NWRMbUrXTWbzRa4fA21lgDjUAAKHEYACswDbSk6ii7jmU3ZVRZ60Y0pQg+rorPglQ2rKZ-FY3DLI0DxjSqPGFkskpgoElFqO0ABRaBwIvw0uIise1H1Gu+3Rk3R6Uydaz47qqsIA9XRzVkABKcHQAAIpj25yWhap3SirquMevAriTK4urYBhYViaN2GqghE166sQt4nngD4lAu5Zkni1yaKG2i6OoBgblYtY7sYniGNYmjqKYmjyropggaeoK0gOiZQAySSMPqyApqQADiHBEHBgplsKL5itWH73BYKr4OoLzmBhHahlRwJngAVDxrr8Uur5emuImBk8rzvKSZH9KYrjAUelLRrQabyIyPDQVGeBkBAzBgIQ2AAG6MNa+BmcCFkcFZQK2T2CA4O5KaFpIykIapRm4iRQQ7u48p+EZpi1vobz4EEfifEqv4kSZwx2QQvn+TZd5RGQabZhw+C0MQAgrLkqReTBxWWZg1m4IFUTBW5jBhaW+SRU+FSkToRhiFhBjvEEPr3KSFyuCGnxmHhJFyQQOTUNwSbCGmDlOS57med5m3sDtDF7RwvWhQIg0RXycKPnxz4IAAtG27Skdl7iPMYBjuL4takgY+B+PKP49ODrYRqZrX4FtF34FdlUcNVtX1WgjUcM1p0I+dSxXTd-V3cwQ2Pc68EjYgb1WCGniuGIug-F8fgvGROG+uDuJkmIATynzHaUf82A8vAhSnfyVMvRUb1vKDAGmK2WFaMYs21m9oO-NrIYvNYbYYRtMZS7xi5GcDoZgxDxihgMbPmEbJUdQF5VjCbKmvWRTwUQ0WEysYnxYcD4N4vUB5fKYQSw4VPb49thOUBw7tRa9tOaG0ivKxhJjq766e4l8xGR4z2IkeoRuI0stDZnmBbJ9T70hgXUPc79fi-sYaUUaD8pGUBPTqBRFGhKEQA */
   id: 'Settings',
-  initial: 'idle',
+  initial: "loadingUser",
   context: ({ input }) => {
     return {
       ...createSettings(),
@@ -322,6 +333,10 @@ export const settingsMachine = setup({
           target: 'persisting settings',
           actions: ['setSettingAtLevel', 'toastSuccess', 'Execute AST'],
         },
+
+        'load.project': {
+          target: 'loadingProject',
+        },
       },
     },
 
@@ -343,6 +358,26 @@ export const settingsMachine = setup({
             context,
           }
         },
+      }
+    },
+
+    "loadingUser": {
+      invoke: [{
+        src: "loadUserSettings",
+        onDone: ["idle", "idle"],
+        onError: ["idle", "idle"]
+      }]
+    },
+    "loadingProject": {
+      invoke: {
+        src: "loadProjectSettings",
+        onDone: "idle",
+        onError: "idle",
+        input: ({ event }) => {
+            return {
+              project: (event.type === 'load.project') ? event.project : undefined
+            }
+        }
       }
     }
   },
