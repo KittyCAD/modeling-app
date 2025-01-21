@@ -270,6 +270,12 @@ export function Toolbar({
   )
 }
 
+interface ToolbarItemContentsProps extends React.PropsWithChildren {
+  itemConfig: ToolbarItemResolved
+  configCallbackProps: ToolbarItemCallbackProps
+  wrapperClassName?: string
+  contentClassName?: string
+}
 /**
  * The single button and dropdown button share content, so we extract it here
  * It contains a tooltip with the title, description, and links
@@ -278,14 +284,10 @@ export function Toolbar({
 const ToolbarItemTooltip = memo(function ToolbarItemContents({
   itemConfig,
   configCallbackProps,
-  className,
-}: {
-  itemConfig: ToolbarItemResolved
-  configCallbackProps: ToolbarItemCallbackProps
-  className?: string
-}) {
-  const { state } = useModelingContext()
-
+  wrapperClassName = '',
+  contentClassName = '',
+  children,
+}: ToolbarItemContentsProps) {
   useHotkeys(
     itemConfig.hotkey || '',
     () => {
@@ -310,10 +312,46 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       }
       hoverOnly
       position="bottom"
-      wrapperClassName={'!p-4 !pointer-events-auto ' + className}
-      contentClassName="!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch"
+      wrapperClassName={'!p-4 !pointer-events-auto ' + wrapperClassName}
+      contentClassName={contentClassName}
+      delay={0}
     >
+      {children}
+    </Tooltip>
+  )
+})
+
+const ToolbarItemTooltipShortContent = ({
+  status,
+  title,
+  hotkey,
+}: {
+  status: string
+  title: string
+  hotkey?: string | string[]
+}) => (
+  <span
+    className={`text-sm ${
+      status !== 'available' ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''
+    }`}
+  >
+    {title}
+    {hotkey && <kbd className="inline-block ml-2 flex-none hotkey">{hotkey}</kbd>}
+  </span>
+)
+
+const ToolbarItemTooltipRichContent = ({
+  itemConfig,
+}: {
+  itemConfig: ToolbarItemResolved
+}) => {
+  const { state } = useModelingContext()
+  return (
+    <>
       <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
+        {itemConfig.icon && (
+          <CustomIcon className="w-5 h-5" name={itemConfig.icon} />
+        )}
         <span
           className={`text-sm flex-1 ${
             itemConfig.status !== 'available'
@@ -382,6 +420,6 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
           </ul>
         </>
       )}
-    </Tooltip>
+    </>
   )
-})
+}
