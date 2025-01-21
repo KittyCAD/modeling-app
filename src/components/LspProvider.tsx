@@ -69,7 +69,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const [isKclLspReady, setIsKclLspReady] = useState(false)
   const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
-  const token = ''
+  const token = useToken()
   const navigate = useNavigate()
 
   // So this is a bit weird, we need to initialize the lsp server and client.
