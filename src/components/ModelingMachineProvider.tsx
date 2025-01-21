@@ -1178,7 +1178,7 @@ export const ModelingMachineProvider = ({
   // wrong
   useEffect(() => {
     sceneInfra.camControls.resetCameraPosition()
-  }, [cameraOrbit])
+  }, [cameraOrbit.current])
 
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {
