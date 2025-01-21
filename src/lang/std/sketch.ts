@@ -2110,9 +2110,10 @@ export function addNewSketchLn({
     }
   | Error {
   const node = structuredClone(_node)
-  const { add, updateArgs } = sketchLineHelperMap?.[fnName] || {}
+  const { add, updateArgs } =
+    sketchLineHelperMap?.[fnName] || sketchLineHelperMapKw?.[fnName] || {}
   if (!add || !updateArgs) {
-    return new Error('not a sketch line helper')
+    return new Error(`${fnName} is not a sketch line helper`)
   }
 
   getNodeFromPath<Node<VariableDeclarator>>(
@@ -2120,7 +2121,7 @@ export function addNewSketchLn({
     pathToNode,
     'VariableDeclarator'
   )
-  getNodeFromPath<Node<PipeExpression | CallExpression>>(
+  getNodeFromPath<Node<PipeExpression | CallExpression | CallExpressionKw>>(
     node,
     pathToNode,
     'PipeExpression'
@@ -2142,7 +2143,7 @@ export function addCallExpressionsToPipe({
   node: Node<Program>
   programMemory: ProgramMemory
   pathToNode: PathToNode
-  expressions: Node<CallExpression>[]
+  expressions: Node<CallExpression | CallExpressionKw>[]
 }) {
   const _node = { ...node }
   const pipeExpression = getNodeFromPath<Node<PipeExpression>>(

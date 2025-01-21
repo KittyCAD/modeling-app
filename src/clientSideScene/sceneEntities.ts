@@ -89,6 +89,8 @@ import {
   addStartProfileAt,
   createArrayExpression,
   createCallExpressionStdLib,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
   createLiteral,
   createObjectExpression,
   createPipeExpression,
@@ -785,29 +787,32 @@ export class SceneEntities {
         let modifiedAst
 
         // Snapping logic for the profile start handle
+        // ADAM: Should generate line calls with endAbsolute.
         if (intersectsProfileStart) {
           const lastSegment = sketch.paths.slice(-1)[0]
+          const originCoords = createArrayExpression([
+            createCallExpressionStdLib('profileStartX', [
+              createPipeSubstitution(),
+            ]),
+            createCallExpressionStdLib('profileStartY', [
+              createPipeSubstitution(),
+            ]),
+          ])
           modifiedAst = addCallExpressionsToPipe({
             node: kclManager.ast,
             programMemory: kclManager.programMemory,
             pathToNode: sketchPathToNode,
             expressions: [
-              createCallExpressionStdLib(
-                lastSegment.type === 'TangentialArcTo'
-                  ? 'tangentialArcTo'
-                  : 'lineTo',
-                [
-                  createArrayExpression([
-                    createCallExpressionStdLib('profileStartX', [
-                      createPipeSubstitution(),
-                    ]),
-                    createCallExpressionStdLib('profileStartY', [
-                      createPipeSubstitution(),
-                    ]),
-                  ]),
-                  createPipeSubstitution(),
-                ]
-              ),
+              lastSegment.type === 'TangentialArcTo'
+                ? createCallExpressionStdLib('tangentialArcTo', [
+                    originCoords,
+                    createPipeSubstitution(),
+                  ])
+                : createCallExpressionStdLibKw(
+                    'line',
+                    createPipeSubstitution(),
+                    [createLabeledArg('endAbsolute', originCoords)]
+                  ),
             ],
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
