@@ -9,9 +9,7 @@ export function CameraProjectionToggle() {
   const [checked, setChecked] = useState(isCameraProjectionPerspective)
 
   useEffect(() => {
-    setChecked(
-      settings.modeling.cameraProjection.current === 'perspective'
-    )
+    setChecked(settings.modeling.cameraProjection.current === 'perspective')
   }, [settings.modeling.cameraProjection.current])
 
   return (

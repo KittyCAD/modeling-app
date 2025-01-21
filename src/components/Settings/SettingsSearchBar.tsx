@@ -35,20 +35,19 @@ export function SettingsSearchBar() {
   const settings = useSettings()
   const settingsAsSearchable: SettingsSearchItem[] = useMemo(
     () => [
-      ...Object.entries(settings).flatMap(
-        ([category, categorySettings]) =>
-          Object.entries(categorySettings).flatMap(([settingName, setting]) => {
-            const s = setting as Setting
-            return (['project', 'user'] satisfies SettingsLevel[])
-              .filter((l) => s.hideOnLevel !== l)
-              .map((l) => ({
-                category: decamelize(category, { separator: ' ' }),
-                name: settingName,
-                description: s.description ?? '',
-                displayName: decamelize(settingName, { separator: ' ' }),
-                level: l as ExtendedSettingsLevel,
-              }))
-          })
+      ...Object.entries(settings).flatMap(([category, categorySettings]) =>
+        Object.entries(categorySettings).flatMap(([settingName, setting]) => {
+          const s = setting as Setting
+          return (['project', 'user'] satisfies SettingsLevel[])
+            .filter((l) => s.hideOnLevel !== l)
+            .map((l) => ({
+              category: decamelize(category, { separator: ' ' }),
+              name: settingName,
+              description: s.description ?? '',
+              displayName: decamelize(settingName, { separator: ' ' }),
+              level: l as ExtendedSettingsLevel,
+            }))
+        })
       ),
       ...Object.entries(interactionMap).flatMap(
         ([category, categoryKeybindings]) =>

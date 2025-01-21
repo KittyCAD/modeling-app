@@ -69,7 +69,9 @@ export const AllSettingsFields = forwardRef(
      * A "listener" for the XState to return to "idle" state
      * when the user resets the onboarding, using the callback above
      */
-    const isSettingsMachineIdle = useSelector(settingsActor, (s) => s.matches('idle'))
+    const isSettingsMachineIdle = useSelector(settingsActor, (s) =>
+      s.matches('idle')
+    )
     useEffect(() => {
       async function navigateToOnboardingStart() {
         if (
@@ -89,7 +91,12 @@ export const AllSettingsFields = forwardRef(
       }
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigateToOnboardingStart()
-    }, [isFileSettings, navigate, isSettingsMachineIdle, context.app.onboardingStatus.current])
+    }, [
+      isFileSettings,
+      navigate,
+      isSettingsMachineIdle,
+      context.app.onboardingStatus.current,
+    ])
 
     return (
       <div className="relative overflow-y-auto">
