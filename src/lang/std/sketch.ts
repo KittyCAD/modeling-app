@@ -2029,6 +2029,19 @@ export function changeSketchArguments(
       input,
     })
   }
+  if (callExpression?.callee?.name in sketchLineHelperMapKw) {
+    const { updateArgs } = sketchLineHelperMapKw[callExpression.callee.name]
+    if (!updateArgs) {
+      return new Error('not a sketch line keyword helper')
+    }
+
+    return updateArgs({
+      node: _node,
+      previousProgramMemory: programMemory,
+      pathToNode: shallowPath,
+      input,
+    })
+  }
 
   return new Error(`not a sketch line helper: ${callExpression?.callee?.name}`)
 }

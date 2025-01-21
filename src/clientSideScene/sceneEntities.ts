@@ -60,6 +60,7 @@ import {
   resultIsOk,
   SourceRange,
   topLevelRange,
+  CallExpressionKw,
 } from 'lang/wasm'
 import { calculate_circle_from_3_points } from '../wasm-lib/pkg/wasm_lib'
 import {
@@ -1948,15 +1949,16 @@ export class SceneEntities {
     const dragTo: [number, number] = [snappedPoint.x, snappedPoint.y]
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
-    const _node = getNodeFromPath<Node<CallExpression>>(
+    const _node = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
       modifiedAst,
       pathToNode,
-      'CallExpression'
+      ['CallExpression', 'CallExpressionKw']
     )
     if (trap(_node)) return
     const node = _node.node
 
-    if (node.type !== 'CallExpression') return
+    if (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw')
+      return
 
     let modded:
       | {
@@ -2262,11 +2264,12 @@ export class SceneEntities {
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           const updatedAst = pResult.program
-          const _node = getNodeFromPath<Node<CallExpression>>(
-            updatedAst,
-            parent.userData.pathToNode,
-            'CallExpression'
-          )
+          const _node = getNodeFromPath<
+            Node<CallExpression | CallExpressionKw>
+          >(updatedAst, parent.userData.pathToNode, [
+            'CallExpressionKw',
+            'CallExpression',
+          ])
           if (trap(_node, { suppress: true })) return
           const node = _node.node
           editorManager.setHighlightRange([topLevelRange(node.start, node.end)])
@@ -2427,9 +2430,11 @@ function prepareTruncatedMemoryAndAst(
     // truncatedAst needs to setup with another segment at the end
     let newSegment
     if (draftSegment === 'line') {
-      newSegment = createCallExpressionStdLib('line', [
-        createArrayExpression([createLiteral(0), createLiteral(0)]),
-        createPipeSubstitution(),
+      newSegment = createCallExpressionStdLibKw('line', null, [
+        createLabeledArg(
+          'end',
+          createArrayExpression([createLiteral(0), createLiteral(0)])
+        ),
       ])
     } else {
       newSegment = createCallExpressionStdLib('tangentialArcTo', [
