@@ -24,8 +24,7 @@ import {
 } from '../wasm'
 import {
   getNodeFromPath,
-  getNodeFromPathCurry,
-  isValueZero,
+  getNodeFromPathCurry
 } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
