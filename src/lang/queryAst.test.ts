@@ -650,7 +650,7 @@ sketch001 = startSketchOn('XZ')
 bing = { yo: 55 }
 myNestedVar = [
   {
-  prop:   line([bing.yo, 21], sketch001)
+  prop:   line(end = [bing.yo, 21], tag = sketch001)
 }
 ]
   `

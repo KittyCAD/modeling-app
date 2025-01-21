@@ -99,9 +99,9 @@ export function isSketchVariablesLinked(
     |> line(end = [0.41, baz])
     |> xLine(0.91, %)
     |> angledLine([37, 2], %)
-  const yo = line([myVar, 0.38], part001)
+  const yo = line(end = [myVar, 0.38], tag = part001)
     |> line(end = [1, 1])
-  const yo2 = line([myVar, 0.38], yo)
+  const yo2 = line(end = [myVar, 0.38], tag = yo)
     |> line(end = [1, 1]) // ❗️ <- and cursor here (secondary) is linked to the one above through variables
   */
   const secondaryVarName = secondaryVarDec?.id?.name
