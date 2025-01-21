@@ -16,6 +16,7 @@ import { getProjectInfo } from './desktop'
 import { createSettings } from './settings/initialSettings'
 import { normalizeLineEndings } from 'lib/codeEditor'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+import { settingsActor } from 'machines/settingsMachine'
 
 // The root loader simply resolves the settings and any errors that
 // occurred during the settings load
@@ -156,9 +157,17 @@ export const fileLoader: LoaderFunction = async (
       ? await getProjectInfo(projectPath)
       : null
 
+    const project = maybeProjectInfo ?? defaultProjectData
+
+    // Fire off the event to load the project settings
+    settingsActor.send({
+      type: 'load.project',
+      project,
+    })
+
     const projectData: IndexLoaderData = {
       code,
-      project: maybeProjectInfo ?? defaultProjectData,
+      project,
       file: {
         name: currentFileName || '',
         path: currentFilePath || '',
@@ -194,5 +203,8 @@ export const homeLoader: LoaderFunction = async (): Promise<
   if (!isDesktop()) {
     return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
   }
+  settingsActor.send({
+    type: 'clear.project',
+  })
   return {}
 }
