@@ -15,7 +15,6 @@ import {
 import { useHotkeys } from 'react-hotkeys-hook'
 import { isDesktop } from 'lib/isDesktop'
 import { kclManager } from 'lib/singletons'
-import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { LowerRightControls } from 'components/LowerRightControls'
 import { ProjectSearchBar, useProjectSearch } from 'components/ProjectSearchBar'
 import { Project } from 'lib/project'
@@ -33,7 +32,6 @@ const Home = () => {
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
 
-  useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const navigate = useNavigate()
   const settings = useSettings()
 

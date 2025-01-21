@@ -12,7 +12,6 @@ import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isDesktop } from 'lib/isDesktop'
 import { useLspContext } from 'components/LspProvider'
-import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
 import { LowerRightControls } from 'components/LowerRightControls'
 import ModalContainer from 'react-modal-promise'
@@ -30,7 +29,6 @@ maybeWriteToDisk()
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
-  useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
