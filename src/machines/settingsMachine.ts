@@ -14,6 +14,7 @@ import {
   WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
 import {
+  clearSettingsAtLevel,
   configurationToSettingsPayload,
   loadAndValidateSettings,
   projectConfigurationToSettingsPayload,
@@ -33,7 +34,9 @@ import { reportRejection } from 'lib/trap'
 import { Project } from 'lib/project'
 import { useSelector } from '@xstate/react'
 
-type SettingsMachineContext = ReturnType<typeof createSettings>
+type SettingsMachineContext = ReturnType<typeof createSettings> & {
+  currentProject?: Project
+}
 
 export const settingsMachine = setup({
   types: {
@@ -56,20 +59,20 @@ export const settingsMachine = setup({
         }
       | { type: 'Set all settings'; settings: typeof settings }
       | { type: 'load.project'; project?: Project }
+      | { type: 'clear.project' }
     ) & { doNotPersist?: boolean },
   },
   actors: {
-    persistSettings: fromPromise<void, { doNotPersist: boolean, context: SettingsMachineContext }>(async ({ input, self }) => {
+    persistSettings: fromPromise<
+      void,
+      { doNotPersist: boolean; context: SettingsMachineContext }
+    >(async ({ input }) => {
       // Without this, when a user changes the file, it'd
       // create a detection loop with the file-system watcher.
       if (input.doNotPersist) return
 
       codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-
-      // If the machine is not spawned with an appMachine,
-      // it will only persist user settings.
-      const parentActor = self._parent?.getSnapshot()
-      const currentProjectFromParent = parentActor?.context?.currentProject
+      const currentProjectFromParent = input.context.currentProject?.path
 
       return saveSettings(input.context, currentProjectFromParent)
     }),
@@ -77,10 +80,13 @@ export const settingsMachine = setup({
       const { settings } = await loadAndValidateSettings()
       return settings
     }),
-    loadProjectSettings: fromPromise<SettingsMachineContext, { project?: Project }>(async ({ input }) => {
+    loadProjectSettings: fromPromise<
+      SettingsMachineContext,
+      { project?: Project }
+    >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(input.project?.path)
       return settings
-    })
+    }),
   },
   actions: {
     setClientSideSceneUnits: ({ context, event }) => {
@@ -91,16 +97,20 @@ export const settingsMachine = setup({
       sceneInfra.baseUnit = newBaseUnit
     },
     setEngineTheme: ({ context }) => {
-      engineCommandManager
-        .setTheme(context.app.theme.current)
-        .catch(reportRejection)
+      if (engineCommandManager && context.app.theme.current) {
+        engineCommandManager
+          .setTheme(context.app.theme.current)
+          .catch(reportRejection)
+      }
     },
     setClientTheme: ({ context }) => {
+      if (!sceneInfra || !sceneEntitiesManager) return
       const opposingTheme = getOppositeTheme(context.app.theme.current)
       sceneInfra.theme = opposingTheme
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     },
     setAllowOrbitInSketchMode: ({ context }) => {
+      if (!sceneInfra.camControls) return
       sceneInfra.camControls._setting_allowOrbitInSketchMode =
         context.app.allowOrbitInSketchMode.current
       // ModelingMachineProvider will do a use effect to trigger the camera engine sync
@@ -142,16 +152,18 @@ export const settingsMachine = setup({
         }
 
         const allSettingsIncludesUnitChange =
-          event.type === 'Set all settings' && relevantSetting(event.settings || context)
+          event.type === 'Set all settings' &&
+          relevantSetting(event.settings || context)
         const resetSettingsIncludesUnitChange =
           event.type === 'Reset settings' && relevantSetting(settings)
 
         if (
-          event.type === 'set.modeling.defaultUnit' ||
-          event.type === 'set.modeling.showScaleGrid' ||
-          event.type === 'set.modeling.highlightEdges' ||
-          allSettingsIncludesUnitChange ||
-          resetSettingsIncludesUnitChange
+          context.currentProject &&
+          (event.type === 'set.modeling.defaultUnit' ||
+            event.type === 'set.modeling.showScaleGrid' ||
+            event.type === 'set.modeling.highlightEdges' ||
+            allSettingsIncludesUnitChange ||
+            resetSettingsIncludesUnitChange)
         ) {
           // Unit changes requires a re-exec of code
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -166,6 +178,21 @@ export const settingsMachine = setup({
         console.error('Error executing AST after settings change', e)
       }
     },
+    setThemeColor: ({ context }) => {
+      document.documentElement.style.setProperty(
+        `--primary-hue`,
+        context.app.themeColor.current
+      )
+    },
+    /** Unload the project-level setting values from memory */
+    clearProjectSettings: assign(({ context }) => {
+      const newSettings = clearSettingsAtLevel(context, 'project')
+      return newSettings
+    }),
+    /** Unload the current project's info from memory */
+    clearCurrentProject: assign(({ context }) => {
+      return { ...context, currentProject: undefined }
+    }),
     resetSettings: assign(({ context, event }) => {
       if (!('level' in event)) return {}
 
@@ -218,9 +245,9 @@ export const settingsMachine = setup({
     },
   },
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IAzAA4x+AIyaAbJoCsAFl1njAJmOaANCACeiXQHZ1+a7bdWDATnUxawBfYIdUDB4CIlIKKjoGNAALMABbMABhRmJGDnEpJBBZeUVsZTUELR19IzMLUy97J0RfTXxDBr8DAxtdMSs-UPD0LFxoknJKNHxUxggwYh58eYAzakFiNABVbAV85WKFTCVCiqq9QxNzSxsm50qDU3wrMXV1V2M-bT8xV6GQCKjPCECZxaYJfDJNJgfaFQ6lcoabQXWrXBq3Bz3YzqPz4AyvL7qYw1TS6Az-QFREGxKY0ej4WBoDhgaipACSEwAsnMYZIDnIjidQGdkSS6jdbJjEK5zHi-PouqYiQZjBSRlSYpN4vTqMQcgB3ADyHBYCjZ2GQAGt0ABjJLc+awmQChGnJHVS7i9GS5oIQweVxueVWVz4mW6NWRMbUrXTWbzRa4fA21lgDjUAAKHEYACswDbSk6ii7jmU3ZVRZ60Y0pQg+rorPglQ2rKZ-FY3DLI0DxjSqPGFkskpgoElFqO0ABRaBwIvw0uIise1H1Gu+3Rk3R6Uydaz47qqsIA9XRzVkABKcHQAAIpj25yWhap3SirquMevAriTK4urYBhYViaN2GqghE166sQt4nngD4lAu5Zkni1yaKG2i6OoBgblYtY7sYniGNYmjqKYmjyropggaeoK0gOiZQAySSMPqyApqQADiHBEHBgplsKL5itWH73BYKr4OoLzmBhHahlRwJnjk1AQPgtDZnmBY8a6-EIKYVgePopEfKRmhAQ2xi1m8FyuCGnxmHhJFyb25AAFSaQh2nnIJ74+iJgZPK87ykmR-SmK4wFHpS0a0Gm8iMjw0FRngZAQMwYCENgABujDWvgkXAtFHCxUCCU9ggOBZSmhaSG5T4VKFuIkUEO7uPKfihaYtb6JZQR+J8Sq-iR4XDIlBAFUV8V3lEZBptmHAqcQAgrLkqS5TBo0xZgcW4CVURlZljCVaW+Q1Xxz46ciRhiFhBjvEEPmIKSVk2b1O4NA5EVrfgincLgWyUBwyWpelWU5XlBDfTwf1pntFUCEd1V8nCj6nWczyfPiYgfL4xhhZoqGdR8OhXT0xJiL1HxaI5X3sD9UBQwDM25PNi3LatI3U0pkP-TDB1w8wx2I868G1RomEEURGHWZjrydV0Hjym2bw3bY2LqFTEO4Fmub5mggPYGl5XZWlYMc7TWvqWgPOHfzCMFELvGLkSW5iKYfg2NigZk+85m+i8j3ESqYj+irRLqzTPDmzr00cLNzNoEtHArSbGtQJHBZW3z2AC3bxbCyjGjEvgLtu8YHt9AEHy1h2pg6L+MpthhIeHke2A8vAhRg-yeeLgAtOoui4h23T9GIFFfmStY92YRe-K8bhYX4fiBlYVOal3DvlqFtaoQY+CL-oOM9IvrYRh97NjZtxWTWM69aWdZFPBRDRYTKpddLo2+L3i9QHl8NfEmHTmv1-q33cmdHuIYtxD3xC8MeZMJ7rh3I2P+PRpZvE+K4QBZs1I61ASLBAYgq4bh0HpDsbhUK4zVqEYIQA */
+  /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IAzAA4x+AIyaAbJoCsAFl1njAJmOaANCACeiXQHZ1+a7bdWDATnUxawBfYIdUDB4CIlIKKjoGNAALMABbMABhRmJGDnEpJBBZeUVsZTUELR19IzMLUy97J0RfTXxDBr8DAxtdMSs-UPD0LFxoknJKNHxUxggwYh58eYAzakFiNABVbAV85WKFTCVCiqq9QxNzSxsm50qDU3wrMXV1V2M-bT8xV6GQCKjPCECZxaYJfDJNJgfaFQ6lcoabQXWrXBq3Bz3YzqPz4AyvL7qYw1TS6Az-QFREGxKY0ej4WBoDhgaipACSEwAsnMYZIDnIjidQGdkSS6jdbJjEK5zHi-PouqYiQZjBSRlSYpN4vTqMQcgB3ADyHBYCjZ2GQAGt0ABjJLc+awmQChGnJHVS7i9GS5oIQweVxueVWVz4mW6NWRMbUrXTWbzRa4fA21lgDjUAAKHEYACswDbSk6ii7jmU3ZVRZ60Y0pQg+rorPglQ2rKZ-FY3DLI0DxjSqPGFkskpgoElFqO0ABRaBwIvw0uIise1H1Gu+3Rk3R6Uydaz47qqsIA9XRzVkABKcHQAAIpj25yWhap3SirquMevAriTK4urYBhYViaN2GqghE166sQt4nngD4lAu5Zkni1yaKG2i6OoBgblYtY7sYniGNYmjqKYmjyropggaeoK0gOiZQAySSMPqyApqQADiHBEHBgplsKL5itWH73BYKr4OoLzmBhHahlRwJnjk1AQPgtDZnmBY8a6-EIKYVgePopEfKRmhAQ2xi1m8FyuCGnxmHhJFyb25AAFSaQh2nnIJ74+iJgZPK87ykmR-SmK4wFHpS0a0Gm8iMjw0FRngZAQMwYCENgABujDWvgkXAtFHCxUCCU9ggOBZSmhaSG5T4VKFuIkUEO7uPKfihaYtb6JZQR+J8Sq-iR4XDIlBAFUV8V3lEZBptmHAqcQAgrLkqS5TBo0xZgcW4CVURlZljCVaW+Q1Xxz46ciRhiFhBjvEEPmIKSVk2b1O4NA5EVrfgincLgWyUBwyWpelWU5XlBDfTwf1pntFUCEd1V8nCj6nWczyfPiYgfL4xhhZoqGdR8OhXT0xJiL1HxaI5X3sD9UBQwDM25PNi3LatI3U0pkP-TDB1w8wx2I868G1RomEEURGHWZjrydV0Hjym2bw3bY2LqFTEO4Fmub5mggPYGl5XZWlYMc7TWvqWgPOHfzCMFELvGLn035dGIPgYW1ui9bLv7PK8LxGGRFG6erNM8ObOvTRws3M2gS0cCtJsa1A4cFlbfPYALdvFsLKMaMS+BiKYfg2NigZk+85m+h2pg6L+MpthhKtEqER7YDy8CFGD-I54uAC06ie88ZL4i8FFfmSta92YBe-L8fhhaGLyYVTmrdw75ahbWqEGPgfjyj+PR762EYfezY2bcVk1jGvWlnWRTxB8YWEysY6O6Fve94vUB5fDXxIh5zX6-0b7uTOr3EMW4OzdH6K7JUZMJ7rh3I2X+PRpZvE+K4ABZs1I6xASLBAYhawdj6M8CSG4F64zVi3IAA */
   id: 'Settings',
-  initial: "loadingUser",
+  initial: 'loadingUser',
   context: ({ input }) => {
     return {
       ...createSettings(),
@@ -248,7 +275,7 @@ export const settingsMachine = setup({
           target: 'persisting settings',
 
           // No toast
-          actions: ['setSettingAtLevel'],
+          actions: ['setThemeColor', 'setSettingAtLevel'],
         },
 
         'set.modeling.defaultUnit': {
@@ -339,12 +366,22 @@ export const settingsMachine = setup({
         'load.project': {
           target: 'loadingProject',
         },
+
+        'clear.project': {
+          target: 'idle',
+          reenter: true,
+          actions: [
+            'clearProjectSettings',
+            'clearCurrentProject',
+            'setThemeColor',
+          ],
+        },
       },
     },
 
     'persisting settings': {
       invoke: {
-        src:'persistSettings',
+        src: 'persistSettings',
         onDone: {
           target: 'idle',
         },
@@ -360,34 +397,42 @@ export const settingsMachine = setup({
             context,
           }
         },
-      }
+      },
     },
 
-    "loadingUser": {
-      invoke: [{
-        src: "loadUserSettings",
-        onDone: {
-          target: "idle",
-          actions: "setAllSettings"
+    loadingUser: {
+      invoke: [
+        {
+          src: 'loadUserSettings',
+          onDone: {
+            target: 'idle',
+            actions: 'setAllSettings',
+          },
+          onError: 'idle',
         },
-        onError: "idle"
-      }]
+      ],
     },
-    "loadingProject": {
+    loadingProject: {
+      entry: [
+        assign({
+          currentProject: ({ event }) =>
+            event.type === 'load.project' ? event.project : undefined,
+        }),
+      ],
       invoke: {
-        src: "loadProjectSettings",
+        src: 'loadProjectSettings',
         onDone: {
-          target: "idle",
-          actions: "setAllSettings"
+          target: 'idle',
+          actions: ['setAllSettings', 'setThemeColor', 'Execute AST'],
         },
-        onError: "idle",
+        onError: 'idle',
         input: ({ event }) => {
-            return {
-              project: (event.type === 'load.project') ? event.project : undefined
-            }
-        }
-      }
-    }
+          return {
+            project: event.type === 'load.project' ? event.project : undefined,
+          }
+        },
+      },
+    },
   },
 })
 
@@ -395,4 +440,5 @@ export const settingsActor = createActor(settingsMachine, {
   input: createSettings(),
 }).start()
 
-export const useSettings = () => useSelector(settingsActor, (state) => state.context)
+export const useSettings = () =>
+  useSelector(settingsActor, (state) => state.context)

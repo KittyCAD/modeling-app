@@ -311,6 +311,24 @@ export function getAllCurrentSettings(
   return currentSettings
 }
 
+export function clearSettingsAtLevel(
+  allSettings: typeof settings,
+  level: SettingsLevel
+) {
+  Object.entries(allSettings).forEach(([category, settingsCategory]) => {
+    const categoryKey = category as keyof typeof settings
+    Object.entries(settingsCategory).forEach(
+      ([_, settingValue]: [string, Setting]) => {
+        if (settingValue[level] !== undefined) {
+          settingValue[level] = undefined
+        }
+      }
+    )
+  })
+
+  return allSettings
+}
+
 export function setSettingsAtLevel(
   allSettings: typeof settings,
   level: SettingsLevel,
