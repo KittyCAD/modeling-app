@@ -104,53 +104,12 @@ export const SettingsAuthProviderBase = ({
 }) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const [settingsPath, setSettingsPath] = useState<string | undefined>(
-    undefined
-  )
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
     settingsMachine,
     { input: loadedSettings }
   )
-  // Any time the actor changes, update the settings state for external use
-  useSelector(settingsActor, (s) => {
-    lastSettingsContextSnapshot = s.context
-  })
 
-  useEffect(() => {
-    if (!isDesktop()) return
-    getAppSettingsFilePath().then(setSettingsPath).catch(trap)
-  }, [])
-
-  useFileSystemWatcher(
-    async (eventType: string) => {
-      // If there is a projectPath but it no longer exists it means
-      // it was exterally removed. If we let the code past this condition
-      // execute it will recreate the directory due to code in
-      // loadAndValidateSettings trying to recreate files. I do not
-      // wish to change the behavior in case anything else uses it.
-      // Go home.
-      if (loadedProject?.project?.path) {
-        if (!window.electron.exists(loadedProject?.project?.path)) {
-          navigate(PATHS.HOME)
-          return
-        }
-      }
-
-      // Only reload if there are changes. Ignore everything else.
-      if (eventType !== 'change') return
-
-      const data = await loadAndValidateSettings(loadedProject?.project?.path)
-      settingsSend({
-        type: 'Set all settings',
-        settings: data.settings,
-        doNotPersist: true,
-      })
-    },
-    [settingsPath, loadedProject?.project?.path].filter(
-      (x: string | undefined) => x !== undefined
-    )
-  )
 
   // Add settings commands to the command bar
   // They're treated slightly differently than other commands
