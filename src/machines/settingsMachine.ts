@@ -2,6 +2,7 @@ import {
   Action,
   assign,
   createActor,
+  enqueueActions,
   fromCallback,
   fromPromise,
   sendTo,
@@ -82,7 +83,6 @@ export const settingsMachine = setup({
 
       codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
-      
 
       return saveSettings(settings, currentProject?.path)
     }),
@@ -216,6 +216,16 @@ export const settingsMachine = setup({
         context.app.themeColor.current
       )
     },
+    /**
+     * Update the --cursor-color CSS variable
+     * based on the setting textEditor.blinkingCursor.current
+     */
+    setCursorColor: ({ context }) => {
+      document.documentElement.style.setProperty(
+        `--cursor-color`,
+        context.textEditor.blinkingCursor.current ? 'auto' : 'transparent'
+      )
+    },
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
       const newSettings = clearSettingsAtLevel(context, 'project')
@@ -301,7 +311,19 @@ export const settingsMachine = setup({
       on: {
         '*': {
           target: 'persisting settings',
-          actions: ['setSettingAtLevel', 'toastSuccess'],
+          actions: [
+            'setSettingAtLevel',
+            'toastSuccess',
+            enqueueActions(({ enqueue, check }) => {
+              if (
+                check(
+                  ({ event }) => event.type === 'set.textEditor.blinkingCursor'
+                )
+              ) {
+                enqueue('setCursorColor')
+              }
+            }),
+          ],
         },
 
         'set.app.onboardingStatus': {

@@ -225,18 +225,6 @@ export const SettingsAuthProviderBase = ({
     }
   }, [location])
 
-  /**
-   * Update the --cursor-color CSS variable
-   * based on the setting textEditor.blinkingCursor.current
-   */
-  useEffect(() => {
-    document.documentElement.style.setProperty(
-      `--cursor-color`,
-      settingsState.context.textEditor.blinkingCursor.current
-        ? 'auto'
-        : 'transparent'
-    )
-  }, [settingsState.context.textEditor.blinkingCursor.current])
 
   return (
     <SettingsAuthContext.Provider
