@@ -54,7 +54,7 @@ import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
 import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from './queryAst'
-import { appActor } from 'machines/appMachine'
+import { appActor, getSettings } from 'machines/appMachine'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -181,6 +181,7 @@ const initialise = async () => {
 
 export const initPromise = initialise().then(() => {
   appActor.start()
+  return Promise.resolve()
 })
 
 const splitErrors = (
@@ -584,9 +585,9 @@ export const executor = async (
   try {
     let jsAppSettings = default_app_settings()
     if (!TEST) {
-      const lastSettingsSnapshot = appActor.getSnapshot().context
-      if (lastSettingsSnapshot) {
-        jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
+      const settings = getSettings()
+      if (settings) {
+        jsAppSettings = getAllCurrentSettings(settings)
       }
     }
     const execOutcome: RustExecOutcome = await execute(

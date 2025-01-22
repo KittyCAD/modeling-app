@@ -166,6 +166,7 @@ export const settingsMachine = setup({
         event.type === 'set.modeling.defaultUnit'
           ? (event.data.value as BaseUnit)
           : context.modeling.defaultUnit.current
+      if (!sceneInfra) return
       sceneInfra.baseUnit = newBaseUnit
     },
     setEngineTheme: ({ context }) => {
