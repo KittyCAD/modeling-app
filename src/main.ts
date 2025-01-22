@@ -43,9 +43,9 @@ if (!process.env.NODE_ENV)
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
 process.env.VITE_KC_API_WS_MODELING_URL ??=
-  'wss://api.zoo.dev/ws/modeling/commands'
-process.env.VITE_KC_API_BASE_URL ??= 'https://api.zoo.dev'
-process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
+  'wss://api.dev.zoo.dev/ws/modeling/commands'
+process.env.VITE_KC_API_BASE_URL ??= 'https://api.dev.zoo.dev'
+process.env.VITE_KC_SITE_BASE_URL ??= 'https://dev.zoo.dev'
 process.env.VITE_KC_SKIP_AUTH ??= 'false'
 process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
 
