@@ -20,7 +20,10 @@ description: Result of parsing tan_arc_x_line.kcl
             "start": 9,
             "type": "Literal",
             "type": "Literal",
-            "value": 0.0
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -46,7 +49,10 @@ description: Result of parsing tan_arc_x_line.kcl
             "start": 20,
             "type": "Literal",
             "type": "Literal",
-            "value": 0.0
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
+            }
           },
           "start": 11,
           "type": "VariableDeclarator"
@@ -72,7 +78,10 @@ description: Result of parsing tan_arc_x_line.kcl
             "start": 36,
             "type": "Literal",
             "type": "Literal",
-            "value": 135.0
+            "value": {
+              "value": 135.0,
+              "suffix": "None"
+            }
           },
           "start": 22,
           "type": "VariableDeclarator"
@@ -98,7 +107,10 @@ description: Result of parsing tan_arc_x_line.kcl
             "start": 44,
             "type": "Literal",
             "type": "Literal",
-            "value": 1.0
+            "value": {
+              "value": 1.0,
+              "suffix": "None"
+            }
           },
           "start": 40,
           "type": "VariableDeclarator"
@@ -124,7 +136,10 @@ description: Result of parsing tan_arc_x_line.kcl
             "start": 59,
             "type": "Literal",
             "type": "Literal",
-            "value": 110.0
+            "value": {
+              "value": 110.0,
+              "suffix": "None"
+            }
           },
           "start": 46,
           "type": "VariableDeclarator"
@@ -242,7 +257,10 @@ description: Result of parsing tan_arc_x_line.kcl
                         "start": 172,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.000001
+                        "value": {
+                          "value": 0.000001,
+                          "suffix": "None"
+                        }
                       }
                     }
                   ],
@@ -380,7 +398,10 @@ description: Result of parsing tan_arc_x_line.kcl
                           "start": 319,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.5
+                          "value": {
+                            "value": 0.5,
+                            "suffix": "None"
+                          }
                         },
                         "operator": "*",
                         "right": {
@@ -473,7 +494,10 @@ description: Result of parsing tan_arc_x_line.kcl
                           "start": 412,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.5
+                          "value": {
+                            "value": 0.5,
+                            "suffix": "None"
+                          }
                         },
                         "operator": "*",
                         "right": {
@@ -526,7 +550,10 @@ description: Result of parsing tan_arc_x_line.kcl
                   "start": 451,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
                 },
                 {
                   "end": 455,

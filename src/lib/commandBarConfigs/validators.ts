@@ -211,3 +211,64 @@ export const shellValidator = async ({
 
   return 'Unable to shell with the provided selection'
 }
+
+export const sweepValidator = async ({
+  context,
+  data,
+}: {
+  context: CommandBarContext
+  data: { trajectory: Selections }
+}): Promise<boolean | string> => {
+  if (!isSelections(data.trajectory)) {
+    console.log('Unable to sweep, selections are missing')
+    return 'Unable to sweep, selections are missing'
+  }
+
+  // Retrieve the parent path from the segment selection directly
+  const trajectoryArtifact = data.trajectory.graphSelections[0].artifact
+  if (!trajectoryArtifact) {
+    return "Unable to sweep, couldn't find the trajectory artifact"
+  }
+  if (trajectoryArtifact.type !== 'segment') {
+    return "Unable to sweep, couldn't find the target from a non-segment selection"
+  }
+  const trajectory = trajectoryArtifact.pathId
+
+  // Get the former arg in the command bar flow, and retrieve the path from the solid2d directly
+  const targetArg = context.argumentsToSubmit['target'] as Selections
+  const targetArtifact = targetArg.graphSelections[0].artifact
+  if (!targetArtifact) {
+    return "Unable to sweep, couldn't find the profile artifact"
+  }
+  if (targetArtifact.type !== 'solid2d') {
+    return "Unable to sweep, couldn't find the target from a non-solid2d selection"
+  }
+  const target = targetArtifact.pathId
+
+  const sweepCommand = async () => {
+    // TODO: second look on defaults here
+    const DEFAULT_TOLERANCE: Models['LengthUnit_type'] = 1e-7
+    const DEFAULT_SECTIONAL = false
+    const cmdArgs = {
+      target,
+      trajectory,
+      sectional: DEFAULT_SECTIONAL,
+      tolerance: DEFAULT_TOLERANCE,
+    }
+    return await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'sweep',
+        ...cmdArgs,
+      },
+    })
+  }
+
+  const attemptSweep = await dryRunWrapper(sweepCommand)
+  if (attemptSweep?.success) {
+    return true
+  }
+
+  return 'Unable to sweep with the provided selection'
+}

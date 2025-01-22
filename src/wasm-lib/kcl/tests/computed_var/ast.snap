@@ -22,7 +22,10 @@ description: Result of parsing computed_var.kcl
                 "start": 44,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0.0
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 48,
@@ -30,7 +33,10 @@ description: Result of parsing computed_var.kcl
                 "start": 47,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0.0
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 51,
@@ -38,7 +44,10 @@ description: Result of parsing computed_var.kcl
                 "start": 50,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0.0
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 55,
@@ -46,7 +55,10 @@ description: Result of parsing computed_var.kcl
                 "start": 53,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 10.0
+                "value": {
+                  "value": 10.0,
+                  "suffix": "None"
+                }
               }
             ],
             "end": 56,
@@ -78,7 +90,10 @@ description: Result of parsing computed_var.kcl
             "start": 61,
             "type": "Literal",
             "type": "Literal",
-            "value": 3.0
+            "value": {
+              "value": 3.0,
+              "suffix": "None"
+            }
           },
           "start": 57,
           "type": "VariableDeclarator"
@@ -145,7 +160,10 @@ description: Result of parsing computed_var.kcl
               "start": 94,
               "type": "Literal",
               "type": "Literal",
-              "value": 10.0
+              "value": {
+                "value": 10.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 106,
@@ -153,7 +171,10 @@ description: Result of parsing computed_var.kcl
               "start": 98,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.000001
+              "value": {
+                "value": 0.000001,
+                "suffix": "None"
+              }
             },
             {
               "end": 114,
@@ -233,7 +254,10 @@ description: Result of parsing computed_var.kcl
                   "start": 141,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
                 }
               },
               {
@@ -252,7 +276,10 @@ description: Result of parsing computed_var.kcl
                   "start": 150,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 0.0
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
                 }
               }
             ],
@@ -325,7 +352,10 @@ description: Result of parsing computed_var.kcl
               "start": 185,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 197,
@@ -333,7 +363,10 @@ description: Result of parsing computed_var.kcl
               "start": 188,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.0000001
+              "value": {
+                "value": 0.0000001,
+                "suffix": "None"
+              }
             },
             {
               "end": 205,
