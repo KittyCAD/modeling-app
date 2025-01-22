@@ -4,6 +4,7 @@ import { Project, FileEntry } from 'lib/project'
 
 import {
   defaultAppSettings,
+  initPromise,
   parseAppSettings,
   parseProjectSettings,
 } from 'lang/wasm'
@@ -130,6 +131,12 @@ export async function createNewProjectDirectory(
 export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
+  // Make sure we have wasm initialized.
+  const initializedResult = await initPromise
+  if (err(initializedResult)) {
+    return Promise.reject(initializedResult)
+  }
+
   if (configuration === undefined) {
     configuration = await readAppSettingsFile().catch((e) => {
       console.error(e)
