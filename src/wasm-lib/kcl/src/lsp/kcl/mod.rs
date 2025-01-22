@@ -1475,7 +1475,7 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
         completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
     }
 
-    let variable_kinds = VariableKind::to_completion_items()?;
+    let variable_kinds = VariableKind::to_completion_items();
     for variable_kind in variable_kinds {
         completions.insert(variable_kind.label.clone(), variable_kind);
     }

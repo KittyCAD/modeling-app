@@ -1,7 +1,8 @@
 //! The executor for the AST.
 
-use std::{fmt, path::PathBuf, sync::Arc};
+use std::{path::PathBuf, sync::Arc};
 
+use crate::modules::{ModuleInfo, ModuleLoader, ModulePath, ModuleRepr};
 use annotations::AnnotationScope;
 use anyhow::Result;
 use artifact::build_artifact_graph;
@@ -23,7 +24,9 @@ type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use function_param::FunctionParam;
-pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine, ZOO_COORD_SYSTEM};
+pub(crate) use import::{
+    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
+};
 pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use uuid::Uuid;
 
@@ -40,7 +43,7 @@ use crate::{
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     execution::cache::{CacheInformation, CacheResult},
-    fs::{FileManager, FileSystem},
+    fs::FileManager,
     parsing::ast::types::{
         BodyItem, Expr, FunctionExpression, ImportPath, ImportSelector, ItemVisibility, Node, NodeRef, NonCodeValue,
         Program as AstProgram, TagDeclarator, TagNode,
@@ -86,6 +89,8 @@ pub struct GlobalState {
     pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Module loader.
+    pub mod_loader: ModuleLoader,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -100,9 +105,6 @@ pub struct ModuleState {
     pub pipe_value: Option<KclValue>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
-    /// The stack of import statements for detecting circular module imports.
-    /// If this is empty, we're not currently executing an import statement.
-    pub import_stack: Vec<std::path::PathBuf>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -209,14 +211,6 @@ impl ExecState {
     }
 }
 
-fn read_std(mod_name: &str) -> Option<&'static str> {
-    match mod_name {
-        "prelude" => Some(include_str!("../../std/prelude.kcl")),
-        "math" => Some(include_str!("../../std/math.kcl")),
-        _ => None,
-    }
-}
-
 impl GlobalState {
     fn new(settings: &ExecutorSettings) -> Self {
         let mut global = GlobalState {
@@ -227,6 +221,7 @@ impl GlobalState {
             artifact_commands: Default::default(),
             artifact_responses: Default::default(),
             artifact_graph: Default::default(),
+            mod_loader: Default::default(),
         };
 
         let root_id = ModuleId::default();
@@ -251,7 +246,6 @@ impl ModuleState {
             dynamic_state: Default::default(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
-            import_stack: Default::default(),
             operations: Default::default(),
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),
@@ -1231,50 +1225,6 @@ pub enum BodyType {
     Root,
     Sketch,
     Block,
-}
-
-/// Info about a module.  Right now, this is pretty minimal.  We hope to cache
-/// modules here in the future.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub struct ModuleInfo {
-    /// The ID of the module.
-    id: ModuleId,
-    /// Absolute path of the module's source file.
-    path: ModulePath,
-    repr: ModuleRepr,
-}
-
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub enum ModuleRepr {
-    Root,
-    Kcl(Node<AstProgram>),
-    Foreign(import::PreImportedGeometry),
-}
-
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
-pub enum ModulePath {
-    Local(std::path::PathBuf),
-    Std(String),
-}
-
-impl ModulePath {
-    fn expect_path(&self) -> &std::path::PathBuf {
-        match self {
-            ModulePath::Local(p) => p,
-            _ => unreachable!(),
-        }
-    }
-}
-
-impl fmt::Display for ModulePath {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            ModulePath::Local(path) => path.display().fmt(f),
-            ModulePath::Std(s) => write!(f, "std::{s}"),
-        }
-    }
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
@@ -2606,54 +2556,23 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
+        let resolved_path = ModulePath::from_import_path(path, &self.settings.project_directory);
         match path {
-            ImportPath::Kcl { filename } => {
-                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
-                    project_dir.join(filename)
-                } else {
-                    std::path::PathBuf::from(filename)
-                };
-                let resolved_path = ModulePath::Local(resolved_path);
-
-                if exec_state.mod_local.import_stack.contains(resolved_path.expect_path()) {
-                    return Err(KclError::ImportCycle(KclErrorDetails {
-                        message: format!(
-                            "circular import of modules is not allowed: {} -> {}",
-                            exec_state
-                                .mod_local
-                                .import_stack
-                                .iter()
-                                .map(|p| p.as_path().to_string_lossy())
-                                .collect::<Vec<_>>()
-                                .join(" -> "),
-                            resolved_path,
-                        ),
-                        source_ranges: vec![source_range],
-                    }));
-                }
+            ImportPath::Kcl { .. } => {
+                exec_state.global.mod_loader.cycle_check(&resolved_path, source_range)?;
 
                 if let Some(id) = exec_state.id_for_module(&resolved_path) {
                     return Ok(id);
                 }
 
                 let id = exec_state.next_module_id();
-                let source = self
-                    .fs
-                    .read_to_string(resolved_path.expect_path(), source_range)
-                    .await?;
+                let source = resolved_path.source(&self.fs, source_range).await?;
                 // TODO handle parsing errors properly
                 let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
                 exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed));
                 Ok(id)
             }
-            ImportPath::Foreign { path } => {
-                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
-                    project_dir.join(path)
-                } else {
-                    std::path::PathBuf::from(path)
-                };
-                let resolved_path = ModulePath::Local(resolved_path);
-
+            ImportPath::Foreign { .. } => {
                 if let Some(id) = exec_state.id_for_module(&resolved_path) {
                     return Ok(id);
                 }
@@ -2664,32 +2583,15 @@ impl ExecutorContext {
                 exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
                 Ok(id)
             }
-            ImportPath::Std { path } => {
-                // For now we only support importing from singly-nested modules inside std.
-                if path.len() != 2 {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("Invalid import path for import from std: {}.", path.join("::"),),
-                        source_ranges: vec![source_range],
-                    }));
-                }
-                assert_eq!(&path[0], "std");
-
-                let mod_path = ModulePath::Std(path[1].clone());
-                if let Some(id) = exec_state.id_for_module(&mod_path) {
+            ImportPath::Std { .. } => {
+                if let Some(id) = exec_state.id_for_module(&resolved_path) {
                     return Ok(id);
                 }
 
                 let id = exec_state.next_module_id();
-                let source = read_std(&path[1])
-                    .ok_or_else(|| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!("Cannot find standard library module to import: {}.", path.join("::"),),
-                            source_ranges: vec![source_range],
-                        })
-                    })?
-                    .to_owned();
+                let source = resolved_path.source(&self.fs, source_range).await?;
                 let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err().unwrap();
-                exec_state.add_module(id, mod_path, ModuleRepr::Kcl(parsed));
+                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed));
                 Ok(id)
             }
         }
@@ -2722,22 +2624,18 @@ impl ExecutorContext {
                 source_ranges: vec![source_range],
             })),
             ModuleRepr::Kcl(program) => {
-                let mut local_state = ModuleState {
-                    import_stack: exec_state.mod_local.import_stack.clone(),
-                    ..ModuleState::new(&self.settings)
-                };
-                if let ModulePath::Local(ref path) = info.path {
-                    local_state.import_stack.push(path.clone());
-                }
+                let mut local_state = ModuleState::new(&self.settings);
+                exec_state.global.mod_loader.enter_module(&info.path);
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
                 let original_execution = self.engine.replace_execution_kind(exec_kind);
 
                 let result = self
                     .inner_execute(program, exec_state, crate::execution::BodyType::Root)
                     .await;
-
                 let new_units = exec_state.length_unit();
+
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                exec_state.global.mod_loader.leave_module(&info.path);
                 if !exec_kind.is_isolated() && new_units != old_units {
                     self.engine.set_units(old_units.into(), Default::default()).await?;
                 }

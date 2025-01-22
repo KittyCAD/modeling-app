@@ -1823,31 +1823,36 @@ pub enum VariableKind {
 }
 
 impl VariableKind {
-    pub fn to_completion_items() -> Result<Vec<CompletionItem>> {
-        let mut settings = schemars::gen::SchemaSettings::openapi3();
-        settings.inline_subschemas = true;
-        let mut generator = schemars::gen::SchemaGenerator::new(settings);
-        let schema = VariableKind::json_schema(&mut generator);
-        let schemars::schema::Schema::Object(o) = &schema else {
-            anyhow::bail!("expected object schema: {:#?}", schema);
-        };
-        let Some(subschemas) = &o.subschemas else {
-            anyhow::bail!("expected subschemas: {:#?}", schema);
-        };
-        let Some(one_ofs) = &subschemas.one_of else {
-            anyhow::bail!("expected one_of: {:#?}", schema);
-        };
-
-        // Iterate over all the VariableKinds and create a completion for each.
-        let mut completions = vec![];
-        for one_of in one_ofs {
-            completions.push(crate::docs::completion_item_from_enum_schema(
-                one_of,
-                CompletionItemKind::KEYWORD,
-            )?);
+    pub fn to_completion_items() -> Vec<CompletionItem> {
+        fn completion_item(keyword: &str, description: &str) -> CompletionItem {
+            CompletionItem {
+                label: keyword.to_owned(),
+                label_details: None,
+                kind: Some(CompletionItemKind::KEYWORD),
+                detail: Some(description.to_owned()),
+                documentation: Some(tower_lsp::lsp_types::Documentation::MarkupContent(
+                    tower_lsp::lsp_types::MarkupContent {
+                        kind: tower_lsp::lsp_types::MarkupKind::Markdown,
+                        value: description.to_owned(),
+                    },
+                )),
+                deprecated: Some(false),
+                preselect: None,
+                sort_text: None,
+                filter_text: None,
+                insert_text: None,
+                insert_text_format: None,
+                insert_text_mode: None,
+                text_edit: None,
+                additional_text_edits: None,
+                command: None,
+                commit_characters: None,
+                data: None,
+                tags: None,
+            }
         }
 
-        Ok(completions)
+        vec![completion_item("fn", "Declare a function.")]
     }
 }
 
@@ -3271,7 +3276,7 @@ mod tests {
     // We have this as a test so we can ensure it never panics with an unwrap in the server.
     #[test]
     fn test_variable_kind_to_completion() {
-        let completions = VariableKind::to_completion_items().unwrap();
+        let completions = VariableKind::to_completion_items();
         assert!(!completions.is_empty());
     }
 

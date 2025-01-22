@@ -1663,6 +1663,17 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
             }
         }
 
+        // For now we only support importing from singly-nested modules inside std.
+        if segments.len() != 2 {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    path_range,
+                    format!("Invalid import path for import from std: {}.", path_string),
+                )
+                .into(),
+            ));
+        }
+
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
         let extn = &path_string[path_string.rfind('.').unwrap() + 1..];

@@ -790,60 +790,6 @@ fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) -> Res
     }
 }
 
-pub fn completion_item_from_enum_schema(
-    schema: &schemars::schema::Schema,
-    kind: CompletionItemKind,
-) -> Result<CompletionItem> {
-    // Get the docs for the schema.
-    let schemars::schema::Schema::Object(o) = schema else {
-        anyhow::bail!("expected object schema: {:#?}", schema);
-    };
-    let description = get_description_string_from_schema(&schemars::schema::RootSchema {
-        schema: o.clone(),
-        ..Default::default()
-    })
-    .unwrap_or_default();
-    let Some(enum_values) = o.enum_values.as_ref() else {
-        anyhow::bail!("expected enum values: {:#?}", o);
-    };
-
-    if enum_values.len() > 1 {
-        anyhow::bail!("expected only one enum value: {:#?}", o);
-    }
-
-    if enum_values.is_empty() {
-        anyhow::bail!("expected at least one enum value: {:#?}", o);
-    }
-
-    let serde_json::Value::String(ref enum_value) = enum_values[0] else {
-        anyhow::bail!("expected string enum value: {:#?}", enum_values[0]);
-    };
-
-    Ok(CompletionItem {
-        label: enum_value.to_string(),
-        label_details: None,
-        kind: Some(kind),
-        detail: Some(description.to_string()),
-        documentation: Some(Documentation::MarkupContent(MarkupContent {
-            kind: MarkupKind::Markdown,
-            value: description.to_string(),
-        })),
-        deprecated: Some(false),
-        preselect: None,
-        sort_text: None,
-        filter_text: None,
-        insert_text: None,
-        insert_text_format: None,
-        insert_text_mode: None,
-        text_edit: None,
-        additional_text_edits: None,
-        command: None,
-        commit_characters: None,
-        data: None,
-        tags: None,
-    })
-}
-
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;
