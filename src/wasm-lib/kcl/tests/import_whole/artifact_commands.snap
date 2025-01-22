@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Artifact commands import_whole.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -286,7 +285,19 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       0,
-      19,
+      35,
+      1
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "in"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      36,
+      55,
       1
     ],
     "command": {
@@ -314,8 +325,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      25,
-      68,
+      61,
+      104,
       1
     ],
     "command": {
@@ -334,8 +345,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      25,
-      68,
+      61,
+      104,
       1
     ],
     "command": {
@@ -345,8 +356,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      25,
-      68,
+      61,
+      104,
       1
     ],
     "command": {
@@ -362,8 +373,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      25,
-      68,
+      61,
+      104,
       1
     ],
     "command": {
@@ -391,8 +402,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      25,
-      68,
+      61,
+      104,
       1
     ],
     "command": {
@@ -403,8 +414,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      74,
-      88,
+      110,
+      124,
       1
     ],
     "command": {
@@ -423,8 +434,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      74,
-      88,
+      110,
+      124,
       1
     ],
     "command": {
@@ -437,8 +448,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      74,
-      88,
+      110,
+      124,
       1
     ],
     "command": {
@@ -448,8 +459,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      74,
-      88,
+      110,
+      124,
       1
     ],
     "command": {
@@ -460,8 +471,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      74,
-      88,
+      110,
+      124,
       1
     ],
     "command": {
@@ -473,8 +484,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      74,
-      88,
+      110,
+      124,
       1
     ],
     "command": {
@@ -487,8 +498,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      74,
-      88,
+      110,
+      124,
       1
     ],
     "command": {
@@ -501,8 +512,20 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      49,
-      96,
+      0,
+      0,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      83,
+      130,
       0
     ],
     "command": {

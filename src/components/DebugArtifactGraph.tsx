@@ -1,10 +1,7 @@
 import { useMemo } from 'react'
 import { engineCommandManager } from 'lib/singletons'
-import {
-  ArtifactGraph,
-  expandPlane,
-  PlaneArtifactRich,
-} from 'lang/std/artifactGraph'
+import { expandPlane, PlaneArtifactRich } from 'lang/std/artifactGraph'
+import { ArtifactGraph } from 'lang/wasm'
 import { DebugDisplayArray, GenericObj } from './DebugDisplayObj'
 
 export function DebugArtifactGraph() {

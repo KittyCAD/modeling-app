@@ -2,6 +2,7 @@ import { ToolTip } from 'lang/langHelpers'
 import { Selection, Selections } from 'lib/selections'
 import {
   ArrayExpression,
+  ArtifactGraph,
   BinaryExpression,
   CallExpression,
   Expr,
@@ -16,8 +17,8 @@ import {
   sketchFromKclValue,
   sketchFromKclValueOptional,
   SourceRange,
-  sourceRangeFromRust,
   SyntaxType,
+  topLevelRange,
   VariableDeclaration,
   VariableDeclarator,
 } from './wasm'
@@ -32,7 +33,7 @@ import {
 import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
+import { codeRefFromRange } from './std/artifactGraph'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -716,16 +717,6 @@ function isTypeInArrayExp(
   return node.elements.some((el) => isTypeInValue(el, syntaxType))
 }
 
-export function isValueZero(val?: Expr): boolean {
-  return (
-    (val?.type === 'Literal' && Number(val.value) === 0) ||
-    (val?.type === 'UnaryExpression' &&
-      val.operator === '-' &&
-      val.argument.type === 'Literal' &&
-      Number(val.argument.value) === 0)
-  )
-}
-
 export function isLinesParallelAndConstrained(
   ast: Program,
   artifactGraph: ArtifactGraph,
@@ -819,7 +810,7 @@ export function isLinesParallelAndConstrained(
     return {
       isParallelAndConstrained,
       selection: {
-        codeRef: codeRefFromRange(sourceRangeFromRust(prevSourceRange), ast),
+        codeRef: codeRefFromRange(prevSourceRange, ast),
         artifact: artifactGraph.get(prevSegment.__geoMeta.id),
       },
     }
@@ -937,7 +928,7 @@ export function findUsesOfTagInPipe(
       const tagArgValue =
         tagArg.type === 'TagDeclarator' ? String(tagArg.value) : tagArg.name
       if (tagArgValue === tag)
-        dependentRanges.push([node.start, node.end, true])
+        dependentRanges.push(topLevelRange(node.start, node.end))
     },
   })
   return dependentRanges

@@ -1,6 +1,6 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
-use super::types::{DefaultParamVal, ItemVisibility, LabelledExpression, VariableKind};
+use super::types::{DefaultParamVal, ItemVisibility, LabelledExpression, LiteralValue, VariableKind};
 use crate::parsing::ast::types::{
     ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryPart, BodyItem, CallExpression, CallExpressionKw,
     ElseIf, Expr, ExpressionStatement, FnArgType, FunctionExpression, Identifier, IfExpression, ImportItem,
@@ -275,6 +275,26 @@ impl Literal {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.value.digestable_id());
     });
+}
+
+impl LiteralValue {
+    fn digestable_id(&self) -> Vec<u8> {
+        match self {
+            LiteralValue::Number { value, suffix } => {
+                let mut result: Vec<u8> = value.to_ne_bytes().into();
+                result.extend((*suffix as u32).to_ne_bytes());
+                result
+            }
+            LiteralValue::String(st) => st.as_bytes().into(),
+            LiteralValue::Bool(b) => {
+                if *b {
+                    vec![1]
+                } else {
+                    vec![0]
+                }
+            }
+        }
+    }
 }
 
 impl Identifier {
