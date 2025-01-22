@@ -1,4 +1,4 @@
-import { useRef, useMemo, memo } from 'react'
+import { useRef, useMemo, memo, useCallback, useState } from 'react'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
@@ -34,8 +34,7 @@ export function Toolbar({
   const bgClassName = '!bg-transparent'
   const buttonBgClassName =
     'bg-chalkboard-transparent dark:bg-transparent disabled:bg-transparent dark:disabled:bg-transparent enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10'
-  const buttonBorderClassName =
-    '!border-transparent hover:!border-chalkboard-20 dark:enabled:hover:!border-primary pressed:!border-primary ui-open:!border-primary'
+  const buttonBorderClassName = '!border-transparent'
 
   const sketchPathId = useMemo(() => {
     if (!isSingleCursorInPipe(context.selectionRanges, kclManager.ast))
@@ -50,6 +49,7 @@ export function Toolbar({
   const { overallState } = useNetworkContext()
   const { isExecuting } = useKclContext()
   const { isStreamReady } = useAppState()
+  const [showRichContent, setShowRichContent] = useState(false)
 
   const disableAllButtons =
     (overallState !== NetworkHealthState.Ok &&
@@ -76,6 +76,40 @@ export function Toolbar({
     }),
     [state, send, commandBarSend, sketchPathId]
   )
+
+  const tooltipContentClassName = !showRichContent
+    ? ''
+    : '!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch'
+  const richContentTimeout = useRef<number | null>(null)
+  const richContentClearTimeout = useRef<number | null>(null)
+  // On mouse enter, show rich content after a 1s delay
+  const handleMouseEnter = useCallback(() => {
+    // Cancel the clear timeout if it's already set
+    if (richContentClearTimeout.current) {
+      clearTimeout(richContentClearTimeout.current)
+    }
+    // Start our own timeout to show the rich content
+    richContentTimeout.current = window.setTimeout(() => {
+      setShowRichContent(true)
+      if (richContentClearTimeout.current) {
+        clearTimeout(richContentClearTimeout.current)
+      }
+    }, 1000)
+  }, [setShowRichContent])
+  // On mouse leave, clear the timeout and hide rich content
+  const handleMouseLeave = useCallback(() => {
+    // Clear the timeout to show rich content
+    if (richContentTimeout.current) {
+      clearTimeout(richContentTimeout.current)
+    }
+    // Start a timeout to hide the rich content
+    richContentClearTimeout.current = window.setTimeout(() => {
+      setShowRichContent(false)
+      if (richContentClearTimeout.current) {
+        clearTimeout(richContentClearTimeout.current)
+      }
+    }, 500)
+  }, [setShowRichContent])
 
   /**
    * Resolve all the callbacks and values for the current mode,
@@ -174,44 +208,64 @@ export function Toolbar({
                   status: itemConfig.status,
                 }))}
               >
-                <ActionButton
-                  Element="button"
-                  id={maybeIconConfig[0].id}
-                  data-testid={maybeIconConfig[0].id}
-                  iconStart={{
-                    icon: maybeIconConfig[0].icon,
-                    className: iconClassName,
-                    bgClassName: bgClassName,
-                  }}
-                  className={
-                    '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
-                    buttonBgClassName
-                  }
-                  aria-pressed={maybeIconConfig[0].isActive}
-                  disabled={
-                    disableAllButtons ||
-                    maybeIconConfig[0].status !== 'available' ||
-                    maybeIconConfig[0].disabled
-                  }
-                  name={maybeIconConfig[0].title}
-                  // aria-description is still in ARIA 1.3 draft.
-                  // eslint-disable-next-line jsx-a11y/aria-props
-                  aria-description={maybeIconConfig[0].description}
-                  onClick={() =>
-                    maybeIconConfig[0].onClick(configCallbackProps)
-                  }
+                <div
+                  className="contents"
+                  // Mouse events do not fire on disabled buttons
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
                 >
-                  <span
-                    className={!maybeIconConfig[0].showTitle ? 'sr-only' : ''}
+                  <ActionButton
+                    Element="button"
+                    id={maybeIconConfig[0].id}
+                    data-testid={maybeIconConfig[0].id}
+                    iconStart={{
+                      icon: maybeIconConfig[0].icon,
+                      className: iconClassName,
+                      bgClassName: bgClassName,
+                    }}
+                    className={
+                      '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
+                      buttonBgClassName
+                    }
+                    aria-pressed={maybeIconConfig[0].isActive}
+                    disabled={
+                      disableAllButtons ||
+                      maybeIconConfig[0].status !== 'available' ||
+                      maybeIconConfig[0].disabled
+                    }
+                    name={maybeIconConfig[0].title}
+                    // aria-description is still in ARIA 1.3 draft.
+                    // eslint-disable-next-line jsx-a11y/aria-props
+                    aria-description={maybeIconConfig[0].description}
+                    onClick={() =>
+                      maybeIconConfig[0].onClick(configCallbackProps)
+                    }
                   >
-                    {maybeIconConfig[0].title}
-                  </span>
-                </ActionButton>
-                <ToolbarItemTooltip
-                  itemConfig={maybeIconConfig[0]}
-                  configCallbackProps={configCallbackProps}
-                  className="ui-open:!hidden"
-                />
+                    <span
+                      className={!maybeIconConfig[0].showTitle ? 'sr-only' : ''}
+                    >
+                      {maybeIconConfig[0].title}
+                    </span>
+                    <ToolbarItemTooltip
+                      itemConfig={maybeIconConfig[0]}
+                      configCallbackProps={configCallbackProps}
+                      wrapperClassName="ui-open:!hidden"
+                      contentClassName={tooltipContentClassName}
+                    >
+                      {showRichContent ? (
+                        <ToolbarItemTooltipRichContent
+                          itemConfig={maybeIconConfig[0]}
+                        />
+                      ) : (
+                        <ToolbarItemTooltipShortContent
+                          status={maybeIconConfig[0].status}
+                          title={maybeIconConfig[0].title}
+                          hotkey={maybeIconConfig[0].hotkey}
+                        />
+                      )}
+                    </ToolbarItemTooltip>
+                  </ActionButton>
+                </div>
               </ActionButtonDropdown>
             )
           }
@@ -219,7 +273,13 @@ export function Toolbar({
 
           // A single button
           return (
-            <div className="relative" key={itemConfig.id}>
+            <div
+              className="relative"
+              key={itemConfig.id}
+              // Mouse events do not fire on disabled buttons
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               <ActionButton
                 Element="button"
                 key={itemConfig.id}
@@ -256,7 +316,18 @@ export function Toolbar({
               <ToolbarItemTooltip
                 itemConfig={itemConfig}
                 configCallbackProps={configCallbackProps}
-              />
+                contentClassName={tooltipContentClassName}
+              >
+                {showRichContent ? (
+                  <ToolbarItemTooltipRichContent itemConfig={itemConfig} />
+                ) : (
+                  <ToolbarItemTooltipShortContent
+                    status={itemConfig.status}
+                    title={itemConfig.title}
+                    hotkey={itemConfig.hotkey}
+                  />
+                )}
+              </ToolbarItemTooltip>
             </div>
           )
         })}
@@ -270,6 +341,12 @@ export function Toolbar({
   )
 }
 
+interface ToolbarItemContentsProps extends React.PropsWithChildren {
+  itemConfig: ToolbarItemResolved
+  configCallbackProps: ToolbarItemCallbackProps
+  wrapperClassName?: string
+  contentClassName?: string
+}
 /**
  * The single button and dropdown button share content, so we extract it here
  * It contains a tooltip with the title, description, and links
@@ -278,14 +355,10 @@ export function Toolbar({
 const ToolbarItemTooltip = memo(function ToolbarItemContents({
   itemConfig,
   configCallbackProps,
-  className,
-}: {
-  itemConfig: ToolbarItemResolved
-  configCallbackProps: ToolbarItemCallbackProps
-  className?: string
-}) {
-  const { state } = useModelingContext()
-
+  wrapperClassName = '',
+  contentClassName = '',
+  children,
+}: ToolbarItemContentsProps) {
   useHotkeys(
     itemConfig.hotkey || '',
     () => {
@@ -310,10 +383,48 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
       }
       hoverOnly
       position="bottom"
-      wrapperClassName={'!p-4 !pointer-events-auto ' + className}
-      contentClassName="!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch"
+      wrapperClassName={'!p-4 !pointer-events-auto ' + wrapperClassName}
+      contentClassName={contentClassName}
+      delay={0}
     >
+      {children}
+    </Tooltip>
+  )
+})
+
+const ToolbarItemTooltipShortContent = ({
+  status,
+  title,
+  hotkey,
+}: {
+  status: string
+  title: string
+  hotkey?: string | string[]
+}) => (
+  <span
+    className={`text-sm ${
+      status !== 'available' ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''
+    }`}
+  >
+    {title}
+    {hotkey && (
+      <kbd className="inline-block ml-2 flex-none hotkey">{hotkey}</kbd>
+    )}
+  </span>
+)
+
+const ToolbarItemTooltipRichContent = ({
+  itemConfig,
+}: {
+  itemConfig: ToolbarItemResolved
+}) => {
+  const { state } = useModelingContext()
+  return (
+    <>
       <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
+        {itemConfig.icon && (
+          <CustomIcon className="w-5 h-5" name={itemConfig.icon} />
+        )}
         <span
           className={`text-sm flex-1 ${
             itemConfig.status !== 'available'
@@ -382,6 +493,6 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
           </ul>
         </>
       )}
-    </Tooltip>
+    </>
   )
-})
+}

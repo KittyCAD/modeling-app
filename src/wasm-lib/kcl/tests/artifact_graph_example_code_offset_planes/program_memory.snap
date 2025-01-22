@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing artifact_graph_example_code_offset_planes.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -29,81 +28,96 @@ snapshot_kind: text
         },
         "offsetPlane001": {
           "type": "Plane",
-          "id": "[uuid]",
-          "value": "Custom",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 20.0
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "__meta": []
+          "value": {
+            "id": "[uuid]",
+            "value": "Custom",
+            "origin": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 20.0
+            },
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": []
+          }
         },
         "offsetPlane002": {
           "type": "Plane",
-          "id": "[uuid]",
-          "value": "Custom",
-          "origin": {
-            "x": 0.0,
-            "y": 50.0,
-            "z": 0.0
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
-          },
-          "__meta": []
+          "value": {
+            "id": "[uuid]",
+            "value": "Custom",
+            "origin": {
+              "x": 0.0,
+              "y": 50.0,
+              "z": 0.0
+            },
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": -1.0,
+              "z": 0.0
+            },
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": []
+          }
         },
         "offsetPlane003": {
           "type": "Plane",
-          "id": "[uuid]",
-          "value": "Custom",
-          "origin": {
-            "x": 10.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "xAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "__meta": []
+          "value": {
+            "id": "[uuid]",
+            "value": "Custom",
+            "origin": {
+              "x": 10.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "xAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "zAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": []
+          }
         },
         "sketch002": {
           "type": "Sketch",
@@ -156,6 +170,9 @@ snapshot_kind: text
                 "y": 0.0,
                 "z": 1.0
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": []
             },
             "start": {
@@ -176,6 +193,9 @@ snapshot_kind: text
                   0
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {

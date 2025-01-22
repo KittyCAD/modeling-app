@@ -1729,7 +1729,7 @@ export function transformAstSketchLines({
     let kclVal = programMemory.get(varName)
     let sketch
     if (kclVal?.type === 'Solid') {
-      sketch = kclVal.sketch
+      sketch = kclVal.value.sketch
     } else {
       sketch = sketchFromKclValue(kclVal, varName)
       if (err(sketch)) {

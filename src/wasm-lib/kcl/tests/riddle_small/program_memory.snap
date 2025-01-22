@@ -137,183 +137,206 @@ description: Program memory after executing riddle_small.kcl
         },
         "r": {
           "type": "Solid",
-          "type": "Solid",
-          "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                199,
-                214,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                220,
-                236,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                242,
-                258,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                264,
-                272,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
+          "value": {
+            "type": "Solid",
             "id": "[uuid]",
-            "paths": [
+            "value": [
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    199,
-                    214,
-                    0
-                  ]
-                },
-                "from": [
-                  -26.0,
-                  34.0
-                ],
-                "tag": null,
-                "to": [
-                  -25.0,
-                  34.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    220,
-                    236,
-                    0
-                  ]
-                },
-                "from": [
-                  -25.0,
-                  34.0
-                ],
-                "tag": null,
-                "to": [
-                  -25.0,
-                  33.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    242,
-                    258,
-                    0
-                  ]
-                },
-                "from": [
-                  -25.0,
-                  33.0
-                ],
-                "tag": null,
-                "to": [
-                  -26.0,
-                  33.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    264,
-                    272,
-                    0
-                  ]
-                },
-                "from": [
-                  -26.0,
-                  33.0
-                ],
-                "tag": null,
-                "to": [
-                  -26.0,
-                  34.0
-                ],
-                "type": "ToPoint"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "value": "XZ",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "__meta": []
-            },
-            "start": {
-              "from": [
-                -26.0,
-                34.0
-              ],
-              "to": [
-                -26.0,
-                34.0
-              ],
-              "tag": null,
-              "__geoMeta": {
+                "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  166,
-                  193,
+                  199,
+                  214,
                   0
-                ]
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  220,
+                  236,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  242,
+                  258,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  264,
+                  272,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
               }
+            ],
+            "sketch": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      199,
+                      214,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -26.0,
+                    34.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -25.0,
+                    34.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      220,
+                      236,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -25.0,
+                    34.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -25.0,
+                    33.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      242,
+                      258,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -25.0,
+                    33.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -26.0,
+                    33.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      264,
+                      272,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -26.0,
+                    33.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -26.0,
+                    34.0
+                  ],
+                  "type": "ToPoint"
+                }
+              ],
+              "on": {
+                "type": "plane",
+                "id": "[uuid]",
+                "value": "XZ",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0
+                },
+                "units": {
+                  "type": "Mm"
+                },
+                "__meta": []
+              },
+              "start": {
+                "from": [
+                  -26.0,
+                  34.0
+                ],
+                "to": [
+                  -26.0,
+                  34.0
+                ],
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    166,
+                    193,
+                    0
+                  ]
+                }
+              },
+              "units": {
+                "type": "Mm"
+              },
+              "__meta": [
+                {
+                  "sourceRange": [
+                    166,
+                    193,
+                    0
+                  ]
+                }
+              ]
+            },
+            "height": 1.0,
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -324,19 +347,7 @@ description: Program memory after executing riddle_small.kcl
                 ]
               }
             ]
-          },
-          "height": 1.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                166,
-                193,
-                0
-              ]
-            }
-          ]
+          }
         },
         "t": {
           "type": "Function",

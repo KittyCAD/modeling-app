@@ -1011,9 +1011,9 @@ impl NonCodeNode {
         }
     }
 
-    pub fn annotation(&self, expected_name: &str) -> Option<&NonCodeValue> {
+    pub fn annotation(&self) -> Option<&NonCodeValue> {
         match &self.value {
-            a @ NonCodeValue::Annotation { name, .. } if name.name == expected_name => Some(a),
+            a @ NonCodeValue::Annotation { .. } => Some(a),
             _ => None,
         }
     }
@@ -1069,6 +1069,15 @@ pub enum NonCodeValue {
         name: Node<Identifier>,
         properties: Option<Vec<Node<ObjectProperty>>>,
     },
+}
+
+impl NonCodeValue {
+    pub fn annotation_name(&self) -> Option<&str> {
+        match self {
+            NonCodeValue::Annotation { name, .. } => Some(&name.name),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
