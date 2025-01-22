@@ -221,6 +221,9 @@ const newVar = myVar + 1`
           },
         ],
         id: expect.any(String),
+        units: {
+          type: 'Mm',
+        },
         __meta: [{ sourceRange: [39, 63, 0] }],
       },
     })

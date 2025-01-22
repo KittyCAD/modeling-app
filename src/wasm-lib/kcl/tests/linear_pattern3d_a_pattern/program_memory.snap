@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing linear_pattern3d_a_pattern.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -29,183 +28,206 @@ snapshot_kind: text
         },
         "exampleSketch": {
           "type": "Solid",
-          "type": "Solid",
-          "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                72,
-                87,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                93,
-                108,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                114,
-                130,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                136,
-                144,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
+          "value": {
+            "type": "Solid",
             "id": "[uuid]",
-            "paths": [
+            "value": [
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    87,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  2.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    93,
-                    108,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  2.0
-                ],
-                "tag": null,
-                "to": [
-                  3.0,
-                  3.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    114,
-                    130,
-                    0
-                  ]
-                },
-                "from": [
-                  3.0,
-                  3.0
-                ],
-                "tag": null,
-                "to": [
-                  3.0,
-                  -1.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    136,
-                    144,
-                    0
-                  ]
-                },
-                "from": [
-                  3.0,
-                  -1.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "value": "XZ",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "__meta": []
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "__geoMeta": {
+                "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  41,
-                  66,
+                  72,
+                  87,
                   0
-                ]
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  93,
+                  108,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  114,
+                  130,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  136,
+                  144,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
               }
+            ],
+            "sketch": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      72,
+                      87,
+                      0
+                    ]
+                  },
+                  "from": [
+                    0.0,
+                    0.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.0,
+                    2.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      93,
+                      108,
+                      0
+                    ]
+                  },
+                  "from": [
+                    0.0,
+                    2.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    3.0,
+                    3.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      114,
+                      130,
+                      0
+                    ]
+                  },
+                  "from": [
+                    3.0,
+                    3.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    3.0,
+                    -1.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      136,
+                      144,
+                      0
+                    ]
+                  },
+                  "from": [
+                    3.0,
+                    -1.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.0,
+                    0.0
+                  ],
+                  "type": "ToPoint"
+                }
+              ],
+              "on": {
+                "type": "plane",
+                "id": "[uuid]",
+                "value": "XZ",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0
+                },
+                "units": {
+                  "type": "Mm"
+                },
+                "__meta": []
+              },
+              "start": {
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    41,
+                    66,
+                    0
+                  ]
+                }
+              },
+              "units": {
+                "type": "Mm"
+              },
+              "__meta": [
+                {
+                  "sourceRange": [
+                    41,
+                    66,
+                    0
+                  ]
+                }
+              ]
+            },
+            "height": 1.0,
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -216,19 +238,7 @@ snapshot_kind: text
                 ]
               }
             ]
-          },
-          "height": 1.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "pattn1": {
           "type": "Solids",
@@ -391,6 +401,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -412,6 +425,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -425,6 +441,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -593,6 +612,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -614,6 +636,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -627,6 +652,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -795,6 +823,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -816,6 +847,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -829,6 +863,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -997,6 +1034,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -1018,6 +1058,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -1031,6 +1074,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -1199,6 +1245,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -1220,6 +1269,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -1233,6 +1285,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -1401,6 +1456,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -1422,6 +1480,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -1435,6 +1496,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -1603,6 +1667,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -1624,6 +1691,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -1637,6 +1707,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -1810,6 +1883,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -1831,6 +1907,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -1844,6 +1923,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -2012,6 +2094,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -2033,6 +2118,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -2046,6 +2134,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -2214,6 +2305,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -2235,6 +2329,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -2248,6 +2345,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -2416,6 +2516,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -2437,6 +2540,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -2450,6 +2556,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -2618,6 +2727,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -2639,6 +2751,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -2652,6 +2767,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -2820,6 +2938,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -2841,6 +2962,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -2854,6 +2978,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -3022,6 +3149,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -3043,6 +3173,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -3056,6 +3189,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -3224,6 +3360,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -3245,6 +3384,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -3258,6 +3400,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -3426,6 +3571,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -3447,6 +3595,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -3460,6 +3611,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -3628,6 +3782,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -3649,6 +3806,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -3662,6 +3822,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -3830,6 +3993,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -3851,6 +4017,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -3864,6 +4033,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -4032,6 +4204,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -4053,6 +4228,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -4066,6 +4244,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -4234,6 +4415,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -4255,6 +4439,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -4268,6 +4455,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -4436,6 +4626,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -4457,6 +4650,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -4470,6 +4666,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -4638,6 +4837,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -4659,6 +4861,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -4672,6 +4877,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -4840,6 +5048,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -4861,6 +5072,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -4874,6 +5088,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5042,6 +5259,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -5063,6 +5283,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -5076,6 +5299,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5244,6 +5470,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -5265,6 +5494,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -5278,6 +5510,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5446,6 +5681,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -5467,6 +5705,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -5480,6 +5721,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5648,6 +5892,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -5669,6 +5916,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -5682,6 +5932,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -5850,6 +6103,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -5871,6 +6127,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -5884,6 +6143,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -6052,6 +6314,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -6073,6 +6338,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -6086,6 +6354,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -6254,6 +6525,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -6275,6 +6549,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -6288,6 +6565,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -6456,6 +6736,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -6477,6 +6760,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -6490,6 +6776,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -6658,6 +6947,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -6679,6 +6971,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -6692,6 +6987,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -6860,6 +7158,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -6881,6 +7182,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -6894,6 +7198,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7062,6 +7369,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -7083,6 +7393,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -7096,6 +7409,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7264,6 +7580,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -7285,6 +7604,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -7298,6 +7620,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7466,6 +7791,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -7487,6 +7815,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -7500,6 +7831,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7668,6 +8002,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -7689,6 +8026,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -7702,6 +8042,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -7870,6 +8213,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -7891,6 +8237,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -7904,6 +8253,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8072,6 +8424,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -8093,6 +8448,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -8106,6 +8464,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8274,6 +8635,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -8295,6 +8659,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -8308,6 +8675,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8476,6 +8846,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -8497,6 +8870,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -8510,6 +8886,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8678,6 +9057,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -8699,6 +9081,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -8712,6 +9097,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -8880,6 +9268,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -8901,6 +9292,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -8914,6 +9308,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9082,6 +9479,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -9103,6 +9503,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -9116,6 +9519,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9284,6 +9690,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -9305,6 +9714,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -9318,6 +9730,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9486,6 +9901,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -9507,6 +9925,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -9520,6 +9941,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9688,6 +10112,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -9709,6 +10136,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -9722,6 +10152,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -9890,6 +10323,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -9911,6 +10347,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -9924,6 +10363,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10092,6 +10534,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -10113,6 +10558,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -10126,6 +10574,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10294,6 +10745,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -10315,6 +10769,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -10328,6 +10785,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10496,6 +10956,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -10517,6 +10980,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -10530,6 +10996,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10698,6 +11167,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -10719,6 +11191,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -10732,6 +11207,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -10900,6 +11378,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -10921,6 +11402,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -10934,6 +11418,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -11102,6 +11589,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -11123,6 +11613,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -11136,6 +11629,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -11304,6 +11800,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -11325,6 +11824,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -11338,6 +11840,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
@@ -11506,6 +12011,9 @@ snapshot_kind: text
                     "y": -1.0,
                     "z": 0.0
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": []
                 },
                 "start": {
@@ -11527,6 +12035,9 @@ snapshot_kind: text
                     ]
                   }
                 },
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -11540,6 +12051,9 @@ snapshot_kind: text
               "height": 1.0,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [

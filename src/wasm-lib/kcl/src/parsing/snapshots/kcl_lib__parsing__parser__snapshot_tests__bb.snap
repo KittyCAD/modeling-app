@@ -23,7 +23,10 @@ expression: actual
               "start": 8,
               "type": "Literal",
               "type": "Literal",
-              "value": 4.0
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
             },
             "operator": "^",
             "right": {
@@ -32,7 +35,10 @@ expression: actual
               "start": 12,
               "type": "Literal",
               "type": "Literal",
-              "value": 2.0
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             },
             "start": 8,
             "type": "BinaryExpression",
@@ -49,7 +55,10 @@ expression: actual
                 "start": 16,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "operator": "^",
               "right": {
@@ -58,7 +67,10 @@ expression: actual
                 "start": 20,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2.0
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               },
               "start": 16,
               "type": "BinaryExpression",
@@ -71,7 +83,10 @@ expression: actual
               "start": 24,
               "type": "Literal",
               "type": "Literal",
-              "value": 2.0
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             },
             "start": 16,
             "type": "BinaryExpression",
