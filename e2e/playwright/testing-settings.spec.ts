@@ -523,6 +523,7 @@ test.describe('Testing settings', () => {
       } = await getUtils(page, test)
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
       await test.step('Precondition: Open to second project file', async () => {
         await expect(page.getByTestId('home-section')).toBeVisible()

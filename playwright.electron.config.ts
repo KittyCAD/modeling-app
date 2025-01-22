@@ -36,10 +36,6 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         contextOptions: {
-          logger: {
-            isEnabled: (name, severity) => severity === 'error',
-            log: (name, severity, message, args) => console.log(`${name} ${message}`),
-          },
           /* Chromium is the only one with these permission types */
           permissions: ['clipboard-write', 'clipboard-read'],
         },

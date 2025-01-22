@@ -488,6 +488,7 @@ test.fixme(
     await test.step('Navigate into project', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
+      page.on('console', console.log)
 
       await expect(
         page.getByRole('heading', { name: 'Your Projects' })
