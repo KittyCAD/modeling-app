@@ -38,14 +38,14 @@ test.describe('Debug pane', () => {
       // Set the code in the code editor.
       await u.codeLocator.click()
       await page.keyboard.type(code, { delay: 0 })
-      // Scroll to the feature tree.
+      // Scroll to the artifact graph.
       await tree.scrollIntoViewIfNeeded()
-      // Expand the feature tree.
-      await tree.getByText('Feature Tree').click()
+      // Expand the artifact graph.
+      await tree.getByText('Artifact Graph').click()
       // Just expanded the details, making the element taller, so scroll again.
       await tree.getByText('Plane').first().scrollIntoViewIfNeeded()
     })
-    // Extract the artifact IDs from the debug feature tree.
+    // Extract the artifact IDs from the debug artifact graph.
     const initialSegmentIds = await segment.innerText({ timeout: 5_000 })
     // The artifact ID should include a UUID.
     expect(initialSegmentIds).toMatch(
