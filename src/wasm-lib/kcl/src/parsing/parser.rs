@@ -491,7 +491,7 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                 })?;
 
                 if token.numeric_suffix().is_some() {
-                    ParseContext::err(CompilationError::err(
+                    ParseContext::warn(CompilationError::err(
                         (&token).into(),
                         "Unit of Measure suffixes are experimental and currently do nothing.",
                     ));
@@ -1587,6 +1587,14 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             )
             .into(),
         ));
+    } else if matches!(path, ImportPath::Std { .. }) && matches!(selector, ImportSelector::None { .. }) {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(
+                SourceRange::new(start, end, module_id),
+                "the standard library cannot be import as a part",
+            )
+            .into(),
+        ));
     }
 
     Ok(Node::boxed(
@@ -1639,13 +1647,23 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         }
 
         ImportPath::Kcl { filename: path_string }
-    } else if path_string.starts_with("std") {
+    } else if path_string.starts_with("std::") {
         ParseContext::warn(CompilationError::err(
             path_range,
             "explicit imports from the standard library are experimental, likely to be buggy, and likely to change.",
         ));
 
-        ImportPath::Std
+        let segments: Vec<String> = path_string.split("::").map(str::to_owned).collect();
+
+        for s in &segments {
+            if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
+                return Err(ErrMode::Cut(
+                    CompilationError::fatal(path_range, "invalid path in import statment.").into(),
+                ));
+            }
+        }
+
+        ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
         let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
         if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {

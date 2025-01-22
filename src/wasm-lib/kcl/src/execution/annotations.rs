@@ -8,6 +8,7 @@ use crate::{
 };
 
 pub(super) const SETTINGS: &str = "settings";
+pub(super) const NO_PRELUDE: &str = "no_prelude";
 pub(super) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(super) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 

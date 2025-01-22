@@ -1,6 +1,6 @@
 //! The executor for the AST.
 
-use std::{path::PathBuf, sync::Arc};
+use std::{fmt, path::PathBuf, sync::Arc};
 
 use annotations::AnnotationScope;
 use anyhow::Result;
@@ -70,7 +70,7 @@ pub struct GlobalState {
     /// The stable artifact ID generator.
     pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
-    pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
+    pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// Output map of UUIDs to artifacts.
@@ -178,20 +178,26 @@ impl ExecState {
         self.global.id_generator.next_uuid()
     }
 
+    fn next_module_id(&self) -> ModuleId {
+        ModuleId::from_usize(self.global.path_to_source_id.len())
+    }
+
+    fn id_for_module(&self, path: &ModulePath) -> Option<ModuleId> {
+        self.global.path_to_source_id.get(path).cloned()
+    }
+
     pub fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
     }
 
-    fn add_module(&mut self, id: ModuleId, path: std::path::PathBuf, repr: ModuleRepr) -> ModuleId {
+    fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
 
         self.global.path_to_source_id.insert(path.clone(), id);
 
         let module_info = ModuleInfo { id, repr, path };
         self.global.module_infos.insert(id, module_info);
-
-        id
     }
 
     pub fn length_unit(&self) -> UnitLen {
@@ -200,6 +206,14 @@ impl ExecState {
 
     pub fn angle_unit(&self) -> UnitAngle {
         self.mod_local.settings.default_angle_units
+    }
+}
+
+fn read_std(mod_name: &str) -> Option<&'static str> {
+    match mod_name {
+        "prelude" => Some(include_str!("../../std/prelude.kcl")),
+        "math" => Some(include_str!("../../std/math.kcl")),
+        _ => None,
     }
 }
 
@@ -221,11 +235,11 @@ impl GlobalState {
             root_id,
             ModuleInfo {
                 id: root_id,
-                path: root_path.clone(),
+                path: ModulePath::Local(root_path.clone()),
                 repr: ModuleRepr::Root,
             },
         );
-        global.path_to_source_id.insert(root_path, root_id);
+        global.path_to_source_id.insert(ModulePath::Local(root_path), root_id);
         global
     }
 }
@@ -410,18 +424,10 @@ pub struct Environment {
     parent: Option<EnvironmentRef>,
 }
 
-const NO_META: Vec<Metadata> = Vec::new();
-
 impl Environment {
     pub fn root() -> Self {
         Self {
-            // Prelude
-            bindings: IndexMap::from([
-                ("ZERO".to_string(), KclValue::from_number(0.0, NO_META)),
-                ("QUARTER_TURN".to_string(), KclValue::from_number(90.0, NO_META)),
-                ("HALF_TURN".to_string(), KclValue::from_number(180.0, NO_META)),
-                ("THREE_QUARTER_TURN".to_string(), KclValue::from_number(270.0, NO_META)),
-            ]),
+            bindings: IndexMap::new(),
             parent: None,
         }
     }
@@ -1234,7 +1240,7 @@ pub struct ModuleInfo {
     /// The ID of the module.
     id: ModuleId,
     /// Absolute path of the module's source file.
-    path: std::path::PathBuf,
+    path: ModulePath,
     repr: ModuleRepr,
 }
 
@@ -1244,6 +1250,31 @@ pub enum ModuleRepr {
     Root,
     Kcl(Node<AstProgram>),
     Foreign(import::PreImportedGeometry),
+}
+
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash)]
+pub enum ModulePath {
+    Local(std::path::PathBuf),
+    Std(String),
+}
+
+impl ModulePath {
+    fn expect_path(&self) -> &std::path::PathBuf {
+        match self {
+            ModulePath::Local(p) => p,
+            _ => unreachable!(),
+        }
+    }
+}
+
+impl fmt::Display for ModulePath {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ModulePath::Local(path) => path.display().fmt(f),
+            ModulePath::Std(s) => write!(f, "std::{s}"),
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
@@ -2333,12 +2364,14 @@ impl ExecutorContext {
         }
     }
 
+    /// Returns true if importing the prelude should be skipped.
     async fn handle_annotations(
         &self,
         annotations: impl Iterator<Item = (&NonCodeValue, SourceRange)>,
         scope: AnnotationScope,
         exec_state: &mut ExecState,
-    ) -> Result<(), KclError> {
+    ) -> Result<bool, KclError> {
+        let mut no_prelude = false;
         for (annotation, source_range) in annotations {
             if annotation.annotation_name() == Some(annotations::SETTINGS) {
                 if scope == AnnotationScope::Module {
@@ -2348,7 +2381,7 @@ impl ExecutorContext {
                         .settings
                         .update_from_annotation(annotation, source_range)?;
                     let new_units = exec_state.length_unit();
-                    if old_units != new_units {
+                    if !self.engine.execution_kind().is_isolated() && old_units != new_units {
                         self.engine.set_units(new_units.into(), source_range).await?;
                     }
                 } else {
@@ -2358,9 +2391,19 @@ impl ExecutorContext {
                     }));
                 }
             }
+            if annotation.annotation_name() == Some(annotations::NO_PRELUDE) {
+                if scope == AnnotationScope::Module {
+                    no_prelude = true;
+                } else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "Prelude can only be skipped at the top level scope of a file".to_owned(),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+            }
             // TODO warn on unknown annotations
         }
-        Ok(())
+        Ok(no_prelude)
     }
 
     /// Execute an AST's program.
@@ -2371,22 +2414,54 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        self.handle_annotations(
-            program
-                .non_code_meta
-                .start_nodes
-                .iter()
-                .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
-            AnnotationScope::Module,
-            exec_state,
-        )
-        .await?;
+        if body_type == BodyType::Root {
+            let no_prelude = self
+                .handle_annotations(
+                    program
+                        .non_code_meta
+                        .start_nodes
+                        .iter()
+                        .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
+                    AnnotationScope::Module,
+                    exec_state,
+                )
+                .await?;
+
+            if !no_prelude {
+                // Import std::prelude
+                let prelude_range = SourceRange::from(program).start_as_range();
+                let id = self
+                    .open_module(
+                        &ImportPath::Std {
+                            path: vec!["std".to_owned(), "prelude".to_owned()],
+                        },
+                        exec_state,
+                        prelude_range,
+                    )
+                    .await?;
+                let (_, module_memory, module_exports) = self
+                    .exec_module(id, exec_state, ExecutionKind::Isolated, prelude_range)
+                    .await
+                    .unwrap();
+                for name in module_exports.iter() {
+                    let item = module_memory.get(name, prelude_range).unwrap();
+                    exec_state.mut_memory().add(name, item.clone(), prelude_range)?;
+                }
+            }
+        }
 
         let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in &program.body {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
+                    if body_type != BodyType::Root {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: "Imports are only supported at the top-level of a file.".to_owned(),
+                            source_ranges: vec![import_stmt.into()],
+                        }));
+                    }
+
                     let source_range = SourceRange::from(import_stmt);
                     let module_id = self.open_module(&import_stmt.path, exec_state, source_range).await?;
 
@@ -2538,8 +2613,9 @@ impl ExecutorContext {
                 } else {
                     std::path::PathBuf::from(filename)
                 };
+                let resolved_path = ModulePath::Local(resolved_path);
 
-                if exec_state.mod_local.import_stack.contains(&resolved_path) {
+                if exec_state.mod_local.import_stack.contains(resolved_path.expect_path()) {
                     return Err(KclError::ImportCycle(KclErrorDetails {
                         message: format!(
                             "circular import of modules is not allowed: {} -> {}",
@@ -2550,23 +2626,25 @@ impl ExecutorContext {
                                 .map(|p| p.as_path().to_string_lossy())
                                 .collect::<Vec<_>>()
                                 .join(" -> "),
-                            resolved_path.to_string_lossy()
+                            resolved_path,
                         ),
                         source_ranges: vec![source_range],
                     }));
                 }
 
-                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
-                    return Ok(*id);
+                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                    return Ok(id);
                 }
 
-                let source = self.fs.read_to_string(&resolved_path, source_range).await?;
-                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
+                let id = exec_state.next_module_id();
+                let source = self
+                    .fs
+                    .read_to_string(resolved_path.expect_path(), source_range)
+                    .await?;
                 // TODO handle parsing errors properly
                 let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
-                let repr = ModuleRepr::Kcl(parsed);
-
-                Ok(exec_state.add_module(id, resolved_path, repr))
+                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed));
+                Ok(id)
             }
             ImportPath::Foreign { path } => {
                 let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
@@ -2574,20 +2652,46 @@ impl ExecutorContext {
                 } else {
                     std::path::PathBuf::from(path)
                 };
+                let resolved_path = ModulePath::Local(resolved_path);
 
-                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
-                    return Ok(*id);
+                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                    return Ok(id);
                 }
 
-                let geom = import::import_foreign(&resolved_path, None, exec_state, self, source_range).await?;
-                let repr = ModuleRepr::Foreign(geom);
-                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
-                Ok(exec_state.add_module(id, resolved_path, repr))
+                let id = exec_state.next_module_id();
+                let geom =
+                    import::import_foreign(resolved_path.expect_path(), None, exec_state, self, source_range).await?;
+                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
+                Ok(id)
             }
-            i => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Unsupported import: `{i}`"),
-                source_ranges: vec![source_range],
-            })),
+            ImportPath::Std { path } => {
+                // For now we only support importing from singly-nested modules inside std.
+                if path.len() != 2 {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: format!("Invalid import path for import from std: {}.", path.join("::"),),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+                assert_eq!(&path[0], "std");
+
+                let mod_path = ModulePath::Std(path[1].clone());
+                if let Some(id) = exec_state.id_for_module(&mod_path) {
+                    return Ok(id);
+                }
+
+                let id = exec_state.next_module_id();
+                let source = read_std(&path[1])
+                    .ok_or_else(|| {
+                        KclError::Semantic(KclErrorDetails {
+                            message: format!("Cannot find standard library module to import: {}.", path.join("::"),),
+                            source_ranges: vec![source_range],
+                        })
+                    })?
+                    .to_owned();
+                let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err().unwrap();
+                exec_state.add_module(id, mod_path, ModuleRepr::Kcl(parsed));
+                Ok(id)
+            }
         }
     }
 
@@ -2622,7 +2726,9 @@ impl ExecutorContext {
                     import_stack: exec_state.mod_local.import_stack.clone(),
                     ..ModuleState::new(&self.settings)
                 };
-                local_state.import_stack.push(info.path.clone());
+                if let ModulePath::Local(ref path) = info.path {
+                    local_state.import_stack.push(path.clone());
+                }
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
                 let original_execution = self.engine.replace_execution_kind(exec_kind);
 
@@ -2632,7 +2738,7 @@ impl ExecutorContext {
 
                 let new_units = exec_state.length_unit();
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-                if new_units != old_units {
+                if !exec_kind.is_isolated() && new_units != old_units {
                     self.engine.set_units(old_units.into(), Default::default()).await?;
                 }
                 self.engine.replace_execution_kind(original_execution);
@@ -2645,7 +2751,7 @@ impl ExecutorContext {
                         KclError::Semantic(KclErrorDetails {
                             message: format!(
                                 "Error loading imported file. Open it to view more details. {}: {}",
-                                info.path.display(),
+                                info.path,
                                 err.message()
                             ),
                             source_ranges: vec![source_range],

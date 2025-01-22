@@ -1272,14 +1272,14 @@ impl ImportSelector {
 pub enum ImportPath {
     Kcl { filename: String },
     Foreign { path: String },
-    Std,
+    Std { path: Vec<String> },
 }
 
 impl fmt::Display for ImportPath {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => write!(f, "{s}"),
-            ImportPath::Std => write!(f, "std"),
+            ImportPath::Std { path } => write!(f, "{}", path.join("::")),
         }
     }
 }
