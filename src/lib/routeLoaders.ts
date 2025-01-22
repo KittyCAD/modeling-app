@@ -18,34 +18,6 @@ import { normalizeLineEndings } from 'lib/codeEditor'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
 import { settingsActor } from 'machines/settingsMachine'
 
-// The root loader simply resolves the settings and any errors that
-// occurred during the settings load
-export const settingsLoader: LoaderFunction = async ({
-  params,
-}): Promise<
-  ReturnType<typeof createSettings> | ReturnType<typeof redirect>
-> => {
-  let { settings, configuration } = await loadAndValidateSettings()
-
-  // I don't love that we have to read the settings again here,
-  // but we need to get the project path to load the project settings
-  if (params.id) {
-    const projectPathData = await getProjectMetaByRouteId(
-      params.id,
-      configuration
-    )
-    if (projectPathData) {
-      const { projectPath } = projectPathData
-      const { settings: s } = await loadAndValidateSettings(
-        projectPath || undefined
-      )
-      return s
-    }
-  }
-
-  return settings
-}
-
 export const telemetryLoader: LoaderFunction = async ({
   params,
 }): Promise<null> => {
@@ -73,7 +45,7 @@ export const onboardingRedirectLoader: ActionFunction = async (args) => {
     )
   }
 
-  return settingsLoader(args)
+  return null
 }
 
 export const fileLoader: LoaderFunction = async (
