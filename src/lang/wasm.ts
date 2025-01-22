@@ -539,7 +539,8 @@ export function sketchFromKclValueOptional(
 ): Sketch | Reason {
   if (obj?.value?.type === 'Sketch') return obj.value
   if (obj?.value?.type === 'Solid') return obj.value.sketch
-  if (obj?.type === 'Solid') return obj.sketch
+  if (obj?.type === 'Sketch') return obj.value
+  if (obj?.type === 'Solid') return obj.value.sketch
   if (!varName) {
     varName = 'a KCL value'
   }

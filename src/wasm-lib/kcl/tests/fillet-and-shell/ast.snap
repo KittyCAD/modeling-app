@@ -20,7 +20,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 12,
             "type": "Literal",
             "type": "Literal",
-            "value": 30.0
+            "value": {
+              "value": 30.0,
+              "suffix": "None"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -46,7 +49,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 28,
             "type": "Literal",
             "type": "Literal",
-            "value": 65.0
+            "value": {
+              "value": 65.0,
+              "suffix": "None"
+            }
           },
           "start": 15,
           "type": "VariableDeclarator"
@@ -72,7 +78,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 48,
             "type": "Literal",
             "type": "Literal",
-            "value": 1.0
+            "value": {
+              "value": 1.0,
+              "suffix": "None"
+            }
           },
           "start": 32,
           "type": "VariableDeclarator"
@@ -98,7 +107,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 60,
             "type": "Literal",
             "type": "Literal",
-            "value": 4.0
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
           },
           "start": 51,
           "type": "VariableDeclarator"
@@ -124,7 +136,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 77,
             "type": "Literal",
             "type": "Literal",
-            "value": 4.0
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
           },
           "start": 63,
           "type": "VariableDeclarator"
@@ -170,7 +185,10 @@ description: Result of parsing fillet-and-shell.kcl
                 "start": 113,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2.0
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               },
               "start": 104,
               "type": "BinaryExpression",
@@ -224,7 +242,10 @@ description: Result of parsing fillet-and-shell.kcl
                 "start": 150,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2.0
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               },
               "start": 141,
               "type": "BinaryExpression",
@@ -258,7 +279,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 165,
             "type": "Literal",
             "type": "Literal",
-            "value": 8.0
+            "value": {
+              "value": 8.0,
+              "suffix": "None"
+            }
           },
           "start": 152,
           "type": "VariableDeclarator"
@@ -284,7 +308,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 189,
             "type": "Literal",
             "type": "Literal",
-            "value": 23.0
+            "value": {
+              "value": 23.0,
+              "suffix": "None"
+            }
           },
           "start": 168,
           "type": "VariableDeclarator"
@@ -312,7 +339,10 @@ description: Result of parsing fillet-and-shell.kcl
               "start": 214,
               "type": "Literal",
               "type": "Literal",
-              "value": 29.0
+              "value": {
+                "value": 29.0,
+                "suffix": "None"
+              }
             },
             "operator": "*",
             "right": {
@@ -321,7 +351,10 @@ description: Result of parsing fillet-and-shell.kcl
               "start": 219,
               "type": "Literal",
               "type": "Literal",
-              "value": 2.0
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             },
             "start": 214,
             "type": "BinaryExpression",
@@ -351,7 +384,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 241,
             "type": "Literal",
             "type": "Literal",
-            "value": 12.4
+            "value": {
+              "value": 12.4,
+              "suffix": "None"
+            }
           },
           "start": 222,
           "type": "VariableDeclarator"
@@ -377,7 +413,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 266,
             "type": "Literal",
             "type": "Literal",
-            "value": 41.4
+            "value": {
+              "value": 41.4,
+              "suffix": "None"
+            }
           },
           "start": 246,
           "type": "VariableDeclarator"
@@ -403,7 +442,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 291,
             "type": "Literal",
             "type": "Literal",
-            "value": 54.0
+            "value": {
+              "value": 54.0,
+              "suffix": "None"
+            }
           },
           "start": 271,
           "type": "VariableDeclarator"
@@ -429,7 +471,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 311,
             "type": "Literal",
             "type": "Literal",
-            "value": 11.2
+            "value": {
+              "value": 11.2,
+              "suffix": "None"
+            }
           },
           "start": 295,
           "type": "VariableDeclarator"
@@ -455,7 +500,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 332,
             "type": "Literal",
             "type": "Literal",
-            "value": 7.4
+            "value": {
+              "value": 7.4,
+              "suffix": "None"
+            }
           },
           "start": 316,
           "type": "VariableDeclarator"
@@ -481,7 +529,10 @@ description: Result of parsing fillet-and-shell.kcl
             "start": 355,
             "type": "Literal",
             "type": "Literal",
-            "value": 4.0
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
           },
           "start": 336,
           "type": "VariableDeclarator"
@@ -513,7 +564,10 @@ description: Result of parsing fillet-and-shell.kcl
                         "start": 396,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 452,
@@ -555,7 +609,10 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 451,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 2.0
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
                           },
                           "start": 435,
                           "type": "BinaryExpression",
@@ -593,7 +650,10 @@ description: Result of parsing fillet-and-shell.kcl
                         "start": 483,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 538,
@@ -635,7 +695,10 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 537,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 2.0
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
                           },
                           "start": 521,
                           "type": "BinaryExpression",
@@ -679,7 +742,10 @@ description: Result of parsing fillet-and-shell.kcl
                         "start": 571,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 626,
@@ -721,7 +787,10 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 625,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 2.0
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
                           },
                           "start": 609,
                           "type": "BinaryExpression",
@@ -765,7 +834,10 @@ description: Result of parsing fillet-and-shell.kcl
                         "start": 659,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 715,
@@ -807,7 +879,10 @@ description: Result of parsing fillet-and-shell.kcl
                             "start": 714,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 2.0
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
                           },
                           "start": 698,
                           "type": "BinaryExpression",
@@ -919,7 +994,10 @@ description: Result of parsing fillet-and-shell.kcl
                         "start": 791,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 795,
@@ -927,7 +1005,10 @@ description: Result of parsing fillet-and-shell.kcl
                         "start": 794,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 796,
@@ -970,7 +1051,10 @@ description: Result of parsing fillet-and-shell.kcl
                         "start": 825,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 827,
@@ -1062,7 +1146,10 @@ description: Result of parsing fillet-and-shell.kcl
                         "start": 901,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 914,
@@ -1177,7 +1264,10 @@ description: Result of parsing fillet-and-shell.kcl
                           "start": 1008,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 1.0
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
@@ -1376,7 +1466,10 @@ description: Result of parsing fillet-and-shell.kcl
                                   "start": 1276,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "end": 1280,
@@ -1384,7 +1477,10 @@ description: Result of parsing fillet-and-shell.kcl
                                   "start": 1279,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 }
                               ],
                               "end": 1281,
@@ -1464,7 +1560,10 @@ description: Result of parsing fillet-and-shell.kcl
                                     "start": 1328,
                                     "type": "Literal",
                                     "type": "Literal",
-                                    "value": 2.5
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "None"
+                                    }
                                   }
                                 }
                               ],
@@ -1546,7 +1645,10 @@ description: Result of parsing fillet-and-shell.kcl
                                         "start": 1385,
                                         "type": "Literal",
                                         "type": "Literal",
-                                        "value": 1.25
+                                        "value": {
+                                          "value": 1.25,
+                                          "suffix": "None"
+                                        }
                                       }
                                     }
                                   ],
@@ -1724,7 +1826,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1474,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 1462,
                   "type": "BinaryExpression",
@@ -1751,7 +1856,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 1500,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 1479,
                 "type": "BinaryExpression",
@@ -1773,7 +1881,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1504,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0.0
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   },
                   "operator": "+",
                   "right": {
@@ -1804,7 +1915,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1530,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 1517,
                   "type": "BinaryExpression",
@@ -1831,7 +1945,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 1557,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 1535,
                 "type": "BinaryExpression",
@@ -1896,7 +2013,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1605,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 1593,
                   "type": "BinaryExpression",
@@ -1923,7 +2043,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 1631,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 1610,
                 "type": "BinaryExpression",
@@ -1945,7 +2068,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1635,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0.0
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   },
                   "operator": "+",
                   "right": {
@@ -1976,7 +2102,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1661,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 1648,
                   "type": "BinaryExpression",
@@ -2003,7 +2132,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 1687,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 1665,
                 "type": "BinaryExpression",
@@ -2068,7 +2200,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1734,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 1722,
                   "type": "BinaryExpression",
@@ -2095,7 +2230,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 1759,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 1738,
                 "type": "BinaryExpression",
@@ -2117,7 +2255,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1762,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0.0
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   },
                   "operator": "+",
                   "right": {
@@ -2148,7 +2289,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1788,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 1775,
                   "type": "BinaryExpression",
@@ -2175,7 +2319,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 1814,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 1792,
                 "type": "BinaryExpression",
@@ -2240,7 +2387,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1861,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 1849,
                   "type": "BinaryExpression",
@@ -2267,7 +2417,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 1886,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 1865,
                 "type": "BinaryExpression",
@@ -2289,7 +2442,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1889,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0.0
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   },
                   "operator": "+",
                   "right": {
@@ -2320,7 +2476,10 @@ description: Result of parsing fillet-and-shell.kcl
                     "start": 1915,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 1902,
                   "type": "BinaryExpression",
@@ -2347,7 +2506,10 @@ description: Result of parsing fillet-and-shell.kcl
                   "start": 1942,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 1920,
                 "type": "BinaryExpression",
