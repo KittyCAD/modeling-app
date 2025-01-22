@@ -1129,6 +1129,9 @@ description: Program memory after executing sketch_in_object.kcl
                 "y": 0.0,
                 "z": 1.0
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": []
             },
             "start": {
@@ -1149,6 +1152,9 @@ description: Program memory after executing sketch_in_object.kcl
                   0
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -1278,6 +1284,9 @@ description: Program memory after executing sketch_in_object.kcl
                         "y": 0.0,
                         "z": 1.0
                       },
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": []
                     },
                     "start": {
@@ -1298,6 +1307,9 @@ description: Program memory after executing sketch_in_object.kcl
                           0
                         ]
                       }
+                    },
+                    "units": {
+                      "type": "Mm"
                     },
                     "__meta": [
                       {

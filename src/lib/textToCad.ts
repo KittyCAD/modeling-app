@@ -195,7 +195,7 @@ export async function submitAndAwaitTextToKcl({
         .toLowerCase()}${FILE_EXT}`
 
       if (isDesktop()) {
-        // We have to pre-emptively run our unique file name logic,
+        // We have to preemptively run our unique file name logic,
         // so that we can pass the unique file name to the toast,
         // and by extension the file-deletion-on-reject logic.
         newFileName = getNextFileName({
