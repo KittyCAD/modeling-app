@@ -25,7 +25,7 @@ sqrt(num: number) -> number
 
 ### Returns
 
-`number` 
+`number`
 
 
 ### Examples

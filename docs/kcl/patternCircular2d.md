@@ -26,7 +26,7 @@ patternCircular2d(sketch_set: SketchSet, instances: integer, center: [number], a
 
 ### Returns
 
-[`[Sketch]`](/docs/kcl/types/Sketch) 
+[`[Sketch]`](/docs/kcl/types/Sketch)
 
 
 ### Examples
