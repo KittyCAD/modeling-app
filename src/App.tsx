@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import { AppHeader } from './components/AppHeader'
@@ -23,6 +23,10 @@ import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
 import { maybeWriteToDisk } from 'lib/telemetry'
+import { takeScreenshotOfVideoStreamCanvas } from 'lib/screenshot'
+import { writeProjectThumbnailFile } from 'lib/desktop'
+import { useRouteLoaderData } from 'react-router-dom'
+import { useEngineCommands } from 'components/EngineCommands'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -39,6 +43,12 @@ export function App() {
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
+
+  const [commands] = useEngineCommands()
+  const [capturedCanvas, setCapturedCanvas] = useState(false)
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const lastCommandType = commands[commands.length - 1]?.type
+
   useEffect(() => {
     onProjectOpen({ name: projectName, path: projectPath }, file || null)
   }, [projectName, projectPath])
@@ -75,6 +85,28 @@ export function App() {
     : ''
 
   useEngineConnectionSubscriptions()
+
+  // Generate thumbnail.png when loading the app
+  useEffect(() => {
+    if (!capturedCanvas && lastCommandType === 'execution-done') {
+      setTimeout(() => {
+        const projectDirectoryWithoutEndingSlash = loaderData?.project?.path
+        if (!projectDirectoryWithoutEndingSlash) {
+          return
+        }
+        const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
+        // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
+        writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
+          .then(() => {})
+          .catch((e) => {
+            console.error(
+              `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
+            )
+            console.error(e)
+          })
+      }, 500)
+    }
+  }, [lastCommandType])
 
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
