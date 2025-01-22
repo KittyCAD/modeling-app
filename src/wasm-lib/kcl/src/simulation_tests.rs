@@ -106,7 +106,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     ".environments[].**[].z[]" => rounded_redaction(4),
                 });
             });
-            snapshot_common(
+            assert_common_snapshots(
                 test_name,
                 exec_state.mod_local.operations,
                 exec_state.global.artifact_commands,
@@ -131,7 +131,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                         insta::assert_snapshot!("execution_error", report);
                     });
 
-                    snapshot_common(
+                    assert_common_snapshots(
                         test_name,
                         error.operations,
                         error.artifact_commands,
@@ -151,7 +151,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
 
 /// Assert snapshots that should happen both when KCL execution succeeds and
 /// when it results in an error.
-fn snapshot_common(
+fn assert_common_snapshots(
     test_name: &str,
     operations: Vec<Operation>,
     artifact_commands: Vec<ArtifactCommand>,
