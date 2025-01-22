@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing kw_fn.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -134,7 +133,10 @@ snapshot_kind: text
                                 "start": 32,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 1.0
+                                "value": {
+                                  "value": 1.0,
+                                  "suffix": "None"
+                                }
                               },
                               "start": 28,
                               "type": "BinaryExpression",
@@ -245,7 +247,10 @@ snapshot_kind: text
                       "start": 32,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 28,
                     "type": "BinaryExpression",

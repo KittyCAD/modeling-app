@@ -22,7 +22,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 9,
               "type": "Literal",
               "type": "Literal",
-              "value": 4.0
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
             },
             "endInclusive": true,
             "start": 5,
@@ -32,7 +35,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 6,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.0
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
             },
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"
@@ -66,7 +72,10 @@ description: Result of parsing array_range_expr.kcl
                 "start": 27,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "start": 24,
               "type": "MemberExpression",
@@ -78,7 +87,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 31,
               "type": "Literal",
               "type": "Literal",
-              "value": 4.0
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 41,
@@ -86,7 +98,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 34,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.00001
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
             },
             {
               "end": 69,
@@ -127,7 +142,10 @@ description: Result of parsing array_range_expr.kcl
             "start": 79,
             "type": "Literal",
             "type": "Literal",
-            "value": 4.0
+            "value": {
+              "value": 4.0,
+              "suffix": "None"
+            }
           },
           "start": 72,
           "type": "VariableDeclarator"
@@ -153,7 +171,10 @@ description: Result of parsing array_range_expr.kcl
             "start": 88,
             "type": "Literal",
             "type": "Literal",
-            "value": 0.0
+            "value": {
+              "value": 0.0,
+              "suffix": "None"
+            }
           },
           "start": 81,
           "type": "VariableDeclarator"
@@ -223,7 +244,10 @@ description: Result of parsing array_range_expr.kcl
                 "start": 123,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "start": 120,
               "type": "MemberExpression",
@@ -235,7 +259,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 127,
               "type": "Literal",
               "type": "Literal",
-              "value": 4.0
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 137,
@@ -243,7 +270,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 130,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.00001
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
             },
             {
               "end": 165,
@@ -296,7 +326,10 @@ description: Result of parsing array_range_expr.kcl
                   "start": 186,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 179,
                 "type": "BinaryExpression",
@@ -382,7 +415,10 @@ description: Result of parsing array_range_expr.kcl
                 "start": 222,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               "start": 219,
               "type": "MemberExpression",
@@ -394,7 +430,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 226,
               "type": "Literal",
               "type": "Literal",
-              "value": 4.0
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 236,
@@ -402,7 +441,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 229,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.00001
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
             },
             {
               "end": 274,
@@ -448,7 +490,10 @@ description: Result of parsing array_range_expr.kcl
                 "start": 291,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 5.0
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               },
               "start": 288,
               "type": "MemberExpression",
@@ -460,7 +505,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 295,
               "type": "Literal",
               "type": "Literal",
-              "value": 5.0
+              "value": {
+                "value": 5.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 305,
@@ -468,7 +516,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 298,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.00001
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
             },
             {
               "end": 333,
@@ -523,7 +574,10 @@ description: Result of parsing array_range_expr.kcl
                     "start": 370,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 363,
                   "type": "BinaryExpression",
@@ -561,7 +615,10 @@ description: Result of parsing array_range_expr.kcl
                     "start": 353,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 346,
                   "type": "BinaryExpression",
@@ -611,7 +668,10 @@ description: Result of parsing array_range_expr.kcl
                 "start": 389,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 0.0
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               },
               "start": 386,
               "type": "MemberExpression",
@@ -623,7 +683,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 393,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 403,
@@ -631,7 +694,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 396,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.00001
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
             },
             {
               "end": 425,
@@ -677,7 +743,10 @@ description: Result of parsing array_range_expr.kcl
                 "start": 442,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2.0
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               },
               "start": 439,
               "type": "MemberExpression",
@@ -689,7 +758,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 446,
               "type": "Literal",
               "type": "Literal",
-              "value": 3.0
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 456,
@@ -697,7 +769,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 449,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.00001
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
             },
             {
               "end": 487,
@@ -743,7 +818,10 @@ description: Result of parsing array_range_expr.kcl
                 "start": 504,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "start": 501,
               "type": "MemberExpression",
@@ -755,7 +833,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 508,
               "type": "Literal",
               "type": "Literal",
-              "value": 4.0
+              "value": {
+                "value": 4.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 518,
@@ -763,7 +844,10 @@ description: Result of parsing array_range_expr.kcl
               "start": 511,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.00001
+              "value": {
+                "value": 0.00001,
+                "suffix": "None"
+              }
             },
             {
               "end": 539,

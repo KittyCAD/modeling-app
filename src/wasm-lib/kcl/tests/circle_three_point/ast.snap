@@ -1,8 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 55
 description: Result of parsing circle_three_point.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -56,7 +54,10 @@ snapshot_kind: text
                           "start": 60,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 25.0
+                          "value": {
+                            "value": 25.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 66,
@@ -64,7 +65,10 @@ snapshot_kind: text
                           "start": 64,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 25.0
+                          "value": {
+                            "value": 25.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
                       "end": 67,
@@ -87,7 +91,10 @@ snapshot_kind: text
                           "start": 75,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 30.0
+                          "value": {
+                            "value": 30.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 81,
@@ -95,7 +102,10 @@ snapshot_kind: text
                           "start": 79,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 20.0
+                          "value": {
+                            "value": 20.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
                       "end": 82,
@@ -118,7 +128,10 @@ snapshot_kind: text
                           "start": 90,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 27.0
+                          "value": {
+                            "value": 27.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 96,
@@ -126,7 +139,10 @@ snapshot_kind: text
                           "start": 94,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 15.0
+                          "value": {
+                            "value": 15.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
                       "end": 97,
@@ -180,7 +196,10 @@ snapshot_kind: text
                 "start": 117,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 10.0
+                "value": {
+                  "value": 10.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 130,

@@ -11,6 +11,11 @@ pub(super) const SETTINGS: &str = "settings";
 pub(super) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(super) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub(super) enum AnnotationScope {
+    Module,
+}
+
 pub(super) fn expect_properties<'a>(
     for_key: &'static str,
     annotation: &'a NonCodeValue,

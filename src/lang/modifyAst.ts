@@ -743,14 +743,18 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
   return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
-export function createLiteral(value: LiteralValue): Node<Literal> {
+export function createLiteral(value: LiteralValue | number): Node<Literal> {
+  const raw = `${value}`
+  if (typeof value === 'number') {
+    value = { value, suffix: 'None' }
+  }
   return {
     type: 'Literal',
     start: 0,
     end: 0,
     moduleId: 0,
     value,
-    raw: `${value}`,
+    raw,
   }
 }
 
