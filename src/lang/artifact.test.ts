@@ -234,8 +234,8 @@ const sk2 = startSketchOn('XY')
                 from: [-2.5, 0],
                 to: [0, 10],
                 tag: {
-                  end: 116,
-                  start: 114,
+                  end: expect.any(Number),
+                  start: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'p',
                 },
@@ -262,7 +262,9 @@ const sk2 = startSketchOn('XY')
           units: {
             type: 'Mm',
           },
-          __meta: [{ sourceRange: [expect.any(Number), expect.any(Number), 0] }],
+          __meta: [
+            { sourceRange: [expect.any(Number), expect.any(Number), 0] },
+          ],
         },
       },
       {
@@ -282,8 +284,8 @@ const sk2 = startSketchOn('XY')
               type: 'extrudePlane',
               faceId: expect.any(String),
               tag: {
-                end: 485,
-                start: 483,
+                end: expect.any(Number),
+                start: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'o',
               },
@@ -335,8 +337,8 @@ const sk2 = startSketchOn('XY')
                 from: [-2.5, 0],
                 to: [0, 3],
                 tag: {
-                  end: 419,
-                  start: 417,
+                  end: expect.any(Number),
+                  start: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'o',
                 },
@@ -360,7 +362,9 @@ const sk2 = startSketchOn('XY')
           height: 2,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
-          __meta: [{ sourceRange: [expect.any(Number), expect.any(Number), 0] }],
+          __meta: [
+            { sourceRange: [expect.any(Number), expect.any(Number), 0] },
+          ],
           units: {
             type: 'Mm',
           },

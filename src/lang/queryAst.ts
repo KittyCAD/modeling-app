@@ -34,7 +34,6 @@ import {
 import { err, Reason } from 'lib/trap'
 import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
 import { findKwArg } from './util'
 import { codeRefFromRange } from './std/artifactGraph'
 

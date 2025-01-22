@@ -4599,7 +4599,10 @@ mod snapshot_tests {
         |> line(endAbsolute = [1, 0], tag = $rightPath)
         |> close()"#
     );
-    snapshot_test!(ag, "mySketch = startSketchAt([0,0]) |> line(endAbsolute = [1, 1]) |> close()");
+    snapshot_test!(
+        ag,
+        "mySketch = startSketchAt([0,0]) |> line(endAbsolute = [1, 1]) |> close()"
+    );
     snapshot_test!(ah, "myBox = startSketchAt(p)");
     snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
     snapshot_test!(aj, r#"myBox = startSketchAt(p) |> line(end = [0, l])"#);

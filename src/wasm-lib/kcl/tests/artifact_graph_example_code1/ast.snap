@@ -832,7 +832,7 @@ description: Result of parsing artifact_graph_example_code1.kcl
       },
       {
         "declaration": {
-          "end": 524,
+          "end": 533,
           "id": {
             "end": 500,
             "name": "extrude002",
@@ -842,22 +842,22 @@ description: Result of parsing artifact_graph_example_code1.kcl
           "init": {
             "arguments": [
               {
-                "end": 512,
-                "raw": "5",
-                "start": 511,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 5.0,
-                  "suffix": "None"
+                "type": "LabeledArg",
+                "label": {
+                  "type": "Identifier",
+                  "name": "length"
+                },
+                "arg": {
+                  "end": 532,
+                  "raw": "5",
+                  "start": 531,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 5.0,
+                    "suffix": "None"
+                  }
                 }
-              },
-              {
-                "end": 523,
-                "name": "sketch002",
-                "start": 514,
-                "type": "Identifier",
-                "type": "Identifier"
               }
             ],
             "callee": {
@@ -866,22 +866,29 @@ description: Result of parsing artifact_graph_example_code1.kcl
               "start": 503,
               "type": "Identifier"
             },
-            "end": 524,
+            "end": 533,
             "start": 503,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 520,
+              "name": "sketch002",
+              "start": 511,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 490,
           "type": "VariableDeclarator"
         },
-        "end": 524,
+        "end": 533,
         "kind": "const",
         "start": 490,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 525,
+    "end": 534,
     "start": 0
   }
 }

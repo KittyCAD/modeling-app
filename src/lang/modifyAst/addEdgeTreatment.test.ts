@@ -635,12 +635,9 @@ extrude001 = extrude(sketch001, length = -5)
   it('should correctly identify no edges', () => {
     const ast = assertParse(code)
     const lineOfInterest = `line(end = [-3.29, -13.85])`
-      const start = code.indexOf(lineOfInterest)
-      expect(start).toBeGreaterThan(-1)
-      const range = topLevelRange(
-        start,
-        start + lineOfInterest.length
-    )
+    const start = code.indexOf(lineOfInterest)
+    expect(start).toBeGreaterThan(-1)
+    const range = topLevelRange(start, start + lineOfInterest.length)
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
     const callExp = getNodeFromPath<CallExpression>(
@@ -665,10 +662,7 @@ describe('Testing button states', () => {
     const start = code.indexOf(segmentSnippet)
     expect(start).toBeGreaterThan(-1)
     const range = segmentSnippet
-      ? topLevelRange(
-          start,
-          start + segmentSnippet.length
-        )
+      ? topLevelRange(start, start + segmentSnippet.length)
       : topLevelRange(ast.end, ast.end) // empty line in the end of the code
 
     const selectionRanges: Selections = {

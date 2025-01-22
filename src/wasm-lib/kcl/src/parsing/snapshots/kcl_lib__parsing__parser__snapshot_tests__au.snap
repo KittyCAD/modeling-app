@@ -6,7 +6,7 @@ expression: actual
   "body": [
     {
       "declaration": {
-        "end": 107,
+        "end": 113,
         "id": {
           "end": 14,
           "name": "cylinder",
@@ -131,21 +131,22 @@ expression: actual
             {
               "arguments": [
                 {
-                  "end": 103,
-                  "raw": "14",
-                  "start": 101,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 14.0,
-                    "suffix": "None"
+                  "type": "LabeledArg",
+                  "label": {
+                    "type": "Identifier",
+                    "name": "length"
+                  },
+                  "arg": {
+                    "end": 112,
+                    "raw": "14",
+                    "start": 110,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 14.0,
+                      "suffix": "None"
+                    }
                   }
-                },
-                {
-                  "end": 106,
-                  "start": 105,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
                 }
               ],
               "callee": {
@@ -154,13 +155,14 @@ expression: actual
                 "start": 93,
                 "type": "Identifier"
               },
-              "end": 107,
+              "end": 113,
               "start": 93,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             }
           ],
-          "end": 107,
+          "end": 113,
           "start": 17,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -168,13 +170,13 @@ expression: actual
         "start": 6,
         "type": "VariableDeclarator"
       },
-      "end": 107,
+      "end": 113,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
-  "end": 108,
+  "end": 114,
   "start": 0
 }

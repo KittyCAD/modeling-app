@@ -308,7 +308,7 @@ describe('testing sketchOnExtrudedFace', () => {
   |> extrude(length = 5 + 7)`
     const ast = assertParse(code)
 
-     const segmentSnippet = `line(end = [9.7, 9.19])`
+    const segmentSnippet = `line(end = [9.7, 9.19])`
     const segmentRange = topLevelRange(
       code.indexOf(segmentSnippet),
       code.indexOf(segmentSnippet) + segmentSnippet.length
