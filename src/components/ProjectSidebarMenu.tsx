@@ -17,6 +17,7 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
 import { copyFileShareLink } from 'lib/links'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { DEV } from 'env'
 
 const ProjectSidebarMenu = ({
   project,
@@ -187,6 +188,7 @@ function ProjectMenuPopover({
           id: 'share-link',
           Element: 'button',
           children: 'Share link to file',
+          disabled: !DEV,
           onClick: async () => {
             await copyFileShareLink({
               token: auth?.context.token || '',

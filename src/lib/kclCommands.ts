@@ -175,6 +175,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       groupId: 'code',
       needsReview: false,
       icon: 'link',
+      hide: 'both',
       onSubmit: () => {
         copyFileShareLink({
           token: commandProps.authToken,
