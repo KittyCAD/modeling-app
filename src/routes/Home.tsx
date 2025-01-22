@@ -148,7 +148,7 @@ const Home = () => {
                 }}
                 data-testid="home-new-file"
               >
-                New project
+                Create project
               </ActionButton>
             </div>
             <div className="flex gap-2 items-center">

@@ -55,7 +55,10 @@ description: Result of parsing array_index_oob.kcl
               "start": 17,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.0
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
             },
             "start": 13,
             "type": "MemberExpression",

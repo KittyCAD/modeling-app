@@ -2,7 +2,9 @@
 
 use std::{path::PathBuf, sync::Arc};
 
+use annotations::AnnotationScope;
 use anyhow::Result;
+use artifact::build_artifact_graph;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 use kcmc::{
@@ -11,8 +13,8 @@ use kcmc::{
     websocket::{ModelingSessionData, OkWebSocketResponseData},
     ImageFormat, ModelingCmd,
 };
-use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::{self as kcmc, websocket::WebSocketResponse};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -49,18 +51,18 @@ use crate::{
 };
 
 // Re-exports.
-pub use artifact::{Artifact, ArtifactCommand, ArtifactId, ArtifactInner};
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 pub use cad_op::Operation;
 
 /// State for executing a program.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecState {
     pub global: GlobalState,
     pub mod_local: ModuleState,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
+#[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GlobalState {
     /// The stable artifact ID generator.
@@ -75,6 +77,13 @@ pub struct GlobalState {
     /// These are accumulated in the [`ExecutorContext`] but moved here for
     /// convenience of the execution cache.
     pub artifact_commands: Vec<ArtifactCommand>,
+    /// Responses from the engine for `artifact_commands`.  We need to cache
+    /// this so that we can build the artifact graph.  These are accumulated in
+    /// the [`ExecutorContext`] but moved here for convenience of the execution
+    /// cache.
+    pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -113,6 +122,8 @@ pub struct ExecOutcome {
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
     pub artifact_commands: Vec<ArtifactCommand>,
+    /// Output artifact graph.
+    pub artifact_graph: ArtifactGraph,
 }
 
 impl ExecState {
@@ -149,6 +160,7 @@ impl ExecState {
             operations: self.mod_local.operations,
             artifacts: self.global.artifacts,
             artifact_commands: self.global.artifact_commands,
+            artifact_graph: self.global.artifact_graph,
         }
     }
 
@@ -165,7 +177,7 @@ impl ExecState {
     }
 
     pub fn add_artifact(&mut self, artifact: Artifact) {
-        let id = artifact.id;
+        let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
     }
 
@@ -216,6 +228,8 @@ impl GlobalState {
             module_infos: Default::default(),
             artifacts: Default::default(),
             artifact_commands: Default::default(),
+            artifact_responses: Default::default(),
+            artifact_graph: Default::default(),
         };
 
         // TODO(#4434): Use the top-level file's path.
@@ -378,7 +392,7 @@ impl ProgramMemory {
                 env.bindings
                     .values()
                     .filter_map(|item| match item {
-                        KclValue::Solid(eg) if eg.sketch.id == sketch_id => Some(eg.clone()),
+                        KclValue::Solid { value } if value.sketch.id == sketch_id => Some(value.clone()),
                         _ => None,
                     })
                     .collect::<Vec<_>>()
@@ -492,8 +506,8 @@ impl DynamicState {
     fn append(&mut self, memory: &ProgramMemory) {
         for env in &memory.environments {
             for item in env.bindings.values() {
-                if let KclValue::Solid(eg) = item {
-                    self.solid_ids.push(SolidLazyIds::from(eg.as_ref()));
+                if let KclValue::Solid { value } = item {
+                    self.solid_ids.push(SolidLazyIds::from(value.as_ref()));
                 }
             }
         }
@@ -746,6 +760,7 @@ pub struct Helix {
     pub angle_start: f64,
     /// Is the helix rotation counter clockwise?
     pub ccw: bool,
+    pub units: UnitLen,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -767,6 +782,7 @@ pub struct Plane {
     pub y_axis: Point3d,
     /// The z-axis (normal).
     pub z_axis: Point3d,
+    pub units: UnitLen,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -782,6 +798,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
                 z_axis: Point3d::new(0.0, 0.0, 1.0),
                 value: PlaneType::XY,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::NegXY => Plane {
@@ -791,6 +808,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 1.0, 0.0),
                 z_axis: Point3d::new(0.0, 0.0, -1.0),
                 value: PlaneType::XY,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::XZ => Plane {
@@ -800,6 +818,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(0.0, -1.0, 0.0),
                 value: PlaneType::XZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::NegXZ => Plane {
@@ -809,6 +828,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(0.0, 1.0, 0.0),
                 value: PlaneType::XZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::YZ => Plane {
@@ -818,6 +838,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(1.0, 0.0, 0.0),
                 value: PlaneType::YZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::NegYZ => Plane {
@@ -827,6 +848,7 @@ impl Plane {
                 y_axis: Point3d::new(0.0, 0.0, 1.0),
                 z_axis: Point3d::new(-1.0, 0.0, 0.0),
                 value: PlaneType::YZ,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
             crate::std::sketch::PlaneData::Plane {
@@ -841,6 +863,7 @@ impl Plane {
                 y_axis: *y_axis,
                 z_axis: *z_axis,
                 value: PlaneType::Custom,
+                units: exec_state.length_unit(),
                 meta: vec![],
             },
         }
@@ -887,6 +910,7 @@ pub struct Face {
     pub z_axis: Point3d,
     /// The solid the face is on.
     pub solid: Box<Solid>,
+    pub units: UnitLen,
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
 }
@@ -1005,6 +1029,7 @@ pub struct Sketch {
     /// is sketched on face etc.
     #[serde(skip)]
     pub original_id: uuid::Uuid,
+    pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -1128,6 +1153,7 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
     pub meta: Vec<Metadata>,
@@ -2239,22 +2265,86 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.inner_execute(&cache_result.program, exec_state, crate::execution::BodyType::Root)
+        self.execute_and_build_graph(&cache_result.program, exec_state)
             .await
             .map_err(|e| {
                 KclErrorWithOutputs::new(
                     e,
                     exec_state.mod_local.operations.clone(),
-                    self.engine.take_artifact_commands(),
+                    exec_state.global.artifact_commands.clone(),
+                    exec_state.global.artifact_graph.clone(),
                 )
             })?;
-        // Move the artifact commands to simplify cache management.
+
+        let session_data = self.engine.get_session_data();
+        Ok(session_data)
+    }
+
+    /// Execute an AST's program and build auxiliary outputs like the artifact
+    /// graph.
+    async fn execute_and_build_graph<'a>(
+        &self,
+        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        exec_state: &mut ExecState,
+    ) -> Result<Option<KclValue>, KclError> {
+        // Don't early return!  We need to build other outputs regardless of
+        // whether execution failed.
+        let exec_result = self
+            .inner_execute(program, exec_state, crate::execution::BodyType::Root)
+            .await;
+        // Move the artifact commands and responses to simplify cache management
+        // and error creation.
         exec_state
             .global
             .artifact_commands
             .extend(self.engine.take_artifact_commands());
-        let session_data = self.engine.get_session_data();
-        Ok(session_data)
+        exec_state.global.artifact_responses.extend(self.engine.responses());
+        // Build the artifact graph.
+        match build_artifact_graph(
+            &exec_state.global.artifact_commands,
+            &exec_state.global.artifact_responses,
+            program,
+            &exec_state.global.artifacts,
+        ) {
+            Ok(artifact_graph) => {
+                exec_state.global.artifact_graph = artifact_graph;
+                exec_result
+            }
+            Err(err) => {
+                // Prefer the exec error.
+                exec_result.and(Err(err))
+            }
+        }
+    }
+
+    async fn handle_annotations(
+        &self,
+        annotations: impl Iterator<Item = (&NonCodeValue, SourceRange)>,
+        scope: AnnotationScope,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        for (annotation, source_range) in annotations {
+            if annotation.annotation_name() == Some(annotations::SETTINGS) {
+                if scope == AnnotationScope::Module {
+                    let old_units = exec_state.length_unit();
+                    exec_state
+                        .mod_local
+                        .settings
+                        .update_from_annotation(annotation, source_range)?;
+                    let new_units = exec_state.length_unit();
+                    if old_units != new_units {
+                        self.engine.set_units(new_units.into(), source_range).await?;
+                    }
+                } else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "Settings can only be modified at the top level scope of a file".to_owned(),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+            }
+            // TODO warn on unknown annotations
+        }
+        Ok(())
     }
 
     /// Execute an AST's program.
@@ -2265,21 +2355,16 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        if let Some((annotation, source_range)) = program
-            .non_code_meta
-            .start_nodes
-            .iter()
-            .filter_map(|n| {
-                n.annotation(annotations::SETTINGS)
-                    .map(|result| (result, n.as_source_range()))
-            })
-            .next()
-        {
-            exec_state
-                .mod_local
-                .settings
-                .update_from_annotation(annotation, source_range)?;
-        }
+        self.handle_annotations(
+            program
+                .non_code_meta
+                .start_nodes
+                .iter()
+                .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
+            AnnotationScope::Module,
+            exec_state,
+        )
+        .await?;
 
         let mut last_expr = None;
         // Iterate over the body of the program.
@@ -2462,6 +2547,7 @@ impl ExecutorContext {
         exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, ProgramMemory, Vec<String>), KclError> {
+        let old_units = exec_state.length_unit();
         // TODO It sucks that we have to clone the whole module AST here
         let info = exec_state.global.module_infos[&module_id].clone();
 
@@ -2478,7 +2564,11 @@ impl ExecutorContext {
             .inner_execute(&info.parsed.unwrap(), exec_state, crate::execution::BodyType::Root)
             .await;
 
+        let new_units = exec_state.length_unit();
         std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        if new_units != old_units {
+            self.engine.set_units(old_units.into(), Default::default()).await?;
+        }
         self.engine.replace_execution_kind(original_execution);
 
         let result = result.map_err(|err| {

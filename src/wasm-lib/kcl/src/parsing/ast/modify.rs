@@ -18,6 +18,8 @@ use crate::{
     Program,
 };
 
+use super::types::LiteralValue;
+
 type Point3d = kcmc::shared::Point3d<f64>;
 
 #[derive(Debug)]
@@ -201,8 +203,8 @@ fn create_start_sketch_on(
         "startProfileAt",
         vec![
             ArrayExpression::new(vec![
-                Literal::new(round_before_recast(start[0]).into()).into(),
-                Literal::new(round_before_recast(start[1]).into()).into(),
+                Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(start[0]))).into(),
+                Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(start[1]))).into(),
             ])
             .into(),
             PipeSubstitution::new().into(),
@@ -221,8 +223,8 @@ fn create_start_sketch_on(
         "line",
         vec![
             ArrayExpression::new(vec![
-                Literal::new(round_before_recast(end[0]).into()).into(),
-                Literal::new(round_before_recast(end[1]).into()).into(),
+                Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(end[0]))).into(),
+                Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(end[1]))).into(),
             ])
             .into(),
             PipeSubstitution::new().into(),
@@ -254,8 +256,8 @@ fn create_start_sketch_on(
             "line",
             vec![
                 ArrayExpression::new(vec![
-                    Literal::new(round_before_recast(line[0]).into()).into(),
-                    Literal::new(round_before_recast(line[1]).into()).into(),
+                    Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(line[0]))).into(),
+                    Literal::new(LiteralValue::from_f64_no_uom(round_before_recast(line[1]))).into(),
                 ])
                 .into(),
                 PipeSubstitution::new().into(),

@@ -13,7 +13,6 @@ use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
@@ -1012,9 +1011,9 @@ impl NonCodeNode {
         }
     }
 
-    pub fn annotation(&self, expected_name: &str) -> Option<&NonCodeValue> {
+    pub fn annotation(&self) -> Option<&NonCodeValue> {
         match &self.value {
-            a @ NonCodeValue::Annotation { name, .. } if name.name == expected_name => Some(a),
+            a @ NonCodeValue::Annotation { .. } => Some(a),
             _ => None,
         }
     }
@@ -1070,6 +1069,15 @@ pub enum NonCodeValue {
         name: Node<Identifier>,
         properties: Option<Vec<Node<ObjectProperty>>>,
     },
+}
+
+impl NonCodeValue {
+    pub fn annotation_name(&self) -> Option<&str> {
+        match self {
+            NonCodeValue::Annotation { name, .. } => Some(&name.name),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1867,7 +1875,7 @@ impl Node<Literal> {
 impl Literal {
     pub fn new(value: LiteralValue) -> Node<Self> {
         Node::no_src(Self {
-            raw: JValue::from(value.clone()).to_string(),
+            raw: value.to_string(),
             value,
             digest: None,
         })
@@ -1878,7 +1886,7 @@ impl From<Node<Literal>> for KclValue {
     fn from(literal: Node<Literal>) -> Self {
         let meta = vec![literal.metadata()];
         match literal.inner.value {
-            LiteralValue::Number(value) => KclValue::Number { value, meta },
+            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }

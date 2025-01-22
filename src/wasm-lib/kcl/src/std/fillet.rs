@@ -57,8 +57,8 @@ impl EdgeReference {
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid, tag): (FilletData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
 
-    let solid = inner_fillet(data, solid, tag, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_fillet(data, solid, tag, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Blend a transitional edge along a tagged path, smoothing the sharp edge.
