@@ -30,7 +30,6 @@ import {
   onboardingRedirectLoader,
   telemetryLoader,
 } from 'lib/routeLoaders'
-import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
 import { BROWSER_PROJECT_NAME } from 'lib/constants'
@@ -58,19 +57,17 @@ const router = createRouter([
     element: (
       <AuthNavigationHandler>
         <RouteProvider>
-          <SettingsAuthProvider>
-            <LspProvider>
-              <ProjectsContextProvider>
-                <KclContextProvider>
-                  <AppStateProvider>
-                    <MachineManagerProvider>
-                      <Outlet />
-                    </MachineManagerProvider>
-                  </AppStateProvider>
-                </KclContextProvider>
-              </ProjectsContextProvider>
-            </LspProvider>
-          </SettingsAuthProvider>
+          <LspProvider>
+            <ProjectsContextProvider>
+              <KclContextProvider>
+                <AppStateProvider>
+                  <MachineManagerProvider>
+                    <Outlet />
+                  </MachineManagerProvider>
+                </AppStateProvider>
+              </KclContextProvider>
+            </ProjectsContextProvider>
+          </LspProvider>
         </RouteProvider>
       </AuthNavigationHandler>
     ),
