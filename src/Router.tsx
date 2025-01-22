@@ -51,9 +51,6 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 const router = createRouter([
   {
     id: PATHS.INDEX,
-    // TODO: Re-evaluate if this is true
-    /* Make sure auth is the outermost provider or else we will have
-     * inefficient re-renders, use the react profiler to see. */
     element: (
       <AuthNavigationHandler>
         <RouteProvider>

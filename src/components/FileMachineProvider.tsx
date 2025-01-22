@@ -55,42 +55,40 @@ export const FileMachineProvider = ({
   )
 
   // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
-    // This will register the commands to route to Telemetry, Home, and Settings.
-    useEffect(() => {
-      const filePath =
-        PATHS.FILE +
-        '/' +
-        encodeURIComponent(file?.path || BROWSER_PATH)
-      const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-        createRouteCommands(navigate, location, filePath)
+  // This will register the commands to route to Telemetry, Home, and Settings.
+  useEffect(() => {
+    const filePath =
+      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+    commandBarActor.send({
+      type: 'Remove commands',
+      data: {
+        commands: [
+          RouteTelemetryCommand,
+          RouteHomeCommand,
+          RouteSettingsCommand,
+        ],
+      },
+    })
+    if (location.pathname === PATHS.HOME) {
       commandBarActor.send({
-        type: 'Remove commands',
+        type: 'Add commands',
+        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+      })
+    } else if (location.pathname.includes(PATHS.FILE)) {
+      commandBarActor.send({
+        type: 'Add commands',
         data: {
           commands: [
             RouteTelemetryCommand,
-            RouteHomeCommand,
             RouteSettingsCommand,
+            RouteHomeCommand,
           ],
         },
       })
-      if (location.pathname === PATHS.HOME) {
-        commandBarActor.send({
-          type: 'Add commands',
-          data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
-        })
-      } else if (location.pathname.includes(PATHS.FILE)) {
-        commandBarActor.send({
-          type: 'Add commands',
-          data: {
-            commands: [
-              RouteTelemetryCommand,
-              RouteSettingsCommand,
-              RouteHomeCommand,
-            ],
-          },
-        })
-      }
-    }, [location])
+    }
+  }, [location])
 
   useEffect(() => {
     markOnce('code/didLoadFile')
