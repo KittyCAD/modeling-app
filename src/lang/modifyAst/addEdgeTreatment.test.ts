@@ -302,7 +302,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
 const runDeleteEdgeTreatmentTest = async (
   code: string,
   edgeTreatmentSnippet: string,
-  expectedCode: string,
+  expectedCode: string
 ) => {
   // ast
   const ast = assertParse(code)
