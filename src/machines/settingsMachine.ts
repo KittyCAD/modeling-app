@@ -1,8 +1,9 @@
 import {
-  Action,
+  AnyActorRef,
   assign,
   createActor,
   enqueueActions,
+  EventObject,
   fromCallback,
   fromPromise,
   sendTo,
@@ -15,7 +16,11 @@ import {
   getSystemTheme,
   setThemeClass,
 } from 'lib/theme'
-import { createSettings, settings } from 'lib/settings/initialSettings'
+import {
+  createSettings,
+  settings,
+  SettingsType,
+} from 'lib/settings/initialSettings'
 import {
   BaseUnit,
   SetEventTypes,
@@ -43,8 +48,14 @@ import decamelize from 'decamelize'
 import { reportRejection } from 'lib/trap'
 import { Project } from 'lib/project'
 import { useSelector } from '@xstate/react'
+import {
+  createSettingsCommand,
+  settingsWithCommandConfigs,
+} from 'lib/commandBarConfigs/settingsCommandConfig'
+import { Command } from 'lib/commandTypes'
+import { commandBarActor } from './commandBarMachine'
 
-type SettingsMachineContext = ReturnType<typeof createSettings> & {
+type SettingsMachineContext = SettingsType & {
   currentProject?: Project
 }
 
@@ -118,6 +129,35 @@ export const settingsMachine = setup({
       })
 
       return () => darkModeMatcher?.removeEventListener('change', listener)
+    }),
+    registerCommands: fromCallback<
+      EventObject,
+      { settings: SettingsType; actor: AnyActorRef }
+    >(({ input }) => {
+      // If the user wants to hide the settings commands
+      //from the command bar don't add them.
+      if (settings.commandBar.includeSettings.current === false) return
+
+      const commands = settingsWithCommandConfigs(input.settings)
+        .map((type) =>
+          createSettingsCommand({
+            type,
+            actor: input.actor,
+          })
+        )
+        .filter((c) => c !== null) as Command[]
+
+      commandBarActor.send({
+        type: 'Add commands',
+        data: { commands: commands },
+      })
+
+      return () => {
+        commandBarActor.send({
+          type: 'Remove commands',
+          data: { commands },
+        })
+      }
     }),
   },
   actions: {
@@ -300,10 +340,21 @@ export const settingsMachine = setup({
       ...input,
     }
   },
-  invoke: {
-    src: 'watchSystemTheme',
-    id: 'watchSystemTheme',
-  },
+  invoke: [
+    {
+      src: 'watchSystemTheme',
+      id: 'watchSystemTheme',
+    },
+    {
+      src: 'registerCommands',
+      id: 'registerCommands',
+      // Peel off the non-settings context
+      input: ({ context: { currentProject, ...settings }, self }) => ({
+        settings,
+        actor: self,
+      }),
+    },
+  ],
   states: {
     idle: {
       entry: ['setThemeClass', 'setClientSideSceneUnits', 'sendThemeToWatcher'],

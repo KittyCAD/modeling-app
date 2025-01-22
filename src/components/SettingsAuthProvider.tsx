@@ -101,49 +101,10 @@ export const SettingsAuthProviderBase = ({
   loadedSettings: typeof settings
   loadedProject?: IndexLoaderData
 }) => {
-
   const [settingsState, settingsSend, settingsActor] = useMachine(
     settingsMachine,
     { input: loadedSettings }
   )
-
-
-  // Add settings commands to the command bar
-  // They're treated slightly differently than other commands
-  // Because their state machine doesn't have a meaningful .nextEvents,
-  // and they are configured statically in initialiSettings
-  useEffect(() => {
-    // If the user wants to hide the settings commands
-    //from the command bar don't add them.
-    if (settingsState.context.commandBar.includeSettings.current === false)
-      return
-
-    const commands = settingsWithCommandConfigs(settingsState.context)
-      .map((type) =>
-        createSettingsCommand({
-          type,
-          actor: settingsActor,
-        })
-      )
-      .filter((c) => c !== null) as Command[]
-
-    commandBarActor.send({ type: 'Add commands', data: { commands: commands } })
-
-    return () => {
-      commandBarActor.send({
-        type: 'Remove commands',
-        data: { commands },
-      })
-    }
-  }, [
-    settingsState,
-    settingsSend,
-    settingsActor,
-    commandBarActor.send,
-    settingsWithCommandConfigs,
-  ])
-
-
 
   return (
     <SettingsAuthContext.Provider
