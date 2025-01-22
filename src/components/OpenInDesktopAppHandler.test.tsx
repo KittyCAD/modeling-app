@@ -2,7 +2,11 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { OpenInDesktopAppHandler } from './OpenInDesktopAppHandler'
 
-function TestWrap({
+/**
+ * The behavior under test requires a router,
+ * so we wrap the component in a minimal router setup.
+ */
+function TestingMinimalRouterWrapper({
   children,
   location,
 }: {
@@ -23,9 +27,9 @@ describe('OpenInDesktopAppHandler tests', () => {
   test(`does not render the modal if no query param is present`, () => {
     render(
       <BrowserRouter>
-        <TestWrap>
+        <TestingMinimalRouterWrapper>
           <p>Dummy app contents</p>
-        </TestWrap>
+        </TestingMinimalRouterWrapper>
       </BrowserRouter>
     )
 
@@ -39,9 +43,9 @@ describe('OpenInDesktopAppHandler tests', () => {
   test(`renders the modal if the query param is present`, () => {
     render(
       <BrowserRouter>
-        <TestWrap location="/?ask-open-desktop">
+        <TestingMinimalRouterWrapper location="/?ask-open-desktop">
           <p>Dummy app contents</p>
-        </TestWrap>
+        </TestingMinimalRouterWrapper>
       </BrowserRouter>
     )
 
