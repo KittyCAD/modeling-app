@@ -179,7 +179,9 @@ const initialise = async () => {
   }
 }
 
-export const initPromise = initialise()
+export const initPromise = initialise().then(() => {
+  settingsActor.start()
+})
 
 const splitErrors = (
   input: CompilationError[]
