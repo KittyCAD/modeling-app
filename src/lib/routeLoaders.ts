@@ -13,10 +13,9 @@ import makeUrlPathRelative from './makeUrlPathRelative'
 import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
-import { createSettings } from './settings/initialSettings'
 import { normalizeLineEndings } from 'lib/codeEditor'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
-import { settingsActor } from 'machines/settingsMachine'
+import { getSettings, settingsActor } from 'machines/settingsMachine'
 
 export const telemetryLoader: LoaderFunction = async ({
   params,
@@ -26,7 +25,7 @@ export const telemetryLoader: LoaderFunction = async ({
 
 // Redirect users to the appropriate onboarding page if they haven't completed it
 export const onboardingRedirectLoader: ActionFunction = async (args) => {
-  const { settings } = await loadAndValidateSettings()
+  const settings = getSettings()
   const onboardingStatus: OnboardingStatus =
     settings.app.onboardingStatus.current || ''
   const notEnRouteToOnboarding = !args.request.url.includes(

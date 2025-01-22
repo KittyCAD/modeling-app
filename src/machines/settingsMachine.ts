@@ -517,16 +517,19 @@ export const settingsMachine = setup({
     },
 
     loadingUser: {
-      invoke: [
-        {
-          src: 'loadUserSettings',
-          onDone: {
-            target: 'idle',
-            actions: 'setAllSettings',
-          },
-          onError: 'idle',
+      invoke: {
+        src: 'loadUserSettings',
+        onDone: {
+          target: 'idle',
+          actions: 'setAllSettings',
         },
-      ],
+        onError: {
+          target: 'idle',
+          actions: ({ event }) => {
+            console.error('Error loading user settings', event)
+          },
+        },
+      },
     },
     loadingProject: {
       entry: [
@@ -554,8 +557,12 @@ export const settingsMachine = setup({
 
 export const settingsActor = createActor(settingsMachine, {
   input: createSettings(),
-}).start()
+})
 
+export const getSettings = () => {
+  const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
+  return settings
+}
 export const useSettings = () =>
   useSelector(settingsActor, (state) => {
     // We have to peel everything that isn't settings off
