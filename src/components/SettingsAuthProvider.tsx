@@ -166,10 +166,7 @@ export const SettingsAuthProviderBase = ({
       .map((type) =>
         createSettingsCommand({
           type,
-          send: settingsSend,
-          context: settingsState.context,
           actor: settingsActor,
-          isProjectAvailable: loadedProject !== undefined,
         })
       )
       .filter((c) => c !== null) as Command[]
@@ -227,32 +224,6 @@ export const SettingsAuthProviderBase = ({
       })
     }
   }, [location])
-
-  // Listen for changes to the system theme and update the app theme accordingly
-  // This is only done if the theme setting is set to 'system'.
-  // It can't be done in XState (in an invoked callback, for example)
-  // because there doesn't seem to be a good way to listen to
-  // events outside of the machine that also depend on the machine's context
-  useEffect(() => {
-    const listener = (e: MediaQueryListEvent) => {
-      if (settingsState.context.app.theme.current !== 'system') return
-      setThemeClass(e.matches ? Themes.Dark : Themes.Light)
-    }
-
-    darkModeMatcher?.addEventListener('change', listener)
-    return () => darkModeMatcher?.removeEventListener('change', listener)
-  }, [settingsState.context])
-
-  /**
-   * Update the --primary-hue CSS variable
-   * to match the setting app.themeColor.current
-   */
-  useEffect(() => {
-    document.documentElement.style.setProperty(
-      `--primary-hue`,
-      settingsState.context.app.themeColor.current
-    )
-  }, [settingsState.context.app.themeColor.current])
 
   /**
    * Update the --cursor-color CSS variable

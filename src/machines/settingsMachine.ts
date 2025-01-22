@@ -1,6 +1,15 @@
-import { assign, createActor, fromPromise, setup } from 'xstate'
+import {
+  Action,
+  assign,
+  createActor,
+  fromCallback,
+  fromPromise,
+  sendTo,
+  setup,
+} from 'xstate'
 import {
   Themes,
+  darkModeMatcher,
   getOppositeTheme,
   getSystemTheme,
   setThemeClass,
@@ -72,9 +81,10 @@ export const settingsMachine = setup({
       if (input.doNotPersist) return
 
       codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
-      const currentProjectFromParent = input.context.currentProject?.path
+      const { currentProject, ...settings } = input.context
+      
 
-      return saveSettings(input.context, currentProjectFromParent)
+      return saveSettings(settings, currentProject?.path)
     }),
     loadUserSettings: fromPromise<SettingsMachineContext, void>(async () => {
       const { settings } = await loadAndValidateSettings()
@@ -86,6 +96,28 @@ export const settingsMachine = setup({
     >(async ({ input }) => {
       const { settings } = await loadAndValidateSettings(input.project?.path)
       return settings
+    }),
+    watchSystemTheme: fromCallback<{
+      type: 'update.themeWatcher'
+      theme: Themes
+    }>(({ receive }) => {
+      const listener = (e: MediaQueryListEvent) => {
+        setThemeClass(e.matches ? Themes.Dark : Themes.Light)
+      }
+
+      receive((event) => {
+        if (event.type !== 'update.themeWatcher') {
+          return
+        } else {
+          if (event.theme === Themes.System) {
+            darkModeMatcher?.addEventListener('change', listener)
+          } else {
+            darkModeMatcher?.removeEventListener('change', listener)
+          }
+        }
+      })
+
+      return () => darkModeMatcher?.removeEventListener('change', listener)
     }),
   },
   actions: {
@@ -243,6 +275,10 @@ export const settingsMachine = setup({
       const newCurrentProjection = context.modeling.cameraProjection.current
       sceneInfra.camControls.setEngineCameraProjection(newCurrentProjection)
     },
+    sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
+      type: 'update.themeWatcher',
+      theme: context.app.theme.current,
+    })),
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QGUwBc0EsB2VYDpMIAbMAYlnXwEMAHW-Ae2wCNHqAnCHKZNatAFdYAbQAMAXUShajWJizNpIAB6IAzAA4x+AIyaAbJoCsAFl1njAJmOaANCACeiXQHZ1+a7bdWDATnUxawBfYIdUDB4CIlIKKjoGNAALMABbMABhRmJGDnEpJBBZeUVsZTUELR19IzMLUy97J0RfTXxDBr8DAxtdMSs-UPD0LFxoknJKNHxUxggwYh58eYAzakFiNABVbAV85WKFTCVCiqq9QxNzSxsm50qDU3wrMXV1V2M-bT8xV6GQCKjPCECZxaYJfDJNJgfaFQ6lcoabQXWrXBq3Bz3YzqPz4AyvL7qYw1TS6Az-QFREGxKY0ej4WBoDhgaipACSEwAsnMYZIDnIjidQGdkSS6jdbJjEK5zHi-PouqYiQZjBSRlSYpN4vTqMQcgB3ADyHBYCjZ2GQAGt0ABjJLc+awmQChGnJHVS7i9GS5oIQweVxueVWVz4mW6NWRMbUrXTWbzRa4fA21lgDjUAAKHEYACswDbSk6ii7jmU3ZVRZ60Y0pQg+rorPglQ2rKZ-FY3DLI0DxjSqPGFkskpgoElFqO0ABRaBwIvw0uIise1H1Gu+3Rk3R6Uydaz47qqsIA9XRzVkABKcHQAAIpj25yWhap3SirquMevAriTK4urYBhYViaN2GqghE166sQt4nngD4lAu5Zkni1yaKG2i6OoBgblYtY7sYniGNYmjqKYmjyropggaeoK0gOiZQAySSMPqyApqQADiHBEHBgplsKL5itWH73BYKr4OoLzmBhHahlRwJnjk1AQPgtDZnmBY8a6-EIKYVgePopEfKRmhAQ2xi1m8FyuCGnxmHhJFyb25AAFSaQh2nnIJ74+iJgZPK87ykmR-SmK4wFHpS0a0Gm8iMjw0FRngZAQMwYCENgABujDWvgkXAtFHCxUCCU9ggOBZSmhaSG5T4VKFuIkUEO7uPKfihaYtb6JZQR+J8Sq-iR4XDIlBAFUV8V3lEZBptmHAqcQAgrLkqS5TBo0xZgcW4CVURlZljCVaW+Q1Xxz46ciRhiFhBjvEEPmIKSVk2b1O4NA5EVrfgincLgWyUBwyWpelWU5XlBDfTwf1pntFUCEd1V8nCj6nWczyfPiYgfL4xhhZoqGdR8OhXT0xJiL1HxaI5X3sD9UBQwDM25PNi3LatI3U0pkP-TDB1w8wx2I868G1RomEEURGHWZjrydV0Hjym2bw3bY2LqFTEO4Fmub5mggPYGl5XZWlYMc7TWvqWgPOHfzCMFELvGLn035dGIPgYW1ui9bLv7PK8LxGGRFG6erNM8ObOvTRws3M2gS0cCtJsa1A4cFlbfPYALdvFsLKMaMS+BiKYfg2NigZk+85m+h2pg6L+MpthhKtEqER7YDy8CFGD-I54uAC06ie88ZL4i8FFfmSta92YBe-L8fhhaGLyYVTmrdw75ahbWqEGPgfjyj+PR762EYfezY2bcVk1jGvWlnWRTxB8YWEysY6O6Fve94vUB5fDXxIh5zX6-0b7uTOr3EMW4OzdH6K7JUZMJ7rh3I2X+PRpZvE+K4ABZs1I6xASLBAYhawdj6M8CSG4F64zVi3IAA */
@@ -254,9 +290,13 @@ export const settingsMachine = setup({
       ...input,
     }
   },
+  invoke: {
+    src: 'watchSystemTheme',
+    id: 'watchSystemTheme',
+  },
   states: {
     idle: {
-      entry: ['setThemeClass', 'setClientSideSceneUnits'],
+      entry: ['setThemeClass', 'setClientSideSceneUnits', 'sendThemeToWatcher'],
 
       on: {
         '*': {
@@ -275,7 +315,7 @@ export const settingsMachine = setup({
           target: 'persisting settings',
 
           // No toast
-          actions: ['setThemeColor', 'setSettingAtLevel'],
+          actions: ['setSettingAtLevel', 'setThemeColor'],
         },
 
         'set.modeling.defaultUnit': {
@@ -298,6 +338,7 @@ export const settingsMachine = setup({
             'setThemeClass',
             'setEngineTheme',
             'setClientTheme',
+            'sendThemeToWatcher',
           ],
         },
 
@@ -343,6 +384,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
+            'sendThemeToWatcher',
           ],
         },
 
@@ -355,6 +397,7 @@ export const settingsMachine = setup({
             'Execute AST',
             'setClientTheme',
             'setAllowOrbitInSketchMode',
+            'sendThemeToWatcher',
           ],
         },
 
@@ -441,4 +484,10 @@ export const settingsActor = createActor(settingsMachine, {
 }).start()
 
 export const useSettings = () =>
-  useSelector(settingsActor, (state) => state.context)
+  useSelector(settingsActor, (state) => {
+    // We have to peel everything that isn't settings off
+    const { currentProject, ...settings } = state.context
+    return settings
+  })
+
+window.settingsActor = settingsActor
