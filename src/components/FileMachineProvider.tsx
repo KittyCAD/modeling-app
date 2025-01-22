@@ -1,7 +1,7 @@
 import { useMachine } from '@xstate/react'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+import { useLocation, useNavigate, useRouteLoaderData } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
-import { PATHS } from 'lib/paths'
+import { BROWSER_PATH, PATHS } from 'lib/paths'
 import React, { createContext, useEffect, useMemo } from 'react'
 import { toast } from 'react-hot-toast'
 import {
@@ -30,6 +30,7 @@ import {
 import { markOnce } from 'lib/performance'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { settingsActor } from 'machines/settingsMachine'
+import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -47,10 +48,49 @@ export const FileMachineProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { project, file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
+
+  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
+    // This will register the commands to route to Telemetry, Home, and Settings.
+    useEffect(() => {
+      const filePath =
+        PATHS.FILE +
+        '/' +
+        encodeURIComponent(file?.path || BROWSER_PATH)
+      const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+        createRouteCommands(navigate, location, filePath)
+      commandBarActor.send({
+        type: 'Remove commands',
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteHomeCommand,
+            RouteSettingsCommand,
+          ],
+        },
+      })
+      if (location.pathname === PATHS.HOME) {
+        commandBarActor.send({
+          type: 'Add commands',
+          data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+        })
+      } else if (location.pathname.includes(PATHS.FILE)) {
+        commandBarActor.send({
+          type: 'Add commands',
+          data: {
+            commands: [
+              RouteTelemetryCommand,
+              RouteSettingsCommand,
+              RouteHomeCommand,
+            ],
+          },
+        })
+      }
+    }, [location])
 
   useEffect(() => {
     markOnce('code/didLoadFile')

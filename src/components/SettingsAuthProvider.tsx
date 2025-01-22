@@ -96,14 +96,11 @@ export const SettingsAuthProviderJest = ({
 export const SettingsAuthProviderBase = ({
   children,
   loadedSettings,
-  loadedProject,
 }: {
   children: React.ReactNode
   loadedSettings: typeof settings
   loadedProject?: IndexLoaderData
 }) => {
-  const location = useLocation()
-  const navigate = useNavigate()
 
   const [settingsState, settingsSend, settingsActor] = useMachine(
     settingsMachine,
@@ -146,43 +143,6 @@ export const SettingsAuthProviderBase = ({
     settingsWithCommandConfigs,
   ])
 
-  // Due to the route provider, i've moved this to the SettingsAuthProvider instead of CommandBarProvider
-  // This will register the commands to route to Telemetry, Home, and Settings.
-  useEffect(() => {
-    const filePath =
-      PATHS.FILE +
-      '/' +
-      encodeURIComponent(loadedProject?.file?.path || BROWSER_PATH)
-    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-      createRouteCommands(navigate, location, filePath)
-    commandBarActor.send({
-      type: 'Remove commands',
-      data: {
-        commands: [
-          RouteTelemetryCommand,
-          RouteHomeCommand,
-          RouteSettingsCommand,
-        ],
-      },
-    })
-    if (location.pathname === PATHS.HOME) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
-      })
-    } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: {
-          commands: [
-            RouteTelemetryCommand,
-            RouteSettingsCommand,
-            RouteHomeCommand,
-          ],
-        },
-      })
-    }
-  }, [location])
 
 
   return (
