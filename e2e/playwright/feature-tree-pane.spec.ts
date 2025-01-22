@@ -153,6 +153,10 @@ test.describe('Feature Tree pane', () => {
     `User can edit sketch (but not on offset plane yet) from the feature tree`,
     { tag: '@electron' },
     async ({ context, homePage, scene, editor, toolbar, page }) => {
+      const unavailableToastMessage = page.getByText(
+        'Editing sketches on faces or offset planes through the feature tree is not yet supported'
+      )
+
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -192,20 +196,27 @@ test.describe('Feature Tree pane', () => {
         await toolbar.exitSketchBtn.click()
       })
 
-      await test.step('On an extrude face should work', async () => {
+      await test.step('On an extrude face should *not* work', async () => {
         // Tooltip is getting in the way of clicking, so I'm first closing the pane
         await toolbar.closeFeatureTreePane()
         await (await toolbar.getFeatureTreeOperation('Sketch', 1)).dblclick()
         await expect(
-          toolbar.exitSketchBtn,
-          'We should be in sketch mode now'
+          unavailableToastMessage,
+          'We should see a toast message about this'
         ).toBeVisible()
-        await editor.expectState({
-          highlightedCode: '',
-          diagnostics: [],
-          activeLines: ['|>circle({center=[-1,2],radius=.5},%)'],
-        })
-        await toolbar.exitSketchBtn.click()
+        await unavailableToastMessage.waitFor({ state: 'detached' })
+        // TODO - turn on once we update the artifactGraph in Rust
+        // to include the proper source location for the extrude face
+        // await expect(
+        //   toolbar.exitSketchBtn,
+        //   'We should be in sketch mode now'
+        // ).toBeVisible()
+        // await editor.expectState({
+        //   highlightedCode: '',
+        //   diagnostics: [],
+        //   activeLines: ['|>circle({center=[-1,2],radius=.5},%)'],
+        // })
+        // await toolbar.exitSketchBtn.click()
       })
 
       await test.step('On an offset plane should *not* work', async () => {
@@ -223,7 +234,7 @@ test.describe('Feature Tree pane', () => {
         ).not.toBeVisible()
         await expect(
           page.getByText(
-            'sketches on offset planes through the feature tree is not yet supported'
+            'Editing sketches on faces or offset planes through the feature tree is not yet supported'
           ),
           'We should see a toast message about this'
         ).toBeVisible()

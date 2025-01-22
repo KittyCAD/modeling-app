@@ -275,7 +275,7 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
       } else {
         return {
           reason:
-            'Editing sketches on offset planes through the feature tree is not yet supported. Please double-click the path in the scene for now.',
+            'Editing sketches on faces or offset planes through the feature tree is not yet supported. Please double-click the path in the scene for now.',
         }
       }
     },
