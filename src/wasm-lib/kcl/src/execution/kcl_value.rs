@@ -622,6 +622,19 @@ impl From<crate::UnitLength> for UnitLen {
     }
 }
 
+impl From<UnitLen> for crate::UnitLength {
+    fn from(unit: UnitLen) -> Self {
+        match unit {
+            UnitLen::Cm => crate::UnitLength::Cm,
+            UnitLen::Feet => crate::UnitLength::Ft,
+            UnitLen::Inches => crate::UnitLength::In,
+            UnitLen::M => crate::UnitLength::M,
+            UnitLen::Mm => crate::UnitLength::Mm,
+            UnitLen::Yards => crate::UnitLength::Yd,
+        }
+    }
+}
+
 #[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
