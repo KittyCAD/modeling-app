@@ -2,6 +2,7 @@
 
 use std::{path::PathBuf, sync::Arc};
 
+use annotations::AnnotationScope;
 use anyhow::Result;
 use artifact::build_artifact_graph;
 use async_recursion::async_recursion;
@@ -2316,6 +2317,36 @@ impl ExecutorContext {
         }
     }
 
+    async fn handle_annotations(
+        &self,
+        annotations: impl Iterator<Item = (&NonCodeValue, SourceRange)>,
+        scope: AnnotationScope,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        for (annotation, source_range) in annotations {
+            if annotation.annotation_name() == Some(annotations::SETTINGS) {
+                if scope == AnnotationScope::Module {
+                    let old_units = exec_state.length_unit();
+                    exec_state
+                        .mod_local
+                        .settings
+                        .update_from_annotation(annotation, source_range)?;
+                    let new_units = exec_state.length_unit();
+                    if old_units != new_units {
+                        self.engine.set_units(new_units.into(), source_range).await?;
+                    }
+                } else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "Settings can only be modified at the top level scope of a file".to_owned(),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+            }
+            // TODO warn on unknown annotations
+        }
+        Ok(())
+    }
+
     /// Execute an AST's program.
     #[async_recursion]
     pub(crate) async fn inner_execute<'a>(
@@ -2324,21 +2355,16 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        if let Some((annotation, source_range)) = program
-            .non_code_meta
-            .start_nodes
-            .iter()
-            .filter_map(|n| {
-                n.annotation(annotations::SETTINGS)
-                    .map(|result| (result, n.as_source_range()))
-            })
-            .next()
-        {
-            exec_state
-                .mod_local
-                .settings
-                .update_from_annotation(annotation, source_range)?;
-        }
+        self.handle_annotations(
+            program
+                .non_code_meta
+                .start_nodes
+                .iter()
+                .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
+            AnnotationScope::Module,
+            exec_state,
+        )
+        .await?;
 
         let mut last_expr = None;
         // Iterate over the body of the program.
@@ -2521,6 +2547,7 @@ impl ExecutorContext {
         exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, ProgramMemory, Vec<String>), KclError> {
+        let old_units = exec_state.length_unit();
         // TODO It sucks that we have to clone the whole module AST here
         let info = exec_state.global.module_infos[&module_id].clone();
 
@@ -2537,7 +2564,11 @@ impl ExecutorContext {
             .inner_execute(&info.parsed.unwrap(), exec_state, crate::execution::BodyType::Root)
             .await;
 
+        let new_units = exec_state.length_unit();
         std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+        if new_units != old_units {
+            self.engine.set_units(old_units.into(), Default::default()).await?;
+        }
         self.engine.replace_execution_kind(original_execution);
 
         let result = result.map_err(|err| {
