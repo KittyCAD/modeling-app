@@ -1,7 +1,6 @@
 import {
   AnyActorRef,
   assign,
-  createActor,
   enqueueActions,
   EventObject,
   fromCallback,
@@ -47,7 +46,6 @@ import toast from 'react-hot-toast'
 import decamelize from 'decamelize'
 import { reportRejection } from 'lib/trap'
 import { Project } from 'lib/project'
-import { useSelector } from '@xstate/react'
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,

@@ -33,8 +33,6 @@ const appMachine = setup({
 })
 
 export const appActor = createActor(appMachine)
-window.appActor = appActor
-
 export const authActor = appActor.system.get(AUTH) as ActorRefFrom<
   typeof authMachine
 >
@@ -57,5 +55,3 @@ export const useSettings = () =>
     const { currentProject, ...settings } = state.context
     return settings
   })
-
-window.settingsActor = settingsActor
