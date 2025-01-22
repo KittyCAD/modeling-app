@@ -131,10 +131,13 @@ export async function listProjects(
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<Project[]> {
   if (configuration === undefined) {
-    configuration = await readAppSettingsFile()
+    configuration = await readAppSettingsFile().catch((e) => {
+      console.error(e)
+      return e
+    })
   }
 
-  if (err(configuration)) return Promise.reject(configuration)
+  if (err(configuration) || !configuration) return Promise.reject(configuration)
   const projectDir = await ensureProjectDirectoryExists(configuration)
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
