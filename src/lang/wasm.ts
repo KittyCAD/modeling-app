@@ -54,6 +54,7 @@ import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
 import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from './queryAst'
+import { settingsActor } from 'machines/settingsMachine'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -581,9 +582,7 @@ export const executor = async (
   try {
     let jsAppSettings = default_app_settings()
     if (!TEST) {
-      const lastSettingsSnapshot = await import(
-        'components/SettingsAuthProvider'
-      ).then((module) => module.lastSettingsContextSnapshot)
+      const lastSettingsSnapshot = settingsActor.getSnapshot().context
       if (lastSettingsSnapshot) {
         jsAppSettings = getAllCurrentSettings(lastSettingsSnapshot)
       }
