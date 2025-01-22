@@ -14,7 +14,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { trap } from 'lib/trap'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
-import { settingsActor } from 'machines/settingsMachine'
+import { settingsActor } from 'machines/appMachine'
 
 export const RouteProviderContext = createContext({})
 

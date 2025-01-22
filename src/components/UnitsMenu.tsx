@@ -1,6 +1,6 @@
 import { Popover } from '@headlessui/react'
 import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
-import { settingsActor, useSettings } from 'machines/settingsMachine'
+import { settingsActor, useSettings } from 'machines/appMachine'
 
 export function UnitsMenu() {
   const settings = useSettings()

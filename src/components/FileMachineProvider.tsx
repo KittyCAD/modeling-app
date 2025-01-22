@@ -29,7 +29,7 @@ import {
 } from 'lib/getKclSamplesManifest'
 import { markOnce } from 'lib/performance'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { settingsActor } from 'machines/settingsMachine'
+import { settingsActor } from 'machines/appMachine'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
 
 type MachineContext<T extends AnyStateMachine> = {

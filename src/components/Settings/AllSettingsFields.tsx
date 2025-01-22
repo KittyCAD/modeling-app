@@ -24,7 +24,7 @@ import { useLspContext } from 'components/LspProvider'
 import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { settingsActor, useSettings } from 'machines/settingsMachine'
+import { settingsActor, useSettings } from 'machines/appMachine'
 import { useSelector } from '@xstate/react'
 
 interface AllSettingsFieldsProps {

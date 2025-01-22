@@ -92,7 +92,7 @@ import { promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>

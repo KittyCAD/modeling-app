@@ -19,7 +19,7 @@ import { createIdentifier, createVariableDeclaration } from 'lang/modifyAst'
 import { useCodeMirror } from 'components/ModelingSidebar/ModelingPanes/CodeEditor'
 import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 const machineContextSelector = (snapshot?: {
   context: Record<string, unknown>

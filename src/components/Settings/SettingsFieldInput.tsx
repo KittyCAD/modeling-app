@@ -6,7 +6,7 @@ import {
   WildcardSetEvent,
 } from 'lib/settings/settingsTypes'
 import { getSettingInputType } from 'lib/settings/settingsUtils'
-import { settingsActor, useSettings } from 'machines/settingsMachine'
+import { settingsActor, useSettings } from 'machines/appMachine'
 import { useMemo } from 'react'
 import { EventFrom } from 'xstate'
 

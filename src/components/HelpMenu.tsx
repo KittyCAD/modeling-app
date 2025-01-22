@@ -8,7 +8,7 @@ import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { useLspContext } from './LspProvider'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { reportRejection } from 'lib/trap'
-import { settingsActor } from 'machines/settingsMachine'
+import { settingsActor } from 'machines/appMachine'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />

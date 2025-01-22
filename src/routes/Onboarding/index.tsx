@@ -25,7 +25,7 @@ import { reportRejection } from 'lib/trap'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { EngineConnectionStateType } from 'lang/std/engineConnection'
-import { settingsActor, useSettings } from 'machines/settingsMachine'
+import { settingsActor, useSettings } from 'machines/appMachine'
 import { useSelector } from '@xstate/react'
 
 export const kbdClasses =

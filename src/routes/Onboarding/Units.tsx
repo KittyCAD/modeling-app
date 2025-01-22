@@ -4,7 +4,7 @@ import { ActionButton } from 'components/ActionButton'
 import { SettingsSection } from 'components/Settings/SettingsSection'
 import { useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { settingsActor, useSettings } from 'machines/settingsMachine'
+import { settingsActor, useSettings } from 'machines/appMachine'
 
 export default function Units() {
   const dismiss = useDismiss()

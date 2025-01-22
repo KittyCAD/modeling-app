@@ -3,7 +3,7 @@ import { onboardingPaths } from 'routes/Onboarding/paths'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { bracketThicknessCalculationLine } from 'lib/exampleKcl'
 import { isDesktop } from 'lib/isDesktop'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 export default function OnboardingParametricModeling() {
   useDemoCode()

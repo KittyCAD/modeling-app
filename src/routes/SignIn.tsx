@@ -14,7 +14,7 @@ import { toSync } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import toast from 'react-hot-toast'
 import { authActor } from 'machines/appMachine'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'

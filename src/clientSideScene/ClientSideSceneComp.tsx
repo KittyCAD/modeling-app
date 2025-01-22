@@ -47,7 +47,7 @@ import { ActionButton } from 'components/ActionButton'
 import { err, reportRejection, trap } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)

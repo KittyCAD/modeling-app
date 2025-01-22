@@ -14,7 +14,7 @@ import { useFileContext } from 'hooks/useFileContext'
 import { useLspContext } from 'components/LspProvider'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 /**
  * Show either a welcome screen or a warning screen

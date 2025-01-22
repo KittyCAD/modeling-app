@@ -22,7 +22,7 @@ import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
 import { maybeWriteToDisk } from 'lib/telemetry'
 import { useToken } from 'machines/appMachine'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})

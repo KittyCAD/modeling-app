@@ -2,7 +2,7 @@ import decamelize from 'decamelize'
 import { Setting } from 'lib/settings/initialSettings'
 import { SettingsLevel } from 'lib/settings/settingsTypes'
 import { shouldHideSetting } from 'lib/settings/settingsUtils'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 interface SettingsSectionsListProps {
   searchParamTab: SettingsLevel

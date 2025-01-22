@@ -50,7 +50,7 @@ import {
 } from 'machines/kclEditorMachine'
 import { useSelector } from '@xstate/react'
 import { modelingMachineEvent } from 'editor/manager'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 export const editorShortcutMeta = {
   formatCode: {

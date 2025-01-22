@@ -1,5 +1,5 @@
 import { Themes, getSystemTheme } from 'lib/theme'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 /**
  * Resolves the current theme based on the theme setting

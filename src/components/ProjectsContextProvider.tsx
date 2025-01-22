@@ -23,7 +23,7 @@ import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from 'lib/isDesktop'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>

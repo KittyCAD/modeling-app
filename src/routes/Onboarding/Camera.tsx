@@ -6,7 +6,7 @@ import {
   cameraSystems,
 } from 'lib/cameraControls'
 import { SettingsSection } from 'components/Settings/SettingsSection'
-import { settingsActor, useSettings } from 'machines/settingsMachine'
+import { settingsActor, useSettings } from 'machines/appMachine'
 
 export default function Units() {
   const dismiss = useDismiss()

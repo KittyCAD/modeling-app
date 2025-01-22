@@ -23,7 +23,7 @@ import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { useProjectsContext } from 'hooks/useProjectsContext'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.

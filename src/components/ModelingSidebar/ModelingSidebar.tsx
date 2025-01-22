@@ -20,7 +20,7 @@ import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
 import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'

@@ -6,7 +6,7 @@ import { CustomIconName } from 'components/CustomIcon'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from 'components/ActionIcon'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useSettings } from 'machines/settingsMachine'
+import { useSettings } from 'machines/appMachine'
 
 export interface ModelingPaneProps {
   id: string

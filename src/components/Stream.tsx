@@ -19,9 +19,8 @@ import { IndexLoaderData } from 'lib/types'
 import { err, reportRejection } from 'lib/trap'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ViewControlContextMenu } from './ViewControlMenu'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { useSelector } from '@xstate/react'
-import { useSettings } from 'machines/settingsMachine'
+import { useCommandBarState } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 
 enum StreamState {
   Playing = 'playing',

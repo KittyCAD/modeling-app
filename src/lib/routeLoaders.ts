@@ -15,7 +15,7 @@ import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
 import { normalizeLineEndings } from 'lib/codeEditor'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
-import { getSettings, settingsActor } from 'machines/settingsMachine'
+import { getSettings, settingsActor } from 'machines/appMachine'
 
 export const telemetryLoader: LoaderFunction = async ({
   params,
