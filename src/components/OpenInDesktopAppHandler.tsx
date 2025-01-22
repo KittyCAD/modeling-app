@@ -1,7 +1,6 @@
 import { getSystemTheme, Themes } from 'lib/theme'
 import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
 import { isDesktop } from 'lib/isDesktop'
-import { Spinner } from './Spinner'
 import { useSearchParams } from 'react-router-dom'
 import { ASK_TO_OPEN_QUERY_PARAM } from 'lib/constants'
 import { VITE_KC_SITE_BASE_URL } from 'env'
@@ -85,7 +84,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
           </h1>
         </div>
         <p className="text-primary flex items-center gap-2">
-          <Spinner /> Choose where to open this link...
+          Choose where to open this link...
         </p>
         <div className="flex flex-col md:flex-row items-start justify-between gap-4 xl:gap-8">
           <div className="flex flex-col gap-2">
