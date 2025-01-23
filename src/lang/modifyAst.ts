@@ -212,12 +212,13 @@ export function mutateKwArg(
   node: CallExpressionKw,
   val: Expr
 ): boolean {
-  node.arguments.forEach((arg, i) => {
+  for (let i = 0; i < node.arguments.length; i++) {
+    const arg = node.arguments[i]
     if (arg.label.name === label) {
       node.arguments[i].arg = val
       return true
     }
-  })
+  }
   node.arguments.push(createLabeledArg(label, val))
   return false
 }
