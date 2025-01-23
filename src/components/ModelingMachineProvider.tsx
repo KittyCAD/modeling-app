@@ -1,4 +1,4 @@
-import { useMachine } from '@xstate/react'
+import { useMachine, useSelector } from '@xstate/react'
 import React, {
   createContext,
   useEffect,
@@ -11,6 +11,7 @@ import {
   AnyStateMachine,
   ContextFrom,
   Prop,
+  SnapshotFrom,
   StateFrom,
   assign,
   fromPromise,
@@ -75,7 +76,6 @@ import toast from 'react-hot-toast'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -88,6 +88,7 @@ import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -98,6 +99,10 @@ type MachineContext<T extends AnyStateMachine> = {
 export const ModelingMachineContext = createContext(
   {} as MachineContext<typeof modelingMachine>
 )
+
+const commandBarIsClosedSelector = (
+  state: SnapshotFrom<typeof commandBarActor>
+) => state.matches('Closed')
 
 export const ModelingMachineProvider = ({
   children,
@@ -129,8 +134,10 @@ export const ModelingMachineProvider = ({
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
-  const { commandBarState, commandBarSend } = useCommandsContext()
-
+  const isCommandBarClosed = useSelector(
+    commandBarActor,
+    commandBarIsClosedSelector
+  )
   // Settings machine setup
   // const retrievedSettings = useRef(
   // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
@@ -385,7 +392,16 @@ export const ModelingMachineProvider = ({
             }
 
             if (setSelections.selectionType === 'completeSelection') {
-              editorManager.selectRange(setSelections.selection)
+              const codeMirrorSelection = editorManager.createEditorSelection(
+                setSelections.selection
+              )
+              kclEditorActor.send({
+                type: 'setLastSelectionEvent',
+                data: {
+                  codeMirrorSelection,
+                  scrollIntoView: false,
+                },
+              })
               if (!sketchDetails)
                 return {
                   selectionRanges: setSelections.selection,
@@ -526,7 +542,6 @@ export const ModelingMachineProvider = ({
             trimmedPrompt,
             fileMachineSend,
             navigate,
-            commandBarSend,
             context,
             token,
             settings: {
@@ -540,7 +555,7 @@ export const ModelingMachineProvider = ({
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
-          if (!commandBarState.matches('Closed')) return false
+          if (!isCommandBarClosed) return false
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },

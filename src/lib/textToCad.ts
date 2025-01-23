@@ -68,10 +68,6 @@ interface TextToKclProps {
     data?: unknown
   ) => unknown
   navigate: NavigateFunction
-  commandBarSend: (
-    type: EventFrom<typeof commandBarMachine>,
-    data?: unknown
-  ) => unknown
   context: ContextFrom<typeof fileMachine>
   token?: string
   settings: {
@@ -84,7 +80,6 @@ export async function submitAndAwaitTextToKcl({
   trimmedPrompt,
   fileMachineSend,
   navigate,
-  commandBarSend,
   context,
   token,
   settings,
@@ -96,7 +91,6 @@ export async function submitAndAwaitTextToKcl({
         ToastTextToCadError({
           toastId,
           message,
-          commandBarSend,
           prompt: trimmedPrompt,
         }),
       {
