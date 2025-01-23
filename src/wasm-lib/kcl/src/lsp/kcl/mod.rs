@@ -42,6 +42,7 @@ use tower_lsp::{
 };
 
 use crate::{
+    docs::kcl_doc::DocData,
     errors::Suggestion,
     lsp::{backend::Backend as _, util::IntoDiagnostic},
     parsing::{
@@ -172,8 +173,9 @@ impl Backend {
         can_send_telemetry: bool,
     ) -> Result<Self, String> {
         let stdlib = crate::std::StdLib::new();
-        let stdlib_completions = get_completions_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
-        let stdlib_signatures = get_signatures_from_stdlib(&stdlib).map_err(|e| e.to_string())?;
+        let kcl_std = crate::docs::kcl_doc::walk_prelude();
+        let stdlib_completions = get_completions_from_stdlib(&stdlib, &kcl_std).map_err(|e| e.to_string())?;
+        let stdlib_signatures = get_signatures_from_stdlib(&stdlib, &kcl_std).map_err(|e| e.to_string())?;
 
         Ok(Self {
             client,
@@ -1467,12 +1469,19 @@ impl LanguageServer for Backend {
 }
 
 /// Get completions from our stdlib.
-pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap<String, CompletionItem>> {
+pub fn get_completions_from_stdlib(
+    stdlib: &crate::std::StdLib,
+    kcl_std: &[DocData],
+) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
     let combined = stdlib.combined();
 
     for internal_fn in combined.values() {
         completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
+    }
+
+    for d in kcl_std {
+        completions.insert(d.name().to_owned(), d.to_completion_item());
     }
 
     let variable_kinds = VariableKind::to_completion_items();
@@ -1484,12 +1493,21 @@ pub fn get_completions_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMa
 }
 
 /// Get signatures from our stdlib.
-pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib) -> Result<HashMap<String, SignatureHelp>> {
+pub fn get_signatures_from_stdlib(
+    stdlib: &crate::std::StdLib,
+    kcl_std: &[DocData],
+) -> Result<HashMap<String, SignatureHelp>> {
     let mut signatures = HashMap::new();
     let combined = stdlib.combined();
 
     for internal_fn in combined.values() {
         signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
+    }
+
+    for d in kcl_std {
+        if let Some(sig) = d.to_signature_help() {
+            signatures.insert(d.name().to_owned(), sig);
+        }
     }
 
     Ok(signatures)

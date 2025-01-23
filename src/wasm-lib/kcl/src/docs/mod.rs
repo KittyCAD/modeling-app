@@ -2,6 +2,7 @@
 
 #[cfg(test)]
 mod gen_std_tests;
+pub mod kcl_doc;
 
 use std::path::Path;
 
@@ -998,19 +999,5 @@ mod tests {
 	ccw = ${2:false},
 }, ${3:%})${}"#
         );
-    }
-
-    // We want to test the snippets we compile at lsp start.
-    #[test]
-    fn get_all_stdlib_autocomplete_snippets() {
-        let stdlib = crate::std::StdLib::new();
-        crate::lsp::kcl::get_completions_from_stdlib(&stdlib).unwrap();
-    }
-
-    // We want to test the signatures we compile at lsp start.
-    #[test]
-    fn get_all_stdlib_signatures() {
-        let stdlib = crate::std::StdLib::new();
-        crate::lsp::kcl::get_signatures_from_stdlib(&stdlib).unwrap();
     }
 }

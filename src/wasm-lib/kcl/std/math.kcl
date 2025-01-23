@@ -1,4 +1,4 @@
-@no_prelude()
+@no_prelude
 
 /// The value of `pi`, Archimedes’ constant (π).
 ///

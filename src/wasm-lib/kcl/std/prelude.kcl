@@ -1,4 +1,4 @@
-@no_prelude()
+@no_prelude
 export import * from "std::math"
 
 export ZERO = 0

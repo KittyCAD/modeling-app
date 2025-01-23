@@ -27,7 +27,7 @@ use crate::{
     docs::StdLibFn,
     errors::KclError,
     execution::{KclValue, Metadata, TagIdentifier},
-    parsing::PIPE_OPERATOR,
+    parsing::{token::NumericSuffix, PIPE_OPERATOR},
     source_range::{ModuleId, SourceRange},
 };
 
@@ -813,6 +813,43 @@ impl Expr {
             _ => false,
         }
     }
+
+    pub fn literal_bool(&self) -> Option<bool> {
+        match self {
+            Expr::Literal(lit) => match lit.value {
+                LiteralValue::Bool(b) => Some(b),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    pub fn literal_num(&self) -> Option<(f64, NumericSuffix)> {
+        match self {
+            Expr::Literal(lit) => match lit.value {
+                LiteralValue::Number { value, suffix } => Some((value, suffix)),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    pub fn literal_str(&self) -> Option<&str> {
+        match self {
+            Expr::Literal(lit) => match &lit.value {
+                LiteralValue::String(s) => Some(s),
+                _ => None,
+            },
+            _ => None,
+        }
+    }
+
+    pub fn ident_name(&self) -> Option<&str> {
+        match self {
+            Expr::Identifier(ident) => Some(&ident.name),
+            _ => None,
+        }
+    }
 }
 
 impl From<Expr> for SourceRange {
@@ -1102,6 +1139,20 @@ impl NonCodeMeta {
     pub fn non_code_nodes_len(&self) -> usize {
         self.non_code_nodes.values().map(|x| x.len()).sum()
     }
+
+    pub fn insert(&mut self, i: usize, new: Node<NonCodeNode>) {
+        self.non_code_nodes.entry(i).or_default().push(new);
+    }
+
+    pub fn contains(&self, pos: usize) -> bool {
+        if self.start_nodes.iter().any(|node| node.contains(pos)) {
+            return true;
+        }
+
+        self.non_code_nodes
+            .iter()
+            .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
+    }
 }
 
 // implement Deserialize manually because we to force the keys of non_code_nodes to be usize
@@ -1129,22 +1180,6 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
             start_nodes: helper.start_nodes,
             digest: None,
         })
-    }
-}
-
-impl NonCodeMeta {
-    pub fn insert(&mut self, i: usize, new: Node<NonCodeNode>) {
-        self.non_code_nodes.entry(i).or_default().push(new);
-    }
-
-    pub fn contains(&self, pos: usize) -> bool {
-        if self.start_nodes.iter().any(|node| node.contains(pos)) {
-            return true;
-        }
-
-        self.non_code_nodes
-            .iter()
-            .any(|(_, nodes)| nodes.iter().any(|node| node.contains(pos)))
     }
 }
 
@@ -1636,7 +1671,7 @@ pub enum ItemVisibility {
 }
 
 impl ItemVisibility {
-    fn is_default(&self) -> bool {
+    pub fn is_default(&self) -> bool {
         matches!(self, Self::Default)
     }
 }
