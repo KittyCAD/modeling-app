@@ -863,7 +863,9 @@ impl Node<IfExpression> {
             .await?
             .get_bool()?;
         if cond {
-            let block_result = ctx.inner_execute(&self.then_val, exec_state, BodyType::Block).await?;
+            let block_result = ctx
+                .inner_execute(&self.then_val, exec_state, BodyType::Block, false)
+                .await?;
             // Block must end in an expression, so this has to be Some.
             // Enforced by the parser.
             // See https://github.com/KittyCAD/modeling-app/issues/4015
@@ -883,7 +885,7 @@ impl Node<IfExpression> {
                 .get_bool()?;
             if cond {
                 let block_result = ctx
-                    .inner_execute(&else_if.then_val, exec_state, BodyType::Block)
+                    .inner_execute(&else_if.then_val, exec_state, BodyType::Block, false)
                     .await?;
                 // Block must end in an expression, so this has to be Some.
                 // Enforced by the parser.
@@ -893,7 +895,7 @@ impl Node<IfExpression> {
         }
 
         // Run the final `else` branch.
-        ctx.inner_execute(&self.final_else, exec_state, BodyType::Block)
+        ctx.inner_execute(&self.final_else, exec_state, BodyType::Block, false)
             .await
             .map(|expr| expr.unwrap())
     }

@@ -2262,7 +2262,7 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.execute_and_build_graph(&cache_result.program, exec_state)
+        self.execute_and_build_graph(&cache_result.program, exec_state, cache_result.clear_scene)
             .await
             .map_err(|e| {
                 KclErrorWithOutputs::new(
@@ -2283,11 +2283,12 @@ impl ExecutorContext {
         &self,
         program: NodeRef<'a, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
+        cleared_scene: bool,
     ) -> Result<Option<KclValue>, KclError> {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
         let exec_result = self
-            .inner_execute(program, exec_state, crate::execution::BodyType::Root)
+            .inner_execute(program, exec_state, crate::execution::BodyType::Root, cleared_scene)
             .await;
         // Move the artifact commands and responses to simplify cache management
         // and error creation.
@@ -2363,8 +2364,9 @@ impl ExecutorContext {
         program: NodeRef<'a, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
         body_type: BodyType,
+        cleared_scene: bool,
     ) -> Result<Option<KclValue>, KclError> {
-        if body_type == BodyType::Root {
+        if cleared_scene && body_type == BodyType::Root {
             let no_prelude = self
                 .handle_annotations(
                     program
@@ -2630,7 +2632,7 @@ impl ExecutorContext {
                 let original_execution = self.engine.replace_execution_kind(exec_kind);
 
                 let result = self
-                    .inner_execute(program, exec_state, crate::execution::BodyType::Root)
+                    .inner_execute(program, exec_state, crate::execution::BodyType::Root, true)
                     .await;
                 let new_units = exec_state.length_unit();
 
@@ -2943,7 +2945,7 @@ pub(crate) async fn call_user_defined_function(
     let (result, fn_memory) = {
         let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
         let result = ctx
-            .inner_execute(&function_expression.body, exec_state, BodyType::Block)
+            .inner_execute(&function_expression.body, exec_state, BodyType::Block, false)
             .await;
         // Restore the previous memory.
         let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
@@ -2973,7 +2975,7 @@ pub(crate) async fn call_user_defined_function_kw(
     let (result, fn_memory) = {
         let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
         let result = ctx
-            .inner_execute(&function_expression.body, exec_state, BodyType::Block)
+            .inner_execute(&function_expression.body, exec_state, BodyType::Block, false)
             .await;
         // Restore the previous memory.
         let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
