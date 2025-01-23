@@ -281,7 +281,9 @@ export const settingsMachine = setup({
     },
     /** Unload the project-level setting values from memory */
     clearProjectSettings: assign(({ context }) => {
-      const newSettings = clearSettingsAtLevel(context, 'project')
+      // Peel off all non-settings context
+      const { currentProject: _, ...settings } = context
+      const newSettings = clearSettingsAtLevel(settings, 'project')
       return newSettings
     }),
     /** Unload the current project's info from memory */
