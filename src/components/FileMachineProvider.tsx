@@ -12,7 +12,6 @@ import {
   StateFrom,
   fromPromise,
 } from 'xstate'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { fileMachine } from 'machines/fileMachine'
 import { isDesktop } from 'lib/isDesktop'
 import {
@@ -30,6 +29,7 @@ import {
 } from 'lib/getKclSamplesManifest'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { markOnce } from 'lib/performance'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -47,7 +47,6 @@ export const FileMachineProvider = ({
   children: React.ReactNode
 }) => {
   const navigate = useNavigate()
-  const { commandBarSend } = useCommandsContext()
   const { settings } = useSettingsAuthContext()
   const { project, file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
@@ -90,7 +89,7 @@ export const FileMachineProvider = ({
         navigateToFile: ({ context, event }) => {
           if (event.type !== 'xstate.done.actor.create-and-open-file') return
           if (event.output && 'name' in event.output) {
-            commandBarSend({ type: 'Close' })
+            commandBarActor.send({ type: 'Close' })
             navigate(
               `..${PATHS.FILE}/${encodeURIComponent(
                 context.selectedDirectory +
@@ -336,15 +335,18 @@ export const FileMachineProvider = ({
   )
 
   useEffect(() => {
-    commandBarSend({ type: 'Add commands', data: { commands: kclCommandMemo } })
+    commandBarActor.send({
+      type: 'Add commands',
+      data: { commands: kclCommandMemo },
+    })
 
     return () => {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Remove commands',
         data: { commands: kclCommandMemo },
       })
     }
-  }, [commandBarSend, kclCommandMemo])
+  }, [commandBarActor.send, kclCommandMemo])
 
   return (
     <FileContext.Provider
