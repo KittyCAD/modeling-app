@@ -135,7 +135,7 @@ export const ModelingMachineProvider = ({
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
   let [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
+  const pool = 'pr-3008'
 
   const isCommandBarClosed = useSelector(
     commandBarActor,
