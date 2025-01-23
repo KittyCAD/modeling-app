@@ -31,8 +31,8 @@ pub struct ChamferData {
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid, tag): (ChamferData, Box<Solid>, Option<TagNode>) = args.get_data_and_solid_and_tag()?;
 
-    let solid = inner_chamfer(data, solid, tag, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_chamfer(data, solid, tag, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Cut a straight transitional edge along a tagged path.

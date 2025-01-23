@@ -39,8 +39,8 @@ pub struct HelixData {
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let data: HelixData = args.get_data()?;
 
-    let helix = inner_helix(data, exec_state, args).await?;
-    Ok(KclValue::Helix(helix))
+    let value = inner_helix(data, exec_state, args).await?;
+    Ok(KclValue::Helix { value })
 }
 
 /// Create a helix.
@@ -117,6 +117,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
         revolutions: data.revolutions,
         angle_start: data.angle_start,
         ccw: data.ccw,
+        units: exec_state.length_unit(),
         meta: vec![args.source_range.into()],
     });
 
@@ -193,8 +194,8 @@ pub struct HelixRevolutionsData {
 pub async fn helix_revolutions(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, solid): (HelixRevolutionsData, Box<Solid>) = args.get_data_and_solid()?;
 
-    let solid = inner_helix_revolutions(data, solid, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_helix_revolutions(data, solid, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Create a helix on a cylinder.

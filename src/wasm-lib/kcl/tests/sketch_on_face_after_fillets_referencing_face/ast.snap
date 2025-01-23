@@ -20,7 +20,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             "start": 368,
             "type": "Literal",
             "type": "Literal",
-            "value": 8.0
+            "value": {
+              "value": 8.0,
+              "suffix": "None"
+            }
           },
           "start": 354,
           "type": "VariableDeclarator"
@@ -46,7 +49,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             "start": 445,
             "type": "Literal",
             "type": "Literal",
-            "value": 6.0
+            "value": {
+              "value": 6.0,
+              "suffix": "None"
+            }
           },
           "start": 432,
           "type": "VariableDeclarator"
@@ -72,7 +78,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             "start": 573,
             "type": "Literal",
             "type": "Literal",
-            "value": 35000.0
+            "value": {
+              "value": 35000.0,
+              "suffix": "None"
+            }
           },
           "start": 560,
           "type": "VariableDeclarator"
@@ -98,7 +107,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             "start": 594,
             "type": "Literal",
             "type": "Literal",
-            "value": 6.0
+            "value": {
+              "value": 6.0,
+              "suffix": "None"
+            }
           },
           "start": 586,
           "type": "VariableDeclarator"
@@ -124,7 +136,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             "start": 608,
             "type": "Literal",
             "type": "Literal",
-            "value": 300.0
+            "value": {
+              "value": 300.0,
+              "suffix": "None"
+            }
           },
           "start": 604,
           "type": "VariableDeclarator"
@@ -150,7 +165,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             "start": 640,
             "type": "Literal",
             "type": "Literal",
-            "value": 12.0
+            "value": {
+              "value": 12.0,
+              "suffix": "None"
+            }
           },
           "start": 636,
           "type": "VariableDeclarator"
@@ -200,7 +218,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               "start": 665,
               "type": "Literal",
               "type": "Literal",
-              "value": 2.0
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             },
             "start": 657,
             "type": "BinaryExpression",
@@ -230,7 +251,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             "start": 719,
             "type": "Literal",
             "type": "Literal",
-            "value": 2.0
+            "value": {
+              "value": 2.0,
+              "suffix": "None"
+            }
           },
           "start": 713,
           "type": "VariableDeclarator"
@@ -264,7 +288,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                       "start": 855,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 6.0
+                      "value": {
+                        "value": 6.0,
+                        "suffix": "None"
+                      }
                     },
                     "operator": "*",
                     "right": {
@@ -352,7 +379,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             "start": 929,
             "type": "Literal",
             "type": "Literal",
-            "value": 0.25
+            "value": {
+              "value": 0.25,
+              "suffix": "None"
+            }
           },
           "start": 919,
           "type": "VariableDeclarator"
@@ -406,7 +436,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1033,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 1037,
@@ -414,7 +447,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1036,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 1038,
@@ -450,7 +486,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1054,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 1067,
@@ -514,7 +553,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1110,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 1112,
@@ -557,7 +599,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1136,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -628,7 +673,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1191,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 1193,
@@ -671,7 +719,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1221,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 1247,
@@ -1022,7 +1073,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1560,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 4.28
+                        "value": {
+                          "value": 4.28,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 1570,
@@ -1030,7 +1084,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1566,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 3.83
+                        "value": {
+                          "value": 3.83,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 1571,
@@ -1066,7 +1123,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1587,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.17
+                        "value": {
+                          "value": 2.17,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -1075,7 +1135,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           "start": 1594,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.03
+                          "value": {
+                            "value": 0.03,
+                            "suffix": "None"
+                          }
                         },
                         "end": 1598,
                         "operator": "-",
@@ -1118,7 +1181,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           "start": 1616,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.07
+                          "value": {
+                            "value": 0.07,
+                            "suffix": "None"
+                          }
                         },
                         "end": 1620,
                         "operator": "-",
@@ -1133,7 +1199,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           "start": 1623,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 1.8
+                          "value": {
+                            "value": 1.8,
+                            "suffix": "None"
+                          }
                         },
                         "end": 1626,
                         "operator": "-",
@@ -1176,7 +1245,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           "start": 1644,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2.07
+                          "value": {
+                            "value": 2.07,
+                            "suffix": "None"
+                          }
                         },
                         "end": 1648,
                         "operator": "-",
@@ -1190,7 +1262,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         "start": 1650,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.05
+                        "value": {
+                          "value": 0.05,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 1655,
@@ -1312,7 +1387,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                     "start": 1740,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 10.0
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 1745,

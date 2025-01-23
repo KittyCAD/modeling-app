@@ -1,11 +1,11 @@
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { useEffect, useState } from 'react'
 import { CustomIcon } from './CustomIcon'
 import { getActorNextEvents } from 'lib/utils'
 import { sortCommands } from 'lib/commandUtils'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 function CommandComboBox({
   options,
@@ -14,7 +14,6 @@ function CommandComboBox({
   options: Command[]
   placeholder?: string
 }) {
-  const { commandBarSend } = useCommandsContext()
   const [query, setQuery] = useState('')
   const [filteredOptions, setFilteredOptions] = useState<typeof options>()
 
@@ -41,7 +40,7 @@ function CommandComboBox({
   }, [query])
 
   function handleSelection(command: Command) {
-    commandBarSend({ type: 'Select command', data: { command } })
+    commandBarActor.send({ type: 'Select command', data: { command } })
   }
 
   return (
@@ -61,7 +60,7 @@ function CommandComboBox({
               (event.key === 'Backspace' && !event.currentTarget.value)
             ) {
               event.preventDefault()
-              commandBarSend({ type: 'Close' })
+              commandBarActor.send({ type: 'Close' })
             }
           }}
           placeholder={
