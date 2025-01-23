@@ -389,7 +389,7 @@ export const line: SketchLineHelperKw = {
     ) {
       const callExp = createCallExpressionStdLibKw(
         'line',
-        createPipeSubstitution(),
+        null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
         // TODO: ADAM: This should have a tag sometimes.
         [createLabeledArg(ARG_END, createArrayExpression([newXVal, newYVal]))]
       )
@@ -439,7 +439,7 @@ export const line: SketchLineHelperKw = {
 
     const callExp = createCallExpressionStdLibKw(
       'line',
-      createPipeSubstitution(),
+      null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
       [createLabeledArg(ARG_END, createArrayExpression([newXVal, newYVal]))]
     )
     if (pipe.type === 'PipeExpression') {
@@ -473,7 +473,7 @@ export const line: SketchLineHelperKw = {
       createLiteral(roundOff(to[1] - from[1], 2)),
     ])
 
-    mutateKwArg('end', callExpression, toArrExp)
+    mutateKwArg(ARG_END, callExpression, toArrExp)
     return {
       modifiedAst: _node,
       pathToNode,
@@ -528,7 +528,7 @@ export const lineTo: SketchLineHelperKw = {
     ) {
       const callExp = createCallExpressionStdLibKw(
         'line',
-        createPipeSubstitution(),
+        null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
         [
           createLabeledArg(
             ARG_END_ABSOLUTE,
@@ -582,7 +582,7 @@ export const lineTo: SketchLineHelperKw = {
 
     const callExp = createCallExpressionStdLibKw(
       'line',
-      createPipeSubstitution(),
+      null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
       [
         createLabeledArg(
           ARG_END_ABSOLUTE,

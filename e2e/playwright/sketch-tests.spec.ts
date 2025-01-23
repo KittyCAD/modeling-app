@@ -593,7 +593,7 @@ test.describe('Sketch tests', () => {
 
     await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-    // drag startProfieAt handle
+    // drag startProfileAt handle
     await page.mouse.move(startPX[0], startPX[1])
     await page.mouse.down()
     await page.mouse.move(startPX[0] + dragPX, startPX[1] - dragPX, step5)
