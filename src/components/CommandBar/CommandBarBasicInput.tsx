@@ -1,5 +1,5 @@
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CommandArgument } from 'lib/commandTypes'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -15,8 +15,8 @@ function CommandBarBasicInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commandBarSend, commandBarState } = useCommandsContext()
-  useHotkeys('mod + k, mod + /', () => commandBarSend({ type: 'Close' }))
+  const commandBarState = useCommandBarState()
+  useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {

@@ -9,12 +9,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { kclManager } from 'lib/singletons'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { reportRejection } from 'lib/trap'
-import { useCommandsContext } from 'hooks/useCommandsContext'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 export const KclEditorMenu = ({ children }: PropsWithChildren) => {
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable()
-  const { commandBarSend } = useCommandsContext()
 
   return (
     <Menu>
@@ -85,7 +84,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button
               onClick={() => {
-                commandBarSend({
+                commandBarActor.send({
                   type: 'Find and select command',
                   data: {
                     groupId: 'code',
