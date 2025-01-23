@@ -7,7 +7,6 @@ import {
   createRoutesFromElements,
 } from 'react-router-dom'
 import { Models } from '@kittycad/lib'
-import { SettingsAuthProviderJest } from './SettingsAuthProvider'
 
 type User = Models['User_type']
 
@@ -120,12 +119,7 @@ function TestWrap({ children }: { children: React.ReactNode }) {
   // https://reactrouter.com/en/6.16.0/routers/picking-a-router#using-v64-data-apis
   const router = createMemoryRouter(
     createRoutesFromElements(
-      <Route
-        path="/file/:id"
-        element={
-          <SettingsAuthProviderJest>{children}</SettingsAuthProviderJest>
-        }
-      />
+      <Route path="/file/:id" element={<>{children}</>} />
     ),
     {
       initialEntries: ['/file/new'],

@@ -4,19 +4,14 @@ import { ActionButton } from 'components/ActionButton'
 import { SettingsSection } from 'components/Settings/SettingsSection'
 import { useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { settingsActor, useSettings } from 'machines/appMachine'
 
 export default function Units() {
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.CAMERA)
   const {
-    settings: {
-      send,
-      context: {
-        modeling: { defaultUnit },
-      },
-    },
-  } = useSettingsAuthContext()
+    modeling: { defaultUnit },
+  } = useSettings()
 
   return (
     <div className="fixed grid place-content-center inset-0 bg-chalkboard-110/50 z-50">
@@ -31,7 +26,7 @@ export default function Units() {
             className="block w-full px-3 py-1 border border-chalkboard-30 bg-transparent"
             value={defaultUnit.user}
             onChange={(e) => {
-              send({
+              settingsActor.send({
                 type: 'set.modeling.defaultUnit',
                 data: {
                   level: 'user',

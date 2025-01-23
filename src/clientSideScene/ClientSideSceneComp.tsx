@@ -2,7 +2,6 @@ import { useRef, useEffect, useState, useMemo, Fragment } from 'react'
 import { useModelingContext } from 'hooks/useModelingContext'
 
 import { cameraMouseDragGuards } from 'lib/cameraControls'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ARROWHEAD, DEBUG_SHOW_BOTH_SCENES } from './sceneInfra'
 import { ReactCameraProperties } from './CameraControls'
 import { throttle, toSync } from 'lib/utils'
@@ -48,6 +47,7 @@ import { ActionButton } from 'components/ActionButton'
 import { err, reportRejection, trap } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -76,8 +76,8 @@ export const ClientSideScene = ({
   cameraControls,
 }: {
   cameraControls: ReturnType<
-    typeof useSettingsAuthContext
-  >['settings']['context']['modeling']['mouseControls']['current']
+    typeof useSettings
+  >['modeling']['mouseControls']['current']
 }) => {
   const canvasRef = useRef<HTMLDivElement>(null)
   const { state, send, context } = useModelingContext()

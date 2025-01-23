@@ -1,5 +1,4 @@
 import { TEST } from 'env'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { Themes, getSystemTheme } from 'lib/theme'
 import { useEffect, useMemo, useRef } from 'react'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
@@ -51,6 +50,7 @@ import {
 } from 'machines/kclEditorMachine'
 import { useSelector } from '@xstate/react'
 import { modelingMachineEvent } from 'editor/manager'
+import { useSettings } from 'machines/appMachine'
 
 export const editorShortcutMeta = {
   formatCode: {
@@ -63,9 +63,7 @@ export const editorShortcutMeta = {
 }
 
 export const KclEditorPane = () => {
-  const {
-    settings: { context },
-  } = useSettingsAuthContext()
+  const context = useSettings()
   const lastSelectionEvent = useSelector(kclEditorActor, selectionEventSelector)
   const editorIsMounted = useSelector(kclEditorActor, editorIsMountedSelector)
   const theme =

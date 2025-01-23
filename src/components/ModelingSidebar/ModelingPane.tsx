@@ -1,12 +1,12 @@
 import { ReactNode } from 'react'
 import styles from './ModelingPane.module.css'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { ActionButton } from 'components/ActionButton'
 import Tooltip from 'components/Tooltip'
 import { CustomIconName } from 'components/CustomIcon'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { ActionIcon } from 'components/ActionIcon'
 import { onboardingPaths } from 'routes/Onboarding/paths'
+import { useSettings } from 'machines/appMachine'
 
 export interface ModelingPaneProps {
   id: string
@@ -68,8 +68,8 @@ export const ModelingPane = ({
   title,
   ...props
 }: ModelingPaneProps) => {
-  const { settings } = useSettingsAuthContext()
-  const onboardingStatus = settings.context.app.onboardingStatus
+  const settings = useSettings()
+  const onboardingStatus = settings.app.onboardingStatus
   const pointerEventsCssClass =
     onboardingStatus.current === onboardingPaths.CAMERA
       ? 'pointer-events-none '

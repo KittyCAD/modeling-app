@@ -6,14 +6,12 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { useLoaderData, useNavigate } from 'react-router-dom'
 import { type IndexLoaderData } from 'lib/types'
 import { PATHS } from 'lib/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { useEngineConnectionSubscriptions } from 'hooks/useEngineConnectionSubscriptions'
 import { codeManager, engineCommandManager } from 'lib/singletons'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import { isDesktop } from 'lib/isDesktop'
 import { useLspContext } from 'components/LspProvider'
-import { useRefreshSettings } from 'hooks/useRefreshSettings'
 import { ModelingSidebar } from 'components/ModelingSidebar/ModelingSidebar'
 import { LowerRightControls } from 'components/LowerRightControls'
 import ModalContainer from 'react-modal-promise'
@@ -23,13 +21,14 @@ import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
 import { maybeWriteToDisk } from 'lib/telemetry'
+import { useToken } from 'machines/appMachine'
+import { useSettings } from 'machines/appMachine'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
-  useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
@@ -45,8 +44,8 @@ export function App() {
 
   useHotKeyListener()
 
-  const { auth, settings } = useSettingsAuthContext()
-  const token = auth?.context?.token
+  const settings = useSettings()
+  const token = useToken()
 
   const coreDumpManager = useMemo(
     () => new CoreDumpManager(engineCommandManager, codeManager, token),
@@ -55,7 +54,7 @@ export function App() {
 
   const {
     app: { onboardingStatus },
-  } = settings.context
+  } = settings
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()

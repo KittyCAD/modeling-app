@@ -75,11 +75,11 @@ export async function getProjectMetaByRouteId(
   return route
 }
 
-export async function parseProjectRoute(
+export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
   id: string,
   pathlib: PlatformPath | undefined
-): Promise<ProjectRoute> {
+): ProjectRoute {
   let projectName = null
   let projectPath = ''
   let currentFileName = null

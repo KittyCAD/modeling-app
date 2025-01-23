@@ -1,26 +1,19 @@
 import { OnboardingButtons, useDismiss, useNextClick } from '.'
 import { onboardingPaths } from 'routes/Onboarding/paths'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   CameraSystem,
   cameraMouseDragGuards,
   cameraSystems,
 } from 'lib/cameraControls'
 import { SettingsSection } from 'components/Settings/SettingsSection'
+import { settingsActor, useSettings } from 'machines/appMachine'
 
 export default function Units() {
   const dismiss = useDismiss()
   const next = useNextClick(onboardingPaths.STREAMING)
   const {
-    settings: {
-      send,
-      state: {
-        context: {
-          modeling: { mouseControls },
-        },
-      },
-    },
-  } = useSettingsAuthContext()
+    modeling: { mouseControls },
+  } = useSettings()
 
   return (
     <div className="fixed inset-0 z-50 grid items-end justify-start px-4 pointer-events-none">
@@ -40,7 +33,7 @@ export default function Units() {
             className="block w-full px-3 py-1 bg-transparent border border-chalkboard-30"
             value={mouseControls.current}
             onChange={(e) => {
-              send({
+              settingsActor.send({
                 type: 'set.modeling.mouseControls',
                 data: {
                   level: 'user',

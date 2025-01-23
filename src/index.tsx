@@ -11,6 +11,9 @@ import { ToastUpdate } from 'components/ToastUpdate'
 import { markOnce } from 'lib/performance'
 import { AUTO_UPDATER_TOAST_ID } from 'lib/constants'
 import { initializeWindowExceptionHandler } from 'lib/exceptions'
+import { initPromise } from 'lang/wasm'
+import { appActor } from 'machines/appMachine'
+import { reportRejection } from 'lib/trap'
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()
@@ -22,6 +25,14 @@ initializeWindowExceptionHandler()
 //   inspect({
 //     iframe: false,
 //   })
+
+// Don't start the app machine until all these singletons
+// are initialized, and the wasm module is loaded.
+initPromise
+  .then(() => {
+    appActor.start()
+  })
+  .catch(reportRejection)
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 

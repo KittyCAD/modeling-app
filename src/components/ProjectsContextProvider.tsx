@@ -19,11 +19,11 @@ import {
   doesProjectNameNeedInterpolated,
   getUniqueProjectName,
 } from 'lib/desktopFS'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from 'lib/isDesktop'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useSettings } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -74,16 +74,7 @@ const ProjectsContextDesktop = ({
   const navigate = useNavigate()
   const location = useLocation()
   const { onProjectOpen } = useLspContext()
-  const {
-    settings: { context: settings },
-  } = useSettingsAuthContext()
-
-  useEffect(() => {
-    console.log(
-      'project directory changed',
-      settings.app.projectDirectory.current
-    )
-  }, [settings.app.projectDirectory.current])
+  const settings = useSettings()
 
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectPaths, projectsDir } = useProjectsLoader([

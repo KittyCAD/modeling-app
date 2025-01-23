@@ -1,10 +1,10 @@
+import { useAuthState } from 'machines/appMachine'
 import Loading from './components/Loading'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {
-  const { auth } = useSettingsAuthContext()
-  const isLoggingIn = auth?.state.matches('checkIfLoggedIn')
+  const authState = useAuthState()
+  const isLoggingIn = authState.matches('checkIfLoggedIn')
 
   return isLoggingIn ? (
     <Loading>

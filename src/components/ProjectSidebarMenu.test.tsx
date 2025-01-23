@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import ProjectSidebarMenu from './ProjectSidebarMenu'
-import { SettingsAuthProviderJest } from './SettingsAuthProvider'
 import { Project } from 'lib/project'
 
 const now = new Date()
@@ -32,9 +31,7 @@ describe('ProjectSidebarMenu tests', () => {
   test('Disables popover menu by default', () => {
     render(
       <BrowserRouter>
-        <SettingsAuthProviderJest>
-          <ProjectSidebarMenu project={projectWellFormed} />
-        </SettingsAuthProviderJest>
+        <ProjectSidebarMenu project={projectWellFormed} />
       </BrowserRouter>
     )
 
