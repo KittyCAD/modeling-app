@@ -5,7 +5,6 @@ import { engineCommandManager, kclManager } from 'lib/singletons'
 import { modelingMachine, ModelingMachineEvent } from 'machines/modelingMachine'
 import { Selections, Selection, processCodeMirrorRanges } from 'lib/selections'
 import { undo, redo } from '@codemirror/commands'
-import { CommandBarMachineEvent } from 'machines/commandBarMachine'
 import { addLineHighlight, addLineHighlightEvent } from './highlightextension'
 import {
   Diagnostic,
@@ -51,9 +50,6 @@ export default class EditorManager {
 
   private _modelingSend: (eventInfo: ModelingMachineEvent) => void = () => {}
   private _modelingState: StateFrom<typeof modelingMachine> | null = null
-
-  private _commandBarSend: (eventInfo: CommandBarMachineEvent) => void =
-    () => {}
 
   private _convertToVariableEnabled: boolean = false
   private _convertToVariableCallback: () => void = () => {}
@@ -159,14 +155,6 @@ export default class EditorManager {
 
   set modelingState(state: StateFrom<typeof modelingMachine>) {
     this._modelingState = state
-  }
-
-  setCommandBarSend(send: (eventInfo: CommandBarMachineEvent) => void) {
-    this._commandBarSend = send
-  }
-
-  commandBarSend(eventInfo: CommandBarMachineEvent): void {
-    return this._commandBarSend(eventInfo)
   }
 
   get highlightRange(): Array<[number, number]> {

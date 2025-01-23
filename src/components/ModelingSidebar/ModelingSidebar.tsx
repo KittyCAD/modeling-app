@@ -15,12 +15,12 @@ import { ModelingPane } from './ModelingPane'
 import { isDesktop } from 'lib/isDesktop'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { CustomIconName } from 'components/CustomIcon'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { useKclContext } from 'lang/KclProvider'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { onboardingPaths } from 'routes/Onboarding/paths'
 import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -37,7 +37,6 @@ function getPlatformString(): 'web' | 'desktop' {
 
 export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const machineManager = useContext(MachineManagerContext)
-  const { commandBarSend } = useCommandsContext()
   const kclContext = useKclContext()
   const { settings } = useSettingsAuthContext()
   const onboardingStatus = settings.context.app.onboardingStatus
@@ -66,7 +65,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       icon: 'floppyDiskArrow',
       keybinding: 'Ctrl + Shift + E',
       action: () =>
-        commandBarSend({
+        commandBarActor.send({
           type: 'Find and select command',
           data: { name: 'Export', groupId: 'modeling' },
         }),
@@ -79,7 +78,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       keybinding: 'Ctrl + Shift + M',
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       action: async () => {
-        commandBarSend({
+        commandBarActor.send({
           type: 'Find and select command',
           data: { name: 'Make', groupId: 'modeling' },
         })

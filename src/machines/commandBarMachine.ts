@@ -1,4 +1,4 @@
-import { assign, fromPromise, setup } from 'xstate'
+import { assign, createActor, fromPromise, setup, SnapshotFrom } from 'xstate'
 import {
   Command,
   CommandArgument,
@@ -9,6 +9,7 @@ import { Selections__old } from 'lib/selections'
 import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
 import { MachineManager } from 'components/MachineManagerProvider'
 import toast from 'react-hot-toast'
+import { useSelector } from '@xstate/react'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -247,8 +248,17 @@ export const commandBarMachine = setup({
   guards: {
     'Command needs review': ({ context }) =>
       context.selectedCommand?.needsReview || false,
-    'Command has no arguments': () => false,
-    'All arguments are skippable': () => false,
+    'Command has no arguments': ({ context }) => {
+      return (
+        !context.selectedCommand?.args ||
+        Object.keys(context.selectedCommand?.args).length === 0
+      )
+    },
+    'All arguments are skippable': ({ context }) => {
+      return Object.values(context.selectedCommand!.args!).every(
+        (argConfig) => argConfig.skip
+      )
+    },
     'Has selected command': ({ context }) => !!context.selectedCommand,
   },
   actors: {
@@ -619,4 +629,13 @@ function sortCommands(a: Command, b: Command) {
   if (b.groupId === 'settings' && !(a.groupId === 'settings')) return -1
   if (a.groupId === 'settings' && !(b.groupId === 'settings')) return 1
   return a.name.localeCompare(b.name)
+}
+
+export const commandBarActor = createActor(commandBarMachine).start()
+
+/** Basic state snapshot selector */
+const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+  state
+export const useCommandBarState = () => {
+  return useSelector(commandBarActor, cmdBarStateSelector)
 }
