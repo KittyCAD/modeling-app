@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main, pierremtb/test-pr-3008 ]
+    branches: [ main, pierremtb/test-pr-3009 ]
   pull_request:
     branches: [ main ]
 

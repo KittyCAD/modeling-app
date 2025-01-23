@@ -134,8 +134,7 @@ export const ModelingMachineProvider = ({
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
-  let [searchParams] = useSearchParams()
-  const pool = 'pr-3008'
+  const pool = 'pr-3009'
 
   const isCommandBarClosed = useSelector(
     commandBarActor,
