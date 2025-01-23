@@ -286,8 +286,8 @@ fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
 
 fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     let at = at_sign.parse_next(i)?;
-    let name = binding_name.parse_next(i)?;
-    let mut end = name.end;
+    let name = opt(binding_name).parse_next(i)?;
+    let mut end = name.as_ref().map(|n| n.end).unwrap_or(at.end);
 
     let properties = if peek(open_paren).parse_next(i).is_ok() {
         open_paren(i)?;
@@ -319,6 +319,12 @@ fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     } else {
         None
     };
+
+    if name.is_none() && properties.is_none() {
+        return Err(ErrMode::Cut(
+            CompilationError::fatal(at.as_source_range(), format!("Unexpected token: {}", at.value)).into(),
+        ));
+    }
 
     let value = NonCodeValue::Annotation { name, properties };
     Ok(Node::new(
@@ -4145,7 +4151,7 @@ e
 ///  
 /// example = extrude(5, exampleSketch)
 /// ```
-@foo(impl = std_rust)
+@(impl = std_rust)
 export fn cos(num: number(rad)): number(_) {}"#;
         let _ast = crate::parsing::top_level_parse(code).unwrap();
     }

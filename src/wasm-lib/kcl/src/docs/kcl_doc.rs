@@ -480,9 +480,9 @@ trait ApplyMeta {
     fn with_meta(&mut self, meta: &[crate::parsing::ast::types::Node<NonCodeNode>]) {
         let mut comments = Vec::new();
         for m in meta {
-            // TODO should only apply unnamed annotations
             match &m.value {
                 NonCodeValue::Annotation {
+                    name: None,
                     properties: Some(props),
                     ..
                 } => {

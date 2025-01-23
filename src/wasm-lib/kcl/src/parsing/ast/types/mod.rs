@@ -1044,7 +1044,7 @@ impl NonCodeNode {
             NonCodeValue::BlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLineBlockComment { value, style: _ } => value.clone(),
             NonCodeValue::NewLine => "\n\n".to_string(),
-            NonCodeValue::Annotation { name, .. } => name.name.clone(),
+            n @ NonCodeValue::Annotation { .. } => n.annotation_name().unwrap_or("").to_owned(),
         }
     }
 
@@ -1103,7 +1103,7 @@ pub enum NonCodeValue {
     // This is also not a comment.
     NewLine,
     Annotation {
-        name: Node<Identifier>,
+        name: Option<Node<Identifier>>,
         properties: Option<Vec<Node<ObjectProperty>>>,
     },
 }
@@ -1111,7 +1111,7 @@ pub enum NonCodeValue {
 impl NonCodeValue {
     pub fn annotation_name(&self) -> Option<&str> {
         match self {
-            NonCodeValue::Annotation { name, .. } => Some(&name.name),
+            NonCodeValue::Annotation { name, .. } => name.as_ref().map(|i| &*i.name),
             _ => None,
         }
     }
