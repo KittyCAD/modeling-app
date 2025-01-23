@@ -1,14 +1,13 @@
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { getArtifactFromRange } from 'lang/std/artifactGraph'
-import { SourceRange, sourceRangeFromRust } from 'lang/wasm'
+import { SourceRange } from 'lang/wasm'
 import { enterEditFlow, EnterEditFlowProps } from 'lib/operations'
 import { engineCommandManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import toast from 'react-hot-toast'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 import { assign, fromPromise, setup } from 'xstate'
+import { commandBarActor } from './commandBarMachine'
 
-type CommandBarSend = ReturnType<typeof useCommandsContext>['commandBarSend']
 type FeatureTreeEvent =
   | {
       type: 'goToKclSource'
@@ -31,7 +30,6 @@ type FeatureTreeEvent =
 type FeatureTreeContext = {
   targetSourceRange?: SourceRange
   currentOperation?: Operation
-  commandBarSend: CommandBarSend
 }
 
 export const featureTreeMachine = setup({
@@ -48,7 +46,9 @@ export const featureTreeMachine = setup({
       ({
         input,
       }: {
-        input: EnterEditFlowProps & { commandBarSend: CommandBarSend }
+        input: EnterEditFlowProps & {
+          commandBarSend: (typeof commandBarActor)['send']
+        }
       }) => {
         return new Promise((resolve, reject) => {
           const { commandBarSend, ...editFlowProps } = input
@@ -191,7 +191,7 @@ export const featureTreeMachine = setup({
                 // currentOperation is guaranteed to be defined here
                 operation: context.currentOperation!,
                 artifact,
-                commandBarSend: context.commandBarSend,
+                commandBarSend: commandBarActor.send,
               }
             },
             onDone: {
