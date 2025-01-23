@@ -1,5 +1,4 @@
 import { useMachine } from '@xstate/react'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { projectsMachine } from 'machines/projectsMachine'
@@ -18,11 +17,13 @@ import {
   getNextProjectIndex,
   interpolateProjectNameWithIndex,
   doesProjectNameNeedInterpolated,
+  getUniqueProjectName,
 } from 'lib/desktopFS'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from 'lib/isDesktop'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state?: StateFrom<T>
@@ -72,7 +73,6 @@ const ProjectsContextDesktop = ({
 }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { commandBarSend } = useCommandsContext()
   const { onProjectOpen } = useLspContext()
   const {
     settings: { context: settings },
@@ -125,7 +125,7 @@ const ProjectsContextDesktop = ({
               },
               null
             )
-            commandBarSend({ type: 'Close' })
+            commandBarActor.send({ type: 'Close' })
             const newPathName = `${PATHS.FILE}/${encodeURIComponent(
               projectPath
             )}`
@@ -195,16 +195,12 @@ const ProjectsContextDesktop = ({
               : settings.projects.defaultProjectName.current
           ).trim()
 
-          if (doesProjectNameNeedInterpolated(name)) {
-            const nextIndex = getNextProjectIndex(name, input.projects)
-            name = interpolateProjectNameWithIndex(name, nextIndex)
-          }
-
-          await createNewProjectDirectory(name)
+          const uniqueName = getUniqueProjectName(name, input.projects)
+          await createNewProjectDirectory(uniqueName)
 
           return {
-            message: `Successfully created "${name}"`,
-            name,
+            message: `Successfully created "${uniqueName}"`,
+            name: uniqueName,
           }
         }),
         renameProject: fromPromise(async ({ input }) => {

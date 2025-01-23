@@ -25,13 +25,13 @@ import {
   CallExpression,
   PathToNode,
   Program,
-  SourceRange,
   Expr,
   parse,
   recast,
   defaultSourceRange,
   resultIsOk,
   ProgramMemory,
+  topLevelRange,
 } from 'lang/wasm'
 import { CustomIcon, CustomIconName } from 'components/CustomIcon'
 import { ConstrainInfo } from 'lang/std/stdTypes'
@@ -46,8 +46,8 @@ import {
 } from 'lang/modifyAst'
 import { ActionButton } from 'components/ActionButton'
 import { err, reportRejection, trap } from 'lib/trap'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -510,7 +510,6 @@ const ConstraintSymbol = ({
   constrainInfo: ConstrainInfo
   verticalPosition: 'top' | 'bottom'
 }) => {
-  const { commandBarSend } = useCommandsContext()
   const { context } = useModelingContext()
   const varNameMap: {
     [key in ConstrainInfo['type']]: {
@@ -600,8 +599,8 @@ const ConstraintSymbol = ({
   if (err(_node)) return
   const node = _node.node
 
-  const range: SourceRange = node
-    ? [node.start, node.end, true]
+  const range = node
+    ? topLevelRange(node.start, node.end)
     : defaultSourceRange()
 
   if (_type === 'intersectionTag') return null
@@ -630,7 +629,7 @@ const ConstraintSymbol = ({
         // disabled={implicitDesc} TODO why does this change styles that are hard to override?
         onClick={toSync(async () => {
           if (!isConstrained) {
-            commandBarSend({
+            commandBarActor.send({
               type: 'Find and select command',
               data: {
                 name: 'Constrain with named value',
@@ -756,7 +755,6 @@ export const CamDebugSettings = () => {
     sceneInfra.camControls.reactCameraProperties
   )
   const [fov, setFov] = useState(12)
-  const { commandBarSend } = useCommandsContext()
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
@@ -775,7 +773,7 @@ export const CamDebugSettings = () => {
         type="checkbox"
         checked={camSettings.type === 'perspective'}
         onChange={() =>
-          commandBarSend({
+          commandBarActor.send({
             type: 'Find and select command',
             data: {
               groupId: 'settings',

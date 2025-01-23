@@ -1,11 +1,11 @@
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { useEffect, useState } from 'react'
 import { CustomIcon } from './CustomIcon'
 import { getActorNextEvents } from 'lib/utils'
 import { sortCommands } from 'lib/commandUtils'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 function CommandComboBox({
   options,
@@ -14,7 +14,6 @@ function CommandComboBox({
   options: Command[]
   placeholder?: string
 }) {
-  const { commandBarSend } = useCommandsContext()
   const [query, setQuery] = useState('')
   const [filteredOptions, setFilteredOptions] = useState<typeof options>()
 
@@ -41,7 +40,7 @@ function CommandComboBox({
   }, [query])
 
   function handleSelection(command: Command) {
-    commandBarSend({ type: 'Select command', data: { command } })
+    commandBarActor.send({ type: 'Select command', data: { command } })
   }
 
   return (
@@ -52,6 +51,7 @@ function CommandComboBox({
           className="w-5 h-5 bg-primary/10 dark:bg-primary text-primary dark:text-inherit"
         />
         <Combobox.Input
+          data-testid="cmd-bar-search"
           onChange={(event) => setQuery(event.target.value)}
           className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
           onKeyDown={(event) => {
@@ -60,7 +60,7 @@ function CommandComboBox({
               (event.key === 'Backspace' && !event.currentTarget.value)
             ) {
               event.preventDefault()
-              commandBarSend({ type: 'Close' })
+              commandBarActor.send({ type: 'Close' })
             }
           }}
           placeholder={
@@ -85,6 +85,7 @@ function CommandComboBox({
             value={option}
             className="flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50"
             disabled={optionIsDisabled(option)}
+            data-testid={`cmd-bar-option`}
           >
             {'icon' in option && option.icon && (
               <CustomIcon name={option.icon} className="w-5 h-5" />

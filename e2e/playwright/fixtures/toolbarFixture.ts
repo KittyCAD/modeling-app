@@ -63,6 +63,10 @@ export class ToolbarFixture {
     this.exeIndicator = page.getByTestId('model-state-indicator-execution-done')
   }
 
+  get logoLink() {
+    return this.page.getByTestId('app-logo')
+  }
+
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
 

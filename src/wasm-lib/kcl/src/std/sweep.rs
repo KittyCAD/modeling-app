@@ -39,8 +39,8 @@ pub struct SweepData {
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch): (SweepData, Sketch) = args.get_data_and_sketch()?;
 
-    let solid = inner_sweep(data, sketch, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_sweep(data, sketch, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Extrude a sketch along a path.
