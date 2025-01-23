@@ -129,32 +129,46 @@ export const settingsMachine = setup({
       return () => darkModeMatcher?.removeEventListener('change', listener)
     }),
     registerCommands: fromCallback<
-      EventObject,
+      { type: 'update' },
       { settings: SettingsType; actor: AnyActorRef }
-    >(({ input }) => {
+    >(({ input, receive }) => {
       // If the user wants to hide the settings commands
       //from the command bar don't add them.
       if (settings.commandBar.includeSettings.current === false) return
+      let commands: Command[] = []
 
-      const commands = settingsWithCommandConfigs(input.settings)
-        .map((type) =>
-          createSettingsCommand({
-            type,
-            actor: input.actor,
-          })
-        )
-        .filter((c) => c !== null) as Command[]
-
-      commandBarActor.send({
-        type: 'Add commands',
-        data: { commands: commands },
-      })
-
-      return () => {
+      const updateCommands = () =>
+        settingsWithCommandConfigs(input.settings)
+          .map((type) =>
+            createSettingsCommand({
+              type,
+              actor: input.actor,
+            })
+          )
+          .filter((c) => c !== null) as Command[]
+      const addCommands = () =>
+        commandBarActor.send({
+          type: 'Add commands',
+          data: { commands: commands },
+        })
+      const removeCommands = () =>
         commandBarActor.send({
           type: 'Remove commands',
-          data: { commands },
+          data: { commands: commands },
         })
+
+      receive((event) => {
+        if (event.type !== 'update') return
+        removeCommands()
+        commands = updateCommands()
+        addCommands()
+      })
+
+      commands = updateCommands()
+      addCommands()
+
+      return () => {
+        removeCommands()
       }
     }),
   },
@@ -490,6 +504,7 @@ export const settingsMachine = setup({
             'clearProjectSettings',
             'clearCurrentProject',
             'setThemeColor',
+            sendTo('registerCommands', { type: 'update' }),
           ],
         },
       },
@@ -542,7 +557,12 @@ export const settingsMachine = setup({
         src: 'loadProjectSettings',
         onDone: {
           target: 'idle',
-          actions: ['setAllSettings', 'setThemeColor', 'Execute AST'],
+          actions: [
+            'setAllSettings',
+            'setThemeColor',
+            'Execute AST',
+            sendTo('registerCommands', { type: 'update' }),
+          ],
         },
         onError: 'idle',
         input: ({ event }) => {
