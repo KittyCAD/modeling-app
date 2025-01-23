@@ -390,6 +390,7 @@ export const line: SketchLineHelperKw = {
       const callExp = createCallExpressionStdLibKw(
         'line',
         createPipeSubstitution(),
+        // TODO: ADAM: This should have a tag sometimes.
         [createLabeledArg(ARG_END, createArrayExpression([newXVal, newYVal]))]
       )
       const pathToNodeIndex = pathToNode.findIndex(
@@ -2694,6 +2695,26 @@ const getAngledLineThatIntersects = (
     }
   }
   return new Error('expected ArrayExpression or ObjectExpression')
+}
+
+/**
+Given a line call, return whether it's using absolute or relative end.
+*/
+export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
+  const name = lineCall?.callee?.name
+  switch (name) {
+    case 'line':
+      if (findKwArg(ARG_END, lineCall) !== undefined) {
+        return false
+      }
+      if (findKwArg(ARG_END_ABSOLUTE, lineCall) !== undefined) {
+        return true
+      }
+      return new Error(
+        `line call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
+      )
+  }
+  return new Error(`Unknown sketch function ${name}`)
 }
 
 /**

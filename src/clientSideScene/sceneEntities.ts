@@ -601,10 +601,10 @@ export class SceneEntities {
       )
 
       let seg: Group
-      const _node1 = getNodeFromPath<Node<CallExpression>>(
+      const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
         maybeModdedAst,
         segPathToNode,
-        'CallExpression'
+        ['CallExpression', 'CallExpressionKw']
       )
 
       if (err(_node1)) return
@@ -788,7 +788,6 @@ export class SceneEntities {
         let modifiedAst
 
         // Snapping logic for the profile start handle
-        // ADAM: Should generate line calls with endAbsolute.
         if (intersectsProfileStart) {
           const lastSegment = sketch.paths.slice(-1)[0]
           const originCoords = createArrayExpression([

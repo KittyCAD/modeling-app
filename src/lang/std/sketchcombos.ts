@@ -23,6 +23,7 @@ import {
   SourceRange,
   LiteralValue,
   recast,
+  LabeledArg,
 } from '../wasm'
 import {
   getNodeFromPath,
@@ -53,6 +54,7 @@ import {
   ARG_END,
   ARG_END_ABSOLUTE,
   getConstraintInfoKw,
+  isAbsoluteLine,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
@@ -125,21 +127,31 @@ function createCallWrapper(
 ): CreatedSketchExprResult {
   if (Array.isArray(val)) {
     if (tooltip === 'line') {
+      const labeledArgs = [createLabeledArg('end', createArrayExpression(val))]
+      if (tag) {
+        labeledArgs.push(createLabeledArg(ARG_TAG, tag))
+      }
       return {
         callExp: createCallExpressionStdLibKw(
           'line',
           null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
-          [createLabeledArg('end', createArrayExpression(val))]
+          labeledArgs
         ),
         valueUsedInTransform,
       }
     }
     if (tooltip === 'lineTo') {
+      const labeledArgs = [
+        createLabeledArg('endAbsolute', createArrayExpression(val)),
+      ]
+      if (tag) {
+        labeledArgs.push(createLabeledArg(ARG_TAG, tag))
+      }
       return {
         callExp: createCallExpressionStdLibKw(
           'line',
           null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
-          [createLabeledArg('endAbsolute', createArrayExpression(val))]
+          labeledArgs
         ),
         valueUsedInTransform,
       }
@@ -190,6 +202,32 @@ function createStdlibCallExpression(
   }
   return {
     callExp: createCallExpression(tool, args),
+    valueUsedInTransform,
+  }
+}
+
+/**
+ * Abstracts creation of a CallExpressionKw ready for use for a sketchCombo transform
+ * Assume it exists within a pipe, so it omits the unlabeled param, so that it's implicitly
+ * set to "%".
+ * @param tool line, lineTo, angledLine, etc
+ * @param labeled Any labeled arguments to use, except the tag.
+ * @param tag
+ * @param valueUsedInTransform
+ * @returns
+ */
+function createStdlibCallExpressionKw(
+  tool: ToolTip,
+  labeled: LabeledArg[],
+  tag?: Expr,
+  valueUsedInTransform?: number
+): CreatedSketchExprResult {
+  const args = labeled
+  if (tag) {
+    args.push(createLabeledArg(ARG_TAG, tag))
+  }
+  return {
+    callExp: createCallExpressionStdLibKw(tool, null, args),
     valueUsedInTransform,
   }
 }
@@ -1230,7 +1268,7 @@ const transformMap: TransformMap = {
 }
 
 export function getRemoveConstraintsTransform(
-  sketchFnExp: CallExpression,
+  sketchFnExp: CallExpression | CallExpressionKw,
   constraintType: ConstraintType
 ): TransformInfo | false {
   let name = sketchFnExp.callee.name as ToolTip
@@ -1271,10 +1309,19 @@ export function getRemoveConstraintsTransform(
     },
   }
 
-  const isAbsolute = false // ADAM: todo
+  const isAbsolute =
+    // isAbsolute doesn't matter if the call is positional.
+    sketchFnExp.type === 'CallExpression' ? false : isAbsoluteLine(sketchFnExp)
+  if (err(isAbsolute)) {
+    console.error(isAbsolute)
+    return false
+  }
 
   // check if the function is locked down and so can't be transformed
-  const firstArg = getFirstArg(sketchFnExp)
+  const firstArg =
+    sketchFnExp.type === 'CallExpression'
+      ? getFirstArg(sketchFnExp)
+      : getArgForEnd(sketchFnExp)
   if (err(firstArg)) {
     console.error(firstArg)
     return false
@@ -1314,16 +1361,19 @@ export function removeSingleConstraint({
   inputDetails: SimplifiedArgDetails
   ast: Program
 }): TransformInfo | false {
-  const callExp = getNodeFromPath<CallExpression>(
+  const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
     ast,
     pathToCallExp,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
   if (err(callExp)) {
     console.error(callExp)
     return false
   }
-  if (callExp.node.type !== 'CallExpression') {
+  if (
+    callExp.node.type !== 'CallExpression' &&
+    callExp.node.type !== 'CallExpressionKw'
+  ) {
     console.error(new Error('Invalid node type'))
     return false
   }
@@ -1354,11 +1404,31 @@ export function removeSingleConstraint({
           )?.expr
           return (arg.index === inputDetails.index && literal) || arg.expr
         })
-        return createStdlibCallExpression(
-          callExp.node.callee.name as any,
-          createArrayExpression(values),
-          tag
-        )
+        if (callExp.node.type === 'CallExpression') {
+          return createStdlibCallExpression(
+            callExp.node.callee.name as any,
+            createArrayExpression(values),
+            tag
+          )
+        } else {
+          // It's a kw call.
+          const isAbsolute = callExp.node.callee.name == 'lineTo'
+          if (isAbsolute) {
+            const args = [
+              createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(values)),
+            ]
+            return createStdlibCallExpressionKw('line', args, tag)
+          } else {
+            const args = [
+              createLabeledArg(ARG_END, createArrayExpression(values)),
+            ]
+            return createStdlibCallExpressionKw(
+              callExp.node.callee.name as any,
+              args,
+              tag
+            )
+          }
+        }
       }
       if (
         inputDetails.type === 'arrayInObject' ||
@@ -1665,8 +1735,9 @@ export function getRemoveConstraintsTransforms(
     }
 
     const node = nodeMeta.node
-    if (node?.type === 'CallExpression')
+    if (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') {
       return getRemoveConstraintsTransform(node, constraintType)
+    }
 
     return false
   }) as TransformInfo[]
@@ -1908,6 +1979,7 @@ export function transformAstSketchLines({
       )
     }
     const { to, from } = seg
+    // Note to ADAM: Here is where the replaceExisting call gets sent.
     const replacedSketchLine = replaceSketchLine({
       node: node,
       programMemory,
