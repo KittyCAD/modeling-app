@@ -11,7 +11,6 @@ use crate::{
     ModuleId,
 };
 
-// TODO use this for docs
 pub fn walk_prelude() -> Vec<DocData> {
     let mut visitor = CollectionVisitor::default();
     visitor.visit_module("prelude").unwrap();
@@ -89,6 +88,14 @@ impl DocData {
         }
     }
 
+    #[allow(dead_code)]
+    pub fn hide(&self) -> bool {
+        match self {
+            DocData::Fn(f) => f.properties.doc_hidden || f.properties.deprecated,
+            DocData::Const(c) => c.properties.doc_hidden || c.properties.deprecated,
+        }
+    }
+
     pub fn to_completion_item(&self) -> CompletionItem {
         match self {
             DocData::Fn(f) => f.to_completion_item(),
@@ -138,7 +145,7 @@ impl ConstData {
                 Some(lit.raw.clone()),
                 Some(match &lit.value {
                     crate::parsing::ast::types::LiteralValue::Number { suffix, .. } => {
-                        if *suffix == NumericSuffix::None {
+                        if *suffix == NumericSuffix::None || *suffix == NumericSuffix::Count {
                             "number".to_owned()
                         } else {
                             format!("number({suffix})")
@@ -162,6 +169,7 @@ impl ConstData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                doc_hidden: false,
                 impl_kind: ImplKind::Kcl,
             },
             summary: None,
@@ -252,6 +260,7 @@ impl FnData {
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
+                doc_hidden: false,
                 impl_kind: ImplKind::Kcl,
             },
             summary: None,
@@ -268,7 +277,7 @@ impl FnData {
         }
     }
 
-    fn fn_signature(&self) -> String {
+    pub fn fn_signature(&self) -> String {
         let mut signature = String::new();
 
         for (i, arg) in self.args.iter().enumerate() {
@@ -367,6 +376,7 @@ impl FnData {
 #[derive(Debug, Clone)]
 pub struct Properties {
     pub deprecated: bool,
+    pub doc_hidden: bool,
     #[allow(dead_code)]
     pub exported: bool,
     pub impl_kind: ImplKind,
@@ -392,7 +402,7 @@ pub struct ArgData {
     pub docs: Option<String>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Copy)]
 pub enum ArgKind {
     Special,
     // Parameter is whether the arg is optional.
@@ -451,9 +461,20 @@ impl ArgData {
     }
 }
 
+impl ArgKind {
+    #[allow(dead_code)]
+    pub fn required(self) -> bool {
+        match self {
+            ArgKind::Special => true,
+            ArgKind::Labelled(opt) => !opt,
+        }
+    }
+}
+
 trait ApplyMeta {
     fn apply_docs(&mut self, summary: Option<String>, description: Option<String>, examples: Vec<String>);
     fn deprecated(&mut self, deprecated: bool);
+    fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: ImplKind);
 
     fn with_meta(&mut self, meta: &[crate::parsing::ast::types::Node<NonCodeNode>]) {
@@ -481,6 +502,11 @@ trait ApplyMeta {
                                     self.deprecated(b);
                                 }
                             }
+                            "doc_hidden" => {
+                                if let Some(b) = p.value.literal_bool() {
+                                    self.doc_hidden(b);
+                                }
+                            }
                             _ => {}
                         }
                     }
@@ -496,10 +522,11 @@ trait ApplyMeta {
         let mut description = None;
         let mut example: Option<String> = None;
         let mut examples = Vec::new();
-        for l in comments
-            .into_iter()
-            .filter(|l| l.starts_with('/'))
-            .map(|l| l[1..].trim())
+        for l in
+            comments
+                .into_iter()
+                .filter(|l| l.starts_with('/'))
+                .map(|l| if l.starts_with("/ ") { &l[2..] } else { &l[1..] })
         {
             if description.is_none() && summary.is_none() {
                 summary = Some(l.to_owned());
@@ -565,6 +592,10 @@ impl ApplyMeta for ConstData {
         self.properties.deprecated = deprecated;
     }
 
+    fn doc_hidden(&mut self, doc_hidden: bool) {
+        self.properties.doc_hidden = doc_hidden;
+    }
+
     fn impl_kind(&mut self, _impl_kind: ImplKind) {}
 }
 
@@ -577,6 +608,10 @@ impl ApplyMeta for FnData {
 
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
+    }
+
+    fn doc_hidden(&mut self, doc_hidden: bool) {
+        self.properties.doc_hidden = doc_hidden;
     }
 
     fn impl_kind(&mut self, impl_kind: ImplKind) {

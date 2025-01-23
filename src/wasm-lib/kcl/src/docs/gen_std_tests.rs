@@ -13,6 +13,8 @@ use crate::{
     std::StdLib,
 };
 
+use super::kcl_doc::{ConstData, DocData, FnData};
+
 const TYPES_DIR: &str = "../../../docs/kcl/types";
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
@@ -267,12 +269,13 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     hbs.register_template_string("schema", include_str!("templates/schema.hbs"))?;
     hbs.register_template_string("index", include_str!("templates/index.hbs"))?;
     hbs.register_template_string("function", include_str!("templates/function.hbs"))?;
+    hbs.register_template_string("const", include_str!("templates/const.hbs"))?;
     hbs.register_template_string("type", include_str!("templates/type.hbs"))?;
 
     Ok(hbs)
 }
 
-fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> {
+fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[DocData]) -> Result<()> {
     let hbs = init_handlebars()?;
 
     let mut functions = Vec::new();
@@ -288,7 +291,26 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> 
 
         functions.push(json!({
             "name": internal_fn.name(),
+            "file_name": internal_fn.name(),
         }));
+    }
+
+    for d in kcl_lib {
+        if d.hide() {
+            continue;
+        }
+
+        // TODO organise by module
+        match d {
+            DocData::Fn(f) => functions.push(json!({
+                "name": f.name,
+                "file_name": f.name,
+            })),
+            DocData::Const(c) => functions.push(json!({
+                "name": c.name,
+                "file_name": format!("const_{}", c.name),
+            })),
+        }
     }
 
     let data = json!({
@@ -298,6 +320,120 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> 
     let output = hbs.render("index", &data)?;
 
     expectorate::assert_contents("../../../docs/kcl/index.md", &output);
+
+    Ok(())
+}
+
+fn generate_function_from_kcl(function: &FnData) -> Result<()> {
+    if function.properties.doc_hidden {
+        return Ok(());
+    }
+
+    let hbs = init_handlebars()?;
+
+    let name = function.name.clone();
+
+    let examples: Vec<serde_json::Value> = function
+        .examples
+        .iter()
+        .enumerate()
+        .map(|(_index, example)| {
+            // TODO example image
+            // let image_path = format!(
+            //     "{}/tests/outputs/serial_test_example_{}{}.png",
+            //     env!("CARGO_MANIFEST_DIR"),
+            //     name,
+            //     index
+            // );
+            // let image_data =
+            //     std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
+            // let image_base64 = base64::engine::general_purpose::STANDARD.encode(&image_data);
+            let image_base64 = String::new();
+
+            json!({
+                "content": example,
+                "image_base64": image_base64,
+            })
+        })
+        .collect();
+
+    // TODO handle modules
+    let data = json!({
+        "name": name,
+        "summary": function.summary,
+        "description": function.description,
+        "deprecated": function.properties.deprecated,
+        "fn_signature": function.fn_signature(),
+        "tags": [],
+        "examples": examples,
+        "is_utilities": false,
+        "args": function.args.iter().map(|arg| {
+            json!({
+                "name": arg.name,
+                "type_": arg.ty,
+                "description": arg.docs.as_deref().unwrap_or(""),
+                "required": arg.kind.required(),
+            })
+        }).collect::<Vec<_>>(),
+        "return_value": function.return_type.as_ref().map(|t| {
+            json!({
+                "type_": t,
+                "description": "",
+            })
+        }),
+    });
+
+    let output = hbs.render("function", &data)?;
+    expectorate::assert_contents(format!("../../../docs/kcl/{}.md", name), &output);
+
+    Ok(())
+}
+
+fn generate_const_from_kcl(cnst: &ConstData) -> Result<()> {
+    if cnst.properties.doc_hidden {
+        return Ok(());
+    }
+    let hbs = init_handlebars()?;
+
+    let name = cnst.name.clone();
+
+    let examples: Vec<serde_json::Value> = cnst
+        .examples
+        .iter()
+        .enumerate()
+        .map(|(_index, example)| {
+            // TODO example image
+            // let image_path = format!(
+            //     "{}/tests/outputs/serial_test_example_{}{}.png",
+            //     env!("CARGO_MANIFEST_DIR"),
+            //     name,
+            //     index
+            // );
+            // let image_data =
+            //     std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
+            // let image_base64 = base64::engine::general_purpose::STANDARD.encode(&image_data);
+            let image_base64 = String::new();
+
+            json!({
+                "content": example,
+                "image_base64": image_base64,
+            })
+        })
+        .collect();
+
+    // TODO handle modules
+    let data = json!({
+        "name": name,
+        "summary": cnst.summary,
+        "description": cnst.description,
+        "deprecated": cnst.properties.deprecated,
+        "type_": cnst.ty,
+        "examples": examples,
+        "value": cnst.value.as_deref().unwrap_or(""),
+    });
+
+    let output = hbs.render("const", &data)?;
+    expectorate::assert_contents(format!("../../../docs/kcl/const_{}.md", name), &output);
 
     Ok(())
 }
@@ -739,9 +875,10 @@ fn recurse_and_create_references(
 fn test_generate_stdlib_markdown_docs() {
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
+    let kcl_std = crate::docs::kcl_doc::walk_prelude();
 
     // Generate the index which is the table of contents.
-    generate_index(&combined).unwrap();
+    generate_index(&combined, &kcl_std).unwrap();
 
     let mut types = BTreeMap::new();
     for key in combined.keys().sorted() {
@@ -753,6 +890,13 @@ fn test_generate_stdlib_markdown_docs() {
     // Generate the type markdown files.
     for (name, schema) in &types {
         generate_type(name, schema, &types).unwrap();
+    }
+
+    for d in &kcl_std {
+        match d {
+            DocData::Fn(f) => generate_function_from_kcl(f).unwrap(),
+            DocData::Const(c) => generate_const_from_kcl(c).unwrap(),
+        }
     }
 }
 
