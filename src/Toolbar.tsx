@@ -2,7 +2,6 @@ import { useRef, useMemo, memo, useCallback, useState } from 'react'
 import { isCursorInSketchCommandRange } from 'lang/util'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
 import { ActionButton } from 'components/ActionButton'
@@ -22,13 +21,13 @@ import {
 } from 'lib/toolbar'
 import { isDesktop } from 'lib/isDesktop'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 export function Toolbar({
   className = '',
   ...props
 }: React.HTMLAttributes<HTMLElement>) {
   const { state, send, context } = useModelingContext()
-  const { commandBarSend } = useCommandsContext()
   const iconClassName =
     'group-disabled:text-chalkboard-50 !text-inherit dark:group-enabled:group-hover:!text-inherit'
   const bgClassName = '!bg-transparent'
@@ -71,10 +70,9 @@ export function Toolbar({
     () => ({
       modelingState: state,
       modelingSend: send,
-      commandBarSend,
       sketchPathId,
     }),
-    [state, send, commandBarSend, sketchPathId]
+    [state, send, commandBarActor.send, sketchPathId]
   )
 
   const tooltipContentClassName = !showRichContent

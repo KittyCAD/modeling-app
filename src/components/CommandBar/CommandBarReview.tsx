@@ -1,9 +1,9 @@
-import { useCommandsContext } from 'hooks/useCommandsContext'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import CommandBarHeader from './CommandBarHeader'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
-  const { commandBarState, commandBarSend } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const {
     context: { argumentsToSubmit, selectedCommand },
   } = commandBarState
@@ -33,7 +33,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           parseInt(b.keys[0], 10) - 1
         ]
         const arg = selectedCommand?.args[argName]
-        commandBarSend({
+        commandBarActor.send({
           type: 'Edit argument',
           data: { arg: { ...arg, name: argName } },
         })
@@ -50,7 +50,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
 
   function submitCommand(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    commandBarSend({
+    commandBarActor.send({
       type: 'Submit command',
       output: argumentsToSubmit,
     })
