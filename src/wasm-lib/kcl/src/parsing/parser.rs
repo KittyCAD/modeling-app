@@ -1117,9 +1117,25 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
     // Optional return type.
     let return_type = opt(return_type).parse_next(i)?;
     ignore_whitespace(i);
-    open_brace(i)?;
-    let body = function_body(i)?;
-    let end = close_brace(i)?.end;
+    let brace = open_brace(i)?;
+    let close: Option<(Vec<Vec<Token>>, Token)> = opt((repeat(0.., whitespace), close_brace)).parse_next(i)?;
+    let (body, end) = match close {
+        Some((_, end)) => (
+            Node::new(
+                Program {
+                    body: Vec::new(),
+                    non_code_meta: NonCodeMeta::default(),
+                    shebang: None,
+                    digest: None,
+                },
+                brace.end,
+                brace.end,
+                brace.module_id,
+            ),
+            end.end,
+        ),
+        None => (function_body(i)?, close_brace(i)?.end),
+    };
     let result = Node::new(
         FunctionExpression {
             params,
@@ -2474,7 +2490,7 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
         )
             .map(|(token, suffix)| {
                 if suffix.is_some() {
-                    ParseContext::err(CompilationError::err(
+                    ParseContext::warn(CompilationError::err(
                         (&token).into(),
                         "Unit of Measure types are experimental and currently do nothing.",
                     ));
@@ -2545,8 +2561,7 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                  type_,
                  default_value,
              }| {
-                let identifier =
-                    Node::<Identifier>::try_from(arg_name).and_then(Node::<Identifier>::into_valid_binding_name)?;
+                let identifier = Node::<Identifier>::try_from(arg_name)?;
 
                 Ok(Parameter {
                     identifier,
@@ -2593,24 +2608,9 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationError>
     Ok(())
 }
 
-impl Node<Identifier> {
-    fn into_valid_binding_name(self) -> Result<Node<Identifier>, CompilationError> {
-        // Make sure they are not assigning a variable to a stdlib function.
-        if crate::std::name_in_stdlib(&self.name) {
-            return Err(CompilationError::fatal(
-                SourceRange::from(&self),
-                format!("Cannot assign a variable to a reserved keyword: {}", self.name),
-            ));
-        }
-        Ok(self)
-    }
-}
-
 /// Introduce a new name, which binds some value.
 fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
     identifier
-        .context(expected("an identifier, which will be the name of some value"))
-        .try_map(Node::<Identifier>::into_valid_binding_name)
         .context(expected("an identifier, which will be the name of some value"))
         .parse_next(i)
 }
@@ -4026,34 +4026,12 @@ e
     }
 
     #[test]
-    fn test_error_stdlib_in_fn_name() {
-        assert_err(
-            r#"fn cos = () => {
-            return 1
-        }"#,
-            "Cannot assign a variable to a reserved keyword: cos",
-            [3, 6],
-        );
-    }
-
-    #[test]
     fn test_error_keyword_in_fn_args() {
         assert_err(
             r#"fn thing = (let) => {
     return 1
 }"#,
             "Cannot assign a variable to a reserved keyword: let",
-            [12, 15],
-        )
-    }
-
-    #[test]
-    fn test_error_stdlib_in_fn_args() {
-        assert_err(
-            r#"fn thing = (cos) => {
-    return 1
-}"#,
-            "Cannot assign a variable to a reserved keyword: cos",
             [12, 15],
         )
     }
@@ -4148,6 +4126,27 @@ e
         }
         firstPrimeNumber()
         "#;
+        let _ast = crate::parsing::top_level_parse(code).unwrap();
+    }
+
+    #[test]
+    fn std_fn_decl() {
+        let code = r#"/// Compute the cosine of a number (in radians).
+///
+/// ```
+/// exampleSketch = startSketchOn("XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle = 30,
+///     length = 3 / cos(toRadians(30)),
+///   }, %)
+///   |> yLineTo(0, %)
+///   |> close(%)
+///  
+/// example = extrude(5, exampleSketch)
+/// ```
+@foo(impl = std_rust)
+export fn cos(num: number(rad)): number(_) {}"#;
         let _ast = crate::parsing::top_level_parse(code).unwrap();
     }
 
