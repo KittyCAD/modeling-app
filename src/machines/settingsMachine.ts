@@ -228,17 +228,17 @@ export const settingsMachine = setup({
         const resetSettingsIncludesUnitChange =
           event.type === 'Reset settings' && relevantSetting(settings)
 
-        if (
-          context.currentProject &&
+        const shouldExecute =
+          kclManager !== undefined &&
           (event.type === 'set.modeling.defaultUnit' ||
             event.type === 'set.modeling.showScaleGrid' ||
             event.type === 'set.modeling.highlightEdges' ||
             allSettingsIncludesUnitChange ||
             resetSettingsIncludesUnitChange)
-        ) {
+
+        if (shouldExecute) {
           // Unit changes requires a re-exec of code
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          kclManager.executeCode(true)
+          kclManager.executeCode(true).catch(reportRejection)
         } else {
           // For any future logging we'd like to do
           // console.log(
