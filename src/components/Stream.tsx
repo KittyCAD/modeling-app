@@ -17,10 +17,11 @@ import {
 import { useRouteLoaderData } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { err, reportRejection } from 'lib/trap'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ViewControlContextMenu } from './ViewControlMenu'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import { useSelector } from '@xstate/react'
 
 enum StreamState {
   Playing = 'playing',
@@ -35,7 +36,7 @@ export const Stream = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const { settings } = useSettingsAuthContext()
   const { state, send } = useModelingContext()
-  const { commandBarState } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const { mediaStream } = useAppStream()
   const { overallState, immediateState } = useNetworkContext()
   const [streamState, setStreamState] = useState(StreamState.Unset)
@@ -218,20 +219,6 @@ export const Stream = () => {
     }
   }, [IDLE, streamState])
 
-  /**
-   * Play the vid
-   */
-  useEffect(() => {
-    if (!kclManager.isExecuting) {
-      setTimeout(() => {
-        // execute in the next event loop
-        videoRef.current?.play().catch((e) => {
-          console.warn('Video playing was prevented', e, videoRef.current)
-        })
-      })
-    }
-  }, [kclManager.isExecuting])
-
   useEffect(() => {
     if (
       typeof window === 'undefined' ||
@@ -243,9 +230,15 @@ export const Stream = () => {
 
     // The browser complains if we try to load a new stream without pausing first.
     // Do not immediately play the stream!
+    // we instead use a setTimeout to play the stream in the next event loop
     try {
       videoRef.current.srcObject = mediaStream
       videoRef.current.pause()
+      setTimeout(() => {
+        videoRef.current?.play().catch((e) => {
+          console.warn('Video playing was prevented', e, videoRef.current)
+        })
+      })
     } catch (e) {
       console.warn('Attempted to pause stream while play was still loading', e)
     }
@@ -309,7 +302,7 @@ export const Stream = () => {
           return
         }
         const path = getArtifactOfTypes(
-          { key: entity_id, types: ['path', 'solid2D', 'segment'] },
+          { key: entity_id, types: ['path', 'solid2d', 'segment'] },
           engineCommandManager.artifactGraph
         )
         if (err(path)) {
@@ -321,6 +314,7 @@ export const Stream = () => {
   }
 
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div
       ref={videoWrapperRef}
       className="absolute inset-0 z-0"

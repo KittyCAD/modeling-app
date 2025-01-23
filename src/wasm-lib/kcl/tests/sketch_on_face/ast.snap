@@ -48,7 +48,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 51,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 11.19
+                        "value": {
+                          "value": 11.19,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 63,
@@ -56,7 +59,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 58,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 28.35
+                        "value": {
+                          "value": 28.35,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 64,
@@ -92,7 +98,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 80,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 28.67
+                        "value": {
+                          "value": 28.67,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -101,7 +110,10 @@ description: Result of parsing sketch_on_face.kcl
                           "start": 88,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 13.25
+                          "value": {
+                            "value": 13.25,
+                            "suffix": "None"
+                          }
                         },
                         "end": 93,
                         "operator": "-",
@@ -151,7 +163,10 @@ description: Result of parsing sketch_on_face.kcl
                           "start": 118,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 4.12
+                          "value": {
+                            "value": 4.12,
+                            "suffix": "None"
+                          }
                         },
                         "end": 122,
                         "operator": "-",
@@ -166,7 +181,10 @@ description: Result of parsing sketch_on_face.kcl
                           "start": 125,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 22.81
+                          "value": {
+                            "value": 22.81,
+                            "suffix": "None"
+                          }
                         },
                         "end": 130,
                         "operator": "-",
@@ -209,7 +227,10 @@ description: Result of parsing sketch_on_face.kcl
                           "start": 148,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 33.24
+                          "value": {
+                            "value": 33.24,
+                            "suffix": "None"
+                          }
                         },
                         "end": 153,
                         "operator": "-",
@@ -223,7 +244,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 155,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 14.55
+                        "value": {
+                          "value": 14.55,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 161,
@@ -277,7 +301,10 @@ description: Result of parsing sketch_on_face.kcl
                     "start": 193,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 5.0
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 197,
@@ -361,7 +388,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 260,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 264,
@@ -369,7 +399,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 263,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 265,
@@ -405,7 +438,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 281,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 286,
@@ -413,7 +449,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 284,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 10.0
+                        "value": {
+                          "value": 10.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 287,
@@ -449,7 +488,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 303,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 10.0
+                        "value": {
+                          "value": 10.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 308,
@@ -457,7 +499,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 307,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 309,
@@ -493,7 +538,10 @@ description: Result of parsing sketch_on_face.kcl
                         "start": 325,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -502,7 +550,10 @@ description: Result of parsing sketch_on_face.kcl
                           "start": 329,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 10.0
+                          "value": {
+                            "value": 10.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 331,
                         "operator": "-",
@@ -562,7 +613,10 @@ description: Result of parsing sketch_on_face.kcl
                     "start": 364,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 5.0
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 368,

@@ -30,7 +30,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     // Tolerance for the loft operation.
     let tolerance: Option<f64> = args.get_kw_arg_opt("tolerance");
 
-    let solid = inner_loft(
+    let value = inner_loft(
         sketches,
         v_degree,
         bez_approximate_rational,
@@ -40,7 +40,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         args,
     )
     .await?;
-    Ok(KclValue::Solid(solid))
+    Ok(KclValue::Solid { value })
 }
 
 /// Create a 3D surface or solid by interpolating between two or more sketches.
@@ -156,5 +156,8 @@ async fn inner_loft(
     .await?;
 
     // Using the first sketch as the base curve, idk we might want to change this later.
-    do_post_extrude(sketches[0].clone(), 0.0, exec_state, args).await
+    let mut sketch = sketches[0].clone();
+    // Override its id with the loft id so we can get its faces later
+    sketch.id = id;
+    do_post_extrude(sketch, 0.0, exec_state, args).await
 }

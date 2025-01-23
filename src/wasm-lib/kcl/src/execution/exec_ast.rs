@@ -21,8 +21,6 @@ use crate::{
 
 use super::cad_op::{OpArg, Operation};
 
-const FLOAT_TO_INT_MAX_DELTA: f64 = 0.01;
-
 impl BinaryPart {
     #[async_recursion]
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
@@ -123,8 +121,8 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (KclValue::Solid(solid), Property::String(prop)) if prop == "sketch" => Ok(KclValue::Sketch {
-                value: Box::new(solid.sketch),
+            (KclValue::Solid { value }, Property::String(prop)) if prop == "sketch" => Ok(KclValue::Sketch {
+                value: Box::new(value.sketch),
             }),
             (KclValue::Sketch { value: sk }, Property::String(prop)) if prop == "tags" => Ok(KclValue::Object {
                 meta: vec![Metadata {
@@ -664,11 +662,11 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 exec_state.mut_memory().update_tag(&tag.value, tag.clone())?;
             }
         }
-        KclValue::Solid(ref mut solid) => {
-            for value in &solid.value {
-                if let Some(tag) = value.get_tag() {
+        KclValue::Solid { ref mut value } => {
+            for v in &value.value {
+                if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
-                    let mut t = if let Some(t) = solid.sketch.tags.get(&tag.name) {
+                    let mut t = if let Some(t) = value.sketch.tags.get(&tag.name) {
                         t.clone()
                     } else {
                         // It's probably a fillet or a chamfer.
@@ -676,10 +674,10 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         TagIdentifier {
                             value: tag.name.clone(),
                             info: Some(TagEngineInfo {
-                                id: value.get_id(),
-                                surface: Some(value.clone()),
+                                id: v.get_id(),
+                                surface: Some(v.clone()),
                                 path: None,
-                                sketch: solid.id,
+                                sketch: value.id,
                             }),
                             meta: vec![Metadata {
                                 source_range: tag.clone().into(),
@@ -695,21 +693,21 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     };
 
                     let mut info = info.clone();
-                    info.surface = Some(value.clone());
-                    info.sketch = solid.id;
+                    info.surface = Some(v.clone());
+                    info.sketch = value.id;
                     t.info = Some(info);
 
                     exec_state.mut_memory().update_tag(&tag.name, t.clone())?;
 
                     // update the sketch tags.
-                    solid.sketch.tags.insert(tag.name.clone(), t);
+                    value.sketch.tags.insert(tag.name.clone(), t);
                 }
             }
 
             // Find the stale sketch in memory and update it.
             let cur_env_index = exec_state.memory().current_env.index();
             if let Some(current_env) = exec_state.mut_memory().environments.get_mut(cur_env_index) {
-                current_env.update_sketch_tags(&solid.sketch);
+                current_env.update_sketch_tags(&value.sketch);
             }
         }
         _ => {}
@@ -931,13 +929,13 @@ impl Property {
             LiteralIdentifier::Literal(literal) => {
                 let value = literal.value.clone();
                 match value {
-                    LiteralValue::Number(x) => {
-                        if let Some(x) = crate::try_f64_to_usize(x) {
+                    LiteralValue::Number { value, .. } => {
+                        if let Some(x) = crate::try_f64_to_usize(value) {
                             Ok(Property::UInt(x))
                         } else {
                             Err(KclError::Semantic(KclErrorDetails {
                                 source_ranges: property_sr,
-                                message: format!("{x} is not a valid index, indices must be whole numbers >= 0"),
+                                message: format!("{value} is not a valid index, indices must be whole numbers >= 0"),
                             }))
                         }
                     }
@@ -974,10 +972,9 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
             if num < 0.0 {
                 return make_err(format!("'{num}' is negative, so you can't index an array with it"))
             }
-            let nearest_int = num.round();
-            let delta = num-nearest_int;
-            if delta < FLOAT_TO_INT_MAX_DELTA {
-                Ok(Property::UInt(nearest_int as usize))
+            let nearest_int = crate::try_f64_to_usize(num);
+            if let Some(nearest_int) = nearest_int {
+                Ok(Property::UInt(nearest_int))
             } else {
                 make_err(format!("'{num}' is not an integer, so you can't index an array with it"))
             }
@@ -988,6 +985,7 @@ fn jvalue_to_prop(value: &KclValue, property_sr: Vec<SourceRange>, name: &str) -
         }
     }
 }
+
 impl Property {
     fn type_name(&self) -> &'static str {
         match self {

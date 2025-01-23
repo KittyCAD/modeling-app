@@ -24,7 +24,10 @@ describe('testing AST', () => {
             type: 'Literal',
             start: 0,
             end: 1,
-            value: 5,
+            value: {
+              suffix: 'None',
+              value: 5,
+            },
             raw: '5',
           },
           operator: '+',
@@ -32,7 +35,10 @@ describe('testing AST', () => {
             type: 'Literal',
             start: 3,
             end: 4,
-            value: 6,
+            value: {
+              suffix: 'None',
+              value: 6,
+            },
             raw: '6',
           },
         },
@@ -47,7 +53,7 @@ describe('parsing errors', () => {
     const result = parse(code)
     if (err(result)) throw result
     const error = result.errors[0]
-    expect(error.message).toBe('Unexpected token: (')
-    expect(error.sourceRange).toEqual([27, 28, 0])
+    expect(error.message).toBe('Array is missing a closing bracket(`]`)')
+    expect(error.sourceRange).toEqual([28, 29, 0])
   })
 })

@@ -1,10 +1,8 @@
 import {
-  defaultRustSourceRange,
+  ArtifactGraph,
   defaultSourceRange,
-  Program,
-  RustSourceRange,
+  ExecState,
   SourceRange,
-  sourceRangeFromRust,
 } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
@@ -17,13 +15,7 @@ import {
   darkModeMatcher,
 } from 'lib/theme'
 import { DefaultPlanes } from 'wasm-lib/kcl/bindings/DefaultPlanes'
-import {
-  ArtifactGraph,
-  EngineCommand,
-  OrderedCommand,
-  ResponseMap,
-  createArtifactGraph,
-} from 'lang/std/artifactGraph'
+import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
 import toast from 'react-hot-toast'
@@ -1022,6 +1014,11 @@ class EngineConnection extends EventTarget {
               this.pingPongSpan.pong = new Date()
               break
 
+            case 'modeling_session_data':
+              let api_call_id = resp.data?.session?.api_call_id
+              console.log(`API Call ID: ${api_call_id}`)
+              break
+
             // Only fires on successful authentication.
             case 'ice_server_info':
               let ice_servers = resp.data?.ice_servers
@@ -1303,14 +1300,14 @@ export enum EngineCommandManagerEvents {
  *
  * As commands are send their state is tracked in {@link pendingCommands} and clear as soon as we receive a response.
  *
- * Also all commands that are sent are kept track of in {@link orderedCommands} and their responses are kept in {@link responseMap}
+ * Also all commands that are sent are kept track of in WASM artifactCommands and their responses are kept in {@link responseMap}
  * Both of these data structures are used to process the {@link artifactGraph}.
  */
 
 interface PendingMessage {
   command: EngineCommand
-  range: RustSourceRange
-  idToRangeMap: { [key: string]: RustSourceRange }
+  range: SourceRange
+  idToRangeMap: { [key: string]: SourceRange }
   resolve: (data: [Models['WebSocketResponse_type']]) => void
   reject: (reason: string) => void
   promise: Promise<[Models['WebSocketResponse_type']]>
@@ -1329,12 +1326,7 @@ export class EngineCommandManager extends EventTarget {
     [commandId: string]: PendingMessage
   } = {}
   /**
-   * The orderedCommands array of all the the commands sent to the engine, un-folded from batches, and made into one long
-   * list of the individual commands, this is used to process all the commands into the artifactGraph
-   */
-  orderedCommands: Array<OrderedCommand> = []
-  /**
-   * A map of the responses to the {@link orderedCommands}, when processing the commands into the artifactGraph, this response map allow
+   * A map of the responses to the WASM artifactCommands, when processing the commands into the artifactGraph, this response map allow
    * us to look up the response by command id
    */
   responseMap: ResponseMap = {}
@@ -1830,7 +1822,6 @@ export class EngineCommandManager extends EventTarget {
     }
   }
   async startNewSession() {
-    this.orderedCommands = []
     this.responseMap = {}
     await this.initPlanes()
   }
@@ -2000,7 +1991,7 @@ export class EngineCommandManager extends EventTarget {
       {
         command,
         idToRangeMap: {},
-        range: defaultRustSourceRange(),
+        range: defaultSourceRange(),
       },
       true // isSceneCommand
     )
@@ -2031,9 +2022,9 @@ export class EngineCommandManager extends EventTarget {
       return Promise.reject(new Error('rangeStr is undefined'))
     if (commandStr === undefined)
       return Promise.reject(new Error('commandStr is undefined'))
-    const range: RustSourceRange = JSON.parse(rangeStr)
+    const range: SourceRange = JSON.parse(rangeStr)
     const command: EngineCommand = JSON.parse(commandStr)
-    const idToRangeMap: { [key: string]: RustSourceRange } =
+    const idToRangeMap: { [key: string]: SourceRange } =
       JSON.parse(idToRangeStr)
 
     // Current executeAst is stale, going to interrupt, a new executeAst will trigger
@@ -2073,28 +2064,6 @@ export class EngineCommandManager extends EventTarget {
       isSceneCommand,
     }
 
-    if (message.command.type === 'modeling_cmd_req') {
-      this.orderedCommands.push({
-        command: message.command,
-        range: sourceRangeFromRust(message.range),
-      })
-    } else if (message.command.type === 'modeling_cmd_batch_req') {
-      message.command.requests.forEach((req) => {
-        const cmdId = req.cmd_id || ''
-        const range = cmdId
-          ? sourceRangeFromRust(message.idToRangeMap[cmdId])
-          : defaultSourceRange()
-        const cmd: EngineCommand = {
-          type: 'modeling_cmd_req',
-          cmd_id: req.cmd_id,
-          cmd: req.cmd,
-        }
-        this.orderedCommands.push({
-          command: cmd,
-          range,
-        })
-      })
-    }
     this.engineConnection?.send(message.command)
     return promise
   }
@@ -2115,12 +2084,8 @@ export class EngineCommandManager extends EventTarget {
       Object.values(this.pendingCommands).map((a) => a.promise)
     )
   }
-  updateArtifactGraph(ast: Program) {
-    this.artifactGraph = createArtifactGraph({
-      orderedCommands: this.orderedCommands,
-      responseMap: this.responseMap,
-      ast,
-    })
+  updateArtifactGraph(execStateArtifactGraph: ExecState['artifactGraph']) {
+    this.artifactGraph = execStateArtifactGraph
     // TODO check if these still need to be deferred once e2e tests are working again.
     if (this.artifactGraph.size) {
       this.deferredArtifactEmptied(null)

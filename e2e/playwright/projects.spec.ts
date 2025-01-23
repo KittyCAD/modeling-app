@@ -115,7 +115,7 @@ test(
 )
 
 test(
-  'yyyyyyyyy open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
+  'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
@@ -172,7 +172,7 @@ test(
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('broken-code')).toBeVisible()
       await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
     await test.step('opening broken code project should clear the scene and show the error', async () => {
       // Go back home.
@@ -199,7 +199,7 @@ test(
 )
 
 test(
-  'aaayyyyyyyy open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
+  'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
@@ -253,7 +253,7 @@ test(
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('empty')).toBeVisible()
       await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
     await test.step('opening empty code project should clear the scene', async () => {
       // Go back home.
@@ -276,7 +276,7 @@ test(
 )
 
 test(
-  'nooooooooooooo open a file in a project works and renders, open empty file, it should clear the scene',
+  'open a file in a project works and renders, open empty file, it should clear the scene',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
@@ -985,6 +985,126 @@ test.describe(`Project management commands`, () => {
       })
     }
   )
+  test(`Create a new project with a colliding name`, async ({
+    context,
+    homePage,
+    toolbar,
+    cmdBar,
+  }) => {
+    const projectName = 'test-project'
+    await test.step(`Setup`, async () => {
+      await context.folderSetupFn(async (dir) => {
+        const projectDir = path.join(dir, projectName)
+        await Promise.all([fsp.mkdir(projectDir, { recursive: true })])
+        await Promise.all([
+          fsp.copyFile(
+            executorInputPath('router-template-slate.kcl'),
+            path.join(projectDir, 'main.kcl')
+          ),
+        ])
+      })
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: projectName,
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+
+    await test.step('Create a new project with the same name', async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('create project')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Create project',
+        currentArgKey: 'name',
+        currentArgValue: '',
+        headerArguments: {
+          Name: '',
+        },
+        highlightedHeaderArg: 'name',
+      })
+      await cmdBar.argumentInput.fill(projectName)
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Check the project was created with a non-colliding name`, async () => {
+      await toolbar.logoLink.click()
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: projectName + '-1',
+            fileCount: 1,
+          },
+          {
+            title: projectName,
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+
+    await test.step('Create another project with the same name', async () => {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('create project')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Create project',
+        currentArgKey: 'name',
+        currentArgValue: '',
+        headerArguments: {
+          Name: '',
+        },
+        highlightedHeaderArg: 'name',
+      })
+      await cmdBar.argumentInput.fill(projectName)
+      await cmdBar.progressCmdBar()
+    })
+
+    await test.step(`Check the second project was created with a non-colliding name`, async () => {
+      await toolbar.logoLink.click()
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: projectName + '-2',
+            fileCount: 1,
+          },
+          {
+            title: projectName + '-1',
+            fileCount: 1,
+          },
+          {
+            title: projectName,
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+    })
+  })
+})
+
+test(`Create a few projects using the default project name`, async ({
+  homePage,
+  toolbar,
+}) => {
+  for (let i = 0; i < 12; i++) {
+    await test.step(`Create project ${i}`, async () => {
+      await homePage.expectState({
+        projectCards: Array.from({ length: i }, (_, i) => ({
+          title: `project-${i.toString().padStart(3, '0')}`,
+          fileCount: 1,
+        })).toReversed(),
+        sortBy: 'last-modified-desc',
+      })
+      await homePage.createAndGoToProject()
+      await toolbar.logoLink.click()
+    })
+  }
 })
 
 test(
@@ -1391,7 +1511,7 @@ extrude001 = extrude(200, sketch001)`)
     await page.getByTestId('app-logo').click()
 
     await expect(
-      page.getByRole('button', { name: 'New project' })
+      page.getByRole('button', { name: 'Create project' })
     ).toBeVisible()
 
     for (let i = 1; i <= 10; i++) {
@@ -1465,7 +1585,7 @@ test(
 
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
 
     await test.step('Opening the router-template project should load the stream', async () => {
@@ -1494,7 +1614,7 @@ test(
 
       await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
       await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('New Project')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
     })
   }
 )
@@ -1882,6 +2002,51 @@ test.fixme(
       for (const [index, projectLink] of (await getAllProjects()).entries()) {
         await expect(projectLink).toContainText(projectNames[index])
       }
+    })
+  }
+)
+
+test(
+  'project name with foreign characters should open',
+  { tag: '@electron' },
+  async ({ context, page }, testInfo) => {
+    await context.folderSetupFn(async (dir) => {
+      const bracketDir = path.join(dir, 'اَلْعَرَبِيَّةُ')
+      await fsp.mkdir(bracketDir, { recursive: true })
+      await fsp.copyFile(
+        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        path.join(bracketDir, 'main.kcl')
+      )
+
+      await fsp.writeFile(path.join(bracketDir, 'empty.kcl'), '')
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+
+    page.on('console', console.log)
+
+    const pointOnModel = { x: 630, y: 280 }
+
+    await test.step('Opening the اَلْعَرَبِيَّةُ project should load the stream', async () => {
+      // expect to see the text bracket
+      await expect(page.getByText('اَلْعَرَبِيَّةُ')).toBeVisible()
+
+      await page.getByText('اَلْعَرَبِيَّةُ').click()
+
+      await expect(
+        page.getByRole('button', { name: 'Start Sketch' })
+      ).toBeEnabled({
+        timeout: 20_000,
+      })
+
+      // gray at this pixel means the stream has loaded in the most
+      // user way we can verify it (pixel color)
+      await expect
+        .poll(() => u.getGreatestPixDiff(pointOnModel, [85, 85, 85]), {
+          timeout: 10_000,
+        })
+        .toBeLessThan(15)
     })
   }
 )

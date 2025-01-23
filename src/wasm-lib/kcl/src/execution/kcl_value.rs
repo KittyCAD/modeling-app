@@ -7,7 +7,9 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
-    execution::{Face, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
+    execution::{
+        Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier,
+    },
     parsing::{
         ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
         token::NumericSuffix,
@@ -60,17 +62,26 @@ pub enum KclValue {
     },
     TagIdentifier(Box<TagIdentifier>),
     TagDeclarator(crate::parsing::ast::types::BoxNode<TagDeclarator>),
-    Plane(Box<Plane>),
-    Face(Box<Face>),
+    Plane {
+        value: Box<Plane>,
+    },
+    Face {
+        value: Box<Face>,
+    },
     Sketch {
         value: Box<Sketch>,
     },
     Sketches {
         value: Vec<Box<Sketch>>,
     },
-    Solid(Box<Solid>),
+    Solid {
+        value: Box<Solid>,
+    },
     Solids {
         value: Vec<Box<Solid>>,
+    },
+    Helix {
+        value: Box<Helix>,
     },
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
@@ -117,7 +128,7 @@ impl From<Vec<Box<Sketch>>> for KclValue {
 impl From<SolidSet> for KclValue {
     fn from(eg: SolidSet) -> Self {
         match eg {
-            SolidSet::Solid(eg) => KclValue::Solid(eg),
+            SolidSet::Solid(eg) => KclValue::Solid { value: eg },
             SolidSet::Solids(egs) => KclValue::Solids { value: egs },
         }
     }
@@ -126,7 +137,7 @@ impl From<SolidSet> for KclValue {
 impl From<Vec<Box<Solid>>> for KclValue {
     fn from(eg: Vec<Box<Solid>>) -> Self {
         if eg.len() == 1 {
-            KclValue::Solid(eg[0].clone())
+            KclValue::Solid { value: eg[0].clone() }
         } else {
             KclValue::Solids { value: eg }
         }
@@ -137,14 +148,15 @@ impl From<KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
-            KclValue::Solid(e) => to_vec_sr(&e.meta),
+            KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(&meta),
-            KclValue::Plane(p) => to_vec_sr(&p.meta),
-            KclValue::Face(f) => to_vec_sr(&f.meta),
+            KclValue::Plane { value } => to_vec_sr(&value.meta),
+            KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::Int { meta, .. } => to_vec_sr(&meta),
@@ -167,14 +179,15 @@ impl From<&KclValue> for Vec<SourceRange> {
         match item {
             KclValue::TagDeclarator(t) => vec![SourceRange::new(t.start, t.end, t.module_id)],
             KclValue::TagIdentifier(t) => to_vec_sr(&t.meta),
-            KclValue::Solid(e) => to_vec_sr(&e.meta),
+            KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Solids { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
             KclValue::Sketches { value } => value.iter().flat_map(|eg| to_vec_sr(&eg.meta)).collect(),
+            KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::ImportedGeometry(i) => to_vec_sr(&i.meta),
             KclValue::Function { meta, .. } => to_vec_sr(meta),
-            KclValue::Plane(p) => to_vec_sr(&p.meta),
-            KclValue::Face(f) => to_vec_sr(&f.meta),
+            KclValue::Plane { value } => to_vec_sr(&value.meta),
+            KclValue::Face { value } => to_vec_sr(&value.meta),
             KclValue::Bool { meta, .. } => to_vec_sr(meta),
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::Int { meta, .. } => to_vec_sr(meta),
@@ -200,12 +213,13 @@ impl KclValue {
             KclValue::Object { value: _, meta } => meta.clone(),
             KclValue::TagIdentifier(x) => x.meta.clone(),
             KclValue::TagDeclarator(x) => vec![x.metadata()],
-            KclValue::Plane(x) => x.meta.clone(),
-            KclValue::Face(x) => x.meta.clone(),
+            KclValue::Plane { value } => value.meta.clone(),
+            KclValue::Face { value } => value.meta.clone(),
             KclValue::Sketch { value } => value.meta.clone(),
             KclValue::Sketches { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
-            KclValue::Solid(x) => x.meta.clone(),
+            KclValue::Solid { value } => value.meta.clone(),
             KclValue::Solids { value } => value.iter().flat_map(|sketch| &sketch.meta).copied().collect(),
+            KclValue::Helix { value } => value.meta.clone(),
             KclValue::ImportedGeometry(x) => x.meta.clone(),
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
@@ -224,7 +238,7 @@ impl KclValue {
 
     pub(crate) fn get_solid_set(&self) -> Result<SolidSet> {
         match self {
-            KclValue::Solid(e) => Ok(SolidSet::Solid(e.clone())),
+            KclValue::Solid { value } => Ok(SolidSet::Solid(value.clone())),
             KclValue::Solids { value } => Ok(SolidSet::Solids(value.clone())),
             KclValue::Array { value, .. } => {
                 let solids: Vec<_> = value
@@ -260,14 +274,15 @@ impl KclValue {
             KclValue::Uuid { .. } => "Unique ID (uuid)",
             KclValue::TagDeclarator(_) => "TagDeclarator",
             KclValue::TagIdentifier(_) => "TagIdentifier",
-            KclValue::Solid(_) => "Solid",
+            KclValue::Solid { .. } => "Solid",
             KclValue::Solids { .. } => "Solids",
             KclValue::Sketch { .. } => "Sketch",
             KclValue::Sketches { .. } => "Sketches",
+            KclValue::Helix { .. } => "Helix",
             KclValue::ImportedGeometry(_) => "ImportedGeometry",
             KclValue::Function { .. } => "Function",
-            KclValue::Plane(_) => "Plane",
-            KclValue::Face(_) => "Face",
+            KclValue::Plane { .. } => "Plane",
+            KclValue::Face { .. } => "Face",
             KclValue::Bool { .. } => "boolean (true/false value)",
             KclValue::Number { .. } => "number",
             KclValue::Int { .. } => "integer",
@@ -281,7 +296,7 @@ impl KclValue {
 
     pub(crate) fn from_literal(literal: LiteralValue, meta: Vec<Metadata>) -> Self {
         match literal {
-            LiteralValue::Number(value) => KclValue::Number { value, meta },
+            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }
@@ -376,7 +391,7 @@ impl KclValue {
     }
 
     pub fn as_plane(&self) -> Option<&Plane> {
-        if let KclValue::Plane(value) = &self {
+        if let KclValue::Plane { value } = &self {
             Some(value)
         } else {
             None
@@ -384,7 +399,7 @@ impl KclValue {
     }
 
     pub fn as_solid(&self) -> Option<&Solid> {
-        if let KclValue::Solid(value) = &self {
+        if let KclValue::Solid { value } = &self {
             Some(value)
         } else {
             None
@@ -594,10 +609,37 @@ impl TryFrom<NumericSuffix> for UnitLen {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+impl From<crate::UnitLength> for UnitLen {
+    fn from(unit: crate::UnitLength) -> Self {
+        match unit {
+            crate::UnitLength::Cm => UnitLen::Cm,
+            crate::UnitLength::Ft => UnitLen::Feet,
+            crate::UnitLength::In => UnitLen::Inches,
+            crate::UnitLength::M => UnitLen::M,
+            crate::UnitLength::Mm => UnitLen::Mm,
+            crate::UnitLength::Yd => UnitLen::Yards,
+        }
+    }
+}
+
+impl From<UnitLen> for crate::UnitLength {
+    fn from(unit: UnitLen) -> Self {
+        match unit {
+            UnitLen::Cm => crate::UnitLength::Cm,
+            UnitLen::Feet => crate::UnitLength::Ft,
+            UnitLen::Inches => crate::UnitLength::In,
+            UnitLen::M => crate::UnitLength::M,
+            UnitLen::Mm => crate::UnitLength::Mm,
+            UnitLen::Yards => crate::UnitLength::Yd,
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitAngle {
+    #[default]
     Degrees,
     Radians,
 }

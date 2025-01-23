@@ -9,16 +9,25 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    execution::{ExecState, KclValue, Sketch, Solid},
+    execution::{ExecState, Helix, KclValue, Sketch, Solid},
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
+
+/// A path to sweep along.
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(untagged)]
+pub enum SweepPath {
+    Sketch(Sketch),
+    Helix(Box<Helix>),
+}
 
 /// Data for a sweep.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct SweepData {
     /// The path to sweep along.
-    pub path: Sketch,
+    pub path: SweepPath,
     /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
     pub sectional: Option<bool>,
     /// Tolerance for the sweep operation.
@@ -30,8 +39,8 @@ pub struct SweepData {
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch): (SweepData, Sketch) = args.get_data_and_sketch()?;
 
-    let solid = inner_sweep(data, sketch, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_sweep(data, sketch, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Extrude a sketch along a path.
@@ -77,6 +86,26 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         path: sweepPath,
 ///     }, %)   
 /// ```
+///
+/// ```no_run
+/// // Create a spring by sweeping around a helix path.
+///
+/// // Create a helix around the Z axis.
+/// helixPath = helix({
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 4,
+///     length = 10,
+///     radius = 5,
+///     axis = 'Z',
+///  })
+///
+///
+/// // Create a spring by sweeping around the helix path.
+/// springSketch = startSketchOn('YZ')
+///     |> circle({ center = [0, 0], radius = 1 }, %)
+///     |> sweep({ path = helixPath }, %)
+/// ```
 #[stdlib {
     name = "sweep",
     feature_tree_operation = true,
@@ -92,7 +121,10 @@ async fn inner_sweep(
         id,
         ModelingCmd::from(mcmd::Sweep {
             target: sketch.id.into(),
-            trajectory: data.path.id.into(),
+            trajectory: match data.path {
+                SweepPath::Sketch(sketch) => sketch.id.into(),
+                SweepPath::Helix(helix) => helix.value.into(),
+            },
             sectional: data.sectional.unwrap_or(false),
             tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
         }),

@@ -9,6 +9,9 @@ import {
   ExtrudeGeometry,
   Group,
   LineCurve3,
+  LineBasicMaterial,
+  LineDashedMaterial,
+  Line,
   Mesh,
   MeshBasicMaterial,
   NormalBufferAttributes,
@@ -58,6 +61,7 @@ import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
 import { editorManager, sceneInfra } from 'lib/singletons'
 import { Selections } from 'lib/selections'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 interface CreateSegmentArgs {
   input: SegmentInputs
@@ -844,7 +848,7 @@ function createLengthIndicator({
     })
 
     // Command Bar
-    editorManager.commandBarSend({
+    commandBarActor.send({
       type: 'Find and select command',
       data: {
         name: 'Constrain length',
@@ -1001,6 +1005,49 @@ export function createArcGeometry({
     : new BufferGeometry()
   geo.userData.type = 'dashed'
   return geo
+}
+
+// (lee) The above is much more complex than necessary.
+// I've derived the new code from:
+// https://threejs.org/docs/#api/en/extras/curves/EllipseCurve
+// I'm not sure why it wasn't done like this in the first place?
+// I don't touch the code above because it may break something else.
+export function createCircleGeometry({
+  center,
+  radius,
+  color,
+  isDashed = false,
+  scale = 1,
+}: {
+  center: Coords2d
+  radius: number
+  color: number
+  isDashed?: boolean
+  scale?: number
+}): Line {
+  const circle = new EllipseCurve(
+    center[0],
+    center[1],
+    radius,
+    radius,
+    0,
+    Math.PI * 2,
+    true,
+    scale
+  )
+  const points = circle.getPoints(75) // just enough points to not see edges.
+  const geometry = new BufferGeometry().setFromPoints(points)
+  const material = !isDashed
+    ? new LineBasicMaterial({ color })
+    : new LineDashedMaterial({
+        color,
+        scale,
+        dashSize: 6,
+        gapSize: 6,
+      })
+  const line = new Line(geometry, material)
+  line.computeLineDistances()
+  return line
 }
 
 export function dashedStraight(

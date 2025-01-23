@@ -374,6 +374,37 @@ export function loftSketches(
   }
 }
 
+export function addSweep(
+  node: Node<Program>,
+  profileDeclarator: VariableDeclarator,
+  pathDeclarator: VariableDeclarator
+): {
+  modifiedAst: Node<Program>
+  pathToNode: PathToNode
+} {
+  const modifiedAst = structuredClone(node)
+  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
+  const sweep = createCallExpressionStdLib('sweep', [
+    createObjectExpression({ path: createIdentifier(pathDeclarator.id.name) }),
+    createIdentifier(profileDeclarator.id.name),
+  ])
+  const declaration = createVariableDeclaration(name, sweep)
+  modifiedAst.body.push(declaration)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
 export function revolveSketch(
   node: Node<Program>,
   pathToNode: PathToNode,
@@ -712,14 +743,18 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
   return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
-export function createLiteral(value: LiteralValue): Node<Literal> {
+export function createLiteral(value: LiteralValue | number): Node<Literal> {
+  const raw = `${value}`
+  if (typeof value === 'number') {
+    value = { value, suffix: 'None' }
+  }
   return {
     type: 'Literal',
     start: 0,
     end: 0,
     moduleId: 0,
     value,
-    raw: `${value}`,
+    raw,
   }
 }
 
@@ -1149,11 +1184,17 @@ export async function deleteFromSelection(
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
       varDec.node.init.type === 'PipeExpression') ||
-    selection.artifact?.type === 'sweep'
+    selection.artifact?.type === 'sweep' ||
+    selection.artifact?.type === 'plane' ||
+    !selection.artifact // aka expected to be a shell at this point
   ) {
     let extrudeNameToDelete = ''
     let pathToNode: PathToNode | null = null
-    if (selection.artifact?.type !== 'sweep') {
+    if (
+      selection.artifact &&
+      selection.artifact.type !== 'sweep' &&
+      selection.artifact.type !== 'plane'
+    ) {
       const varDecName = varDec.node.id.name
       traverse(astClone, {
         enter: (node, path) => {
@@ -1165,6 +1206,17 @@ export async function deleteFromSelection(
                 dec.init.callee.name === 'revolve') &&
               dec.init.arguments?.[1].type === 'Identifier' &&
               dec.init.arguments?.[1].name === varDecName
+            ) {
+              pathToNode = path
+              extrudeNameToDelete = dec.id.name
+            }
+            if (
+              dec.init.type === 'CallExpression' &&
+              dec.init.callee.name === 'loft' &&
+              dec.init.arguments?.[0].type === 'ArrayExpression' &&
+              dec.init.arguments?.[0].elements.some(
+                (a) => a.type === 'Identifier' && a.name === varDecName
+              )
             ) {
               pathToNode = path
               extrudeNameToDelete = dec.id.name
@@ -1278,17 +1330,17 @@ export async function deleteFromSelection(
                     y: roundLiteral(faceDetails.origin.y),
                     z: roundLiteral(faceDetails.origin.z),
                   }),
-                  x_axis: createObjectExpression({
+                  xAxis: createObjectExpression({
                     x: roundLiteral(faceDetails.x_axis.x),
                     y: roundLiteral(faceDetails.x_axis.y),
                     z: roundLiteral(faceDetails.x_axis.z),
                   }),
-                  y_axis: createObjectExpression({
+                  yAxis: createObjectExpression({
                     x: roundLiteral(faceDetails.y_axis.x),
                     y: roundLiteral(faceDetails.y_axis.y),
                     z: roundLiteral(faceDetails.y_axis.z),
                   }),
-                  z_axis: createObjectExpression({
+                  zAxis: createObjectExpression({
                     x: roundLiteral(faceDetails.z_axis.x),
                     y: roundLiteral(faceDetails.z_axis.y),
                     z: roundLiteral(faceDetails.z_axis.z),

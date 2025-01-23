@@ -2,13 +2,13 @@ import CommandArgOptionInput from './CommandArgOptionInput'
 import CommandBarBasicInput from './CommandBarBasicInput'
 import CommandBarSelectionInput from './CommandBarSelectionInput'
 import { CommandArgument } from 'lib/commandTypes'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import CommandBarHeader from './CommandBarHeader'
 import CommandBarKclInput from './CommandBarKclInput'
 import CommandBarTextareaInput from './CommandBarTextareaInput'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
-  const { commandBarState, commandBarSend } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const {
     context: { currentArgument },
   } = commandBarState
@@ -16,7 +16,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   function onSubmit(data: unknown) {
     if (!currentArgument) return
 
-    commandBarSend({
+    commandBarActor.send({
       type: 'Submit argument',
       data: {
         [currentArgument.name]: data,

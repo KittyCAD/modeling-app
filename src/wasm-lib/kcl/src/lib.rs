@@ -70,7 +70,7 @@ mod settings;
 #[cfg(test)]
 mod simulation_tests;
 mod source_range;
-mod std;
+pub mod std;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod test_server;
 mod thread;
@@ -84,7 +84,7 @@ pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
 pub use execution::{
     cache::{CacheInformation, OldAstState},
-    ExecState, ExecutorContext, ExecutorSettings,
+    ExecState, ExecutorContext, ExecutorSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
@@ -97,7 +97,9 @@ pub use source_range::{ModuleId, SourceRange};
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    pub use crate::execution::{DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch};
+    pub use crate::execution::{
+        ArtifactCommand, DefaultPlanes, IdGenerator, KclValue, PlaneType, ProgramMemory, Sketch,
+    };
 }
 
 #[cfg(target_arch = "wasm32")]

@@ -14,7 +14,10 @@ mod test_examples_someFn {
             settings: Default::default(),
             context_type: crate::execution::ContextType::Mock,
         };
-        if let Err(e) = ctx.run(program.into(), &mut crate::ExecState::new()).await {
+        if let Err(e) = ctx
+            .run(program.into(), &mut crate::ExecState::new(&ctx.settings))
+            .await
+        {
             return Err(miette::Report::new(crate::errors::Report {
                 error: e,
                 filename: format!("{}{}", "someFn", 0usize),
@@ -37,7 +40,7 @@ mod test_examples_someFn {
         {
             Err(crate::errors::ExecError::Kcl(e)) => {
                 return Err(miette::Report::new(crate::errors::Report {
-                    error: e,
+                    error: e.error,
                     filename: format!("{}{}", "someFn", 0usize),
                     kcl_source: "someFn()".to_string(),
                 }));

@@ -9,7 +9,12 @@ import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
-import { loftValidator, revolveAxisValidator } from './validators'
+import {
+  loftValidator,
+  revolveAxisValidator,
+  shellValidator,
+  sweepValidator,
+} from './validators'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -37,6 +42,10 @@ export type ModelingCommandSchema = {
     // result: (typeof EXTRUSION_RESULTS)[number]
     distance: KclCommandValue
   }
+  Sweep: {
+    target: Selections
+    trajectory: Selections
+  }
   Loft: {
     selection: Selections
   }
@@ -47,12 +56,17 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
-    axis: Selections
+    axisOrEdge: string
+    axis: string
+    edge: Selections
   }
   Fillet: {
-    // todo
     selection: Selections
     radius: KclCommandValue
+  }
+  Chamfer: {
+    selection: Selections
+    length: KclCommandValue
   }
   'Offset plane': {
     plane: Selections
@@ -267,7 +281,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
@@ -290,14 +304,40 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  Sweep: {
+    description:
+      'Create a 3D body by moving a sketch region along an arbitrary path.',
+    icon: 'sweep',
+    status: 'development',
+    needsReview: false,
+    args: {
+      target: {
+        inputType: 'selection',
+        selectionTypes: ['solid2d'],
+        required: true,
+        skip: true,
+        multiple: false,
+        warningMessage:
+          'The sweep workflow is new and under tested. Please break it and report issues.',
+      },
+      trajectory: {
+        inputType: 'selection',
+        selectionTypes: ['segment', 'path'],
+        required: true,
+        skip: false,
+        multiple: false,
+        validation: sweepValidator,
+      },
+    },
+  },
   Loft: {
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
-    needsReview: true,
+    needsReview: false,
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D'],
+        selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         skip: false,
@@ -315,30 +355,56 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
-        skip: false,
+        validation: shellValidator,
       },
       thickness: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
+        // TODO: add dry-run validation on thickness param
       },
     },
   },
-  // TODO: Update this configuration, copied from extrude for MVP of revolve, specifically the args.selection
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
+    status: 'development',
     needsReview: true,
     args: {
       selection: {
         inputType: 'selection',
-        selectionTypes: ['solid2D', 'segment'],
+        selectionTypes: ['solid2d', 'segment'],
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+        warningMessage:
+          'The revolve workflow is new and under tested. Please break it and report issues.',
+      },
+      axisOrEdge: {
+        inputType: 'options',
+        required: true,
+        defaultValue: 'Axis',
+        options: [
+          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Edge', isCurrent: false, value: 'Edge' },
+        ],
       },
       axis: {
-        required: true,
+        required: (commandContext) =>
+          ['Axis'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'options',
+        options: [
+          { name: 'X Axis', isCurrent: true, value: 'X' },
+          { name: 'Y Axis', isCurrent: false, value: 'Y' },
+        ],
+      },
+      edge: {
+        required: (commandContext) =>
+          ['Edge'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
         inputType: 'selection',
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
@@ -371,7 +437,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Fillet: {
     description: 'Fillet edge',
-    icon: 'fillet',
+    icon: 'fillet3d',
     status: 'development',
     needsReview: true,
     args: {
@@ -385,6 +451,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           'Fillets cannot touch other fillets yet. This is under development.',
       },
       radius: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
+        required: true,
+      },
+    },
+  },
+  Chamfer: {
+    description: 'Chamfer edge',
+    icon: 'chamfer3d',
+    status: 'development',
+    needsReview: true,
+    args: {
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        multiple: true,
+        required: true,
+        skip: false,
+        warningMessage:
+          'Chamfers cannot touch other chamfers yet. This is under development.',
+      },
+      length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
@@ -490,7 +578,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       selection: {
         inputType: 'selection',
         selectionTypes: [
-          'solid2D',
+          'solid2d',
           'segment',
           'sweepEdge',
           'cap',

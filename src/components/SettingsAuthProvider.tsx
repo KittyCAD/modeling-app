@@ -29,7 +29,6 @@ import {
   createSettingsCommand,
   settingsWithCommandConfigs,
 } from 'lib/commandBarConfigs/settingsCommandConfig'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { BaseUnit } from 'lib/settings/settingsTypes'
 import {
@@ -42,6 +41,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { codeManager } from 'lib/singletons'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -109,7 +109,6 @@ export const SettingsAuthProviderBase = ({
 }) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const { commandBarSend } = useCommandsContext()
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined
   )
@@ -136,6 +135,11 @@ export const SettingsAuthProviderBase = ({
           const opposingTheme = getOppositeTheme(context.app.theme.current)
           sceneInfra.theme = opposingTheme
           sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
+        },
+        setAllowOrbitInSketchMode: ({ context }) => {
+          sceneInfra.camControls._setting_allowOrbitInSketchMode =
+            context.app.allowOrbitInSketchMode.current
+          // ModelingMachineProvider will do a use effect to trigger the camera engine sync
         },
         toastSuccess: ({ event }) => {
           if (!('data' in event)) return
@@ -273,10 +277,10 @@ export const SettingsAuthProviderBase = ({
       )
       .filter((c) => c !== null) as Command[]
 
-    commandBarSend({ type: 'Add commands', data: { commands: commands } })
+    commandBarActor.send({ type: 'Add commands', data: { commands: commands } })
 
     return () => {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Remove commands',
         data: { commands },
       })
@@ -285,7 +289,7 @@ export const SettingsAuthProviderBase = ({
     settingsState,
     settingsSend,
     settingsActor,
-    commandBarSend,
+    commandBarActor.send,
     settingsWithCommandConfigs,
   ])
 
@@ -298,7 +302,7 @@ export const SettingsAuthProviderBase = ({
       encodeURIComponent(loadedProject?.file?.path || BROWSER_PATH)
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
-    commandBarSend({
+    commandBarActor.send({
       type: 'Remove commands',
       data: {
         commands: [
@@ -309,12 +313,12 @@ export const SettingsAuthProviderBase = ({
       },
     })
     if (location.pathname === PATHS.HOME) {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Add commands',
         data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
       })
     } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Add commands',
         data: {
           commands: [

@@ -45,12 +45,14 @@ import {
 import { revolveSketch } from 'lang/modifyAst/addRevolve'
 import {
   addOffsetPlane,
+  addSweep,
   deleteFromSelection,
   extrudeSketch,
   loftSketches,
 } from 'lang/modifyAst'
 import {
   applyEdgeTreatmentToSelection,
+  ChamferParameters,
   EdgeTreatmentType,
   FilletParameters,
 } from 'lang/modifyAst/addEdgeTreatment'
@@ -131,6 +133,8 @@ export interface SketchDetails {
   zAxis: [number, number, number]
   yAxis: [number, number, number]
   origin: [number, number, number]
+  // face id or plane id, both are strings
+  animateTargetId?: string
 }
 
 export interface SegmentOverlay {
@@ -266,10 +270,12 @@ export type ModelingMachineEvent =
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
+  | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
   | { type: 'Shell'; data?: ModelingCommandSchema['Shell'] }
   | { type: 'Revolve'; data?: ModelingCommandSchema['Revolve'] }
   | { type: 'Fillet'; data?: ModelingCommandSchema['Fillet'] }
+  | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
   | { type: 'Text-to-CAD'; data: ModelingCommandSchema['Text-to-CAD'] }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
@@ -418,6 +424,8 @@ export const modelingMachine = setup({
     },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
+    'is editing 3-point circle': ({ context: { sketchDetails } }) =>
+      isEditing3PointCircle({ sketchDetails }),
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
       const info = horzVertInfo(selectionRanges, 'horizontal')
       if (trap(info)) return false
@@ -685,7 +693,7 @@ export const modelingMachine = setup({
       if (event.type !== 'Revolve') return
       ;(async () => {
         if (!event.data) return
-        const { selection, angle, axis } = event.data
+        const { selection, angle, axis, edge, axisOrEdge } = event.data
         let ast = kclManager.ast
         if (
           'variableName' in angle &&
@@ -710,7 +718,9 @@ export const modelingMachine = setup({
           'variableName' in angle
             ? angle.variableIdentifierAst
             : angle.valueAst,
-          axis
+          axisOrEdge,
+          axis,
+          edge
         )
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
@@ -762,30 +772,6 @@ export const modelingMachine = setup({
         await kclManager.updateAst(modifiedAst, true)
         await codeManager.updateEditorWithAstAndWriteToFile(modifiedAst)
       })().catch(reportRejection)
-    },
-    'AST fillet': ({ event }) => {
-      if (event.type !== 'Fillet') return
-      if (!event.data) return
-
-      // Extract inputs
-      const ast = kclManager.ast
-      const { selection, radius } = event.data
-      const parameters: FilletParameters = {
-        type: EdgeTreatmentType.Fillet,
-        radius,
-      }
-
-      // Apply fillet to selection
-      const applyEdgeTreatmentToSelectionResult = applyEdgeTreatmentToSelection(
-        ast,
-        selection,
-        parameters
-      )
-      if (err(applyEdgeTreatmentToSelectionResult))
-        return applyEdgeTreatmentToSelectionResult
-
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
     },
     'set selection filter to curves only': () => {
       ;(async () => {
@@ -1566,6 +1552,66 @@ export const modelingMachine = setup({
         }
       }
     ),
+    sweepAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Sweep'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Extract inputs
+        const ast = kclManager.ast
+        const { target, trajectory } = input
+
+        // Find the profile declaration
+        const targetNodePath = getNodePathFromSourceRange(
+          ast,
+          target.graphSelections[0].codeRef.range
+        )
+        const targetNode = getNodeFromPath<VariableDeclarator>(
+          ast,
+          targetNodePath,
+          'VariableDeclarator'
+        )
+        if (err(targetNode)) {
+          return new Error("Couldn't parse profile selection")
+        }
+        const targetDeclarator = targetNode.node
+
+        // Find the path declaration
+        const trajectoryNodePath = getNodePathFromSourceRange(
+          ast,
+          trajectory.graphSelections[0].codeRef.range
+        )
+        const trajectoryNode = getNodeFromPath<VariableDeclarator>(
+          ast,
+          trajectoryNodePath,
+          'VariableDeclarator'
+        )
+        if (err(trajectoryNode)) {
+          return new Error("Couldn't parse path selection")
+        }
+        const trajectoryDeclarator = trajectoryNode.node
+
+        // Perform the sweep
+        const sweepRes = addSweep(ast, targetDeclarator, trajectoryDeclarator)
+        const updateAstResult = await kclManager.updateAst(
+          sweepRes.modifiedAst,
+          true,
+          {
+            focusPath: [sweepRes.pathToNode],
+          }
+        )
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
     loftAstMod: fromPromise(
       async ({
         input,
@@ -1670,6 +1716,60 @@ export const modelingMachine = setup({
         }
       }
     ),
+    filletAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Fillet'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection, radius } = input
+        const parameters: FilletParameters = {
+          type: EdgeTreatmentType.Fillet,
+          radius,
+        }
+
+        // Apply fillet to selection
+        const filletResult = await applyEdgeTreatmentToSelection(
+          ast,
+          selection,
+          parameters
+        )
+        if (err(filletResult)) return filletResult
+      }
+    ),
+    chamferAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Chamfer'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        // Extract inputs
+        const ast = kclManager.ast
+        const { selection, length } = input
+        const parameters: ChamferParameters = {
+          type: EdgeTreatmentType.Chamfer,
+          length,
+        }
+
+        // Apply chamfer to selection
+        const chamferResult = await applyEdgeTreatmentToSelection(
+          ast,
+          selection,
+          parameters
+        )
+        if (err(chamferResult)) return chamferResult
+      }
+    ),
     'submit-prompt-edit': fromPromise(
       async ({ input }: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {
         console.log('doing thing', input)
@@ -1734,6 +1834,11 @@ export const modelingMachine = setup({
           reenter: false,
         },
 
+        Sweep: {
+          target: 'Applying sweep',
+          reenter: true,
+        },
+
         Loft: {
           target: 'Applying loft',
           reenter: true,
@@ -1745,9 +1850,13 @@ export const modelingMachine = setup({
         },
 
         Fillet: {
-          target: 'idle',
-          actions: ['AST fillet'],
-          reenter: false,
+          target: 'Applying fillet',
+          reenter: true,
+        },
+
+        Chamfer: {
+          target: 'Applying chamfer',
+          reenter: true,
         },
 
         Export: {
@@ -2082,6 +2191,10 @@ export const modelingMachine = setup({
               target: 'SketchIdle',
               guard: 'is editing existing sketch',
             },
+            {
+              target: 'circle3PointToolSelect',
+              guard: 'is editing 3-point circle',
+            },
             'Line tool',
           ],
         },
@@ -2413,13 +2526,8 @@ export const modelingMachine = setup({
         circle3PointToolSelect: {
           invoke: {
             id: 'actor-circle-3-point',
-            input: function ({ context, event }) {
-              // These are not really necessary but I believe they are needed
-              // to satisfy TypeScript type narrowing or undefined check.
-              if (event.type !== 'change tool') return
-              if (event.data?.tool !== 'circle3Points') return
+            input: function ({ context }) {
               if (!context.sketchDetails) return
-
               return context.sketchDetails
             },
             src: 'actorCircle3Point',
@@ -2527,6 +2635,19 @@ export const modelingMachine = setup({
       },
     },
 
+    'Applying sweep': {
+      invoke: {
+        src: 'sweepAstMod',
+        id: 'sweepAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Sweep') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
     'Applying loft': {
       invoke: {
         src: 'loftAstMod',
@@ -2546,6 +2667,32 @@ export const modelingMachine = setup({
         id: 'shellAstMod',
         input: ({ event }) => {
           if (event.type !== 'Shell') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying fillet': {
+      invoke: {
+        src: 'filletAstMod',
+        id: 'filletAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Fillet') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    'Applying chamfer': {
+      invoke: {
+        src: 'chamferAstMod',
+        id: 'chamferAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Chamfer') return undefined
           return event.data
         },
         onDone: ['idle'],
@@ -2638,6 +2785,34 @@ export function isEditingExistingSketch({
   )
   return (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle
 }
+export function isEditing3PointCircle({
+  sketchDetails,
+}: {
+  sketchDetails: SketchDetails | null
+}): boolean {
+  if (!sketchDetails?.sketchPathToNode) return false
+  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
+    kclManager.ast,
+    sketchDetails.sketchPathToNode,
+    'VariableDeclarator'
+  )
+  if (err(variableDeclaration)) return false
+  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
+  const pipeExpression = variableDeclaration.node.init
+  if (pipeExpression.type !== 'PipeExpression') return false
+  const hasStartProfileAt = pipeExpression.body.some(
+    (item) =>
+      item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
+  )
+  const hasCircle3Point = pipeExpression.body.some(
+    (item) =>
+      item.type === 'CallExpressionKw' &&
+      item.callee.name === 'circleThreePoint'
+  )
+  return (
+    (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle3Point
+  )
+}
 export function pipeHasCircle({
   sketchDetails,
 }: {
@@ -2655,6 +2830,27 @@ export function pipeHasCircle({
   if (pipeExpression.type !== 'PipeExpression') return false
   const hasCircle = pipeExpression.body.some(
     (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+  )
+  return hasCircle
+}
+export function pipeHasCircleThreePoint({
+  sketchDetails,
+}: {
+  sketchDetails: SketchDetails | null
+}): boolean {
+  if (!sketchDetails?.sketchPathToNode) return false
+  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
+    kclManager.ast,
+    sketchDetails.sketchPathToNode,
+    'VariableDeclarator'
+  )
+  if (err(variableDeclaration)) return false
+  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
+  const pipeExpression = variableDeclaration.node.init
+  if (pipeExpression.type !== 'PipeExpression') return false
+  const hasCircle = pipeExpression.body.some(
+    (item) =>
+      item.type === 'CallExpression' && item.callee.name === 'circleThreePoint'
   )
   return hasCircle
 }

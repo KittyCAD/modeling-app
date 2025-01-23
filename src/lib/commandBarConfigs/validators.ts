@@ -68,7 +68,7 @@ export const revolveAxisValidator = async ({
   }
 
   const sketchSelection = artifact.pathId
-  let edgeSelection = data.axis.graphSelections[0].artifact?.id
+  let edgeSelection = data.edge.graphSelections[0].artifact?.id
 
   if (!sketchSelection) {
     return 'Unable to revolve, sketch is missing'
@@ -101,7 +101,7 @@ export const revolveAxisValidator = async ({
     return true
   } else {
     // return error message for the toast
-    return 'Unable to revolve with selected axis'
+    return 'Unable to revolve with selected edge'
   }
 }
 
@@ -116,16 +116,16 @@ export const loftValidator = async ({
   }
   const { selection } = data
 
-  if (selection.graphSelections.some((s) => s.artifact?.type !== 'solid2D')) {
-    return 'Unable to loft, some selection are not solid2Ds'
+  if (selection.graphSelections.some((s) => s.artifact?.type !== 'solid2d')) {
+    return 'Unable to loft, some selection are not solid2ds'
   }
 
   const sectionIds = data.selection.graphSelections.flatMap((s) =>
-    s.artifact?.type === 'solid2D' ? s.artifact.pathId : []
+    s.artifact?.type === 'solid2d' ? s.artifact.pathId : []
   )
 
   if (sectionIds.length < 2) {
-    return 'Unable to loft, selection contains less than two solid2Ds'
+    return 'Unable to loft, selection contains less than two solid2ds'
   }
 
   const loftCommand = async () => {
@@ -152,4 +152,119 @@ export const loftValidator = async ({
     // return error message for the toast
     return 'Unable to loft with selected sketches'
   }
+}
+
+export const shellValidator = async ({
+  data,
+}: {
+  data: { selection: Selections }
+}): Promise<boolean | string> => {
+  if (!isSelections(data.selection)) {
+    return 'Unable to shell, selections are missing'
+  }
+
+  // No validation on the faces, filtering is done upstream and we have the dry run validation just below
+  const face_ids = data.selection.graphSelections.flatMap((s) =>
+    s.artifact ? s.artifact.id : []
+  )
+
+  // We don't have the concept of solid3ds in TS yet.
+  // So we're listing out the sweeps as if they were solids and taking the first one, just like in Rust for Shell:
+  // https://github.com/KittyCAD/modeling-app/blob/e61fff115b9fa94aaace6307b1842cc15d41655e/src/wasm-lib/kcl/src/std/shell.rs#L237-L238
+  // TODO: This is one cheap way to make sketch-on-face supported now but will likely fail multiple solids
+  const object_id = engineCommandManager.artifactGraph
+    .values()
+    .find((v) => v.type === 'sweep')?.pathId
+
+  if (!object_id) {
+    return "Unable to shell, couldn't find the solid"
+  }
+
+  const shellCommand = async () => {
+    // TODO: figure out something better than an arbitrarily small value
+    const DEFAULT_THICKNESS: Models['LengthUnit_type'] = 1e-9
+    const DEFAULT_HOLLOW = false
+    const cmdArgs = {
+      face_ids,
+      object_id,
+      hollow: DEFAULT_HOLLOW,
+      shell_thickness: DEFAULT_THICKNESS,
+    }
+    return await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'solid3d_shell_face',
+        ...cmdArgs,
+      },
+    })
+  }
+
+  const attemptShell = await dryRunWrapper(shellCommand)
+  if (attemptShell?.success) {
+    return true
+  }
+
+  return 'Unable to shell with the provided selection'
+}
+
+export const sweepValidator = async ({
+  context,
+  data,
+}: {
+  context: CommandBarContext
+  data: { trajectory: Selections }
+}): Promise<boolean | string> => {
+  if (!isSelections(data.trajectory)) {
+    console.log('Unable to sweep, selections are missing')
+    return 'Unable to sweep, selections are missing'
+  }
+
+  // Retrieve the parent path from the segment selection directly
+  const trajectoryArtifact = data.trajectory.graphSelections[0].artifact
+  if (!trajectoryArtifact) {
+    return "Unable to sweep, couldn't find the trajectory artifact"
+  }
+  if (trajectoryArtifact.type !== 'segment') {
+    return "Unable to sweep, couldn't find the target from a non-segment selection"
+  }
+  const trajectory = trajectoryArtifact.pathId
+
+  // Get the former arg in the command bar flow, and retrieve the path from the solid2d directly
+  const targetArg = context.argumentsToSubmit['target'] as Selections
+  const targetArtifact = targetArg.graphSelections[0].artifact
+  if (!targetArtifact) {
+    return "Unable to sweep, couldn't find the profile artifact"
+  }
+  if (targetArtifact.type !== 'solid2d') {
+    return "Unable to sweep, couldn't find the target from a non-solid2d selection"
+  }
+  const target = targetArtifact.pathId
+
+  const sweepCommand = async () => {
+    // TODO: second look on defaults here
+    const DEFAULT_TOLERANCE: Models['LengthUnit_type'] = 1e-7
+    const DEFAULT_SECTIONAL = false
+    const cmdArgs = {
+      target,
+      trajectory,
+      sectional: DEFAULT_SECTIONAL,
+      tolerance: DEFAULT_TOLERANCE,
+    }
+    return await engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'sweep',
+        ...cmdArgs,
+      },
+    })
+  }
+
+  const attemptSweep = await dryRunWrapper(sweepCommand)
+  if (attemptSweep?.success) {
+    return true
+  }
+
+  return 'Unable to sweep with the provided selection'
 }

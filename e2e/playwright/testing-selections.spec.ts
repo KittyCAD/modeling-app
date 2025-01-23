@@ -389,25 +389,25 @@ test.describe('Testing selections', () => {
     await expect(u.codeLocator).toContainText(`sketch005 = startSketchOn({
      plane = {
        origin = { x = 0, y = -50, z = 0 },
-       x_axis = { x = 1, y = 0, z = 0 },
-       y_axis = { x = 0, y = 0, z = 1 },
-       z_axis = { x = 0, y = -1, z = 0 }
+       xAxis = { x = 1, y = 0, z = 0 },
+       yAxis = { x = 0, y = 0, z = 1 },
+       zAxis = { x = 0, y = -1, z = 0 }
      }
    })`)
     await expect(u.codeLocator).toContainText(`sketch003 = startSketchOn({
      plane = {
        origin = { x = 116.53, y = 0, z = 163.25 },
-       x_axis = { x = -0.81, y = 0, z = 0.58 },
-       y_axis = { x = 0, y = -1, z = 0 },
-       z_axis = { x = 0.58, y = 0, z = 0.81 }
+       xAxis = { x = -0.81, y = 0, z = 0.58 },
+       yAxis = { x = 0, y = -1, z = 0 },
+       zAxis = { x = 0.58, y = 0, z = 0.81 }
      }
    })`)
     await expect(u.codeLocator).toContainText(`sketch002 = startSketchOn({
      plane = {
        origin = { x = -91.74, y = 0, z = 80.89 },
-       x_axis = { x = -0.66, y = 0, z = -0.75 },
-       y_axis = { x = 0, y = -1, z = 0 },
-       z_axis = { x = -0.75, y = 0, z = 0.66 }
+       xAxis = { x = -0.66, y = 0, z = -0.75 },
+       yAxis = { x = 0, y = -1, z = 0 },
+       zAxis = { x = -0.75, y = 0, z = 0.66 }
      }
    })`)
 
@@ -904,53 +904,6 @@ test.describe('Testing selections', () => {
     await expect(
       page.getByRole('button', { name: 'Extrude' })
     ).not.toBeDisabled()
-  })
-
-  test('Fillet button states test', async ({ page, homePage }) => {
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn('XZ')
-    |> startProfileAt([-5, -5], %)
-    |> line([0, 10], %)
-    |> line([10, 0], %)
-    |> line([0, -10], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)`
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    const selectSegment = () => page.getByText(`line([10, 0], %)`).click()
-    const selectClose = () => page.getByText(`close(%)`).click()
-    const clickEmpty = () => page.mouse.click(950, 100)
-
-    // Now that we don't disable toolbar buttons based on selection,
-    // but rather based on a "selection" step in the command palette,
-    // the fillet button should always be enabled with a good network connection.
-    // I'm not sure if this test is actually useful anymore.
-    await selectSegment()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
-    await clickEmpty()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
-
-    // test fillet button with the body in the scene
-    const codeToAdd = `${await u.codeLocator.allInnerTexts()}
-  extrude001 = extrude(10, sketch001)`
-    await u.codeLocator.clear()
-    await u.codeLocator.fill(codeToAdd)
-    await selectSegment()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
-    await selectClose()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
-    await clickEmpty()
-    await expect(page.getByRole('button', { name: 'Fillet' })).toBeEnabled()
   })
 
   const removeAfterFirstParenthesis = (inputString: string) => {

@@ -10,11 +10,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, KclValue, Sketch, Solid},
-    std::{
-        extrude::do_post_extrude,
-        fillet::{default_tolerance, EdgeReference},
-        Args,
-    },
+    std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
 /// Data for revolution surfaces.
@@ -26,80 +22,18 @@ pub struct RevolveData {
     #[schemars(range(min = -360.0, max = 360.0))]
     pub angle: Option<f64>,
     /// Axis of revolution.
-    pub axis: AxisOrEdgeReference,
+    pub axis: Axis2dOrEdgeReference,
     /// Tolerance for the revolve operation.
     #[serde(default)]
     pub tolerance: Option<f64>,
-}
-
-/// Axis or tagged edge.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(untagged)]
-pub enum AxisOrEdgeReference {
-    /// Axis and origin.
-    Axis(AxisAndOrigin),
-    /// Tagged edge.
-    Edge(EdgeReference),
-}
-
-/// Axis and origin.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub enum AxisAndOrigin {
-    /// X-axis.
-    #[serde(rename = "X", alias = "x")]
-    X,
-    /// Y-axis.
-    #[serde(rename = "Y", alias = "y")]
-    Y,
-    /// Flip the X-axis.
-    #[serde(rename = "-X", alias = "-x")]
-    NegX,
-    /// Flip the Y-axis.
-    #[serde(rename = "-Y", alias = "-y")]
-    NegY,
-    Custom {
-        /// The axis.
-        axis: [f64; 2],
-        /// The origin.
-        origin: [f64; 2],
-    },
-}
-
-impl AxisAndOrigin {
-    /// Get the axis and origin.
-    pub fn axis_and_origin(&self) -> Result<(kcmc::shared::Point3d<f64>, kcmc::shared::Point3d<LengthUnit>), KclError> {
-        let (axis, origin) = match self {
-            AxisAndOrigin::X => ([1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
-            AxisAndOrigin::Y => ([0.0, 1.0, 0.0], [0.0, 0.0, 0.0]),
-            AxisAndOrigin::NegX => ([-1.0, 0.0, 0.0], [0.0, 0.0, 0.0]),
-            AxisAndOrigin::NegY => ([0.0, -1.0, 0.0], [0.0, 0.0, 0.0]),
-            AxisAndOrigin::Custom { axis, origin } => ([axis[0], axis[1], 0.0], [origin[0], origin[1], 0.0]),
-        };
-
-        Ok((
-            kcmc::shared::Point3d {
-                x: axis[0],
-                y: axis[1],
-                z: axis[2],
-            },
-            kcmc::shared::Point3d {
-                x: LengthUnit(origin[0]),
-                y: LengthUnit(origin[1]),
-                z: LengthUnit(origin[2]),
-            },
-        ))
-    }
 }
 
 /// Revolve a sketch around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch): (RevolveData, Sketch) = args.get_data_and_sketch()?;
 
-    let solid = inner_revolve(data, sketch, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_revolve(data, sketch, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.
@@ -266,7 +200,7 @@ async fn inner_revolve(
 
     let id = exec_state.next_uuid();
     match data.axis {
-        AxisOrEdgeReference::Axis(axis) => {
+        Axis2dOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
             args.batch_modeling_cmd(
                 id,
@@ -281,7 +215,7 @@ async fn inner_revolve(
             )
             .await?;
         }
-        AxisOrEdgeReference::Edge(edge) => {
+        Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
             args.batch_modeling_cmd(
                 id,
@@ -297,48 +231,4 @@ async fn inner_revolve(
     }
 
     do_post_extrude(sketch, 0.0, exec_state, args).await
-}
-
-#[cfg(test)]
-mod tests {
-
-    use pretty_assertions::assert_eq;
-
-    use crate::std::revolve::{AxisAndOrigin, AxisOrEdgeReference};
-
-    #[test]
-    fn test_deserialize_revolve_axis() {
-        let data = AxisOrEdgeReference::Axis(AxisAndOrigin::X);
-        let mut str_json = serde_json::to_string(&data).unwrap();
-        assert_eq!(str_json, "\"X\"");
-
-        str_json = "\"Y\"".to_string();
-        let data: AxisOrEdgeReference = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, AxisOrEdgeReference::Axis(AxisAndOrigin::Y));
-
-        str_json = "\"-Y\"".to_string();
-        let data: AxisOrEdgeReference = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, AxisOrEdgeReference::Axis(AxisAndOrigin::NegY));
-
-        str_json = "\"-x\"".to_string();
-        let data: AxisOrEdgeReference = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(data, AxisOrEdgeReference::Axis(AxisAndOrigin::NegX));
-
-        let data = AxisOrEdgeReference::Axis(AxisAndOrigin::Custom {
-            axis: [0.0, -1.0],
-            origin: [1.0, 0.0],
-        });
-        str_json = serde_json::to_string(&data).unwrap();
-        assert_eq!(str_json, r#"{"custom":{"axis":[0.0,-1.0],"origin":[1.0,0.0]}}"#);
-
-        str_json = r#"{"custom": {"axis": [0,-1], "origin": [1,2.0]}}"#.to_string();
-        let data: AxisOrEdgeReference = serde_json::from_str(&str_json).unwrap();
-        assert_eq!(
-            data,
-            AxisOrEdgeReference::Axis(AxisAndOrigin::Custom {
-                axis: [0.0, -1.0],
-                origin: [1.0, 2.0]
-            })
-        );
-    }
 }

@@ -1,6 +1,6 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { DEV } from 'env'
-import { commandBarMachine } from 'machines/commandBarMachine'
+import { commandBarActor, commandBarMachine } from 'machines/commandBarMachine'
 import {
   canRectangleOrCircleTool,
   isClosedSketch,
@@ -8,6 +8,7 @@ import {
   modelingMachine,
   pipeHasCircle,
 } from 'machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 import { EventFrom, StateFrom } from 'xstate'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
@@ -20,7 +21,6 @@ type ToolbarMode = {
 export interface ToolbarItemCallbackProps {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
-  commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
   sketchPathId: string | false
 }
 
@@ -83,8 +83,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'extrude',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
@@ -97,13 +97,13 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'revolve',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
         icon: 'revolve',
-        status: DEV ? 'available' : 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Revolve',
         hotkey: 'R',
         description:
@@ -118,24 +118,28 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'sweep',
-        onClick: () => console.error('Sweep not yet implemented'),
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Sweep', groupId: 'modeling' },
+          }),
         icon: 'sweep',
-        status: 'unavailable',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Sweep',
         hotkey: 'W',
         description:
           'Create a 3D body by moving a sketch region along an arbitrary path.',
         links: [
           {
-            label: 'GitHub discussion',
-            url: 'https://github.com/KittyCAD/modeling-app/discussions/498',
+            label: 'KCL docs',
+            url: 'https://zoo.dev/docs/kcl/sweep',
           },
         ],
       },
       {
         id: 'loft',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Loft', groupId: 'modeling' },
           }),
@@ -155,23 +159,27 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'fillet3d',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Fillet', groupId: 'modeling' },
           }),
         icon: 'fillet3d',
-        status: DEV ? 'available' : 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Fillet',
         hotkey: 'F',
         description: 'Round the edges of a 3D solid.',
         links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/fillet' }],
       },
       {
-        id: 'chamfer',
-        onClick: () => console.error('Chamfer not yet implemented'),
+        id: 'chamfer3d',
+        onClick: () =>
+          commandBarActor.send({
+            type: 'Find and select command',
+            data: { name: 'Chamfer', groupId: 'modeling' },
+          }),
         icon: 'chamfer3d',
-        status: 'kcl-only',
+        status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
         title: 'Chamfer',
         hotkey: 'C',
         description: 'Bevel the edges of a 3D solid.',
@@ -179,8 +187,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'shell',
-        onClick: ({ commandBarSend }) => {
-          commandBarSend({
+        onClick: () => {
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Shell', groupId: 'modeling' },
           })
@@ -199,6 +207,15 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         title: 'Hole',
         description: 'Create a hole in a 3D solid.',
         links: [],
+      },
+      {
+        id: 'helix',
+        onClick: () => console.error('Helix not yet implemented'),
+        icon: 'helix',
+        status: 'kcl-only',
+        title: 'Helix',
+        description: 'Create a helix or spiral in 3D about an axis.',
+        links: [{ label: 'KCL docs', url: 'https://zoo.dev/docs/kcl/helix' }],
       },
       'break',
       [
@@ -251,8 +268,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'plane-offset',
-          onClick: ({ commandBarSend }) => {
-            commandBarSend({
+          onClick: () => {
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Offset plane', groupId: 'modeling' },
             })
@@ -262,7 +279,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Offset plane',
           description: 'Create a plane parallel to an existing plane.',
-          links: [],
+          links: [
+            {
+              label: 'KCL docs',
+              url: 'https://zoo.dev/docs/kcl/offsetPlane',
+            },
+          ],
         },
         {
           id: 'plane-points',
@@ -278,8 +300,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'text-to-cad',
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Text-to-CAD', groupId: 'modeling' },
             }),
@@ -287,12 +309,17 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Text-to-CAD',
           description: 'Generate geometry from a text prompt.',
-          links: [],
+          links: [
+            {
+              label: 'API docs',
+              url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
+            },
+          ],
         },
         {
           id: 'prompt-to-edit',
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Prompt-to-edit', groupId: 'modeling' },
             }),
@@ -442,18 +469,16 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           disabled: (state) =>
             state.matches('Sketch no face') ||
             (!canRectangleOrCircleTool(state.context) &&
-              !state.matches({ Sketch: 'Circle tool' })),
-          isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
+              !state.matches({ Sketch: 'Circle tool' }) &&
+              !state.matches({ Sketch: 'circle3PointToolSelect' })),
+          isActive: (state) =>
+            state.matches({ Sketch: 'Circle tool' }) ||
+            state.matches({ Sketch: 'circle3PointToolSelect' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
           showTitle: false,
           description: 'Start drawing a circle from its center',
-          links: [
-            {
-              label: 'GitHub issue',
-              url: 'https://github.com/KittyCAD/modeling-app/issues/1501',
-            },
-          ],
+          links: [],
         },
         {
           id: 'circle-three-points',
@@ -470,7 +495,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             }),
           icon: 'circle',
           status: 'available',
-          title: 'Three-point circle',
+          title: '3-point circle',
           showTitle: false,
           description: 'Draw a circle defined by three points',
           links: [],
@@ -567,8 +592,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         {
           id: 'constraint-length',
           disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: {
                 name: 'Constrain length',

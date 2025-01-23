@@ -10,6 +10,7 @@ import {
   SourceRange,
   Expr,
   defaultSourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import { ModelingMachineEvent } from 'machines/modelingMachine'
 import { isNonNullable, uuidv4 } from 'lib/utils'
@@ -63,7 +64,7 @@ type Selection__old =
         | 'line-end'
         | 'line-mid'
         | 'extrude-wall'
-        | 'solid2D'
+        | 'solid2d'
         | 'start-cap'
         | 'end-cap'
         | 'point'
@@ -103,13 +104,13 @@ function convertSelectionToOld(selection: Selection): Selection__old | null {
   // return {} as Selection__old
   // TODO implementation
   const _artifact = selection.artifact
-  if (_artifact?.type === 'solid2D') {
+  if (_artifact?.type === 'solid2d') {
     const codeRef = getSolid2dCodeRef(
       _artifact,
       engineCommandManager.artifactGraph
     )
     if (err(codeRef)) return null
-    return { range: codeRef.range, type: 'solid2D' }
+    return { range: codeRef.range, type: 'solid2d' }
   }
   if (_artifact?.type === 'cap') {
     const codeRef = getCapCodeRef(_artifact, engineCommandManager.artifactGraph)
@@ -269,7 +270,7 @@ export function getEventForSegmentSelection(
         selectionType: 'singleCodeCursor',
         selection: {
           codeRef: {
-            range: [node.node.start, node.node.end, true],
+            range: topLevelRange(node.node.start, node.node.end),
             pathToNode: group.userData.pathToNode,
           },
         },
@@ -381,10 +382,13 @@ export function processCodeMirrorRanges({
   if (!isChange) return null
   const codeBasedSelections: Selections['graphSelections'] =
     codeMirrorRanges.map(({ from, to }) => {
-      const pathToNode = getNodePathFromSourceRange(ast, [from, to, true])
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        topLevelRange(from, to)
+      )
       return {
         codeRef: {
-          range: [from, to, true],
+          range: topLevelRange(from, to),
           pathToNode,
         },
       }
@@ -447,7 +451,10 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
     if (err(nodeMeta)) return
     const node = nodeMeta.node
     const groupHasCursor = codeBasedSelections.some((selection) => {
-      return isOverlap(selection?.codeRef?.range, [node.start, node.end, true])
+      return isOverlap(
+        selection?.codeRef?.range,
+        topLevelRange(node.start, node.end)
+      )
     })
 
     const color = groupHasCursor
@@ -575,7 +582,7 @@ export function getSelectionTypeDisplayText(
       ([type, count]) =>
         `${count} ${type
           .replace('wall', 'face')
-          .replace('solid2D', 'face')
+          .replace('solid2d', 'face')
           .replace('segment', 'face')}${count > 1 ? 's' : ''}`
     )
     .toArray()
@@ -650,7 +657,7 @@ export function codeToIdSelections(
           const artifact = engineCommandManager.artifactGraph.get(
             entry.artifact.solid2dId || ''
           )
-          if (artifact?.type !== 'solid2D') {
+          if (artifact?.type !== 'solid2d') {
             bestCandidate = {
               artifact: entry.artifact,
               selection,
@@ -670,6 +677,7 @@ export function codeToIdSelections(
           }
         }
         if (type === 'extrude-wall' && entry.artifact.type === 'segment') {
+          if (!entry.artifact.surfaceId) return
           const wall = engineCommandManager.artifactGraph.get(
             entry.artifact.surfaceId
           )
@@ -714,6 +722,7 @@ export function codeToIdSelections(
           (type === 'end-cap' || type === 'start-cap') &&
           entry.artifact.type === 'path'
         ) {
+          if (!entry.artifact.sweepId) return
           const extrusion = getArtifactOfTypes(
             {
               key: entry.artifact.sweepId,
@@ -871,7 +880,7 @@ export function updateSelections(
       return {
         artifact: artifact,
         codeRef: {
-          range: [node.start, node.end, true],
+          range: topLevelRange(node.start, node.end),
           pathToNode: pathToNode,
         },
       }
@@ -885,7 +894,7 @@ export function updateSelections(
     if (err(node)) return node
     pathToNodeBasedSelections.push({
       codeRef: {
-        range: [node.node.start, node.node.end, true],
+        range: topLevelRange(node.node.start, node.node.end),
         pathToNode: pathToNode,
       },
     })

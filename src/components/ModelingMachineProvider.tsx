@@ -1,4 +1,4 @@
-import { useMachine } from '@xstate/react'
+import { useMachine, useSelector } from '@xstate/react'
 import React, {
   createContext,
   useEffect,
@@ -11,6 +11,7 @@ import {
   AnyStateMachine,
   ContextFrom,
   Prop,
+  SnapshotFrom,
   StateFrom,
   assign,
   fromPromise,
@@ -78,7 +79,6 @@ import toast from 'react-hot-toast'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -91,6 +91,7 @@ import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -102,6 +103,10 @@ export const ModelingMachineContext = createContext(
   {} as MachineContext<typeof modelingMachine>
 )
 
+const commandBarIsClosedSelector = (
+  state: SnapshotFrom<typeof commandBarActor>
+) => state.matches('Closed')
+
 export const ModelingMachineProvider = ({
   children,
 }: {
@@ -111,7 +116,7 @@ export const ModelingMachineProvider = ({
     auth,
     settings: {
       context: {
-        app: { theme, enableSSAO },
+        app: { theme, enableSSAO, allowOrbitInSketchMode },
         modeling: {
           defaultUnit,
           cameraProjection,
@@ -121,6 +126,7 @@ export const ModelingMachineProvider = ({
       },
     },
   } = useSettingsAuthContext()
+  const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
@@ -131,8 +137,10 @@ export const ModelingMachineProvider = ({
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
-  const { commandBarState, commandBarSend } = useCommandsContext()
-
+  const isCommandBarClosed = useSelector(
+    commandBarActor,
+    commandBarIsClosedSelector
+  )
   // Settings machine setup
   // const retrievedSettings = useRef(
   // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
@@ -157,39 +165,38 @@ export const ModelingMachineProvider = ({
         'enable copilot': () => {
           editorManager.setCopilotEnabled(true)
         },
-        // tsc reports this typing as perfectly fine, but eslint is complaining.
-        // It's actually nonsensical, so I'm quieting.
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        'sketch exit execute': async ({
-          context: { store },
-        }): Promise<void> => {
-          // When cancelling the sketch mode we should disable sketch mode within the engine.
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'sketch_mode_disable' },
-          })
-
-          sceneInfra.camControls.syncDirection = 'clientToEngine'
-
-          if (cameraProjection.current === 'perspective') {
-            await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
-          }
-
-          sceneInfra.camControls.syncDirection = 'engineToClient'
-
-          store.videoElement?.pause()
-
-          return kclManager
-            .executeCode()
-            .then(() => {
-              if (engineCommandManager.engineConnection?.idleMode) return
-
-              store.videoElement?.play().catch((e) => {
-                console.warn('Video playing was prevented', e)
-              })
+        'sketch exit execute': ({ context: { store } }) => {
+          // TODO: Remove this async callback.  For some reason eslint wouldn't
+          // let me disable @typescript-eslint/no-misused-promises for the line.
+          ;(async () => {
+            // When cancelling the sketch mode we should disable sketch mode within the engine.
+            await engineCommandManager.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: { type: 'sketch_mode_disable' },
             })
-            .catch(reportRejection)
+
+            sceneInfra.camControls.syncDirection = 'clientToEngine'
+
+            if (cameraProjection.current === 'perspective') {
+              await sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            }
+
+            sceneInfra.camControls.syncDirection = 'engineToClient'
+
+            store.videoElement?.pause()
+
+            return kclManager
+              .executeCode()
+              .then(() => {
+                if (engineCommandManager.engineConnection?.idleMode) return
+
+                store.videoElement?.play().catch((e) => {
+                  console.warn('Video playing was prevented', e)
+                })
+              })
+              .catch(reportRejection)
+          })().catch(reportRejection)
         },
         'Set mouse state': assign(({ context, event }) => {
           if (event.type !== 'Set mouse state') return {}
@@ -271,6 +278,7 @@ export const ModelingMachineProvider = ({
               cmd_id: uuidv4(),
               cmd: {
                 type: 'default_camera_center_to_selection',
+                camera_movement: 'vantage',
               },
             })
             .catch(reportRejection)
@@ -387,7 +395,16 @@ export const ModelingMachineProvider = ({
             }
 
             if (setSelections.selectionType === 'completeSelection') {
-              editorManager.selectRange(setSelections.selection)
+              const codeMirrorSelection = editorManager.createEditorSelection(
+                setSelections.selection
+              )
+              kclEditorActor.send({
+                type: 'setLastSelectionEvent',
+                data: {
+                  codeMirrorSelection,
+                  scrollIntoView: false,
+                },
+              })
               if (!sketchDetails)
                 return {
                   selectionRanges: setSelections.selection,
@@ -528,7 +545,6 @@ export const ModelingMachineProvider = ({
             trimmedPrompt,
             fileMachineSend,
             navigate,
-            commandBarSend,
             context,
             token,
             settings: {
@@ -542,7 +558,7 @@ export const ModelingMachineProvider = ({
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
-          if (!commandBarState.matches('Closed')) return false
+          if (!isCommandBarClosed) return false
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
@@ -634,7 +650,8 @@ export const ModelingMachineProvider = ({
             input.plane
           )
           await kclManager.updateAst(modifiedAst, false)
-          sceneInfra.camControls.enableRotate = false
+          sceneInfra.camControls.enableRotate =
+            sceneInfra.camControls._setting_allowOrbitInSketchMode
           sceneInfra.camControls.syncDirection = 'clientToEngine'
 
           await letEngineAnimateAndSyncCamAfter(
@@ -647,6 +664,7 @@ export const ModelingMachineProvider = ({
             zAxis: input.zAxis,
             yAxis: input.yAxis,
             origin: [0, 0, 0],
+            animateTargetId: input.planeId,
           }
         }),
         'animate-to-sketch': fromPromise(
@@ -671,6 +689,7 @@ export const ModelingMachineProvider = ({
               origin: info.sketchDetails.origin.map(
                 (a) => a / sceneInfra._baseUnitMultiplier
               ) as [number, number, number],
+              animateTargetId: info?.sketchDetails?.faceId || '',
             }
           }
         ),
@@ -1187,6 +1206,41 @@ export const ModelingMachineProvider = ({
       )
     }
   }, [engineCommandManager.engineConnection, modelingSend])
+
+  useEffect(() => {
+    // Only trigger this if the state actually changes, if it stays the same do not reload the camera
+    if (
+      previousAllowOrbitInSketchMode.current === allowOrbitInSketchMode.current
+    ) {
+      //no op
+      previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
+      return
+    }
+    const inSketchMode = modelingState.matches('Sketch')
+
+    // If you are in sketch mode and you disable the orbit, return back to the normal view to the target
+    if (!allowOrbitInSketchMode.current) {
+      const targetId = modelingState.context.sketchDetails?.animateTargetId
+      if (inSketchMode && targetId) {
+        letEngineAnimateAndSyncCamAfter(engineCommandManager, targetId)
+          .then(() => {})
+          .catch((e) => {
+            console.error(
+              'failed to sync engine and client scene after disabling allow orbit in sketch mode'
+            )
+            console.error(e)
+          })
+      }
+    }
+
+    // While you are in sketch mode you should be able to control the enable rotate
+    // Once you exit it goes back to normal
+    if (inSketchMode) {
+      sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
+    }
+
+    previousAllowOrbitInSketchMode.current = allowOrbitInSketchMode.current
+  }, [allowOrbitInSketchMode])
 
   // Allow using the delete key to delete solids
   useHotkeys(['backspace', 'delete', 'del'], () => {

@@ -10,7 +10,7 @@ use pretty_assertions::assert_eq;
 async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, ModuleId, uuid::Uuid)> {
     let program = Program::parse_no_errs(code)?;
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
-    let mut exec_state = ExecState::default();
+    let mut exec_state = ExecState::new(&ctx.settings);
     ctx.run(program.clone().into(), &mut exec_state).await?;
 
     // We need to get the sketch ID.
@@ -25,7 +25,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, Modu
         .send_modeling_cmd(
             plane_id,
             SourceRange::default(),
-            ModelingCmd::from(mcmd::MakePlane {
+            &ModelingCmd::from(mcmd::MakePlane {
                 clobber: false,
                 origin: Point3d::default(),
                 size: LengthUnit(60.0),
@@ -43,7 +43,7 @@ async fn setup(code: &str, name: &str) -> Result<(ExecutorContext, Program, Modu
         .send_modeling_cmd(
             uuid::Uuid::new_v4(),
             SourceRange::default(),
-            ModelingCmd::from(mcmd::EnableSketchMode {
+            &ModelingCmd::from(mcmd::EnableSketchMode {
                 animated: false,
                 ortho: true,
                 entity_id: plane_id,
@@ -62,9 +62,9 @@ async fn kcl_test_modify_sketch_part001() {
     let code = format!(
         r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
-  |> line([7.37, -11.0], %)
+  |> line([7.37, -11], %)
   |> line([-8.69, -3.75], %)
-  |> line([-5.0, 4.25], %)
+  |> line([-5, 4.25], %)
 "#,
         name
     );

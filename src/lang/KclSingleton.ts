@@ -22,6 +22,7 @@ import {
   ProgramMemory,
   recast,
   SourceRange,
+  topLevelRange,
 } from 'lang/wasm'
 import { getNodeFromPath } from './queryAst'
 import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
@@ -376,7 +377,7 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/programMemory
-    await this.engineCommandManager.updateArtifactGraph(this.ast)
+    this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
     if (!isInterrupted) {
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
@@ -390,6 +391,24 @@ export class KclManager {
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
   }
+
+  /**
+   * This cleanup function is external and internal to the KclSingleton class.
+   * Since the WASM runtime can panic and the error cannot be caught in executeAst
+   * we need a global exception handler in exceptions.ts
+   * This file will interface with this cleanup as if it caught the original error
+   * to properly restore the TS application state.
+   */
+  executeAstCleanUp() {
+    this.isExecuting = false
+    this.executeIsStale = null
+    this.engineCommandManager.addCommandLog({
+      type: 'execution-done',
+      data: null,
+    })
+    markOnce('code/endExecuteAst')
+  }
+
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
   async executeAstMock(
@@ -451,7 +470,7 @@ export class KclManager {
           ...artifact,
           codeRef: {
             ...artifact.codeRef,
-            range: [node.start, node.end, true],
+            range: topLevelRange(node.start, node.end),
           },
         })
       }
@@ -572,7 +591,7 @@ export class KclManager {
         if (start && end) {
           returnVal.graphSelections.push({
             codeRef: {
-              range: [start, end, true],
+              range: topLevelRange(start, end),
               pathToNode: path,
             },
           })

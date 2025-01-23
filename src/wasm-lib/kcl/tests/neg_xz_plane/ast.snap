@@ -48,7 +48,10 @@ description: Result of parsing neg_xz_plane.kcl
                         "start": 52,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 56,
@@ -56,7 +59,10 @@ description: Result of parsing neg_xz_plane.kcl
                         "start": 55,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 57,
@@ -92,7 +98,10 @@ description: Result of parsing neg_xz_plane.kcl
                         "start": 75,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 100.0
+                        "value": {
+                          "value": 100.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 83,
@@ -100,7 +109,10 @@ description: Result of parsing neg_xz_plane.kcl
                         "start": 80,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 100.0
+                        "value": {
+                          "value": 100.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 84,
@@ -136,7 +148,10 @@ description: Result of parsing neg_xz_plane.kcl
                         "start": 102,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 100.0
+                        "value": {
+                          "value": 100.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 108,
@@ -144,7 +159,10 @@ description: Result of parsing neg_xz_plane.kcl
                         "start": 107,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 109,
@@ -200,7 +218,10 @@ description: Result of parsing neg_xz_plane.kcl
                       "start": 141,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 5.0
+                      "value": {
+                        "value": 5.0,
+                        "suffix": "None"
+                      }
                     },
                     "operator": "+",
                     "right": {
@@ -209,7 +230,10 @@ description: Result of parsing neg_xz_plane.kcl
                       "start": 145,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 7.0
+                      "value": {
+                        "value": 7.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 141,
                     "type": "BinaryExpression",

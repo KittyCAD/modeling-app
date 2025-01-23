@@ -247,8 +247,8 @@ async fn inner_shell(
 pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (thickness, solid): (f64, Box<Solid>) = args.get_data_and_solid()?;
 
-    let solid = inner_hollow(thickness, solid, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_hollow(thickness, solid, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Make the inside of a 3D object hollow.

@@ -11,6 +11,7 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::execution::{Artifact, ArtifactId};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -954,8 +955,8 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
     let (data, tag): (SketchData, Option<FaceTag>) = args.get_data_and_optional_tag()?;
 
     match inner_start_sketch_on(data, tag, exec_state, &args).await? {
-        SketchSurface::Plane(plane) => Ok(KclValue::Plane(plane)),
-        SketchSurface::Face(face) => Ok(KclValue::Face(face)),
+        SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),
+        SketchSurface::Face(value) => Ok(KclValue::Face { value }),
     }
 }
 
@@ -1075,7 +1076,17 @@ async fn inner_start_sketch_on(
             let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
             Ok(SketchSurface::Plane(plane))
         }
-        SketchData::Plane(plane) => Ok(SketchSurface::Plane(plane)),
+        SketchData::Plane(plane) => {
+            // Create artifact used only by the UI, not the engine.
+            let id = exec_state.next_uuid();
+            exec_state.add_artifact(Artifact::StartSketchOnPlane {
+                id: ArtifactId::from(id),
+                plane_id: plane.id,
+                source_range: args.source_range,
+            });
+
+            Ok(SketchSurface::Plane(plane))
+        }
         SketchData::Solid(solid) => {
             let Some(tag) = tag else {
                 return Err(KclError::Type(KclErrorDetails {
@@ -1084,6 +1095,15 @@ async fn inner_start_sketch_on(
                 }));
             };
             let face = start_sketch_on_face(solid, tag, exec_state, args).await?;
+
+            // Create artifact used only by the UI, not the engine.
+            let id = exec_state.next_uuid();
+            exec_state.add_artifact(Artifact::StartSketchOnFace {
+                id: ArtifactId::from(id),
+                face_id: face.id,
+                source_range: args.source_range,
+            });
+
             Ok(SketchSurface::Face(face))
         }
     }
@@ -1104,6 +1124,7 @@ async fn start_sketch_on_face(
         x_axis: solid.sketch.on.x_axis(),
         y_axis: solid.sketch.on.y_axis(),
         z_axis: solid.sketch.on.z_axis(),
+        units: solid.units,
         solid,
         meta: vec![args.source_range.into()],
     }))
@@ -1242,6 +1263,11 @@ pub(crate) async fn inner_start_profile_at(
         _ => {}
     }
 
+    let units = match &sketch_surface {
+        SketchSurface::Face(face) => face.units,
+        SketchSurface::Plane(_) => exec_state.length_unit(),
+    };
+
     // Enter sketch mode on the surface.
     // We call this here so you can reuse the sketch surface for multiple sketches.
     let id = exec_state.next_uuid();
@@ -1265,7 +1291,7 @@ pub(crate) async fn inner_start_profile_at(
     let id = exec_state.next_uuid();
     let path_id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath {}))
+    args.batch_modeling_cmd(path_id, ModelingCmd::from(mcmd::StartPath::default()))
         .await?;
     args.batch_modeling_cmd(
         id,
@@ -1291,6 +1317,7 @@ pub(crate) async fn inner_start_profile_at(
         original_id: path_id,
         on: sketch_surface.clone(),
         paths: vec![],
+        units,
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();
@@ -1438,7 +1465,7 @@ pub(crate) async fn inner_close(
         // We were on a plane, disable the sketch mode.
         args.batch_modeling_cmd(
             exec_state.next_uuid(),
-            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable {}),
+            ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
         )
         .await?;
     }

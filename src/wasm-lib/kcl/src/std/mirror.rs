@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::KclError,
     execution::{ExecState, KclValue, Sketch, SketchSet},
-    std::{revolve::AxisOrEdgeReference, Args},
+    std::{axis_or_reference::Axis2dOrEdgeReference, Args},
 };
 
 /// Data for a mirror.
@@ -19,7 +19,7 @@ use crate::{
 #[serde(rename_all = "camelCase")]
 pub struct Mirror2dData {
     /// Axis to use as mirror.
-    pub axis: AxisOrEdgeReference,
+    pub axis: Axis2dOrEdgeReference,
 }
 
 /// Mirror a sketch.
@@ -117,7 +117,7 @@ async fn inner_mirror_2d(
     }
 
     match data.axis {
-        AxisOrEdgeReference::Axis(axis) => {
+        Axis2dOrEdgeReference::Axis(axis) => {
             let (axis, origin) = axis.axis_and_origin()?;
 
             args.batch_modeling_cmd(
@@ -130,7 +130,7 @@ async fn inner_mirror_2d(
             )
             .await?;
         }
-        AxisOrEdgeReference::Edge(edge) => {
+        Axis2dOrEdgeReference::Edge(edge) => {
             let edge_id = edge.get_engine_id(exec_state, &args)?;
 
             args.batch_modeling_cmd(

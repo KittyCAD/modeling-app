@@ -39,8 +39,8 @@ test.describe('Sketch tests', () => {
   ${startProfileAt1}
   |> arc({
         radius = screwRadius,
-        angle_start = 0,
-        angle_end = 360
+        angleStart = 0,
+        angleEnd = 360
       }, %)
 
     part001 = startSketchOn('XY')
@@ -60,8 +60,8 @@ test.describe('Sketch tests', () => {
   |> yLine(wireOffset, %)
   |> arc({
         radius = wireRadius,
-        angle_start = 0,
-        angle_end = 180
+        angleStart = 0,
+        angleEnd = 180
       }, %)
   |> yLine(-wireOffset, %)
   |> xLine(-width / 4, %)

@@ -5,7 +5,13 @@ import { posToOffset } from '@kittycad/codemirror-lsp-client'
 import { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
 import { Text } from '@codemirror/state'
 import { EditorView } from 'codemirror'
-import { SourceRange } from 'lang/wasm'
+import {
+  ArtifactCommand,
+  ArtifactGraph,
+  defaultArtifactGraph,
+  isTopLevelModule,
+  SourceRange,
+} from 'lang/wasm'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
@@ -14,86 +20,197 @@ export class KCLError extends Error {
   sourceRange: SourceRange
   msg: string
   operations: Operation[]
+  artifactCommands: ArtifactCommand[]
+  artifactGraph: ArtifactGraph
 
   constructor(
     kind: ExtractKind<RustKclError> | 'name',
     msg: string,
     sourceRange: SourceRange,
-    operations: Operation[]
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
   ) {
     super()
     this.kind = kind
     this.msg = msg
     this.sourceRange = sourceRange
     this.operations = operations
+    this.artifactCommands = artifactCommands
+    this.artifactGraph = artifactGraph
     Object.setPrototypeOf(this, KCLError.prototype)
   }
 }
 
 export class KCLLexicalError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('lexical', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
+  ) {
+    super(
+      'lexical',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph
+    )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLInternalError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('internal', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
+  ) {
+    super(
+      'internal',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph
+    )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLSyntaxError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('syntax', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
+  ) {
+    super(
+      'syntax',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph
+    )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
 }
 
 export class KCLSemanticError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('semantic', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
+  ) {
+    super(
+      'semantic',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph
+    )
     Object.setPrototypeOf(this, KCLSemanticError.prototype)
   }
 }
 
 export class KCLTypeError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('type', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
+  ) {
+    super('type', msg, sourceRange, operations, artifactCommands, artifactGraph)
     Object.setPrototypeOf(this, KCLTypeError.prototype)
   }
 }
 
 export class KCLUnimplementedError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('unimplemented', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
+  ) {
+    super(
+      'unimplemented',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph
+    )
     Object.setPrototypeOf(this, KCLUnimplementedError.prototype)
   }
 }
 
 export class KCLUnexpectedError extends KCLError {
-  constructor(msg: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('unexpected', msg, sourceRange, operations)
+  constructor(
+    msg: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
+  ) {
+    super(
+      'unexpected',
+      msg,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph
+    )
     Object.setPrototypeOf(this, KCLUnexpectedError.prototype)
   }
 }
 
 export class KCLValueAlreadyDefined extends KCLError {
-  constructor(key: string, sourceRange: SourceRange, operations: Operation[]) {
+  constructor(
+    key: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
+  ) {
     super(
       'name',
       `Key ${key} was already defined elsewhere`,
       sourceRange,
-      operations
+      operations,
+      artifactCommands,
+      artifactGraph
     )
     Object.setPrototypeOf(this, KCLValueAlreadyDefined.prototype)
   }
 }
 
 export class KCLUndefinedValueError extends KCLError {
-  constructor(key: string, sourceRange: SourceRange, operations: Operation[]) {
-    super('name', `Key ${key} has not been defined`, sourceRange, operations)
+  constructor(
+    key: string,
+    sourceRange: SourceRange,
+    operations: Operation[],
+    artifactCommands: ArtifactCommand[],
+    artifactGraph: ArtifactGraph
+  ) {
+    super(
+      'name',
+      `Key ${key} has not been defined`,
+      sourceRange,
+      operations,
+      artifactCommands,
+      artifactGraph
+    )
     Object.setPrototypeOf(this, KCLUndefinedValueError.prototype)
   }
 }
@@ -112,8 +229,10 @@ export function lspDiagnosticsToKclErrors(
         new KCLError(
           'unexpected',
           message,
-          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, true],
-          []
+          [posToOffset(doc, range.start)!, posToOffset(doc, range.end)!, 0],
+          [],
+          [],
+          defaultArtifactGraph()
         )
     )
     .sort((a, b) => {
@@ -137,7 +256,7 @@ export function kclErrorsToDiagnostics(
   errors: KCLError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => err.sourceRange[2])
+    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .map((err) => {
       return {
         from: err.sourceRange[0],
@@ -152,7 +271,7 @@ export function complilationErrorsToDiagnostics(
   errors: CompilationError[]
 ): CodeMirrorDiagnostic[] {
   return errors
-    ?.filter((err) => err.sourceRange[2] === 0)
+    ?.filter((err) => isTopLevelModule(err.sourceRange))
     .map((err) => {
       let severity: any = 'error'
       if (err.severity === 'Warning') {
