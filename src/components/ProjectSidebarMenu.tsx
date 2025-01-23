@@ -7,7 +7,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useMemo, useContext } from 'react'
 import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
 import { engineCommandManager, kclManager } from 'lib/singletons'
@@ -15,6 +14,9 @@ import { MachineManagerContext } from 'components/MachineManagerProvider'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
+import { SnapshotFrom } from 'xstate'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { useSelector } from '@xstate/react'
 
 const ProjectSidebarMenu = ({
   project,
@@ -84,6 +86,9 @@ function AppLogoLink({
   )
 }
 
+const commandsSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
+  state.context.commands
+
 function ProjectMenuPopover({
   project,
   file,
@@ -96,16 +101,14 @@ function ProjectMenuPopover({
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const machineManager = useContext(MachineManagerContext)
+  const commands = useSelector(commandBarActor, commandsSelector)
 
-  const { commandBarState, commandBarSend } = useCommandsContext()
   const { onProjectClose } = useLspContext()
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
   const findCommand = (obj: { name: string; groupId: string }) =>
     Boolean(
-      commandBarState.context.commands.find(
-        (c) => c.name === obj.name && c.groupId === obj.groupId
-      )
+      commands.find((c) => c.name === obj.name && c.groupId === obj.groupId)
     )
   const machineCount = machineManager.machines.length
 
@@ -150,7 +153,7 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(exportCommandInfo),
           onClick: () =>
-            commandBarSend({
+            commandBarActor.send({
               type: 'Find and select command',
               data: exportCommandInfo,
             }),
@@ -175,7 +178,7 @@ function ProjectMenuPopover({
           ),
           disabled: !findCommand(makeCommandInfo) || machineCount === 0,
           onClick: () => {
-            commandBarSend({
+            commandBarActor.send({
               type: 'Find and select command',
               data: makeCommandInfo,
             })
@@ -200,7 +203,7 @@ function ProjectMenuPopover({
     [
       platform,
       findCommand,
-      commandBarSend,
+      commandBarActor.send,
       engineCommandManager,
       onProjectClose,
       isDesktop,

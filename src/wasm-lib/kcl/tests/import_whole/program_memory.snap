@@ -36,8 +36,8 @@ description: Program memory after executing import_whole.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  25,
-                  68,
+                  61,
+                  104,
                   1
                 ],
                 "tag": null,
@@ -52,8 +52,8 @@ description: Program memory after executing import_whole.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      25,
-                      68,
+                      61,
+                      104,
                       1
                     ]
                   },
@@ -100,7 +100,7 @@ description: Program memory after executing import_whole.kcl
                   "z": 1.0
                 },
                 "units": {
-                  "type": "Mm"
+                  "type": "Inches"
                 },
                 "__meta": []
               },
@@ -117,20 +117,20 @@ description: Program memory after executing import_whole.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    25,
-                    68,
+                    61,
+                    104,
                     1
                   ]
                 }
               },
               "units": {
-                "type": "Mm"
+                "type": "Inches"
               },
               "__meta": [
                 {
                   "sourceRange": [
-                    25,
-                    68,
+                    61,
+                    104,
                     1
                   ]
                 }
@@ -140,13 +140,13 @@ description: Program memory after executing import_whole.kcl
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "__meta": [
               {
                 "sourceRange": [
-                  25,
-                  68,
+                  61,
+                  104,
                   1
                 ]
               }
@@ -159,8 +159,8 @@ description: Program memory after executing import_whole.kcl
           "__meta": [
             {
               "sourceRange": [
-                0,
-                32,
+                34,
+                66,
                 0
               ]
             }
