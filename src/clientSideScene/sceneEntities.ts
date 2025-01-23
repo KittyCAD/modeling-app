@@ -808,11 +808,9 @@ export class SceneEntities {
                     originCoords,
                     createPipeSubstitution(),
                   ])
-                : createCallExpressionStdLibKw(
-                    'line',
-                    createPipeSubstitution(),
-                    [createLabeledArg('endAbsolute', originCoords)]
-                  ),
+                : createCallExpressionStdLibKw('line', null, [
+                    createLabeledArg('endAbsolute', originCoords),
+                  ]),
             ],
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
