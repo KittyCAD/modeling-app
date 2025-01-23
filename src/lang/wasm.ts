@@ -581,9 +581,9 @@ export const executor = async (
   try {
     let jsAppSettings = default_app_settings()
     if (!TEST) {
-      const settings = await import(
-        'machines/appMachine'
-      ).then((module) => module.getSettings())
+      const settings = await import('machines/appMachine').then((module) =>
+        module.getSettings()
+      )
       if (settings) {
         jsAppSettings = getAllCurrentSettings(settings)
       }
