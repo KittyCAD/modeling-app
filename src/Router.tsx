@@ -31,7 +31,6 @@ import {
   settingsLoader,
   telemetryLoader,
 } from 'lib/routeLoaders'
-import { CommandBarProvider } from 'components/CommandBar/CommandBarProvider'
 import SettingsAuthProvider from 'components/SettingsAuthProvider'
 import LspProvider from 'components/LspProvider'
 import { KclContextProvider } from 'lang/KclProvider'
@@ -60,23 +59,21 @@ const router = createRouter([
      * inefficient re-renders, use the react profiler to see. */
     element: (
       <OpenInDesktopAppHandler>
-        <CommandBarProvider>
-          <RouteProvider>
-            <SettingsAuthProvider>
-              <LspProvider>
-                <ProjectsContextProvider>
-                  <KclContextProvider>
-                    <AppStateProvider>
-                      <MachineManagerProvider>
-                        <Outlet />
-                      </MachineManagerProvider>
-                    </AppStateProvider>
-                  </KclContextProvider>
-                </ProjectsContextProvider>
-              </LspProvider>
-            </SettingsAuthProvider>
-          </RouteProvider>
-        </CommandBarProvider>
+        <RouteProvider>
+          <SettingsAuthProvider>
+            <LspProvider>
+              <ProjectsContextProvider>
+                <KclContextProvider>
+                  <AppStateProvider>
+                    <MachineManagerProvider>
+                      <Outlet />
+                    </MachineManagerProvider>
+                  </AppStateProvider>
+                </KclContextProvider>
+              </ProjectsContextProvider>
+            </LspProvider>
+          </SettingsAuthProvider>
+        </RouteProvider>
       </OpenInDesktopAppHandler>
     ),
     errorElement: <ErrorPage />,

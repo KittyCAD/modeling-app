@@ -1,5 +1,4 @@
 import { useMachine } from '@xstate/react'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { projectsMachine } from 'machines/projectsMachine'
@@ -25,6 +24,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
 import { projectsCommandBarConfig } from 'lib/commandBarConfigs/projectsCommandConfig'
 import { isDesktop } from 'lib/isDesktop'
+import { commandBarActor } from 'machines/commandBarMachine'
 import {
   CREATE_FILE_URL_PARAM,
   FILE_EXT,
@@ -197,7 +197,6 @@ const ProjectsContextDesktop = ({
     searchParams.delete('units')
     setSearchParams(searchParams)
   }, [searchParams, setSearchParams])
-  const { commandBarSend } = useCommandsContext()
   const { onProjectOpen } = useLspContext()
   const {
     settings: { context: settings },
@@ -243,7 +242,7 @@ const ProjectsContextDesktop = ({
               },
               null
             )
-            commandBarSend({ type: 'Close' })
+            commandBarActor.send({ type: 'Close' })
             const newPathName = `${PATHS.FILE}/${encodeURIComponent(
               projectPath
             )}`
