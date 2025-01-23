@@ -385,7 +385,16 @@ export const ModelingMachineProvider = ({
             }
 
             if (setSelections.selectionType === 'completeSelection') {
-              editorManager.selectRange(setSelections.selection)
+              const codeMirrorSelection = editorManager.createEditorSelection(
+                setSelections.selection
+              )
+              kclEditorActor.send({
+                type: 'setLastSelectionEvent',
+                data: {
+                  codeMirrorSelection,
+                  scrollIntoView: false,
+                },
+              })
               if (!sketchDetails)
                 return {
                   selectionRanges: setSelections.selection,

@@ -315,6 +315,21 @@ export default class EditorManager {
     if (selections?.graphSelections?.length === 0) {
       return
     }
+
+    if (!this._editorView) {
+      return
+    }
+    const codeBaseSelections = this.createEditorSelection(selections)
+    this._editorView.dispatch({
+      selection: codeBaseSelections,
+      annotations: [
+        updateOutsideEditorEvent,
+        Transaction.addToHistory.of(false),
+      ],
+    })
+  }
+
+  createEditorSelection(selections: Selections) {
     let codeBasedSelections = []
     for (const selection of selections.graphSelections) {
       const safeEnd = Math.min(
@@ -331,18 +346,7 @@ export default class EditorManager {
         .range[1]
     const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
-
-    if (!this._editorView) {
-      return
-    }
-
-    this._editorView.dispatch({
-      selection: EditorSelection.create(codeBasedSelections, 1),
-      annotations: [
-        updateOutsideEditorEvent,
-        Transaction.addToHistory.of(false),
-      ],
-    })
+    return EditorSelection.create(codeBasedSelections, 1)
   }
 
   // We will ONLY get here if the user called a select event.
