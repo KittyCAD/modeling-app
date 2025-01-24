@@ -64,7 +64,7 @@ export const getRectangleCallExpressions = (
     createPipeSubstitution(),
     createTagDeclarator(tags[2]),
   ]),
-  createCallExpressionStdLibKw('line', createPipeSubstitution(), [
+  createCallExpressionStdLibKw('line', null, [
     createLabeledArg(
       'endAbsolute',
       createArrayExpression([
