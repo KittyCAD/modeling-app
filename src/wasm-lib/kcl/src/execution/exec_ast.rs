@@ -339,7 +339,7 @@ pub(crate) async fn execute_pipe_body(
         source_range: SourceRange::from(first),
     };
     let output = ctx
-        .execute_expr(first, exec_state, &meta, StatementKind::Expression)
+        .execute_expr(first, exec_state, &meta, &[], StatementKind::Expression)
         .await?;
 
     // Now that we've evaluated the first child expression in the pipeline, following child expressions
@@ -373,7 +373,7 @@ async fn inner_execute_pipe_body(
             source_range: SourceRange::from(expression),
         };
         let output = ctx
-            .execute_expr(expression, exec_state, &metadata, StatementKind::Expression)
+            .execute_expr(expression, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
         exec_state.mod_local.pipe_value = Some(output);
     }
@@ -394,7 +394,7 @@ impl Node<CallExpressionKw> {
             let source_range = SourceRange::from(arg_expr.arg.clone());
             let metadata = Metadata { source_range };
             let value = ctx
-                .execute_expr(&arg_expr.arg, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(&arg_expr.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
             fn_args.insert(arg_expr.label.name.clone(), Arg::new(value, source_range));
         }
@@ -405,7 +405,7 @@ impl Node<CallExpressionKw> {
             let source_range = SourceRange::from(arg_expr.clone());
             let metadata = Metadata { source_range };
             let value = ctx
-                .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
             Some(Arg::new(value, source_range))
         } else {
@@ -540,7 +540,7 @@ impl Node<CallExpression> {
                 source_range: SourceRange::from(arg_expr),
             };
             let value = ctx
-                .execute_expr(arg_expr, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
             let arg = Arg::new(value, SourceRange::from(arg_expr));
             fn_args.push(arg);
@@ -618,11 +618,14 @@ impl Node<CallExpression> {
                 let return_value = {
                     let previous_dynamic_state =
                         std::mem::replace(&mut exec_state.mod_local.dynamic_state, fn_dynamic_state);
-                    let result = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
-                        // Add the call expression to the source ranges.
-                        // TODO currently ignored by the frontend
-                        e.add_source_ranges(vec![source_range])
-                    });
+                    let result = func
+                        .call_fn(fn_args, exec_state, ctx.clone(), source_range)
+                        .await
+                        .map_err(|e| {
+                            // Add the call expression to the source ranges.
+                            // TODO currently ignored by the frontend
+                            e.add_source_ranges(vec![source_range])
+                        });
                     exec_state.mod_local.dynamic_state = previous_dynamic_state;
                     result?
                 };
@@ -743,7 +746,7 @@ impl Node<ArrayExpression> {
             // TODO: Carry statement kind here so that we know if we're
             // inside a variable declaration.
             let value = ctx
-                .execute_expr(element, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(element, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
 
             results.push(value);
@@ -761,7 +764,13 @@ impl Node<ArrayRangeExpression> {
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let metadata = Metadata::from(&self.start_element);
         let start = ctx
-            .execute_expr(&self.start_element, exec_state, &metadata, StatementKind::Expression)
+            .execute_expr(
+                &self.start_element,
+                exec_state,
+                &metadata,
+                &[],
+                StatementKind::Expression,
+            )
             .await?;
         let start = start.as_int().ok_or(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![self.into()],
@@ -769,7 +778,7 @@ impl Node<ArrayRangeExpression> {
         }))?;
         let metadata = Metadata::from(&self.end_element);
         let end = ctx
-            .execute_expr(&self.end_element, exec_state, &metadata, StatementKind::Expression)
+            .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
         let end = end.as_int().ok_or(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![self.into()],
@@ -812,7 +821,7 @@ impl Node<ObjectExpression> {
         for property in &self.properties {
             let metadata = Metadata::from(&property.value);
             let result = ctx
-                .execute_expr(&property.value, exec_state, &metadata, StatementKind::Expression)
+                .execute_expr(&property.value, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
 
             object.insert(property.key.name.clone(), result);
@@ -859,7 +868,13 @@ impl Node<IfExpression> {
     pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         // Check the `if` branch.
         let cond = ctx
-            .execute_expr(&self.cond, exec_state, &Metadata::from(self), StatementKind::Expression)
+            .execute_expr(
+                &self.cond,
+                exec_state,
+                &Metadata::from(self),
+                &[],
+                StatementKind::Expression,
+            )
             .await?
             .get_bool()?;
         if cond {
@@ -879,6 +894,7 @@ impl Node<IfExpression> {
                     &else_if.cond,
                     exec_state,
                     &Metadata::from(self),
+                    &[],
                     StatementKind::Expression,
                 )
                 .await?

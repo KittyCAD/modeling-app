@@ -2,7 +2,10 @@
 
 use std::{path::PathBuf, sync::Arc};
 
-use crate::modules::{ModuleInfo, ModuleLoader, ModulePath, ModuleRepr};
+use crate::{
+    modules::{ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
+    parsing::ast::types::NonCodeNode,
+};
 use annotations::AnnotationScope;
 use anyhow::Result;
 use artifact::build_artifact_graph;
@@ -965,16 +968,6 @@ impl std::hash::Hash for TagIdentifier {
         self.value.hash(state);
     }
 }
-
-pub type MemoryFunction =
-    fn(
-        s: Vec<Arg>,
-        memory: ProgramMemory,
-        expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        metadata: Vec<Metadata>,
-        exec_state: &ExecState,
-        ctx: ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<KclValue>, KclError>> + Send>>;
 
 /// Engine information for a tag.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -2404,7 +2397,7 @@ impl ExecutorContext {
 
         let mut last_expr = None;
         // Iterate over the body of the program.
-        for statement in &program.body {
+        for (i, statement) in program.body.iter().enumerate() {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
                     if body_type != BodyType::Root {
@@ -2495,6 +2488,7 @@ impl ExecutorContext {
                             &expression_statement.expression,
                             exec_state,
                             &metadata,
+                            &[],
                             StatementKind::Expression,
                         )
                         .await?,
@@ -2505,11 +2499,20 @@ impl ExecutorContext {
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
 
+                    let meta_nodes = if i == 0 {
+                        &program.non_code_meta.start_nodes
+                    } else if let Some(meta) = program.non_code_meta.non_code_nodes.get(&(i - 1)) {
+                        meta
+                    } else {
+                        &Vec::new()
+                    };
+
                     let memory_item = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
                             exec_state,
                             &metadata,
+                            meta_nodes,
                             StatementKind::Declaration { name: &var_name },
                         )
                         .await?;
@@ -2528,6 +2531,7 @@ impl ExecutorContext {
                             &return_statement.argument,
                             exec_state,
                             &metadata,
+                            &[],
                             StatementKind::Expression,
                         )
                         .await?;
@@ -2674,6 +2678,7 @@ impl ExecutorContext {
         init: &Expr,
         exec_state: &mut ExecState,
         metadata: &Metadata,
+        meta_nodes: &[Node<NonCodeNode>],
         statement_kind: StatementKind<'a>,
     ) -> Result<KclValue, KclError> {
         let item = match init {
@@ -2706,14 +2711,43 @@ impl ExecutorContext {
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
-                // Cloning memory here is crucial for semantics so that we close
-                // over variables.  Variables defined lexically later shouldn't
-                // be available to the function body.
-                KclValue::Function {
-                    expression: function_expression.clone(),
-                    meta: vec![metadata.to_owned()],
-                    func: None,
-                    memory: Box::new(exec_state.memory().clone()),
+                let mut rust_impl = false;
+                for n in meta_nodes {
+                    if let NonCodeValue::Annotation {
+                        name: None,
+                        properties: Some(props),
+                        ..
+                    } = &n.value
+                    {
+                        for p in props {
+                            if &*p.key.name == "impl" {
+                                if let Some(s) = p.value.ident_name() {
+                                    if s == "std_rust" {
+                                        rust_impl = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if rust_impl {
+                    KclValue::Function {
+                        expression: function_expression.clone(),
+                        meta: vec![metadata.to_owned()],
+                        func: Some(crate::modules::std_fn(statement_kind.expect_name())),
+                        memory: None,
+                    }
+                } else {
+                    // Cloning memory here is crucial for semantics so that we close
+                    // over variables.  Variables defined lexically later shouldn't
+                    // be available to the function body.
+                    KclValue::Function {
+                        expression: function_expression.clone(),
+                        meta: vec![metadata.to_owned()],
+                        func: None,
+                        memory: Some(Box::new(exec_state.memory().clone())),
+                    }
                 }
             }
             Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
@@ -2748,7 +2782,7 @@ impl ExecutorContext {
             Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::LabelledExpression(expr) => {
                 let result = self
-                    .execute_expr(&expr.expr, exec_state, metadata, statement_kind)
+                    .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
                 exec_state
                     .mut_memory()
@@ -2989,6 +3023,15 @@ pub(crate) async fn call_user_defined_function_kw(
 pub enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
+}
+
+impl<'a> StatementKind<'a> {
+    fn expect_name(&self) -> &'a str {
+        match self {
+            StatementKind::Declaration { name } => name,
+            StatementKind::Expression => unreachable!(),
+        }
+    }
 }
 
 #[cfg(test)]

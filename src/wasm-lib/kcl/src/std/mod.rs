@@ -123,7 +123,6 @@ lazy_static! {
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::planes::OffsetPlane),
         Box::new(crate::std::import::Import),
-        Box::new(crate::std::math::Cos),
         Box::new(crate::std::math::Sin),
         Box::new(crate::std::math::Tan),
         Box::new(crate::std::math::Acos),
@@ -304,7 +303,7 @@ pub enum Primitive {
 
 /// A closure used as an argument to a stdlib function.
 pub struct FnAsArg<'a> {
-    pub func: Option<&'a crate::execution::MemoryFunction>,
+    pub func: Option<&'a crate::std::StdFn>,
     pub expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-    pub memory: Box<ProgramMemory>,
+    pub memory: Option<Box<ProgramMemory>>,
 }

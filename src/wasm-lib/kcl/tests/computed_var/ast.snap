@@ -391,9 +391,180 @@ description: Result of parsing computed_var.kcl
         "start": 168,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
+      },
+      {
+        "end": 242,
+        "expression": {
+          "arguments": [
+            {
+              "end": 222,
+              "name": "PI",
+              "start": 220,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 225,
+              "raw": "3",
+              "start": 224,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "end": 230,
+              "raw": "0.2",
+              "start": 227,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.2,
+                "suffix": "None"
+              }
+            },
+            {
+              "end": 241,
+              "raw": "\"oops pi\"",
+              "start": 232,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "oops pi"
+            }
+          ],
+          "callee": {
+            "end": 219,
+            "name": "assertEqual",
+            "start": 208,
+            "type": "Identifier"
+          },
+          "end": 242,
+          "start": 208,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 208,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "declaration": {
+          "end": 258,
+          "id": {
+            "end": 244,
+            "name": "x",
+            "start": 243,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 257,
+                "left": {
+                  "end": 252,
+                  "raw": "2",
+                  "start": 251,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "operator": "*",
+                "right": {
+                  "end": 257,
+                  "name": "PI",
+                  "start": 255,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "start": 251,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              }
+            ],
+            "callee": {
+              "end": 250,
+              "name": "cos",
+              "start": 247,
+              "type": "Identifier"
+            },
+            "end": 258,
+            "start": 247,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 243,
+          "type": "VariableDeclarator"
+        },
+        "end": 258,
+        "kind": "const",
+        "start": 243,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 298,
+        "expression": {
+          "arguments": [
+            {
+              "end": 272,
+              "name": "x",
+              "start": 271,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            {
+              "end": 275,
+              "raw": "1",
+              "start": 274,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "end": 285,
+              "raw": "0.000001",
+              "start": 277,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.000001,
+                "suffix": "None"
+              }
+            },
+            {
+              "end": 297,
+              "raw": "\"oops cos\"",
+              "start": 287,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "oops cos"
+            }
+          ],
+          "callee": {
+            "end": 270,
+            "name": "assertEqual",
+            "start": 259,
+            "type": "Identifier"
+          },
+          "end": 298,
+          "start": 259,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 259,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
       }
     ],
-    "end": 207,
+    "end": 299,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
@@ -420,6 +591,16 @@ description: Result of parsing computed_var.kcl
           {
             "end": 168,
             "start": 166,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "end": 208,
+            "start": 206,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

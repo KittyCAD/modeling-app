@@ -49,31 +49,7 @@ fn inner_rem(num: f64, divisor: f64) -> f64 {
 /// Compute the cosine of a number (in radians).
 pub async fn cos(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num = args.get_number()?;
-    let result = inner_cos(num)?;
-
-    Ok(args.make_user_val_from_f64(result))
-}
-
-/// Compute the cosine of a number (in radians).
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 30,
-///     length = 3 / cos(toRadians(30)),
-///   }, %)
-///   |> yLineTo(0, %)
-///   |> close(%)
-///  
-/// example = extrude(5, exampleSketch)
-/// ```
-#[stdlib {
-    name = "cos",
-    tags = ["math"],
-}]
-fn inner_cos(num: f64) -> Result<f64, KclError> {
-    Ok(num.cos())
+    Ok(args.make_user_val_from_f64(num.cos()))
 }
 
 /// Compute the sine of a number (in radians).

@@ -7,9 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::KclErrorDetails,
     exec::{ProgramMemory, Sketch},
-    execution::{
-        Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier,
-    },
+    execution::{Face, Helix, ImportedGeometry, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier},
     parsing::{
         ast::types::{FunctionExpression, KclNone, LiteralValue, TagDeclarator, TagNode},
         token::NumericSuffix,
@@ -86,15 +84,12 @@ pub enum KclValue {
     ImportedGeometry(ImportedGeometry),
     #[ts(skip)]
     Function {
-        /// Adam Chalmers speculation:
-        /// Reference to a KCL stdlib function (written in Rust).
-        /// Some if the KCL value is an alias of a stdlib function,
-        /// None if it's a KCL function written/declared in KCL.
         #[serde(skip)]
-        func: Option<MemoryFunction>,
+        func: Option<crate::std::StdFn>,
         #[schemars(skip)]
         expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        memory: Box<ProgramMemory>,
+        // Invariant: Always Some except for std lib functions
+        memory: Option<Box<ProgramMemory>>,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -454,7 +449,7 @@ impl KclValue {
         Some(FnAsArg {
             func: func.as_ref(),
             expr: expression.to_owned(),
-            memory: memory.to_owned(),
+            memory: memory.clone(),
         })
     }
 
@@ -509,12 +504,13 @@ impl KclValue {
         args: Vec<Arg>,
         exec_state: &mut ExecState,
         ctx: ExecutorContext,
+        source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
         let KclValue::Function {
             func,
             expression,
             memory: closure_memory,
-            meta,
+            ..
         } = &self
         else {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -523,19 +519,18 @@ impl KclValue {
             }));
         };
         if let Some(func) = func {
-            func(
+            let args = crate::std::Args::new(
                 args,
-                closure_memory.as_ref().clone(),
-                expression.clone(),
-                meta.clone(),
-                exec_state,
-                ctx,
-            )
-            .await
+                source_range,
+                ctx.clone(),
+                exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+            );
+
+            func(exec_state, args).await.map(Some)
         } else {
             crate::execution::call_user_defined_function(
                 args,
-                closure_memory.as_ref(),
+                closure_memory.as_ref().unwrap(),
                 expression.as_ref(),
                 exec_state,
                 &ctx,
@@ -570,7 +565,7 @@ impl KclValue {
         } else {
             crate::execution::call_user_defined_function_kw(
                 args.kw_args,
-                closure_memory.as_ref(),
+                closure_memory.as_ref().unwrap(),
                 expression.as_ref(),
                 exec_state,
                 &ctx,

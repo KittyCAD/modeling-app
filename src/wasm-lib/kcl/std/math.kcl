@@ -43,3 +43,20 @@ export E = 2.71828182845904523536028747135266250_
 /// example = extrude(5, exampleSketch)
 /// ```
 export TAU = 6.28318530717958647692528676655900577_
+
+/// Compute the cosine of a number (in radians).
+///
+/// ```
+/// exampleSketch = startSketchOn("XZ")
+///   |> startProfileAt([0, 0], %)
+///   |> angledLine({
+///     angle = 30,
+///     length = 3 / cos(toRadians(30)),
+///   }, %)
+///   |> yLineTo(0, %)
+///   |> close(%)
+///
+/// example = extrude(5, exampleSketch)
+/// ```
+@(impl = std_rust)
+export fn cos(num: number(rad)): number(_) {}

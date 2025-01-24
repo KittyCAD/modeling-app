@@ -280,14 +280,15 @@ impl FnData {
     pub fn fn_signature(&self) -> String {
         let mut signature = String::new();
 
+        signature.push('(');
         for (i, arg) in self.args.iter().enumerate() {
             if i > 0 {
                 signature.push_str(", ");
             }
             match &arg.kind {
                 ArgKind::Special => signature.push_str(&format!("@{}", arg.name)),
-                ArgKind::Labelled(true) => signature.push_str(&arg.name),
-                ArgKind::Labelled(false) => signature.push_str(&format!("{}?", arg.name)),
+                ArgKind::Labelled(false) => signature.push_str(&arg.name),
+                ArgKind::Labelled(true) => signature.push_str(&format!("{}?", arg.name)),
             }
             if let Some(ty) = &arg.ty {
                 signature.push_str(&format!(": {ty}"));
@@ -418,9 +419,9 @@ impl ArgData {
             // Doc comments are not yet supported on parameters.
             docs: None,
             kind: if arg.labeled {
-                ArgKind::Special
-            } else {
                 ArgKind::Labelled(arg.optional())
+            } else {
+                ArgKind::Special
             },
         }
     }
@@ -522,6 +523,7 @@ trait ApplyMeta {
         let mut description = None;
         let mut example: Option<String> = None;
         let mut examples = Vec::new();
+        #[allow(clippy::manual_strip)]
         for l in
             comments
                 .into_iter()

@@ -280,7 +280,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
 
     let mut functions = Vec::new();
 
-    for key in combined.keys().sorted() {
+    for key in combined.keys() {
         let internal_fn = combined
             .get(key)
             .ok_or_else(|| anyhow::anyhow!("Failed to get internal function: {}", key))?;
@@ -289,10 +289,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             continue;
         }
 
-        functions.push(json!({
-            "name": internal_fn.name(),
-            "file_name": internal_fn.name(),
-        }));
+        functions.push((internal_fn.name(), internal_fn.name()));
     }
 
     for d in kcl_lib {
@@ -302,19 +299,13 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
 
         // TODO organise by module
         match d {
-            DocData::Fn(f) => functions.push(json!({
-                "name": f.name,
-                "file_name": f.name,
-            })),
-            DocData::Const(c) => functions.push(json!({
-                "name": c.name,
-                "file_name": format!("const_{}", c.name),
-            })),
+            DocData::Fn(f) => functions.push((f.name.clone(), f.name.clone())),
+            DocData::Const(c) => functions.push((c.name.clone(), format!("const_{}", c.name))),
         }
     }
 
     let data = json!({
-        "functions": functions,
+        "functions": functions.into_iter().sorted().map(|(name, file_name)| json!({"name": name, "file_name": file_name })).collect::<Vec<_>>(),
     });
 
     let output = hbs.render("index", &data)?;
@@ -363,7 +354,7 @@ fn generate_function_from_kcl(function: &FnData) -> Result<()> {
         "summary": function.summary,
         "description": function.description,
         "deprecated": function.properties.deprecated,
-        "fn_signature": function.fn_signature(),
+        "fn_signature": name.clone() + &function.fn_signature(),
         "tags": [],
         "examples": examples,
         "is_utilities": false,

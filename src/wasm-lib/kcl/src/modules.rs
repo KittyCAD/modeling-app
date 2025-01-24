@@ -11,11 +11,22 @@ use crate::{
     source_range::SourceRange,
     ModuleId,
 };
+
 pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
     match mod_name {
         "prelude" => Some(include_str!("../std/prelude.kcl")),
         "math" => Some(include_str!("../std/math.kcl")),
         _ => None,
+    }
+}
+
+pub(crate) fn std_fn(fn_name: &str) -> crate::std::StdFn {
+    // TODO auto-generate this list
+    match fn_name {
+        "cos" => |e, a| Box::pin(crate::std::math::cos(e, a)),
+        "sin" => |e, a| Box::pin(crate::std::math::sin(e, a)),
+        "tan" => |e, a| Box::pin(crate::std::math::tan(e, a)),
+        _ => unreachable!(),
     }
 }
 

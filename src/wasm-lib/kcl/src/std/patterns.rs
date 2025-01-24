@@ -70,9 +70,8 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
         FunctionParam {
             inner: transform.func,
             fn_expr: transform.expr,
-            meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
-            memory: *transform.memory,
+            memory: transform.memory.map(|m| *m),
         },
         extr,
         exec_state,
@@ -92,9 +91,8 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
         FunctionParam {
             inner: transform.func,
             fn_expr: transform.expr,
-            meta: vec![args.source_range.into()],
             ctx: args.ctx.clone(),
-            memory: *transform.memory,
+            memory: transform.memory.map(|m| *m),
         },
         sketch,
         exec_state,
@@ -426,7 +424,9 @@ async fn make_transform<'a, T: GeometryTrait>(
         meta: vec![source_range.into()],
     };
     let transform_fn_args = vec![Arg::synthetic(repetition_num)];
-    let transform_fn_return = transform_function.call(exec_state, transform_fn_args).await?;
+    let transform_fn_return = transform_function
+        .call(exec_state, transform_fn_args, source_range)
+        .await?;
 
     // Unpack the returned transform object.
     let source_ranges = vec![source_range];
