@@ -318,6 +318,10 @@ impl ProgramMemory {
         }
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.environments.len() == 1 && self.environments[self.current_env.index()].bindings.is_empty()
+    }
+
     pub fn new_env_for_call(&mut self, parent: EnvironmentRef) -> EnvironmentRef {
         let new_env_ref = EnvironmentRef(self.environments.len());
         let new_env = Environment::new(parent);
@@ -2255,7 +2259,7 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.execute_and_build_graph(&cache_result.program, exec_state, cache_result.clear_scene)
+        self.execute_and_build_graph(&cache_result.program, exec_state)
             .await
             .map_err(|e| {
                 KclErrorWithOutputs::new(
@@ -2276,12 +2280,11 @@ impl ExecutorContext {
         &self,
         program: NodeRef<'a, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
-        cleared_scene: bool,
     ) -> Result<Option<KclValue>, KclError> {
         // Don't early return!  We need to build other outputs regardless of
         // whether execution failed.
         let exec_result = self
-            .inner_execute(program, exec_state, crate::execution::BodyType::Root, cleared_scene)
+            .inner_execute(program, exec_state, crate::execution::BodyType::Root)
             .await;
         // Move the artifact commands and responses to simplify cache management
         // and error creation.
@@ -2357,9 +2360,8 @@ impl ExecutorContext {
         program: NodeRef<'a, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
         body_type: BodyType,
-        cleared_scene: bool,
     ) -> Result<Option<KclValue>, KclError> {
-        if cleared_scene && body_type == BodyType::Root {
+        if body_type == BodyType::Root {
             let no_prelude = self
                 .handle_annotations(
                     program
@@ -2372,7 +2374,10 @@ impl ExecutorContext {
                 )
                 .await?;
 
-            if !no_prelude {
+            // Only importing the prelude if memory is empty is a bit of a hack. Ideally we should know what we have to in advance.
+            // However, between mock execution and caching, it's a bit of a nightmare, so we just check memory. The bug here is if
+            // a @no_prelude module imports one which wants the prelude, it won't get it. But hopefully that is an unlikely scenario.
+            if !no_prelude && exec_state.memory().is_empty() {
                 // Import std::prelude
                 let prelude_range = SourceRange::from(program).start_as_range();
                 let id = self
@@ -2636,7 +2641,7 @@ impl ExecutorContext {
                 let original_execution = self.engine.replace_execution_kind(exec_kind);
 
                 let result = self
-                    .inner_execute(program, exec_state, crate::execution::BodyType::Root, true)
+                    .inner_execute(program, exec_state, crate::execution::BodyType::Root)
                     .await;
                 let new_units = exec_state.length_unit();
 
@@ -2979,7 +2984,7 @@ pub(crate) async fn call_user_defined_function(
     let (result, fn_memory) = {
         let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
         let result = ctx
-            .inner_execute(&function_expression.body, exec_state, BodyType::Block, false)
+            .inner_execute(&function_expression.body, exec_state, BodyType::Block)
             .await;
         // Restore the previous memory.
         let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
@@ -3009,7 +3014,7 @@ pub(crate) async fn call_user_defined_function_kw(
     let (result, fn_memory) = {
         let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
         let result = ctx
-            .inner_execute(&function_expression.body, exec_state, BodyType::Block, false)
+            .inner_execute(&function_expression.body, exec_state, BodyType::Block)
             .await;
         // Restore the previous memory.
         let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
