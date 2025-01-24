@@ -2863,16 +2863,14 @@ impl PipeExpression {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema, FromStr, Display)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, JsonSchema)]
 #[serde(tag = "type")]
-#[display(style = "snake_case")]
 pub enum FnArgPrimitive {
     /// A string type.
     String,
     /// A number type.
-    Number,
+    Number(NumericSuffix),
     /// A boolean type.
-    #[display("bool")]
     #[serde(rename = "bool")]
     Boolean,
     /// A tag.
@@ -2889,12 +2887,46 @@ impl FnArgPrimitive {
     pub fn digestable_id(&self) -> &[u8] {
         match self {
             FnArgPrimitive::String => b"string",
-            FnArgPrimitive::Number => b"number",
-            FnArgPrimitive::Boolean => b"boolean",
+            FnArgPrimitive::Number(suffix) => suffix.digestable_id(),
+            FnArgPrimitive::Boolean => b"bool",
             FnArgPrimitive::Tag => b"tag",
-            FnArgPrimitive::Sketch => b"sketch",
-            FnArgPrimitive::SketchSurface => b"sketch_surface",
-            FnArgPrimitive::Solid => b"solid",
+            FnArgPrimitive::Sketch => b"Sketch",
+            FnArgPrimitive::SketchSurface => b"SketchSurface",
+            FnArgPrimitive::Solid => b"Solid",
+        }
+    }
+
+    pub fn from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
+        match (s, suffix) {
+            ("string", None) => Some(FnArgPrimitive::String),
+            ("bool", None) => Some(FnArgPrimitive::Boolean),
+            ("tag", None) => Some(FnArgPrimitive::Tag),
+            ("Sketch", None) => Some(FnArgPrimitive::Sketch),
+            ("SketchSurface", None) => Some(FnArgPrimitive::SketchSurface),
+            ("Solid", None) => Some(FnArgPrimitive::Solid),
+            ("number", None) => Some(FnArgPrimitive::Number(NumericSuffix::None)),
+            ("number", Some(s)) => Some(FnArgPrimitive::Number(s)),
+            _ => None,
+        }
+    }
+}
+
+impl fmt::Display for FnArgPrimitive {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            FnArgPrimitive::Number(suffix) => {
+                write!(f, "number")?;
+                if *suffix != NumericSuffix::None {
+                    write!(f, "({suffix})")?;
+                }
+                Ok(())
+            }
+            FnArgPrimitive::String => write!(f, "string"),
+            FnArgPrimitive::Boolean => write!(f, "bool"),
+            FnArgPrimitive::Tag => write!(f, "tag"),
+            FnArgPrimitive::Sketch => write!(f, "Sketch"),
+            FnArgPrimitive::SketchSurface => write!(f, "SketchSurface"),
+            FnArgPrimitive::Solid => write!(f, "Solid"),
         }
     }
 }
@@ -3438,7 +3470,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: number, arg1: string, tag?: string) => {
+        let some_program_string = r#"fn thing = (arg0: number(mm), arg1: string, tag?: string) => {
     return arg0
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3453,7 +3485,10 @@ const cylinder = startSketchOn('-XZ')
         };
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
-        assert_eq!(params[0].type_, Some(FnArgType::Primitive(FnArgPrimitive::Number)));
+        assert_eq!(
+            params[0].type_,
+            Some(FnArgType::Primitive(FnArgPrimitive::Number(NumericSuffix::Mm)))
+        );
         assert_eq!(params[1].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
         assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
     }
@@ -3475,7 +3510,10 @@ const cylinder = startSketchOn('-XZ')
         };
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
-        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(
+            params[0].type_,
+            Some(FnArgType::Array(FnArgPrimitive::Number(NumericSuffix::None)))
+        );
         assert_eq!(params[1].type_, Some(FnArgType::Array(FnArgPrimitive::String)));
         assert_eq!(params[2].type_, Some(FnArgType::Primitive(FnArgPrimitive::String)));
     }
@@ -3498,7 +3536,10 @@ const cylinder = startSketchOn('-XZ')
         };
         let params = &func_expr.params;
         assert_eq!(params.len(), 3);
-        assert_eq!(params[0].type_, Some(FnArgType::Array(FnArgPrimitive::Number)));
+        assert_eq!(
+            params[0].type_,
+            Some(FnArgType::Array(FnArgPrimitive::Number(NumericSuffix::None)))
+        );
         assert_eq!(
             params[1].type_,
             Some(FnArgType::Object {
@@ -3513,7 +3554,7 @@ const cylinder = startSketchOn('-XZ')
                             40,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number(NumericSuffix::None))),
                         default_value: None,
                         labeled: true,
                         digest: None,
@@ -3586,7 +3627,7 @@ const cylinder = startSketchOn('-XZ')
                             18,
                             module_id,
                         ),
-                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number)),
+                        type_: Some(FnArgType::Primitive(FnArgPrimitive::Number(NumericSuffix::None))),
                         default_value: None,
                         labeled: true,
                         digest: None

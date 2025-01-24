@@ -1,7 +1,7 @@
 // TODO optimise size of CompilationError
 #![allow(clippy::result_large_err)]
 
-use std::{cell::RefCell, collections::HashMap, str::FromStr};
+use std::{cell::RefCell, collections::HashMap};
 
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, separated, separated_pair, terminated},
@@ -2484,11 +2484,19 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
         (open_brace, parameters, close_brace).map(|(_, params, _)| Ok(FnArgType::Object { properties: params })),
         // Array types
-        (one_of(TokenType::Type), open_bracket, close_bracket).map(|(token, _, _)| {
-            FnArgPrimitive::from_str(&token.value)
-                .map(FnArgType::Array)
-                .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
-        }),
+        (
+            one_of(TokenType::Type),
+            opt(delimited(open_paren, uom_for_type, close_paren)),
+            open_bracket,
+            close_bracket,
+        )
+            .map(|(token, uom, _, _)| {
+                FnArgPrimitive::from_str(&token.value, uom)
+                    .map(FnArgType::Array)
+                    .ok_or_else(|| {
+                        CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
+                    })
+            }),
         // Primitive types
         (
             one_of(TokenType::Type),
@@ -2501,9 +2509,11 @@ fn argument_type(i: &mut TokenSlice) -> PResult<FnArgType> {
                         "Unit of Measure types are experimental and currently do nothing.",
                     ));
                 }
-                FnArgPrimitive::from_str(&token.value)
+                FnArgPrimitive::from_str(&token.value, suffix)
                     .map(FnArgType::Primitive)
-                    .map_err(|err| CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", err)))
+                    .ok_or_else(|| {
+                        CompilationError::fatal(token.as_source_range(), format!("Invalid type: {}", token.value))
+                    })
             }),
     ))
     .parse_next(i)?
