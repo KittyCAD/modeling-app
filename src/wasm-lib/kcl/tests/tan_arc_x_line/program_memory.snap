@@ -295,6 +295,7 @@ description: Program memory after executing tan_arc_x_line.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

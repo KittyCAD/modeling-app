@@ -132,6 +132,7 @@ description: Program memory after executing riddle_small.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }
@@ -678,6 +679,7 @@ description: Program memory after executing riddle_small.kcl
                             "type": "Identifier"
                           },
                           "type_": {
+                            "Rad": null,
                             "type": "Primitive",
                             "type": "Number"
                           }

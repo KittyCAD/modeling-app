@@ -673,6 +673,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

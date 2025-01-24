@@ -408,6 +408,7 @@ description: Program memory after executing parametric.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

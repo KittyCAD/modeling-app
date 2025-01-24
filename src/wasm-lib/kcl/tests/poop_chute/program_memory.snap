@@ -171,6 +171,7 @@ description: Program memory after executing poop_chute.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

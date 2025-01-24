@@ -480,6 +480,7 @@ description: Program memory after executing parametric_with_tan_arc.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

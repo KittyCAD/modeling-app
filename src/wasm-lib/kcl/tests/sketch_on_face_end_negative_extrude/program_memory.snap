@@ -119,6 +119,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }
@@ -536,6 +537,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                             "type": "Identifier"
                           },
                           "type_": {
+                            "Rad": null,
                             "type": "Primitive",
                             "type": "Number"
                           }

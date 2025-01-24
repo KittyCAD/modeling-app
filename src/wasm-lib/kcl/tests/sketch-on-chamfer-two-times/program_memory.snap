@@ -119,6 +119,7 @@ description: Program memory after executing sketch-on-chamfer-two-times.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

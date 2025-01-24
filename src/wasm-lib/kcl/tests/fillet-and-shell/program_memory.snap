@@ -747,6 +747,7 @@ description: Program memory after executing fillet-and-shell.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }
@@ -2137,6 +2138,7 @@ description: Program memory after executing fillet-and-shell.kcl
                             "type": "Identifier"
                           },
                           "type_": {
+                            "Rad": null,
                             "type": "Primitive",
                             "type": "Number"
                           }

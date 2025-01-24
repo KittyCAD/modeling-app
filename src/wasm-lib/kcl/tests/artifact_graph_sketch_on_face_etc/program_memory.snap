@@ -119,6 +119,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

@@ -119,6 +119,7 @@ description: Program memory after executing array_range_negative_expr.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

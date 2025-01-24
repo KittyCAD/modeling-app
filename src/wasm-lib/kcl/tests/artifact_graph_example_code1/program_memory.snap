@@ -119,6 +119,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

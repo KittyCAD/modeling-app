@@ -119,6 +119,7 @@ description: Program memory after executing property_of_object.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

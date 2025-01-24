@@ -48,6 +48,7 @@ expression: actual
                 "type": "Identifier"
               },
               "type_": {
+                "None": null,
                 "type": "Primitive",
                 "type": "Number"
               },

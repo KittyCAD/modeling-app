@@ -119,6 +119,7 @@ description: Program memory after executing circle_three_point.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

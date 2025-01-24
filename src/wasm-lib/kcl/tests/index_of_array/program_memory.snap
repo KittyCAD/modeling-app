@@ -172,6 +172,7 @@ description: Program memory after executing index_of_array.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

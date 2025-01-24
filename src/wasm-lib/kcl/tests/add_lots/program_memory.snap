@@ -119,6 +119,7 @@ description: Program memory after executing add_lots.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }
@@ -310,6 +311,7 @@ description: Program memory after executing add_lots.kcl
                             "type": "Identifier"
                           },
                           "type_": {
+                            "Rad": null,
                             "type": "Primitive",
                             "type": "Number"
                           }

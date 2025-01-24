@@ -185,6 +185,7 @@ description: Program memory after executing computed_var.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

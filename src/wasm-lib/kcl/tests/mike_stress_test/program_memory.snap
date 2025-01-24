@@ -119,6 +119,7 @@ description: Program memory after executing mike_stress_test.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

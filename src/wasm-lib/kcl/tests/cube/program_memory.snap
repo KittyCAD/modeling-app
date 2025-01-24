@@ -119,6 +119,7 @@ description: Program memory after executing cube.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }
@@ -922,6 +923,7 @@ description: Program memory after executing cube.kcl
                             "type": "Identifier"
                           },
                           "type_": {
+                            "Rad": null,
                             "type": "Primitive",
                             "type": "Number"
                           }

@@ -158,6 +158,7 @@ description: Program memory after executing if_else.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

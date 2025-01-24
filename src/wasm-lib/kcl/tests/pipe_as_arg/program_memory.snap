@@ -119,6 +119,7 @@ description: Program memory after executing pipe_as_arg.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }
@@ -922,6 +923,7 @@ description: Program memory after executing pipe_as_arg.kcl
                             "type": "Identifier"
                           },
                           "type_": {
+                            "Rad": null,
                             "type": "Primitive",
                             "type": "Number"
                           }
@@ -1130,6 +1132,7 @@ description: Program memory after executing pipe_as_arg.kcl
                             "type": "Identifier"
                           },
                           "type_": {
+                            "Rad": null,
                             "type": "Primitive",
                             "type": "Number"
                           }
@@ -1933,6 +1936,7 @@ description: Program memory after executing pipe_as_arg.kcl
                                       "type": "Identifier"
                                     },
                                     "type_": {
+                                      "Rad": null,
                                       "type": "Primitive",
                                       "type": "Number"
                                     }
@@ -2368,6 +2372,7 @@ description: Program memory after executing pipe_as_arg.kcl
                             "type": "Identifier"
                           },
                           "type_": {
+                            "Rad": null,
                             "type": "Primitive",
                             "type": "Number"
                           }
@@ -3171,6 +3176,7 @@ description: Program memory after executing pipe_as_arg.kcl
                                       "type": "Identifier"
                                     },
                                     "type_": {
+                                      "Rad": null,
                                       "type": "Primitive",
                                       "type": "Number"
                                     }
@@ -3379,6 +3385,7 @@ description: Program memory after executing pipe_as_arg.kcl
                                       "type": "Identifier"
                                     },
                                     "type_": {
+                                      "Rad": null,
                                       "type": "Primitive",
                                       "type": "Number"
                                     }
@@ -4182,6 +4189,7 @@ description: Program memory after executing pipe_as_arg.kcl
                                                 "type": "Identifier"
                                               },
                                               "type_": {
+                                                "Rad": null,
                                                 "type": "Primitive",
                                                 "type": "Number"
                                               }

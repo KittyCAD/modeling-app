@@ -119,6 +119,7 @@ description: Program memory after executing xz_plane.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }

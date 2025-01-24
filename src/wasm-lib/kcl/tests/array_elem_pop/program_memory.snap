@@ -172,6 +172,7 @@ description: Program memory after executing array_elem_pop.kcl
                   "type": "Identifier"
                 },
                 "type_": {
+                  "Rad": null,
                   "type": "Primitive",
                   "type": "Number"
                 }
