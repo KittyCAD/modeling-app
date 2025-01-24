@@ -1,6 +1,6 @@
 const sketch001 = startSketchOn('XZ')
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-  |> angledline(end = [0, 268.43], tag = $rectangleSegmentA001)
+  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        217.26
