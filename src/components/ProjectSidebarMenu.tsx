@@ -9,7 +9,7 @@ import { Logo } from './Logo'
 import { APP_NAME } from 'lib/constants'
 import { CustomIcon } from './CustomIcon'
 import { useLspContext } from './LspProvider'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 import usePlatform from 'hooks/usePlatform'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
@@ -17,6 +17,9 @@ import Tooltip from './Tooltip'
 import { SnapshotFrom } from 'xstate'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useSelector } from '@xstate/react'
+import { copyFileShareLink } from 'lib/links'
+import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { DEV } from 'env'
 
 const ProjectSidebarMenu = ({
   project,
@@ -100,6 +103,7 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
+  const { settings, auth } = useSettingsAuthContext()
   const machineManager = useContext(MachineManagerContext)
   const commands = useSelector(commandBarActor, commandsSelector)
 
@@ -158,7 +162,6 @@ function ProjectMenuPopover({
               data: exportCommandInfo,
             }),
         },
-        'break',
         {
           id: 'make',
           Element: 'button',
@@ -181,6 +184,20 @@ function ProjectMenuPopover({
             commandBarActor.send({
               type: 'Find and select command',
               data: makeCommandInfo,
+            })
+          },
+        },
+        {
+          id: 'share-link',
+          Element: 'button',
+          children: 'Share link to file',
+          disabled: !DEV,
+          onClick: async () => {
+            await copyFileShareLink({
+              token: auth?.context.token || '',
+              code: codeManager.code,
+              name: project?.name || '',
+              units: settings.context.modeling.defaultUnit.current,
             })
           },
         },
