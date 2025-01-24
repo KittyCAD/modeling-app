@@ -707,6 +707,22 @@ impl<'a> FromKclValue<'a> for [f64; 2] {
     }
 }
 
+impl<'a> FromKclValue<'a> for [f32; 3] {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Array { value, meta: _ } = arg else {
+            return None;
+        };
+        if value.len() != 3 {
+            return None;
+        }
+        let v0 = value.first()?;
+        let v1 = value.get(1)?;
+        let v2 = value.get(2)?;
+        let array = [v0.as_f32()?, v1.as_f32()?, v2.as_f32()?];
+        Some(array)
+    }
+}
+
 impl<'a> FromKclValue<'a> for [usize; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Array { value, meta: _ } = arg else {
@@ -1065,6 +1081,50 @@ impl<'a> FromKclValue<'a> for super::appearance::AppearanceData {
             color,
             metalness,
             roughness,
+        })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::transform::ScaleData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, scale);
+        let_field_of!(obj, global?);
+        Some(Self { scale, global })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::transform::TranslateData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, translate);
+        let_field_of!(obj, global?);
+        Some(Self { translate, global })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::transform::RotateAboutAxisData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, axis);
+        let_field_of!(obj, angle);
+        Some(Self { axis, angle })
+    }
+}
+
+impl<'a> FromKclValue<'a> for super::transform::RotateData {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let obj = arg.as_object()?;
+        let_field_of!(obj, roll);
+        let_field_of!(obj, pitch);
+        let_field_of!(obj, yaw);
+        let_field_of!(obj, global?);
+
+        Some(Self {
+            roll,
+            pitch,
+            yaw,
+            global,
         })
     }
 }
@@ -1577,6 +1637,15 @@ impl<'a> FromKclValue<'a> for f64 {
         match arg {
             KclValue::Number { value, meta: _ } => Some(*value),
             KclValue::Int { value, meta: _ } => Some(*value as f64),
+            _ => None,
+        }
+    }
+}
+impl<'a> FromKclValue<'a> for f32 {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Number { value, meta: _ } => Some(*value as f32),
+            KclValue::Int { value, meta: _ } => Some(*value as f32),
             _ => None,
         }
     }
