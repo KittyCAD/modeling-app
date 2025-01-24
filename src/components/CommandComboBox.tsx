@@ -75,34 +75,40 @@ function CommandComboBox({
           autoFocus
         />
       </div>
-      <Combobox.Options
-        static
-        className="overflow-y-auto max-h-96 cursor-pointer"
-      >
-        {filteredOptions?.map((option) => (
-          <Combobox.Option
-            key={option.groupId + option.name + (option.displayName || '')}
-            value={option}
-            className="flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50"
-            disabled={optionIsDisabled(option)}
-            data-testid={`cmd-bar-option`}
-          >
-            {'icon' in option && option.icon && (
-              <CustomIcon name={option.icon} className="w-5 h-5" />
-            )}
-            <div className="flex-grow flex flex-col">
-              <p className="my-0 leading-tight">
-                {option.displayName || option.name}{' '}
-              </p>
-              {option.description && (
-                <p className="my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50">
-                  {option.description}
-                </p>
+      {filteredOptions?.length ? (
+        <Combobox.Options
+          static
+          className="overflow-y-auto max-h-96 cursor-pointer"
+        >
+          {filteredOptions?.map((option) => (
+            <Combobox.Option
+              key={option.groupId + option.name + (option.displayName || '')}
+              value={option}
+              className="flex items-center gap-4 px-4 py-1.5 first:mt-2 last:mb-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90 ui-disabled:!text-chalkboard-50"
+              disabled={optionIsDisabled(option)}
+              data-testid={`cmd-bar-option`}
+            >
+              {'icon' in option && option.icon && (
+                <CustomIcon name={option.icon} className="w-5 h-5" />
               )}
-            </div>
-          </Combobox.Option>
-        ))}
-      </Combobox.Options>
+              <div className="flex-grow flex flex-col">
+                <p className="my-0 leading-tight">
+                  {option.displayName || option.name}{' '}
+                </p>
+                {option.description && (
+                  <p className="my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50">
+                    {option.description}
+                  </p>
+                )}
+              </div>
+            </Combobox.Option>
+          ))}
+        </Combobox.Options>
+      ) : (
+        <p className="px-4 pt-2 text-chalkboard-60 dark:text-chalkboard-50">
+          No results found
+        </p>
+      )}
     </Combobox>
   )
 }

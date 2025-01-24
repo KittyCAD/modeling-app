@@ -25,6 +25,7 @@ import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { useProjectsLoader } from 'hooks/useProjectsLoader'
 import { useProjectsContext } from 'hooks/useProjectsContext'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -32,6 +33,18 @@ const Home = () => {
   const { state, send } = useProjectsContext()
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
+
+  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
+  useCreateFileLinkQuery((argDefaultValues) => {
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Import file from URL',
+        argDefaultValues,
+      },
+    })
+  })
 
   useRefreshSettings(PATHS.HOME + 'SETTINGS')
   const navigate = useNavigate()
