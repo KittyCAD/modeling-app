@@ -31,6 +31,8 @@ import {
   getNodePathFromSourceRange,
   isNodeSafeToReplace,
   traverse,
+  ARG_INDEX_FIELD,
+  LABELED_ARG_FIELD,
 } from './queryAst'
 import { addTagForSketchOnFace, ARG_TAG, getConstraintInfo } from './std/sketch'
 import {
@@ -317,6 +319,9 @@ export function extrudeSketch(
   const extrudeCall = createCallExpressionStdLibKw('extrude', sketchToExtrude, [
     createLabeledArg('length', distance),
   ])
+  // index of the 'length' arg above. If you reorder the labeled args above,
+  // make sure to update this too.
+  const argIndex = 0
 
   if (shouldPipe) {
     const pipeChain = createPipeExpression(
@@ -331,8 +336,9 @@ export function extrudeSketch(
       ['init', 'VariableDeclarator'],
       ['body', ''],
       [pipeChain.body.length - 1, 'index'],
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
     ]
 
     return {
@@ -359,8 +365,9 @@ export function extrudeSketch(
     [sketchIndexInBody + 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
   return {
     modifiedAst: _node,

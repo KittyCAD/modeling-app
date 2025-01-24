@@ -1459,10 +1459,8 @@ export const modelingMachine = setup({
       let ast = structuredClone(kclManager.ast)
       let extrudeName: string | undefined = undefined
 
-      const pathToNode = getNodePathFromSourceRange(
-        ast,
-        selection.graphSelections[0]?.codeRef.range
-      )
+      const sourceRange = selection.graphSelections[0]?.codeRef.range
+      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
       // Add an extrude statement to the AST
       const extrudeSketchRes = extrudeSketch(
         ast,
