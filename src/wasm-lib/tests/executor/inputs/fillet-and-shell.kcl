@@ -42,9 +42,9 @@ const miniHdmiHole = startSketchAt([
 
 const case = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line(endAbsolute = [caseWidth, 0])
-  |> line(endAbsolute = [caseWidth, caseLength])
-  |> line(endAbsolute = [0, caseLength])
+  |> line(endAbsolute = [caseWidth, 0], $edge1)
+  |> line(endAbsolute = [caseWidth, caseLength], $edge2)
+  |> line(endAbsolute = [0, caseLength], $edge3)
   |> close(tag = $edge4)
   |> extrude(length = caseHeight)
   |> fillet({
