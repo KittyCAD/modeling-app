@@ -2183,9 +2183,7 @@ export function addCloseToPipe({
   pathToNode: PathToNode
 }) {
   const _node = { ...node }
-  const closeExpression = createCallExpression('close', [
-    createPipeSubstitution(),
-  ])
+  const closeExpression = createCallExpressionStdLibKw('close', null, [])
   const pipeExpression = getNodeFromPath<PipeExpression>(
     _node,
     pathToNode,

@@ -73,7 +73,7 @@ export const getRectangleCallExpressions = (
       ])
     ),
   ]), // close the rectangle
-  createCallExpressionStdLib('close', [createPipeSubstitution()]),
+  createCallExpressionStdLibKw('close', null, []),
 ]
 
 /**

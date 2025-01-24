@@ -920,8 +920,11 @@ test.describe('Sketch tests', () => {
 
     await page.getByRole('button', { name: 'Start Sketch' }).click()
 
+    // Click the end face of extrude001
     await page.mouse.click(622, 355)
 
+    // The click should generate a new sketch starting on the end face of extrude001
+    // signified by the implicit 'END' tag for that solid.
     await page.waitForTimeout(800)
     await page.getByText(`END')`).click()
     await page.keyboard.press('End')
