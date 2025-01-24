@@ -1355,7 +1355,7 @@ export const ModelingMachineProvider = ({
               sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             }
             sceneInfra.resetMouseListeners()
-            await sceneEntitiesManager.setupSketch({
+            const { sketchTools } = await sceneEntitiesManager.setupSketch({
               sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
               sketchNodePaths: sketchDetails.sketchNodePaths,
               forward: sketchDetails.zAxis,
@@ -1373,7 +1373,12 @@ export const ModelingMachineProvider = ({
               position: sketchDetails.origin,
               sketchNodePaths: sketchDetails.sketchNodePaths,
               planeNodePath: sketchDetails.planeNodePath,
+              // We will want to pass sketchTools here
+              // to add their interactions
             })
+
+            // We will want to update the context with sketchTools.
+            // They'll be used for their .destroy() in tearDownSketch
             return undefined
           }
         ),

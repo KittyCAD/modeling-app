@@ -84,6 +84,7 @@ import { MachineManager } from 'components/MachineManagerProvider'
 import { addShell } from 'lang/modifyAst/addShell'
 import { KclCommandValue } from 'lib/commandTypes'
 import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
+import { CircleThreePoint } from '../clientSideScene/circleThreePoint'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -228,7 +229,7 @@ export type SketchTool =
   | 'rectangle'
   | 'center rectangle'
   | 'circle'
-  | 'circle3Points'
+  | 'circleThreePoints'
   | 'none'
 
 export type ModelingMachineEvent =
@@ -432,8 +433,6 @@ export const modelingMachine = setup({
     'has valid selection for deletion': () => false,
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
-    'is editing 3-point circle': ({ context: { sketchDetails } }) =>
-      isEditing3PointCircle({ sketchDetails }),
     'Can make selection horizontal': ({ context: { selectionRanges } }) => {
       const info = horzVertInfo(selectionRanges, 'horizontal')
       if (trap(info)) return false
@@ -583,8 +582,8 @@ export const modelingMachine = setup({
       currentTool === 'center rectangle',
     'next is circle': ({ context: { currentTool } }) =>
       currentTool === 'circle',
-    'next is circle 3 point': ({ context: { currentTool } }) =>
-      currentTool === 'circle3Points',
+    'next is circle three point': ({ context: { currentTool } }) =>
+      currentTool === 'circleThreePoint',
     'next is line': ({ context }) => context.currentTool === 'line',
     'next is none': ({ context }) => context.currentTool === 'none',
   },
@@ -977,6 +976,7 @@ export const modelingMachine = setup({
     },
     'update sketchDetails': assign(({ event, context }) => {
       if (
+        event.type !== 'xstate.done.actor.actor-circle-three-point' &&
         event.type !== 'xstate.done.actor.set-up-draft-circle' &&
         event.type !== 'xstate.done.actor.set-up-draft-rectangle' &&
         event.type !== 'xstate.done.actor.set-up-draft-center-rectangle' &&
@@ -1863,7 +1863,7 @@ export const modelingMachine = setup({
     // lee: I REALLY wanted to inline this at the location of the actor invocation
     // but the type checker loses it's fricking mind because the `actors` prop
     // this exists on now doesn't have the correct type if I do that. *agh*.
-    actorCircle3Point: fromCallback<
+    actorCircleThreePoint: fromCallback<
       { type: '' }, // Not used. We receive() no events in this actor.
       SketchDetails | undefined,
       // Doesn't type-check anything for some reason.
@@ -1873,17 +1873,39 @@ export const modelingMachine = setup({
       // destroying the actor and going back to idle state.
       if (!sketchDetails) return
 
-      const cleanupFn = sceneEntitiesManager.entryDraftCircle3Point(
-        // I make it clear that the stop is coming from an internal call
-        () => sendBack({ type: 'stop-internal' }),
-        sketchDetails.planeNodePath,
-        new Vector3(...sketchDetails.zAxis),
-        new Vector3(...sketchDetails.yAxis),
-        new Vector3(...sketchDetails.origin)
-      )
+      let tool = new CircleThreePoint({
+        scene: sceneEntitiesManager.scene, 
+        intersectionPlane: sceneEntitiesManager.intersectionPlane,
+        startSketchOnASTNodePath: sketchDetails.planeNodePath,
+        maybeExistingNodePath: sketchDetails.sketchEntryNodePath,
+        forward: new Vector3(...sketchDetails.zAxis),
+        up: new Vector3(...sketchDetails.yAxis),
+        sketchOrigin: new Vector3(...sketchDetails.origin),
+
+        // Needed because of our current architecture of initializing
+        // shapes and then immediately entering "generic" sketch editing mode.
+        callDoneFnAfterBeingDefined: true,
+        done(output) {
+          sendBack({
+            type: 'xstate.done.actor.actor-circle-three-point',
+            output: {
+              updatedPlaneNodePath,
+              updatedEntryNodePath,
+              updatedSketchNodePaths,
+            }
+          })
+        }
+      })
+
+      sceneInfra.setCallbacks({
+        // After the third click this actor will transition.
+        onClick: tool.onClick,
+      })
+
+      tool.init()
 
       // When the state is exited (by anything, even itself), this is run!
-      return cleanupFn
+      return tool.destroy
     }),
   },
   // end actors
@@ -2271,10 +2293,6 @@ export const modelingMachine = setup({
               target: 'SketchIdle',
               guard: 'is editing existing sketch',
             },
-            {
-              target: 'circle3PointToolSelect',
-              guard: 'is editing 3-point circle',
-            },
             'Line tool',
           ],
         },
@@ -2650,9 +2668,9 @@ export const modelingMachine = setup({
               guard: 'next is center rectangle',
             },
             {
-              target: 'circle3PointToolSelect',
+              target: 'circleThreePointToolSelect',
               reenter: true,
-              guard: 'next is circle 3 point',
+              guard: 'next is circle three point',
             },
           ],
         },
@@ -2756,14 +2774,14 @@ export const modelingMachine = setup({
           initial: 'splitting sketch pipe',
           entry: ['assign tool in context', 'reset selections'],
         },
-        circle3PointToolSelect: {
+        circleThreePointToolSelect: {
           invoke: {
-            id: 'actor-circle-3-point',
+            id: 'actor-circle-three-point',
             input: function ({ context }) {
               if (!context.sketchDetails) return
               return context.sketchDetails
             },
-            src: 'actorCircle3Point',
+            src: 'actorCircleThreePoint',
           },
           on: {
             // We still need this action to trigger (legacy code support)
@@ -2771,6 +2789,7 @@ export const modelingMachine = setup({
             // On stop event, transition to our usual SketchIdle state
             'stop-internal': {
               target: '#Modeling.Sketch.SketchIdle',
+              actions: 'update sketchDetails',
             },
           },
         },
@@ -3018,43 +3037,27 @@ export function isEditingExistingSketch({
       maybePipeExpression.callee.name === 'circle')
   )
     return true
+  if (
+    maybePipeExpression.type === 'CallExpressionKw' &&
+    (maybePipeExpression.callee.name === 'startProfileAt' ||
+      maybePipeExpression.callee.name === 'circleThreePoint')
+  )
+    return true
   if (maybePipeExpression.type !== 'PipeExpression') return false
   const hasStartProfileAt = maybePipeExpression.body.some(
     (item) =>
       item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
   )
-  const hasCircle = maybePipeExpression.body.some(
-    (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
-  )
+  const hasCircle =
+    maybePipeExpression.body.some(
+      (item) => item.type === 'CallExpression' && item.callee.name === 'circle'
+    ) ||
+    maybePipeExpression.body.some(
+      (item) =>
+        item.type === 'CallExpressionKw' &&
+        item.callee.name === 'circleThreePoint'
+    )
   return (hasStartProfileAt && maybePipeExpression.body.length > 1) || hasCircle
-}
-export function isEditing3PointCircle({
-  sketchDetails,
-}: {
-  sketchDetails: SketchDetails | null
-}): boolean {
-  if (!sketchDetails?.sketchEntryNodePath) return false
-  const variableDeclaration = getNodeFromPath<VariableDeclarator>(
-    kclManager.ast,
-    sketchDetails.sketchEntryNodePath,
-    'VariableDeclarator'
-  )
-  if (err(variableDeclaration)) return false
-  if (variableDeclaration.node.type !== 'VariableDeclarator') return false
-  const pipeExpression = variableDeclaration.node.init
-  if (pipeExpression.type !== 'PipeExpression') return false
-  const hasStartProfileAt = pipeExpression.body.some(
-    (item) =>
-      item.type === 'CallExpression' && item.callee.name === 'startProfileAt'
-  )
-  const hasCircle3Point = pipeExpression.body.some(
-    (item) =>
-      item.type === 'CallExpressionKw' &&
-      item.callee.name === 'circleThreePoint'
-  )
-  return (
-    (hasStartProfileAt && pipeExpression.body.length > 2) || hasCircle3Point
-  )
 }
 export function pipeHasCircle({
   sketchDetails,
