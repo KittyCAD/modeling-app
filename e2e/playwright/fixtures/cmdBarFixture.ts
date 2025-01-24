@@ -151,4 +151,11 @@ export class CmdBarFixture {
   chooseCommand = async (commandName: string) => {
     await this.cmdOptions.getByText(commandName).click()
   }
+
+  /**
+   * Select an option from the command bar
+   */
+  selectOption = (options: Parameters<typeof this.page.getByRole>[1]) => {
+    return this.page.getByRole('option', options)
+  }
 }

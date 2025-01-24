@@ -129,6 +129,7 @@ function CommandArgOptionInput({
           <label
             htmlFor="option-input"
             className="capitalize px-2 py-1 rounded-l bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80"
+            data-testid="cmd-bar-arg-name"
           >
             {argName}
           </label>
