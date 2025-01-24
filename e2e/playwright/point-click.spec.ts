@@ -1030,7 +1030,7 @@ test(`Sweep point-and-click failing validation`, async ({
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
   |> xLine(-500, %)
-  |> lineTo([-2000, 500], %)
+  |> line(endAbsolute = [-2000, 500])
 `
   await context.addInitScript((initialCode) => {
     localStorage.setItem('persistCode', initialCode)
