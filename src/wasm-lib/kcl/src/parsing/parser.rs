@@ -1680,7 +1680,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         for s in &segments {
             if s.chars().any(|c| !c.is_ascii_alphanumeric() && c != '_') || s.starts_with('_') {
                 return Err(ErrMode::Cut(
-                    CompilationError::fatal(path_range, "invalid path in import statment.").into(),
+                    CompilationError::fatal(path_range, "invalid path in import statement.").into(),
                 ));
             }
         }

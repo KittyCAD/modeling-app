@@ -663,7 +663,7 @@ mod test {
                         Err(crate::errors::ExecError::Kcl(e)) => {
                             return Err(miette::Report::new(crate::errors::Report {
                                 error: e.error,
-                                filename: format!("{}{}", d.name(), i),
+                                filename: format!("{}{i}", d.name()),
                                 kcl_source: eg.to_string(),
                             }));
                         }
@@ -671,7 +671,7 @@ mod test {
                         Ok(img) => img,
                     };
                 twenty_twenty::assert_image(
-                    &format!("tests/outputs/serial_test_example_{}{}.png", d.name(), i),
+                    format!("tests/outputs/serial_test_example_{}{i}.png", d.name()),
                     &result,
                     0.99,
                 );

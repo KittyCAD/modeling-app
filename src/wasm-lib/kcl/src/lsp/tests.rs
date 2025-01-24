@@ -2490,10 +2490,7 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
     assert_eq!(ast, default_hashed);
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(
-        matches!(memory.get("part001", Default::default()), Err(_)),
-        "{memory:#?}"
-    );
+    assert!(memory.get("part001", Default::default()).is_err(), "{memory:#?}");
 }
 
 #[tokio::test(flavor = "multi_thread")]

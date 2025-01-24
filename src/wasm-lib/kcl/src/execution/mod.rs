@@ -3518,7 +3518,7 @@ let shape = layer() |> patternTransform(10, transform, %)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
-        let ast = r#"const myVar = pi() * 2"#;
+        let ast = r#"const myVar = PI * 2"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,
