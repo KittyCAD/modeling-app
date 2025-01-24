@@ -97,6 +97,47 @@ description: Program memory after executing circle_three_point.kcl
             }
           ]
         },
+        "cos": {
+          "type": "Function",
+          "expression": {
+            "body": {
+              "body": [],
+              "end": 1444,
+              "moduleId": 2,
+              "start": 1444
+            },
+            "end": 1445,
+            "moduleId": 2,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 1417,
+                  "moduleId": 2,
+                  "name": "num",
+                  "start": 1414,
+                  "type": "Identifier"
+                },
+                "type_": {
+                  "type": "Primitive",
+                  "type": "Number"
+                }
+              }
+            ],
+            "start": 1413,
+            "type": "FunctionExpression"
+          },
+          "memory": null,
+          "__meta": [
+            {
+              "sourceRange": [
+                1413,
+                1445,
+                2
+              ]
+            }
+          ]
+        },
         "example": {
           "type": "Solid",
           "value": {
