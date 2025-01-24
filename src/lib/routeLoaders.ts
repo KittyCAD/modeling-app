@@ -114,7 +114,7 @@ export const fileLoader: LoaderFunction = async (
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
             isDesktop() ? fallbackFile : params.id + '/' + PROJECT_ENTRYPOINT
-          )}`
+          )}${new URL(routerData.request.url).search || ''}`
         )
       }
 
@@ -188,11 +188,14 @@ export const fileLoader: LoaderFunction = async (
 
 // Loads the settings and by extension the projects in the default directory
 // and returns them to the Home route, along with any errors that occurred
-export const homeLoader: LoaderFunction = async (): Promise<
-  HomeLoaderData | Response
-> => {
+export const homeLoader: LoaderFunction = async ({
+  request,
+}): Promise<HomeLoaderData | Response> => {
+  const url = new URL(request.url)
   if (!isDesktop()) {
-    return redirect(PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME)
+    return redirect(
+      PATHS.FILE + '/%2F' + BROWSER_PROJECT_NAME + (url.search || '')
+    )
   }
   return {}
 }
