@@ -116,6 +116,14 @@ impl DocData {
             DocData::Const(c) => c.with_meta(meta),
         }
     }
+
+    #[cfg(test)]
+    fn examples(&self) -> &[String] {
+        match self {
+            DocData::Fn(f) => &f.examples,
+            DocData::Const(c) => &c.examples,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -641,5 +649,35 @@ mod test {
             }
         }
         panic!("didn't find PI");
+    }
+
+    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
+    async fn test_examples() -> miette::Result<()> {
+        let std = walk_prelude();
+        for d in std {
+            for (i, eg) in d.examples().iter().enumerate() {
+                let result =
+                    match crate::test_server::execute_and_snapshot(eg, crate::settings::types::UnitLength::Mm, None)
+                        .await
+                    {
+                        Err(crate::errors::ExecError::Kcl(e)) => {
+                            return Err(miette::Report::new(crate::errors::Report {
+                                error: e.error,
+                                filename: format!("{}{}", d.name(), i),
+                                kcl_source: eg.to_string(),
+                            }));
+                        }
+                        Err(other_err) => panic!("{}", other_err),
+                        Ok(img) => img,
+                    };
+                twenty_twenty::assert_image(
+                    &format!("tests/outputs/serial_test_example_{}{}.png", d.name(), i),
+                    &result,
+                    0.99,
+                );
+            }
+        }
+
+        Ok(())
     }
 }

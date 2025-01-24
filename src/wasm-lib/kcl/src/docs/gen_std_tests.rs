@@ -328,18 +328,16 @@ fn generate_function_from_kcl(function: &FnData) -> Result<()> {
         .examples
         .iter()
         .enumerate()
-        .map(|(_index, example)| {
-            // TODO example image
-            // let image_path = format!(
-            //     "{}/tests/outputs/serial_test_example_{}{}.png",
-            //     env!("CARGO_MANIFEST_DIR"),
-            //     name,
-            //     index
-            // );
-            // let image_data =
-            //     std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
-            // let image_base64 = base64::engine::general_purpose::STANDARD.encode(&image_data);
-            let image_base64 = String::new();
+        .map(|(index, example)| {
+            let image_path = format!(
+                "{}/tests/outputs/serial_test_example_{}{}.png",
+                env!("CARGO_MANIFEST_DIR"),
+                name,
+                index
+            );
+            let image_data =
+                std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
+            let image_base64 = base64::engine::general_purpose::STANDARD.encode(&image_data);
 
             json!({
                 "content": example,
@@ -392,18 +390,16 @@ fn generate_const_from_kcl(cnst: &ConstData) -> Result<()> {
         .examples
         .iter()
         .enumerate()
-        .map(|(_index, example)| {
-            // TODO example image
-            // let image_path = format!(
-            //     "{}/tests/outputs/serial_test_example_{}{}.png",
-            //     env!("CARGO_MANIFEST_DIR"),
-            //     name,
-            //     index
-            // );
-            // let image_data =
-            //     std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
-            // let image_base64 = base64::engine::general_purpose::STANDARD.encode(&image_data);
-            let image_base64 = String::new();
+        .map(|(index, example)| {
+            let image_path = format!(
+                "{}/tests/outputs/serial_test_example_{}{}.png",
+                env!("CARGO_MANIFEST_DIR"),
+                name,
+                index
+            );
+            let image_data =
+                std::fs::read(&image_path).unwrap_or_else(|_| panic!("Failed to read image file: {}", image_path));
+            let image_base64 = base64::engine::general_purpose::STANDARD.encode(&image_data);
 
             json!({
                 "content": example,
