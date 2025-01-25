@@ -358,7 +358,9 @@ test.describe('Editor tests', () => {
     // Hover over the line function
     await page.getByText('line').first().hover()
     await expect(page.locator('.hover-tooltip')).toBeVisible()
-    await expect(page.getByText('Draw a line')).toBeVisible()
+    await expect(
+      page.getByText('Extend the current sketch with a new straight line.')
+    ).toBeVisible()
   })
 
   test('if you use the format keyboard binding it formats your code', async ({
