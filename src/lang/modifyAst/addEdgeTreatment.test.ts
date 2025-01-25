@@ -607,6 +607,7 @@ extrude002 = extrude(-25, sketch002)
       })
     })
     describe(`Testing deleteEdgeTreatment with ${edgeTreatmentType}s`, () => {
+      // simple cases
       it(`should delete a piped ${edgeTreatmentType} from a specific segment`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
@@ -652,6 +653,35 @@ fillet001 = ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, extru
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)`
+
+        await runDeleteEdgeTreatmentTest(
+          code,
+          edgeTreatmentSnippet,
+          expectedCode
+        )
+      })
+      // messier cases
+      it(`should delete a piped ${edgeTreatmentType} from a body with several existing edge treatments`, async () => {
+        const code = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %, $seg01)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg02)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(-15, sketch001)
+  |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)
+fillet001 = ${edgeTreatmentType}({ ${parameterName} = 6, tags = [seg02] }, extrude001)`
+        const edgeTreatmentSnippet = `${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)`
+        const expectedCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-10, 10], %)
+  |> line([20, 0], %, $seg01)
+  |> line([0, -20], %)
+  |> line([-20, 0], %, $seg02)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(-15, sketch001)
+fillet001 = ${edgeTreatmentType}({ ${parameterName} = 6, tags = [seg02] }, extrude001)`
 
         await runDeleteEdgeTreatmentTest(
           code,
