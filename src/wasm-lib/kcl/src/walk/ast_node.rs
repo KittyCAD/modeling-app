@@ -76,6 +76,48 @@ impl Node<'_> {
             Node::LabelledExpression(n) => n.digest,
         }
     }
+
+    /// Check to see if this [Node] points to the same underlying specific
+    /// borrowed object as another [Node]. This is not the same as `Eq` or
+    /// even `PartialEq` -- anything that is `true` here is absolutely `Eq`,
+    /// but it's possible this node is `Eq` to another with this being `false`.
+    ///
+    /// This merely indicates that this [Node] specifically is the exact same
+    /// borrowed object as [Node].
+    pub fn ptr_eq(&self, other: Node) -> bool {
+        unsafe { std::ptr::eq(self.ptr(), other.ptr()) }
+    }
+
+    unsafe fn ptr(&self) -> *const () {
+        match self {
+            Node::Program(n) => *n as *const _ as *const (),
+            Node::ImportStatement(n) => *n as *const _ as *const (),
+            Node::ExpressionStatement(n) => *n as *const _ as *const (),
+            Node::VariableDeclaration(n) => *n as *const _ as *const (),
+            Node::ReturnStatement(n) => *n as *const _ as *const (),
+            Node::VariableDeclarator(n) => *n as *const _ as *const (),
+            Node::Literal(n) => *n as *const _ as *const (),
+            Node::TagDeclarator(n) => *n as *const _ as *const (),
+            Node::Identifier(n) => *n as *const _ as *const (),
+            Node::BinaryExpression(n) => *n as *const _ as *const (),
+            Node::FunctionExpression(n) => *n as *const _ as *const (),
+            Node::CallExpression(n) => *n as *const _ as *const (),
+            Node::CallExpressionKw(n) => *n as *const _ as *const (),
+            Node::PipeExpression(n) => *n as *const _ as *const (),
+            Node::PipeSubstitution(n) => *n as *const _ as *const (),
+            Node::ArrayExpression(n) => *n as *const _ as *const (),
+            Node::ArrayRangeExpression(n) => *n as *const _ as *const (),
+            Node::ObjectExpression(n) => *n as *const _ as *const (),
+            Node::MemberExpression(n) => *n as *const _ as *const (),
+            Node::UnaryExpression(n) => *n as *const _ as *const (),
+            Node::Parameter(p) => *p as *const _ as *const (),
+            Node::ObjectProperty(n) => *n as *const _ as *const (),
+            Node::IfExpression(n) => *n as *const _ as *const (),
+            Node::ElseIf(n) => *n as *const _ as *const (),
+            Node::KclNone(n) => *n as *const _ as *const (),
+            Node::LabelledExpression(n) => *n as *const _ as *const (),
+        }
+    }
 }
 
 /// Returned during source_range conversion.
@@ -239,3 +281,33 @@ impl_from!(Node, IfExpression);
 impl_from!(Node, ElseIf);
 impl_from!(Node, LabelledExpression);
 impl_from!(Node, KclNone);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! kcl {
+        ( $kcl:expr ) => {{
+            $crate::parsing::top_level_parse($kcl).unwrap()
+        }};
+    }
+
+    #[test]
+    fn check_ptr_eq() {
+        let program = kcl!(
+            "
+const foo = 1
+const bar = foo + 1
+
+fn myfn = () => {
+    const foo = 2
+    sin(foo)
+}
+"
+        );
+
+        let foo: Node = (&program.body[0]).into();
+        assert!(foo.ptr_eq((&program.body[0]).into()));
+        assert!(!foo.ptr_eq((&program.body[1]).into()));
+    }
+}
