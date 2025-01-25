@@ -5,6 +5,9 @@ import {
   PathToNode,
   Identifier,
   topLevelRange,
+  PipeExpression,
+  CallExpression,
+  VariableDeclarator,
 } from './wasm'
 import { ProgramMemory } from 'lang/wasm'
 import {
@@ -794,4 +797,31 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
 `
     expect(recasted).toEqual(expectedCode)
   })
+  //   it('it should fail', () => {
+  //     const openSketch = `startSketchOn('XZ')
+  // |> startProfileAt([0.02, 0.22], %)
+  // |> xLine(0.39, %)
+  // |> line([0.02, -0.17], %)
+  // |> yLine(-0.15, %)
+  // |> line([-0.21, -0.02], %)
+  // |> xLine(-0.15, %)
+  // |> line([-0.02, 0.21], %)
+  // |> line([-0.08, 0.05], %)
+  // |> lineTo([profileStartX(%), profileStartY(%)], %)
+  // `
+  //     const ast = assertParse(openSketch)
+  //     const sketchSnippet = `startProfileAt([0.02, 0.22], %)`
+  //     const sketchRange = topLevelRange(
+  //       openSketch.indexOf(sketchSnippet),
+  //       openSketch.indexOf(sketchSnippet) + sketchSnippet.length
+  //     )
+  //     const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
+  //     sketchPathToNode.splice(0, 1)
+  //     const _node = addCloseToPipe({
+  //       node: ast,
+  //       programMemory: ProgramMemory.empty(),
+  //       pathToNode: sketchPathToNode,
+  //     })
+  //     console.log(_node)
+  //   })
 })
