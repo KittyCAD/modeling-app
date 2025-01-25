@@ -951,7 +951,7 @@ test.describe('Editor tests', () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09], %)  |> tangentialArcTo([24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5)`
+      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArcTo([24.95, -5.38], %)  |> close()extrude001 = extrude(sketch001, length = 5)`
     )
 
     // Now hit undo
