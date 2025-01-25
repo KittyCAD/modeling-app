@@ -791,8 +791,7 @@ test.describe('Editor tests', () => {
 
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
-      // press arrow down twice then enter to accept xLine
-      await page.keyboard.press('ArrowDown')
+      // press arrow down then enter to accept xLine
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Enter')
       // finish line with comment
@@ -865,8 +864,7 @@ test.describe('Editor tests', () => {
 
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
-      // press arrow down twice then tab to accept xLine
-      await page.keyboard.press('ArrowDown')
+      // press arrow down then tab to accept xLine
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Tab')
       // finish line with comment
