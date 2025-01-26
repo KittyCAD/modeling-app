@@ -595,7 +595,7 @@ describe('Testing removeSingleConstraintInfo', () => {
         'objectProperty',
         'angle',
       ],
-      ['line(endAbsolute = [6.14, 3.14 + 0])', 'arrayIndex', 0],
+      ['line(endAbsolute = [6.14 + 0, 3.14 + 0])', 'arrayIndex', 0],
       ['xLineTo(8, %)', '', ''],
       ['yLineTo(5, %)', '', ''],
       ['yLine(3.14, %, $a)', '', ''],

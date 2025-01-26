@@ -334,7 +334,7 @@ test.describe('Testing segment overlays', () => {
         constraintType: 'yAbsolute',
         expectBeforeUnconstrained:
           'line(endAbsolute = [5 + 33, 20 + 11.5 + 0])',
-        expectAfterUnconstrained: 'line(endAbsolute = [5 + 33, 31.5], %)',
+        expectAfterUnconstrained: 'line(endAbsolute = [5 + 33, 31.5])',
         expectFinal: 'line(endAbsolute = [5 + 33, yAbs001])',
         steps: 8,
         ang: ang + 180,

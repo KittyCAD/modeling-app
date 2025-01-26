@@ -170,7 +170,10 @@ export function modifyAstWithEdgeTreatmentAndTag(
 
     let pathToEdgeTreatmentNode: PathToNode
 
-    if (extrudeDeclarator.init.type === 'CallExpression') {
+    if (
+      extrudeDeclarator.init.type === 'CallExpression' ||
+      extrudeDeclarator.init.type === 'CallExpressionKw'
+    ) {
       // 1. case when no edge treatment exists
 
       // modify ast with new edge treatment call by mutating the extrude node
@@ -315,7 +318,12 @@ export function mutateAstWithTagForSketchSegment(
   if (err(segmentNode)) return segmentNode
 
   // Check whether selection is a valid segment
-  if (!(segmentNode.node.callee.name in sketchLineHelperMap)) {
+  if (
+    !(
+      segmentNode.node.callee.name in sketchLineHelperMap ||
+      segmentNode.node.callee.name in sketchLineHelperMapKw
+    )
+  ) {
     return new Error('Selection is not a sketch segment')
   }
 
@@ -338,7 +346,7 @@ export function mutateAstWithTagForSketchSegment(
 export function getEdgeTagCall(
   tag: string,
   artifact: Artifact
-): Node<Identifier | CallExpression> {
+): Node<Identifier | CallExpression | CallExpressionKw> {
   let tagCall: Expr = createIdentifier(tag)
 
   // Modify the tag based on selectionType
@@ -374,6 +382,7 @@ function locateExtrudeDeclarator(
 
   if (
     extrudeInit.type !== 'CallExpression' &&
+    extrudeInit.type !== 'CallExpressionKw' &&
     extrudeInit.type !== 'PipeExpression'
   ) {
     return new Error('Extrude must be a PipeExpression or CallExpression')
@@ -385,7 +394,7 @@ function locateExtrudeDeclarator(
 function getPathToNodeOfEdgeTreatmentLiteral(
   pathToExtrudeNode: PathToNode,
   extrudeDeclarator: VariableDeclarator,
-  tag: Identifier | CallExpression,
+  tag: Identifier | CallExpression | CallExpressionKw,
   parameters: EdgeTreatmentParameters
 ): PathToNode {
   let pathToEdgeTreatmentObj: PathToNode = []
@@ -394,7 +403,7 @@ function getPathToNodeOfEdgeTreatmentLiteral(
   traverse(extrudeDeclarator.init, {
     enter(node, path) {
       if (
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         node.callee.name === parameters.type
       ) {
         inEdgeTreatment = true
@@ -410,7 +419,7 @@ function getPathToNodeOfEdgeTreatmentLiteral(
     },
     leave(node) {
       if (
-        node.type === 'CallExpression' &&
+        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
         node.callee.name === parameters.type
       ) {
         inEdgeTreatment = false
@@ -434,7 +443,7 @@ function getPathToNodeOfEdgeTreatmentLiteral(
 
 function hasTag(
   node: ObjectExpression,
-  tag: Identifier | CallExpression
+  tag: Identifier | CallExpression | CallExpressionKw
 ): boolean {
   return node.properties.some((prop) => {
     if (prop.key.name === 'tags' && prop.value.type === 'ArrayExpression') {
@@ -455,6 +464,25 @@ function hasTag(
             tag.arguments[0].type === 'Identifier' &&
             element.arguments[0].name === tag.arguments[0].name // tag name
         )
+      }
+      if (tag.type === 'CallExpressionKw') {
+        return prop.value.elements.some((element) => {
+          if (element.type !== 'CallExpressionKw') {
+            return false
+          }
+
+          const elementTag = findKwArg(ARG_TAG, element)
+          const tagTag = findKwArg(ARG_TAG, tag)
+
+          return (
+            element.callee.name === tag.callee.name && // edge location
+            elementTag !== undefined &&
+            elementTag.type === 'Identifier' &&
+            tagTag !== undefined &&
+            tagTag.type === 'Identifier' &&
+            elementTag.name === tagTag.name
+          )
+        })
       }
     }
     return false
