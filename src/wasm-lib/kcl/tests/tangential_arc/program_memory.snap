@@ -305,11 +305,6 @@ description: Program memory after executing tangential_arc.kcl
                   "name": "num",
                   "start": 1414,
                   "type": "Identifier"
-                },
-                "type_": {
-                  "Rad": null,
-                  "type": "Primitive",
-                  "type": "Number"
                 }
               }
             ],

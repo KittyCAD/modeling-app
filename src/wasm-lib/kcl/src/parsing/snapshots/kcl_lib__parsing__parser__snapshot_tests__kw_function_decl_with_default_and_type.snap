@@ -47,11 +47,6 @@ expression: actual
                 "start": 7,
                 "type": "Identifier"
               },
-              "type_": {
-                "None": null,
-                "type": "Primitive",
-                "type": "Number"
-              },
               "default_value": {
                 "type": "Literal",
                 "type": "Literal",

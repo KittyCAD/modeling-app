@@ -558,11 +558,6 @@ description: Program memory after executing function_sketch_with_position.kcl
                             "name": "num",
                             "start": 1414,
                             "type": "Identifier"
-                          },
-                          "type_": {
-                            "Rad": null,
-                            "type": "Primitive",
-                            "type": "Number"
                           }
                         }
                       ],
@@ -617,11 +612,6 @@ description: Program memory after executing function_sketch_with_position.kcl
                   "name": "num",
                   "start": 1414,
                   "type": "Identifier"
-                },
-                "type_": {
-                  "Rad": null,
-                  "type": "Primitive",
-                  "type": "Number"
                 }
               }
             ],

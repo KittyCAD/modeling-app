@@ -117,11 +117,6 @@ description: Program memory after executing big_number_angle_to_match_length_y.k
                   "name": "num",
                   "start": 1414,
                   "type": "Identifier"
-                },
-                "type_": {
-                  "Rad": null,
-                  "type": "Primitive",
-                  "type": "Number"
                 }
               }
             ],

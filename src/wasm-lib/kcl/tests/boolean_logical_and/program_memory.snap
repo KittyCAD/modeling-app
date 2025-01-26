@@ -216,11 +216,6 @@ description: Program memory after executing boolean_logical_and.kcl
                   "name": "num",
                   "start": 1414,
                   "type": "Identifier"
-                },
-                "type_": {
-                  "Rad": null,
-                  "type": "Primitive",
-                  "type": "Number"
                 }
               }
             ],

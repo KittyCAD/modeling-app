@@ -117,11 +117,6 @@ description: Program memory after executing linear_pattern3d_a_pattern.kcl
                   "name": "num",
                   "start": 1414,
                   "type": "Identifier"
-                },
-                "type_": {
-                  "Rad": null,
-                  "type": "Primitive",
-                  "type": "Number"
                 }
               }
             ],

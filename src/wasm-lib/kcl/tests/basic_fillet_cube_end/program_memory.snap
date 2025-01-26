@@ -117,11 +117,6 @@ description: Program memory after executing basic_fillet_cube_end.kcl
                   "name": "num",
                   "start": 1414,
                   "type": "Identifier"
-                },
-                "type_": {
-                  "Rad": null,
-                  "type": "Primitive",
-                  "type": "Number"
                 }
               }
             ],

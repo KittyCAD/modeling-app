@@ -117,11 +117,6 @@ description: Program memory after executing import_glob.kcl
                   "name": "num",
                   "start": 1414,
                   "type": "Identifier"
-                },
-                "type_": {
-                  "Rad": null,
-                  "type": "Primitive",
-                  "type": "Number"
                 }
               }
             ],
@@ -289,11 +284,6 @@ description: Program memory after executing import_glob.kcl
                             "name": "num",
                             "start": 1414,
                             "type": "Identifier"
-                          },
-                          "type_": {
-                            "Rad": null,
-                            "type": "Primitive",
-                            "type": "Number"
                           }
                         }
                       ],

@@ -2105,11 +2105,6 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                             "name": "num",
                             "start": 1414,
                             "type": "Identifier"
-                          },
-                          "type_": {
-                            "Rad": null,
-                            "type": "Primitive",
-                            "type": "Number"
                           }
                         }
                       ],
@@ -2608,11 +2603,6 @@ description: Program memory after executing pentagon_fillet_sugar.kcl
                   "name": "num",
                   "start": 1414,
                   "type": "Identifier"
-                },
-                "type_": {
-                  "Rad": null,
-                  "type": "Primitive",
-                  "type": "Number"
                 }
               }
             ],

@@ -2983,8 +2983,7 @@ pub struct Parameter {
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
     /// This is optional if the user defines a type.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(skip)]
+    #[serde(skip)]
     pub type_: Option<FnArgType>,
     /// Is the parameter optional?
     /// If so, what is its default value?

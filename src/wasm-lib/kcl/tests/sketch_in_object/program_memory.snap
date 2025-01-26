@@ -117,11 +117,6 @@ description: Program memory after executing sketch_in_object.kcl
                   "name": "num",
                   "start": 1414,
                   "type": "Identifier"
-                },
-                "type_": {
-                  "Rad": null,
-                  "type": "Primitive",
-                  "type": "Number"
                 }
               }
             ],
@@ -531,11 +526,6 @@ description: Program memory after executing sketch_in_object.kcl
                             "name": "num",
                             "start": 1414,
                             "type": "Identifier"
-                          },
-                          "type_": {
-                            "Rad": null,
-                            "type": "Primitive",
-                            "type": "Number"
                           }
                         }
                       ],
@@ -1000,11 +990,6 @@ description: Program memory after executing sketch_in_object.kcl
                             "name": "num",
                             "start": 1414,
                             "type": "Identifier"
-                          },
-                          "type_": {
-                            "Rad": null,
-                            "type": "Primitive",
-                            "type": "Number"
                           }
                         }
                       ],
@@ -1414,11 +1399,6 @@ description: Program memory after executing sketch_in_object.kcl
                                       "name": "num",
                                       "start": 1414,
                                       "type": "Identifier"
-                                    },
-                                    "type_": {
-                                      "Rad": null,
-                                      "type": "Primitive",
-                                      "type": "Number"
                                     }
                                   }
                                 ],
