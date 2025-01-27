@@ -3,8 +3,9 @@
 use std::path::PathBuf;
 
 use crate::{
+    engine::new_zoo_client,
     errors::ExecErrorWithState,
-    execution::{new_zoo_client, ExecutorContext, ExecutorSettings},
+    execution::{ExecutorContext, ExecutorSettings},
     settings::types::UnitLength,
     ConnectionError, ExecError, ExecState, KclErrorWithOutputs, Program,
 };
