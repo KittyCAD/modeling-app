@@ -1,17 +1,17 @@
 import { useEffect, useState, createContext, ReactNode } from 'react'
-import { useNavigation, useLocation, useNavigate } from 'react-router-dom'
+import { useNavigation, useLocation } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { markOnce } from 'lib/performance'
-import { useAuthState } from 'machines/appMachine'
+import { useAuthNavigation } from 'hooks/useAuthNavigation'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
+  useAuthNavigation()
   const [first, setFirstState] = useState(true)
   const navigation = useNavigation()
-  const navigate = useNavigate()
   const location = useLocation()
-  const authState = useAuthState()
+
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
     // it sends an idle event first.

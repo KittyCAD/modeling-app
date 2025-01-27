@@ -47,7 +47,6 @@ import { RouteProvider } from 'components/RouteProvider'
 import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
 import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
 import { useToken } from 'machines/appMachine'
-import { AuthNavigationHandler } from 'components/AuthNavigationHandler'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -60,23 +59,21 @@ const router = createRouter([
      * inefficient re-renders, use the react profiler to see. */
     element: (
       <OpenInDesktopAppHandler>
-        <AuthNavigationHandler>
-          <RouteProvider>
-            <SettingsAuthProvider>
-              <LspProvider>
-                <ProjectsContextProvider>
-                  <KclContextProvider>
-                    <AppStateProvider>
-                      <MachineManagerProvider>
-                        <Outlet />
-                      </MachineManagerProvider>
-                    </AppStateProvider>
-                  </KclContextProvider>
-                </ProjectsContextProvider>
-              </LspProvider>
-            </SettingsAuthProvider>
-          </RouteProvider>
-        </AuthNavigationHandler>
+        <RouteProvider>
+          <SettingsAuthProvider>
+            <LspProvider>
+              <ProjectsContextProvider>
+                <KclContextProvider>
+                  <AppStateProvider>
+                    <MachineManagerProvider>
+                      <Outlet />
+                    </MachineManagerProvider>
+                  </AppStateProvider>
+                </KclContextProvider>
+              </ProjectsContextProvider>
+            </LspProvider>
+          </SettingsAuthProvider>
+        </RouteProvider>
       </OpenInDesktopAppHandler>
     ),
     errorElement: <ErrorPage />,
