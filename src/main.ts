@@ -32,22 +32,23 @@ let mainWindow: BrowserWindow | null = null
 const args = parseCLIArgs()
 
 // If it's not set, scream.
-const NODE_ENV = process.env.NODE_ENV || 'production'
+const viteEnv = import.meta.env
+const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
 if (!process.env.NODE_ENV)
   console.warn(
-    '*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to production'
+    `*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to vite mode ${viteEnv.MODE}`
   )
-// Default prod values
 
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 
-process.env.VITE_KC_API_WS_MODELING_URL ??=
-  'wss://api.zoo.dev/ws/modeling/commands'
-process.env.VITE_KC_API_BASE_URL ??= 'https://api.zoo.dev'
-process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
-process.env.VITE_KC_SKIP_AUTH ??= 'false'
-process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
+// default vite values based on mode
+process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
+process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
+process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
+process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
+process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
+console.log('process.env post force', process.env)
 
 /// Register our application to handle all "zoo-studio:" protocols.
 if (process.defaultApp) {
