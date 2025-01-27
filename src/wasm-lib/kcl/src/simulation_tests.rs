@@ -206,6 +206,27 @@ mod cube {
         super::execute(TEST_NAME, true).await
     }
 }
+mod cube_with_error {
+    const TEST_NAME: &str = "cube_with_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod artifact_graph_example_code1 {
     const TEST_NAME: &str = "artifact_graph_example_code1";
 
