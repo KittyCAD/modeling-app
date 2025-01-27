@@ -2624,13 +2624,14 @@ impl ExecutorContext {
                 message: format!(
                     "circular import of modules is not allowed: {} -> {}",
                     exec_state
-                        .mod_local
+                        .global
+                        .mod_loader
                         .import_stack
                         .iter()
                         .map(|p| p.as_path().to_string_lossy())
                         .collect::<Vec<_>>()
                         .join(" -> "),
-                    info.path.display()
+                    info.path,
                 ),
                 source_ranges: vec![source_range],
             })),
