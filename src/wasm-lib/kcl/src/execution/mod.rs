@@ -3,6 +3,7 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
+use cache::OldAstState;
 use indexmap::IndexMap;
 use kcmc::{
     each_cmd as mcmd,
@@ -29,6 +30,16 @@ use crate::{
     ExecError, KclErrorWithOutputs,
 };
 
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+pub use cache::bust_cache;
+pub use cad_op::Operation;
+pub use exec_ast::FunctionParam;
+pub use geometry::*;
+pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine, ZOO_COORD_SYSTEM};
+pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
+pub use memory::ProgramMemory;
+pub use state::{ExecState, IdGenerator, MetaSettings};
+
 pub(crate) mod annotations;
 mod artifact;
 pub(crate) mod cache;
@@ -39,15 +50,6 @@ mod import;
 pub(crate) mod kcl_value;
 mod memory;
 mod state;
-
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
-pub use cad_op::Operation;
-pub use exec_ast::FunctionParam;
-pub use geometry::*;
-pub(crate) use import::{import_foreign, ZOO_COORD_SYSTEM};
-pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
-pub use memory::ProgramMemory;
-pub use state::{ExecState, IdGenerator, MetaSettings};
 
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -506,32 +508,133 @@ impl ExecutorContext {
     ) -> Result<(), KclError> {
         self.engine
             .clear_scene(&mut exec_state.global.id_generator, source_range)
-            .await?;
+            .await
+    }
 
-        // We do not create the planes here as the post hook in wasm will do that
-        // AND if we aren't in wasm it doesn't really matter.
-        Ok(())
+    pub async fn run_mock(
+        &self,
+        program: crate::Program,
+        program_memory_override: Option<ProgramMemory>,
+    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        assert!(self.is_mock());
+
+        let mut exec_state = ExecState::new(&self.settings);
+        if let Some(program_memory_override) = program_memory_override {
+            exec_state.mod_local.memory = program_memory_override;
+        }
+
+        self.inner_run(&program.ast, &mut exec_state).await?;
+        Ok(exec_state.to_wasm_outcome())
+    }
+
+    pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        assert!(!self.is_mock());
+
+        let (program, mut exec_state) = if let Some(OldAstState {
+            ast: old_ast,
+            exec_state: old_state,
+            settings: old_settings,
+        }) = cache::read_old_ast_memory().await
+        {
+            let old = CacheInformation {
+                ast: &old_ast,
+                settings: &old_settings,
+            };
+            let new = CacheInformation {
+                ast: &program.ast,
+                settings: &self.settings,
+            };
+
+            // Get the program that actually changed from the old and new information.
+            let (clear_scene, program) = match cache::get_changed_program(old, new).await {
+                CacheResult::ReExecute {
+                    clear_scene,
+                    reapply_settings,
+                    program: changed_program,
+                } => {
+                    if reapply_settings
+                        && self
+                            .engine
+                            .reapply_settings(&self.settings, Default::default())
+                            .await
+                            .is_err()
+                    {
+                        (true, program.ast)
+                    } else {
+                        (clear_scene, changed_program)
+                    }
+                }
+                CacheResult::NoAction(true) => {
+                    if self
+                        .engine
+                        .reapply_settings(&self.settings, Default::default())
+                        .await
+                        .is_ok()
+                    {
+                        return Ok(old_state.to_wasm_outcome());
+                    }
+                    (true, program.ast)
+                }
+                CacheResult::NoAction(false) => return Ok(old_state.to_wasm_outcome()),
+            };
+
+            let exec_state = if clear_scene {
+                // Pop the execution state, since we are starting fresh.
+                let mut exec_state = old_state;
+                exec_state.reset(&self.settings);
+
+                // We don't do this in mock mode since there is no engine connection
+                // anyways and from the TS side we override memory and don't want to clear it.
+                self.send_clear_scene(&mut exec_state, Default::default())
+                    .await
+                    .map_err(KclErrorWithOutputs::no_outputs)?;
+
+                exec_state
+            } else {
+                old_state
+            };
+
+            (program, exec_state)
+        } else {
+            let mut exec_state = ExecState::new(&self.settings);
+            self.send_clear_scene(&mut exec_state, Default::default())
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
+            (program.ast, exec_state)
+        };
+
+        let result = self.inner_run(&program, &mut exec_state).await;
+
+        if result.is_err() {
+            cache::bust_cache().await;
+        }
+
+        // Throw the error.
+        result?;
+
+        // Save this as the last successful execution to the cache.
+        cache::write_old_ast_memory(OldAstState {
+            ast: program,
+            exec_state: exec_state.clone(),
+            settings: self.settings.clone(),
+        })
+        .await;
+
+        Ok(exec_state.to_wasm_outcome())
     }
 
     /// Perform the execution of a program.
     ///
     /// You can optionally pass in some initialization memory for partial
     /// execution.
-    pub async fn run(&self, cache_info: CacheInformation, exec_state: &mut ExecState) -> Result<(), KclError> {
-        self.inner_run(cache_info, exec_state).await?;
-        Ok(())
-    }
-
-    // TODO program.clone().into()
-    /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(
+    pub async fn run(
         &self,
-        cache_info: CacheInformation,
+        program: &crate::Program,
         exec_state: &mut ExecState,
-    ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.inner_run(cache_info, exec_state).await?;
-
-        self.prepare_snapshot().await
+    ) -> Result<Option<ModelingSessionData>, KclError> {
+        self.run_with_ui_outputs(program, exec_state)
+            .await
+            .map_err(|e| e.into())
     }
 
     /// Perform the execution of a program.
@@ -543,62 +646,23 @@ impl ExecutorContext {
     /// artifact graph.
     pub async fn run_with_ui_outputs(
         &self,
-        cache_info: CacheInformation,
+        program: &crate::Program,
         exec_state: &mut ExecState,
-    ) -> Result<(), KclErrorWithOutputs> {
-        self.inner_run(cache_info, exec_state).await?;
-        Ok(())
-    }
-
-    /// Perform the execution of a program.  Additionally return engine session
-    /// data.
-    pub async fn run_with_session_data(
-        &self,
-        cache_info: CacheInformation,
-        exec_state: &mut ExecState,
-    ) -> Result<Option<ModelingSessionData>, KclError> {
-        self.inner_run(cache_info, exec_state).await.map_err(|e| e.into())
+    ) -> Result<Option<ModelingSessionData>, KclErrorWithOutputs> {
+        self.send_clear_scene(exec_state, Default::default())
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        self.inner_run(&program.ast, exec_state).await
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
     /// output everything.
-    ///
-    /// You can optionally pass in some initialization memory for partial
-    /// execution.
     async fn inner_run(
         &self,
-        cache_info: CacheInformation,
+        program: &Node<Program>,
         exec_state: &mut ExecState,
     ) -> Result<Option<ModelingSessionData>, KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
-
-        // Get the program that actually changed from the old and new information.
-        let (clear_scene, program) = match cache::get_changed_program(cache_info.clone(), &self.settings).await {
-            CacheResult::ReExecute { clear_scene, program } => (clear_scene, program),
-            CacheResult::ReapplySettings => {
-                if self
-                    .engine
-                    .reapply_settings(&self.settings, Default::default())
-                    .await
-                    .is_ok()
-                {
-                    return Ok(None);
-                }
-                (true, cache_info.new_ast)
-            }
-            CacheResult::NoAction => return Ok(None),
-        };
-
-        if clear_scene && !self.is_mock() {
-            // Pop the execution state, since we are starting fresh.
-            exec_state.reset(&self.settings);
-
-            // We don't do this in mock mode since there is no engine connection
-            // anyways and from the TS side we override memory and don't want to clear it.
-            self.send_clear_scene(exec_state, Default::default())
-                .await
-                .map_err(KclErrorWithOutputs::no_outputs)?;
-        }
 
         // Re-apply the settings, in case the cache was busted.
         self.engine
@@ -606,7 +670,7 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.execute_and_build_graph(&program, exec_state).await.map_err(|e| {
+        self.execute_and_build_graph(program, exec_state).await.map_err(|e| {
             KclErrorWithOutputs::new(
                 e,
                 exec_state.mod_local.operations.clone(),
@@ -662,7 +726,7 @@ impl ExecutorContext {
     }
 
     /// Get a snapshot of the current scene.
-    async fn prepare_snapshot(&self) -> std::result::Result<TakeSnapshot, ExecError> {
+    pub async fn prepare_snapshot(&self) -> std::result::Result<TakeSnapshot, ExecError> {
         // Zoom to fit.
         self.engine
             .send_modeling_cmd(
@@ -718,7 +782,7 @@ async fn parse_execute(code: &str) -> Result<(crate::Program, ExecutorContext, E
         context_type: ContextType::Mock,
     };
     let mut exec_state = ExecState::new(&ctx.settings);
-    ctx.run(program.clone().into(), &mut exec_state).await?;
+    ctx.run(&program, &mut exec_state).await?;
 
     Ok((program, ctx, exec_state))
 }
@@ -1537,16 +1601,17 @@ let w = f() + f()
             .await
             .unwrap();
         let old_program = crate::Program::parse_no_errs(code).unwrap();
+
         // Execute the program.
-        let mut exec_state = ExecState::new(&ctx.settings);
-        let cache_info = crate::CacheInformation {
-            old: None,
-            new_ast: old_program.ast.clone(),
-        };
-        ctx.run(cache_info, &mut exec_state).await.unwrap();
+        ctx.run_with_caching(old_program).await.unwrap();
 
         // Get the id_generator from the first execution.
-        let id_generator = exec_state.global.id_generator.clone();
+        let id_generator = cache::read_old_ast_memory()
+            .await
+            .unwrap()
+            .exec_state
+            .global
+            .id_generator;
 
         let code = r#"sketch001 = startSketchOn('XZ')
 |> startProfileAt([62.74, 206.13], %)
@@ -1564,17 +1629,16 @@ let w = f() + f()
 
         // Execute a slightly different program again.
         let program = crate::Program::parse_no_errs(code).unwrap();
-        let cache_info = crate::CacheInformation {
-            old: Some(crate::OldAstState {
-                ast: old_program.ast.clone(),
-                exec_state: exec_state.clone(),
-                settings: ctx.settings.clone(),
-            }),
-            new_ast: program.ast.clone(),
-        };
         // Execute the program.
-        ctx.run(cache_info, &mut exec_state).await.unwrap();
+        ctx.run_with_caching(program).await.unwrap();
 
-        assert_eq!(id_generator, exec_state.global.id_generator);
+        let new_id_generator = cache::read_old_ast_memory()
+            .await
+            .unwrap()
+            .exec_state
+            .global
+            .id_generator;
+
+        assert_eq!(id_generator, new_id_generator);
     }
 }
