@@ -413,14 +413,7 @@ export class KclManager {
 
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(
-    ast: Program = this._ast,
-    {
-      updates,
-    }: {
-      updates: 'none' | 'artifactRanges'
-    } = { updates: 'none' }
-  ) {
+  async executeAstMock(ast: Program = this._ast) {
     await this.ensureWasmInit()
 
     const newCode = recast(ast)
@@ -450,34 +443,6 @@ export class KclManager {
       this.lastSuccessfulProgramMemory = execState.memory
       this.lastSuccessfulOperations = execState.operations
     }
-    if (updates !== 'artifactRanges') return
-
-    // TODO the below seems like a work around, I wish there's a comment explaining exactly what
-    // problem this solves, but either way we should strive to remove it.
-    Array.from(this.engineCommandManager.artifactGraph).forEach(
-      ([commandId, artifact]) => {
-        if (!('codeRef' in artifact && artifact.codeRef)) return
-        const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
-          this.ast,
-          artifact.codeRef.pathToNode,
-          ['CallExpression', 'CallExpressionKw']
-        )
-        if (err(_node1)) return
-        const { node } = _node1
-        if (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw')
-          return
-        const [oldStart, oldEnd] = artifact.codeRef.range
-        if (oldStart === 0 && oldEnd === 0) return
-        if (oldStart === node.start && oldEnd === node.end) return
-        this.engineCommandManager.artifactGraph.set(commandId, {
-          ...artifact,
-          codeRef: {
-            ...artifact.codeRef,
-            range: topLevelRange(node.start, node.end),
-          },
-        })
-      }
-    )
   }
   cancelAllExecutions() {
     this._cancelTokens.forEach((_, key) => {
