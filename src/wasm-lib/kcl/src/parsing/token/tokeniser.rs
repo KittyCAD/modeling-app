@@ -361,7 +361,7 @@ fn keyword_type_or_word(i: &mut Input<'_>) -> PResult<Token> {
 
 #[cfg(test)]
 mod tests {
-    use winnow::Located;
+    use winnow::LocatingSlice;
 
     use super::*;
     use crate::parsing::token::TokenSlice;
@@ -373,7 +373,7 @@ mod tests {
     {
         let state = State::new(ModuleId::default());
         let mut input = Input {
-            input: Located::new(s),
+            input: LocatingSlice::new(s),
             state,
         };
         assert!(p.parse_next(&mut input).is_err(), "parsed {s} but should have failed");
@@ -388,7 +388,7 @@ mod tests {
     {
         let state = State::new(ModuleId::default());
         let mut input = Input {
-            input: Located::new(s),
+            input: LocatingSlice::new(s),
             state,
         };
         let res = p.parse_next(&mut input);
@@ -422,7 +422,7 @@ mod tests {
 
         let module_id = ModuleId::from_usize(1);
         let input = Input {
-            input: Located::new("0.0000000000"),
+            input: LocatingSlice::new("0.0000000000"),
             state: State::new(module_id),
         };
 

@@ -22,12 +22,11 @@ use crate::{
         cache::{CacheInformation, CacheResult},
     },
     fs::FileManager,
-    parsing::ast::types::{Expr, FunctionExpression, Node, NodeRef, Program as AstProgram},
+    parsing::ast::types::{Expr, FunctionExpression, Node, NodeRef, Program},
     settings::types::UnitLength,
     source_range::{ModuleId, SourceRange},
     std::{args::Arg, StdLib},
-    walk::Node as WalkNode,
-    ExecError, KclErrorWithOutputs, Program,
+    ExecError, KclErrorWithOutputs,
 };
 
 pub(crate) mod annotations;
@@ -45,7 +44,7 @@ pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 pub use cad_op::Operation;
 pub use exec_ast::FunctionParam;
 pub use geometry::*;
-pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine, ZOO_COORD_SYSTEM};
+pub(crate) use import::{import_foreign, ZOO_COORD_SYSTEM};
 pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 pub use memory::ProgramMemory;
 pub use state::{ExecState, IdGenerator, MetaSettings};
@@ -177,7 +176,7 @@ pub struct ModuleInfo {
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
 pub enum ModuleRepr {
     Root,
-    Kcl(Node<AstProgram>),
+    Kcl(Node<Program>),
     Foreign(import::PreImportedGeometry),
 }
 
@@ -378,19 +377,6 @@ impl ExecutorContext {
         })
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
-    pub async fn new_mock() -> Self {
-        ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
-            )),
-            fs: Arc::new(FileManager::new()),
-            stdlib: Arc::new(StdLib::new()),
-            settings: Default::default(),
-            context_type: ContextType::Mock,
-        }
-    }
-
     #[cfg(target_arch = "wasm32")]
     pub async fn new(
         engine_manager: crate::engine::conn_wasm::EngineCommandManager,
@@ -408,6 +394,19 @@ impl ExecutorContext {
             settings,
             context_type: ContextType::Live,
         })
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub async fn new_mock() -> Self {
+        ExecutorContext {
+            engine: Arc::new(Box::new(
+                crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
+            )),
+            fs: Arc::new(FileManager::new()),
+            stdlib: Arc::new(StdLib::new()),
+            settings: Default::default(),
+            context_type: ContextType::Mock,
+        }
     }
 
     #[cfg(target_arch = "wasm32")]
@@ -476,10 +475,6 @@ impl ExecutorContext {
         Ok(ctx)
     }
 
-    pub fn is_mock(&self) -> bool {
-        self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
-    }
-
     /// For executing unit tests.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_for_unit_test(units: UnitLength, engine_addr: Option<String>) -> Result<Self> {
@@ -500,7 +495,11 @@ impl ExecutorContext {
         Ok(ctx)
     }
 
-    pub async fn reset_scene(
+    pub fn is_mock(&self) -> bool {
+        self.context_type == ContextType::Mock || self.context_type == ContextType::MockCustomForwarded
+    }
+
+    pub async fn send_clear_scene(
         &self,
         exec_state: &mut ExecState,
         source_range: crate::execution::SourceRange,
@@ -514,157 +513,25 @@ impl ExecutorContext {
         Ok(())
     }
 
-    /// Given an old ast, old program memory and new ast, find the parts of the code that need to be
-    /// re-executed.
-    /// This function should never error, because in the case of any internal error, we should just pop
-    /// the cache.
-    ///
-    /// Returns `None` when there are no changes to the program, i.e. it is
-    /// fully cached.
-    pub async fn get_changed_program(&self, info: CacheInformation) -> Option<CacheResult> {
-        let Some(old) = info.old else {
-            // We have no old info, we need to re-execute the whole thing.
-            return Some(CacheResult {
-                clear_scene: true,
-                program: info.new_ast,
-            });
-        };
-
-        // If the settings are different we might need to bust the cache.
-        // We specifically do this before checking if they are the exact same.
-        if old.settings != self.settings {
-            // If the units are different we need to re-execute the whole thing.
-            if old.settings.units != self.settings.units {
-                return Some(CacheResult {
-                    clear_scene: true,
-                    program: info.new_ast,
-                });
-            }
-
-            // If anything else is different we do not need to re-execute, but rather just
-            // run the settings again.
-
-            if self
-                .engine
-                .reapply_settings(&self.settings, Default::default())
-                .await
-                .is_err()
-            {
-                // Bust the cache, we errored.
-                return Some(CacheResult {
-                    clear_scene: true,
-                    program: info.new_ast,
-                });
-            }
-        }
-
-        // If the ASTs are the EXACT same we return None.
-        // We don't even need to waste time computing the digests.
-        if old.ast == info.new_ast {
-            return None;
-        }
-
-        let mut old_ast = old.ast;
-        let mut new_ast = info.new_ast;
-
-        // The digests should already be computed, but just in case we don't
-        // want to compare against none.
-        old_ast.compute_digest();
-        new_ast.compute_digest();
-
-        // Check if the digest is the same.
-        if old_ast.digest == new_ast.digest {
-            return None;
-        }
-
-        // Check if the changes were only to Non-code areas, like comments or whitespace.
-        Some(Self::generate_changed_program(old_ast, new_ast))
-    }
-
-    /// Force-generate a new CacheResult, even if one shouldn't be made. The
-    /// way in which this gets invoked should always be through
-    /// [Self::get_changed_program]. This is purely to contain the logic on
-    /// how we construct a new [CacheResult].
-    fn generate_changed_program(old_ast: Node<AstProgram>, new_ast: Node<AstProgram>) -> CacheResult {
-        let mut generated_program = new_ast.clone();
-        generated_program.body = vec![];
-
-        if !old_ast.body.iter().zip(new_ast.body.iter()).all(|(old, new)| {
-            let old_node: WalkNode = old.into();
-            let new_node: WalkNode = new.into();
-            old_node.digest() == new_node.digest()
-        }) {
-            // If any of the nodes are different in the stretch of body that
-            // overlaps, we have to bust cache and rebuild the scene. This
-            // means a single insertion or deletion will result in a cache
-            // bust.
-
-            return CacheResult {
-                clear_scene: true,
-                program: new_ast,
-            };
-        }
-
-        // otherwise the overlapping section of the ast bodies matches.
-        // Let's see what the rest of the slice looks like.
-
-        match new_ast.body.len().cmp(&old_ast.body.len()) {
-            std::cmp::Ordering::Less => {
-                // the new AST is shorter than the old AST -- statements
-                // were removed from the "current" code in the "new" code.
-                //
-                // Statements up until now match which means this is a
-                // "pure delete" of the remaining slice, when we get to
-                // supporting that.
-
-                // Cache bust time.
-                CacheResult {
-                    clear_scene: true,
-                    program: new_ast,
-                }
-            }
-            std::cmp::Ordering::Greater => {
-                // the new AST is longer than the old AST, which means
-                // statements were added to the new code we haven't previously
-                // seen.
-                //
-                // Statements up until now are the same, which means this
-                // is a "pure addition" of the remaining slice.
-
-                generated_program
-                    .body
-                    .extend_from_slice(&new_ast.body[old_ast.body.len()..]);
-
-                CacheResult {
-                    clear_scene: false,
-                    program: generated_program,
-                }
-            }
-            std::cmp::Ordering::Equal => {
-                // currently unreachable, but let's pretend like the code
-                // above can do something meaningful here for when we get
-                // to diffing and yanking chunks of the program apart.
-
-                // We don't actually want to do anything here; so we're going
-                // to not clear and do nothing. Is this wrong? I don't think
-                // so but i think many things. This def needs to change
-                // when the code above changes.
-
-                CacheResult {
-                    clear_scene: false,
-                    program: generated_program,
-                }
-            }
-        }
-    }
-
     /// Perform the execution of a program.
     ///
     /// You can optionally pass in some initialization memory for partial
     /// execution.
     pub async fn run(&self, cache_info: CacheInformation, exec_state: &mut ExecState) -> Result<(), KclError> {
-        self.run_with_session_data(cache_info, exec_state).await?;
+        self.inner_run(cache_info, exec_state).await?;
         Ok(())
+    }
+
+    // TODO program.clone().into()
+    /// Execute the program, then get a PNG screenshot.
+    pub async fn execute_and_prepare_snapshot(
+        &self,
+        cache_info: CacheInformation,
+        exec_state: &mut ExecState,
+    ) -> std::result::Result<TakeSnapshot, ExecError> {
+        self.inner_run(cache_info, exec_state).await?;
+
+        self.prepare_snapshot().await
     }
 
     /// Perform the execution of a program.
@@ -706,20 +573,29 @@ impl ExecutorContext {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
         // Get the program that actually changed from the old and new information.
-        let cache_result = self.get_changed_program(cache_info.clone()).await;
-
-        // Check if we don't need to re-execute.
-        let Some(cache_result) = cache_result else {
-            return Ok(None);
+        let (clear_scene, program) = match cache::get_changed_program(cache_info.clone(), &self.settings).await {
+            CacheResult::ReExecute { clear_scene, program } => (clear_scene, program),
+            CacheResult::ReapplySettings => {
+                if self
+                    .engine
+                    .reapply_settings(&self.settings, Default::default())
+                    .await
+                    .is_ok()
+                {
+                    return Ok(None);
+                }
+                (true, cache_info.new_ast)
+            }
+            CacheResult::NoAction => return Ok(None),
         };
 
-        if cache_result.clear_scene && !self.is_mock() {
+        if clear_scene && !self.is_mock() {
             // Pop the execution state, since we are starting fresh.
             exec_state.reset(&self.settings);
 
             // We don't do this in mock mode since there is no engine connection
             // anyways and from the TS side we override memory and don't want to clear it.
-            self.reset_scene(exec_state, Default::default())
+            self.send_clear_scene(exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
         }
@@ -730,16 +606,14 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        self.execute_and_build_graph(&cache_result.program, exec_state)
-            .await
-            .map_err(|e| {
-                KclErrorWithOutputs::new(
-                    e,
-                    exec_state.mod_local.operations.clone(),
-                    exec_state.global.artifact_commands.clone(),
-                    exec_state.global.artifact_graph.clone(),
-                )
-            })?;
+        self.execute_and_build_graph(&program, exec_state).await.map_err(|e| {
+            KclErrorWithOutputs::new(
+                e,
+                exec_state.mod_local.operations.clone(),
+                exec_state.global.artifact_commands.clone(),
+                exec_state.global.artifact_graph.clone(),
+            )
+        })?;
 
         let session_data = self.engine.get_session_data();
         Ok(session_data)
@@ -783,12 +657,12 @@ impl ExecutorContext {
     }
 
     /// Update the units for the executor.
-    pub fn update_units(&mut self, units: UnitLength) {
+    pub(crate) fn update_units(&mut self, units: UnitLength) {
         self.settings.units = units;
     }
 
     /// Get a snapshot of the current scene.
-    pub async fn prepare_snapshot(&self) -> std::result::Result<TakeSnapshot, ExecError> {
+    async fn prepare_snapshot(&self) -> std::result::Result<TakeSnapshot, ExecError> {
         // Zoom to fit.
         self.engine
             .send_modeling_cmd(
@@ -827,49 +701,34 @@ impl ExecutorContext {
         Ok(contents)
     }
 
-    /// Execute the program, then get a PNG screenshot.
-    pub async fn execute_and_prepare_snapshot(
-        &self,
-        program: &Program,
-        exec_state: &mut ExecState,
-    ) -> std::result::Result<TakeSnapshot, ExecError> {
-        self.run_with_ui_outputs(program.clone().into(), exec_state).await?;
-
-        self.prepare_snapshot().await
-    }
-
     pub async fn close(&self) {
         self.engine.close().await;
     }
 }
 
 #[cfg(test)]
-mod tests {
-    use std::sync::Arc;
+async fn parse_execute(code: &str) -> Result<(crate::Program, ExecutorContext, ExecState)> {
+    let program = crate::Program::parse_no_errs(code)?;
 
+    let ctx = ExecutorContext {
+        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
+        fs: Arc::new(crate::fs::FileManager::new()),
+        stdlib: Arc::new(crate::std::StdLib::new()),
+        settings: Default::default(),
+        context_type: ContextType::Mock,
+    };
+    let mut exec_state = ExecState::new(&ctx.settings);
+    ctx.run(program.clone().into(), &mut exec_state).await?;
+
+    Ok((program, ctx, exec_state))
+}
+
+#[cfg(test)]
+mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        parsing::ast::types::{DefaultParamVal, Identifier, Node, Parameter},
-        OldAstState,
-    };
-
-    async fn parse_execute(code: &str) -> Result<(Program, ExecutorContext, ExecState)> {
-        let program = Program::parse_no_errs(code)?;
-
-        let ctx = ExecutorContext {
-            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().await?)),
-            fs: Arc::new(crate::fs::FileManager::new()),
-            stdlib: Arc::new(crate::std::StdLib::new()),
-            settings: Default::default(),
-            context_type: ContextType::Mock,
-        };
-        let mut exec_state = ExecState::new(&ctx.settings);
-        ctx.run(program.clone().into(), &mut exec_state).await?;
-
-        Ok((program, ctx, exec_state))
-    }
+    use crate::errors::KclErrorDetails;
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
@@ -1650,442 +1509,12 @@ let w = f() + f()
     }
 
     #[test]
-    fn test_assign_args_to_params() {
-        // Set up a little framework for this test.
-        fn mem(number: usize) -> KclValue {
-            KclValue::Int {
-                value: number as i64,
-                meta: Default::default(),
-            }
-        }
-        fn ident(s: &'static str) -> Node<Identifier> {
-            Node::no_src(Identifier {
-                name: s.to_owned(),
-                digest: None,
-            })
-        }
-        fn opt_param(s: &'static str) -> Parameter {
-            Parameter {
-                identifier: ident(s),
-                type_: None,
-                default_value: Some(DefaultParamVal::none()),
-                labeled: true,
-                digest: None,
-            }
-        }
-        fn req_param(s: &'static str) -> Parameter {
-            Parameter {
-                identifier: ident(s),
-                type_: None,
-                default_value: None,
-                labeled: true,
-                digest: None,
-            }
-        }
-        fn additional_program_memory(items: &[(String, KclValue)]) -> ProgramMemory {
-            let mut program_memory = ProgramMemory::new();
-            for (name, item) in items {
-                program_memory
-                    .add(name.as_str(), item.clone(), SourceRange::default())
-                    .unwrap();
-            }
-            program_memory
-        }
-        // Declare the test cases.
-        for (test_name, params, args, expected) in [
-            ("empty", Vec::new(), Vec::new(), Ok(ProgramMemory::new())),
-            (
-                "all params required, and all given, should be OK",
-                vec![req_param("x")],
-                vec![mem(1)],
-                Ok(additional_program_memory(&[("x".to_owned(), mem(1))])),
-            ),
-            (
-                "all params required, none given, should error",
-                vec![req_param("x")],
-                vec![],
-                Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange::default()],
-                    message: "Expected 1 arguments, got 0".to_owned(),
-                })),
-            ),
-            (
-                "all params optional, none given, should be OK",
-                vec![opt_param("x")],
-                vec![],
-                Ok(additional_program_memory(&[("x".to_owned(), KclValue::none())])),
-            ),
-            (
-                "mixed params, too few given",
-                vec![req_param("x"), opt_param("y")],
-                vec![],
-                Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange::default()],
-                    message: "Expected 1-2 arguments, got 0".to_owned(),
-                })),
-            ),
-            (
-                "mixed params, minimum given, should be OK",
-                vec![req_param("x"), opt_param("y")],
-                vec![mem(1)],
-                Ok(additional_program_memory(&[
-                    ("x".to_owned(), mem(1)),
-                    ("y".to_owned(), KclValue::none()),
-                ])),
-            ),
-            (
-                "mixed params, maximum given, should be OK",
-                vec![req_param("x"), opt_param("y")],
-                vec![mem(1), mem(2)],
-                Ok(additional_program_memory(&[
-                    ("x".to_owned(), mem(1)),
-                    ("y".to_owned(), mem(2)),
-                ])),
-            ),
-            (
-                "mixed params, too many given",
-                vec![req_param("x"), opt_param("y")],
-                vec![mem(1), mem(2), mem(3)],
-                Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange::default()],
-                    message: "Expected 1-2 arguments, got 3".to_owned(),
-                })),
-            ),
-        ] {
-            // Run each test.
-            let func_expr = &Node::no_src(FunctionExpression {
-                params,
-                body: Node {
-                    inner: crate::parsing::ast::types::Program {
-                        body: Vec::new(),
-                        non_code_meta: Default::default(),
-                        shebang: None,
-                        digest: None,
-                    },
-                    start: 0,
-                    end: 0,
-                    module_id: ModuleId::default(),
-                },
-                return_type: None,
-                digest: None,
-            });
-            let args = args.into_iter().map(Arg::synthetic).collect();
-            let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
-            assert_eq!(
-                actual, expected,
-                "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
-            );
-        }
-    }
-
-    #[test]
     fn test_serialize_memory_item() {
         let mem = KclValue::Solids {
             value: Default::default(),
         };
         let json = serde_json::to_string(&mem).unwrap();
         assert_eq!(json, r#"{"type":"Solids","value":[]}"#);
-    }
-
-    // Easy case where we have no old ast and memory.
-    // We need to re-execute everything.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_no_old_information() {
-        let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-        let (program, ctx, _) = parse_execute(new).await.unwrap();
-
-        let result = ctx
-            .get_changed_program(CacheInformation {
-                old: None,
-                new_ast: program.ast.clone(),
-            })
-            .await;
-
-        assert!(result.is_some());
-
-        let result = result.unwrap();
-
-        assert_eq!(result.program, program.ast);
-        assert!(result.clear_scene);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code() {
-        let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-
-        let (program, ctx, exec_state) = parse_execute(new).await.unwrap();
-
-        let result = ctx
-            .get_changed_program(CacheInformation {
-                old: Some(OldAstState {
-                    ast: program.ast.clone(),
-                    exec_state,
-                    settings: Default::default(),
-                }),
-                new_ast: program.ast.clone(),
-            })
-            .await;
-
-        assert_eq!(result, None);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_changed_whitespace() {
-        let old = r#" // Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
-
-        let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-
-        let (program_old, ctx, exec_state) = parse_execute(old).await.unwrap();
-
-        let program_new = crate::Program::parse_no_errs(new).unwrap();
-
-        let result = ctx
-            .get_changed_program(CacheInformation {
-                old: Some(OldAstState {
-                    ast: program_old.ast.clone(),
-                    exec_state,
-                    settings: Default::default(),
-                }),
-                new_ast: program_new.ast.clone(),
-            })
-            .await;
-
-        assert_eq!(result, None);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_changed_code_comment_start_of_program() {
-        let old = r#" // Removed the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
-
-        let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-
-        let (program, ctx, exec_state) = parse_execute(old).await.unwrap();
-
-        let program_new = crate::Program::parse_no_errs(new).unwrap();
-
-        let result = ctx
-            .get_changed_program(CacheInformation {
-                old: Some(OldAstState {
-                    ast: program.ast.clone(),
-                    exec_state,
-                    settings: Default::default(),
-                }),
-                new_ast: program_new.ast.clone(),
-            })
-            .await;
-
-        assert_eq!(result, None);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_changed_code_comments() {
-        let old = r#" // Removed the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0]) // my thing
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch) "#;
-
-        let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-
-        let (program, ctx, exec_state) = parse_execute(old).await.unwrap();
-
-        let program_new = crate::Program::parse_no_errs(new).unwrap();
-
-        let result = ctx
-            .get_changed_program(CacheInformation {
-                old: Some(OldAstState {
-                    ast: program.ast.clone(),
-                    exec_state,
-                    settings: Default::default(),
-                }),
-                new_ast: program_new.ast.clone(),
-            })
-            .await;
-
-        assert!(result.is_none());
-    }
-
-    // Changing the units with the exact same file should bust the cache.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_but_different_units() {
-        let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-
-        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
-
-        // Change the settings to cm.
-        ctx.settings.units = crate::UnitLength::Cm;
-
-        let result = ctx
-            .get_changed_program(CacheInformation {
-                old: Some(OldAstState {
-                    ast: program.ast.clone(),
-                    exec_state,
-                    settings: Default::default(),
-                }),
-                new_ast: program.ast.clone(),
-            })
-            .await;
-
-        assert!(result.is_some());
-
-        let result = result.unwrap();
-
-        assert_eq!(result.program, program.ast);
-        assert!(result.clear_scene);
-    }
-
-    // Changing the grid settings with the exact same file should NOT bust the cache.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_but_different_grid_setting() {
-        let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-
-        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
-
-        // Change the settings.
-        ctx.settings.show_grid = !ctx.settings.show_grid;
-
-        let result = ctx
-            .get_changed_program(CacheInformation {
-                old: Some(OldAstState {
-                    ast: program.ast.clone(),
-                    exec_state,
-                    settings: Default::default(),
-                }),
-                new_ast: program.ast.clone(),
-            })
-            .await;
-
-        assert_eq!(result, None);
-    }
-
-    // Changing the edge visibility settings with the exact same file should NOT bust the cache.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
-        let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
-
-        let (program, mut ctx, exec_state) = parse_execute(new).await.unwrap();
-
-        // Change the settings.
-        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
-
-        let result = ctx
-            .get_changed_program(CacheInformation {
-                old: Some(OldAstState {
-                    ast: program.ast.clone(),
-                    exec_state,
-                    settings: Default::default(),
-                }),
-                new_ast: program.ast.clone(),
-            })
-            .await;
-
-        assert_eq!(result, None);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2134,7 +1563,7 @@ shell({ faces = ['end'], thickness = 0.25 }, firstSketch)"#;
 "#;
 
         // Execute a slightly different program again.
-        let program: Program = crate::Program::parse_no_errs(code).unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
         let cache_info = crate::CacheInformation {
             old: Some(crate::OldAstState {
                 ast: old_program.ast.clone(),

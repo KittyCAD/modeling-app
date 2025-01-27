@@ -68,7 +68,7 @@ async fn do_execute_and_snapshot(
 ) -> Result<(ExecState, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = ExecState::new(&ctx.settings);
     let snapshot_png_bytes = ctx
-        .execute_and_prepare_snapshot(&program, &mut exec_state)
+        .execute_and_prepare_snapshot(program.into(), &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?
         .contents
