@@ -7,7 +7,7 @@ use winnow::{
     prelude::*,
     stream::{Location, Stream},
     token::{any, none_of, one_of, take_till, take_until},
-    Located, Stateful,
+    LocatingSlice, Stateful,
 };
 
 use super::TokenStream;
@@ -65,13 +65,13 @@ lazy_static! {
 pub(super) fn lex(i: &str, module_id: ModuleId) -> Result<TokenStream, ParseError<Input<'_>, ContextError>> {
     let state = State::new(module_id);
     let input = Input {
-        input: Located::new(i),
+        input: LocatingSlice::new(i),
         state,
     };
     Ok(TokenStream::new(repeat(0.., token).parse(input)?))
 }
 
-pub(super) type Input<'a> = Stateful<Located<&'a str>, State>;
+pub(super) type Input<'a> = Stateful<LocatingSlice<&'a str>, State>;
 
 #[derive(Debug, Clone)]
 pub(super) struct State {
