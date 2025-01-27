@@ -28,15 +28,17 @@ async fn cache_test(
         // set the new settings.
         ctx.settings = variation.settings.clone();
 
-        ctx.run(
-            kcl_lib::CacheInformation {
-                old: old_ast_state,
-                new_ast: program.ast.clone(),
-            },
-            &mut exec_state,
-        )
-        .await?;
-        let snapshot_png_bytes = ctx.prepare_snapshot().await?.contents.0;
+        let snapshot_png_bytes = ctx
+            .execute_and_prepare_snapshot(
+                kcl_lib::CacheInformation {
+                    old: old_ast_state,
+                    new_ast: program.ast.clone(),
+                },
+                &mut exec_state,
+            )
+            .await?
+            .contents
+            .0;
 
         // Decode the snapshot, return it.
         let img = image::ImageReader::new(std::io::Cursor::new(snapshot_png_bytes))

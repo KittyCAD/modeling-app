@@ -1637,3 +1637,139 @@ impl JsonSchema for FunctionParam<'_> {
         gen.subschema_for::<()>()
     }
 }
+
+#[cfg(test)]
+mod test {
+    use crate::parsing::ast::types::{DefaultParamVal, Identifier, Parameter};
+
+    use super::*;
+
+    #[test]
+    fn test_assign_args_to_params() {
+        // Set up a little framework for this test.
+        fn mem(number: usize) -> KclValue {
+            KclValue::Int {
+                value: number as i64,
+                meta: Default::default(),
+            }
+        }
+        fn ident(s: &'static str) -> Node<Identifier> {
+            Node::no_src(Identifier {
+                name: s.to_owned(),
+                digest: None,
+            })
+        }
+        fn opt_param(s: &'static str) -> Parameter {
+            Parameter {
+                identifier: ident(s),
+                type_: None,
+                default_value: Some(DefaultParamVal::none()),
+                labeled: true,
+                digest: None,
+            }
+        }
+        fn req_param(s: &'static str) -> Parameter {
+            Parameter {
+                identifier: ident(s),
+                type_: None,
+                default_value: None,
+                labeled: true,
+                digest: None,
+            }
+        }
+        fn additional_program_memory(items: &[(String, KclValue)]) -> ProgramMemory {
+            let mut program_memory = ProgramMemory::new();
+            for (name, item) in items {
+                program_memory
+                    .add(name.as_str(), item.clone(), SourceRange::default())
+                    .unwrap();
+            }
+            program_memory
+        }
+        // Declare the test cases.
+        for (test_name, params, args, expected) in [
+            ("empty", Vec::new(), Vec::new(), Ok(ProgramMemory::new())),
+            (
+                "all params required, and all given, should be OK",
+                vec![req_param("x")],
+                vec![mem(1)],
+                Ok(additional_program_memory(&[("x".to_owned(), mem(1))])),
+            ),
+            (
+                "all params required, none given, should error",
+                vec![req_param("x")],
+                vec![],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange::default()],
+                    message: "Expected 1 arguments, got 0".to_owned(),
+                })),
+            ),
+            (
+                "all params optional, none given, should be OK",
+                vec![opt_param("x")],
+                vec![],
+                Ok(additional_program_memory(&[("x".to_owned(), KclValue::none())])),
+            ),
+            (
+                "mixed params, too few given",
+                vec![req_param("x"), opt_param("y")],
+                vec![],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange::default()],
+                    message: "Expected 1-2 arguments, got 0".to_owned(),
+                })),
+            ),
+            (
+                "mixed params, minimum given, should be OK",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1)],
+                Ok(additional_program_memory(&[
+                    ("x".to_owned(), mem(1)),
+                    ("y".to_owned(), KclValue::none()),
+                ])),
+            ),
+            (
+                "mixed params, maximum given, should be OK",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1), mem(2)],
+                Ok(additional_program_memory(&[
+                    ("x".to_owned(), mem(1)),
+                    ("y".to_owned(), mem(2)),
+                ])),
+            ),
+            (
+                "mixed params, too many given",
+                vec![req_param("x"), opt_param("y")],
+                vec![mem(1), mem(2), mem(3)],
+                Err(KclError::Semantic(KclErrorDetails {
+                    source_ranges: vec![SourceRange::default()],
+                    message: "Expected 1-2 arguments, got 3".to_owned(),
+                })),
+            ),
+        ] {
+            // Run each test.
+            let func_expr = &Node::no_src(FunctionExpression {
+                params,
+                body: Node {
+                    inner: crate::parsing::ast::types::Program {
+                        body: Vec::new(),
+                        non_code_meta: Default::default(),
+                        shebang: None,
+                        digest: None,
+                    },
+                    start: 0,
+                    end: 0,
+                    module_id: ModuleId::default(),
+                },
+                return_type: None,
+                digest: None,
+            });
+            let args = args.into_iter().map(Arg::synthetic).collect();
+            let actual = assign_args_to_params(func_expr, args, ProgramMemory::new());
+            assert_eq!(
+                actual, expected,
+                "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"
+            );
+        }
+    }
+}

@@ -9,7 +9,7 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     let stdlib_completions = crate::lsp::kcl::get_completions_from_stdlib(&stdlib)?;
     let stdlib_signatures = crate::lsp::kcl::get_signatures_from_stdlib(&stdlib)?;
 
-    let zoo_client = crate::execution::new_zoo_client(None, None)?;
+    let zoo_client = crate::engine::new_zoo_client(None, None)?;
 
     let executor_ctx = if execute {
         Some(crate::execution::ExecutorContext::new(&zoo_client, Default::default()).await?)
