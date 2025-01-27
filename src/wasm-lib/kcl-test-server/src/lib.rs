@@ -176,8 +176,11 @@ async fn snapshot_endpoint(body: Bytes, ctxt: ExecutorContext) -> Response<Body>
     // Let users know if the test is taking a long time.
     let (done_tx, done_rx) = oneshot::channel::<()>();
     let timer = time_until(done_rx);
-    let snapshot = match ctxt.execute_and_prepare_snapshot(program.into(), &mut exec_state).await {
-        Ok(sn) => sn,
+    if let Err(e) = ctxt.run(&program, &mut exec_state).await {
+        return kcl_err(e);
+    }
+    let snapshot = match ctxt.prepare_snapshot().await {
+        Ok(s) => s,
         Err(e) => return kcl_err(e),
     };
     let _ = done_tx.send(());

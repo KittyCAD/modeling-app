@@ -444,6 +444,12 @@ pub struct ArtifactGraph {
     map: IndexMap<ArtifactId, Artifact>,
 }
 
+impl ArtifactGraph {
+    pub fn len(&self) -> usize {
+        self.map.len()
+    }
+}
+
 pub(super) fn build_artifact_graph(
     artifact_commands: &[ArtifactCommand],
     responses: &IndexMap<Uuid, WebSocketResponse>,
