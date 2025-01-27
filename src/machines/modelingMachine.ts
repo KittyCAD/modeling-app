@@ -1451,10 +1451,10 @@ export const modelingMachine = setup({
       }
     ),
     extrudeAstMod: fromPromise<
-      unknown,
+      void,
       ModelingCommandSchema['Extrude'] | undefined
     >(async ({ input }) => {
-      if (!input) return new Error('No input provided')
+      if (!input) return Promise.reject('No input provided')
       const { selection, distance } = input
       let ast = structuredClone(kclManager.ast)
       let extrudeName: string | undefined = undefined
@@ -1472,7 +1472,7 @@ export const modelingMachine = setup({
           ? distance.variableIdentifierAst
           : distance.valueAst
       )
-      if (err(extrudeSketchRes)) return extrudeSketchRes
+      if (err(extrudeSketchRes)) return Promise.reject(extrudeSketchRes)
       const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
       // Insert the distance variable if the user has provided a variable name
