@@ -606,7 +606,7 @@ export class SceneEntities {
         maybeModdedAst,
         sourceRangeFromRust(sketch.start.__geoMeta.sourceRange)
       )
-      if (sketch?.paths?.[0]?.type !== 'Circle') {
+      if (['Circle', 'CircleThreePoint'].includes(sketch?.paths?.[0]?.type) === false) {
         const _profileStart = createProfileStartHandle({
           from: sketch.start.from,
           id: sketch.start.__geoMeta.id,
@@ -672,12 +672,15 @@ export class SceneEntities {
 
         if (segment.type === 'CircleThreePoint') {
           const circleThreePoint = new CircleThreePoint({
-            scene: this.scene,
+            scene: group,
             intersectionPlane: this.intersectionPlane,
             startSketchOnASTNodePath: segPathToNode,
-            forward,
-            up,
-            sketchOrigin: position,
+            maybeExistingNodePath: _node1.deepPath,
+            sketchNodePaths: sketch.paths,
+            metadata: segment,
+            forward: new Vector3(...forward),
+            up: new Vector3(...up),
+            sketchOrigin: new Vector3(...position),
           })
           circleThreePoint.init()
           this.sketchTools.push(circleThreePoint)
@@ -774,7 +777,7 @@ export class SceneEntities {
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
     const nextAst = await kclManager.updateAst(modifiedAst, false)
-    this.tearDownSketch({ removeAxis: false })
+    await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,
@@ -840,7 +843,7 @@ export class SceneEntities {
 
     const draftExpressionsIndices = { start: index, end: index }
 
-    if (shouldTearDown) this.tearDownSketch({ removeAxis: false })
+    if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
 
     const { truncatedAst, programMemoryOverride } = await this.setupSketch({
@@ -1599,7 +1602,7 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
-          this.tearDownSketch({ removeAxis: false })
+          await this.tearDownSketch({ removeAxis: false })
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.setupSketch({
             sketchEntryNodePath,
@@ -1670,7 +1673,7 @@ export class SceneEntities {
             if (trap(mod)) return
 
             await kclManager.executeAstMock(mod.modifiedAst)
-            this.tearDownSketch({ removeAxis: false })
+            await this.tearDownSketch({ removeAxis: false })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
               sketchEntryNodePath: pathToNode,
@@ -2050,11 +2053,17 @@ export class SceneEntities {
   removeSketchGrid() {
     if (this.axisGroup) this.scene.remove(this.axisGroup)
   }
-  tearDownSketch({ removeAxis = true }: { removeAxis?: boolean }) {
+  async tearDownSketch({ removeAxis = true }: { removeAxis?: boolean }) {
     // Remove all draft groups
     this.draftPointGroups.forEach((draftPointGroup) => {
       this.scene.remove(draftPointGroup)
     })
+
+    // Remove all sketch tools
+    for (let tool of this.sketchTools) {
+      await tool.destroy()
+    }
+
     if (this.axisGroup && removeAxis) this.scene.remove(this.axisGroup)
     const sketchSegments = this.scene.children.find(
       ({ userData }) => userData?.type === SKETCH_GROUP_SEGMENTS

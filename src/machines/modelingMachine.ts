@@ -352,7 +352,7 @@ export type ModelingMachineEvent =
   | { type: 'Finish circle' }
   | { type: 'Artifact graph populated' }
   | { type: 'Artifact graph emptied' }
-  | { type: 'stop-internal' }
+  | { type: 'xstate.done.actor.actor-circle-three-point' }
 
 export type MoveDesc = { line: number; snippet: string }
 
@@ -1867,7 +1867,7 @@ export const modelingMachine = setup({
       { type: '' }, // Not used. We receive() no events in this actor.
       SketchDetails | undefined,
       // Doesn't type-check anything for some reason.
-      { type: 'stop-internal' } // The 1 event we sendBack().
+      { type: 'xstate.done.actor.actor-circle-three-point' } // The 1 event we sendBack().
     >(function ({ sendBack, receive, input: sketchDetails }) {
       // In the wild event we have no sketch details, return immediately,
       // destroying the actor and going back to idle state.
@@ -1878,6 +1878,7 @@ export const modelingMachine = setup({
         intersectionPlane: sceneEntitiesManager.intersectionPlane,
         startSketchOnASTNodePath: sketchDetails.planeNodePath,
         maybeExistingNodePath: sketchDetails.sketchEntryNodePath,
+        sketchNodePaths: sketchDetails.sketchNodePaths,
         forward: new Vector3(...sketchDetails.zAxis),
         up: new Vector3(...sketchDetails.yAxis),
         sketchOrigin: new Vector3(...sketchDetails.origin),
@@ -1888,11 +1889,7 @@ export const modelingMachine = setup({
         done(output) {
           sendBack({
             type: 'xstate.done.actor.actor-circle-three-point',
-            output: {
-              updatedPlaneNodePath,
-              updatedEntryNodePath,
-              updatedSketchNodePaths,
-            }
+            output,
           })
         }
       })
@@ -2787,7 +2784,7 @@ export const modelingMachine = setup({
             // We still need this action to trigger (legacy code support)
             'change tool': 'Change Tool',
             // On stop event, transition to our usual SketchIdle state
-            'stop-internal': {
+            'xstate.done.actor.actor-circle-three-point': {
               target: '#Modeling.Sketch.SketchIdle',
               actions: 'update sketchDetails',
             },

@@ -10,6 +10,7 @@ import {
   BufferGeometry,
   LineDashedMaterial,
   Line,
+  Plane,
 } from 'three'
 
 import { PathToNode, recast, parse, VariableDeclaration } from 'lang/wasm'
@@ -35,9 +36,11 @@ import {
 
 interface InitArgs {
   scene: Scene
-  intersectionPlane: any
+  intersectionPlane: Plane
   startSketchOnASTNodePath: PathToNode
   maybeExistingNodePath: PathToNode
+  sketchNodePaths: PathToNode[]
+  metadata?: any
   forward: Vector3
   up: Vector3
   sketchOrigin: Vector3
@@ -54,37 +57,42 @@ export function CircleThreePoint(initArgs: InitArgs): SketchTool {
   // all this. Use this as a template for other tools.
 
   // The KCL to generate. Parses into an AST to be modified / manipulated.
-  const selfASTNode = parse(`profileVarNameToBeReplaced = circleThreePoint(
+  let selfASTNode = parse(`profileVarNameToBeReplaced = circleThreePoint(
     sketchVarNameToBeReplaced,
     p1 = [0.0, 0.0],
     p2 = [0.0, 0.0],
     p3 = [0.0, 0.0],
   )`)
 
-  // AST node to work with. It's either an existing one, or a new one.
-
+  // May be updated to false in the following code
   let isNewSketch = true
   const astSnapshot = structuredClone(kclManager.ast)
 
-  if (initArgs.maybeExistingNodePath.length === 0) {
+  let sketchEntryNodePath = initArgs.maybeExistingNodePath
+
+  // AST node to work with. It's either an existing one, or a new one.
+  if (sketchEntryNodePath.length === 0) {
     // Travel 1 node up from the sketch plane AST node, and append or
     // update the new profile AST node.
+
+    const OFFSET_TO_PARENT_SCOPE = -3
 
     // Get the index of the sketch AST node.
     // (It could be in a program or function body!)
     // (It could be in the middle of anywhere in the program!)
-    // ['body', 'index']
-    // [8, 'index'] <- ...[1]?.[0] refers to 8.
+    // ['body', 'index'] <- in this case we're at the top program body
+    // [x, 'index'] <- x is what we're incrementing here -v
     const nextIndex = initArgs.startSketchOnASTNodePath[
-      // - 3 puts us at the body of a function or the overall program
-      initArgs.startSketchOnASTNodePath.length - 3
+      // OFFSET_TO_PARENT_SCOPE puts us at the body of a function or
+      // the overall program
+      initArgs.startSketchOnASTNodePath.length + OFFSET_TO_PARENT_SCOPE
     ][0] + 1
 
     const bodyASTNode = getNodeFromPath<VariableDeclaration>(
       astSnapshot,
-      Array.from(initArgs.startSketchOnASTNodePath).splice(
+      structuredClone(initArgs.startSketchOnASTNodePath).splice(
         0,
-        initArgs.startSketchOnASTNodePath.length - 3
+        initArgs.startSketchOnASTNodePath.length + OFFSET_TO_PARENT_SCOPE
       ),
       'VariableDeclaration'
     )
@@ -96,13 +104,21 @@ export function CircleThreePoint(initArgs: InitArgs): SketchTool {
 
     // Attach the node
     bodyASTNode.node.splice(nextIndex, 0, selfASTNode.program.body[0])
+
+    // Manipulate a copy of the original path to match our new AST.
+    sketchEntryNodePath = structuredClone(initArgs.startSketchOnASTNodePath)
+    sketchEntryNodePath[sketchEntryNodePath.length + OFFSET_TO_PARENT_SCOPE][0] = nextIndex
   } else {
-    selfASTNode = getNodeFromPath<VariableDeclaration>(
+    const tmpNode = getNodeFromPath<VariableDeclaration>(
       kclManager.ast,
-      initArgs.maybeExistingNodePath,
+      sketchEntryNodePath,
       'VariableDeclaration'
     )
-    if (err(selfASTNode)) return new NoOpTool()
+    if (err(tmpNode)) return new NoOpTool()
+
+    // Create references to the existing circleThreePoint AST node
+    Object.assign(selfASTNode.program.body[0], tmpNode.node)
+
     isNewSketch = false
   }
   
@@ -119,6 +135,8 @@ export function CircleThreePoint(initArgs: InitArgs): SketchTool {
   groupOfDrafts.traverse((child) => {
     child.layers.set(SKETCH_LAYER)
   })
+  Object.assign(groupOfDrafts.userData, initArgs.metadata)
+
   initArgs.scene.add(groupOfDrafts)
 
   // lee: Not a fan we need to re-iterate this dummy object all over the place
@@ -310,7 +328,12 @@ export function CircleThreePoint(initArgs: InitArgs): SketchTool {
     // If you use 3D points, do not rotate anything.
     // If you use 2D points (easier to deal with, generally do this!), then
     // rotate the group just like this! Remember to rotate other groups too!
-    groupOfDrafts.setRotationFromQuaternion(orientation)
+
+    // For some reason, when going into edit mode, we don't need to orient...
+    if (isNewSketch) {
+      groupOfDrafts.setRotationFromQuaternion(orientation)
+    }
+
     initArgs.scene.add(groupOfDrafts)
 
     // We're not working with an existing circleThreePoint.
@@ -320,7 +343,7 @@ export function CircleThreePoint(initArgs: InitArgs): SketchTool {
     // Use the points in the AST as starting points.
     const maybeVariableDeclaration = getNodeFromPath<VariableDeclaration>(
       astSnapshot,
-      selfASTNode,
+      sketchEntryNodePath,
       'VariableDeclaration'
     )
 
@@ -430,7 +453,23 @@ export function CircleThreePoint(initArgs: InitArgs): SketchTool {
       // because this sketch tool logic doesn't need that at all, and is
       // needless (sometimes heavy, but not here) computation.
       await kclManager.executeAstMock(astWithNewCode)
-      initArgs.done()
+
+      if (isNewSketch) {
+        // Add it to our sketch's profiles
+        initArgs.sketchNodePaths.push(sketchEntryNodePath)
+      }
+
+      // Pass the updated sketchDetails information back to the state machine.
+      // In most (all?) cases the sketch plane never changes.
+      // In many cases, sketchEntryNodePath may be a new PathToNode
+      // (usually simply the next index in a scope)
+      // updatedSketchNodePaths same deal, many cases it's the same or updated,
+      // depends if a new circle is made.
+      initArgs.done({
+        updatedPlaneNodePath: initArgs.startSketchOnASTNodePath,
+        updatedEntryNodePath: sketchEntryNodePath,
+        updatedSketchNodePaths: initArgs.sketchNodePaths,
+      })
     }
   }
 }
