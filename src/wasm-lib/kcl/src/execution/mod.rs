@@ -2642,15 +2642,15 @@ impl ExecutorContext {
                     let (result, _, _) = self
                         .exec_module(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
                         .await?;
-                    result.ok_or_else(|| {
-                        KclError::Semantic(KclErrorDetails {
-                            message: format!(
-                                "Evaluating module `{}` as part of an assembly did not produce a result",
-                                identifier.name
-                            ),
-                            source_ranges: vec![metadata.source_range, meta[0].source_range],
-                        })
-                    })?
+                    result.unwrap_or_else(|| {
+                        // The module didn't have a return value.
+                        let mut new_meta = vec![metadata.to_owned()];
+                        new_meta.extend(meta);
+                        KclValue::KclNone {
+                            value: Default::default(),
+                            meta: new_meta,
+                        }
+                    })
                 } else {
                     value
                 }
