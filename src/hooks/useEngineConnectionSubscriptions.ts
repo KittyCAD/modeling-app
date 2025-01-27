@@ -18,7 +18,8 @@ import {
 import { err, reportRejection } from 'lib/trap'
 import { getFaceDetails } from 'clientSideScene/sceneEntities'
 import { DefaultPlaneStr } from 'lib/planes'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { CallExpression, defaultSourceRange } from 'lang/wasm'
 import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
 

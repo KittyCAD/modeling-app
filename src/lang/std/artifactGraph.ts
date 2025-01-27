@@ -16,7 +16,7 @@ import {
   EdgeCut,
 } from 'lang/wasm'
 import { Models } from '@kittycad/lib'
-import { getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { err } from 'lib/trap'
 import { codeManager } from 'lib/singletons'
 
