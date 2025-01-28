@@ -963,37 +963,31 @@ sketch002 = startSketchOn('XZ')
     await toolbar.sweepButton.click()
     await cmdBar.expectState({
       commandName: 'Sweep',
-      currentArgKey: 'profile',
+      currentArgKey: 'target',
       currentArgValue: '',
       headerArguments: {
-        Path: '',
-        Profile: '',
+        Target: '',
+        Trajectory: '',
       },
-      highlightedHeaderArg: 'profile',
+      highlightedHeaderArg: 'target',
       stage: 'arguments',
     })
     await clickOnSketch1()
     await cmdBar.expectState({
       commandName: 'Sweep',
-      currentArgKey: 'path',
+      currentArgKey: 'trajectory',
       currentArgValue: '',
       headerArguments: {
-        Path: '',
-        Profile: '1 face',
+        Target: '1 face',
+        Trajectory: '',
       },
-      highlightedHeaderArg: 'path',
+      highlightedHeaderArg: 'trajectory',
       stage: 'arguments',
     })
     await clickOnSketch2()
-    await cmdBar.expectState({
-      commandName: 'Sweep',
-      headerArguments: {
-        Path: '1 face',
-        Profile: '1 face',
-      },
-      stage: 'review',
-    })
+    await page.waitForTimeout(500)
     await cmdBar.progressCmdBar()
+    await page.waitForTimeout(500)
   })
 
   await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
@@ -1017,6 +1011,75 @@ sketch002 = startSketchOn('XZ')
     await page.waitForTimeout(500)
     await toolbar.closePane('feature-tree')
     await scene.expectPixelColor([53, 53, 53], testPoint, 15)
+  })
+})
+
+test(`Sweep point-and-click failing validation`, async ({
+  context,
+  page,
+  homePage,
+  scene,
+  toolbar,
+  cmdBar,
+}) => {
+  const initialCode = `sketch001 = startSketchOn('YZ')
+  |> circle({
+       center = [0, 0],
+       radius = 500
+     }, %)
+sketch002 = startSketchOn('XZ')
+  |> startProfileAt([0, 0], %)
+  |> xLine(-500, %)
+  |> lineTo([-2000, 500], %)
+`
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, initialCode)
+  await page.setBodyDimensions({ width: 1000, height: 500 })
+  await homePage.goToModelingScene()
+  await scene.waitForExecutionDone()
+
+  // One dumb hardcoded screen pixel value
+  const testPoint = { x: 700, y: 250 }
+  const [clickOnSketch1] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
+  const [clickOnSketch2] = scene.makeMouseHelpers(testPoint.x - 50, testPoint.y)
+
+  await test.step(`Look for sketch001`, async () => {
+    await toolbar.closePane('code')
+    await scene.expectPixelColor([53, 53, 53], testPoint, 15)
+  })
+
+  await test.step(`Go through the command bar flow and fail validation with a toast`, async () => {
+    await toolbar.sweepButton.click()
+    await cmdBar.expectState({
+      commandName: 'Sweep',
+      currentArgKey: 'target',
+      currentArgValue: '',
+      headerArguments: {
+        Target: '',
+        Trajectory: '',
+      },
+      highlightedHeaderArg: 'target',
+      stage: 'arguments',
+    })
+    await clickOnSketch1()
+    await cmdBar.expectState({
+      commandName: 'Sweep',
+      currentArgKey: 'trajectory',
+      currentArgValue: '',
+      headerArguments: {
+        Target: '1 face',
+        Trajectory: '',
+      },
+      highlightedHeaderArg: 'trajectory',
+      stage: 'arguments',
+    })
+    await clickOnSketch2()
+    await page.waitForTimeout(500)
+    await cmdBar.progressCmdBar()
+    await expect(
+      page.getByText('Unable to sweep with the provided selection')
+    ).toBeVisible()
   })
 })
 

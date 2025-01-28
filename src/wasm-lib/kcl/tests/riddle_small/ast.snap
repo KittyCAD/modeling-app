@@ -20,7 +20,10 @@ description: Result of parsing riddle_small.kcl
             "start": 9,
             "type": "Literal",
             "type": "Literal",
-            "value": 41803.0
+            "value": {
+              "value": 41803.0,
+              "suffix": "None"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -76,7 +79,10 @@ description: Result of parsing riddle_small.kcl
                         "start": 49,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 12345.0
+                        "value": {
+                          "value": 12345.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 36,
                       "type": "BinaryExpression",
@@ -89,7 +95,10 @@ description: Result of parsing riddle_small.kcl
                       "start": 58,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 214748.0
+                      "value": {
+                        "value": 214748.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 36,
                     "type": "BinaryExpression",
@@ -144,7 +153,10 @@ description: Result of parsing riddle_small.kcl
             "start": 73,
             "type": "Literal",
             "type": "Literal",
-            "value": 205804.0
+            "value": {
+              "value": 205804.0,
+              "suffix": "None"
+            }
           },
           "start": 68,
           "type": "VariableDeclarator"
@@ -170,7 +182,10 @@ description: Result of parsing riddle_small.kcl
             "start": 85,
             "type": "Literal",
             "type": "Literal",
-            "value": 71816.0
+            "value": {
+              "value": 71816.0,
+              "suffix": "None"
+            }
           },
           "start": 80,
           "type": "VariableDeclarator"
@@ -198,7 +213,10 @@ description: Result of parsing riddle_small.kcl
               "start": 96,
               "type": "Literal",
               "type": "Literal",
-              "value": 35.0
+              "value": {
+                "value": 35.0,
+                "suffix": "None"
+              }
             },
             "operator": "-",
             "right": {
@@ -231,7 +249,10 @@ description: Result of parsing riddle_small.kcl
                 "start": 110,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 70.0
+                "value": {
+                  "value": 70.0,
+                  "suffix": "None"
+                }
               },
               "start": 102,
               "type": "BinaryExpression",
@@ -267,7 +288,10 @@ description: Result of parsing riddle_small.kcl
               "start": 119,
               "type": "Literal",
               "type": "Literal",
-              "value": 35.0
+              "value": {
+                "value": 35.0,
+                "suffix": "None"
+              }
             },
             "operator": "-",
             "right": {
@@ -300,7 +324,10 @@ description: Result of parsing riddle_small.kcl
                 "start": 133,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 70.0
+                "value": {
+                  "value": 70.0,
+                  "suffix": "None"
+                }
               },
               "start": 125,
               "type": "BinaryExpression",
@@ -404,7 +431,10 @@ description: Result of parsing riddle_small.kcl
                         "start": 205,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 209,
@@ -412,7 +442,10 @@ description: Result of parsing riddle_small.kcl
                         "start": 208,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 210,
@@ -448,7 +481,10 @@ description: Result of parsing riddle_small.kcl
                         "start": 226,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -457,7 +493,10 @@ description: Result of parsing riddle_small.kcl
                           "start": 230,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 1.0
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 231,
                         "operator": "-",
@@ -500,7 +539,10 @@ description: Result of parsing riddle_small.kcl
                           "start": 249,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 1.0
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 250,
                         "operator": "-",
@@ -514,7 +556,10 @@ description: Result of parsing riddle_small.kcl
                         "start": 252,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 254,
@@ -568,7 +613,10 @@ description: Result of parsing riddle_small.kcl
                     "start": 286,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 290,

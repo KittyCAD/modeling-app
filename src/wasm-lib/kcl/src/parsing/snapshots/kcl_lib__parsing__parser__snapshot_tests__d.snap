@@ -23,7 +23,10 @@ expression: actual
                 "start": 8,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 5.0
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               },
               "operator": "+",
               "right": {
@@ -32,7 +35,10 @@ expression: actual
                 "start": 12,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 6.0
+                "value": {
+                  "value": 6.0,
+                  "suffix": "None"
+                }
               },
               "start": 8,
               "type": "BinaryExpression",
@@ -46,7 +52,10 @@ expression: actual
                   "start": 24,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 45.0
+                  "value": {
+                    "value": 45.0,
+                    "suffix": "None"
+                  }
                 },
                 {
                   "end": 29,

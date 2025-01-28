@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing artifact_graph_sketch_on_face_etc.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -29,84 +28,28 @@ snapshot_kind: text
         },
         "extrude001": {
           "type": "Solid",
-          "type": "Solid",
-          "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                68,
-                83,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                89,
-                113,
-                0
-              ],
-              "tag": {
-                "end": 112,
-                "start": 106,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                119,
-                166,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
+          "value": {
+            "type": "Solid",
             "id": "[uuid]",
-            "paths": [
+            "value": [
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    68,
-                    83,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  68,
+                  83,
+                  0
                 ],
                 "tag": null,
-                "to": [
-                  4.0,
-                  8.0
-                ],
-                "type": "ToPoint"
+                "type": "extrudePlane"
               },
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    89,
-                    113,
-                    0
-                  ]
-                },
-                "from": [
-                  4.0,
-                  8.0
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  89,
+                  113,
+                  0
                 ],
                 "tag": {
                   "end": 112,
@@ -114,393 +57,167 @@ snapshot_kind: text
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
-                "to": [
-                  9.0,
-                  0.0
-                ],
-                "type": "ToPoint"
+                "type": "extrudePlane"
               },
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    119,
-                    166,
-                    0
-                  ]
-                },
-                "from": [
-                  9.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    172,
-                    180,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": null,
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "value": "XZ",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "__meta": []
-            },
-            "start": {
-              "from": [
-                0.0,
-                0.0
-              ],
-              "to": [
-                0.0,
-                0.0
-              ],
-              "tag": null,
-              "__geoMeta": {
+                "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  37,
-                  62,
+                  119,
+                  166,
                   0
-                ]
-              }
-            },
-            "tags": {
-              "seg01": {
-                "type": "TagIdentifier",
-                "value": "seg01",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        89,
-                        113,
-                        0
-                      ]
-                    },
-                    "from": [
-                      4.0,
-                      8.0
-                    ],
-                    "tag": {
-                      "end": 112,
-                      "start": 106,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "to": [
-                      9.0,
-                      0.0
-                    ],
-                    "type": "ToPoint"
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      89,
-                      113,
-                      0
-                    ],
-                    "tag": {
-                      "end": 112,
-                      "start": 106,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      106,
-                      112,
-                      0
-                    ]
-                  }
-                ]
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  62,
-                  0
-                ]
-              }
-            ]
-          },
-          "height": 6.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                37,
-                62,
-                0
-              ]
-            }
-          ]
-        },
-        "extrude002": {
-          "type": "Solid",
-          "type": "Solid",
-          "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                302,
-                317,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                323,
-                339,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                345,
-                392,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    302,
-                    317,
-                    0
-                  ]
-                },
-                "from": [
-                  -0.5,
-                  0.5
                 ],
                 "tag": null,
-                "to": [
-                  1.5,
-                  5.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    323,
-                    339,
-                    0
-                  ]
-                },
-                "from": [
-                  1.5,
-                  5.5
-                ],
-                "tag": null,
-                "to": [
-                  3.5,
-                  0.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    345,
-                    392,
-                    0
-                  ]
-                },
-                "from": [
-                  3.5,
-                  0.5
-                ],
-                "tag": null,
-                "to": [
-                  -0.5,
-                  0.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    398,
-                    406,
-                    0
-                  ]
-                },
-                "from": [
-                  -0.5,
-                  0.5
-                ],
-                "tag": null,
-                "to": [
-                  -0.5,
-                  0.5
-                ],
-                "type": "ToPoint"
+                "type": "extrudePlane"
               }
             ],
-            "on": {
-              "type": "face",
+            "sketch": {
+              "type": "Sketch",
               "id": "[uuid]",
-              "value": "seg01",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
                       68,
                       83,
                       0
-                    ],
-                    "tag": null,
-                    "type": "extrudePlane"
+                    ]
                   },
-                  {
-                    "faceId": "[uuid]",
+                  "from": [
+                    0.0,
+                    0.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    4.0,
+                    8.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
                       89,
                       113,
                       0
-                    ],
-                    "tag": {
-                      "end": 112,
-                      "start": 106,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "type": "extrudePlane"
+                    ]
                   },
-                  {
-                    "faceId": "[uuid]",
+                  "from": [
+                    4.0,
+                    8.0
+                  ],
+                  "tag": {
+                    "end": 112,
+                    "start": 106,
+                    "type": "TagDeclarator",
+                    "value": "seg01"
+                  },
+                  "to": [
+                    9.0,
+                    0.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
                       119,
                       166,
                       0
-                    ],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  }
+                    ]
+                  },
+                  "from": [
+                    9.0,
+                    0.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.0,
+                    0.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      172,
+                      180,
+                      0
+                    ]
+                  },
+                  "from": [
+                    0.0,
+                    0.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    0.0,
+                    0.0
+                  ],
+                  "type": "ToPoint"
+                }
+              ],
+              "on": {
+                "type": "plane",
+                "id": "[uuid]",
+                "value": "XZ",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0
+                },
+                "units": {
+                  "type": "Mm"
+                },
+                "__meta": []
+              },
+              "start": {
+                "from": [
+                  0.0,
+                  0.0
                 ],
-                "sketch": {
-                  "type": "Sketch",
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "__geoMeta": {
                   "id": "[uuid]",
-                  "paths": [
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          68,
-                          83,
-                          0
-                        ]
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        4.0,
-                        8.0
-                      ],
-                      "type": "ToPoint"
-                    },
-                    {
+                  "sourceRange": [
+                    37,
+                    62,
+                    0
+                  ]
+                }
+              },
+              "tags": {
+                "seg01": {
+                  "type": "TagIdentifier",
+                  "value": "seg01",
+                  "info": {
+                    "type": "TagEngineInfo",
+                    "id": "[uuid]",
+                    "sketch": "[uuid]",
+                    "path": {
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
@@ -525,591 +242,398 @@ snapshot_kind: text
                       ],
                       "type": "ToPoint"
                     },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          119,
-                          166,
-                          0
-                        ]
-                      },
-                      "from": [
-                        9.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          172,
-                          180,
-                          0
-                        ]
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": null,
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint"
-                    }
-                  ],
-                  "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
-                    "value": "XZ",
-                    "origin": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 0.0
-                    },
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0
-                    },
-                    "__meta": []
-                  },
-                  "start": {
-                    "from": [
-                      0.0,
-                      0.0
-                    ],
-                    "to": [
-                      0.0,
-                      0.0
-                    ],
-                    "tag": null,
-                    "__geoMeta": {
+                    "surface": {
+                      "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        37,
-                        62,
+                        89,
+                        113,
                         0
-                      ]
-                    }
-                  },
-                  "tags": {
-                    "seg01": {
-                      "type": "TagIdentifier",
-                      "value": "seg01",
-                      "info": {
-                        "type": "TagEngineInfo",
-                        "id": "[uuid]",
-                        "sketch": "[uuid]",
-                        "path": {
-                          "__geoMeta": {
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              89,
-                              113,
-                              0
-                            ]
-                          },
-                          "from": [
-                            4.0,
-                            8.0
-                          ],
-                          "tag": {
-                            "end": 112,
-                            "start": 106,
-                            "type": "TagDeclarator",
-                            "value": "seg01"
-                          },
-                          "to": [
-                            9.0,
-                            0.0
-                          ],
-                          "type": "ToPoint"
-                        },
-                        "surface": {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            89,
-                            113,
-                            0
-                          ],
-                          "tag": {
-                            "end": 112,
-                            "start": 106,
-                            "type": "TagDeclarator",
-                            "value": "seg01"
-                          },
-                          "type": "extrudePlane"
-                        }
+                      ],
+                      "tag": {
+                        "end": 112,
+                        "start": 106,
+                        "type": "TagDeclarator",
+                        "value": "seg01"
                       },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            106,
-                            112,
-                            0
-                          ]
-                        }
-                      ]
+                      "type": "extrudePlane"
                     }
                   },
                   "__meta": [
                     {
                       "sourceRange": [
-                        37,
-                        62,
+                        106,
+                        112,
                         0
                       ]
                     }
                   ]
-                },
-                "height": 6.0,
-                "startCapId": "[uuid]",
-                "endCapId": "[uuid]",
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      62,
-                      0
-                    ]
-                  }
-                ]
+                }
+              },
+              "units": {
+                "type": "Mm"
               },
               "__meta": [
                 {
                   "sourceRange": [
-                    228,
-                    260,
+                    37,
+                    62,
                     0
                   ]
                 }
               ]
             },
-            "start": {
-              "from": [
-                -0.5,
-                0.5
-              ],
-              "to": [
-                -0.5,
-                0.5
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  266,
-                  296,
-                  0
-                ]
-              }
+            "height": 6.0,
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
                 "sourceRange": [
-                  266,
-                  296,
+                  37,
+                  62,
                   0
                 ]
               }
             ]
-          },
-          "height": 5.0,
-          "startCapId": null,
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                266,
-                296,
-                0
-              ]
-            }
-          ]
+          }
         },
-        "extrude003": {
+        "extrude002": {
           "type": "Solid",
-          "type": "Solid",
-          "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                525,
-                550,
-                0
-              ],
-              "tag": {
-                "end": 549,
-                "start": 543,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                556,
-                572,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                578,
-                625,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
+          "value": {
+            "type": "Solid",
             "id": "[uuid]",
-            "paths": [
+            "value": [
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    525,
-                    550,
-                    0
-                  ]
-                },
-                "from": [
-                  1.0,
-                  1.5
-                ],
-                "tag": {
-                  "end": 549,
-                  "start": 543,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  1.5,
-                  3.5
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    556,
-                    572,
-                    0
-                  ]
-                },
-                "from": [
-                  1.5,
-                  3.5
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  302,
+                  317,
+                  0
                 ],
                 "tag": null,
-                "to": [
-                  2.5,
-                  1.5
-                ],
-                "type": "ToPoint"
+                "type": "extrudePlane"
               },
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    578,
-                    625,
-                    0
-                  ]
-                },
-                "from": [
-                  2.5,
-                  1.5
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  323,
+                  339,
+                  0
                 ],
                 "tag": null,
-                "to": [
-                  1.0,
-                  1.5
-                ],
-                "type": "ToPoint"
+                "type": "extrudePlane"
               },
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    631,
-                    639,
-                    0
-                  ]
-                },
-                "from": [
-                  1.0,
-                  1.5
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  345,
+                  392,
+                  0
                 ],
                 "tag": null,
-                "to": [
-                  1.0,
-                  1.5
-                ],
-                "type": "ToPoint"
+                "type": "extrudePlane"
               }
             ],
-            "on": {
-              "type": "face",
+            "sketch": {
+              "type": "Sketch",
               "id": "[uuid]",
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
                       302,
                       317,
                       0
-                    ],
-                    "tag": null,
-                    "type": "extrudePlane"
+                    ]
                   },
-                  {
-                    "faceId": "[uuid]",
+                  "from": [
+                    -0.5,
+                    0.5
+                  ],
+                  "tag": null,
+                  "to": [
+                    1.5,
+                    5.5
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
                       323,
                       339,
                       0
-                    ],
-                    "tag": null,
-                    "type": "extrudePlane"
+                    ]
                   },
-                  {
-                    "faceId": "[uuid]",
+                  "from": [
+                    1.5,
+                    5.5
+                  ],
+                  "tag": null,
+                  "to": [
+                    3.5,
+                    0.5
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
                       345,
                       392,
                       0
-                    ],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
+                    ]
+                  },
+                  "from": [
+                    3.5,
+                    0.5
+                  ],
+                  "tag": null,
+                  "to": [
+                    -0.5,
+                    0.5
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      398,
+                      406,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -0.5,
+                    0.5
+                  ],
+                  "tag": null,
+                  "to": [
+                    -0.5,
+                    0.5
+                  ],
+                  "type": "ToPoint"
+                }
+              ],
+              "on": {
+                "type": "face",
+                "id": "[uuid]",
+                "value": "seg01",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0
+                },
+                "solid": {
+                  "type": "Solid",
                   "id": "[uuid]",
-                  "paths": [
+                  "value": [
                     {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          302,
-                          317,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -0.5,
-                        0.5
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        68,
+                        83,
+                        0
                       ],
                       "tag": null,
-                      "to": [
-                        1.5,
-                        5.5
-                      ],
-                      "type": "ToPoint"
+                      "type": "extrudePlane"
                     },
                     {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          323,
-                          339,
-                          0
-                        ]
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        89,
+                        113,
+                        0
+                      ],
+                      "tag": {
+                        "end": 112,
+                        "start": 106,
+                        "type": "TagDeclarator",
+                        "value": "seg01"
                       },
-                      "from": [
-                        1.5,
-                        5.5
-                      ],
-                      "tag": null,
-                      "to": [
-                        3.5,
-                        0.5
-                      ],
-                      "type": "ToPoint"
+                      "type": "extrudePlane"
                     },
                     {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          345,
-                          392,
-                          0
-                        ]
-                      },
-                      "from": [
-                        3.5,
-                        0.5
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        119,
+                        166,
+                        0
                       ],
                       "tag": null,
-                      "to": [
-                        -0.5,
-                        0.5
-                      ],
-                      "type": "ToPoint"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          398,
-                          406,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -0.5,
-                        0.5
-                      ],
-                      "tag": null,
-                      "to": [
-                        -0.5,
-                        0.5
-                      ],
-                      "type": "ToPoint"
+                      "type": "extrudePlane"
                     }
                   ],
-                  "on": {
-                    "type": "face",
+                  "sketch": {
+                    "type": "Sketch",
                     "id": "[uuid]",
-                    "value": "seg01",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0
-                    },
-                    "solid": {
-                      "type": "Solid",
-                      "id": "[uuid]",
-                      "value": [
-                        {
-                          "faceId": "[uuid]",
+                    "paths": [
+                      {
+                        "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
                             68,
                             83,
                             0
-                          ],
-                          "tag": null,
-                          "type": "extrudePlane"
+                          ]
                         },
-                        {
-                          "faceId": "[uuid]",
+                        "from": [
+                          0.0,
+                          0.0
+                        ],
+                        "tag": null,
+                        "to": [
+                          4.0,
+                          8.0
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
                             89,
                             113,
                             0
-                          ],
-                          "tag": {
-                            "end": 112,
-                            "start": 106,
-                            "type": "TagDeclarator",
-                            "value": "seg01"
-                          },
-                          "type": "extrudePlane"
+                          ]
                         },
-                        {
-                          "faceId": "[uuid]",
+                        "from": [
+                          4.0,
+                          8.0
+                        ],
+                        "tag": {
+                          "end": 112,
+                          "start": 106,
+                          "type": "TagDeclarator",
+                          "value": "seg01"
+                        },
+                        "to": [
+                          9.0,
+                          0.0
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
                             119,
                             166,
                             0
-                          ],
-                          "tag": null,
-                          "type": "extrudePlane"
-                        }
+                          ]
+                        },
+                        "from": [
+                          9.0,
+                          0.0
+                        ],
+                        "tag": null,
+                        "to": [
+                          0.0,
+                          0.0
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": [
+                            172,
+                            180,
+                            0
+                          ]
+                        },
+                        "from": [
+                          0.0,
+                          0.0
+                        ],
+                        "tag": null,
+                        "to": [
+                          0.0,
+                          0.0
+                        ],
+                        "type": "ToPoint"
+                      }
+                    ],
+                    "on": {
+                      "type": "plane",
+                      "id": "[uuid]",
+                      "value": "XZ",
+                      "origin": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                      },
+                      "xAxis": {
+                        "x": 1.0,
+                        "y": 0.0,
+                        "z": 0.0
+                      },
+                      "yAxis": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                      },
+                      "zAxis": {
+                        "x": 0.0,
+                        "y": -1.0,
+                        "z": 0.0
+                      },
+                      "units": {
+                        "type": "Mm"
+                      },
+                      "__meta": []
+                    },
+                    "start": {
+                      "from": [
+                        0.0,
+                        0.0
                       ],
-                      "sketch": {
-                        "type": "Sketch",
+                      "to": [
+                        0.0,
+                        0.0
+                      ],
+                      "tag": null,
+                      "__geoMeta": {
                         "id": "[uuid]",
-                        "paths": [
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                68,
-                                83,
-                                0
-                              ]
-                            },
-                            "from": [
-                              0.0,
-                              0.0
-                            ],
-                            "tag": null,
-                            "to": [
-                              4.0,
-                              8.0
-                            ],
-                            "type": "ToPoint"
-                          },
-                          {
+                        "sourceRange": [
+                          37,
+                          62,
+                          0
+                        ]
+                      }
+                    },
+                    "tags": {
+                      "seg01": {
+                        "type": "TagIdentifier",
+                        "value": "seg01",
+                        "info": {
+                          "type": "TagEngineInfo",
+                          "id": "[uuid]",
+                          "sketch": "[uuid]",
+                          "path": {
                             "__geoMeta": {
                               "id": "[uuid]",
                               "sourceRange": [
@@ -1134,846 +658,611 @@ snapshot_kind: text
                             ],
                             "type": "ToPoint"
                           },
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                119,
-                                166,
-                                0
-                              ]
-                            },
-                            "from": [
-                              9.0,
-                              0.0
-                            ],
-                            "tag": null,
-                            "to": [
-                              0.0,
-                              0.0
-                            ],
-                            "type": "ToPoint"
-                          },
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                172,
-                                180,
-                                0
-                              ]
-                            },
-                            "from": [
-                              0.0,
-                              0.0
-                            ],
-                            "tag": null,
-                            "to": [
-                              0.0,
-                              0.0
-                            ],
-                            "type": "ToPoint"
-                          }
-                        ],
-                        "on": {
-                          "type": "plane",
-                          "id": "[uuid]",
-                          "value": "XZ",
-                          "origin": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                          },
-                          "xAxis": {
-                            "x": 1.0,
-                            "y": 0.0,
-                            "z": 0.0
-                          },
-                          "yAxis": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 1.0
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": -1.0,
-                            "z": 0.0
-                          },
-                          "__meta": []
-                        },
-                        "start": {
-                          "from": [
-                            0.0,
-                            0.0
-                          ],
-                          "to": [
-                            0.0,
-                            0.0
-                          ],
-                          "tag": null,
-                          "__geoMeta": {
+                          "surface": {
+                            "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
-                              37,
-                              62,
+                              89,
+                              113,
                               0
-                            ]
-                          }
-                        },
-                        "tags": {
-                          "seg01": {
-                            "type": "TagIdentifier",
-                            "value": "seg01",
-                            "info": {
-                              "type": "TagEngineInfo",
-                              "id": "[uuid]",
-                              "sketch": "[uuid]",
-                              "path": {
-                                "__geoMeta": {
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    89,
-                                    113,
-                                    0
-                                  ]
-                                },
-                                "from": [
-                                  4.0,
-                                  8.0
-                                ],
-                                "tag": {
-                                  "end": 112,
-                                  "start": 106,
-                                  "type": "TagDeclarator",
-                                  "value": "seg01"
-                                },
-                                "to": [
-                                  9.0,
-                                  0.0
-                                ],
-                                "type": "ToPoint"
-                              },
-                              "surface": {
-                                "faceId": "[uuid]",
-                                "id": "[uuid]",
-                                "sourceRange": [
-                                  89,
-                                  113,
-                                  0
-                                ],
-                                "tag": {
-                                  "end": 112,
-                                  "start": 106,
-                                  "type": "TagDeclarator",
-                                  "value": "seg01"
-                                },
-                                "type": "extrudePlane"
-                              }
+                            ],
+                            "tag": {
+                              "end": 112,
+                              "start": 106,
+                              "type": "TagDeclarator",
+                              "value": "seg01"
                             },
-                            "__meta": [
-                              {
-                                "sourceRange": [
-                                  106,
-                                  112,
-                                  0
-                                ]
-                              }
-                            ]
+                            "type": "extrudePlane"
                           }
                         },
                         "__meta": [
                           {
                             "sourceRange": [
-                              37,
-                              62,
+                              106,
+                              112,
                               0
                             ]
                           }
                         ]
-                      },
-                      "height": 6.0,
-                      "startCapId": "[uuid]",
-                      "endCapId": "[uuid]",
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            37,
-                            62,
-                            0
-                          ]
-                        }
-                      ]
+                      }
+                    },
+                    "units": {
+                      "type": "Mm"
                     },
                     "__meta": [
                       {
                         "sourceRange": [
-                          228,
-                          260,
+                          37,
+                          62,
                           0
                         ]
                       }
                     ]
                   },
-                  "start": {
-                    "from": [
-                      -0.5,
-                      0.5
-                    ],
-                    "to": [
-                      -0.5,
-                      0.5
-                    ],
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        266,
-                        296,
-                        0
-                      ]
-                    }
+                  "height": 6.0,
+                  "startCapId": "[uuid]",
+                  "endCapId": "[uuid]",
+                  "units": {
+                    "type": "Mm"
                   },
                   "__meta": [
                     {
                       "sourceRange": [
-                        266,
-                        296,
+                        37,
+                        62,
                         0
                       ]
                     }
                   ]
                 },
-                "height": 5.0,
-                "startCapId": null,
-                "endCapId": "[uuid]",
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
-                      266,
-                      296,
+                      228,
+                      260,
                       0
                     ]
                   }
                 ]
               },
+              "start": {
+                "from": [
+                  -0.5,
+                  0.5
+                ],
+                "to": [
+                  -0.5,
+                  0.5
+                ],
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    266,
+                    296,
+                    0
+                  ]
+                }
+              },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
-                    454,
-                    486,
+                    266,
+                    296,
                     0
                   ]
                 }
               ]
             },
-            "start": {
-              "from": [
-                1.0,
-                1.5
-              ],
-              "to": [
-                1.0,
-                1.5
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  492,
-                  519,
-                  0
-                ]
-              }
-            },
-            "tags": {
-              "seg02": {
-                "type": "TagIdentifier",
-                "value": "seg02",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        525,
-                        550,
-                        0
-                      ]
-                    },
-                    "from": [
-                      1.0,
-                      1.5
-                    ],
-                    "tag": {
-                      "end": 549,
-                      "start": 543,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "to": [
-                      1.5,
-                      3.5
-                    ],
-                    "type": "ToPoint"
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      525,
-                      550,
-                      0
-                    ],
-                    "tag": {
-                      "end": 549,
-                      "start": 543,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      543,
-                      549,
-                      0
-                    ]
-                  }
-                ]
-              }
+            "height": 5.0,
+            "startCapId": null,
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
                 "sourceRange": [
-                  492,
-                  519,
+                  266,
+                  296,
                   0
                 ]
               }
             ]
-          },
-          "height": 4.0,
-          "startCapId": null,
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                492,
-                519,
-                0
-              ]
-            }
-          ]
+          }
         },
-        "extrude004": {
+        "extrude003": {
           "type": "Solid",
-          "type": "Solid",
-          "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                758,
-                775,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                781,
-                799,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            },
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                805,
-                852,
-                0
-              ],
-              "tag": null,
-              "type": "extrudePlane"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
+          "value": {
+            "type": "Solid",
             "id": "[uuid]",
-            "paths": [
+            "value": [
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    758,
-                    775,
-                    0
-                  ]
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  525,
+                  550,
+                  0
+                ],
+                "tag": {
+                  "end": 549,
+                  "start": 543,
+                  "type": "TagDeclarator",
+                  "value": "seg02"
                 },
-                "from": [
-                  -3.0,
-                  14.0
-                ],
-                "tag": null,
-                "to": [
-                  -2.5,
-                  15.0
-                ],
-                "type": "ToPoint"
+                "type": "extrudePlane"
               },
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    781,
-                    799,
-                    0
-                  ]
-                },
-                "from": [
-                  -2.5,
-                  15.0
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  556,
+                  572,
+                  0
                 ],
                 "tag": null,
-                "to": [
-                  -2.0,
-                  13.0
-                ],
-                "type": "ToPoint"
+                "type": "extrudePlane"
               },
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    805,
-                    852,
-                    0
-                  ]
-                },
-                "from": [
-                  -2.0,
-                  13.0
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  578,
+                  625,
+                  0
                 ],
                 "tag": null,
-                "to": [
-                  -3.0,
-                  14.0
-                ],
-                "type": "ToPoint"
-              },
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    858,
-                    866,
-                    0
-                  ]
-                },
-                "from": [
-                  -3.0,
-                  14.0
-                ],
-                "tag": null,
-                "to": [
-                  -3.0,
-                  14.0
-                ],
-                "type": "ToPoint"
+                "type": "extrudePlane"
               }
             ],
-            "on": {
-              "type": "face",
+            "sketch": {
+              "type": "Sketch",
               "id": "[uuid]",
-              "value": "seg02",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
                       525,
                       550,
                       0
-                    ],
-                    "tag": {
-                      "end": 549,
-                      "start": 543,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "type": "extrudePlane"
+                    ]
                   },
-                  {
-                    "faceId": "[uuid]",
+                  "from": [
+                    1.0,
+                    1.5
+                  ],
+                  "tag": {
+                    "end": 549,
+                    "start": 543,
+                    "type": "TagDeclarator",
+                    "value": "seg02"
+                  },
+                  "to": [
+                    1.5,
+                    3.5
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
                       556,
                       572,
                       0
-                    ],
-                    "tag": null,
-                    "type": "extrudePlane"
+                    ]
                   },
-                  {
-                    "faceId": "[uuid]",
+                  "from": [
+                    1.5,
+                    3.5
+                  ],
+                  "tag": null,
+                  "to": [
+                    2.5,
+                    1.5
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
                       578,
                       625,
                       0
-                    ],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
+                    ]
+                  },
+                  "from": [
+                    2.5,
+                    1.5
+                  ],
+                  "tag": null,
+                  "to": [
+                    1.0,
+                    1.5
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      631,
+                      639,
+                      0
+                    ]
+                  },
+                  "from": [
+                    1.0,
+                    1.5
+                  ],
+                  "tag": null,
+                  "to": [
+                    1.0,
+                    1.5
+                  ],
+                  "type": "ToPoint"
+                }
+              ],
+              "on": {
+                "type": "face",
+                "id": "[uuid]",
+                "value": "end",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0
+                },
+                "solid": {
+                  "type": "Solid",
                   "id": "[uuid]",
-                  "paths": [
+                  "value": [
                     {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          525,
-                          550,
-                          0
-                        ]
-                      },
-                      "from": [
-                        1.0,
-                        1.5
-                      ],
-                      "tag": {
-                        "end": 549,
-                        "start": 543,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        1.5,
-                        3.5
-                      ],
-                      "type": "ToPoint"
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          556,
-                          572,
-                          0
-                        ]
-                      },
-                      "from": [
-                        1.5,
-                        3.5
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        302,
+                        317,
+                        0
                       ],
                       "tag": null,
-                      "to": [
-                        2.5,
-                        1.5
-                      ],
-                      "type": "ToPoint"
+                      "type": "extrudePlane"
                     },
                     {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          578,
-                          625,
-                          0
-                        ]
-                      },
-                      "from": [
-                        2.5,
-                        1.5
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        323,
+                        339,
+                        0
                       ],
                       "tag": null,
-                      "to": [
-                        1.0,
-                        1.5
-                      ],
-                      "type": "ToPoint"
+                      "type": "extrudePlane"
                     },
                     {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          631,
-                          639,
-                          0
-                        ]
-                      },
-                      "from": [
-                        1.0,
-                        1.5
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        345,
+                        392,
+                        0
                       ],
                       "tag": null,
-                      "to": [
-                        1.0,
-                        1.5
-                      ],
-                      "type": "ToPoint"
+                      "type": "extrudePlane"
                     }
                   ],
-                  "on": {
-                    "type": "face",
+                  "sketch": {
+                    "type": "Sketch",
                     "id": "[uuid]",
-                    "value": "end",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0
-                    },
-                    "solid": {
-                      "type": "Solid",
-                      "id": "[uuid]",
-                      "value": [
-                        {
-                          "faceId": "[uuid]",
+                    "paths": [
+                      {
+                        "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
                             302,
                             317,
                             0
-                          ],
-                          "tag": null,
-                          "type": "extrudePlane"
+                          ]
                         },
-                        {
-                          "faceId": "[uuid]",
+                        "from": [
+                          -0.5,
+                          0.5
+                        ],
+                        "tag": null,
+                        "to": [
+                          1.5,
+                          5.5
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
                             323,
                             339,
                             0
-                          ],
-                          "tag": null,
-                          "type": "extrudePlane"
+                          ]
                         },
-                        {
-                          "faceId": "[uuid]",
+                        "from": [
+                          1.5,
+                          5.5
+                        ],
+                        "tag": null,
+                        "to": [
+                          3.5,
+                          0.5
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
                           "id": "[uuid]",
                           "sourceRange": [
                             345,
                             392,
                             0
-                          ],
-                          "tag": null,
-                          "type": "extrudePlane"
-                        }
-                      ],
-                      "sketch": {
-                        "type": "Sketch",
+                          ]
+                        },
+                        "from": [
+                          3.5,
+                          0.5
+                        ],
+                        "tag": null,
+                        "to": [
+                          -0.5,
+                          0.5
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": [
+                            398,
+                            406,
+                            0
+                          ]
+                        },
+                        "from": [
+                          -0.5,
+                          0.5
+                        ],
+                        "tag": null,
+                        "to": [
+                          -0.5,
+                          0.5
+                        ],
+                        "type": "ToPoint"
+                      }
+                    ],
+                    "on": {
+                      "type": "face",
+                      "id": "[uuid]",
+                      "value": "seg01",
+                      "xAxis": {
+                        "x": 1.0,
+                        "y": 0.0,
+                        "z": 0.0
+                      },
+                      "yAxis": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                      },
+                      "zAxis": {
+                        "x": 0.0,
+                        "y": -1.0,
+                        "z": 0.0
+                      },
+                      "solid": {
+                        "type": "Solid",
                         "id": "[uuid]",
-                        "paths": [
+                        "value": [
                           {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                302,
-                                317,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -0.5,
-                              0.5
+                            "faceId": "[uuid]",
+                            "id": "[uuid]",
+                            "sourceRange": [
+                              68,
+                              83,
+                              0
                             ],
                             "tag": null,
-                            "to": [
-                              1.5,
-                              5.5
-                            ],
-                            "type": "ToPoint"
+                            "type": "extrudePlane"
                           },
                           {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                323,
-                                339,
-                                0
-                              ]
+                            "faceId": "[uuid]",
+                            "id": "[uuid]",
+                            "sourceRange": [
+                              89,
+                              113,
+                              0
+                            ],
+                            "tag": {
+                              "end": 112,
+                              "start": 106,
+                              "type": "TagDeclarator",
+                              "value": "seg01"
                             },
-                            "from": [
-                              1.5,
-                              5.5
-                            ],
-                            "tag": null,
-                            "to": [
-                              3.5,
-                              0.5
-                            ],
-                            "type": "ToPoint"
+                            "type": "extrudePlane"
                           },
                           {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                345,
-                                392,
-                                0
-                              ]
-                            },
-                            "from": [
-                              3.5,
-                              0.5
+                            "faceId": "[uuid]",
+                            "id": "[uuid]",
+                            "sourceRange": [
+                              119,
+                              166,
+                              0
                             ],
                             "tag": null,
-                            "to": [
-                              -0.5,
-                              0.5
-                            ],
-                            "type": "ToPoint"
-                          },
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                398,
-                                406,
-                                0
-                              ]
-                            },
-                            "from": [
-                              -0.5,
-                              0.5
-                            ],
-                            "tag": null,
-                            "to": [
-                              -0.5,
-                              0.5
-                            ],
-                            "type": "ToPoint"
+                            "type": "extrudePlane"
                           }
                         ],
-                        "on": {
-                          "type": "face",
+                        "sketch": {
+                          "type": "Sketch",
                           "id": "[uuid]",
-                          "value": "seg01",
-                          "xAxis": {
-                            "x": 1.0,
-                            "y": 0.0,
-                            "z": 0.0
-                          },
-                          "yAxis": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 1.0
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": -1.0,
-                            "z": 0.0
-                          },
-                          "solid": {
-                            "type": "Solid",
-                            "id": "[uuid]",
-                            "value": [
-                              {
-                                "faceId": "[uuid]",
+                          "paths": [
+                            {
+                              "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
                                   68,
                                   83,
                                   0
-                                ],
-                                "tag": null,
-                                "type": "extrudePlane"
+                                ]
                               },
-                              {
-                                "faceId": "[uuid]",
+                              "from": [
+                                0.0,
+                                0.0
+                              ],
+                              "tag": null,
+                              "to": [
+                                4.0,
+                                8.0
+                              ],
+                              "type": "ToPoint"
+                            },
+                            {
+                              "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
                                   89,
                                   113,
                                   0
-                                ],
-                                "tag": {
-                                  "end": 112,
-                                  "start": 106,
-                                  "type": "TagDeclarator",
-                                  "value": "seg01"
-                                },
-                                "type": "extrudePlane"
+                                ]
                               },
-                              {
-                                "faceId": "[uuid]",
+                              "from": [
+                                4.0,
+                                8.0
+                              ],
+                              "tag": {
+                                "end": 112,
+                                "start": 106,
+                                "type": "TagDeclarator",
+                                "value": "seg01"
+                              },
+                              "to": [
+                                9.0,
+                                0.0
+                              ],
+                              "type": "ToPoint"
+                            },
+                            {
+                              "__geoMeta": {
                                 "id": "[uuid]",
                                 "sourceRange": [
                                   119,
                                   166,
                                   0
-                                ],
-                                "tag": null,
-                                "type": "extrudePlane"
-                              }
+                                ]
+                              },
+                              "from": [
+                                9.0,
+                                0.0
+                              ],
+                              "tag": null,
+                              "to": [
+                                0.0,
+                                0.0
+                              ],
+                              "type": "ToPoint"
+                            },
+                            {
+                              "__geoMeta": {
+                                "id": "[uuid]",
+                                "sourceRange": [
+                                  172,
+                                  180,
+                                  0
+                                ]
+                              },
+                              "from": [
+                                0.0,
+                                0.0
+                              ],
+                              "tag": null,
+                              "to": [
+                                0.0,
+                                0.0
+                              ],
+                              "type": "ToPoint"
+                            }
+                          ],
+                          "on": {
+                            "type": "plane",
+                            "id": "[uuid]",
+                            "value": "XZ",
+                            "origin": {
+                              "x": 0.0,
+                              "y": 0.0,
+                              "z": 0.0
+                            },
+                            "xAxis": {
+                              "x": 1.0,
+                              "y": 0.0,
+                              "z": 0.0
+                            },
+                            "yAxis": {
+                              "x": 0.0,
+                              "y": 0.0,
+                              "z": 1.0
+                            },
+                            "zAxis": {
+                              "x": 0.0,
+                              "y": -1.0,
+                              "z": 0.0
+                            },
+                            "units": {
+                              "type": "Mm"
+                            },
+                            "__meta": []
+                          },
+                          "start": {
+                            "from": [
+                              0.0,
+                              0.0
                             ],
-                            "sketch": {
-                              "type": "Sketch",
+                            "to": [
+                              0.0,
+                              0.0
+                            ],
+                            "tag": null,
+                            "__geoMeta": {
                               "id": "[uuid]",
-                              "paths": [
-                                {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      68,
-                                      83,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    0.0,
-                                    0.0
-                                  ],
-                                  "tag": null,
-                                  "to": [
-                                    4.0,
-                                    8.0
-                                  ],
-                                  "type": "ToPoint"
-                                },
-                                {
+                              "sourceRange": [
+                                37,
+                                62,
+                                0
+                              ]
+                            }
+                          },
+                          "tags": {
+                            "seg01": {
+                              "type": "TagIdentifier",
+                              "value": "seg01",
+                              "info": {
+                                "type": "TagEngineInfo",
+                                "id": "[uuid]",
+                                "sketch": "[uuid]",
+                                "path": {
                                   "__geoMeta": {
                                     "id": "[uuid]",
                                     "sourceRange": [
@@ -1998,152 +1287,945 @@ snapshot_kind: text
                                   ],
                                   "type": "ToPoint"
                                 },
-                                {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      119,
-                                      166,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    9.0,
-                                    0.0
-                                  ],
-                                  "tag": null,
-                                  "to": [
-                                    0.0,
-                                    0.0
-                                  ],
-                                  "type": "ToPoint"
-                                },
-                                {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      172,
-                                      180,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    0.0,
-                                    0.0
-                                  ],
-                                  "tag": null,
-                                  "to": [
-                                    0.0,
-                                    0.0
-                                  ],
-                                  "type": "ToPoint"
-                                }
-                              ],
-                              "on": {
-                                "type": "plane",
-                                "id": "[uuid]",
-                                "value": "XZ",
-                                "origin": {
-                                  "x": 0.0,
-                                  "y": 0.0,
-                                  "z": 0.0
-                                },
-                                "xAxis": {
-                                  "x": 1.0,
-                                  "y": 0.0,
-                                  "z": 0.0
-                                },
-                                "yAxis": {
-                                  "x": 0.0,
-                                  "y": 0.0,
-                                  "z": 1.0
-                                },
-                                "zAxis": {
-                                  "x": 0.0,
-                                  "y": -1.0,
-                                  "z": 0.0
-                                },
-                                "__meta": []
-                              },
-                              "start": {
-                                "from": [
-                                  0.0,
-                                  0.0
-                                ],
-                                "to": [
-                                  0.0,
-                                  0.0
-                                ],
-                                "tag": null,
-                                "__geoMeta": {
+                                "surface": {
+                                  "faceId": "[uuid]",
                                   "id": "[uuid]",
                                   "sourceRange": [
-                                    37,
-                                    62,
+                                    89,
+                                    113,
+                                    0
+                                  ],
+                                  "tag": {
+                                    "end": 112,
+                                    "start": 106,
+                                    "type": "TagDeclarator",
+                                    "value": "seg01"
+                                  },
+                                  "type": "extrudePlane"
+                                }
+                              },
+                              "__meta": [
+                                {
+                                  "sourceRange": [
+                                    106,
+                                    112,
                                     0
                                   ]
                                 }
+                              ]
+                            }
+                          },
+                          "units": {
+                            "type": "Mm"
+                          },
+                          "__meta": [
+                            {
+                              "sourceRange": [
+                                37,
+                                62,
+                                0
+                              ]
+                            }
+                          ]
+                        },
+                        "height": 6.0,
+                        "startCapId": "[uuid]",
+                        "endCapId": "[uuid]",
+                        "units": {
+                          "type": "Mm"
+                        },
+                        "__meta": [
+                          {
+                            "sourceRange": [
+                              37,
+                              62,
+                              0
+                            ]
+                          }
+                        ]
+                      },
+                      "units": {
+                        "type": "Mm"
+                      },
+                      "__meta": [
+                        {
+                          "sourceRange": [
+                            228,
+                            260,
+                            0
+                          ]
+                        }
+                      ]
+                    },
+                    "start": {
+                      "from": [
+                        -0.5,
+                        0.5
+                      ],
+                      "to": [
+                        -0.5,
+                        0.5
+                      ],
+                      "tag": null,
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": [
+                          266,
+                          296,
+                          0
+                        ]
+                      }
+                    },
+                    "units": {
+                      "type": "Mm"
+                    },
+                    "__meta": [
+                      {
+                        "sourceRange": [
+                          266,
+                          296,
+                          0
+                        ]
+                      }
+                    ]
+                  },
+                  "height": 5.0,
+                  "startCapId": null,
+                  "endCapId": "[uuid]",
+                  "units": {
+                    "type": "Mm"
+                  },
+                  "__meta": [
+                    {
+                      "sourceRange": [
+                        266,
+                        296,
+                        0
+                      ]
+                    }
+                  ]
+                },
+                "units": {
+                  "type": "Mm"
+                },
+                "__meta": [
+                  {
+                    "sourceRange": [
+                      454,
+                      486,
+                      0
+                    ]
+                  }
+                ]
+              },
+              "start": {
+                "from": [
+                  1.0,
+                  1.5
+                ],
+                "to": [
+                  1.0,
+                  1.5
+                ],
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    492,
+                    519,
+                    0
+                  ]
+                }
+              },
+              "tags": {
+                "seg02": {
+                  "type": "TagIdentifier",
+                  "value": "seg02",
+                  "info": {
+                    "type": "TagEngineInfo",
+                    "id": "[uuid]",
+                    "sketch": "[uuid]",
+                    "path": {
+                      "__geoMeta": {
+                        "id": "[uuid]",
+                        "sourceRange": [
+                          525,
+                          550,
+                          0
+                        ]
+                      },
+                      "from": [
+                        1.0,
+                        1.5
+                      ],
+                      "tag": {
+                        "end": 549,
+                        "start": 543,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
+                      "to": [
+                        1.5,
+                        3.5
+                      ],
+                      "type": "ToPoint"
+                    },
+                    "surface": {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        525,
+                        550,
+                        0
+                      ],
+                      "tag": {
+                        "end": 549,
+                        "start": 543,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
+                      "type": "extrudePlane"
+                    }
+                  },
+                  "__meta": [
+                    {
+                      "sourceRange": [
+                        543,
+                        549,
+                        0
+                      ]
+                    }
+                  ]
+                }
+              },
+              "units": {
+                "type": "Mm"
+              },
+              "__meta": [
+                {
+                  "sourceRange": [
+                    492,
+                    519,
+                    0
+                  ]
+                }
+              ]
+            },
+            "height": 4.0,
+            "startCapId": null,
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  492,
+                  519,
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        "extrude004": {
+          "type": "Solid",
+          "value": {
+            "type": "Solid",
+            "id": "[uuid]",
+            "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  758,
+                  775,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  781,
+                  799,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              },
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  805,
+                  852,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudePlane"
+              }
+            ],
+            "sketch": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      758,
+                      775,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -3.0,
+                    14.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -2.5,
+                    15.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      781,
+                      799,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -2.5,
+                    15.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -2.0,
+                    13.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      805,
+                      852,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -2.0,
+                    13.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -3.0,
+                    14.0
+                  ],
+                  "type": "ToPoint"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      858,
+                      866,
+                      0
+                    ]
+                  },
+                  "from": [
+                    -3.0,
+                    14.0
+                  ],
+                  "tag": null,
+                  "to": [
+                    -3.0,
+                    14.0
+                  ],
+                  "type": "ToPoint"
+                }
+              ],
+              "on": {
+                "type": "face",
+                "id": "[uuid]",
+                "value": "seg02",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": -1.0,
+                  "z": 0.0
+                },
+                "solid": {
+                  "type": "Solid",
+                  "id": "[uuid]",
+                  "value": [
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        525,
+                        550,
+                        0
+                      ],
+                      "tag": {
+                        "end": 549,
+                        "start": 543,
+                        "type": "TagDeclarator",
+                        "value": "seg02"
+                      },
+                      "type": "extrudePlane"
+                    },
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        556,
+                        572,
+                        0
+                      ],
+                      "tag": null,
+                      "type": "extrudePlane"
+                    },
+                    {
+                      "faceId": "[uuid]",
+                      "id": "[uuid]",
+                      "sourceRange": [
+                        578,
+                        625,
+                        0
+                      ],
+                      "tag": null,
+                      "type": "extrudePlane"
+                    }
+                  ],
+                  "sketch": {
+                    "type": "Sketch",
+                    "id": "[uuid]",
+                    "paths": [
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": [
+                            525,
+                            550,
+                            0
+                          ]
+                        },
+                        "from": [
+                          1.0,
+                          1.5
+                        ],
+                        "tag": {
+                          "end": 549,
+                          "start": 543,
+                          "type": "TagDeclarator",
+                          "value": "seg02"
+                        },
+                        "to": [
+                          1.5,
+                          3.5
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": [
+                            556,
+                            572,
+                            0
+                          ]
+                        },
+                        "from": [
+                          1.5,
+                          3.5
+                        ],
+                        "tag": null,
+                        "to": [
+                          2.5,
+                          1.5
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": [
+                            578,
+                            625,
+                            0
+                          ]
+                        },
+                        "from": [
+                          2.5,
+                          1.5
+                        ],
+                        "tag": null,
+                        "to": [
+                          1.0,
+                          1.5
+                        ],
+                        "type": "ToPoint"
+                      },
+                      {
+                        "__geoMeta": {
+                          "id": "[uuid]",
+                          "sourceRange": [
+                            631,
+                            639,
+                            0
+                          ]
+                        },
+                        "from": [
+                          1.0,
+                          1.5
+                        ],
+                        "tag": null,
+                        "to": [
+                          1.0,
+                          1.5
+                        ],
+                        "type": "ToPoint"
+                      }
+                    ],
+                    "on": {
+                      "type": "face",
+                      "id": "[uuid]",
+                      "value": "end",
+                      "xAxis": {
+                        "x": 1.0,
+                        "y": 0.0,
+                        "z": 0.0
+                      },
+                      "yAxis": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 1.0
+                      },
+                      "zAxis": {
+                        "x": 0.0,
+                        "y": -1.0,
+                        "z": 0.0
+                      },
+                      "solid": {
+                        "type": "Solid",
+                        "id": "[uuid]",
+                        "value": [
+                          {
+                            "faceId": "[uuid]",
+                            "id": "[uuid]",
+                            "sourceRange": [
+                              302,
+                              317,
+                              0
+                            ],
+                            "tag": null,
+                            "type": "extrudePlane"
+                          },
+                          {
+                            "faceId": "[uuid]",
+                            "id": "[uuid]",
+                            "sourceRange": [
+                              323,
+                              339,
+                              0
+                            ],
+                            "tag": null,
+                            "type": "extrudePlane"
+                          },
+                          {
+                            "faceId": "[uuid]",
+                            "id": "[uuid]",
+                            "sourceRange": [
+                              345,
+                              392,
+                              0
+                            ],
+                            "tag": null,
+                            "type": "extrudePlane"
+                          }
+                        ],
+                        "sketch": {
+                          "type": "Sketch",
+                          "id": "[uuid]",
+                          "paths": [
+                            {
+                              "__geoMeta": {
+                                "id": "[uuid]",
+                                "sourceRange": [
+                                  302,
+                                  317,
+                                  0
+                                ]
                               },
-                              "tags": {
-                                "seg01": {
-                                  "type": "TagIdentifier",
-                                  "value": "seg01",
-                                  "info": {
-                                    "type": "TagEngineInfo",
-                                    "id": "[uuid]",
-                                    "sketch": "[uuid]",
-                                    "path": {
-                                      "__geoMeta": {
-                                        "id": "[uuid]",
-                                        "sourceRange": [
-                                          89,
-                                          113,
-                                          0
-                                        ]
-                                      },
-                                      "from": [
-                                        4.0,
-                                        8.0
-                                      ],
-                                      "tag": {
-                                        "end": 112,
-                                        "start": 106,
-                                        "type": "TagDeclarator",
-                                        "value": "seg01"
-                                      },
-                                      "to": [
-                                        9.0,
-                                        0.0
-                                      ],
-                                      "type": "ToPoint"
+                              "from": [
+                                -0.5,
+                                0.5
+                              ],
+                              "tag": null,
+                              "to": [
+                                1.5,
+                                5.5
+                              ],
+                              "type": "ToPoint"
+                            },
+                            {
+                              "__geoMeta": {
+                                "id": "[uuid]",
+                                "sourceRange": [
+                                  323,
+                                  339,
+                                  0
+                                ]
+                              },
+                              "from": [
+                                1.5,
+                                5.5
+                              ],
+                              "tag": null,
+                              "to": [
+                                3.5,
+                                0.5
+                              ],
+                              "type": "ToPoint"
+                            },
+                            {
+                              "__geoMeta": {
+                                "id": "[uuid]",
+                                "sourceRange": [
+                                  345,
+                                  392,
+                                  0
+                                ]
+                              },
+                              "from": [
+                                3.5,
+                                0.5
+                              ],
+                              "tag": null,
+                              "to": [
+                                -0.5,
+                                0.5
+                              ],
+                              "type": "ToPoint"
+                            },
+                            {
+                              "__geoMeta": {
+                                "id": "[uuid]",
+                                "sourceRange": [
+                                  398,
+                                  406,
+                                  0
+                                ]
+                              },
+                              "from": [
+                                -0.5,
+                                0.5
+                              ],
+                              "tag": null,
+                              "to": [
+                                -0.5,
+                                0.5
+                              ],
+                              "type": "ToPoint"
+                            }
+                          ],
+                          "on": {
+                            "type": "face",
+                            "id": "[uuid]",
+                            "value": "seg01",
+                            "xAxis": {
+                              "x": 1.0,
+                              "y": 0.0,
+                              "z": 0.0
+                            },
+                            "yAxis": {
+                              "x": 0.0,
+                              "y": 0.0,
+                              "z": 1.0
+                            },
+                            "zAxis": {
+                              "x": 0.0,
+                              "y": -1.0,
+                              "z": 0.0
+                            },
+                            "solid": {
+                              "type": "Solid",
+                              "id": "[uuid]",
+                              "value": [
+                                {
+                                  "faceId": "[uuid]",
+                                  "id": "[uuid]",
+                                  "sourceRange": [
+                                    68,
+                                    83,
+                                    0
+                                  ],
+                                  "tag": null,
+                                  "type": "extrudePlane"
+                                },
+                                {
+                                  "faceId": "[uuid]",
+                                  "id": "[uuid]",
+                                  "sourceRange": [
+                                    89,
+                                    113,
+                                    0
+                                  ],
+                                  "tag": {
+                                    "end": 112,
+                                    "start": 106,
+                                    "type": "TagDeclarator",
+                                    "value": "seg01"
+                                  },
+                                  "type": "extrudePlane"
+                                },
+                                {
+                                  "faceId": "[uuid]",
+                                  "id": "[uuid]",
+                                  "sourceRange": [
+                                    119,
+                                    166,
+                                    0
+                                  ],
+                                  "tag": null,
+                                  "type": "extrudePlane"
+                                }
+                              ],
+                              "sketch": {
+                                "type": "Sketch",
+                                "id": "[uuid]",
+                                "paths": [
+                                  {
+                                    "__geoMeta": {
+                                      "id": "[uuid]",
+                                      "sourceRange": [
+                                        68,
+                                        83,
+                                        0
+                                      ]
                                     },
-                                    "surface": {
-                                      "faceId": "[uuid]",
+                                    "from": [
+                                      0.0,
+                                      0.0
+                                    ],
+                                    "tag": null,
+                                    "to": [
+                                      4.0,
+                                      8.0
+                                    ],
+                                    "type": "ToPoint"
+                                  },
+                                  {
+                                    "__geoMeta": {
                                       "id": "[uuid]",
                                       "sourceRange": [
                                         89,
                                         113,
                                         0
-                                      ],
-                                      "tag": {
-                                        "end": 112,
-                                        "start": 106,
-                                        "type": "TagDeclarator",
-                                        "value": "seg01"
-                                      },
-                                      "type": "extrudePlane"
-                                    }
+                                      ]
+                                    },
+                                    "from": [
+                                      4.0,
+                                      8.0
+                                    ],
+                                    "tag": {
+                                      "end": 112,
+                                      "start": 106,
+                                      "type": "TagDeclarator",
+                                      "value": "seg01"
+                                    },
+                                    "to": [
+                                      9.0,
+                                      0.0
+                                    ],
+                                    "type": "ToPoint"
                                   },
-                                  "__meta": [
-                                    {
+                                  {
+                                    "__geoMeta": {
+                                      "id": "[uuid]",
                                       "sourceRange": [
-                                        106,
-                                        112,
+                                        119,
+                                        166,
                                         0
                                       ]
-                                    }
-                                  ]
-                                }
+                                    },
+                                    "from": [
+                                      9.0,
+                                      0.0
+                                    ],
+                                    "tag": null,
+                                    "to": [
+                                      0.0,
+                                      0.0
+                                    ],
+                                    "type": "ToPoint"
+                                  },
+                                  {
+                                    "__geoMeta": {
+                                      "id": "[uuid]",
+                                      "sourceRange": [
+                                        172,
+                                        180,
+                                        0
+                                      ]
+                                    },
+                                    "from": [
+                                      0.0,
+                                      0.0
+                                    ],
+                                    "tag": null,
+                                    "to": [
+                                      0.0,
+                                      0.0
+                                    ],
+                                    "type": "ToPoint"
+                                  }
+                                ],
+                                "on": {
+                                  "type": "plane",
+                                  "id": "[uuid]",
+                                  "value": "XZ",
+                                  "origin": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                  },
+                                  "xAxis": {
+                                    "x": 1.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                  },
+                                  "yAxis": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 1.0
+                                  },
+                                  "zAxis": {
+                                    "x": 0.0,
+                                    "y": -1.0,
+                                    "z": 0.0
+                                  },
+                                  "units": {
+                                    "type": "Mm"
+                                  },
+                                  "__meta": []
+                                },
+                                "start": {
+                                  "from": [
+                                    0.0,
+                                    0.0
+                                  ],
+                                  "to": [
+                                    0.0,
+                                    0.0
+                                  ],
+                                  "tag": null,
+                                  "__geoMeta": {
+                                    "id": "[uuid]",
+                                    "sourceRange": [
+                                      37,
+                                      62,
+                                      0
+                                    ]
+                                  }
+                                },
+                                "tags": {
+                                  "seg01": {
+                                    "type": "TagIdentifier",
+                                    "value": "seg01",
+                                    "info": {
+                                      "type": "TagEngineInfo",
+                                      "id": "[uuid]",
+                                      "sketch": "[uuid]",
+                                      "path": {
+                                        "__geoMeta": {
+                                          "id": "[uuid]",
+                                          "sourceRange": [
+                                            89,
+                                            113,
+                                            0
+                                          ]
+                                        },
+                                        "from": [
+                                          4.0,
+                                          8.0
+                                        ],
+                                        "tag": {
+                                          "end": 112,
+                                          "start": 106,
+                                          "type": "TagDeclarator",
+                                          "value": "seg01"
+                                        },
+                                        "to": [
+                                          9.0,
+                                          0.0
+                                        ],
+                                        "type": "ToPoint"
+                                      },
+                                      "surface": {
+                                        "faceId": "[uuid]",
+                                        "id": "[uuid]",
+                                        "sourceRange": [
+                                          89,
+                                          113,
+                                          0
+                                        ],
+                                        "tag": {
+                                          "end": 112,
+                                          "start": 106,
+                                          "type": "TagDeclarator",
+                                          "value": "seg01"
+                                        },
+                                        "type": "extrudePlane"
+                                      }
+                                    },
+                                    "__meta": [
+                                      {
+                                        "sourceRange": [
+                                          106,
+                                          112,
+                                          0
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                },
+                                "units": {
+                                  "type": "Mm"
+                                },
+                                "__meta": [
+                                  {
+                                    "sourceRange": [
+                                      37,
+                                      62,
+                                      0
+                                    ]
+                                  }
+                                ]
+                              },
+                              "height": 6.0,
+                              "startCapId": "[uuid]",
+                              "endCapId": "[uuid]",
+                              "units": {
+                                "type": "Mm"
                               },
                               "__meta": [
                                 {
@@ -2155,47 +2237,56 @@ snapshot_kind: text
                                 }
                               ]
                             },
-                            "height": 6.0,
-                            "startCapId": "[uuid]",
-                            "endCapId": "[uuid]",
+                            "units": {
+                              "type": "Mm"
+                            },
                             "__meta": [
                               {
                                 "sourceRange": [
-                                  37,
-                                  62,
+                                  228,
+                                  260,
                                   0
                                 ]
                               }
                             ]
                           },
+                          "start": {
+                            "from": [
+                              -0.5,
+                              0.5
+                            ],
+                            "to": [
+                              -0.5,
+                              0.5
+                            ],
+                            "tag": null,
+                            "__geoMeta": {
+                              "id": "[uuid]",
+                              "sourceRange": [
+                                266,
+                                296,
+                                0
+                              ]
+                            }
+                          },
+                          "units": {
+                            "type": "Mm"
+                          },
                           "__meta": [
                             {
                               "sourceRange": [
-                                228,
-                                260,
+                                266,
+                                296,
                                 0
                               ]
                             }
                           ]
                         },
-                        "start": {
-                          "from": [
-                            -0.5,
-                            0.5
-                          ],
-                          "to": [
-                            -0.5,
-                            0.5
-                          ],
-                          "tag": null,
-                          "__geoMeta": {
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              266,
-                              296,
-                              0
-                            ]
-                          }
+                        "height": 5.0,
+                        "startCapId": null,
+                        "endCapId": "[uuid]",
+                        "units": {
+                          "type": "Mm"
                         },
                         "__meta": [
                           {
@@ -2207,108 +2298,117 @@ snapshot_kind: text
                           }
                         ]
                       },
-                      "height": 5.0,
-                      "startCapId": null,
-                      "endCapId": "[uuid]",
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": [
                         {
                           "sourceRange": [
-                            266,
-                            296,
+                            454,
+                            486,
                             0
                           ]
                         }
                       ]
                     },
-                    "__meta": [
-                      {
+                    "start": {
+                      "from": [
+                        1.0,
+                        1.5
+                      ],
+                      "to": [
+                        1.0,
+                        1.5
+                      ],
+                      "tag": null,
+                      "__geoMeta": {
+                        "id": "[uuid]",
                         "sourceRange": [
-                          454,
-                          486,
+                          492,
+                          519,
                           0
                         ]
                       }
-                    ]
-                  },
-                  "start": {
-                    "from": [
-                      1.0,
-                      1.5
-                    ],
-                    "to": [
-                      1.0,
-                      1.5
-                    ],
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        492,
-                        519,
-                        0
-                      ]
-                    }
-                  },
-                  "tags": {
-                    "seg02": {
-                      "type": "TagIdentifier",
-                      "value": "seg02",
-                      "info": {
-                        "type": "TagEngineInfo",
-                        "id": "[uuid]",
-                        "sketch": "[uuid]",
-                        "path": {
-                          "__geoMeta": {
+                    },
+                    "tags": {
+                      "seg02": {
+                        "type": "TagIdentifier",
+                        "value": "seg02",
+                        "info": {
+                          "type": "TagEngineInfo",
+                          "id": "[uuid]",
+                          "sketch": "[uuid]",
+                          "path": {
+                            "__geoMeta": {
+                              "id": "[uuid]",
+                              "sourceRange": [
+                                525,
+                                550,
+                                0
+                              ]
+                            },
+                            "from": [
+                              1.0,
+                              1.5
+                            ],
+                            "tag": {
+                              "end": 549,
+                              "start": 543,
+                              "type": "TagDeclarator",
+                              "value": "seg02"
+                            },
+                            "to": [
+                              1.5,
+                              3.5
+                            ],
+                            "type": "ToPoint"
+                          },
+                          "surface": {
+                            "faceId": "[uuid]",
                             "id": "[uuid]",
                             "sourceRange": [
                               525,
                               550,
                               0
-                            ]
-                          },
-                          "from": [
-                            1.0,
-                            1.5
-                          ],
-                          "tag": {
-                            "end": 549,
-                            "start": 543,
-                            "type": "TagDeclarator",
-                            "value": "seg02"
-                          },
-                          "to": [
-                            1.5,
-                            3.5
-                          ],
-                          "type": "ToPoint"
+                            ],
+                            "tag": {
+                              "end": 549,
+                              "start": 543,
+                              "type": "TagDeclarator",
+                              "value": "seg02"
+                            },
+                            "type": "extrudePlane"
+                          }
                         },
-                        "surface": {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            525,
-                            550,
-                            0
-                          ],
-                          "tag": {
-                            "end": 549,
-                            "start": 543,
-                            "type": "TagDeclarator",
-                            "value": "seg02"
-                          },
-                          "type": "extrudePlane"
-                        }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            543,
-                            549,
-                            0
-                          ]
-                        }
-                      ]
-                    }
+                        "__meta": [
+                          {
+                            "sourceRange": [
+                              543,
+                              549,
+                              0
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "units": {
+                      "type": "Mm"
+                    },
+                    "__meta": [
+                      {
+                        "sourceRange": [
+                          492,
+                          519,
+                          0
+                        ]
+                      }
+                    ]
+                  },
+                  "height": 4.0,
+                  "startCapId": null,
+                  "endCapId": "[uuid]",
+                  "units": {
+                    "type": "Mm"
                   },
                   "__meta": [
                     {
@@ -2320,47 +2420,56 @@ snapshot_kind: text
                     }
                   ]
                 },
-                "height": 4.0,
-                "startCapId": null,
-                "endCapId": "[uuid]",
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
-                      492,
-                      519,
+                      687,
+                      719,
                       0
                     ]
                   }
                 ]
               },
+              "start": {
+                "from": [
+                  -3.0,
+                  14.0
+                ],
+                "to": [
+                  -3.0,
+                  14.0
+                ],
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    725,
+                    752,
+                    0
+                  ]
+                }
+              },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": [
                 {
                   "sourceRange": [
-                    687,
-                    719,
+                    725,
+                    752,
                     0
                   ]
                 }
               ]
             },
-            "start": {
-              "from": [
-                -3.0,
-                14.0
-              ],
-              "to": [
-                -3.0,
-                14.0
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  725,
-                  752,
-                  0
-                ]
-              }
+            "height": 3.0,
+            "startCapId": null,
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -2371,19 +2480,7 @@ snapshot_kind: text
                 ]
               }
             ]
-          },
-          "height": 3.0,
-          "startCapId": null,
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                725,
-                752,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg01": {
           "type": "TagIdentifier",
@@ -2621,6 +2718,9 @@ snapshot_kind: text
                 "y": -1.0,
                 "z": 0.0
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": []
             },
             "start": {
@@ -2702,6 +2802,9 @@ snapshot_kind: text
                   }
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -2977,6 +3080,9 @@ snapshot_kind: text
                       "y": -1.0,
                       "z": 0.0
                     },
+                    "units": {
+                      "type": "Mm"
+                    },
                     "__meta": []
                   },
                   "start": {
@@ -3059,6 +3165,9 @@ snapshot_kind: text
                       ]
                     }
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -3072,6 +3181,9 @@ snapshot_kind: text
                 "height": 6.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -3081,6 +3193,9 @@ snapshot_kind: text
                     ]
                   }
                 ]
+              },
+              "units": {
+                "type": "Mm"
               },
               "__meta": [
                 {
@@ -3110,6 +3225,9 @@ snapshot_kind: text
                   0
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -3532,6 +3650,9 @@ snapshot_kind: text
                             "y": -1.0,
                             "z": 0.0
                           },
+                          "units": {
+                            "type": "Mm"
+                          },
                           "__meta": []
                         },
                         "start": {
@@ -3614,6 +3735,9 @@ snapshot_kind: text
                             ]
                           }
                         },
+                        "units": {
+                          "type": "Mm"
+                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -3627,6 +3751,9 @@ snapshot_kind: text
                       "height": 6.0,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": [
                         {
                           "sourceRange": [
@@ -3636,6 +3763,9 @@ snapshot_kind: text
                           ]
                         }
                       ]
+                    },
+                    "units": {
+                      "type": "Mm"
                     },
                     "__meta": [
                       {
@@ -3666,6 +3796,9 @@ snapshot_kind: text
                       ]
                     }
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -3679,6 +3812,9 @@ snapshot_kind: text
                 "height": 5.0,
                 "startCapId": null,
                 "endCapId": "[uuid]",
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -3688,6 +3824,9 @@ snapshot_kind: text
                     ]
                   }
                 ]
+              },
+              "units": {
+                "type": "Mm"
               },
               "__meta": [
                 {
@@ -3778,6 +3917,9 @@ snapshot_kind: text
                   }
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {
@@ -4347,6 +4489,9 @@ snapshot_kind: text
                                   "y": -1.0,
                                   "z": 0.0
                                 },
+                                "units": {
+                                  "type": "Mm"
+                                },
                                 "__meta": []
                               },
                               "start": {
@@ -4429,6 +4574,9 @@ snapshot_kind: text
                                   ]
                                 }
                               },
+                              "units": {
+                                "type": "Mm"
+                              },
                               "__meta": [
                                 {
                                   "sourceRange": [
@@ -4442,6 +4590,9 @@ snapshot_kind: text
                             "height": 6.0,
                             "startCapId": "[uuid]",
                             "endCapId": "[uuid]",
+                            "units": {
+                              "type": "Mm"
+                            },
                             "__meta": [
                               {
                                 "sourceRange": [
@@ -4451,6 +4602,9 @@ snapshot_kind: text
                                 ]
                               }
                             ]
+                          },
+                          "units": {
+                            "type": "Mm"
                           },
                           "__meta": [
                             {
@@ -4481,6 +4635,9 @@ snapshot_kind: text
                             ]
                           }
                         },
+                        "units": {
+                          "type": "Mm"
+                        },
                         "__meta": [
                           {
                             "sourceRange": [
@@ -4494,6 +4651,9 @@ snapshot_kind: text
                       "height": 5.0,
                       "startCapId": null,
                       "endCapId": "[uuid]",
+                      "units": {
+                        "type": "Mm"
+                      },
                       "__meta": [
                         {
                           "sourceRange": [
@@ -4503,6 +4663,9 @@ snapshot_kind: text
                           ]
                         }
                       ]
+                    },
+                    "units": {
+                      "type": "Mm"
                     },
                     "__meta": [
                       {
@@ -4594,6 +4757,9 @@ snapshot_kind: text
                       ]
                     }
                   },
+                  "units": {
+                    "type": "Mm"
+                  },
                   "__meta": [
                     {
                       "sourceRange": [
@@ -4607,6 +4773,9 @@ snapshot_kind: text
                 "height": 4.0,
                 "startCapId": null,
                 "endCapId": "[uuid]",
+                "units": {
+                  "type": "Mm"
+                },
                 "__meta": [
                   {
                     "sourceRange": [
@@ -4616,6 +4785,9 @@ snapshot_kind: text
                     ]
                   }
                 ]
+              },
+              "units": {
+                "type": "Mm"
               },
               "__meta": [
                 {
@@ -4645,6 +4817,9 @@ snapshot_kind: text
                   0
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {

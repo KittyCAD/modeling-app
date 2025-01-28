@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing artifact_graph_example_code_no_3d.kcl
-snapshot_kind: text
 ---
 {
   "environments": [
@@ -308,6 +307,9 @@ snapshot_kind: text
                 "y": 0.0,
                 "z": 0.0
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": []
             },
             "start": {
@@ -463,6 +465,9 @@ snapshot_kind: text
                 ]
               }
             },
+            "units": {
+              "type": "Mm"
+            },
             "__meta": [
               {
                 "sourceRange": [
@@ -575,6 +580,9 @@ snapshot_kind: text
                 "y": 1.0,
                 "z": 0.0
               },
+              "units": {
+                "type": "Mm"
+              },
               "__meta": []
             },
             "start": {
@@ -595,6 +603,9 @@ snapshot_kind: text
                   0
                 ]
               }
+            },
+            "units": {
+              "type": "Mm"
             },
             "__meta": [
               {

@@ -7,7 +7,10 @@ description: Result of parsing import_cycle1.kcl
     "body": [
       {
         "end": 35,
-        "path": "import_cycle2.kcl",
+        "path": {
+          "type": "Kcl",
+          "filename": "import_cycle2.kcl"
+        },
         "selector": {
           "type": "List",
           "items": [
@@ -64,7 +67,10 @@ description: Result of parsing import_cycle1.kcl
                       "start": 72,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 64,
                     "type": "BinaryExpression",

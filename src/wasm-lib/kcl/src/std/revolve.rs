@@ -32,8 +32,8 @@ pub struct RevolveData {
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let (data, sketch): (RevolveData, Sketch) = args.get_data_and_sketch()?;
 
-    let solid = inner_revolve(data, sketch, exec_state, args).await?;
-    Ok(KclValue::Solid(solid))
+    let value = inner_revolve(data, sketch, exec_state, args).await?;
+    Ok(KclValue::Solid { value })
 }
 
 /// Rotate a sketch around some provided axis, creating a solid from its extent.

@@ -87,7 +87,10 @@ description: Result of parsing function_sketch_with_position.kcl
                                   "start": 92,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "end": 96,
@@ -137,7 +140,10 @@ description: Result of parsing function_sketch_with_position.kcl
                                   "start": 118,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 }
                               ],
                               "end": 120,
@@ -173,7 +179,10 @@ description: Result of parsing function_sketch_with_position.kcl
                                   "start": 138,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "argument": {
@@ -378,7 +387,10 @@ description: Result of parsing function_sketch_with_position.kcl
                     "start": 218,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0.0
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 222,
@@ -386,7 +398,10 @@ description: Result of parsing function_sketch_with_position.kcl
                     "start": 221,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0.0
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   }
                 ],
                 "end": 223,
@@ -400,7 +415,10 @@ description: Result of parsing function_sketch_with_position.kcl
                 "start": 225,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 229,
@@ -408,7 +426,10 @@ description: Result of parsing function_sketch_with_position.kcl
                 "start": 228,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 6.0
+                "value": {
+                  "value": 6.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 233,
@@ -416,7 +437,10 @@ description: Result of parsing function_sketch_with_position.kcl
                 "start": 231,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 10.0
+                "value": {
+                  "value": 10.0,
+                  "suffix": "None"
+                }
               }
             ],
             "callee": {

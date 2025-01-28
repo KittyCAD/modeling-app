@@ -20,7 +20,10 @@ description: Result of parsing parametric.kcl
             "start": 13,
             "type": "Literal",
             "type": "Literal",
-            "value": 35000.0
+            "value": {
+              "value": 35000.0,
+              "suffix": "None"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -46,7 +49,10 @@ description: Result of parsing parametric.kcl
             "start": 34,
             "type": "Literal",
             "type": "Literal",
-            "value": 9.0
+            "value": {
+              "value": 9.0,
+              "suffix": "None"
+            }
           },
           "start": 26,
           "type": "VariableDeclarator"
@@ -72,7 +78,10 @@ description: Result of parsing parametric.kcl
             "start": 48,
             "type": "Literal",
             "type": "Literal",
-            "value": 150.0
+            "value": {
+              "value": 150.0,
+              "suffix": "None"
+            }
           },
           "start": 44,
           "type": "VariableDeclarator"
@@ -98,7 +107,10 @@ description: Result of parsing parametric.kcl
             "start": 87,
             "type": "Literal",
             "type": "Literal",
-            "value": 6.0
+            "value": {
+              "value": 6.0,
+              "suffix": "None"
+            }
           },
           "start": 76,
           "type": "VariableDeclarator"
@@ -124,7 +136,10 @@ description: Result of parsing parametric.kcl
             "start": 105,
             "type": "Literal",
             "type": "Literal",
-            "value": 2.0
+            "value": {
+              "value": 2.0,
+              "suffix": "None"
+            }
           },
           "start": 99,
           "type": "VariableDeclarator"
@@ -150,7 +165,10 @@ description: Result of parsing parametric.kcl
             "start": 115,
             "type": "Literal",
             "type": "Literal",
-            "value": 5.0
+            "value": {
+              "value": 5.0,
+              "suffix": "None"
+            }
           },
           "start": 108,
           "type": "VariableDeclarator"
@@ -176,7 +194,10 @@ description: Result of parsing parametric.kcl
             "start": 134,
             "type": "Literal",
             "type": "Literal",
-            "value": 8.0
+            "value": {
+              "value": 8.0,
+              "suffix": "None"
+            }
           },
           "start": 127,
           "type": "VariableDeclarator"
@@ -246,7 +267,10 @@ description: Result of parsing parametric.kcl
                       "start": 184,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 6.0
+                      "value": {
+                        "value": 6.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 163,
                     "type": "BinaryExpression",
@@ -340,7 +364,10 @@ description: Result of parsing parametric.kcl
                         "start": 269,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 273,
@@ -348,7 +375,10 @@ description: Result of parsing parametric.kcl
                         "start": 272,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 274,
@@ -384,7 +414,10 @@ description: Result of parsing parametric.kcl
                         "start": 290,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 297,
@@ -434,7 +467,10 @@ description: Result of parsing parametric.kcl
                         "start": 320,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 322,
@@ -470,7 +506,10 @@ description: Result of parsing parametric.kcl
                         "start": 338,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -548,7 +587,10 @@ description: Result of parsing parametric.kcl
                         "start": 387,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 389,
@@ -584,7 +626,10 @@ description: Result of parsing parametric.kcl
                         "start": 405,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 425,

@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing kw_fn.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -35,7 +34,10 @@ snapshot_kind: text
                       "start": 32,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     },
                     "start": 28,
                     "type": "BinaryExpression",
@@ -171,7 +173,10 @@ snapshot_kind: text
                 "start": 95,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             ],
             "callee": {
@@ -217,7 +222,10 @@ snapshot_kind: text
                   "start": 121,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 }
               }
             ],
@@ -237,7 +245,10 @@ snapshot_kind: text
               "start": 110,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             }
           },
           "start": 98,

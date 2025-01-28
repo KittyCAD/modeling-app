@@ -61,6 +61,7 @@ import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
 import { editorManager, sceneInfra } from 'lib/singletons'
 import { Selections } from 'lib/selections'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 interface CreateSegmentArgs {
   input: SegmentInputs
@@ -847,7 +848,7 @@ function createLengthIndicator({
     })
 
     // Command Bar
-    editorManager.commandBarSend({
+    commandBarActor.send({
       type: 'Find and select command',
       data: {
         name: 'Constrain length',

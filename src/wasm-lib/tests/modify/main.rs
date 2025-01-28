@@ -62,9 +62,9 @@ async fn kcl_test_modify_sketch_part001() {
     let code = format!(
         r#"{} = startSketchOn("XY")
   |> startProfileAt([8.41, 5.78], %)
-  |> line([7.37, -11.0], %)
+  |> line([7.37, -11], %)
   |> line([-8.69, -3.75], %)
-  |> line([-5.0, 4.25], %)
+  |> line([-5, 4.25], %)
 "#,
         name
     );

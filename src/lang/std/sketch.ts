@@ -17,9 +17,9 @@ import {
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
-  getNodePathFromSourceRange,
   getObjExprProperty,
 } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,

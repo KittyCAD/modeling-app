@@ -95,9 +95,11 @@ export const processMemory = (programMemory: ProgramMemory) => {
     ) {
       const sk = sketchFromKclValueOptional(val, key)
       if (val.type === 'Solid') {
-        processedMemory[key] = val.value.map(({ ...rest }: ExtrudeSurface) => {
-          return rest
-        })
+        processedMemory[key] = val.value.value.map(
+          ({ ...rest }: ExtrudeSurface) => {
+            return rest
+          }
+        )
       } else if (!(sk instanceof Reason)) {
         processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
           return rest

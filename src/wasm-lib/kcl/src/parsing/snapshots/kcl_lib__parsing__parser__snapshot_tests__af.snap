@@ -25,7 +25,10 @@ expression: actual
                       "start": 26,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0.0
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     },
                     {
                       "end": 29,
@@ -33,7 +36,10 @@ expression: actual
                       "start": 28,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0.0
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     }
                   ],
                   "end": 30,
@@ -63,7 +69,10 @@ expression: actual
                       "start": 51,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0.0
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     },
                     {
                       "end": 55,
@@ -71,7 +80,10 @@ expression: actual
                       "start": 54,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     }
                   ],
                   "end": 56,
@@ -114,7 +126,10 @@ expression: actual
                       "start": 89,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     },
                     {
                       "end": 93,
@@ -122,7 +137,10 @@ expression: actual
                       "start": 92,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     }
                   ],
                   "end": 94,
@@ -158,7 +176,10 @@ expression: actual
                       "start": 118,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     },
                     {
                       "end": 122,
@@ -166,7 +187,10 @@ expression: actual
                       "start": 121,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 0.0
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
                     }
                   ],
                   "end": 123,

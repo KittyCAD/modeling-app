@@ -24,7 +24,10 @@ describe('testing AST', () => {
             type: 'Literal',
             start: 0,
             end: 1,
-            value: 5,
+            value: {
+              suffix: 'None',
+              value: 5,
+            },
             raw: '5',
           },
           operator: '+',
@@ -32,7 +35,10 @@ describe('testing AST', () => {
             type: 'Literal',
             start: 3,
             end: 4,
-            value: 6,
+            value: {
+              suffix: 'None',
+              value: 6,
+            },
             raw: '6',
           },
         },

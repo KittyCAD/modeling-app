@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing helix_ccw.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -62,7 +61,10 @@ snapshot_kind: text
                               "start": 54,
                               "type": "Literal",
                               "type": "Literal",
-                              "value": 5.0
+                              "value": {
+                                "value": 5.0,
+                                "suffix": "None"
+                              }
                             },
                             {
                               "end": 58,
@@ -70,7 +72,10 @@ snapshot_kind: text
                               "start": 57,
                               "type": "Literal",
                               "type": "Literal",
-                              "value": 5.0
+                              "value": {
+                                "value": 5.0,
+                                "suffix": "None"
+                              }
                             }
                           ],
                           "end": 59,
@@ -95,7 +100,10 @@ snapshot_kind: text
                           "start": 70,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 10.0
+                          "value": {
+                            "value": 10.0,
+                            "suffix": "None"
+                          }
                         }
                       }
                     ],
@@ -129,7 +137,10 @@ snapshot_kind: text
                     "start": 92,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 10.0
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 97,
@@ -170,7 +181,10 @@ snapshot_kind: text
                           "start": 144,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 16.0
+                          "value": {
+                            "value": 16.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
@@ -189,7 +203,10 @@ snapshot_kind: text
                           "start": 168,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.0
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {

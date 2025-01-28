@@ -16,10 +16,8 @@ import {
 } from 'lib/selections'
 import { assign, fromPromise, fromCallback, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import {
-  isNodeSafeToReplacePath,
-  getNodePathFromSourceRange,
-} from 'lang/queryAst'
+import { isNodeSafeToReplacePath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   kclManager,
   sceneInfra,
@@ -1561,40 +1559,40 @@ export const modelingMachine = setup({
         if (!input) return new Error('No input provided')
         // Extract inputs
         const ast = kclManager.ast
-        const { profile, path } = input
+        const { target, trajectory } = input
 
         // Find the profile declaration
-        const profileNodePath = getNodePathFromSourceRange(
+        const targetNodePath = getNodePathFromSourceRange(
           ast,
-          profile.graphSelections[0].codeRef.range
+          target.graphSelections[0].codeRef.range
         )
-        const profileNode = getNodeFromPath<VariableDeclarator>(
+        const targetNode = getNodeFromPath<VariableDeclarator>(
           ast,
-          profileNodePath,
+          targetNodePath,
           'VariableDeclarator'
         )
-        if (err(profileNode)) {
+        if (err(targetNode)) {
           return new Error("Couldn't parse profile selection")
         }
-        const profileDeclarator = profileNode.node
+        const targetDeclarator = targetNode.node
 
         // Find the path declaration
-        const pathNodePath = getNodePathFromSourceRange(
+        const trajectoryNodePath = getNodePathFromSourceRange(
           ast,
-          path.graphSelections[0].codeRef.range
+          trajectory.graphSelections[0].codeRef.range
         )
-        const pathNode = getNodeFromPath<VariableDeclarator>(
+        const trajectoryNode = getNodeFromPath<VariableDeclarator>(
           ast,
-          pathNodePath,
+          trajectoryNodePath,
           'VariableDeclarator'
         )
-        if (err(pathNode)) {
+        if (err(trajectoryNode)) {
           return new Error("Couldn't parse path selection")
         }
-        const pathDeclarator = pathNode.node
+        const trajectoryDeclarator = trajectoryNode.node
 
         // Perform the sweep
-        const sweepRes = addSweep(ast, profileDeclarator, pathDeclarator)
+        const sweepRes = addSweep(ast, targetDeclarator, trajectoryDeclarator)
         const updateAstResult = await kclManager.updateAst(
           sweepRes.modifiedAst,
           true,

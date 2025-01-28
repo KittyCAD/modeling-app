@@ -22,7 +22,10 @@ description: Result of parsing array_elem_pop_fail.kcl
                 "start": 7,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 11,
@@ -30,7 +33,10 @@ description: Result of parsing array_elem_pop_fail.kcl
                 "start": 10,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2.0
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 14,
@@ -38,7 +44,10 @@ description: Result of parsing array_elem_pop_fail.kcl
                 "start": 13,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             ],
             "end": 15,
@@ -119,7 +128,10 @@ description: Result of parsing array_elem_pop_fail.kcl
               "start": 54,
               "type": "Literal",
               "type": "Literal",
-              "value": 2.0
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             },
             "start": 44,
             "type": "MemberExpression",

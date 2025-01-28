@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -49,7 +48,10 @@ snapshot_kind: text
                         "start": 53,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 57,
@@ -57,7 +59,10 @@ snapshot_kind: text
                         "start": 56,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 58,
@@ -93,7 +98,10 @@ snapshot_kind: text
                         "start": 74,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 4.0
+                        "value": {
+                          "value": 4.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 78,
@@ -101,7 +109,10 @@ snapshot_kind: text
                         "start": 77,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 8.0
+                        "value": {
+                          "value": 8.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 79,
@@ -137,7 +148,10 @@ snapshot_kind: text
                         "start": 95,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 5.0
+                        "value": {
+                          "value": 5.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -146,7 +160,10 @@ snapshot_kind: text
                           "start": 99,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 8.0
+                          "value": {
+                            "value": 8.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 100,
                         "operator": "-",
@@ -305,7 +322,10 @@ snapshot_kind: text
                 "start": 202,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 6.0
+                "value": {
+                  "value": 6.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 214,
@@ -385,7 +405,10 @@ snapshot_kind: text
                           "start": 283,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.5
+                          "value": {
+                            "value": 0.5,
+                            "suffix": "None"
+                          }
                         },
                         "end": 286,
                         "operator": "-",
@@ -399,7 +422,10 @@ snapshot_kind: text
                         "start": 288,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.5
+                        "value": {
+                          "value": 0.5,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 292,
@@ -435,7 +461,10 @@ snapshot_kind: text
                         "start": 308,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 312,
@@ -443,7 +472,10 @@ snapshot_kind: text
                         "start": 311,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 5.0
+                        "value": {
+                          "value": 5.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 313,
@@ -479,7 +511,10 @@ snapshot_kind: text
                         "start": 329,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -488,7 +523,10 @@ snapshot_kind: text
                           "start": 333,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 5.0
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 334,
                         "operator": "-",
@@ -640,7 +678,10 @@ snapshot_kind: text
                 "start": 428,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 5.0
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 440,
@@ -720,7 +761,10 @@ snapshot_kind: text
                         "start": 508,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 514,
@@ -728,7 +772,10 @@ snapshot_kind: text
                         "start": 511,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.5
+                        "value": {
+                          "value": 1.5,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 515,
@@ -764,7 +811,10 @@ snapshot_kind: text
                         "start": 531,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.5
+                        "value": {
+                          "value": 0.5,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 537,
@@ -772,7 +822,10 @@ snapshot_kind: text
                         "start": 536,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 538,
@@ -815,7 +868,10 @@ snapshot_kind: text
                         "start": 562,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -824,7 +880,10 @@ snapshot_kind: text
                           "start": 566,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2.0
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 567,
                         "operator": "-",
@@ -976,7 +1035,10 @@ snapshot_kind: text
                 "start": 661,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 4.0
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 673,
@@ -1056,7 +1118,10 @@ snapshot_kind: text
                           "start": 742,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 3.0
+                          "value": {
+                            "value": 3.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 743,
                         "operator": "-",
@@ -1070,7 +1135,10 @@ snapshot_kind: text
                         "start": 745,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 14.0
+                        "value": {
+                          "value": 14.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 748,
@@ -1106,7 +1174,10 @@ snapshot_kind: text
                         "start": 764,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.5
+                        "value": {
+                          "value": 0.5,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 770,
@@ -1114,7 +1185,10 @@ snapshot_kind: text
                         "start": 769,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 771,
@@ -1150,7 +1224,10 @@ snapshot_kind: text
                         "start": 787,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.5
+                        "value": {
+                          "value": 0.5,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -1159,7 +1236,10 @@ snapshot_kind: text
                           "start": 793,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2.0
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 794,
                         "operator": "-",
@@ -1311,7 +1391,10 @@ snapshot_kind: text
                 "start": 888,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 900,

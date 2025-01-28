@@ -21,7 +21,10 @@ expression: actual
             "start": 9,
             "type": "Literal",
             "type": "Literal",
-            "value": 1.0
+            "value": {
+              "value": 1.0,
+              "suffix": "None"
+            }
           },
           "operator": "-",
           "right": {

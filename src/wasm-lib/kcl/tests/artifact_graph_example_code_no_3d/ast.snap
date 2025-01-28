@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing artifact_graph_example_code_no_3d.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -49,7 +48,10 @@ snapshot_kind: text
                         "start": 53,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 5.82
+                        "value": {
+                          "value": 5.82,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 60,
@@ -57,7 +59,10 @@ snapshot_kind: text
                         "start": 59,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 61,
@@ -93,7 +98,10 @@ snapshot_kind: text
                         "start": 83,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 180.0
+                        "value": {
+                          "value": 180.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 93,
@@ -101,7 +109,10 @@ snapshot_kind: text
                         "start": 88,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 11.54
+                        "value": {
+                          "value": 11.54,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 94,
@@ -168,7 +179,10 @@ snapshot_kind: text
                           "start": 178,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 90.0
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 147,
                         "type": "BinaryExpression",
@@ -180,7 +194,10 @@ snapshot_kind: text
                         "start": 189,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 8.21
+                        "value": {
+                          "value": 8.21,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 200,
@@ -443,7 +460,10 @@ snapshot_kind: text
                         "start": 475,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 483,
@@ -451,7 +471,10 @@ snapshot_kind: text
                         "start": 478,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 14.36
+                        "value": {
+                          "value": 14.36,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 484,
@@ -487,7 +510,10 @@ snapshot_kind: text
                         "start": 500,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 15.49
+                        "value": {
+                          "value": 15.49,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 511,
@@ -495,7 +521,10 @@ snapshot_kind: text
                         "start": 507,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.05
+                        "value": {
+                          "value": 0.05,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 512,
@@ -531,7 +560,10 @@ snapshot_kind: text
                         "start": 539,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 543,
@@ -539,7 +571,10 @@ snapshot_kind: text
                         "start": 542,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 544,
@@ -576,7 +611,10 @@ snapshot_kind: text
                           "start": 572,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 6.8
+                          "value": {
+                            "value": 6.8,
+                            "suffix": "None"
+                          }
                         },
                         "end": 575,
                         "operator": "-",
@@ -590,7 +628,10 @@ snapshot_kind: text
                         "start": 577,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 8.17
+                        "value": {
+                          "value": 8.17,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 582,

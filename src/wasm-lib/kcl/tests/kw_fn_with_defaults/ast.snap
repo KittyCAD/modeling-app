@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing kw_fn_with_defaults.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -72,7 +71,10 @@ snapshot_kind: text
                 "default_value": {
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0,
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  },
                   "raw": "1"
                 }
               }
@@ -107,7 +109,10 @@ snapshot_kind: text
                 "start": 63,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             ],
             "callee": {
@@ -153,7 +158,10 @@ snapshot_kind: text
                   "start": 96,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 20.0
+                  "value": {
+                    "value": 20.0,
+                    "suffix": "None"
+                  }
                 }
               }
             ],
@@ -173,7 +181,10 @@ snapshot_kind: text
               "start": 88,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             }
           },
           "start": 66,

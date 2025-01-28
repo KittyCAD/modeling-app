@@ -3,6 +3,7 @@
   @apply font-mono !no-underline text-xs font-bold select-none text-chalkboard-90;
   @apply ui-active:bg-primary/10 ui-active:text-primary ui-active:text-inherit;
   @apply transition-colors ease-out;
+  @apply m-0;
 }
 
 :global(.dark) .button {

@@ -48,7 +48,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         "start": 57,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 61,
@@ -56,7 +59,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         "start": 60,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 62,
@@ -92,7 +98,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         "start": 78,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 82,
@@ -100,7 +109,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         "start": 81,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 83,
@@ -136,7 +148,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         "start": 99,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 3.0
+                        "value": {
+                          "value": 3.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 103,
@@ -144,7 +159,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         "start": 102,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 104,
@@ -180,7 +198,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                         "start": 120,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -189,7 +210,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                           "start": 124,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 4.0
+                          "value": {
+                            "value": 4.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 125,
                         "operator": "-",
@@ -249,7 +273,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                     "start": 158,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 162,
@@ -316,7 +343,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                           "start": 202,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 1.0
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 206,
@@ -324,7 +354,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                           "start": 205,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.0
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 209,
@@ -332,7 +365,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                           "start": 208,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.0
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
                       "end": 210,
@@ -357,7 +393,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                       "start": 226,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 7.0
+                      "value": {
+                        "value": 7.0,
+                        "suffix": "None"
+                      }
                     }
                   },
                   {
@@ -376,7 +415,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                       "start": 242,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 6.0
+                      "value": {
+                        "value": 6.0,
+                        "suffix": "None"
+                      }
                     }
                   }
                 ],
@@ -444,7 +486,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                           "start": 300,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.0
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 304,
@@ -452,7 +497,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                           "start": 303,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.0
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         },
                         {
                           "end": 307,
@@ -460,7 +508,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                           "start": 306,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 1.0
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
                         }
                       ],
                       "end": 308,
@@ -485,7 +536,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                       "start": 323,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     }
                   },
                   {
@@ -504,7 +558,10 @@ description: Result of parsing linear_pattern3d_a_pattern.kcl
                       "start": 340,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 7.0
+                      "value": {
+                        "value": 7.0,
+                        "suffix": "None"
+                      }
                     }
                   }
                 ],

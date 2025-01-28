@@ -13,6 +13,7 @@ import {
   loftValidator,
   revolveAxisValidator,
   shellValidator,
+  sweepValidator,
 } from './validators'
 
 type OutputFormat = Models['OutputFormat_type']
@@ -42,8 +43,8 @@ export type ModelingCommandSchema = {
     distance: KclCommandValue
   }
   Sweep: {
-    path: Selections
-    profile: Selections
+    target: Selections
+    trajectory: Selections
   }
   Loft: {
     selection: Selections
@@ -308,25 +309,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
     status: 'development',
-    needsReview: true,
+    needsReview: false,
     args: {
-      profile: {
+      target: {
         inputType: 'selection',
         selectionTypes: ['solid2d'],
         required: true,
         skip: true,
         multiple: false,
-        // TODO: add dry-run validation
         warningMessage:
           'The sweep workflow is new and under tested. Please break it and report issues.',
       },
-      path: {
+      trajectory: {
         inputType: 'selection',
         selectionTypes: ['segment', 'path'],
         required: true,
-        skip: true,
+        skip: false,
         multiple: false,
-        // TODO: add dry-run validation
+        validation: sweepValidator,
       },
     },
   },

@@ -39,7 +39,10 @@ description: Program memory after executing import_glob.kcl
                     "start": 45,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 42.0
+                    "value": {
+                      "value": 42.0,
+                      "suffix": "None"
+                    }
                   },
                   "end": 47,
                   "moduleId": 1,

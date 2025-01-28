@@ -48,7 +48,10 @@ description: Result of parsing big_number_angle_to_match_length_y.kcl
                         "start": 51,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 55,
@@ -56,7 +59,10 @@ description: Result of parsing big_number_angle_to_match_length_y.kcl
                         "start": 54,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 56,
@@ -92,7 +98,10 @@ description: Result of parsing big_number_angle_to_match_length_y.kcl
                         "start": 72,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 1.0
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 79,
@@ -100,7 +109,10 @@ description: Result of parsing big_number_angle_to_match_length_y.kcl
                         "start": 75,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 3.82
+                        "value": {
+                          "value": 3.82,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 80,
@@ -153,7 +165,10 @@ description: Result of parsing big_number_angle_to_match_length_y.kcl
                               "start": 141,
                               "type": "Literal",
                               "type": "Literal",
-                              "value": 3.0
+                              "value": {
+                                "value": 3.0,
+                                "suffix": "None"
+                              }
                             },
                             {
                               "end": 145,
@@ -185,7 +200,10 @@ description: Result of parsing big_number_angle_to_match_length_y.kcl
                         "start": 148,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 3.0
+                        "value": {
+                          "value": 3.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 150,
@@ -239,7 +257,10 @@ description: Result of parsing big_number_angle_to_match_length_y.kcl
                     "start": 182,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 10.0
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 187,

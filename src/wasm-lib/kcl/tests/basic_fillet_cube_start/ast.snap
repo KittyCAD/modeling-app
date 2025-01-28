@@ -48,7 +48,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         "start": 51,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 55,
@@ -56,7 +59,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         "start": 54,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 56,
@@ -92,7 +98,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         "start": 72,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 77,
@@ -100,7 +109,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         "start": 75,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 10.0
+                        "value": {
+                          "value": 10.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 78,
@@ -143,7 +155,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         "start": 102,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 10.0
+                        "value": {
+                          "value": 10.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 107,
@@ -151,7 +166,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         "start": 106,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 108,
@@ -187,7 +205,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                         "start": 124,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "argument": {
@@ -196,7 +217,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                           "start": 128,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 10.0
+                          "value": {
+                            "value": 10.0,
+                            "suffix": "None"
+                          }
                         },
                         "end": 130,
                         "operator": "-",
@@ -263,7 +287,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                     "start": 172,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 10.0
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 177,
@@ -304,7 +331,10 @@ description: Result of parsing basic_fillet_cube_start.kcl
                           "start": 202,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2.0
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {

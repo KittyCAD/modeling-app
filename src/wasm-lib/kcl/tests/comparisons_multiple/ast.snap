@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing comparisons_multiple.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -20,7 +19,10 @@ snapshot_kind: text
                   "start": 7,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 3.0
+                  "value": {
+                    "value": 3.0,
+                    "suffix": "None"
+                  }
                 },
                 "operator": "==",
                 "right": {
@@ -29,7 +31,10 @@ snapshot_kind: text
                   "start": 12,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 3.0
+                  "value": {
+                    "value": 3.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 7,
                 "type": "BinaryExpression",
@@ -42,7 +47,10 @@ snapshot_kind: text
                 "start": 17,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "start": 7,
               "type": "BinaryExpression",

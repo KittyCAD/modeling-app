@@ -51,7 +51,6 @@ layout: manual
 * [`helixRevolutions`](kcl/helixRevolutions)
 * [`hole`](kcl/hole)
 * [`hollow`](kcl/hollow)
-* [`import`](kcl/import)
 * [`inch`](kcl/inch)
 * [`lastSegX`](kcl/lastSegX)
 * [`lastSegY`](kcl/lastSegY)

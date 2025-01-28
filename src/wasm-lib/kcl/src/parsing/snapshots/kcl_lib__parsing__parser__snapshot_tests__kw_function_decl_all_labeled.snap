@@ -1,7 +1,6 @@
 ---
 source: kcl/src/parsing/parser.rs
 expression: actual
-snapshot_kind: text
 ---
 {
   "body": [
@@ -24,7 +23,10 @@ snapshot_kind: text
                   "start": 22,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
                 },
                 "end": 23,
                 "start": 15,

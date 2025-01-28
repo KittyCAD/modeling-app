@@ -119,7 +119,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     .global
                     .artifact_graph
                     .to_mermaid_flowchart()
-                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to mind map: {e}"));
+                    .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
                 // Change the snapshot suffix so that it is rendered as a
                 // Markdown file in GitHub.
                 insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
@@ -853,6 +853,27 @@ mod import_whole {
 }
 mod import_side_effect {
     const TEST_NAME: &str = "import_side_effect";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_foreign {
+    const TEST_NAME: &str = "import_foreign";
 
     /// Test parsing KCL.
     #[test]

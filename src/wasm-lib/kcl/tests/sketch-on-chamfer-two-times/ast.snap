@@ -48,7 +48,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 53,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 75.8
+                        "value": {
+                          "value": 75.8,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 64,
@@ -56,7 +59,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 59,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 317.2
+                        "value": {
+                          "value": 317.2,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 65,
@@ -92,7 +98,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 117,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 126,
@@ -100,7 +109,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 120,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 268.43
+                        "value": {
+                          "value": 268.43,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 127,
@@ -167,7 +179,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 211,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 90.0
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 180,
                         "type": "BinaryExpression",
@@ -179,7 +194,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 222,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 217.26
+                        "value": {
+                          "value": 217.26,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 235,
@@ -435,7 +453,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                     "start": 447,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 100.0
+                    "value": {
+                      "value": 100.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 461,
@@ -477,7 +498,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 486,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 20.0
+                          "value": {
+                            "value": 20.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
@@ -550,7 +574,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 535,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 50.0
+                          "value": {
+                            "value": 50.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
@@ -630,7 +657,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 599,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 50.0
+                          "value": {
+                            "value": 50.0,
+                            "suffix": "None"
+                          }
                         }
                       },
                       {
@@ -768,7 +798,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 729,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 69.1
+                          "value": {
+                            "value": 69.1,
+                            "suffix": "None"
+                          }
                         },
                         "end": 733,
                         "operator": "-",
@@ -782,7 +815,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 735,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 277.34
+                        "value": {
+                          "value": 277.34,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 742,
@@ -818,7 +854,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 764,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 772,
@@ -826,7 +865,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 767,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 41.48
+                        "value": {
+                          "value": 41.48,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 773,
@@ -893,7 +935,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 857,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 90.0
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 826,
                         "type": "BinaryExpression",
@@ -905,7 +950,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 868,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 104.8
+                        "value": {
+                          "value": 104.8,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 880,
@@ -1174,7 +1222,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 1167,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 159.25
+                        "value": {
+                          "value": 159.25,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 1181,
@@ -1182,7 +1233,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 1175,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 278.35
+                        "value": {
+                          "value": 278.35,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 1182,
@@ -1218,7 +1272,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 1204,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 1212,
@@ -1226,7 +1283,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 1207,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 40.82
+                        "value": {
+                          "value": 40.82,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 1213,
@@ -1293,7 +1353,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                           "start": 1297,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 90.0
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 1266,
                         "type": "BinaryExpression",
@@ -1305,7 +1368,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                         "start": 1308,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 132.27
+                        "value": {
+                          "value": 132.27,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 1321,
@@ -1542,7 +1608,10 @@ description: Result of parsing sketch-on-chamfer-two-times.kcl
                 "start": 1563,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 50.0
+                "value": {
+                  "value": 50.0,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 1576,

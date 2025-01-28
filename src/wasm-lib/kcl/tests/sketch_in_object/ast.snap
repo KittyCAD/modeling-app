@@ -52,7 +52,10 @@ description: Result of parsing sketch_in_object.kcl
                                 "start": 64,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 0.0
+                                "value": {
+                                  "value": 0.0,
+                                  "suffix": "None"
+                                }
                               },
                               {
                                 "end": 68,
@@ -60,7 +63,10 @@ description: Result of parsing sketch_in_object.kcl
                                 "start": 67,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 0.0
+                                "value": {
+                                  "value": 0.0,
+                                  "suffix": "None"
+                                }
                               }
                             ],
                             "end": 69,
@@ -96,7 +102,10 @@ description: Result of parsing sketch_in_object.kcl
                                 "start": 87,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 0.0
+                                "value": {
+                                  "value": 0.0,
+                                  "suffix": "None"
+                                }
                               },
                               {
                                 "end": 91,
@@ -104,7 +113,10 @@ description: Result of parsing sketch_in_object.kcl
                                 "start": 90,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 1.0
+                                "value": {
+                                  "value": 1.0,
+                                  "suffix": "None"
+                                }
                               }
                             ],
                             "end": 92,
@@ -140,7 +152,10 @@ description: Result of parsing sketch_in_object.kcl
                                 "start": 110,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 1.0
+                                "value": {
+                                  "value": 1.0,
+                                  "suffix": "None"
+                                }
                               },
                               {
                                 "end": 114,
@@ -148,7 +163,10 @@ description: Result of parsing sketch_in_object.kcl
                                 "start": 113,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 0.0
+                                "value": {
+                                  "value": 0.0,
+                                  "suffix": "None"
+                                }
                               }
                             ],
                             "end": 115,
@@ -184,7 +202,10 @@ description: Result of parsing sketch_in_object.kcl
                                 "start": 133,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 0.0
+                                "value": {
+                                  "value": 0.0,
+                                  "suffix": "None"
+                                }
                               },
                               {
                                 "argument": {
@@ -193,7 +214,10 @@ description: Result of parsing sketch_in_object.kcl
                                   "start": 137,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 1.0
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "end": 138,
                                 "operator": "-",
@@ -348,7 +372,10 @@ description: Result of parsing sketch_in_object.kcl
                                             "start": 264,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 0.0
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
                                           },
                                           {
                                             "end": 268,
@@ -356,7 +383,10 @@ description: Result of parsing sketch_in_object.kcl
                                             "start": 267,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 0.0
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
                                           }
                                         ],
                                         "end": 269,
@@ -392,7 +422,10 @@ description: Result of parsing sketch_in_object.kcl
                                             "start": 291,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 0.0
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
                                           },
                                           {
                                             "end": 295,
@@ -400,7 +433,10 @@ description: Result of parsing sketch_in_object.kcl
                                             "start": 294,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 1.0
+                                            "value": {
+                                              "value": 1.0,
+                                              "suffix": "None"
+                                            }
                                           }
                                         ],
                                         "end": 296,
@@ -436,7 +472,10 @@ description: Result of parsing sketch_in_object.kcl
                                             "start": 318,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 1.0
+                                            "value": {
+                                              "value": 1.0,
+                                              "suffix": "None"
+                                            }
                                           },
                                           {
                                             "end": 322,
@@ -444,7 +483,10 @@ description: Result of parsing sketch_in_object.kcl
                                             "start": 321,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 0.0
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
                                           }
                                         ],
                                         "end": 323,
@@ -480,7 +522,10 @@ description: Result of parsing sketch_in_object.kcl
                                             "start": 345,
                                             "type": "Literal",
                                             "type": "Literal",
-                                            "value": 0.0
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "None"
+                                            }
                                           },
                                           {
                                             "argument": {
@@ -489,7 +534,10 @@ description: Result of parsing sketch_in_object.kcl
                                               "start": 349,
                                               "type": "Literal",
                                               "type": "Literal",
-                                              "value": 1.0
+                                              "value": {
+                                                "value": 1.0,
+                                                "suffix": "None"
+                                              }
                                             },
                                             "end": 350,
                                             "operator": "-",
@@ -634,7 +682,10 @@ description: Result of parsing sketch_in_object.kcl
                     "start": 416,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 10.0
+                    "value": {
+                      "value": 10.0,
+                      "suffix": "None"
+                    }
                   },
                   "end": 418,
                   "operator": "-",
@@ -748,7 +799,10 @@ description: Result of parsing sketch_in_object.kcl
                   "start": 467,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 10.0
+                  "value": {
+                    "value": 10.0,
+                    "suffix": "None"
+                  }
                 },
                 {
                   "end": 472,

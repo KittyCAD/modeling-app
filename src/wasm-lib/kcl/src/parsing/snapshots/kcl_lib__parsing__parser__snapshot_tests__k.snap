@@ -32,7 +32,10 @@ expression: actual
                 "start": 11,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             {
@@ -51,7 +54,10 @@ expression: actual
                 "start": 17,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 2.0
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               }
             }
           ],
@@ -87,7 +93,10 @@ expression: actual
                 "start": 35,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               },
               "operator": "-",
               "right": {
@@ -122,7 +131,10 @@ expression: actual
               "start": 49,
               "type": "Literal",
               "type": "Literal",
-              "value": 0.0
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
             }
           ],
           "end": 51,

@@ -87,7 +87,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                                   "start": 92,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "end": 100,
@@ -137,7 +140,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                                   "start": 126,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 }
                               ],
                               "end": 128,
@@ -173,7 +179,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                                   "start": 146,
                                   "type": "Literal",
                                   "type": "Literal",
-                                  "value": 0.0
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 {
                                   "argument": {
@@ -315,7 +324,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                         "start": 192,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 196,
@@ -323,7 +335,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                         "start": 195,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 197,
@@ -337,7 +352,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                     "start": 199,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 20.0
+                    "value": {
+                      "value": 20.0,
+                      "suffix": "None"
+                    }
                   }
                 ],
                 "callee": {
@@ -379,7 +397,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                     "start": 230,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 20.0
+                    "value": {
+                      "value": 20.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 235,
@@ -477,7 +498,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                               "start": 302,
                               "type": "Literal",
                               "type": "Literal",
-                              "value": 0.0
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
                             },
                             {
                               "end": 306,
@@ -485,7 +509,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                               "start": 305,
                               "type": "Literal",
                               "type": "Literal",
-                              "value": 0.0
+                              "value": {
+                                "value": 0.0,
+                                "suffix": "None"
+                              }
                             }
                           ],
                           "end": 307,
@@ -510,7 +537,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                           "start": 318,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 5.0
+                          "value": {
+                            "value": 5.0,
+                            "suffix": "None"
+                          }
                         }
                       }
                     ],
@@ -551,7 +581,10 @@ description: Result of parsing sketch_on_face_circle_tagged.kcl
                     "start": 350,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 5.0
+                    "value": {
+                      "value": 5.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 354,

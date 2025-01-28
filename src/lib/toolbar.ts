@@ -1,6 +1,6 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { DEV } from 'env'
-import { commandBarMachine } from 'machines/commandBarMachine'
+import { commandBarActor, commandBarMachine } from 'machines/commandBarMachine'
 import {
   canRectangleOrCircleTool,
   isClosedSketch,
@@ -21,7 +21,6 @@ type ToolbarMode = {
 export interface ToolbarItemCallbackProps {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
-  commandBarSend: (event: EventFrom<typeof commandBarMachine>) => void
   sketchPathId: string | false
 }
 
@@ -84,8 +83,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'extrude',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Extrude', groupId: 'modeling' },
           }),
@@ -98,8 +97,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'revolve',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Revolve', groupId: 'modeling' },
           }),
@@ -119,8 +118,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'sweep',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Sweep', groupId: 'modeling' },
           }),
@@ -139,8 +138,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'loft',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Loft', groupId: 'modeling' },
           }),
@@ -160,8 +159,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       'break',
       {
         id: 'fillet3d',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Fillet', groupId: 'modeling' },
           }),
@@ -174,8 +173,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'chamfer3d',
-        onClick: ({ commandBarSend }) =>
-          commandBarSend({
+        onClick: () =>
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Chamfer', groupId: 'modeling' },
           }),
@@ -188,8 +187,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       },
       {
         id: 'shell',
-        onClick: ({ commandBarSend }) => {
-          commandBarSend({
+        onClick: () => {
+          commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Shell', groupId: 'modeling' },
           })
@@ -269,8 +268,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'plane-offset',
-          onClick: ({ commandBarSend }) => {
-            commandBarSend({
+          onClick: () => {
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Offset plane', groupId: 'modeling' },
             })
@@ -280,7 +279,12 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Offset plane',
           description: 'Create a plane parallel to an existing plane.',
-          links: [],
+          links: [
+            {
+              label: 'KCL docs',
+              url: 'https://zoo.dev/docs/kcl/offsetPlane',
+            },
+          ],
         },
         {
           id: 'plane-points',
@@ -296,8 +300,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
       [
         {
           id: 'text-to-cad',
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Text-to-CAD', groupId: 'modeling' },
             }),
@@ -305,12 +309,17 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Text-to-CAD',
           description: 'Generate geometry from a text prompt.',
-          links: [],
+          links: [
+            {
+              label: 'API docs',
+              url: 'https://zoo.dev/docs/api/ml/generate-a-cad-model-from-text',
+            },
+          ],
         },
         {
           id: 'prompt-to-edit',
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: { name: 'Prompt-to-edit', groupId: 'modeling' },
             }),
@@ -583,8 +592,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         {
           id: 'constraint-length',
           disabled: (state) => !state.matches({ Sketch: 'SketchIdle' }),
-          onClick: ({ commandBarSend }) =>
-            commandBarSend({
+          onClick: () =>
+            commandBarActor.send({
               type: 'Find and select command',
               data: {
                 name: 'Constrain length',

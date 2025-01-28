@@ -33,7 +33,10 @@ description: Result of parsing property_of_object.kcl
                   "start": 64,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 1.0
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
                 }
               },
               {
@@ -52,7 +55,10 @@ description: Result of parsing property_of_object.kcl
                   "start": 73,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 0.0
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
                 }
               }
             ],
@@ -126,7 +132,10 @@ description: Result of parsing property_of_object.kcl
               "start": 162,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 190,
@@ -169,7 +178,10 @@ description: Result of parsing property_of_object.kcl
               "start": 221,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 249,
@@ -277,7 +289,10 @@ description: Result of parsing property_of_object.kcl
               "start": 392,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 421,
@@ -320,7 +335,10 @@ description: Result of parsing property_of_object.kcl
               "start": 452,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 481,
@@ -461,7 +479,10 @@ description: Result of parsing property_of_object.kcl
               "start": 601,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 629,
@@ -504,7 +525,10 @@ description: Result of parsing property_of_object.kcl
               "start": 660,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 688,
@@ -600,7 +624,10 @@ description: Result of parsing property_of_object.kcl
               "start": 801,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 830,
@@ -643,7 +670,10 @@ description: Result of parsing property_of_object.kcl
               "start": 861,
               "type": "Literal",
               "type": "Literal",
-              "value": 1.0
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             },
             {
               "end": 890,

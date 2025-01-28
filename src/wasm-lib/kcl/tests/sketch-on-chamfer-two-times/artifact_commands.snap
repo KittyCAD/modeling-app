@@ -675,8 +675,7 @@ snapshot_kind: text
       "edge_id": "[uuid]",
       "radius": 20.0,
       "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "face_id": "[uuid]"
+      "cut_type": "fillet"
     }
   },
   {
@@ -692,8 +691,7 @@ snapshot_kind: text
       "edge_id": "[uuid]",
       "radius": 50.0,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer",
-      "face_id": "[uuid]"
+      "cut_type": "chamfer"
     }
   },
   {
@@ -709,8 +707,7 @@ snapshot_kind: text
       "edge_id": "[uuid]",
       "radius": 50.0,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer",
-      "face_id": "[uuid]"
+      "cut_type": "chamfer"
     }
   },
   {

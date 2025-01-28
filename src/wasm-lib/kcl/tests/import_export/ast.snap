@@ -7,7 +7,10 @@ description: Result of parsing import_export.kcl
     "body": [
       {
         "end": 32,
-        "path": "export_1.kcl",
+        "path": {
+          "type": "Kcl",
+          "filename": "export_1.kcl"
+        },
         "selector": {
           "type": "List",
           "items": [

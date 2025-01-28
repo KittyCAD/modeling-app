@@ -20,7 +20,10 @@ description: Result of parsing invalid_member_object.kcl
             "start": 6,
             "type": "Literal",
             "type": "Literal",
-            "value": 999.0
+            "value": {
+              "value": 999.0,
+              "suffix": "None"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -56,7 +59,10 @@ description: Result of parsing invalid_member_object.kcl
               "start": 18,
               "type": "Literal",
               "type": "Literal",
-              "value": 3.0
+              "value": {
+                "value": 3.0,
+                "suffix": "None"
+              }
             },
             "start": 14,
             "type": "MemberExpression",

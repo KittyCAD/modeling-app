@@ -955,8 +955,8 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
     let (data, tag): (SketchData, Option<FaceTag>) = args.get_data_and_optional_tag()?;
 
     match inner_start_sketch_on(data, tag, exec_state, &args).await? {
-        SketchSurface::Plane(plane) => Ok(KclValue::Plane(plane)),
-        SketchSurface::Face(face) => Ok(KclValue::Face(face)),
+        SketchSurface::Plane(value) => Ok(KclValue::Plane { value }),
+        SketchSurface::Face(value) => Ok(KclValue::Face { value }),
     }
 }
 
@@ -1124,6 +1124,7 @@ async fn start_sketch_on_face(
         x_axis: solid.sketch.on.x_axis(),
         y_axis: solid.sketch.on.y_axis(),
         z_axis: solid.sketch.on.z_axis(),
+        units: solid.units,
         solid,
         meta: vec![args.source_range.into()],
     }))
@@ -1262,6 +1263,11 @@ pub(crate) async fn inner_start_profile_at(
         _ => {}
     }
 
+    let units = match &sketch_surface {
+        SketchSurface::Face(face) => face.units,
+        SketchSurface::Plane(_) => exec_state.length_unit(),
+    };
+
     // Enter sketch mode on the surface.
     // We call this here so you can reuse the sketch surface for multiple sketches.
     let id = exec_state.next_uuid();
@@ -1311,6 +1317,7 @@ pub(crate) async fn inner_start_profile_at(
         original_id: path_id,
         on: sketch_surface.clone(),
         paths: vec![],
+        units,
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();

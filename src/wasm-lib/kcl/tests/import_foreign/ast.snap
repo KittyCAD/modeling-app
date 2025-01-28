@@ -1,0 +1,71 @@
+---
+source: kcl/src/simulation_tests.rs
+description: Result of parsing import_foreign.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "end": 36,
+        "path": {
+          "type": "Foreign",
+          "path": "../inputs/cube.gltf"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "end": 36,
+            "name": "cube",
+            "start": 32,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "declaration": {
+          "end": 50,
+          "id": {
+            "end": 43,
+            "name": "model",
+            "start": 38,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 50,
+            "name": "cube",
+            "start": 46,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "start": 38,
+          "type": "VariableDeclarator"
+        },
+        "end": 50,
+        "kind": "const",
+        "start": 38,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 51,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 38,
+            "start": 36,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

@@ -91,7 +91,10 @@ description: Result of parsing boolean_logical_multiple.kcl
                     "start": 53,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 53,
                   "type": "ExpressionStatement",
@@ -112,7 +115,10 @@ description: Result of parsing boolean_logical_multiple.kcl
                     "start": 40,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 40,
                   "type": "ExpressionStatement",
@@ -154,7 +160,10 @@ description: Result of parsing boolean_logical_multiple.kcl
                 "start": 69,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               },
               "start": 64,
               "type": "BinaryExpression",
@@ -307,7 +316,10 @@ description: Result of parsing boolean_logical_multiple.kcl
                     "start": 179,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 2.0
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 179,
                   "type": "ExpressionStatement",
@@ -328,7 +340,10 @@ description: Result of parsing boolean_logical_multiple.kcl
                     "start": 166,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 166,
                   "type": "ExpressionStatement",
@@ -370,7 +385,10 @@ description: Result of parsing boolean_logical_multiple.kcl
                 "start": 195,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 1.0
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               },
               "start": 190,
               "type": "BinaryExpression",

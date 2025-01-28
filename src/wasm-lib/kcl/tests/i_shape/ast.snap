@@ -22,7 +22,10 @@ description: Result of parsing i_shape.kcl
                 "start": 25,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 22.8
+                "value": {
+                  "value": 22.8,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 35,
@@ -30,7 +33,10 @@ description: Result of parsing i_shape.kcl
                 "start": 31,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 10.7
+                "value": {
+                  "value": 10.7,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 41,
@@ -38,7 +44,10 @@ description: Result of parsing i_shape.kcl
                 "start": 37,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 16.4
+                "value": {
+                  "value": 16.4,
+                  "suffix": "None"
+                }
               },
               {
                 "end": 47,
@@ -46,7 +55,10 @@ description: Result of parsing i_shape.kcl
                 "start": 43,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 18.5
+                "value": {
+                  "value": 18.5,
+                  "suffix": "None"
+                }
               }
             ],
             "end": 48,
@@ -94,7 +106,10 @@ description: Result of parsing i_shape.kcl
                     "start": 79,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 0.0
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 57,
                   "type": "MemberExpression",
@@ -117,7 +132,10 @@ description: Result of parsing i_shape.kcl
                     "start": 106,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   "start": 84,
                   "type": "MemberExpression",
@@ -144,7 +162,10 @@ description: Result of parsing i_shape.kcl
                   "start": 133,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "start": 111,
                 "type": "MemberExpression",
@@ -171,7 +192,10 @@ description: Result of parsing i_shape.kcl
                 "start": 160,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 3.0
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               },
               "start": 138,
               "type": "MemberExpression",
@@ -205,7 +229,10 @@ description: Result of parsing i_shape.kcl
             "start": 172,
             "type": "Literal",
             "type": "Literal",
-            "value": 120.0
+            "value": {
+              "value": 120.0,
+              "suffix": "None"
+            }
           },
           "start": 163,
           "type": "VariableDeclarator"
@@ -231,7 +258,10 @@ description: Result of parsing i_shape.kcl
             "start": 195,
             "type": "Literal",
             "type": "Literal",
-            "value": 24.0
+            "value": {
+              "value": 24.0,
+              "suffix": "None"
+            }
           },
           "start": 178,
           "type": "VariableDeclarator"
@@ -257,7 +287,10 @@ description: Result of parsing i_shape.kcl
             "start": 216,
             "type": "Literal",
             "type": "Literal",
-            "value": 5.0
+            "value": {
+              "value": 5.0,
+              "suffix": "None"
+            }
           },
           "start": 200,
           "type": "VariableDeclarator"
@@ -296,7 +329,10 @@ description: Result of parsing i_shape.kcl
                         "start": 429,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 431,
@@ -347,7 +383,10 @@ description: Result of parsing i_shape.kcl
                         "start": 467,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 471,
@@ -425,7 +464,10 @@ description: Result of parsing i_shape.kcl
                       "start": 551,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 25.0
+                      "value": {
+                        "value": 25.0,
+                        "suffix": "None"
+                      }
                     },
                     "operator": "-",
                     "right": {
@@ -527,7 +569,10 @@ description: Result of parsing i_shape.kcl
                           "start": 676,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 0.0
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 654,
                         "type": "MemberExpression",
@@ -550,7 +595,10 @@ description: Result of parsing i_shape.kcl
                           "start": 698,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2.0
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 682,
                         "type": "BinaryExpression",
@@ -655,7 +703,10 @@ description: Result of parsing i_shape.kcl
                           "start": 791,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 25.0
+                          "value": {
+                            "value": 25.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 782,
                         "type": "BinaryExpression",
@@ -668,7 +719,10 @@ description: Result of parsing i_shape.kcl
                         "start": 798,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 23.0
+                        "value": {
+                          "value": 23.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 782,
                       "type": "BinaryExpression",
@@ -691,7 +745,10 @@ description: Result of parsing i_shape.kcl
                         "start": 822,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 806,
                       "type": "BinaryExpression",
@@ -771,7 +828,10 @@ description: Result of parsing i_shape.kcl
                       "start": 904,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 15.0
+                      "value": {
+                        "value": 15.0,
+                        "suffix": "None"
+                      }
                     },
                     "operator": "-",
                     "right": {
@@ -790,7 +850,10 @@ description: Result of parsing i_shape.kcl
                         "start": 928,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 912,
                       "type": "BinaryExpression",
@@ -870,7 +933,10 @@ description: Result of parsing i_shape.kcl
                       "start": 1010,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 23.0
+                      "value": {
+                        "value": 23.0,
+                        "suffix": "None"
+                      }
                     },
                     "operator": "-",
                     "right": {
@@ -974,7 +1040,10 @@ description: Result of parsing i_shape.kcl
                             "start": 1130,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 15.0
+                            "value": {
+                              "value": 15.0,
+                              "suffix": "None"
+                            }
                           },
                           "start": 1113,
                           "type": "BinaryExpression",
@@ -987,7 +1056,10 @@ description: Result of parsing i_shape.kcl
                           "start": 1137,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 15.0
+                          "value": {
+                            "value": 15.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 1113,
                         "type": "BinaryExpression",
@@ -1010,7 +1082,10 @@ description: Result of parsing i_shape.kcl
                           "start": 1161,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2.0
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 1145,
                         "type": "BinaryExpression",
@@ -1111,7 +1186,10 @@ description: Result of parsing i_shape.kcl
                         "start": 1248,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 23.0
+                        "value": {
+                          "value": 23.0,
+                          "suffix": "None"
+                        }
                       },
                       "operator": "-",
                       "right": {
@@ -1208,7 +1286,10 @@ description: Result of parsing i_shape.kcl
                       "start": 1350,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 15.0
+                      "value": {
+                        "value": 15.0,
+                        "suffix": "None"
+                      }
                     },
                     "operator": "-",
                     "right": {
@@ -1227,7 +1308,10 @@ description: Result of parsing i_shape.kcl
                         "start": 1374,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 1358,
                       "type": "BinaryExpression",
@@ -1327,7 +1411,10 @@ description: Result of parsing i_shape.kcl
                             "start": 1468,
                             "type": "Literal",
                             "type": "Literal",
-                            "value": 25.0
+                            "value": {
+                              "value": 25.0,
+                              "suffix": "None"
+                            }
                           },
                           "start": 1459,
                           "type": "BinaryExpression",
@@ -1340,7 +1427,10 @@ description: Result of parsing i_shape.kcl
                           "start": 1475,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 23.0
+                          "value": {
+                            "value": 23.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 1459,
                         "type": "BinaryExpression",
@@ -1363,7 +1453,10 @@ description: Result of parsing i_shape.kcl
                           "start": 1499,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2.0
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 1483,
                         "type": "BinaryExpression",
@@ -1480,7 +1573,10 @@ description: Result of parsing i_shape.kcl
                                 "start": 1608,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 1.0
+                                "value": {
+                                  "value": 1.0,
+                                  "suffix": "None"
+                                }
                               },
                               "start": 1586,
                               "type": "MemberExpression",
@@ -1503,7 +1599,10 @@ description: Result of parsing i_shape.kcl
                                 "start": 1635,
                                 "type": "Literal",
                                 "type": "Literal",
-                                "value": 2.0
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
                               },
                               "start": 1613,
                               "type": "MemberExpression",
@@ -1530,7 +1629,10 @@ description: Result of parsing i_shape.kcl
                               "start": 1662,
                               "type": "Literal",
                               "type": "Literal",
-                              "value": 3.0
+                              "value": {
+                                "value": 3.0,
+                                "suffix": "None"
+                              }
                             },
                             "start": 1640,
                             "type": "MemberExpression",
@@ -1655,7 +1757,10 @@ description: Result of parsing i_shape.kcl
                         "start": 1782,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 25.0
+                        "value": {
+                          "value": 25.0,
+                          "suffix": "None"
+                        }
                       },
                       "operator": "-",
                       "right": {
@@ -1798,7 +1903,10 @@ description: Result of parsing i_shape.kcl
                         "start": 1911,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 1915,
@@ -1806,7 +1914,10 @@ description: Result of parsing i_shape.kcl
                         "start": 1914,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 1916,
@@ -1834,7 +1945,10 @@ description: Result of parsing i_shape.kcl
                     "start": 1929,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 1.0
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 1935,
@@ -1906,7 +2020,10 @@ description: Result of parsing i_shape.kcl
                       "start": 2012,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 25.0
+                      "value": {
+                        "value": 25.0,
+                        "suffix": "None"
+                      }
                     },
                     "operator": "-",
                     "right": {
@@ -1925,7 +2042,10 @@ description: Result of parsing i_shape.kcl
                         "start": 2036,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 2.0
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
                       },
                       "start": 2020,
                       "type": "BinaryExpression",
@@ -2011,7 +2131,10 @@ description: Result of parsing i_shape.kcl
                       "start": 2120,
                       "type": "Literal",
                       "type": "Literal",
-                      "value": 1.0
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
                     },
                     "end": 2123,
                     "operator": "-",
@@ -2104,7 +2227,10 @@ description: Result of parsing i_shape.kcl
                         "start": 2207,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 25.0
+                        "value": {
+                          "value": 25.0,
+                          "suffix": "None"
+                        }
                       },
                       "operator": "-",
                       "right": {
@@ -2123,7 +2249,10 @@ description: Result of parsing i_shape.kcl
                           "start": 2231,
                           "type": "Literal",
                           "type": "Literal",
-                          "value": 2.0
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
                         },
                         "start": 2215,
                         "type": "BinaryExpression",
@@ -2294,7 +2423,10 @@ description: Result of parsing i_shape.kcl
                     "start": 2371,
                     "type": "Literal",
                     "type": "Literal",
-                    "value": 3.0
+                    "value": {
+                      "value": 3.0,
+                      "suffix": "None"
+                    }
                   },
                   {
                     "end": 2377,

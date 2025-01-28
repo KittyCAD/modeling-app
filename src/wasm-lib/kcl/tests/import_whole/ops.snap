@@ -1,30 +1,29 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed import_whole.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
         "sourceRange": [
-          55,
-          92,
+          89,
+          126,
           0
         ]
       },
       "solid_set": {
         "sourceRange": [
-          94,
-          95,
+          128,
+          129,
           0
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      49,
-      96,
+      83,
+      130,
       0
     ],
     "type": "StdLibCall",

@@ -23,7 +23,10 @@ expression: actual
                   "start": 50,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 2.0
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
                 },
                 "end": 51,
                 "start": 43,

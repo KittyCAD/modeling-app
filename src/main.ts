@@ -21,6 +21,7 @@ import minimist from 'minimist'
 import getCurrentProjectFile from 'lib/getCurrentProjectFile'
 import os from 'node:os'
 import { reportRejection } from 'lib/trap'
+import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
 import argvFromYargs from './commandLineArgs'
 
 import * as packageJSON from '../package.json'
@@ -48,9 +49,7 @@ process.env.VITE_KC_SITE_BASE_URL ??= 'https://zoo.dev'
 process.env.VITE_KC_SKIP_AUTH ??= 'false'
 process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= '15000'
 
-const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
-
-/// Register our application to handle all "electron-fiddle://" protocols.
+/// Register our application to handle all "zoo-studio:" protocols.
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [
@@ -65,7 +64,7 @@ if (process.defaultApp) {
 // Must be done before ready event.
 registerStartupListeners()
 
-const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
+const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   let newWindow
 
   if (reuse) {
@@ -90,32 +89,54 @@ const createWindow = (filePath?: string, reuse?: boolean): BrowserWindow => {
     })
   }
 
+  const pathIsCustomProtocolLink =
+    pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
+
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    newWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL).catch(reportRejection)
+    const filteredPath = pathToOpen
+      ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, ''))
+      : ''
+    const fullHashBasedUrl = `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/${filteredPath}`
+    newWindow.loadURL(fullHashBasedUrl).catch(reportRejection)
   } else {
-    getProjectPathAtStartup(filePath)
-      .then(async (projectPath) => {
-        const startIndex = path.join(
-          __dirname,
-          `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
-        )
-
-        if (projectPath === null) {
-          await newWindow.loadFile(startIndex)
-          return
-        }
-
-        console.log('Loading file', projectPath)
-
-        const fullUrl = `/file/${encodeURIComponent(projectPath)}`
-        console.log('Full URL', fullUrl)
-
-        await newWindow.loadFile(startIndex, {
-          hash: fullUrl,
+    if (pathIsCustomProtocolLink && pathToOpen) {
+      // We're trying to open a custom protocol link
+      const filteredPath = pathToOpen
+        ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, ''))
+        : ''
+      const startIndex = path.join(
+        __dirname,
+        `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+      )
+      newWindow
+        .loadFile(startIndex, {
+          hash: filteredPath,
         })
-      })
-      .catch(reportRejection)
+        .catch(reportRejection)
+    } else {
+      // otherwise we're trying to open a local file from the command line
+      getProjectPathAtStartup(pathToOpen)
+        .then(async (projectPath) => {
+          const startIndex = path.join(
+            __dirname,
+            `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
+          )
+
+          if (projectPath === null) {
+            await newWindow.loadFile(startIndex)
+            return
+          }
+
+          const fullUrl = `/file/${encodeURIComponent(projectPath)}`
+          console.log('Full URL', fullUrl)
+
+          await newWindow.loadFile(startIndex, {
+            hash: fullUrl,
+          })
+        })
+        .catch(reportRejection)
+    }
   }
 
   // Open the DevTools.

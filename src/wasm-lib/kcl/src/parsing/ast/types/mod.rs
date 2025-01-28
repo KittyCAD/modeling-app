@@ -13,7 +13,6 @@ use anyhow::Result;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-use serde_json::Value as JValue;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
@@ -1012,9 +1011,9 @@ impl NonCodeNode {
         }
     }
 
-    pub fn annotation(&self, expected_name: &str) -> Option<&NonCodeValue> {
+    pub fn annotation(&self) -> Option<&NonCodeValue> {
         match &self.value {
-            a @ NonCodeValue::Annotation { name, .. } if name.name == expected_name => Some(a),
+            a @ NonCodeValue::Annotation { .. } => Some(a),
             _ => None,
         }
     }
@@ -1070,6 +1069,15 @@ pub enum NonCodeValue {
         name: Node<Identifier>,
         properties: Option<Vec<Node<ObjectProperty>>>,
     },
+}
+
+impl NonCodeValue {
+    pub fn annotation_name(&self) -> Option<&str> {
+        match self {
+            NonCodeValue::Annotation { name, .. } => Some(&name.name),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Default, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1248,6 +1256,32 @@ impl ImportSelector {
             ImportSelector::None { alias: Some(alias) } => alias.rename(old_name, new_name),
         }
     }
+
+    pub fn exposes_imported_name(&self) -> bool {
+        matches!(self, ImportSelector::None { alias: None })
+    }
+
+    pub fn imports_items(&self) -> bool {
+        !matches!(self, ImportSelector::None { .. })
+    }
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum ImportPath {
+    Kcl { filename: String },
+    Foreign { path: String },
+    Std,
+}
+
+impl fmt::Display for ImportPath {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => write!(f, "{s}"),
+            ImportPath::Std => write!(f, "std"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1255,7 +1289,7 @@ impl ImportSelector {
 #[serde(tag = "type")]
 pub struct ImportStatement {
     pub selector: ImportSelector,
-    pub path: String,
+    pub path: ImportPath,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
 
@@ -1304,12 +1338,15 @@ impl ImportStatement {
             return Some(alias.name.clone());
         }
 
-        let mut parts = self.path.split('.');
+        let mut parts = match &self.path {
+            ImportPath::Kcl { filename: s } | ImportPath::Foreign { path: s } => s.split('.'),
+            _ => return None,
+        };
         let name = parts.next()?;
-        let ext = parts.next()?;
+        let _ext = parts.next()?;
         let rest = parts.next();
 
-        if rest.is_some() || ext != "kcl" {
+        if rest.is_some() {
             return None;
         }
 
@@ -1867,7 +1904,7 @@ impl Node<Literal> {
 impl Literal {
     pub fn new(value: LiteralValue) -> Node<Self> {
         Node::no_src(Self {
-            raw: JValue::from(value.clone()).to_string(),
+            raw: value.to_string(),
             value,
             digest: None,
         })
@@ -1878,7 +1915,7 @@ impl From<Node<Literal>> for KclValue {
     fn from(literal: Node<Literal>) -> Self {
         let meta = vec![literal.metadata()];
         match literal.inner.value {
-            LiteralValue::Number(value) => KclValue::Number { value, meta },
+            LiteralValue::Number { value, .. } => KclValue::Number { value, meta },
             LiteralValue::String(value) => KclValue::String { value, meta },
             LiteralValue::Bool(value) => KclValue::Bool { value, meta },
         }

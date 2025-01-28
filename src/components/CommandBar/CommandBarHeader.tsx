@@ -1,4 +1,3 @@
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { CustomIcon } from '../CustomIcon'
 import React, { useState } from 'react'
 import { ActionButton } from '../ActionButton'
@@ -7,9 +6,10 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { KclCommandValue, KclExpressionWithVariable } from 'lib/commandTypes'
 import Tooltip from 'components/Tooltip'
 import { roundOff } from 'lib/utils'
+import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 
 function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
-  const { commandBarState, commandBarSend } = useCommandsContext()
+  const commandBarState = useCommandBarState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
   } = commandBarState
@@ -49,7 +49,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
         ]
         const arg = selectedCommand?.args[argName]
         if (!argName || !arg) return
-        commandBarSend({
+        commandBarActor.send({
           type: 'Change current argument',
           data: { arg: { ...arg, name: argName } },
         })
@@ -100,7 +100,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     }
                     disabled={!isReviewing && currentArgument?.name === argName}
                     onClick={() => {
-                      commandBarSend({
+                      commandBarActor.send({
                         type: isReviewing
                           ? 'Edit argument'
                           : 'Change current argument',

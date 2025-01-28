@@ -1,12 +1,14 @@
 import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
 import { Command, CommandArgumentOption } from './commandTypes'
-import { kclManager } from './singletons'
+import { codeManager, kclManager } from './singletons'
 import { isDesktop } from './isDesktop'
 import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from './constants'
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { parseProjectSettings } from 'lang/wasm'
 import { err, reportRejection } from './trap'
 import { projectConfigurationToSettingsPayload } from './settings/settingsUtils'
+import { copyFileShareLink } from './links'
+import { IndexLoaderData } from './types'
 
 interface OnSubmitProps {
   sampleName: string
@@ -15,10 +17,21 @@ interface OnSubmitProps {
   method: 'overwrite' | 'newFile'
 }
 
-export function kclCommands(
-  onSubmit: (p: OnSubmitProps) => Promise<void>,
-  providedOptions: CommandArgumentOption<string>[]
-): Command[] {
+interface KclCommandConfig {
+  // TODO: find a different approach that doesn't require
+  // special props for a single command
+  specialPropsForSampleCommand: {
+    onSubmit: (p: OnSubmitProps) => Promise<void>
+    providedOptions: CommandArgumentOption<string>[]
+  }
+  projectData: IndexLoaderData
+  authToken: string
+  settings: {
+    defaultUnit: UnitLength_type
+  }
+}
+
+export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
     {
       name: 'format-code',
@@ -107,7 +120,9 @@ export function kclCommands(
           )
           .then((props) => {
             if (props?.code) {
-              onSubmit(props).catch(reportError)
+              commandProps.specialPropsForSampleCommand
+                .onSubmit(props)
+                .catch(reportError)
             }
           })
           .catch(reportError)
@@ -149,9 +164,25 @@ export function kclCommands(
             }
             return value
           },
-          options: providedOptions,
+          options: commandProps.specialPropsForSampleCommand.providedOptions,
         },
       },
     },
+    // {
+    //   name: 'share-file-link',
+    //   displayName: 'Share file',
+    //   description: 'Create a link that contains a copy of the current file.',
+    //   groupId: 'code',
+    //   needsReview: false,
+    //   icon: 'link',
+    //   onSubmit: () => {
+    //     copyFileShareLink({
+    //       token: commandProps.authToken,
+    //       code: codeManager.code,
+    //       name: commandProps.projectData.project?.name || '',
+    //       units: commandProps.settings.defaultUnit,
+    //     }).catch(reportRejection)
+    //   },
+    // },
   ]
 }

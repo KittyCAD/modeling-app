@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Result of parsing artifact_graph_example_code_offset_planes.kcl
-snapshot_kind: text
 ---
 {
   "Ok": {
@@ -31,7 +30,10 @@ snapshot_kind: text
                 "start": 35,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 20.0
+                "value": {
+                  "value": 20.0,
+                  "suffix": "None"
+                }
               }
             ],
             "callee": {
@@ -80,7 +82,10 @@ snapshot_kind: text
                   "start": 75,
                   "type": "Literal",
                   "type": "Literal",
-                  "value": 50.0
+                  "value": {
+                    "value": 50.0,
+                    "suffix": "None"
+                  }
                 },
                 "end": 77,
                 "operator": "-",
@@ -134,7 +139,10 @@ snapshot_kind: text
                 "start": 114,
                 "type": "Literal",
                 "type": "Literal",
-                "value": 10.0
+                "value": {
+                  "value": 10.0,
+                  "suffix": "None"
+                }
               }
             ],
             "callee": {
@@ -199,7 +207,10 @@ snapshot_kind: text
                         "start": 182,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 186,
@@ -207,7 +218,10 @@ snapshot_kind: text
                         "start": 185,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 0.0
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 187,
@@ -243,7 +257,10 @@ snapshot_kind: text
                         "start": 203,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 6.78
+                        "value": {
+                          "value": 6.78,
+                          "suffix": "None"
+                        }
                       },
                       {
                         "end": 214,
@@ -251,7 +268,10 @@ snapshot_kind: text
                         "start": 209,
                         "type": "Literal",
                         "type": "Literal",
-                        "value": 15.01
+                        "value": {
+                          "value": 15.01,
+                          "suffix": "None"
+                        }
                       }
                     ],
                     "end": 215,

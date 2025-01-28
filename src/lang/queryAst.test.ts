@@ -10,7 +10,6 @@ import {
   findAllPreviousVariables,
   isNodeSafeToReplace,
   isTypeInValue,
-  getNodePathFromSourceRange,
   hasExtrudeSketch,
   findUsesOfTagInPipe,
   hasSketchPipeBeenExtruded,
@@ -19,6 +18,7 @@ import {
   getNodeFromPath,
   doesSceneHaveExtrudedSketch,
 } from './queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
   createArrayExpression,
@@ -660,7 +660,7 @@ myNestedVar = [
       enter: (node, path) => {
         if (
           node.type === 'Literal' &&
-          String(node.value) === literalOfInterest
+          String((node as any).value.value) === literalOfInterest
         ) {
           pathToNode = path
         } else if (

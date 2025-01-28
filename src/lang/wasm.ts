@@ -53,7 +53,7 @@ import { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
 import { Artifact } from './std/artifactGraph'
-import { getNodePathFromSourceRange } from './queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -539,7 +539,8 @@ export function sketchFromKclValueOptional(
 ): Sketch | Reason {
   if (obj?.value?.type === 'Sketch') return obj.value
   if (obj?.value?.type === 'Solid') return obj.value.sketch
-  if (obj?.type === 'Solid') return obj.sketch
+  if (obj?.type === 'Sketch') return obj.value
+  if (obj?.type === 'Solid') return obj.value.sketch
   if (!varName) {
     varName = 'a KCL value'
   }
