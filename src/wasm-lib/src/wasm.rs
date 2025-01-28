@@ -77,19 +77,7 @@ pub async fn execute(
     let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
     let mut settings: kcl_lib::ExecutorSettings = config.into();
     if let Some(path) = path {
-        let p = std::path::PathBuf::from(&path);
-        // We want the parent directory of the file.
-        if path.ends_with(".kcl") {
-            settings.current_file = Some(p.clone());
-            // Get the parent directory.
-            if let Some(parent) = p.parent() {
-                settings.project_directory = Some(parent.to_path_buf());
-            } else {
-                settings.project_directory = Some(std::path::PathBuf::from(""));
-            }
-        } else {
-            settings.project_directory = Some(p);
-        }
+        settings.with_current_file(std::path::PathBuf::from(path));
     }
 
     let ctx = if is_mock {

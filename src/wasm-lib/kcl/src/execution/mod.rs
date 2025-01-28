@@ -1812,6 +1812,25 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     }
 }
 
+impl ExecutorSettings {
+    /// Add the current file path to the executor settings.
+    pub fn with_current_file(mut self, current_file: PathBuf) -> Self {
+        // We want the parent directory of the file.
+        if current_file.extension() == Some(std::ffi::OsStr::new("kcl")) {
+            self.current_file = Some(current_file.clone());
+            // Get the parent directory.
+            if let Some(parent) = current_file.parent() {
+                self.project_directory = Some(parent.to_path_buf());
+            } else {
+                self.project_directory = Some(std::path::PathBuf::from(""));
+            }
+        } else {
+            self.project_directory = Some(current_file.clone());
+        }
+        self
+    }
+}
+
 /// Create a new zoo api client.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> Result<kittycad::Client> {
