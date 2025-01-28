@@ -47,7 +47,8 @@ process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
 process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
 process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
 process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
-process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??= viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
+process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
+  viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
 console.log('process.env post force', process.env)
 
 /// Register our application to handle all "zoo-studio:" protocols.
