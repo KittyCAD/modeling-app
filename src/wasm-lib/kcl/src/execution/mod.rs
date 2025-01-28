@@ -2603,7 +2603,20 @@ impl ExecutorContext {
         let info = exec_state.global.module_infos[&module_id].clone();
 
         match &info.repr {
-            ModuleRepr::Root => unreachable!(),
+            ModuleRepr::Root => Err(KclError::ImportCycle(KclErrorDetails {
+                message: format!(
+                    "circular import of modules is not allowed: {} -> {}",
+                    exec_state
+                        .mod_local
+                        .import_stack
+                        .iter()
+                        .map(|p| p.as_path().to_string_lossy())
+                        .collect::<Vec<_>>()
+                        .join(" -> "),
+                    info.path.display()
+                ),
+                source_ranges: vec![source_range],
+            })),
             ModuleRepr::Kcl(program) => {
                 let mut local_state = ModuleState {
                     import_stack: exec_state.mod_local.import_stack.clone(),
