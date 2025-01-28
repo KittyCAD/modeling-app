@@ -22,7 +22,6 @@ import {
   VariableDeclaration,
   VariableDeclarator,
 } from './wasm'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
 import { getAngle } from '../lib/utils'
@@ -32,6 +31,7 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err, Reason } from 'lib/trap'
+import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { codeRefFromRange } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from './queryAstNodePathUtils'
