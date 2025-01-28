@@ -56,23 +56,22 @@ afterEach(() => {
   process.chdir('..')
 })
 
-// The tests have to be sequential because we need to change directories
-// to support `import` working properly.
-// @ts-expect-error
-describe.sequential('Test KCL Samples from public Github repository', () => {
-  // @ts-expect-error
-  describe.sequential('when performing enginelessExecutor', () => {
+describe('Test KCL Samples from public Github repository', () => {
+  describe('when performing enginelessExecutor', () => {
     manifest.forEach((file: KclSampleFile) => {
-      // @ts-expect-error
-      it.sequential(
+      it(
         `should execute ${file.title} (${file.file}) successfully`,
         async () => {
-          const [dirProject, fileKcl] =
-            file.pathFromProjectDirectoryToFirstFile.split('/')
-          process.chdir(dirProject)
-          const code = await fs.readFile(fileKcl, 'utf-8')
+          const code = await fs.readFile(
+            file.pathFromProjectDirectoryToFirstFile,
+            'utf-8'
+          )
           const ast = assertParse(code)
-          await enginelessExecutor(ast, programMemoryInit())
+          await enginelessExecutor(
+            ast,
+            programMemoryInit(),
+            file.pathFromProjectDirectoryToFirstFile
+          )
         },
         files.length * 1000
       )
