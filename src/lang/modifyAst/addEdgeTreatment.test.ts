@@ -770,7 +770,7 @@ chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001
 extrude001 = extrude(-15, sketch001)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)
   |> fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, %)
-chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001XXX)`
+chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001)`
 
         await runDeleteEdgeTreatmentTest(
           code,
