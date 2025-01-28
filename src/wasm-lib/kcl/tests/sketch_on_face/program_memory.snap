@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Program memory after executing sketch_on_face.kcl
-snapshot_kind: text
 ---
 {
   "environments": [

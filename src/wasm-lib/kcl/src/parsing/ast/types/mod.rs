@@ -41,7 +41,7 @@ pub enum Definition<'a> {
     Import(NodeRef<'a, ImportStatement>),
 }
 
-#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct Node<T> {
@@ -51,6 +51,8 @@ pub struct Node<T> {
     pub end: usize,
     #[serde(default, skip_serializing_if = "ModuleId::is_top_level")]
     pub module_id: ModuleId,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub trivia: NodeList<NonCodeNode>,
 }
 
 impl<T> Node<T> {
@@ -94,6 +96,7 @@ impl<T> Node<T> {
             start,
             end,
             module_id,
+            trivia: Vec::new(),
         }
     }
 
@@ -103,6 +106,7 @@ impl<T> Node<T> {
             start: 0,
             end: 0,
             module_id: ModuleId::default(),
+            trivia: Vec::new(),
         }
     }
 
@@ -112,6 +116,7 @@ impl<T> Node<T> {
             start,
             end,
             module_id,
+            trivia: Vec::new(),
         })
     }
 
@@ -642,6 +647,7 @@ impl From<&BodyItem> for SourceRange {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum Expr {
     Literal(BoxNode<Literal>),
     Identifier(BoxNode<Identifier>),
@@ -3823,6 +3829,7 @@ const cylinder = startSketchOn('-XZ')
                         start: 0,
                         end: 0,
                         module_id: ModuleId::default(),
+                        trivia: Vec::new(),
                     },
                     return_type: None,
                     digest: None,
@@ -3852,6 +3859,7 @@ const cylinder = startSketchOn('-XZ')
                         start: 0,
                         end: 0,
                         module_id: ModuleId::default(),
+                        trivia: Vec::new(),
                     },
                     return_type: None,
                     digest: None,
@@ -3893,6 +3901,7 @@ const cylinder = startSketchOn('-XZ')
                         start: 0,
                         end: 0,
                         module_id: ModuleId::default(),
+                        trivia: Vec::new(),
                     },
                     return_type: None,
                     digest: None,

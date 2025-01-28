@@ -1769,6 +1769,7 @@ mod test {
                     start: 0,
                     end: 0,
                     module_id: ModuleId::default(),
+                    trivia: Vec::new(),
                 },
                 return_type: None,
                 digest: None,

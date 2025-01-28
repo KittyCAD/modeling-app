@@ -278,6 +278,7 @@ export function mutateObjExpProp(
         start: 0,
         end: 0,
         moduleId: 0,
+        trivia: [],
       })
     }
   }
@@ -890,6 +891,7 @@ export function createLiteral(value: LiteralValue | number): Node<Literal> {
     moduleId: 0,
     value,
     raw,
+    trivia: [],
   }
 }
 
@@ -899,6 +901,7 @@ export function createTagDeclarator(value: string): Node<TagDeclarator> {
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     value,
   }
@@ -910,6 +913,7 @@ export function createIdentifier(name: string): Node<Identifier> {
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     name,
   }
@@ -921,6 +925,7 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
   }
 }
 
@@ -933,11 +938,13 @@ export function createCallExpressionStdLib(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
 
       name,
     },
@@ -955,11 +962,13 @@ export function createCallExpressionStdLibKw(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
 
       name,
     },
@@ -977,11 +986,13 @@ export function createCallExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
 
       name,
     },
@@ -997,6 +1008,7 @@ export function createArrayExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     nonCodeMeta: nonCodeMetaEmpty(),
     elements,
@@ -1011,6 +1023,7 @@ export function createPipeExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     body,
     nonCodeMeta: nonCodeMetaEmpty(),
@@ -1028,12 +1041,14 @@ export function createVariableDeclaration(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     declaration: {
       type: 'VariableDeclarator',
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
 
       id: createIdentifier(varName),
       init,
@@ -1051,6 +1066,7 @@ export function createObjectExpression(properties: {
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
@@ -1058,6 +1074,7 @@ export function createObjectExpression(properties: {
       start: 0,
       end: 0,
       moduleId: 0,
+      trivia: [],
       key: createIdentifier(key),
 
       value,
@@ -1074,6 +1091,7 @@ export function createUnaryExpression(
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     operator,
     argument,
@@ -1090,6 +1108,7 @@ export function createBinaryExpression([left, operator, right]: [
     start: 0,
     end: 0,
     moduleId: 0,
+    trivia: [],
 
     operator,
     left,

@@ -308,6 +308,7 @@ fn annotation(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
                     value,
                     digest: None,
                 },
+                trivia: Vec::new(),
             }),
             comma_sep,
         )
@@ -426,6 +427,7 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
             non_code_meta,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -828,6 +830,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectPr
             key,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -856,6 +859,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
             value: expr,
             digest: None,
         },
+        trivia: Vec::new(),
     };
 
     if sep.token_type == TokenType::Colon {
@@ -1786,6 +1790,7 @@ fn return_stmt(i: &mut TokenSlice) -> PResult<Node<ReturnStatement>> {
         end: argument.end(),
         module_id: ret.module_id,
         inner: ReturnStatement { argument, digest: None },
+        trivia: Vec::new(),
     })
 }
 
@@ -2012,11 +2017,13 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
                     init: val,
                     digest: None,
                 },
+                trivia: Vec::new(),
             },
             visibility,
             kind,
             digest: None,
         },
+        trivia: Vec::new(),
     }))
 }
 
@@ -2222,6 +2229,7 @@ fn unary_expression(i: &mut TokenSlice) -> PResult<Node<UnaryExpression>> {
             argument,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -2302,6 +2310,7 @@ fn expression_stmt(i: &mut TokenSlice) -> PResult<Node<ExpressionStatement>> {
             expression: val,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -2741,6 +2750,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
             arguments: args,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
@@ -2770,6 +2780,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
             arguments: args,
             digest: None,
         },
+        trivia: Vec::new(),
     })
 }
 
