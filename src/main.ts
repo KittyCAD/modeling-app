@@ -97,7 +97,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     const filteredPath = pathToOpen
-      ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, ''))
+      ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
       : ''
     const fullHashBasedUrl = `${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/${filteredPath}`
     newWindow.loadURL(fullHashBasedUrl).catch(reportRejection)
@@ -105,7 +105,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     if (pathIsCustomProtocolLink && pathToOpen) {
       // We're trying to open a custom protocol link
       const filteredPath = pathToOpen
-        ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL, ''))
+        ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
         : ''
       const startIndex = path.join(
         __dirname,
