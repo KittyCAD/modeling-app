@@ -1814,7 +1814,7 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
 
 impl ExecutorSettings {
     /// Add the current file path to the executor settings.
-    pub fn with_current_file(mut self, current_file: PathBuf) -> Self {
+    pub fn with_current_file(&mut self, current_file: PathBuf) {
         // We want the parent directory of the file.
         if current_file.extension() == Some(std::ffi::OsStr::new("kcl")) {
             self.current_file = Some(current_file.clone());
@@ -1827,7 +1827,6 @@ impl ExecutorSettings {
         } else {
             self.project_directory = Some(current_file.clone());
         }
-        self
     }
 }
 
