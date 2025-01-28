@@ -14,7 +14,6 @@ import {
   findAllPreviousVariables,
   isNodeSafeToReplace,
   isTypeInValue,
-  getNodePathFromSourceRange,
   hasExtrudeSketch,
   findUsesOfTagInPipe,
   hasSketchPipeBeenExtruded,
@@ -23,6 +22,7 @@ import {
   getNodeFromPath,
   doesSceneHaveExtrudedSketch,
 } from './queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
   createArrayExpression,
