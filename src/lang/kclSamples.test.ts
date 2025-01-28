@@ -52,7 +52,6 @@ afterAll(async () => {
   } catch (e) {}
 })
 
-afterEach(() => {})
 
 describe('Test KCL Samples from public Github repository', () => {
   describe('when performing enginelessExecutor', () => {
