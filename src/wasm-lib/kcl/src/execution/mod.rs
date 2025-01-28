@@ -142,7 +142,7 @@ impl ExecState {
         // This is for the front end to keep track of the ids.
         id_generator.next_id = 0;
 
-        let mut global = GlobalState::new(PathBuf::default());
+        let mut global = GlobalState::new();
         global.id_generator = id_generator;
 
         *self = ExecState {
@@ -204,7 +204,7 @@ impl ExecState {
 }
 
 impl GlobalState {
-    fn new(root_path: PathBuf) -> Self {
+    fn new() -> Self {
         let mut global = GlobalState {
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
@@ -216,6 +216,7 @@ impl GlobalState {
         };
 
         let root_id = ModuleId::default();
+        let root_path = PathBuf::from("");
         global.module_infos.insert(
             root_id,
             ModuleInfo {

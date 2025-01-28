@@ -53,7 +53,7 @@ export async function executeAst({
   programMemoryOverride,
 }: {
   ast: Node<Program>
-  path: string | null,
+  path?: string
   engineCommandManager: EngineCommandManager
   programMemoryOverride?: ProgramMemory
   isInterrupted?: boolean
@@ -65,8 +65,8 @@ export async function executeAst({
 }> {
   try {
     const execState = await (programMemoryOverride
-      ? enginelessExecutor(ast, path, programMemoryOverride)
-      : executor(ast, path, engineCommandManager))
+      ? enginelessExecutor(ast, programMemoryOverride, path)
+      : executor(ast, engineCommandManager, path))
 
     await engineCommandManager.waitForAllCommands()
 

@@ -577,8 +577,8 @@ export function sketchFromKclValue(
  */
 export const executor = async (
   node: Node<Program>,
-  path: string | null,
   engineCommandManager: EngineCommandManager,
+  path?: string,
   programMemoryOverride: ProgramMemory | Error | null = null
 ): Promise<ExecState> => {
   if (programMemoryOverride !== null && err(programMemoryOverride))
@@ -610,6 +610,7 @@ export const executor = async (
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
+    console.log('YOYOYO path', path)
     const kclError = new KCLError(
       parsed.error.kind,
       parsed.error.msg,
