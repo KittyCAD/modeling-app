@@ -141,7 +141,7 @@ export function updateCenterRectangleSketch(
       const literal = arrayExpression.elements[0]
       if (isLiteral(literal)) {
         callExpression.arguments[0] = createArrayExpression([
-          createLiteral(literal.value),
+          createLiteral(literal.value.value),
           createLiteral(Math.abs(twoX)),
         ])
       }
