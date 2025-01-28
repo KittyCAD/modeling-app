@@ -10,7 +10,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   sketchFromKclValue,
-} from 'lang/wasm'
+} from '../wasm'
 import {
   createCallExpressionStdLib,
   createPipeSubstitution,
@@ -18,7 +18,7 @@ import {
   createArrayExpression,
   createIdentifier,
   createPipeExpression,
-} from 'lang/modifyAst'
+} from '../modifyAst'
 import {
   getNodeFromPath,
   hasSketchPipeBeenExtruded,
