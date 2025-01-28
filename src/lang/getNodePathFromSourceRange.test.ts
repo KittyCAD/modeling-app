@@ -1,5 +1,5 @@
 import { getNodeFromPath } from './queryAst'
-import { getNodePathFromSourceRange } from './queryAstNodePathUtils'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   Identifier,
   assertParse,

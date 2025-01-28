@@ -22,6 +22,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
 } from './wasm'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
 import { getAngle } from '../lib/utils'

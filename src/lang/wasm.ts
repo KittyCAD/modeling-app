@@ -54,6 +54,8 @@ import { Artifact as RustArtifact } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactId } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
+import { Artifact } from './std/artifactGraph'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'

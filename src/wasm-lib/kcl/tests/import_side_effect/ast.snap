@@ -7,7 +7,10 @@ description: Result of parsing import_side_effect.kcl
     "body": [
       {
         "end": 40,
-        "path": "export_side_effect.kcl",
+        "path": {
+          "type": "Kcl",
+          "filename": "export_side_effect.kcl"
+        },
         "selector": {
           "type": "List",
           "items": [

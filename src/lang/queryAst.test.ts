@@ -18,7 +18,7 @@ import {
   getNodeFromPath,
   doesSceneHaveExtrudedSketch,
 } from './queryAst'
-import { getNodePathFromSourceRange } from './queryAstNodePathUtils'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { enginelessExecutor } from '../lib/testHelpers'
 import {
   createArrayExpression,
