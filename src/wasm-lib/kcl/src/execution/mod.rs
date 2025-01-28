@@ -2643,7 +2643,12 @@ impl ExecutorContext {
                         .exec_module(module_id, exec_state, ExecutionKind::Normal, metadata.source_range)
                         .await?;
                     result.unwrap_or_else(|| {
-                        // The module didn't have a return value.
+                        // The module didn't have a return value.  Currently,
+                        // the only way to have a return value is with the final
+                        // statement being an expression statement.
+                        //
+                        // TODO: Make a warning when we support them in the
+                        // execution phase.
                         let mut new_meta = vec![metadata.to_owned()];
                         new_meta.extend(meta);
                         KclValue::KclNone {
