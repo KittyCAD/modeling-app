@@ -26,7 +26,7 @@ import {
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
 import { getAngle } from '../lib/utils'
-import { ARG_TAG, getFirstArg } from './std/sketch'
+import { ARG_TAG, getArgForEnd, getFirstArg } from './std/sketch'
 import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
@@ -772,10 +772,10 @@ export function isLinesParallelAndConstrained(
       ast,
       secondaryLine?.codeRef?.range
     )
-    const _secondaryNode = getNodeFromPath<CallExpression>(
+    const _secondaryNode = getNodeFromPath<CallExpression | CallExpressionKw>(
       ast,
       secondaryPath,
-      'CallExpression'
+      ['CallExpression', 'CallExpressionKw']
     )
     if (err(_secondaryNode)) return _secondaryNode
     const secondaryNode = _secondaryNode.node
@@ -809,7 +809,10 @@ export function isLinesParallelAndConstrained(
       Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
     // is secondary line fully constrain, or has constrain type of 'angle'
-    const secondaryFirstArg = getFirstArg(secondaryNode)
+    const secondaryFirstArg =
+      secondaryNode.type === 'CallExpression'
+        ? getFirstArg(secondaryNode)
+        : getArgForEnd(secondaryNode)
     if (err(secondaryFirstArg)) return secondaryFirstArg
 
     const isAbsolute = false // ADAM: TODO

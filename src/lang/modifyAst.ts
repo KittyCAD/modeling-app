@@ -34,7 +34,12 @@ import {
   ARG_INDEX_FIELD,
   LABELED_ARG_FIELD,
 } from './queryAst'
-import { addTagForSketchOnFace, ARG_TAG, getConstraintInfo } from './std/sketch'
+import {
+  addTagForSketchOnFace,
+  ARG_TAG,
+  getConstraintInfo,
+  getConstraintInfoKw,
+} from './std/sketch'
 import {
   PathToNodeMap,
   isLiteralArrayOrStatic,
@@ -1034,6 +1039,7 @@ export function giveSketchFnCallTag(
       return { tagDeclarator, isTagExisting }
     }
 
+    // We've handled CallExpressionKw above, so this has to be positional.
     const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
     if (err(_node1)) return _node1
     const { node: primaryCallExp } = _node1
@@ -1175,17 +1181,22 @@ export function deleteSegmentFromPipeExpression(
   dependentRanges.forEach((range) => {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
 
-    const callExp = getNodeFromPath<Node<CallExpression>>(
+    const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
       _modifiedAst,
       path,
-      'CallExpression',
+      ['CallExpression', 'CallExpressionKw'],
       true
     )
     if (err(callExp)) return callExp
 
-    const constraintInfo = getConstraintInfo(callExp.node, code, path).find(
-      ({ sourceRange }) => isOverlap(sourceRange, range)
-    )
+    const constraintInfo =
+      callExp.node.type === 'CallExpression'
+        ? getConstraintInfo(callExp.node, code, path).find(({ sourceRange }) =>
+            isOverlap(sourceRange, range)
+          )
+        : getConstraintInfoKw(callExp.node, code, path).find(
+            ({ sourceRange }) => isOverlap(sourceRange, range)
+          )
     if (!constraintInfo) return
 
     if (!constraintInfo.argPosition) return

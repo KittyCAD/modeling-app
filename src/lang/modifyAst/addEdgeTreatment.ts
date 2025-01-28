@@ -310,10 +310,10 @@ export function mutateAstWithTagForSketchSegment(
   astClone: Node<Program>,
   pathToSegmentNode: PathToNode
 ): { modifiedAst: Program; tag: string } | Error {
-  const segmentNode = getNodeFromPath<CallExpression>(
+  const segmentNode = getNodeFromPath<CallExpression | CallExpressionKw>(
     astClone,
     pathToSegmentNode,
-    'CallExpression'
+    ['CallExpression', 'CallExpressionKw']
   )
   if (err(segmentNode)) return segmentNode
 

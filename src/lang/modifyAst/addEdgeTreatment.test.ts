@@ -63,18 +63,18 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   function getExtrudeExpression(
     ast: Program,
     pathToExtrudeNode: PathToNode
-  ): CallExpression | PipeExpression | undefined | Error {
+  ): CallExpression | CallExpressionKw | PipeExpression | undefined | Error {
     if (pathToExtrudeNode.length === 0) return undefined // no extrude node
 
-    const extrudeNodeResult = getNodeFromPath<CallExpression>(
-      ast,
-      pathToExtrudeNode
-    )
+    const extrudeNodeResult = getNodeFromPath<
+      CallExpression | CallExpressionKw
+    >(ast, pathToExtrudeNode)
     if (err(extrudeNodeResult)) {
       return extrudeNodeResult
     }
     return extrudeNodeResult.node
   }
+
   function getExpectedExtrudeExpression(
     ast: Program,
     code: string,
@@ -605,10 +605,10 @@ extrude001 = extrude(sketch001, length = -5)
     )
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression>(
+    const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
       ast,
       pathToNode,
-      'CallExpression'
+      ['CallExpression', 'CallExpressionKw']
     )
     if (err(callExp)) return
     const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
@@ -640,7 +640,7 @@ extrude001 = extrude(sketch001, length = -5)
     const range = topLevelRange(start, start + lineOfInterest.length)
     const pathToNode = getNodePathFromSourceRange(ast, range)
     if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression>(
+    const callExp = getNodeFromPath<CallExpressionKw>(
       ast,
       pathToNode,
       'CallExpression'

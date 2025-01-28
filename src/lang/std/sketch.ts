@@ -2012,7 +2012,10 @@ export function changeSketchArguments(
     sourceRangeOrPath.type === 'sourceRange'
       ? getNodePathFromSourceRange(_node, sourceRangeOrPath.sourceRange)
       : sourceRangeOrPath.pathToNode
-  const nodeMeta = getNodeFromPath<CallExpression>(_node, thePath)
+  const nodeMeta = getNodeFromPath<CallExpression | CallExpressionKw>(
+    _node,
+    thePath
+  )
   if (err(nodeMeta)) return nodeMeta
 
   const { node: callExpression, shallowPath } = nodeMeta
@@ -2268,7 +2271,7 @@ export function replaceSketchLine({
  */
 function addTagToChamfer(
   tagInfo: AddTagInfo,
-  edgeCutMeta: EdgeCutInfo | null
+  edgeCutMeta: EdgeCutInfo
 ):
   | {
       modifiedAst: Node<Program>
@@ -2406,6 +2409,11 @@ export function addTagForSketchOnFace(
     return addTagKw()(tagInfo)
   }
   if (expressionName === 'chamfer') {
+    if (edgeCutMeta === null) {
+      return new Error(
+        'Cannot add tag to chamfer because no edge cut was provided'
+      )
+    }
     return addTagToChamfer(tagInfo, edgeCutMeta)
   }
   if (expressionName in sketchLineHelperMapKw) {
