@@ -131,7 +131,7 @@ pub struct ExecOutcome {
 impl ExecState {
     pub fn new(exec_settings: &ExecutorSettings) -> Self {
         ExecState {
-            global: GlobalState::new(),
+            global: GlobalState::new(exec_settings),
             mod_local: ModuleState::new(exec_settings),
         }
     }
@@ -142,7 +142,7 @@ impl ExecState {
         // This is for the front end to keep track of the ids.
         id_generator.next_id = 0;
 
-        let mut global = GlobalState::new();
+        let mut global = GlobalState::new(exec_settings);
         global.id_generator = id_generator;
 
         *self = ExecState {
@@ -204,7 +204,7 @@ impl ExecState {
 }
 
 impl GlobalState {
-    fn new() -> Self {
+    fn new(settings: &ExecutorSettings) -> Self {
         let mut global = GlobalState {
             id_generator: Default::default(),
             path_to_source_id: Default::default(),
@@ -215,9 +215,8 @@ impl GlobalState {
             artifact_graph: Default::default(),
         };
 
-        // TODO(#4434): Use the top-level file's path.
-        let root_path = PathBuf::new();
         let root_id = ModuleId::default();
+        let root_path = settings.current_file.clone().unwrap_or_default();
         global.module_infos.insert(
             root_id,
             ModuleInfo {
@@ -1752,6 +1751,9 @@ pub struct ExecutorSettings {
     /// The directory of the current project.  This is used for resolving import
     /// paths.  If None is given, the current working directory is used.
     pub project_directory: Option<PathBuf>,
+    /// This is the path to the current file being executed.
+    /// We use this for preventing cyclic imports.
+    pub current_file: Option<PathBuf>,
 }
 
 impl Default for ExecutorSettings {
@@ -1763,6 +1765,7 @@ impl Default for ExecutorSettings {
             show_grid: false,
             replay: None,
             project_directory: None,
+            current_file: None,
         }
     }
 }
@@ -1776,6 +1779,7 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
             show_grid: config.settings.modeling.show_scale_grid,
             replay: None,
             project_directory: None,
+            current_file: None,
         }
     }
 }
@@ -1789,6 +1793,7 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
             show_grid: config.settings.modeling.show_scale_grid,
             replay: None,
             project_directory: None,
+            current_file: None,
         }
     }
 }
@@ -1802,6 +1807,25 @@ impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
             show_grid: modeling.show_scale_grid,
             replay: None,
             project_directory: None,
+            current_file: None,
+        }
+    }
+}
+
+impl ExecutorSettings {
+    /// Add the current file path to the executor settings.
+    pub fn with_current_file(&mut self, current_file: PathBuf) {
+        // We want the parent directory of the file.
+        if current_file.extension() == Some(std::ffi::OsStr::new("kcl")) {
+            self.current_file = Some(current_file.clone());
+            // Get the parent directory.
+            if let Some(parent) = current_file.parent() {
+                self.project_directory = Some(parent.to_path_buf());
+            } else {
+                self.project_directory = Some(std::path::PathBuf::from(""));
+            }
+        } else {
+            self.project_directory = Some(current_file.clone());
         }
     }
 }
@@ -2019,6 +2043,7 @@ impl ExecutorContext {
                 show_grid: false,
                 replay: None,
                 project_directory: None,
+                current_file: None,
             },
             None,
             engine_addr,
@@ -2578,7 +2603,20 @@ impl ExecutorContext {
         let info = exec_state.global.module_infos[&module_id].clone();
 
         match &info.repr {
-            ModuleRepr::Root => unreachable!(),
+            ModuleRepr::Root => Err(KclError::ImportCycle(KclErrorDetails {
+                message: format!(
+                    "circular import of modules is not allowed: {} -> {}",
+                    exec_state
+                        .mod_local
+                        .import_stack
+                        .iter()
+                        .map(|p| p.as_path().to_string_lossy())
+                        .collect::<Vec<_>>()
+                        .join(" -> "),
+                    info.path.display()
+                ),
+                source_ranges: vec![source_range],
+            })),
             ModuleRepr::Kcl(program) => {
                 let mut local_state = ModuleState {
                     import_stack: exec_state.mod_local.import_stack.clone(),
