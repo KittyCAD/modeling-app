@@ -1022,19 +1022,19 @@ export function giveSketchFnCallTag(
   | Error {
   const path = getNodePathFromSourceRange(ast, range)
   const maybeTag = (() => {
-    const kwCallNode = getNodeFromPath<CallExpressionKw>(
+    const callNode = getNodeFromPath<CallExpression | CallExpressionKw>(
       ast,
       path,
-      'CallExpressionKw'
+      ['CallExpression', 'CallExpressionKw']
     )
-    if (!err(kwCallNode)) {
-      const { node: primaryCallExp } = kwCallNode
+    if (!err(callNode) && callNode.node.type === 'CallExpressionKw') {
+      const { node: primaryCallExp } = callNode
       const existingTag = findKwArg(ARG_TAG, primaryCallExp)
       const tagDeclarator =
         existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
       const isTagExisting = !!existingTag
       if (!isTagExisting) {
-        kwCallNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
+        callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
       }
       return { tagDeclarator, isTagExisting }
     }
