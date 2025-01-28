@@ -1,9 +1,5 @@
-import {
-  getNodePathFromSourceRange,
-  getNodeFromPath,
-  LABELED_ARG_FIELD,
-  ARG_INDEX_FIELD,
-} from './queryAst'
+import { getNodeFromPath, LABELED_ARG_FIELD, ARG_INDEX_FIELD } from './queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   Identifier,
   assertParse,

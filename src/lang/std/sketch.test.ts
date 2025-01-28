@@ -16,7 +16,8 @@ import {
   topLevelRange,
   CallExpressionKw,
 } from '../wasm'
-import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
+import { getNodeFromPath } from '../queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { enginelessExecutor } from '../../lib/testHelpers'
 import { err } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'

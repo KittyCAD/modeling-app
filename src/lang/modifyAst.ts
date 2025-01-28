@@ -28,7 +28,6 @@ import {
   findAllPreviousVariables,
   findAllPreviousVariablesPath,
   getNodeFromPath,
-  getNodePathFromSourceRange,
   isNodeSafeToReplace,
   traverse,
   ARG_INDEX_FIELD,
@@ -40,6 +39,7 @@ import {
   getConstraintInfo,
   getConstraintInfoKw,
 } from './std/sketch'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   PathToNodeMap,
   isLiteralArrayOrStatic,

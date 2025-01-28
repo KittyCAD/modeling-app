@@ -18,10 +18,10 @@ import {
 import {
   getNodeFromPath,
   getNodeFromPathCurry,
-  getNodePathFromSourceRange,
   getObjExprProperty,
   LABELED_ARG_FIELD,
 } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   isLiteralArrayOrStatic,
   isNotLiteralArrayOrStatic,

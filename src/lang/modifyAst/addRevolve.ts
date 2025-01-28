@@ -20,7 +20,8 @@ import {
   findUniqueName,
   createVariableDeclaration,
 } from 'lang/modifyAst'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   mutateAstWithTagForSketchSegment,
   getEdgeTagCall,

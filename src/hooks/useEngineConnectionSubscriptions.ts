@@ -17,7 +17,8 @@ import {
 } from 'lang/std/artifactGraph'
 import { err, reportRejection } from 'lib/trap'
 import { DefaultPlaneStr, getFaceDetails } from 'clientSideScene/sceneEntities'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { CallExpression, CallExpressionKw, defaultSourceRange } from 'lang/wasm'
 import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
 

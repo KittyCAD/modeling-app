@@ -23,6 +23,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
 } from './wasm'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
 import { getSketchSegmentFromSourceRange } from './std/sketchConstraints'
 import { getAngle } from '../lib/utils'
@@ -420,30 +421,6 @@ function moreNodePathFromSourceRange(
 
   console.error('not implemented: ' + node.type)
 
-  return path
-}
-
-export function getNodePathFromSourceRange(
-  node: Program,
-  sourceRange: SourceRange,
-  previousPath: PathToNode = [['body', '']]
-): PathToNode {
-  const [start, end] = sourceRange || []
-  let path: PathToNode = [...previousPath]
-  const _node = { ...node }
-
-  // loop over each statement in body getting the index with a for loop
-  for (
-    let statementIndex = 0;
-    statementIndex < _node.body.length;
-    statementIndex++
-  ) {
-    const statement = _node.body[statementIndex]
-    if (statement.start <= start && statement.end >= end) {
-      path.push([statementIndex, 'index'])
-      return moreNodePathFromSourceRange(statement, sourceRange, path)
-    }
-  }
   return path
 }
 
