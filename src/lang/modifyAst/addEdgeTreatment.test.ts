@@ -288,7 +288,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
     otherSelections: [],
   }
 
-  // apply edge treatment to seleciton
+  // apply edge treatment to selection
   const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters)
   if (err(result)) {
     return result
@@ -320,7 +320,7 @@ const runDeleteEdgeTreatmentTest = async (
   // executeAst
   await kclManager.executeAst({ ast })
 
-  // apply edge treatment to seleciton
+  // apply edge treatment to selection
   const result = await deleteEdgeTreatment(ast, selection)
   if (err(result)) {
     return result
@@ -634,7 +634,7 @@ extrude001 = extrude(-15, sketch001)`
           expectedCode
         )
       })
-      it(`should delete a not piped ${edgeTreatmentType} from a specific segment`, async () => {
+      it(`should delete a non-piped ${edgeTreatmentType} from a specific segment`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
