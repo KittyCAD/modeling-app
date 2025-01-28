@@ -16,6 +16,7 @@ import {
   emptyExecState,
   ExecState,
   initPromise,
+  KclValue,
   parse,
   PathToNode,
   Program,
@@ -33,6 +34,16 @@ import {
   ModelingCmdReq_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { Operation } from 'wasm-lib/kcl/bindings/Operation'
+import {
+  createCutList,
+  CutLumber,
+  LumberToCut,
+  Offcut,
+  STANDARD_TIMBER_LENGTH,
+  uuider,
+} from './std/cutlist'
+
+const LOCALSTORAGE_KEY = 'chickenCoop'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -370,6 +381,148 @@ export class KclManager {
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(isInterrupted ? [] : kclErrorsToDiagnostics(errors))
     this.execState = execState
+    console.log('execState', execState)
+    const frame = execState.memory.get('aGroupOfStudForCreatingCutList')
+    if (frame) {
+      const _existingCutList = localStorage.getItem(LOCALSTORAGE_KEY)
+      const existingCutList: ReturnType<typeof createCutList>[] =
+        _existingCutList ? JSON.parse(_existingCutList) : []
+      console.log('existingCutList', existingCutList)
+      let idStart
+      if (existingCutList.length) {
+        const lastList = existingCutList[existingCutList.length - 1]
+        const lastId =
+          lastList.cutLumbers[lastList.cutLumbers.length - 1].timberLengthId
+        idStart = Number(lastId)
+
+        // sumerize the last cutlist
+
+        const masterCutLumbersByTimberLengthId: Record<string, CutLumber[]> = {}
+        existingCutList.forEach((cutList) => {
+          cutList.cutLumbers.forEach((cutLumber) => {
+            if (!masterCutLumbersByTimberLengthId[cutLumber.timberLengthId]) {
+              masterCutLumbersByTimberLengthId[cutLumber.timberLengthId] = []
+            }
+            masterCutLumbersByTimberLengthId[cutLumber.timberLengthId].push(
+              cutLumber
+            )
+          })
+        })
+        console.log(
+          'masterCutLumbersByTimberLengthId',
+          masterCutLumbersByTimberLengthId
+        )
+        let prettyPrint = ''
+        Object.entries(masterCutLumbersByTimberLengthId).forEach(
+          ([key, value]) => {
+            // prettyPrint += `timberLengthId: ${key}`
+            value.forEach((cutLumber) => {
+              prettyPrint += `timberLengthId: ${key
+                .toString()
+                .padStart(2, ' ')},  cutLength: ${Math.round(
+                cutLumber.lengthBeforeAngles
+              )
+                .toString()
+                .padStart(5, ' ')}, id: ${cutLumber.id
+                .toString()
+                .padStart(2, ' ')}, ang1: ${Math.round(cutLumber.angle1)
+                .toString()
+                .padStart(3, ' ')}, ang2: ${Math.round(cutLumber.angle2)
+                .toString()
+                .padStart(3, ' ')}, angleOnWidth: ${cutLumber.angleRelevantWidth
+                .toString()
+                .padStart(3, ' ')}, depth: ${cutLumber.depth
+                .toString()
+                .padStart(2, ' ')}, name: ${cutLumber.name.padEnd(44, ' ')}\n`
+            })
+            // prettyPrint += `timberLengthId: ${key}`
+          }
+        )
+        console.log('cutlist json')
+        console.log(JSON.stringify(existingCutList))
+        console.log(prettyPrint)
+
+        // cutLumbers.forEach((cutLumber) => {
+        //   if (!cutLumbersByTimberLengthId[cutLumber.timberLengthId]) {
+        //     cutLumbersByTimberLengthId[cutLumber.timberLengthId] = []
+        //   }
+        //   cutLumbersByTimberLengthId[cutLumber.timberLengthId].push(cutLumber)
+        // })
+      } else {
+        idStart = 0
+      }
+      console.log('idStart', idStart)
+      const aGroupOfStudForCreatingCutList = flatternKCLVal(frame) as {
+        angleRelevantWidth: number
+        endCut1: number
+        endCut2: number
+        lengthBeforeAngles: number
+        name: string
+        studType: (string | number)[]
+      }[]
+      console.log(
+        'aGroupOfStudForCreatingCutList',
+        aGroupOfStudForCreatingCutList
+      )
+      const uuid = uuider(idStart)
+      let initialOffcutList: Offcut[] = existingCutList.length
+        ? existingCutList[existingCutList.length - 1].offcutList
+        : [
+            {
+              length: STANDARD_TIMBER_LENGTH,
+              lastAngle: 0,
+              angleRelevantWidth: 90,
+              timberLengthId: uuid(),
+            },
+          ]
+      /**
+angleRelevantWidth: 90,
+      depth: 35,
+      lengthBeforeAngles: 2000,
+      angle1: 0,
+      angle2: 0,
+      name: 'a',
+         */
+      const initialLumbersToCut: LumberToCut[] =
+        aGroupOfStudForCreatingCutList.map((stud, index) => {
+          return {
+            angleRelevantWidth: stud.angleRelevantWidth,
+            depth: stud.studType.find(
+              (item) =>
+                typeof item === 'number' && item !== stud.angleRelevantWidth
+            ) as number,
+            lengthBeforeAngles: stud.lengthBeforeAngles,
+            angle1: stud.endCut1,
+            angle2: stud.endCut2,
+            name: stud.name,
+          }
+        })
+      // console.log('initialLumbersToCut', JSON.stringify(initialLumbersToCut))
+      const cutListResult = createCutList({
+        lumbersToCut: initialLumbersToCut,
+        offcutList: initialOffcutList,
+        uuid,
+      })
+      const newCutList = [...existingCutList, cutListResult]
+      // localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(newCutList))
+      // console.log('cutListResultJSON', JSON.stringify(cutListResult))
+      console.log('cutListResult', cutListResult, 'newCutlistarr', newCutList)
+    } else {
+      console.log('no frame', execState)
+    }
+
+    // console.log('frame', frame)
+    // if (Array.isArray(frame?.value)) {
+    //   const cleanArray = frame?.value.map((value: any) => {
+    //     const val = value.value
+    //     const obj: any = {}
+    //     Object.entries(val).forEach(([key, value2]: [any, any]) => {
+    //       obj[key] = value2.value
+    //     })
+    //     return obj
+    //   })
+    //   console.log('cleanArray', cleanArray)
+    // }
     if (!errors.length) {
       this.lastSuccessfulProgramMemory = execState.memory
       this.lastSuccessfulOperations = execState.operations
@@ -721,4 +874,380 @@ function setSelectionFilter(
       responses: false,
     })
     .catch(reportError)
+}
+
+function flatternKCLVal(val: KclValue): any {
+  if (val.type === 'Number' || val.type === 'String') {
+    return val.value
+  } else if (val.type === 'Array') {
+    return val.value.map(flatternKCLVal)
+  } else if (val.type === 'Object') {
+    const obj: any = {}
+    Object.entries(val.value).forEach(([key, value]: [any, any]) => {
+      obj[key] = flatternKCLVal(value)
+    })
+    return obj
+  }
+}
+
+const yoTestFrontFrame = {
+  cutLumbers: [
+    {
+      angleRelevantWidth: 90,
+      depth: 35,
+      lengthBeforeAngles: 1715,
+      angle1: 0,
+      angle2: 0,
+      name: 'doorSupportUnderHeaderL',
+      id: 1,
+      timberLengthId: '1',
+    },
+    {
+      angleRelevantWidth: 90,
+      depth: 35,
+      lengthBeforeAngles: 1715,
+      angle1: 0,
+      angle2: 0,
+      name: 'doorSupportUnderHeaderR',
+      id: 2,
+      timberLengthId: '1',
+    },
+    {
+      angleRelevantWidth: 90,
+      depth: 35,
+      lengthBeforeAngles: 1544.3684870912048,
+      angle1: 0,
+      angle2: 40,
+      name: 'frontCornerStudL',
+      id: 3,
+      timberLengthId: '1',
+    },
+    {
+      angleRelevantWidth: 90,
+      depth: 35,
+      lengthBeforeAngles: 1544.3684870912048,
+      angle1: 0,
+      angle2: 40,
+      name: 'frontCornerStudL',
+      id: 4,
+      timberLengthId: '2',
+    },
+    {
+      angleRelevantWidth: 35,
+      depth: 90,
+      lengthBeforeAngles: 1770.9253875090703,
+      angle1: 0,
+      angle2: 40,
+      name: 'lDoorVertStud',
+      id: 5,
+      timberLengthId: '2',
+    },
+    {
+      angleRelevantWidth: 35,
+      depth: 90,
+      lengthBeforeAngles: 1770.9253875090703,
+      angle1: 0,
+      angle2: 40,
+      name: 'rDoorVertStud',
+      id: 6,
+      timberLengthId: '2',
+    },
+    {
+      angleRelevantWidth: 35,
+      depth: 90,
+      lengthBeforeAngles: 1515,
+      angle1: 0,
+      angle2: 40,
+      name: 'vertStudsBetweenSideAndDoor',
+      id: 7,
+      timberLengthId: '3',
+    },
+    {
+      angleRelevantWidth: 35,
+      depth: 90,
+      lengthBeforeAngles: 1515,
+      angle1: 0,
+      angle2: 40,
+      name: 'vertStudsBetweenSideAndDoor',
+      id: 8,
+      timberLengthId: '3',
+    },
+    {
+      angleRelevantWidth: 35,
+      depth: 90,
+      lengthBeforeAngles: 108.57232480920788,
+      angle1: 0,
+      angle2: 40,
+      name: 'vertStudsOverDoor',
+      id: 9,
+      timberLengthId: '1',
+    },
+    {
+      angleRelevantWidth: 35,
+      depth: 90,
+      lengthBeforeAngles: 108.57232480920788,
+      angle1: 0,
+      angle2: 40,
+      name: 'vertStudsOverDoor',
+      id: 10,
+      timberLengthId: '1',
+    },
+    {
+      angleRelevantWidth: 35,
+      depth: 90,
+      lengthBeforeAngles: 949.6869799080042,
+      angle1: 40,
+      angle2: 40,
+      name: 'backPitchedStud',
+      id: 11,
+      timberLengthId: '3',
+    },
+    {
+      angleRelevantWidth: 35,
+      depth: 90,
+      lengthBeforeAngles: 949.6869799080042,
+      angle1: 40,
+      angle2: 40,
+      name: 'backPitchedStud',
+      id: 12,
+      timberLengthId: '3',
+    },
+    {
+      angleRelevantWidth: 90,
+      depth: 35,
+      lengthBeforeAngles: 820,
+      angle1: 0,
+      angle2: 0,
+      name: 'doorHeader1',
+      id: 13,
+      timberLengthId: '3',
+    },
+    {
+      angleRelevantWidth: 90,
+      depth: 35,
+      lengthBeforeAngles: 820,
+      angle1: 0,
+      angle2: 0,
+      name: 'doorHeader2',
+      id: 14,
+      timberLengthId: '4',
+    },
+    {
+      angleRelevantWidth: 90,
+      depth: 35,
+      lengthBeforeAngles: 375,
+      angle1: 0,
+      angle2: 0,
+      name: 'footL',
+      id: 15,
+      timberLengthId: '1',
+    },
+    {
+      angleRelevantWidth: 90,
+      depth: 35,
+      lengthBeforeAngles: 375,
+      angle1: 0,
+      angle2: 0,
+      name: 'footR',
+      id: 16,
+      timberLengthId: '2',
+    },
+  ],
+  offcutList: [
+    {
+      length: 308.7669656572259,
+      lastAngle: 0,
+      angleRelevantWidth: 90,
+      timberLengthId: '1',
+    },
+    {
+      length: 420.0608402575016,
+      lastAngle: 0,
+      angleRelevantWidth: 90,
+      timberLengthId: '2',
+    },
+    {
+      length: 115.40342621518221,
+      lastAngle: 0,
+      angleRelevantWidth: 90,
+      timberLengthId: '3',
+    },
+    { length: 5177, lastAngle: 0, angleRelevantWidth: 90, timberLengthId: '4' },
+  ],
+  lumbersToCut: [],
+  cutLumbersByTimberLengthId: {
+    '1': [
+      {
+        angleRelevantWidth: 90,
+        depth: 35,
+        lengthBeforeAngles: 1715,
+        angle1: 0,
+        angle2: 0,
+        name: 'doorSupportUnderHeaderL',
+        id: 1,
+        timberLengthId: '1',
+      },
+      {
+        angleRelevantWidth: 90,
+        depth: 35,
+        lengthBeforeAngles: 1715,
+        angle1: 0,
+        angle2: 0,
+        name: 'doorSupportUnderHeaderR',
+        id: 2,
+        timberLengthId: '1',
+      },
+      {
+        angleRelevantWidth: 90,
+        depth: 35,
+        lengthBeforeAngles: 1544.3684870912048,
+        angle1: 0,
+        angle2: 40,
+        name: 'frontCornerStudL',
+        id: 3,
+        timberLengthId: '1',
+      },
+      {
+        angleRelevantWidth: 35,
+        depth: 90,
+        lengthBeforeAngles: 108.57232480920788,
+        angle1: 0,
+        angle2: 40,
+        name: 'vertStudsOverDoor',
+        id: 9,
+        timberLengthId: '1',
+      },
+      {
+        angleRelevantWidth: 35,
+        depth: 90,
+        lengthBeforeAngles: 108.57232480920788,
+        angle1: 0,
+        angle2: 40,
+        name: 'vertStudsOverDoor',
+        id: 10,
+        timberLengthId: '1',
+      },
+      {
+        angleRelevantWidth: 90,
+        depth: 35,
+        lengthBeforeAngles: 375,
+        angle1: 0,
+        angle2: 0,
+        name: 'footL',
+        id: 15,
+        timberLengthId: '1',
+      },
+    ],
+    '2': [
+      {
+        angleRelevantWidth: 90,
+        depth: 35,
+        lengthBeforeAngles: 1544.3684870912048,
+        angle1: 0,
+        angle2: 40,
+        name: 'frontCornerStudL',
+        id: 4,
+        timberLengthId: '2',
+      },
+      {
+        angleRelevantWidth: 35,
+        depth: 90,
+        lengthBeforeAngles: 1770.9253875090703,
+        angle1: 0,
+        angle2: 40,
+        name: 'lDoorVertStud',
+        id: 5,
+        timberLengthId: '2',
+      },
+      {
+        angleRelevantWidth: 35,
+        depth: 90,
+        lengthBeforeAngles: 1770.9253875090703,
+        angle1: 0,
+        angle2: 40,
+        name: 'rDoorVertStud',
+        id: 6,
+        timberLengthId: '2',
+      },
+      {
+        angleRelevantWidth: 90,
+        depth: 35,
+        lengthBeforeAngles: 375,
+        angle1: 0,
+        angle2: 0,
+        name: 'footR',
+        id: 16,
+        timberLengthId: '2',
+      },
+    ],
+    '3': [
+      {
+        angleRelevantWidth: 35,
+        depth: 90,
+        lengthBeforeAngles: 1515,
+        angle1: 0,
+        angle2: 40,
+        name: 'vertStudsBetweenSideAndDoor',
+        id: 7,
+        timberLengthId: '3',
+      },
+      {
+        angleRelevantWidth: 35,
+        depth: 90,
+        lengthBeforeAngles: 1515,
+        angle1: 0,
+        angle2: 40,
+        name: 'vertStudsBetweenSideAndDoor',
+        id: 8,
+        timberLengthId: '3',
+      },
+      {
+        angleRelevantWidth: 35,
+        depth: 90,
+        lengthBeforeAngles: 949.6869799080042,
+        angle1: 40,
+        angle2: 40,
+        name: 'backPitchedStud',
+        id: 11,
+        timberLengthId: '3',
+      },
+      {
+        angleRelevantWidth: 35,
+        depth: 90,
+        lengthBeforeAngles: 949.6869799080042,
+        angle1: 40,
+        angle2: 40,
+        name: 'backPitchedStud',
+        id: 12,
+        timberLengthId: '3',
+      },
+      {
+        angleRelevantWidth: 90,
+        depth: 35,
+        lengthBeforeAngles: 820,
+        angle1: 0,
+        angle2: 0,
+        name: 'doorHeader1',
+        id: 13,
+        timberLengthId: '3',
+      },
+    ],
+    '4': [
+      {
+        angleRelevantWidth: 90,
+        depth: 35,
+        lengthBeforeAngles: 820,
+        angle1: 0,
+        angle2: 0,
+        name: 'doorHeader2',
+        id: 14,
+        timberLengthId: '4',
+      },
+    ],
+  },
+}
+
+;(window as any).removeChickenCoopCache = () => {
+  localStorage.removeItem(LOCALSTORAGE_KEY)
+  console.log('cache removed')
 }
