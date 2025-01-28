@@ -68,7 +68,7 @@ impl FromStr for NumericSuffix {
             "inch" | "in" => Ok(NumericSuffix::Inch),
             "ft" | "feet" => Ok(NumericSuffix::Ft),
             "yd" | "yards" => Ok(NumericSuffix::Yd),
-            "deg" | "degress" => Ok(NumericSuffix::Deg),
+            "deg" | "degrees" => Ok(NumericSuffix::Deg),
             "rad" | "radians" => Ok(NumericSuffix::Rad),
             _ => Err(CompilationError::err(SourceRange::default(), "invalid unit of measure")),
         }
