@@ -80,6 +80,7 @@ pub async fn execute(
         let p = std::path::PathBuf::from(&path);
         // We want the parent directory of the file.
         if path.ends_with(".kcl") {
+            settings.current_file = Some(p.clone());
             // Get the parent directory.
             if let Some(parent) = p.parent() {
                 settings.project_directory = Some(parent.to_path_buf());
@@ -90,6 +91,7 @@ pub async fn execute(
             settings.project_directory = Some(p);
         }
     }
+
     let ctx = if is_mock {
         kcl_lib::ExecutorContext::new_mock(fs_manager, settings).await?
     } else {

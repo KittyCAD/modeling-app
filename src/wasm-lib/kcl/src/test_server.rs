@@ -108,6 +108,7 @@ pub async fn new_context(
             show_grid: false,
             replay: None,
             project_directory,
+            current_file: None,
         },
     )
     .await
