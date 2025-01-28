@@ -53,7 +53,6 @@ afterAll(async () => {
 })
 
 afterEach(() => {
-  process.chdir('..')
 })
 
 describe('Test KCL Samples from public Github repository', () => {
