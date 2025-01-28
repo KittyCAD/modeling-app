@@ -610,7 +610,6 @@ export const executor = async (
   } catch (e: any) {
     console.log(e)
     const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
-    console.log('YOYOYO path', path)
     const kclError = new KCLError(
       parsed.error.kind,
       parsed.error.msg,
