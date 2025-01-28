@@ -152,10 +152,8 @@ async fn inner_fillet(
                 radius: LengthUnit(data.radius),
                 tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
                 cut_type: CutType::Fillet,
-                // We pass in the command id as the face id.
-                // So the resulting face of the fillet will be the same.
-                // This is because that's how most other endpoints work.
-                face_id: Some(id),
+                // We make this a none so that we can remove it in the future.
+                face_id: None,
             }),
         )
         .await?;

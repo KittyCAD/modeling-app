@@ -654,8 +654,7 @@ snapshot_kind: text
       "edge_id": "[uuid]",
       "radius": 2.0,
       "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "face_id": "[uuid]"
+      "cut_type": "fillet"
     }
   },
   {
@@ -671,8 +670,7 @@ snapshot_kind: text
       "edge_id": "[uuid]",
       "radius": 2.0,
       "tolerance": 0.0000001,
-      "cut_type": "fillet",
-      "face_id": "[uuid]"
+      "cut_type": "fillet"
     }
   }
 ]
