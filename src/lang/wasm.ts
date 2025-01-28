@@ -90,6 +90,7 @@ export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
 export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
 export type { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+export type { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
 
 export type SyntaxType =
   | 'Program'

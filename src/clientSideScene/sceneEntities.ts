@@ -612,8 +612,8 @@ export class SceneEntities {
         segment.type === 'TangentialArcTo'
           ? segmentUtils.tangentialArcTo.init
           : segment.type === 'Circle'
-            ? segmentUtils.circle.init
-            : segmentUtils.straight.init
+          ? segmentUtils.circle.init
+          : segmentUtils.straight.init
       const input: SegmentInputs =
         segment.type === 'Circle'
           ? {
