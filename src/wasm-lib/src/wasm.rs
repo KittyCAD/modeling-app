@@ -58,6 +58,7 @@ pub async fn clear_scene_and_bust_cache(
 #[wasm_bindgen]
 pub async fn execute(
     program_ast_json: &str,
+    path: Option<String>,
     program_memory_override_str: &str,
     settings: &str,
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
@@ -73,11 +74,16 @@ pub async fn execute(
     // You cannot override the memory in non-mock mode.
     let is_mock = program_memory_override.is_some();
 
-    let settings: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
+    let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
+    let mut settings: kcl_lib::ExecutorSettings = config.into();
+    if let Some(path) = path {
+        settings.with_current_file(std::path::PathBuf::from(path));
+    }
+
     let ctx = if is_mock {
-        kcl_lib::ExecutorContext::new_mock(fs_manager, settings.into()).await?
+        kcl_lib::ExecutorContext::new_mock(fs_manager, settings).await?
     } else {
-        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?
+        kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings).await?
     };
 
     let mut exec_state = ExecState::new(&ctx.settings);

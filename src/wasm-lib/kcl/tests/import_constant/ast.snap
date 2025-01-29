@@ -7,7 +7,10 @@ description: Result of parsing import_constant.kcl
     "body": [
       {
         "end": 39,
-        "path": "export_constant.kcl",
+        "path": {
+          "type": "Kcl",
+          "filename": "export_constant.kcl"
+        },
         "selector": {
           "type": "List",
           "items": [
