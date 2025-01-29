@@ -462,12 +462,14 @@ impl ArtifactGraph {
         output.push_str("mindmap\n");
         output.push_str("  root\n");
 
+        let mut ids_seen = vec![];
+
         for (_, artifact) in &self.map {
             // Only the planes are roots.
             let Artifact::Plane(_) = artifact else {
                 continue;
             };
-            self.mind_map_artifact(&mut output, artifact, "    ")?;
+            self.mind_map_artifact(&mut output, &mut ids_seen, artifact, "    ")?;
         }
 
         output.push_str("```\n");
@@ -475,7 +477,17 @@ impl ArtifactGraph {
         Ok(output)
     }
 
-    fn mind_map_artifact<W: Write>(&self, output: &mut W, artifact: &Artifact, prefix: &str) -> std::fmt::Result {
+    fn mind_map_artifact<W: Write>(
+        &self,
+        output: &mut W,
+        ids_seen: &mut Vec<ArtifactId>,
+        artifact: &Artifact,
+        prefix: &str,
+    ) -> std::fmt::Result {
+        if ids_seen.contains(&artifact.id()) {
+            return Ok(());
+        }
+
         match artifact {
             Artifact::Plane(_plane) => {
                 writeln!(output, "{prefix}Plane")?;
@@ -515,11 +527,13 @@ impl ArtifactGraph {
             }
         }
 
+        ids_seen.push(artifact.id());
+
         for child_id in artifact.child_ids() {
             let Some(child_artifact) = self.map.get(&child_id) else {
                 continue;
             };
-            self.mind_map_artifact(output, child_artifact, &format!("{}  ", prefix))?;
+            self.mind_map_artifact(output, ids_seen, child_artifact, &format!("{}  ", prefix))?;
         }
 
         Ok(())

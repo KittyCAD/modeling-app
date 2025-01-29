@@ -785,7 +785,7 @@ mod import_function_not_sketch {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod import_constant {
