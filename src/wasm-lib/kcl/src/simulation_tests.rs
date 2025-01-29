@@ -87,7 +87,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
     let exec_res = crate::test_server::execute_and_snapshot_ast(
         ast.into(),
         crate::settings::types::UnitLength::Mm,
-        Some(Path::new("tests").join(test_name)),
+        Some(Path::new("tests").join(test_name).join("input.kcl").to_owned()),
     )
     .await;
     match exec_res {
