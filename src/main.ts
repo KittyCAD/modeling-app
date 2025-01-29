@@ -116,12 +116,10 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       const filteredPath = pathToOpen
         ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
         : ''
-      alert('filteredPath: ' + filteredPath)
       const startIndex = path.join(
         __dirname,
         `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
       )
-      alert('startIndex: ' + startIndex)
       newWindow
         .loadFile(startIndex, {
           hash: filteredPath,
