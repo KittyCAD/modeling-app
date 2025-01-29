@@ -43,8 +43,8 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
         required: true,
         options: (_, context) =>
           context?.projects.map((p) => ({
-            name: p.name!,
-            value: p.name!,
+            name: p.name,
+            value: p.name,
           })) || [],
       },
     },
