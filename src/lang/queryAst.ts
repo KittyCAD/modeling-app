@@ -83,7 +83,9 @@ export function getNodeFromPath<T>(
         }
       })
       const error = new Error(
-        `Failed to stopAt ${stopAt}, ${aFewFunctionNames.filter((a) => a).join(' > ')}`
+        `Failed to stopAt ${stopAt}, ${aFewFunctionNames
+          .filter((a) => a)
+          .join(' > ')}`
       )
       console.error(tree)
       console.error(sourceCode)
