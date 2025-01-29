@@ -154,7 +154,7 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
     let p2 = args.get_kw_arg("p2")?;
     let p3 = args.get_kw_arg("p3")?;
     let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
-    let tag = args.get_kw_arg_opt("tag");
+    let tag = args.get_kw_arg_opt("tag")?;
 
     let sketch = inner_circle_three_point(p1, p2, p3, sketch_surface_or_group, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {

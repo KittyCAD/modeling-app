@@ -19,16 +19,16 @@ const DEFAULT_V_DEGREE: u32 = 2;
 pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches")?;
     let v_degree: NonZeroU32 = args
-        .get_kw_arg_opt("vDegree")
+        .get_kw_arg_opt("vDegree")?
         .unwrap_or(NonZeroU32::new(DEFAULT_V_DEGREE).unwrap());
     // Attempt to approximate rational curves (such as arcs) using a bezier.
     // This will remove banding around interpolations between arcs and non-arcs.  It may produce errors in other scenarios
     // Over time, this field won't be necessary.
-    let bez_approximate_rational = args.get_kw_arg_opt("bezApproximateRational").unwrap_or(false);
+    let bez_approximate_rational = args.get_kw_arg_opt("bezApproximateRational")?.unwrap_or(false);
     // This can be set to override the automatically determined topological base curve, which is usually the first section encountered.
-    let base_curve_index: Option<u32> = args.get_kw_arg_opt("baseCurveIndex");
+    let base_curve_index: Option<u32> = args.get_kw_arg_opt("baseCurveIndex")?;
     // Tolerance for the loft operation.
-    let tolerance: Option<f64> = args.get_kw_arg_opt("tolerance");
+    let tolerance: Option<f64> = args.get_kw_arg_opt("tolerance")?;
 
     let value = inner_loft(
         sketches,

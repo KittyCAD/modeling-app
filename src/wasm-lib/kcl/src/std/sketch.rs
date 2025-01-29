@@ -98,9 +98,9 @@ pub const NEW_TAG_KW: &str = "tag";
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // let (to, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
     let sketch = args.get_unlabeled_kw_arg("sketch")?;
-    let end = args.get_kw_arg_opt("end");
-    let end_absolute = args.get_kw_arg_opt("endAbsolute");
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW);
+    let end = args.get_kw_arg_opt("end")?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
     let new_sketch = inner_line(sketch, end_absolute, end, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
@@ -1461,7 +1461,7 @@ pub(crate) fn inner_profile_start(sketch: Sketch) -> Result<[f64; 2], KclError> 
 /// Close the current sketch.
 pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch = args.get_unlabeled_kw_arg("sketch")?;
-    let tag = args.get_kw_arg_opt(NEW_TAG_KW);
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
     let new_sketch = inner_close(sketch, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),

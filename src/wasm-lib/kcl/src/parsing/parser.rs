@@ -2586,8 +2586,20 @@ fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
         .parse_next(i)
 }
 
-fn typecheck_all(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
-    // Type check the arguments.
+/// Typecheck the arguments in a keyword fn call.
+fn typecheck_all_kw(std_fn: Box<dyn StdLibFn>, args: &[&LabeledArg]) -> PResult<()> {
+    for arg in args {
+        let label = &arg.label;
+        let expr = &arg.arg;
+        if let Some(spec_arg) = std_fn.args(false).iter().find(|spec_arg| spec_arg.name == label.name) {
+            typecheck(spec_arg, &expr)?;
+        }
+    }
+    Ok(())
+}
+
+/// Type check the arguments in a positional fn call.
+fn typecheck_all_positional(std_fn: Box<dyn StdLibFn>, args: &[&Expr]) -> PResult<()> {
     for (i, spec_arg) in std_fn.args(false).iter().enumerate() {
         let Some(arg) = &args.get(i) else {
             // The executor checks the number of arguments, so we don't need to check it here.
@@ -2614,7 +2626,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(*arg),
-                        format!("Expected a tag declarator like `$name`, found {:?}", e),
+                        format!(
+                            "Expected a tag declarator like `$name`, found {}",
+                            e.human_friendly_type()
+                        ),
                     )
                     .into(),
                 ));
@@ -2627,7 +2642,10 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(*arg),
-                        format!("Expected a tag identifier like `tagName`, found {:?}", e),
+                        format!(
+                            "Expected a tag identifier like `tagName`, found {}",
+                            e.human_friendly_type()
+                        ),
                     )
                     .into(),
                 ));
@@ -2665,7 +2683,7 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
 
     if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
         let just_args: Vec<_> = args.iter().collect();
-        typecheck_all(std_fn, &just_args)?;
+        typecheck_all_positional(std_fn, &just_args)?;
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
@@ -2689,6 +2707,10 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
 
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
     let args = labeled_arguments(i)?;
+    if let Some(std_fn) = crate::std::get_stdlib_fn(&fn_name.name) {
+        let just_args: Vec<_> = args.iter().collect();
+        typecheck_all_kw(std_fn, &just_args)?;
+    }
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
