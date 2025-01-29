@@ -462,7 +462,7 @@ impl Environment {
             let KclValue::Sketch { value } = val else { continue };
             let mut sketch = value.to_owned();
 
-            if sketch.original_id == sg.original_id {
+            if sketch.artifact_id == sg.artifact_id {
                 for tag in sg.tags.iter() {
                     sketch.tags.insert(tag.0.clone(), tag.1.clone());
                 }
@@ -1012,8 +1012,7 @@ pub struct Sketch {
     pub tags: IndexMap<String, TagIdentifier>,
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
-    #[serde(skip)]
-    pub original_id: uuid::Uuid,
+    pub artifact_id: ArtifactId,
     pub units: UnitLen,
     /// Metadata.
     #[serde(rename = "__meta")]
@@ -1125,6 +1124,8 @@ impl Sketch {
 pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
+    /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
+    pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
     /// The sketch.

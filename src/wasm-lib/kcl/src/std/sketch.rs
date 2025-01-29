@@ -1313,7 +1313,7 @@ pub(crate) async fn inner_start_profile_at(
 
     let sketch = Sketch {
         id: path_id,
-        original_id: path_id,
+        artifact_id: path_id.into(),
         on: sketch_surface.clone(),
         paths: vec![],
         units,
