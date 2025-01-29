@@ -37,7 +37,7 @@ triangle = startSketchOn("XZ")
   // the start of the sketch.
   |> line(endAbsolute = [10, 0])
   |> line(endAbsolute = [0, 10])
-  |> line(endAbsolute = [-10, 0], tag = "thirdLineOfBox")
+  |> line(endAbsolute = [-10, 0], tag = $thirdLineOfTriangle)
   |> close()
   |> extrude(length = 5)
 
@@ -47,7 +47,7 @@ box = startSketchOn("XZ")
   // So, [10, 0] is a relative distance away from the current point.
   |> line(end = [10, 0])
   |> line(end = [0, 10])
-  |> line(end = [-10, 0], tag = "thirdLineOfBox")
+  |> line(end = [-10, 0], tag = $thirdLineOfBox)
   |> close()
   |> extrude(length = 5)
 ```

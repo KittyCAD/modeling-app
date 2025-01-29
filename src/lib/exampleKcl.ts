@@ -47,7 +47,7 @@ bracketLeg1Sketch = startSketchOn('XY')
      }, %), %)
 
 // Extrude the leg 2 bracket sketch
-bracketLeg1Extrude = extrude(thickness, bracketLeg1Sketch)
+bracketLeg1Extrude = extrude(bracketLeg1Sketch, length = thickness)
   |> fillet({
        radius = extFilletRadius,
        tags = [
