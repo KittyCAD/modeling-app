@@ -98,6 +98,7 @@ export const CommandBar = () => {
           'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
           (isSelectionArgument ? 'pointer-events-none' : '')
         }
+        data-testid="command-bar-wrapper"
       >
         <Transition.Child
           enter="duration-100 ease-out"
