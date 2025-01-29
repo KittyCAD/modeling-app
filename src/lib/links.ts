@@ -54,7 +54,8 @@ export async function copyFileShareLink(
 export function createCreateFileUrl({ code, name, units }: FileLinkParams) {
   // Use the dev server if we are in development mode
   // let origin = DEV ? 'http://localhost:3000' : NODE_ENV ? DEV_APP_URL : PROD_APP_URL
-  let origin = 'https://modeling-app-git-pierremtb-issue5136-turn-on-li-d04fea-kittycad.vercel.app'
+  let origin =
+    'https://modeling-app-git-pierremtb-issue5136-turn-on-li-d04fea-kittycad.vercel.app'
   const searchParams = new URLSearchParams({
     [CREATE_FILE_URL_PARAM]: String(true),
     name,

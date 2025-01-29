@@ -98,6 +98,11 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
 
+  dialog.showMessageBox(newWindow, {
+    title: 'pathToOpen: ',
+    message: pathToOpen + '',
+  })
+
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     const filteredPath = pathToOpen
@@ -111,12 +116,12 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       const filteredPath = pathToOpen
         ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
         : ''
-      console.log('filteredPath', filteredPath)
+      alert('filteredPath: ' + filteredPath)
       const startIndex = path.join(
         __dirname,
         `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
       )
-      console.log('startIndex', startIndex)
+      alert('startIndex: ' + startIndex)
       newWindow
         .loadFile(startIndex, {
           hash: filteredPath,
@@ -350,7 +355,7 @@ export function getAutoUpdater(): AppUpdater {
 
 app.on('ready', () => {
   // Disable auto updater on non-versioned builds
-  if (packageJSON.version === '0.0.0') {
+  if (packageJSON.version === '0.0.0' && viteEnv.MODE !== 'production') {
     return
   }
 
@@ -467,6 +472,26 @@ function parseCLIArgs(): minimist.ParsedArgs {
 }
 
 function registerStartupListeners() {
+  // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
+  const gotTheLock = app.requestSingleInstanceLock()
+
+  if (!gotTheLock) {
+    app.quit()
+  } else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+      // Someone tried to run a second instance, we should focus our window.
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) mainWindow.restore()
+        mainWindow.focus()
+      }
+
+      dialog.showErrorBox(
+        'Welcome Back',
+        `You arrived from: ${commandLine.pop()?.slice(0, -1)}`
+      )
+    })
+  }
+
   /**
    * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
    * the app-ready event. We listen very early for open-file and remember this upon startup as path to open.
@@ -495,6 +520,7 @@ function registerStartupListeners() {
     event: { preventDefault: () => void },
     url: string
   ) {
+    dialog.showErrorBox('Welcome Back', `You arrived from: ${url}`)
     event.preventDefault()
 
     // If we have a mainWindow, lets open another window.
