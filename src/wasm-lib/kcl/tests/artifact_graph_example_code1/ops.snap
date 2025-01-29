@@ -22,5 +22,107 @@ snapshot_kind: text
     ],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          288,
+          291,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      260,
+      292,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "sourceRange": [
+        268,
+        277,
+        0
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          305,
+          335,
+          0
+        ]
+      },
+      "solid": {
+        "sourceRange": [
+          337,
+          338,
+          0
+        ]
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [
+      298,
+      339,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "sourceRange": [
+          366,
+          376,
+          0
+        ]
+      },
+      "tag": {
+        "sourceRange": [
+          378,
+          383,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      352,
+      384,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "sourceRange": [
+          583,
+          584,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      555,
+      585,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "sourceRange": [
+        563,
+        572,
+        0
+      ]
+    }
   }
 ]

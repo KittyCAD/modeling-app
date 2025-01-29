@@ -94,7 +94,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
         Ok((exec_state, png)) => {
             let fail_path_str = format!("tests/{test_name}/execution_error.snap");
             let fail_path = Path::new(&fail_path_str);
-            if std::fs::exists(&fail_path).unwrap() {
+            if std::fs::exists(fail_path).unwrap() {
                 panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl/{fail_path_str}")
             }
             if render_to_png {
@@ -143,7 +143,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
         Err(e) => {
             let ok_path_str = format!("tests/{test_name}/program_memory.snap");
             let ok_path = Path::new(&ok_path_str);
-            let previously_passed = std::fs::exists(&ok_path).unwrap();
+            let previously_passed = std::fs::exists(ok_path).unwrap();
             match e.error {
                 crate::errors::ExecError::Kcl(error) => {
                     // Snapshot the KCL error with a fancy graphical report.
