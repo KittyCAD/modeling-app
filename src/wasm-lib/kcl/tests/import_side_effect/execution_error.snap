@@ -1,14 +1,12 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Error from executing import_side_effect.kcl
+snapshot_kind: text
 ---
-KCL Semantic error
+KCL Engine error
 
-  × semantic: Error loading imported file. Open it to view more details.
-  │ tests/import_side_effect/export_side_effect.kcl: Cannot send modeling
-  │ commands while importing. Wrap your code in a function if you want to
-  │ import the file.
+  × engine: Modeling command failed: websocket closed early
    ╭────
  1 │ import foo from "export_side_effect.kcl"
-   · ────────────────────────────────────────
+   · ▲
    ╰────

@@ -35,11 +35,11 @@ snapshot_kind: text
       },
       {
         "declaration": {
-          "end": 110,
+          "end": 109,
           "id": {
-            "end": 85,
+            "end": 84,
             "name": "one",
-            "start": 82,
+            "start": 81,
             "type": "Identifier"
           },
           "init": {
@@ -47,25 +47,25 @@ snapshot_kind: text
               "body": [
                 {
                   "argument": {
-                    "end": 108,
+                    "end": 107,
                     "left": {
                       "arguments": [],
                       "callee": {
-                        "end": 102,
+                        "end": 101,
                         "name": "two",
-                        "start": 99,
+                        "start": 98,
                         "type": "Identifier"
                       },
-                      "end": 104,
-                      "start": 99,
+                      "end": 103,
+                      "start": 98,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
                     "operator": "-",
                     "right": {
-                      "end": 108,
+                      "end": 107,
                       "raw": "1",
-                      "start": 107,
+                      "start": 106,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -73,42 +73,42 @@ snapshot_kind: text
                         "suffix": "None"
                       }
                     },
-                    "start": 99,
+                    "start": 98,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 108,
-                  "start": 92,
+                  "end": 107,
+                  "start": 91,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 110,
-              "start": 88
+              "end": 109,
+              "start": 87
             },
-            "end": 110,
+            "end": 109,
             "params": [],
-            "start": 85,
+            "start": 84,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 82,
+          "start": 81,
           "type": "VariableDeclarator"
         },
-        "end": 110,
+        "end": 109,
         "kind": "fn",
-        "start": 72,
+        "start": 71,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       }
     ],
-    "end": 111,
+    "end": 110,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 72,
+            "end": 71,
             "start": 69,
             "type": "NonCodeNode",
             "value": {
