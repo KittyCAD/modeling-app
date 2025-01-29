@@ -87,7 +87,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
     let exec_res = crate::test_server::execute_and_snapshot_ast(
         ast.into(),
         crate::settings::types::UnitLength::Mm,
-        Some(Path::new("tests").join(test_name)),
+        Some(Path::new("tests").join(test_name).join("input.kcl").to_owned()),
     )
     .await;
     match exec_res {
@@ -853,6 +853,27 @@ mod import_whole {
 }
 mod import_side_effect {
     const TEST_NAME: &str = "import_side_effect";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_foreign {
+    const TEST_NAME: &str = "import_foreign";
 
     /// Test parsing KCL.
     #[test]

@@ -4,7 +4,11 @@ excerpt: "Import a CAD file."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated.
+
 Import a CAD file.
+
+**DEPRECATED** Prefer to use import statements.
 
 For formats lacking unit data (such as STL, OBJ, or PLY files), the default unit of measurement is millimeters. Alternatively you may specify the unit by passing your desired measurement unit in the options parameter. When importing a GLTF file, the bin file will be imported as well. Import paths are relative to the current project directory.
 
