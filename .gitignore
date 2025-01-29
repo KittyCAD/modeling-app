@@ -44,7 +44,7 @@ e2e/playwright/temp3.png
 e2e/playwright/export-snapshots/*
 !e2e/playwright/export-snapshots/*.png
 
-
+/kcl-samples
 /test-results/
 /playwright-report/
 /blob-report/
