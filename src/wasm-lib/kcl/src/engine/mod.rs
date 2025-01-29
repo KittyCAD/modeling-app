@@ -198,7 +198,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
         let execution_kind = self.execution_kind();
-        if execution_kind.is_isolated() {
+        // We can ignore this error if they are just setting the units for the file.
+        if let ModelingCmd::SetSceneUnits(_) = cmd {
+        } else if execution_kind.is_isolated() {
             return Err(KclError::Semantic(KclErrorDetails { message: "Cannot send modeling commands while importing. Wrap your code in a function if you want to import the file.".to_owned(), source_ranges: vec![source_range] }));
         }
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
