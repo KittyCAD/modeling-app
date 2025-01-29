@@ -95,6 +95,13 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     })
   }
 
+  // Case of a second window opened from deep link for macOS
+  // @ts-ignore
+  if (!pathToOpen && global['openUrls'] && global['openUrls'][0]) {
+    // @ts-ignore
+    pathToOpen = global['openUrls'][0]
+  }
+
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
 
@@ -518,7 +525,7 @@ function registerStartupListeners() {
     event: { preventDefault: () => void },
     url: string
   ) {
-    dialog.showErrorBox('Welcome Back', `You arrived from: ${url}`)
+    dialog.showErrorBox('Welcome Back', `You arrived in openurl from: ${url}`)
     event.preventDefault()
 
     // If we have a mainWindow, lets open another window.
