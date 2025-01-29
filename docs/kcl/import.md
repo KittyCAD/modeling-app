@@ -14,8 +14,6 @@ For formats lacking unit data (such as STL, OBJ, or PLY files), the default unit
 
 Note: The import command currently only works when using the native Modeling App.
 
-For importing KCL functions using the `import` statement, see the docs on [KCL modules](/docs/kcl/modules).
-
 ```js
 import(file_path: String, options?: ImportFormat) -> ImportedGeometry
 ```
