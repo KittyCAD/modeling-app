@@ -17,29 +17,19 @@ export function createNamedViewsCommand({
     groupId: 'namedViews',
     icon: 'settings',
     needsReview: false,
-    onSubmit: (data) => {
+    onSubmit: async (data) => {
       const namedViews = [
         ...settingsActor.getSnapshot().context.modeling.namedViews.current,
       ]
-
-      const fov = sceneInfra.camControls.camera.fov // undefined if ortho
-      const near = sceneInfra.camControls.camera.near
-      const far = sceneInfra.camControls.camera.far
-      const position = sceneInfra.camControls.camera.position.toArray()
-      const orientation = sceneInfra.camControls.camera.quaternion.toArray()
-      // const orientation = [...sceneInfra.camControls.camera.up, 0]
-      const target = sceneInfra.camControls.target.toArray()
-      const zoom = sceneInfra.camControls.totalZoom
-
+      var a = await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'default_camera_get_view' },
+      })
+      var view = a.resp.data.modeling_response.data
       const requestedView: NamedView = {
         name: data.name,
-        fov,
-        near,
-        far,
-        position,
-        orientation,
-        target,
-        zoom,
+        ...view.view,
       }
 
       const requestedNamedViews = [...namedViews, requestedView]
@@ -127,56 +117,20 @@ export function createNamedViewsCommand({
       const namedViews = [
         ...settingsActor.getSnapshot().context.modeling.namedViews.current,
       ]
+      console.log('NAMED VIEWS?', namedViews)
       const viewToLoad = namedViews.find((view) => view.name === nameToLoad)
       if (viewToLoad) {
-        // await engineCommandManager.sendSceneCommand({
-        //   type: 'modeling_cmd_req',
-        //   cmd_id: uuidv4(),
-        //   cmd: {
-        //     type: 'default_camera_look_at',
-        //     center: new Vector3().fromArray(viewToLoad.target),
-        //     vantage: new Vector3().fromArray(viewToLoad.position),
-        //     up: new Vector3(
-        //       viewToLoad.orientation[0],
-        //       viewToLoad.orientation[1],
-        //       viewToLoad.orientation[2]
-        //     ),
-        //   },
-        // })
-
-        const cam = convertThreeCamValuesToEngineCam({
-          // isPerspective: viewToLoad.fov !== undefined,
-          isPerspective: true,
-          position: new Vector3().fromArray(viewToLoad.position),
-          quaternion: new Quaternion().fromArray(viewToLoad.orientation),
-          target: new Vector3().fromArray(viewToLoad.target),
-          zoom: -1,
-        })
-        console.log(cam)
+        const cameraViewData = { ...viewToLoad }
+        delete cameraViewData.name
+        console.log(cameraViewData)
         await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
-            type: 'default_camera_look_at',
-            center: cam.center,
-            up: cam.up,
-            vantage: cam.vantage,
-          },
-        })
-        // await engineCommandManager.sendSceneCommand({
-        //   type: 'modeling_cmd_req',
-        //   cmd_id: uuidv4(),
-        //   cmd: {
-        //     type: 'default_camera_zoom',
-        //     magnitude: viewToLoad.zoom / window.devicePixelRatio,
-        //   },
-        // })
-        settingsSend({
-          type: 'set.modeling.cameraProjection',
-          data: {
-            level: 'user',
-            value:
-              viewToLoad.fov !== undefined ? 'perspective' : 'orthographic',
+            type: 'default_camera_set_view',
+            view: {
+              ...cameraViewData,
+            },
           },
         })
         toast.success(`Loaded ${data.name} named view.`)

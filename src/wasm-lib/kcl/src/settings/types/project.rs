@@ -219,24 +219,26 @@ color = 1567.4"#;
                         named_views: vec![
                             NamedView {
                                 name: String::from("Hello"),
-                                position: [1.0,2.0,3.0],
-                                fov: 42.0,
-                                near: 41.0,
-                                far: 43.0,
-                                orientation: [4.0,5.0,6.0,7.0],
-                                target:[1.0,2.0,3.0],
-                                zoom:1.0
+                                eye_offset: 1236.4015,
+                                fov_y: 45.0,
+                                is_ortho: false,
+                                ortho_eye_offset: 45.0,
+                                ortho_scale: 45.0,
+                                pivot_position: [-100.0, 100.0, 100.0],
+                                pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
+                                world_coord_system: String::from("RightHandedUpZ")
                             },
                             NamedView {
                                 name: String::from("Goodbye"),
-                                position: [1.0,2.0,3.0],
-                                fov: 42.0,
-                                near: 41.0,
-                                far: 43.0,
-                                orientation: [4.0,5.0,6.0,7.0],
-                                target:[1.0,2.0,3.0],
-                                zoom:1.0
-                            }
+                                eye_offset: 1236.4015,
+                                fov_y: 45.0,
+                                is_ortho: false,
+                                ortho_eye_offset: 45.0,
+                                ortho_scale: 45.0,
+                                pivot_position: [-100.0, 100.0, 100.0],
+                                pivot_rotation: [-0.16391756, 0.9862819, -0.01956843, 0.0032552152],
+                                world_coord_system: String::from("RightHandedUpZ")
+                            },
                         ]
                     },
                     text_editor: TextEditorSettings {
@@ -257,25 +259,28 @@ color = 138.0
 base_unit = "yd"
 show_debug_panel = true
 
-[[settings.modeling.named_views]]
-name = "Hello"
-position = [1.0, 2.0, 3.0]
-fov = 42.0
-near = 41.0
-far = 43.0
-orientation = [4.0, 5.0, 6.0, 7.0]
-target = [1.0, 2.0, 3.0]
-zoom = 1.0
 
 [[settings.modeling.named_views]]
-name = "Goodbye"
-position = [1.0, 2.0, 3.0]
-fov = 42.0
-near = 41.0
-far = 43.0
-orientation = [4.0, 5.0, 6.0, 7.0]
-target = [1.0, 2.0, 3.0]
-zoom = 1.0
+name = "Hello"
+eye_offset = 1236.4015
+fov_y = 45.0
+is_ortho = false
+ortho_eye_offset = 45.0
+ortho_scale = 45.0
+pivot_position = [-100.0, 100.0, 100.0]
+pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
+world_coord_system = RightHandedUpZ
+
+[[settings.modeling.named_views]]
+name = Goodbye
+eye_offset = 1236.4015
+fov_y = 45.0
+is_ortho = false
+ortho_eye_offset = 45.0
+ortho_scale = 45.0
+pivot_position = [-100.0, 100.0, 100.0]
+pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
+world_coord_system = RightHandedUpZ
 
 [settings.text_editor]
 text_wrapping = false

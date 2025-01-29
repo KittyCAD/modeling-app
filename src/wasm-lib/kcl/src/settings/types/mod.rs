@@ -289,27 +289,31 @@ pub struct NamedView {
     #[serde(default, alias = "name", skip_serializing_if = "is_default")]
     pub name: String,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "position", skip_serializing_if = "is_default")]
-    pub position: [f64; 3],
+    #[serde(default, alias = "eyeOffset", skip_serializing_if = "is_default")]
+    pub eye_offset: f64,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "fov", skip_serializing_if = "is_default")]
-    pub fov: f64,
+    #[serde(default, alias = "fovY", skip_serializing_if = "is_default")]
+    pub fov_y: f64,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "near", skip_serializing_if = "is_default")]
-    pub near: f64,
+    #[serde(default, alias = "isOrtho")]
+    pub is_ortho: bool,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "far", skip_serializing_if = "is_default")]
-    pub far: f64,
+    #[serde(default, alias = "orthoEyeOffset")]
+    pub ortho_eye_offset: f64,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "orientation", skip_serializing_if = "is_default")]
-    pub orientation: [f64;4],
+    #[serde(default, alias = "orthoScale", skip_serializing_if = "is_default")]
+    pub ortho_scale: f64,
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "target", skip_serializing_if = "is_default")]
-    pub target: [f64;3],
+    #[serde(default, alias = "pivotPosition", skip_serializing_if = "is_default")]
+    pub pivot_position: [f64; 3],
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "zoom", skip_serializing_if = "is_default")]
-    pub zoom: f64,
+    #[serde(default, alias = "pivotRotation", skip_serializing_if = "is_default")]
+    pub pivot_rotation: [f64; 4],
+    /// The default unit to use in modeling dimensions.
+    #[serde(default, alias = "worldCoordSystem", skip_serializing_if = "is_default")]
+    pub world_coord_system: String,
 }
+
 
 impl PartialEq for NamedView {
     fn eq(&self, other: &Self) -> bool {

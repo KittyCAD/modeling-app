@@ -130,7 +130,8 @@ export const ModelingMachineProvider = ({
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
   let [searchParams] = useSearchParams()
-  const pool = searchParams.get('pool')
+  // const pool = searchParams.get('pool')
+  const pool = 'pr-3017'
 
   const { commandBarState, commandBarSend } = useCommandsContext()
 

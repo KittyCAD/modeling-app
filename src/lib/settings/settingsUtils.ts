@@ -205,6 +205,7 @@ export async function loadAndValidateSettings(
       return Promise.reject(new Error('Invalid project settings'))
 
     const projectSettingsPayload = projectSettings
+    console.log('PROJECT!', projectSettingsPayload)
     settingsNext = setSettingsAtLevel(
       settingsNext,
       'project',
