@@ -882,7 +882,6 @@ describe('testing getConstraintInfo', () => {
          offset = 0 + 0
        }, %)
     |> tangentialArcTo([3.14 + 0, 13.14 + 0], %)`
-    const ast = assertParse(code)
     test.each([
       [
         'line',
