@@ -462,7 +462,7 @@ impl ArtifactGraph {
         output.push_str("mindmap\n");
         output.push_str("  root\n");
 
-        let mut ids_seen = vec![];
+        let mut ids_seen: fnv::FnvHashSet<ArtifactId> = Default::default();
 
         for (_, artifact) in &self.map {
             // Only the planes are roots.
@@ -480,16 +480,13 @@ impl ArtifactGraph {
     fn mind_map_artifact<W: Write>(
         &self,
         output: &mut W,
-        ids_seen: &mut Vec<ArtifactId>,
+        ids_seen: &mut fnv::FnvHashSet<ArtifactId>,
         artifact: &Artifact,
         prefix: &str,
     ) -> std::fmt::Result {
-        if ids_seen.contains(&artifact.id()) {
-            return Ok(());
-        }
-
         match artifact {
             Artifact::Plane(_plane) => {
+                ids_seen.clear();
                 writeln!(output, "{prefix}Plane")?;
             }
             Artifact::Path(_path) => {
@@ -527,7 +524,11 @@ impl ArtifactGraph {
             }
         }
 
-        ids_seen.push(artifact.id());
+        if ids_seen.contains(&artifact.id()) {
+            return Ok(());
+        }
+
+        ids_seen.insert(artifact.id());
 
         for child_id in artifact.child_ids() {
             let Some(child_artifact) = self.map.get(&child_id) else {
