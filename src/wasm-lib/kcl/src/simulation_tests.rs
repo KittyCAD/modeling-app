@@ -767,6 +767,27 @@ mod import_cycle1 {
         super::execute(TEST_NAME, false).await
     }
 }
+mod import_function_not_sketch {
+    const TEST_NAME: &str = "import_function_not_sketch";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod import_constant {
     const TEST_NAME: &str = "import_constant";
 
