@@ -1101,11 +1101,13 @@ test(`Fillet point-and-click`, async ({
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-12, sketch001)
-fillet01 = fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, extrude001)
+fillet01 = fillet({  radius = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)
 `
   const firstFilletDeclaration = 'fillet({ radius = 5, tags = [seg01] }, %)'
   const secondFilletDeclaration =
     'fillet({       radius = 5,       tags = [getOppositeEdge(seg01)]     }, %)'
+  const thirdFilletDeclaration =
+    'fillet01 = fillet({  radius = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)'
 
   // Locators
   const firstEdgeLocation = { x: 600, y: 193 }
@@ -1298,33 +1300,184 @@ fillet01 = fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, extrude001)
     )
   })
 
-  // Test 3: Delete fillet via feature tree selection
-  await test.step('Open Feature Tree Pane', async () => {
-    await toolbar.openPane('feature-tree')
-    await page.waitForTimeout(500)
+  // Test 3: Delete fillets
+  await test.step('Delete fillet via feature tree selection', async () => {
+    await test.step('Open Feature Tree Pane', async () => {
+      await toolbar.openPane('feature-tree')
+      await page.waitForTimeout(500)
+    })
+    await test.step('Delete (not piped) fillet via feature tree selection', async () => {
+      await editor.expectEditor.toContain(thirdFilletDeclaration)
+      const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 2)
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Backspace')
+      await page.waitForTimeout(500)
+      // not-piped fillet should be DELETED :
+      await editor.expectEditor.not.toContain(thirdFilletDeclaration)
+      // two piped fillets should NOT be deleted :
+      await scene.expectPixelColor(filletColor, firstEdgeLocation, lowTolerance)
+      await scene.expectPixelColor(
+        backgroundColor,
+        secondEdgeLocation,
+        lowTolerance
+      )
+    })
+    await test.step('Delete (piped) fillet via feature tree selection', async () => {
+      await editor.expectEditor.toContain(secondFilletDeclaration)
+      const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 1)
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Backspace')
+      await page.waitForTimeout(500)
+      // second piped fillet should be DELETED :
+      await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
+      await editor.expectEditor.not.toContain(secondFilletDeclaration)
+      // first piped fillet should NOT be deleted :
+      await scene.expectPixelColor(filletColor, firstEdgeLocation, 15) // stayed
+    })
   })
-  await test.step('Delete (not piped) fillet via feature tree selection', async () => {
-    const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 2)
-    await operationButton.click({ button: 'left' })
-    await page.keyboard.press('Backspace')
-    await page.waitForTimeout(500)
-    await editor.expectEditor.not.toContain(
-      'fillet01 = fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, extrude001)'
-    )
-    await scene.expectPixelColor(filletColor, firstEdgeLocation, lowTolerance) // stayed
+})
+
+test(`Fillet point-and-click delete`, async ({
+  context,
+  page,
+  homePage,
+  scene,
+  editor,
+  toolbar,
+  cmdBar,
+}) => {
+  // Code samples
+  const initialCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-12, -6], %)
+  |> line([0, 12], %)
+  |> line([24, 0], %, $seg02)
+  |> line([0, -12], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg01)
+  |> close(%)
+extrude001 = extrude(-12, sketch001)
+  |> fillet({ radius = 5, tags = [seg01] }, %) // fillet01
+  |> fillet({ radius = 5, tags = [seg02] }, %) // fillet02
+fillet03 = fillet({  radius = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)
+fillet04 = fillet({  radius = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)
+`
+  const pipedFilletDeclaration = 'fillet({ radius = 5, tags = [seg01] }, %)'
+  const secondPipedFilletDeclaration =
+    'fillet({ radius = 5, tags = [seg02] }, %)'
+  const standaloneFilletDeclaration =
+    'fillet03 = fillet({  radius = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)'
+  const secondStandaloneFilletDeclaration =
+    'fillet04 = fillet({  radius = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)'
+
+  // Locators
+  const pipedFilletEdgeLocation = { x: 600, y: 193 }
+  const standaloneFilletEdgeLocation = { x: 600, y: 383 }
+  const bodyLocation = { x: 630, y: 290 }
+
+  // Colors
+  const edgeColorWhite: [number, number, number] = [248, 248, 248]
+  const bodyColor: [number, number, number] = [155, 155, 155]
+  const filletColor: [number, number, number] = [127, 127, 127]
+  const backgroundColor: [number, number, number] = [30, 30, 30]
+  const lowTolerance = 20
+  const highTolerance = 40
+
+  // Setup
+  await test.step(`Initial test setup`, async () => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+
+    // verify modeling scene is loaded
     await scene.expectPixelColor(
       backgroundColor,
-      secondEdgeLocation,
+      standaloneFilletEdgeLocation,
       lowTolerance
-    ) // stayed
+    )
+
+    // wait for stream to load
+    await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
   })
-  await test.step('Delete (piped) fillet via feature tree selection', async () => {
-    const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 1)
-    await operationButton.click({ button: 'left' })
-    await page.keyboard.press('Backspace')
-    await page.waitForTimeout(500)
-    await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
-    await scene.expectPixelColor(filletColor, firstEdgeLocation, 15) // stayed
+
+  // Test
+  await test.step('Delete fillet via feature tree selection', async () => {
+    await test.step('Open Feature Tree Pane', async () => {
+      await toolbar.openPane('feature-tree')
+      await page.waitForTimeout(500)
+    })
+
+    await test.step('Delete piped fillet via feature tree selection', async () => {
+      await test.step('Verify all fillets are present in the editor', async () => {
+        await editor.expectEditor.toContain(pipedFilletDeclaration)
+        await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+        await editor.expectEditor.toContain(standaloneFilletDeclaration)
+        await editor.expectEditor.toContain(secondStandaloneFilletDeclaration)
+      })
+      await test.step('Verify test fillets are present in the scene', async () => {
+        await scene.expectPixelColor(
+          filletColor,
+          pipedFilletEdgeLocation,
+          lowTolerance
+        )
+        await scene.expectPixelColor(
+          backgroundColor,
+          standaloneFilletEdgeLocation,
+          lowTolerance
+        )
+      })
+      await test.step('Delete piped fillet', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Fillet',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Backspace')
+        await page.waitForTimeout(500)
+      })
+      await test.step('Verify piped fillet is deleted but other fillets are not (in the editor)', async () => {
+        await editor.expectEditor.not.toContain(pipedFilletDeclaration)
+        await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+        await editor.expectEditor.toContain(standaloneFilletDeclaration)
+        await editor.expectEditor.toContain(secondStandaloneFilletDeclaration)
+      })
+      await test.step('Verify piped fillet is deleted but non-piped is not (in the scene)', async () => {
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          pipedFilletEdgeLocation,
+          lowTolerance
+        )
+        await scene.expectPixelColor(
+          backgroundColor,
+          standaloneFilletEdgeLocation,
+          lowTolerance
+        )
+      })
+    })
+
+    await test.step('Delete non-piped fillet via feature tree selection', async () => {
+      await test.step('Delete non-piped fillet', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Fillet',
+          1
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Backspace')
+        await page.waitForTimeout(500)
+      })
+      await test.step('Verify non-piped fillet is deleted but other two fillets are not (in the editor)', async () => {
+        await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+        await editor.expectEditor.not.toContain(standaloneFilletDeclaration)
+        await editor.expectEditor.toContain(secondStandaloneFilletDeclaration)
+      })
+      await test.step('Verify non-piped fillet is deleted but piped is not (in the scene)', async () => {
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          standaloneFilletEdgeLocation,
+          lowTolerance
+        )
+      })
+    })
   })
 })
 
