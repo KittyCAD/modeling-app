@@ -1189,7 +1189,7 @@ export const ModelingMachineProvider = ({
   // the up vector otherwise the conconical orientation for the camera modes will be
   // wrong
   useEffect(() => {
-    sceneInfra.camControls.resetCameraPosition()
+    sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
   }, [cameraOrbit.current])
 
   useEffect(() => {
