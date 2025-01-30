@@ -96,10 +96,13 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
 
   // Deep Link: Case of a cold start from Windows or Linux
-  if(!pathToOpen && process.argv.length > 1 &&
-    process.argv[1].indexOf(ZOO_STUDIO_PROTOCOL + '://') > -1) {
-    dialog.showErrorBox('argv', JSON.stringify(process.argv[1]))
+  if (
+    !pathToOpen &&
+    process.argv.length > 1 &&
+    process.argv[1].indexOf(ZOO_STUDIO_PROTOCOL + '://') > -1
+  ) {
     pathToOpen = process.argv[1]
+    console.log('Retrieved deep link from argv', pathToOpen)
   }
 
   // Deep Link: Case of a second window opened for macOS
@@ -107,6 +110,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   if (!pathToOpen && global['openUrls'] && global['openUrls'][0]) {
     // @ts-ignore
     pathToOpen = global['openUrls'][0]
+    console.log('Retrieved deep link from open-url', pathToOpen)
   }
 
   const pathIsCustomProtocolLink =
@@ -123,9 +127,10 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     if (pathIsCustomProtocolLink && pathToOpen) {
       // We're trying to open a custom protocol link
       // TODO: fix the replace %3 thing
-      const urlNoProtocol = pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', '').replace('%3', '')
-      dialog.showErrorBox('urlNoProtocol', urlNoProtocol)
-      console.log(urlNoProtocol)
+      const urlNoProtocol = pathToOpen
+        .replace(ZOO_STUDIO_PROTOCOL + '://', '')
+        .replaceAll('%3D', '')
+        .replaceAll('%3', '')
       const filteredPath = decodeURI(urlNoProtocol)
       const startIndex = path.join(
         __dirname,
@@ -483,22 +488,13 @@ function parseCLIArgs(): minimist.ParsedArgs {
 function registerStartupListeners() {
   // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
   const gotTheLock = app.requestSingleInstanceLock()
-
   if (!gotTheLock) {
     app.quit()
   } else {
     app.on('second-instance', (event, commandLine, workingDirectory) => {
-      // Someone tried to run a second instance, we should focus our window.
-      // if (mainWindow) {
-      //   if (mainWindow.isMinimized()) mainWindow.restore()
-      //   mainWindow.focus()
-      // }
-
+      // Deep Link: second instance for Windows and Linux
       const url = commandLine.pop()?.slice(0, -1)
-      dialog.showErrorBox(
-        'Welcome Back',
-        `You arrived in second-instance from: ${url}`
-      )
+      console.log('Retrieved deep link from commandLine', url)
       createWindow(url)
     })
   }
@@ -522,7 +518,7 @@ function registerStartupListeners() {
   })
 
   /**
-   * macOS: react to open-url requests.
+   * macOS: react to open-url requests (including Deep Link on second instances)
    */
   const openUrls: string[] = []
   // @ts-ignore
@@ -531,7 +527,6 @@ function registerStartupListeners() {
     event: { preventDefault: () => void },
     url: string
   ) {
-    dialog.showErrorBox('Welcome Back', `You arrived in openurl from: ${url}`)
     event.preventDefault()
 
     // If we have a mainWindow, lets open another window.
