@@ -31,6 +31,7 @@ import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { isOverlap } from 'lib/utils'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
+import { c } from 'vite/dist/node/types.d-aGj9QkWt'
 
 beforeAll(async () => {
   await initPromise
@@ -304,30 +305,39 @@ const runDeleteEdgeTreatmentTest = async (
   edgeTreatmentSnippet: string,
   expectedCode: string
 ) => {
-  // ast
+  // parse ast
   const ast = assertParse(code)
 
-  // selection
+  // update artifact graph
+  await kclManager.executeAst({ ast })
+  const artifactGraph = engineCommandManager.artifactGraph
 
+  // define snippet range
   const edgeTreatmentRange = topLevelRange(
     code.indexOf(edgeTreatmentSnippet),
     code.indexOf(edgeTreatmentSnippet) + edgeTreatmentSnippet.length
   )
+
+  // find artifact
+  const maybeArtifact = [...artifactGraph].find(([, artifact]) => {
+    if (!('codeRef' in artifact)) return false
+    return isOverlap(artifact.codeRef.range, edgeTreatmentRange)
+  })
+
+  // build selection
   const selection: Selection = {
     codeRef: codeRefFromRange(edgeTreatmentRange, ast),
+    artifact: maybeArtifact ? maybeArtifact[1] : undefined,
   }
 
-  // executeAst
-  await kclManager.executeAst({ ast })
-
-  // apply edge treatment to selection
+  // delete edge treatment
   const result = await deleteEdgeTreatment(ast, selection)
   if (err(result)) {
     return result
   }
 
+  // recast and check
   const newCode = recast(result)
-
   expect(newCode).toContain(expectedCode)
 }
 const createFilletParameters = (radiusValue: number): FilletParameters => ({
@@ -608,7 +618,7 @@ extrude002 = extrude(-25, sketch002)
     })
     describe(`Testing deleteEdgeTreatment with ${edgeTreatmentType}s`, () => {
       // simple cases
-      it(`should delete a piped ${edgeTreatmentType} from a specific segment`, async () => {
+      it(`should delete a piped ${edgeTreatmentType} from a single segment`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
@@ -634,7 +644,7 @@ extrude001 = extrude(-15, sketch001)`
           expectedCode
         )
       })
-      it(`should delete a non-piped ${edgeTreatmentType} from a specific segment`, async () => {
+      it(`should delete a non-piped ${edgeTreatmentType} from a single segment`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %)
@@ -714,7 +724,7 @@ extrude001 = extrude(-15, sketch001)`
         )
       })
       // cases with several edge treatments
-      it(`should delete a piped ${edgeTreatmentType} from a body with several existing edge treatments`, async () => {
+      it(`should delete a piped ${edgeTreatmentType} from a body with multiple treatments`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
@@ -736,9 +746,15 @@ chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001
   |> lineTo([profileStartX(%), profileStartY(%)], %)
   |> close(%)
 extrude001 = extrude(-15, sketch001)
-  |> fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, %)
+  |> fillet({
+       radius = 5,
+       tags = [getOppositeEdge(seg02)]
+     }, %)
 fillet001 = ${edgeTreatmentType}({ ${parameterName} = 6, tags = [seg02] }, extrude001)
-chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001)`
+chamfer001 = chamfer({
+  length = 5,
+  tags = [getOppositeEdge(seg01)]
+}, extrude001)`
 
         await runDeleteEdgeTreatmentTest(
           code,
@@ -746,7 +762,7 @@ chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001
           expectedCode
         )
       })
-      it(`should delete a non-piped ${edgeTreatmentType} from a body with several existing edge treatments`, async () => {
+      it(`should delete a non-piped ${edgeTreatmentType} from a body with multiple treatments`, async () => {
         const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, 10], %)
   |> line([20, 0], %, $seg01)
@@ -769,8 +785,14 @@ chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001
   |> close(%)
 extrude001 = extrude(-15, sketch001)
   |> ${edgeTreatmentType}({ ${parameterName} = 3, tags = [seg01] }, %)
-  |> fillet({ radius = 5, tags = [getOppositeEdge(seg02)] }, %)
-chamfer001 = chamfer({ length = 5, tags = [getOppositeEdge(seg01)] }, extrude001)`
+  |> fillet({
+       radius = 5,
+       tags = [getOppositeEdge(seg02)]
+     }, %)
+chamfer001 = chamfer({
+  length = 5,
+  tags = [getOppositeEdge(seg01)]
+}, extrude001)`
 
         await runDeleteEdgeTreatmentTest(
           code,
