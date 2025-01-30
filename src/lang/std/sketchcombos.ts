@@ -1420,7 +1420,7 @@ export function removeSingleConstraint({
               createLabeledArg(ARG_END, createArrayExpression(values)),
             ]
             return createStdlibCallExpressionKw(
-              callExp.node.callee.name as any,
+              callExp.node.callee.name as ToolTip,
               args,
               tag
             )
@@ -1599,7 +1599,6 @@ function getTransformMapPathKw(
         lineInputType: 'free',
         constraintType,
       }
-    // if (info) return info
   }
 
   // check what constraints the function has
@@ -1612,7 +1611,6 @@ function getTransformMapPathKw(
         lineInputType,
         constraintType,
       }
-    // if (info) return info
   }
 
   return false
