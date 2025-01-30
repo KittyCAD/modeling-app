@@ -1,9 +1,13 @@
 import { Popover } from '@headlessui/react'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
+import { kclManager } from 'lib/singletons'
 
 export function UnitsMenu() {
   const { settings } = useSettingsAuthContext()
+  const lengthSetting =
+    kclManager.fileSettings.defaultLengthUnit ||
+    settings.context.modeling.defaultUnit.current
   return (
     <Popover className="relative pointer-events-auto">
       {({ close }) => (
@@ -18,7 +22,7 @@ export function UnitsMenu() {
               <div className="absolute w-[1px] h-[1em] bg-primary right-0 top-1/2 -translate-y-1/2"></div>
             </div>
             <span className="sr-only">Current units are:&nbsp;</span>
-            {settings.context.modeling.defaultUnit.current}
+            {lengthSetting}
           </Popover.Button>
           <Popover.Panel
             className={`absolute bottom-full right-0 mb-2 w-48 bg-chalkboard-10 dark:bg-chalkboard-90
@@ -42,7 +46,7 @@ export function UnitsMenu() {
                     }}
                   >
                     <span className="flex-1">{baseUnitLabels[unit]}</span>
-                    {unit === settings.context.modeling.defaultUnit.current && (
+                    {unit === lengthSetting && (
                       <span className="text-chalkboard-60">current</span>
                     )}
                   </button>

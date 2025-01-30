@@ -4,6 +4,11 @@ import { AtLeast, PathValue, Paths } from 'lib/types'
 import { CommandArgumentConfig } from 'lib/commandTypes'
 import { Themes } from 'lib/theme'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
+import { ATTRIBUTE_NAME_ANGLE, ATTRIBUTE_NAME_LENGTH } from 'lib/constants'
+import {
+  UnitAngle_type,
+  UnitLength_type,
+} from '@kittycad/lib/dist/types/src/models'
 
 export interface SettingsViaQueryString {
   pool: string | null
@@ -136,3 +141,8 @@ type RecursiveSettingsPayloads<T> = {
 }
 
 export type SaveSettingsPayload = RecursiveSettingsPayloads<typeof settings>
+
+export interface KclSettingsAnnotation {
+  [ATTRIBUTE_NAME_LENGTH]?: UnitLength_type
+  [ATTRIBUTE_NAME_ANGLE]?: UnitAngle_type
+}

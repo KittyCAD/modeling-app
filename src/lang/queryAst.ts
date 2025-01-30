@@ -32,9 +32,12 @@ import {
   getConstraintType,
 } from './std/sketchcombos'
 import { err, Reason } from 'lib/trap'
-import { ImportStatement } from 'wasm-lib/kcl/bindings/ImportStatement'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { codeRefFromRange } from './std/artifactGraph'
+import { ATTRIBUTE_NAME_ANGLE, ATTRIBUTE_NAME_LENGTH } from 'lib/constants'
+import { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
+import { UnitAngle_type } from '@kittycad/lib/dist/types/src/models'
+import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -769,4 +772,44 @@ export function getObjExprProperty(
   const index = node.properties.findIndex(({ key }) => key.name === propName)
   if (index === -1) return null
   return { expr: node.properties[index].value, index }
+}
+
+/**
+ * Given an AST, returns the settings annotation object if it exists.
+ */
+export function getSettingsAnnotation(
+  node: Node<Program>
+): KclSettingsAnnotation {
+  const settings: KclSettingsAnnotation = {}
+  const maybeAnnotations = node.nonCodeMeta.startNodes.filter(
+    (n) => n.value.type === 'annotation' && n.value.name.name === 'settings'
+  )
+  if (!maybeAnnotations.length) return settings
+
+  // Use the last settings annotation
+  // we could merge all settings annotations, but that's not necessary for now
+  const annotation = maybeAnnotations.pop()
+
+  // For tsc
+  if (
+    !(
+      annotation?.value.type == 'annotation' &&
+      annotation.value.name.name === 'settings' &&
+      annotation.value.properties !== null
+    )
+  ) {
+    return settings
+  }
+
+  annotation.value.properties.forEach((prop) => {
+    if ('name' in prop.value) {
+      if (prop.key.name === ATTRIBUTE_NAME_LENGTH) {
+        settings[ATTRIBUTE_NAME_LENGTH] = prop.value.name as UnitLength
+      } else if (prop.key.name === ATTRIBUTE_NAME_ANGLE) {
+        settings[ATTRIBUTE_NAME_ANGLE] = prop.value.name as UnitAngle_type
+      }
+    }
+  })
+
+  return settings
 }

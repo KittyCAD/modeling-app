@@ -152,3 +152,10 @@ export const ZOO_STUDIO_PROTOCOL = 'zoo-studio:'
  * to "open in desktop app" when present in the URL
  */
 export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
+
+/**
+ * attribute names for default units. Also defined on rust side
+ * in src/wasm-lib/kcl/src/execution/annotations.rs
+ */
+export const ATTRIBUTE_NAME_LENGTH = 'defaultLengthUnit'
+export const ATTRIBUTE_NAME_ANGLE = 'defaultAngleUnit'
