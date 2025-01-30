@@ -47,7 +47,7 @@ function isSelections(selections: unknown): selections is Selections {
   )
 }
 
-function parseEngineError(engineError: string) {
+export function parseEngineErrorMessage(engineError: string) {
   const parts = engineError.split('engine error: ')
   if (parts.length < 2) {
     return undefined
@@ -116,7 +116,7 @@ export const revolveAxisValidator = async ({
     return true
   }
 
-  const reason = parseEngineError(result) || 'unknown'
+  const reason = parseEngineErrorMessage(result) || 'unknown'
   return `Unable to revolve with the current selection. Reason: ${reason}`
 }
 
@@ -165,7 +165,7 @@ export const loftValidator = async ({
     return true
   }
 
-  const reason = parseEngineError(result) || 'unknown'
+  const reason = parseEngineErrorMessage(result) || 'unknown'
   return `Unable to loft with the current selection. Reason: ${reason}`
 }
 
@@ -220,7 +220,7 @@ export const shellValidator = async ({
     return true
   }
 
-  const reason = parseEngineError(result) || 'unknown'
+  const reason = parseEngineErrorMessage(result) || 'unknown'
   return `Unable to shell with the current selection. Reason: ${reason}`
 }
 
@@ -282,6 +282,6 @@ export const sweepValidator = async ({
     return true
   }
 
-  const reason = parseEngineError(result) || 'unknown'
+  const reason = parseEngineErrorMessage(result) || 'unknown'
   return `Unable to sweep with the current selection. Reason: ${reason}`
 }
