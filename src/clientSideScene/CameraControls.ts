@@ -30,7 +30,6 @@ import { isQuaternionVertical } from './helpers'
 import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 import { CameraDragInteractionType_type } from '@kittycad/lib/dist/types/src/models'
-import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const FRAMES_TO_ANIMATE_IN = 30
