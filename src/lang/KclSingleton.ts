@@ -482,6 +482,7 @@ export class KclManager {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
+    this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
   }
   cancelAllExecutions() {
     this._cancelTokens.forEach((_, key) => {
