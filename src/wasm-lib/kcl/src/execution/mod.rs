@@ -3499,6 +3499,16 @@ const inInches = 1.0 * inch()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_unit_overriden_in() {
+        let ast = r#"@settings(defaultLengthUnit = in)
+const inMm = 25.4 * mm()
+const inInches = 2.0 * inch()"#;
+        let (_, _, exec_state) = parse_execute(ast).await.unwrap();
+        assert_eq!(1.0, mem_get_json(exec_state.memory(), "inMm").as_f64().unwrap().round());
+        assert_eq!(2.0, mem_get_json(exec_state.memory(), "inInches").as_f64().unwrap());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_zero_param_fn() {
         let ast = r#"const sigmaAllow = 35000 // psi
 const leg1 = 5 // inches
