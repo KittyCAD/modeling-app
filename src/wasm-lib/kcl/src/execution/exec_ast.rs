@@ -925,11 +925,15 @@ impl Node<CallExpressionKw> {
                         .kw_args
                         .labeled
                         .iter()
-                        .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| (k.clone(), OpArg::new(arg.value.clone(), arg.source_range)))
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(arg.value.clone(), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                         is_error: false,
@@ -970,7 +974,7 @@ impl Node<CallExpressionKw> {
                     .kw_args
                     .labeled
                     .iter()
-                    .map(|(k, v)| (k.clone(), OpArg::new(v.source_range)))
+                    .map(|(k, arg)| (k.clone(), OpArg::new(arg.value.clone(), arg.source_range)))
                     .collect();
                 exec_state
                     .mod_local
@@ -978,7 +982,11 @@ impl Node<CallExpressionKw> {
                     .push(Operation::UserDefinedFunctionCall {
                         name: Some(fn_name.clone()),
                         function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| OpArg::new(arg.source_range)),
+                        unlabeled_arg: args
+                            .kw_args
+                            .unlabeled
+                            .as_ref()
+                            .map(|arg| OpArg::new(arg.value.clone(), arg.source_range)),
                         labeled_args: op_labeled_args,
                         source_range: callsite,
                     });
@@ -1043,7 +1051,7 @@ impl Node<CallExpression> {
                         .args(false)
                         .iter()
                         .zip(&fn_args)
-                        .map(|(k, v)| (k.name.clone(), OpArg::new(v.source_range)))
+                        .map(|(k, arg)| (k.name.clone(), OpArg::new(arg.value.clone(), arg.source_range)))
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),

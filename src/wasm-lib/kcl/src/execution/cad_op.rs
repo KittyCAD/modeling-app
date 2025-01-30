@@ -4,9 +4,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::{docs::StdLibFn, std::get_stdlib_fn, SourceRange};
 
+use super::KclValue;
+
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Operation {
@@ -54,18 +56,20 @@ impl Operation {
 }
 
 /// An argument to a CAD modeling operation.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct OpArg {
+    /// The runtime value of the argument.
+    value: KclValue,
     /// The KCL code expression for the argument.  This is used in the UI so
     /// that the user can edit the expression.
     source_range: SourceRange,
 }
 
 impl OpArg {
-    pub(crate) fn new(source_range: SourceRange) -> Self {
-        Self { source_range }
+    pub(crate) fn new(value: KclValue, source_range: SourceRange) -> Self {
+        Self { value, source_range }
     }
 }
 
