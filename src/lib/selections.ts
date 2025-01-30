@@ -579,7 +579,8 @@ export function getSelectionTypeDisplayText(
       ([type, count]) =>
         `${count} ${type
           .replace('wall', 'face')
-          .replace('solid2d', 'face')}${count > 1 ? 's' : ''}`
+          .replace('solid2d', 'face')
+          .replace('segment', 'face')}${count > 1 ? 's' : ''}`
     )
     .toArray()
     .join(', ')
