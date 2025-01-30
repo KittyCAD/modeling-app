@@ -32,6 +32,7 @@ let mainWindow: BrowserWindow | null = null
 const args = parseCLIArgs()
 
 // If it's not set, scream.
+// @ts-ignore: TS1343
 const viteEnv = import.meta.env
 console.log('viteEnv', viteEnv)
 const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
@@ -50,6 +51,7 @@ process.env.BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
 process.env.VITE_KC_API_WS_MODELING_URL ??= viteEnv.VITE_KC_API_WS_MODELING_URL
 process.env.VITE_KC_API_BASE_URL ??= viteEnv.VITE_KC_API_BASE_URL
 process.env.VITE_KC_SITE_BASE_URL ??= viteEnv.VITE_KC_SITE_BASE_URL
+process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
 process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
 process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
   viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS

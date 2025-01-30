@@ -1,12 +1,7 @@
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
-import {
-  ASK_TO_OPEN_QUERY_PARAM,
-  CREATE_FILE_URL_PARAM,
-  DEV_APP_URL,
-  PROD_APP_URL,
-} from './constants'
+import { ASK_TO_OPEN_QUERY_PARAM, CREATE_FILE_URL_PARAM } from './constants'
 import { stringToBase64 } from './base64'
-import { DEV, NODE_ENV, VITE_KC_API_BASE_URL } from 'env'
+import { VITE_KC_API_BASE_URL, VITE_KC_SITE_APP_URL } from 'env'
 import toast from 'react-hot-toast'
 import { err } from './trap'
 export interface FileLinkParams {
@@ -52,10 +47,7 @@ export async function copyFileShareLink(
  * open the URL in the desktop app.
  */
 export function createCreateFileUrl({ code, name, units }: FileLinkParams) {
-  // Use the dev server if we are in development mode
-  // let origin = DEV ? 'http://localhost:3000' : NODE_ENV ? DEV_APP_URL : PROD_APP_URL
-  let origin =
-    'https://modeling-app-git-pierremtb-issue5136-turn-on-li-d04fea-kittycad.vercel.app'
+  let origin = VITE_KC_SITE_APP_URL
   const searchParams = new URLSearchParams({
     [CREATE_FILE_URL_PARAM]: String(true),
     name,

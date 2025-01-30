@@ -68,11 +68,6 @@ export const KCL_DEFAULT_DEGREE = `360`
 /** localStorage key for the playwright test-specific app settings file */
 export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
 
-export const DEFAULT_HOST = 'https://api.zoo.dev'
-export const PROD_APP_URL = 'https://app.zoo.dev'
-// export const DEV_APP_URL = 'https://app.dev.zoo.dev'
-export const DEV_APP_URL =
-  'https://modeling-app-git-pierremtb-issue5136-turn-on-li-d04fea-kittycad.vercel.app'
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
