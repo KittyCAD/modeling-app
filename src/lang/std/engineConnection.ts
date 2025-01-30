@@ -248,6 +248,7 @@ class EngineConnection extends EventTarget {
   mediaStream?: MediaStream
   idleMode: boolean = false
   promise?: Promise<void>
+  sdpAnswer?: Models['RtcSessionDescription_type']
 
   onIceCandidate = function (
     this: RTCPeerConnection,
@@ -584,7 +585,30 @@ class EngineConnection extends EventTarget {
         }
 
         this.onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
+          console.log('icecandidate', event.candidate)
+
+          // This is null when the ICE gathering state is done.
+          // Start connecting.
           if (event.candidate === null) {
+            this.state = {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.WebRTCConnecting,
+              },
+            }
+
+            // As soon as this is set, RTCPeerConnection tries to
+            // establish a connection.
+            // @ts-ignore
+            // Have to ignore because dom.ts doesn't have the right type
+            void this.pc?.setRemoteDescription(this.sdpAnswer)
+
+            this.state = {
+              type: EngineConnectionStateType.Connecting,
+              value: {
+                type: ConnectingType.SetRemoteDescription,
+              },
+            }
             return
           }
 
@@ -595,7 +619,6 @@ class EngineConnection extends EventTarget {
             },
           }
 
-          // Request a candidate to use
           this.send({
             type: 'trickle_ice',
             candidate: {
@@ -606,7 +629,22 @@ class EngineConnection extends EventTarget {
             },
           })
         }
+
         this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
+        this.pc?.addEventListener?.(
+          'iceconnectionstatechange',
+          function (_event) {
+            console.log('iceconnectionstatechange', this.iceConnectionState)
+            console.log('iceconnectionstatechange', this.iceGatheringState)
+          }
+        )
+        this.pc?.addEventListener?.('negotiationneeded', function (_event) {
+          console.log('negotiationneeded', this.iceConnectionState)
+          console.log('negotiationneeded', this.iceGatheringState)
+        })
+        this.pc?.addEventListener?.('signalingstatechange', function (event) {
+          console.log('signalingstatechange', this.signalingState)
+        })
 
         this.onIceCandidateError = (_event: Event) => {
           const event = _event as RTCPeerConnectionIceErrorEvent
@@ -633,6 +671,8 @@ class EngineConnection extends EventTarget {
                   detail: { conn: this, mediaStream: this.mediaStream! },
                 })
               )
+              break
+            case 'connecting':
               break
             case 'disconnected':
             case 'failed':
@@ -1126,25 +1166,8 @@ class EngineConnection extends EventTarget {
                 },
               }
 
-              // As soon as this is set, RTCPeerConnection tries to
-              // establish a connection.
-              // @ts-ignore
-              // Have to ignore because dom.ts doesn't have the right type
-              void this.pc?.setRemoteDescription(answer)
+              this.sdpAnswer = answer
 
-              this.state = {
-                type: EngineConnectionStateType.Connecting,
-                value: {
-                  type: ConnectingType.SetRemoteDescription,
-                },
-              }
-
-              this.state = {
-                type: EngineConnectionStateType.Connecting,
-                value: {
-                  type: ConnectingType.WebRTCConnecting,
-                },
-              }
               break
 
             case 'trickle_ice':
