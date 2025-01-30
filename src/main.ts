@@ -105,11 +105,6 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   const pathIsCustomProtocolLink =
     pathToOpen?.startsWith(ZOO_STUDIO_PROTOCOL) ?? false
 
-  dialog.showMessageBox(newWindow, {
-    title: 'pathToOpen: ',
-    message: pathToOpen + '',
-  })
-
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
     const filteredPath = pathToOpen
@@ -120,9 +115,11 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   } else {
     if (pathIsCustomProtocolLink && pathToOpen) {
       // We're trying to open a custom protocol link
-      const filteredPath = pathToOpen
-        ? decodeURI(pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', ''))
-        : ''
+      // TODO: fix the replace %3 thing
+      const urlNoProtocol = pathToOpen.replace(ZOO_STUDIO_PROTOCOL + '://', '').replace('%3', '')
+      dialog.showErrorBox('urlNoProtocol', urlNoProtocol)
+      console.log(urlNoProtocol)
+      const filteredPath = decodeURI(urlNoProtocol)
       const startIndex = path.join(
         __dirname,
         `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`
@@ -485,15 +482,17 @@ function registerStartupListeners() {
   } else {
     app.on('second-instance', (event, commandLine, workingDirectory) => {
       // Someone tried to run a second instance, we should focus our window.
-      if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore()
-        mainWindow.focus()
-      }
+      // if (mainWindow) {
+      //   if (mainWindow.isMinimized()) mainWindow.restore()
+      //   mainWindow.focus()
+      // }
 
+      const url = commandLine.pop()?.slice(0, -1)
       dialog.showErrorBox(
         'Welcome Back',
-        `You arrived from: ${commandLine.pop()?.slice(0, -1)}`
+        `You arrived in second-instance from: ${url}`
       )
+      createWindow(url)
     })
   }
 
