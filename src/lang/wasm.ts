@@ -442,21 +442,11 @@ export class ProgramMemory {
    * Note: Return value of the returned ProgramMemory is always null.
    */
   filterVariables(
-    keepPrelude: boolean,
     predicate: (value: KclValue) => boolean
   ): ProgramMemory | Error {
     const environments: Environment[] = []
     for (const [i, env] of this.environments.entries()) {
-      let bindings: Memory
-      if (i === ROOT_ENVIRONMENT_REF && keepPrelude) {
-        // Get prelude definitions.  Create these first so that they're always
-        // first in iteration order.
-        const memoryOrError = programMemoryInit()
-        if (err(memoryOrError)) return memoryOrError
-        bindings = memoryOrError.environments[0].bindings
-      } else {
-        bindings = emptyEnvironment().bindings
-      }
+      let bindings = emptyEnvironment().bindings
 
       for (const [name, value] of Object.entries(env.bindings)) {
         if (value === undefined) continue

@@ -2,6 +2,10 @@
 
 use std::{path::PathBuf, sync::Arc};
 
+use crate::{
+    modules::{ModuleInfo, ModuleLoader, ModulePath, ModuleRepr},
+    parsing::ast::types::NonCodeNode,
+};
 use annotations::AnnotationScope;
 use anyhow::Result;
 use artifact::build_artifact_graph;
@@ -23,7 +27,9 @@ type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 pub use function_param::FunctionParam;
-pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine, ZOO_COORD_SYSTEM};
+pub(crate) use import::{
+    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
+};
 pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use uuid::Uuid;
 
@@ -40,7 +46,7 @@ use crate::{
     engine::{EngineManager, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     execution::cache::{CacheInformation, CacheResult},
-    fs::{FileManager, FileSystem},
+    fs::FileManager,
     parsing::ast::types::{
         BodyItem, Expr, FunctionExpression, ImportPath, ImportSelector, ItemVisibility, Node, NodeRef, NonCodeValue,
         Program as AstProgram, TagDeclarator, TagNode,
@@ -70,7 +76,7 @@ pub struct GlobalState {
     /// The stable artifact ID generator.
     pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
-    pub path_to_source_id: IndexMap<std::path::PathBuf, ModuleId>,
+    pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to module info.
     pub module_infos: IndexMap<ModuleId, ModuleInfo>,
     /// Output map of UUIDs to artifacts.
@@ -86,6 +92,8 @@ pub struct GlobalState {
     pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Module loader.
+    pub mod_loader: ModuleLoader,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq)]
@@ -100,9 +108,6 @@ pub struct ModuleState {
     pub pipe_value: Option<KclValue>,
     /// Identifiers that have been exported from the current module.
     pub module_exports: Vec<String>,
-    /// The stack of import statements for detecting circular module imports.
-    /// If this is empty, we're not currently executing an import statement.
-    pub import_stack: Vec<std::path::PathBuf>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
     pub operations: Vec<Operation>,
@@ -178,20 +183,26 @@ impl ExecState {
         self.global.id_generator.next_uuid()
     }
 
+    fn next_module_id(&self) -> ModuleId {
+        ModuleId::from_usize(self.global.path_to_source_id.len())
+    }
+
+    fn id_for_module(&self, path: &ModulePath) -> Option<ModuleId> {
+        self.global.path_to_source_id.get(path).cloned()
+    }
+
     pub fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
     }
 
-    fn add_module(&mut self, id: ModuleId, path: std::path::PathBuf, repr: ModuleRepr) -> ModuleId {
+    fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
         debug_assert!(!self.global.path_to_source_id.contains_key(&path));
 
         self.global.path_to_source_id.insert(path.clone(), id);
 
         let module_info = ModuleInfo { id, repr, path };
         self.global.module_infos.insert(id, module_info);
-
-        id
     }
 
     pub fn length_unit(&self) -> UnitLen {
@@ -213,6 +224,7 @@ impl GlobalState {
             artifact_commands: Default::default(),
             artifact_responses: Default::default(),
             artifact_graph: Default::default(),
+            mod_loader: Default::default(),
         };
 
         let root_id = ModuleId::default();
@@ -221,11 +233,11 @@ impl GlobalState {
             root_id,
             ModuleInfo {
                 id: root_id,
-                path: root_path.clone(),
+                path: ModulePath::Local(root_path.clone()),
                 repr: ModuleRepr::Root,
             },
         );
-        global.path_to_source_id.insert(root_path, root_id);
+        global.path_to_source_id.insert(ModulePath::Local(root_path), root_id);
         global
     }
 }
@@ -237,7 +249,6 @@ impl ModuleState {
             dynamic_state: Default::default(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
-            import_stack: Default::default(),
             operations: Default::default(),
             settings: MetaSettings {
                 default_length_units: exec_settings.units.into(),
@@ -305,6 +316,10 @@ impl ProgramMemory {
             current_env: EnvironmentRef::root(),
             return_: None,
         }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.environments.len() == 1 && self.environments[self.current_env.index()].bindings.is_empty()
     }
 
     pub fn new_env_for_call(&mut self, parent: EnvironmentRef) -> EnvironmentRef {
@@ -410,18 +425,10 @@ pub struct Environment {
     parent: Option<EnvironmentRef>,
 }
 
-const NO_META: Vec<Metadata> = Vec::new();
-
 impl Environment {
     pub fn root() -> Self {
         Self {
-            // Prelude
-            bindings: IndexMap::from([
-                ("ZERO".to_string(), KclValue::from_number(0.0, NO_META)),
-                ("QUARTER_TURN".to_string(), KclValue::from_number(90.0, NO_META)),
-                ("HALF_TURN".to_string(), KclValue::from_number(180.0, NO_META)),
-                ("THREE_QUARTER_TURN".to_string(), KclValue::from_number(270.0, NO_META)),
-            ]),
+            bindings: IndexMap::new(),
             parent: None,
         }
     }
@@ -966,16 +973,6 @@ impl std::hash::Hash for TagIdentifier {
     }
 }
 
-pub type MemoryFunction =
-    fn(
-        s: Vec<Arg>,
-        memory: ProgramMemory,
-        expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        metadata: Vec<Metadata>,
-        exec_state: &ExecState,
-        ctx: ExecutorContext,
-    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<Option<KclValue>, KclError>> + Send>>;
-
 /// Engine information for a tag.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
@@ -1225,25 +1222,6 @@ pub enum BodyType {
     Root,
     Sketch,
     Block,
-}
-
-/// Info about a module.  Right now, this is pretty minimal.  We hope to cache
-/// modules here in the future.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub struct ModuleInfo {
-    /// The ID of the module.
-    id: ModuleId,
-    /// Absolute path of the module's source file.
-    path: std::path::PathBuf,
-    repr: ModuleRepr,
-}
-
-#[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize)]
-pub enum ModuleRepr {
-    Root,
-    Kcl(Node<AstProgram>),
-    Foreign(import::PreImportedGeometry),
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone, Copy, ts_rs::TS, JsonSchema)]
@@ -2333,12 +2311,14 @@ impl ExecutorContext {
         }
     }
 
+    /// Returns true if importing the prelude should be skipped.
     async fn handle_annotations(
         &self,
         annotations: impl Iterator<Item = (&NonCodeValue, SourceRange)>,
         scope: AnnotationScope,
         exec_state: &mut ExecState,
-    ) -> Result<(), KclError> {
+    ) -> Result<bool, KclError> {
+        let mut no_prelude = false;
         for (annotation, source_range) in annotations {
             if annotation.annotation_name() == Some(annotations::SETTINGS) {
                 if scope == AnnotationScope::Module {
@@ -2348,7 +2328,7 @@ impl ExecutorContext {
                         .settings
                         .update_from_annotation(annotation, source_range)?;
                     let new_units = exec_state.length_unit();
-                    if old_units != new_units {
+                    if !self.engine.execution_kind().is_isolated() && old_units != new_units {
                         self.engine.set_units(new_units.into(), source_range).await?;
                     }
                 } else {
@@ -2358,9 +2338,19 @@ impl ExecutorContext {
                     }));
                 }
             }
+            if annotation.annotation_name() == Some(annotations::NO_PRELUDE) {
+                if scope == AnnotationScope::Module {
+                    no_prelude = true;
+                } else {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "Prelude can only be skipped at the top level scope of a file".to_owned(),
+                        source_ranges: vec![source_range],
+                    }));
+                }
+            }
             // TODO warn on unknown annotations
         }
-        Ok(())
+        Ok(no_prelude)
     }
 
     /// Execute an AST's program.
@@ -2371,22 +2361,57 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         body_type: BodyType,
     ) -> Result<Option<KclValue>, KclError> {
-        self.handle_annotations(
-            program
-                .non_code_meta
-                .start_nodes
-                .iter()
-                .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
-            AnnotationScope::Module,
-            exec_state,
-        )
-        .await?;
+        if body_type == BodyType::Root {
+            let no_prelude = self
+                .handle_annotations(
+                    program
+                        .non_code_meta
+                        .start_nodes
+                        .iter()
+                        .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range()))),
+                    AnnotationScope::Module,
+                    exec_state,
+                )
+                .await?;
+
+            // Only importing the prelude if memory is empty is a bit of a hack. Ideally we should know what we have to in advance.
+            // However, between mock execution and caching, it's a bit of a nightmare, so we just check memory. The bug here is if
+            // a @no_prelude module imports one which wants the prelude, it won't get it. But hopefully that is an unlikely scenario.
+            if !no_prelude && exec_state.memory().is_empty() {
+                // Import std::prelude
+                let prelude_range = SourceRange::from(program).start_as_range();
+                let id = self
+                    .open_module(
+                        &ImportPath::Std {
+                            path: vec!["std".to_owned(), "prelude".to_owned()],
+                        },
+                        exec_state,
+                        prelude_range,
+                    )
+                    .await?;
+                let (_, module_memory, module_exports) = self
+                    .exec_module(id, exec_state, ExecutionKind::Isolated, prelude_range)
+                    .await
+                    .unwrap();
+                for name in module_exports.iter() {
+                    let item = module_memory.get(name, prelude_range).unwrap();
+                    exec_state.mut_memory().add(name, item.clone(), prelude_range)?;
+                }
+            }
+        }
 
         let mut last_expr = None;
         // Iterate over the body of the program.
-        for statement in &program.body {
+        for (i, statement) in program.body.iter().enumerate() {
             match statement {
                 BodyItem::ImportStatement(import_stmt) => {
+                    if body_type != BodyType::Root {
+                        return Err(KclError::Semantic(KclErrorDetails {
+                            message: "Imports are only supported at the top-level of a file.".to_owned(),
+                            source_ranges: vec![import_stmt.into()],
+                        }));
+                    }
+
                     let source_range = SourceRange::from(import_stmt);
                     let module_id = self.open_module(&import_stmt.path, exec_state, source_range).await?;
 
@@ -2468,6 +2493,7 @@ impl ExecutorContext {
                             &expression_statement.expression,
                             exec_state,
                             &metadata,
+                            &[],
                             StatementKind::Expression,
                         )
                         .await?,
@@ -2478,11 +2504,20 @@ impl ExecutorContext {
                     let source_range = SourceRange::from(&variable_declaration.declaration.init);
                     let metadata = Metadata { source_range };
 
+                    let meta_nodes = if i == 0 {
+                        &program.non_code_meta.start_nodes
+                    } else if let Some(meta) = program.non_code_meta.non_code_nodes.get(&(i - 1)) {
+                        meta
+                    } else {
+                        &Vec::new()
+                    };
+
                     let memory_item = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
                             exec_state,
                             &metadata,
+                            meta_nodes,
                             StatementKind::Declaration { name: &var_name },
                         )
                         .await?;
@@ -2501,6 +2536,7 @@ impl ExecutorContext {
                             &return_statement.argument,
                             exec_state,
                             &metadata,
+                            &[],
                             StatementKind::Expression,
                         )
                         .await?;
@@ -2531,63 +2567,44 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<ModuleId, KclError> {
+        let resolved_path = ModulePath::from_import_path(path, &self.settings.project_directory);
         match path {
-            ImportPath::Kcl { filename } => {
-                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
-                    project_dir.join(filename)
-                } else {
-                    std::path::PathBuf::from(filename)
-                };
+            ImportPath::Kcl { .. } => {
+                exec_state.global.mod_loader.cycle_check(&resolved_path, source_range)?;
 
-                if exec_state.mod_local.import_stack.contains(&resolved_path) {
-                    return Err(KclError::ImportCycle(KclErrorDetails {
-                        message: format!(
-                            "circular import of modules is not allowed: {} -> {}",
-                            exec_state
-                                .mod_local
-                                .import_stack
-                                .iter()
-                                .map(|p| p.as_path().to_string_lossy())
-                                .collect::<Vec<_>>()
-                                .join(" -> "),
-                            resolved_path.to_string_lossy()
-                        ),
-                        source_ranges: vec![source_range],
-                    }));
+                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                    return Ok(id);
                 }
 
-                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
-                    return Ok(*id);
-                }
-
-                let source = self.fs.read_to_string(&resolved_path, source_range).await?;
-                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
+                let id = exec_state.next_module_id();
+                let source = resolved_path.source(&self.fs, source_range).await?;
                 // TODO handle parsing errors properly
                 let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err()?;
-                let repr = ModuleRepr::Kcl(parsed);
-
-                Ok(exec_state.add_module(id, resolved_path, repr))
+                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed));
+                Ok(id)
             }
-            ImportPath::Foreign { path } => {
-                let resolved_path = if let Some(project_dir) = &self.settings.project_directory {
-                    project_dir.join(path)
-                } else {
-                    std::path::PathBuf::from(path)
-                };
-
-                if let Some(id) = exec_state.global.path_to_source_id.get(&resolved_path) {
-                    return Ok(*id);
+            ImportPath::Foreign { .. } => {
+                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                    return Ok(id);
                 }
 
-                let geom = import::import_foreign(&resolved_path, None, exec_state, self, source_range).await?;
-                let repr = ModuleRepr::Foreign(geom);
-                let id = ModuleId::from_usize(exec_state.global.path_to_source_id.len());
-                Ok(exec_state.add_module(id, resolved_path, repr))
+                let id = exec_state.next_module_id();
+                let geom =
+                    import::import_foreign(resolved_path.expect_path(), None, exec_state, self, source_range).await?;
+                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
+                Ok(id)
             }
-            i => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Unsupported import: `{i}`"),
-                source_ranges: vec![source_range],
-            })),
+            ImportPath::Std { .. } => {
+                if let Some(id) = exec_state.id_for_module(&resolved_path) {
+                    return Ok(id);
+                }
+
+                let id = exec_state.next_module_id();
+                let source = resolved_path.source(&self.fs, source_range).await?;
+                let parsed = crate::parsing::parse_str(&source, id).parse_errs_as_err().unwrap();
+                exec_state.add_module(id, resolved_path, ModuleRepr::Kcl(parsed));
+                Ok(id)
+            }
         }
     }
 
@@ -2607,32 +2624,31 @@ impl ExecutorContext {
                 message: format!(
                     "circular import of modules is not allowed: {} -> {}",
                     exec_state
-                        .mod_local
+                        .global
+                        .mod_loader
                         .import_stack
                         .iter()
                         .map(|p| p.as_path().to_string_lossy())
                         .collect::<Vec<_>>()
                         .join(" -> "),
-                    info.path.display()
+                    info.path,
                 ),
                 source_ranges: vec![source_range],
             })),
             ModuleRepr::Kcl(program) => {
-                let mut local_state = ModuleState {
-                    import_stack: exec_state.mod_local.import_stack.clone(),
-                    ..ModuleState::new(&self.settings)
-                };
-                local_state.import_stack.push(info.path.clone());
+                let mut local_state = ModuleState::new(&self.settings);
+                exec_state.global.mod_loader.enter_module(&info.path);
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
                 let original_execution = self.engine.replace_execution_kind(exec_kind);
 
                 let result = self
                     .inner_execute(program, exec_state, crate::execution::BodyType::Root)
                     .await;
-
                 let new_units = exec_state.length_unit();
+
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
-                if new_units != old_units {
+                exec_state.global.mod_loader.leave_module(&info.path);
+                if !exec_kind.is_isolated() && new_units != old_units {
                     self.engine.set_units(old_units.into(), Default::default()).await?;
                 }
                 self.engine.replace_execution_kind(original_execution);
@@ -2645,7 +2661,7 @@ impl ExecutorContext {
                         KclError::Semantic(KclErrorDetails {
                             message: format!(
                                 "Error loading imported file. Open it to view more details. {}: {}",
-                                info.path.display(),
+                                info.path,
                                 err.message()
                             ),
                             source_ranges: vec![source_range],
@@ -2668,6 +2684,7 @@ impl ExecutorContext {
         init: &Expr,
         exec_state: &mut ExecState,
         metadata: &Metadata,
+        meta_nodes: &[Node<NonCodeNode>],
         statement_kind: StatementKind<'a>,
     ) -> Result<KclValue, KclError> {
         let item = match init {
@@ -2700,14 +2717,43 @@ impl ExecutorContext {
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
             Expr::FunctionExpression(function_expression) => {
-                // Cloning memory here is crucial for semantics so that we close
-                // over variables.  Variables defined lexically later shouldn't
-                // be available to the function body.
-                KclValue::Function {
-                    expression: function_expression.clone(),
-                    meta: vec![metadata.to_owned()],
-                    func: None,
-                    memory: Box::new(exec_state.memory().clone()),
+                let mut rust_impl = false;
+                for n in meta_nodes {
+                    if let NonCodeValue::Annotation {
+                        name: None,
+                        properties: Some(props),
+                        ..
+                    } = &n.value
+                    {
+                        for p in props {
+                            if &*p.key.name == "impl" {
+                                if let Some(s) = p.value.ident_name() {
+                                    if s == "std_rust" {
+                                        rust_impl = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if rust_impl {
+                    KclValue::Function {
+                        expression: function_expression.clone(),
+                        meta: vec![metadata.to_owned()],
+                        func: Some(crate::modules::std_fn(statement_kind.expect_name())),
+                        memory: None,
+                    }
+                } else {
+                    // Cloning memory here is crucial for semantics so that we close
+                    // over variables.  Variables defined lexically later shouldn't
+                    // be available to the function body.
+                    KclValue::Function {
+                        expression: function_expression.clone(),
+                        meta: vec![metadata.to_owned()],
+                        func: None,
+                        memory: Some(Box::new(exec_state.memory().clone())),
+                    }
                 }
             }
             Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
@@ -2742,7 +2788,7 @@ impl ExecutorContext {
             Expr::IfExpression(expr) => expr.get_result(exec_state, self).await?,
             Expr::LabelledExpression(expr) => {
                 let result = self
-                    .execute_expr(&expr.expr, exec_state, metadata, statement_kind)
+                    .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
                 exec_state
                     .mut_memory()
@@ -2983,6 +3029,15 @@ pub(crate) async fn call_user_defined_function_kw(
 pub enum StatementKind<'a> {
     Declaration { name: &'a str },
     Expression,
+}
+
+impl<'a> StatementKind<'a> {
+    fn expect_name(&self) -> &'a str {
+        match self {
+            StatementKind::Declaration { name } => name,
+            StatementKind::Expression => unreachable!(),
+        }
+    }
 }
 
 #[cfg(test)]
@@ -3464,7 +3519,7 @@ let shape = layer() |> patternTransform(10, transform, %)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
-        let ast = r#"const myVar = pi() * 2"#;
+        let ast = r#"const myVar = PI * 2"#;
         let (_, _, exec_state) = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,

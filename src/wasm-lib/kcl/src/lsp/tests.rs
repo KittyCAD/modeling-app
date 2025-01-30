@@ -808,11 +808,8 @@ async fn test_kcl_lsp_completions_const_raw() {
     // Check the completions.
     if let tower_lsp::lsp_types::CompletionResponse::Array(completions) = completions {
         assert!(completions.len() > 10);
-        // Find the one with label "const".
-        let const_completion = completions
-            .iter()
-            .find(|completion| completion.label == "const")
-            .unwrap();
+        // Find the one with label "fn".
+        let const_completion = completions.iter().find(|completion| completion.label == "fn").unwrap();
         assert_eq!(
             const_completion.kind,
             Some(tower_lsp::lsp_types::CompletionItemKind::KEYWORD)
@@ -2326,7 +2323,13 @@ async fn kcl_test_kcl_lsp_empty_file_execute_ok() {
 
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
+    assert!(
+        matches!(
+            memory.get("ZERO", Default::default()),
+            Ok(&crate::exec::KclValue::Number { value: 0.0, .. })
+        ),
+        "{memory:#?}"
+    );
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2456,7 +2459,13 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
     assert!(ast != Node::<Program>::default());
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert!(memory != ProgramMemory::default());
+    assert!(
+        matches!(
+            memory.get("part001", Default::default()),
+            Ok(&crate::exec::KclValue::Solid { .. })
+        ),
+        "{memory:#?}"
+    );
 
     // Send change file.
     server
@@ -2481,7 +2490,7 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
     assert_eq!(ast, default_hashed);
     // Get the memory.
     let memory = server.memory_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(memory, ProgramMemory::default());
+    assert!(memory.get("part001", Default::default()).is_err(), "{memory:#?}");
 }
 
 #[tokio::test(flavor = "multi_thread")]

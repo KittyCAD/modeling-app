@@ -9,23 +9,19 @@ Compute the cosine of a number (in radians).
 
 
 ```js
-cos(num: number) -> number
+cos(num: number(rad)): number(_)
 ```
-
-### Tags
-
-* `math`
 
 
 ### Arguments
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number` |  | Yes |
+| `num` | `number(rad)` |  | Yes |
 
 ### Returns
 
-`number` 
+`number(_)` 
 
 
 ### Examples
@@ -34,9 +30,9 @@ cos(num: number) -> number
 exampleSketch = startSketchOn("XZ")
   |> startProfileAt([0, 0], %)
   |> angledLine({
-       angle = 30,
-       length = 3 / cos(toRadians(30))
-     }, %)
+    angle = 30,
+    length = 3 / cos(toRadians(30)),
+  }, %)
   |> yLineTo(0, %)
   |> close(%)
 

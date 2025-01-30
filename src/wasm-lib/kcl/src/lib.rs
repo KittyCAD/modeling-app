@@ -65,6 +65,7 @@ mod fs;
 pub mod lint;
 mod log;
 mod lsp;
+mod modules;
 mod parsing;
 mod settings;
 #[cfg(test)]

@@ -76,7 +76,7 @@ assertEqual(sum, 6, 0.00001, "1 + 2 + 3 summed is 6")
 // Declare a function that sketches a decagon.
 fn decagon(radius) {
   // Each side of the decagon is turned this many degrees from the previous angle.
-  stepAngle = 1 / 10 * tau()
+  stepAngle = 1 / 10 * TAU
 
   // Start the decagon sketch at this point.
   startOfDecagonSketch = startSketchOn('XY')
@@ -97,7 +97,7 @@ fn decagon(radius) {
 
 /* The `decagon` above is basically like this pseudo-code:
 fn decagon(radius):
-    stepAngle = (1/10) * tau()
+    stepAngle = (1/10) * TAU
     plane = startSketchOn('XY')
     startOfDecagonSketch = startProfileAt([(cos(0)*radius), (sin(0) * radius)], plane)
 

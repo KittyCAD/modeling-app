@@ -8,6 +8,7 @@ use crate::{
 };
 
 pub(super) const SETTINGS: &str = "settings";
+pub(super) const NO_PRELUDE: &str = "no_prelude";
 pub(super) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(super) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 
@@ -23,7 +24,7 @@ pub(super) fn expect_properties<'a>(
 ) -> Result<&'a [Node<ObjectProperty>], KclError> {
     match annotation {
         NonCodeValue::Annotation { name, properties } => {
-            assert_eq!(name.name, for_key);
+            assert_eq!(name.as_ref().unwrap().name, for_key);
             Ok(&**properties.as_ref().ok_or_else(|| {
                 KclError::Semantic(KclErrorDetails {
                     message: format!("Empty `{for_key}` annotation"),
