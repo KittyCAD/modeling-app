@@ -95,7 +95,14 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     })
   }
 
-  // Case of a second window opened from deep link for macOS
+  // Deep Link: Case of a cold start from Windows or Linux
+  if(!pathToOpen && process.argv.length > 1 &&
+    process.argv[1].indexOf(ZOO_STUDIO_PROTOCOL + '://') > -1) {
+    dialog.showErrorBox('argv', JSON.stringify(process.argv[1]))
+    pathToOpen = process.argv[1]
+  }
+
+  // Deep Link: Case of a second window opened for macOS
   // @ts-ignore
   if (!pathToOpen && global['openUrls'] && global['openUrls'][0]) {
     // @ts-ignore
