@@ -754,8 +754,6 @@ export class CameraControls {
       didChange = true
     }
 
-    this.safeLookAtTarget(this.camera.up)
-
     // Update the camera's matrices
     this.camera.updateMatrixWorld()
     if (didChange || forceUpdate) {

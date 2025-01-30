@@ -1185,6 +1185,13 @@ export const ModelingMachineProvider = ({
     editorManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
 
+  // When changing camera modes reset the camera to the default orientation to correct
+  // the up vector otherwise the conconical orientation for the camera modes will be
+  // wrong
+  useEffect(() => {
+    sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+  }, [cameraOrbit.current])
+
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {
       // If we are in sketch mode we need to exit it.
