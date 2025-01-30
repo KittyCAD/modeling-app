@@ -28,119 +28,130 @@ description: Program memory after executing import_whole.kcl
         },
         "bar": {
           "type": "Solid",
-          "type": "Solid",
-          "id": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                25,
-                68,
-                1
-              ],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
+          "value": {
+            "type": "Solid",
             "id": "[uuid]",
-            "paths": [
+            "value": [
               {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    25,
-                    68,
-                    1
-                  ]
-                },
-                "ccw": true,
-                "center": [
-                  5.0,
-                  5.0
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  61,
+                  104,
+                  1
                 ],
+                "tag": null,
+                "type": "extrudeArc"
+              }
+            ],
+            "sketch": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      61,
+                      104,
+                      1
+                    ]
+                  },
+                  "ccw": true,
+                  "center": [
+                    5.0,
+                    5.0
+                  ],
+                  "from": [
+                    15.0,
+                    5.0
+                  ],
+                  "radius": 10.0,
+                  "tag": null,
+                  "to": [
+                    15.0,
+                    5.0
+                  ],
+                  "type": "Circle"
+                }
+              ],
+              "on": {
+                "type": "plane",
+                "id": "[uuid]",
+                "value": "XY",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "units": {
+                  "type": "Inches"
+                },
+                "__meta": []
+              },
+              "start": {
                 "from": [
                   15.0,
                   5.0
                 ],
-                "radius": 10.0,
-                "tag": null,
                 "to": [
                   15.0,
                   5.0
                 ],
-                "type": "Circle"
-              }
-            ],
-            "on": {
-              "type": "plane",
-              "id": "[uuid]",
-              "value": "XY",
-              "origin": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 0.0
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    61,
+                    104,
+                    1
+                  ]
+                }
               },
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
+              "units": {
+                "type": "Inches"
               },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "__meta": []
+              "__meta": [
+                {
+                  "sourceRange": [
+                    61,
+                    104,
+                    1
+                  ]
+                }
+              ]
             },
-            "start": {
-              "from": [
-                15.0,
-                5.0
-              ],
-              "to": [
-                15.0,
-                5.0
-              ],
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  25,
-                  68,
-                  1
-                ]
-              }
+            "height": 10.0,
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Inches"
             },
             "__meta": [
               {
                 "sourceRange": [
-                  25,
-                  68,
+                  61,
+                  104,
                   1
                 ]
               }
             ]
-          },
-          "height": 10.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
-          "__meta": [
-            {
-              "sourceRange": [
-                25,
-                68,
-                1
-              ]
-            }
-          ]
+          }
         },
         "foo": {
           "type": "Module",
@@ -148,8 +159,8 @@ description: Program memory after executing import_whole.kcl
           "__meta": [
             {
               "sourceRange": [
-                0,
-                32,
+                34,
+                66,
                 0
               ]
             }

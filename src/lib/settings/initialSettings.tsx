@@ -21,6 +21,7 @@ import { reportRejection } from 'lib/trap'
 import { CameraProjectionType } from 'wasm-lib/kcl/bindings/CameraProjectionType'
 import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
 import { OnboardingStatus } from 'wasm-lib/kcl/bindings/OnboardingStatus'
+import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
 
 /**
  * A setting that can be set at the user or project level

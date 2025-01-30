@@ -21,7 +21,8 @@ import {
   ChamferParameters,
   EdgeTreatmentParameters,
 } from './addEdgeTreatment'
-import { getNodeFromPath, getNodePathFromSourceRange } from '../queryAst'
+import { getNodeFromPath } from '../queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'

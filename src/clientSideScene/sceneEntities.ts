@@ -69,7 +69,8 @@ import {
   codeManager,
   editorManager,
 } from 'lib/singletons'
-import { getNodeFromPath, getNodePathFromSourceRange } from 'lang/queryAst'
+import { getNodeFromPath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { executeAst, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
@@ -2051,8 +2052,8 @@ export class SceneEntities {
       )
       if (!(sk instanceof Reason)) {
         sketch = sk
-      } else if ((maybeSketch as Solid).sketch) {
-        sketch = (maybeSketch as Solid).sketch
+      } else if (maybeSketch && (maybeSketch.value as Solid)?.sketch) {
+        sketch = (maybeSketch.value as Solid).sketch
       }
       if (!sketch) return
 
@@ -2541,7 +2542,7 @@ export function sketchFromPathToNode({
   const varDec = _varDec.node
   const result = programMemory.get(varDec?.id?.name || '')
   if (result?.type === 'Solid') {
-    return result.sketch
+    return result.value.sketch
   }
   const sg = sketchFromKclValue(result, varDec?.id?.name)
   if (err(sg)) {
