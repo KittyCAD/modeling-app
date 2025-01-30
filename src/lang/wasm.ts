@@ -570,9 +570,19 @@ export function sketchFromKclValue(
   return result
 }
 
+/**
+ * Execute a KCL program.
+ * @param node The AST of the program to execute.
+ * @param path The full path of the file being executed.  Use `null` for
+ * expressions that don't have a file, like expressions in the command bar.
+ * @param programMemoryOverride If this is not `null`, this will be used as the
+ * initial program memory, and the execution will be engineless (AKA mock
+ * execution).
+ */
 export const executor = async (
   node: Node<Program>,
   engineCommandManager: EngineCommandManager,
+  path?: string,
   programMemoryOverride: ProgramMemory | Error | null = null
 ): Promise<ExecState> => {
   if (programMemoryOverride !== null && err(programMemoryOverride))
@@ -594,6 +604,7 @@ export const executor = async (
     }
     const execOutcome: RustExecOutcome = await execute(
       JSON.stringify(node),
+      path,
       JSON.stringify(programMemoryOverride?.toRaw() || null),
       JSON.stringify({ settings: jsAppSettings }),
       engineCommandManager,

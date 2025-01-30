@@ -323,6 +323,7 @@ export class KclManager {
     await this.ensureWasmInit()
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
+      path: codeManager.currentFilePath || undefined,
       engineCommandManager: this.engineCommandManager,
     })
 
