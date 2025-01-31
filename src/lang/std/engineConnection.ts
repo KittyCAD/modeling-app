@@ -599,8 +599,7 @@ class EngineConnection extends EventTarget {
 
             // As soon as this is set, RTCPeerConnection tries to
             // establish a connection.
-            // @ts-ignore
-            // Have to ignore because dom.ts doesn't have the right type
+            // @ts-expect-error: Have to ignore because dom.ts doesn't have the right type
             void this.pc?.setRemoteDescription(this.sdpAnswer)
 
             this.state = {
