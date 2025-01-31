@@ -166,6 +166,11 @@ impl Program {
         self.ast.get_meta_settings()
     }
 
+    /// Change the meta settings for the kcl file.
+    pub fn change_meta_settings(&mut self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
+        self.ast.change_meta_settings(settings)
+    }
+
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
         self.ast.lint_all()
     }

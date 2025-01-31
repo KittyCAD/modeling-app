@@ -272,6 +272,10 @@ impl Node<Program> {
 
         Ok(None)
     }
+
+    pub fn change_meta_settings(&mut self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
+        // TODO: @nrc
+    }
 }
 
 impl Program {
