@@ -3888,4 +3888,38 @@ startSketchOn('XY')
 "#
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_nothing_to_mm() {
+        let some_program_string = r#"startSketchOn('XY')"#;
+        let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.get_meta_settings().unwrap();
+        assert!(result.is_none());
+
+        // Edit the ast.
+        let new_program = program
+            .change_meta_settings(crate::execution::MetaSettings {
+                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                ..Default::default()
+            })
+            .unwrap();
+
+        let result = new_program.get_meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(
+            meta_settings.default_length_units,
+            crate::execution::kcl_value::UnitLen::Mm
+        );
+
+        let formatted = new_program.recast(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(defaultLengthUnit = mm)
+startSketchOn('XY')
+"#
+        );
+    }
 }

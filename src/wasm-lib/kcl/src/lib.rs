@@ -84,7 +84,7 @@ pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
 pub use execution::{
     cache::{CacheInformation, OldAstState},
-    ExecState, ExecutorContext, ExecutorSettings, Point2d,
+    ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
@@ -162,12 +162,12 @@ impl Program {
     }
 
     /// Get the meta settings for the kcl file from the annotations.
-    pub fn get_meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
+    pub fn get_meta_settings(&self) -> Result<Option<crate::MetaSettings>, KclError> {
         self.ast.get_meta_settings()
     }
 
     /// Change the meta settings for the kcl file.
-    pub fn change_meta_settings(&mut self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
+    pub fn change_meta_settings(&mut self, settings: crate::MetaSettings) -> Result<Self, KclError> {
         Ok(Self {
             ast: self.ast.change_meta_settings(settings)?,
         })
