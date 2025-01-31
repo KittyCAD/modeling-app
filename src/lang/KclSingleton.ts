@@ -496,7 +496,7 @@ export class KclManager {
       return
     }
 
-    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, opts?.zoomToFit)
+    // zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, opts?.zoomToFit)
 
     this.ast = { ...ast }
     return this.executeAst(opts)

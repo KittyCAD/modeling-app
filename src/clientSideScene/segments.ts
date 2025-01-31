@@ -31,6 +31,12 @@ import {
   CIRCLE_SEGMENT,
   CIRCLE_SEGMENT_BODY,
   CIRCLE_SEGMENT_DASH,
+  CIRCLE_THREE_POINT_HANDLE1,
+  CIRCLE_THREE_POINT_HANDLE2,
+  CIRCLE_THREE_POINT_HANDLE3,
+  CIRCLE_THREE_POINT_SEGMENT,
+  CIRCLE_THREE_POINT_SEGMENT_BODY,
+  CIRCLE_THREE_POINT_SEGMENT_DASH,
   EXTRA_SEGMENT_HANDLE,
   EXTRA_SEGMENT_OFFSET_PX,
   HIDE_HOVER_SEGMENT_LENGTH,
@@ -48,11 +54,13 @@ import {
 import { getTangentPointFromPreviousArc } from 'lib/utils2d'
 import {
   ARROWHEAD,
+  CIRCLE_3_POINT_DRAFT_CIRCLE,
   DRAFT_POINT,
   SceneInfra,
   SEGMENT_LENGTH_LABEL,
   SEGMENT_LENGTH_LABEL_OFFSET_PX,
   SEGMENT_LENGTH_LABEL_TEXT,
+  SKETCH_LAYER,
 } from './sceneInfra'
 import { Themes, getThemeColorForThreeJs } from 'lib/theme'
 import { normaliseAngle, roundOff } from 'lib/utils'
@@ -61,6 +69,7 @@ import { SegmentInputs } from 'lang/std/stdTypes'
 import { err } from 'lib/trap'
 import { editorManager, sceneInfra } from 'lib/singletons'
 import { Selections } from 'lib/selections'
+import { calculate_circle_from_3_points } from 'wasm-lib/pkg/wasm_lib'
 
 interface CreateSegmentArgs {
   input: SegmentInputs
@@ -693,6 +702,194 @@ class CircleSegment implements SegmentUtils {
   }
 }
 
+class CircleThreePointSegment implements SegmentUtils {
+  init: SegmentUtils['init'] = ({
+    input,
+    id,
+    pathToNode,
+    isDraftSegment,
+    scale = 1,
+    theme,
+    isSelected = false,
+    sceneInfra,
+    prevSegment,
+  }) => {
+    if (input.type !== 'circle-three-point-segment') {
+      return new Error('Invalid segment type')
+    }
+    const { p1, p2, p3 } = input
+    const { center_x, center_y, radius } = calculate_circle_from_3_points(
+      p1[0],
+      p1[1],
+      p2[0],
+      p2[1],
+      p3[0],
+      p3[1]
+    )
+    const center: [number, number] = [center_x, center_y]
+    const baseColor = getThemeColorForThreeJs(theme)
+    const color = isSelected ? 0x0000ff : baseColor
+
+    const group = new Group()
+    const geometry = createArcGeometry({
+      center,
+      radius,
+      startAngle: 0,
+      endAngle: Math.PI * 2,
+      ccw: true,
+      isDashed: isDraftSegment,
+      scale,
+    })
+    const mat = new MeshBasicMaterial({ color })
+    const arcMesh = new Mesh(geometry, mat)
+    const meshType = isDraftSegment
+      ? CIRCLE_THREE_POINT_SEGMENT_DASH
+      : CIRCLE_THREE_POINT_SEGMENT_BODY
+    const handle1 = createCircleThreePointHandle(
+      scale,
+      theme,
+      CIRCLE_THREE_POINT_HANDLE1,
+      color
+    )
+    const handle2 = createCircleThreePointHandle(
+      scale,
+      theme,
+      CIRCLE_THREE_POINT_HANDLE2,
+      color
+    )
+    const handle3 = createCircleThreePointHandle(
+      scale,
+      theme,
+      CIRCLE_THREE_POINT_HANDLE3,
+      color
+    )
+
+    arcMesh.userData.type = meshType
+    arcMesh.name = meshType
+    group.userData = {
+      type: CIRCLE_THREE_POINT_SEGMENT,
+      draft: isDraftSegment,
+      id,
+      p1,
+      p2,
+      p3,
+      ccw: true,
+      prevSegment,
+      pathToNode,
+      isSelected,
+      baseColor,
+    }
+    group.name = CIRCLE_THREE_POINT_SEGMENT
+
+    group.add(arcMesh, handle1, handle2, handle3)
+    const updateOverlaysCallback = this.update({
+      prevSegment,
+      input,
+      group,
+      scale,
+      sceneInfra,
+    })
+    if (err(updateOverlaysCallback)) return updateOverlaysCallback
+
+    return {
+      group,
+      updateOverlaysCallback,
+    }
+  }
+  update: SegmentUtils['update'] = ({
+    input,
+    group,
+    scale = 1,
+    sceneInfra,
+  }) => {
+    if (input.type !== 'circle-three-point-segment') {
+      return new Error('Invalid segment type')
+    }
+    const { p1, p2, p3 } = input
+    group.userData.p1 = p1
+    group.userData.p2 = p2
+    group.userData.p3 = p3
+    const { center_x, center_y, radius } = calculate_circle_from_3_points(
+      p1[0],
+      p1[1],
+      p2[0],
+      p2[1],
+      p3[0],
+      p3[1]
+    )
+    const center: [number, number] = [center_x, center_y]
+    const points = [p1, p2, p3]
+    const handles = [
+      CIRCLE_THREE_POINT_HANDLE1,
+      CIRCLE_THREE_POINT_HANDLE2,
+      CIRCLE_THREE_POINT_HANDLE3,
+    ].map((handle) => group.getObjectByName(handle) as Group)
+    handles.forEach((handle, i) => {
+      const point = points[i]
+      console.log('point', point, handle)
+      if (handle && point) {
+        handle.position.set(point[0], point[1], 0)
+        handle.scale.set(scale, scale, scale)
+        handle.visible = true
+      }
+    })
+
+    const pxLength = (2 * radius * Math.PI) / scale
+    const shouldHideIdle = pxLength < HIDE_SEGMENT_LENGTH
+    const shouldHideHover = pxLength < HIDE_HOVER_SEGMENT_LENGTH
+
+    const hoveredParent =
+      sceneInfra.hoveredObject &&
+      getParentGroup(sceneInfra.hoveredObject, [CIRCLE_SEGMENT])
+    let isHandlesVisible = !shouldHideIdle
+    if (hoveredParent && hoveredParent?.uuid === group?.uuid) {
+      isHandlesVisible = !shouldHideHover
+    }
+
+    const circleSegmentBody = group.children.find(
+      (child) => child.userData.type === CIRCLE_THREE_POINT_SEGMENT_BODY
+    ) as Mesh
+
+    if (circleSegmentBody) {
+      const newGeo = createArcGeometry({
+        radius,
+        center,
+        startAngle: 0,
+        endAngle: Math.PI * 2,
+        ccw: true,
+        scale,
+      })
+      circleSegmentBody.geometry = newGeo
+    }
+    const circleSegmentBodyDashed = group.getObjectByName(
+      CIRCLE_THREE_POINT_SEGMENT_DASH
+    )
+    if (circleSegmentBodyDashed instanceof Mesh) {
+      // consider throttling the whole updateTangentialArcToSegment
+      // if there are more perf considerations going forward
+      circleSegmentBodyDashed.geometry = createArcGeometry({
+        center,
+        radius,
+        ccw: true,
+        // make the start end where the handle is
+        startAngle: Math.PI * 0.25,
+        endAngle: Math.PI * 2.25,
+        isDashed: true,
+        scale,
+      })
+    }
+    return () =>
+      sceneInfra.updateOverlayDetails({
+        arrowGroup: {} as any,
+        group,
+        isHandlesVisible,
+        from: [0, 0],
+        to: [center[0], center[1]],
+        angle: Math.PI / 4,
+      })
+  }
+}
+
 export function createProfileStartHandle({
   from,
   isDraft = false,
@@ -772,6 +969,32 @@ function createCircleCenterHandle(
     baseColor,
   }
   circleCenterGroup.name = CIRCLE_CENTER_HANDLE
+  circleCenterGroup.scale.set(scale, scale, scale)
+  return circleCenterGroup
+}
+function createCircleThreePointHandle(
+  scale = 1,
+  theme: Themes,
+  name:
+    | 'circle-three-point-handle1'
+    | 'circle-three-point-handle2'
+    | 'circle-three-point-handle3',
+  color?: number
+): Group {
+  const circleCenterGroup = new Group()
+
+  const geometry = new BoxGeometry(12, 12, 12) // in pixels scaled later
+  const baseColor = getThemeColorForThreeJs(theme)
+  const body = new MeshBasicMaterial({ color })
+  const mesh = new Mesh(geometry, body)
+
+  circleCenterGroup.add(mesh)
+
+  circleCenterGroup.userData = {
+    type: name,
+    baseColor,
+  }
+  circleCenterGroup.name = name
   circleCenterGroup.scale.set(scale, scale, scale)
   return circleCenterGroup
 }
@@ -1101,4 +1324,5 @@ export const segmentUtils = {
   straight: new StraightSegment(),
   tangentialArcTo: new TangentialArcToSegment(),
   circle: new CircleSegment(),
+  circleThreePoint: new CircleThreePointSegment(),
 } as const

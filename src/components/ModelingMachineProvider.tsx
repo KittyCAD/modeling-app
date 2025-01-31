@@ -1306,6 +1306,29 @@ export const ModelingMachineProvider = ({
             return result
           }
         ),
+        'set-up-draft-circle-three-point': fromPromise(
+          async ({ input: { sketchDetails, data } }) => {
+            if (!sketchDetails || !data)
+              return reject('No sketch details or data')
+            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+
+            const result =
+              await sceneEntitiesManager.setupDraftCircleThreePoint(
+                sketchDetails.sketchEntryNodePath,
+                sketchDetails.sketchNodePaths,
+                sketchDetails.planeNodePath,
+                sketchDetails.zAxis,
+                sketchDetails.yAxis,
+                sketchDetails.origin,
+                data.p1,
+                data.p2
+              )
+            if (err(result)) return reject(result)
+            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+
+            return result
+          }
+        ),
         'set-up-draft-rectangle': fromPromise(
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
@@ -1355,7 +1378,7 @@ export const ModelingMachineProvider = ({
               sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             }
             sceneInfra.resetMouseListeners()
-            const { sketchTools } = await sceneEntitiesManager.setupSketch({
+            await sceneEntitiesManager.setupSketch({
               sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
               sketchNodePaths: sketchDetails.sketchNodePaths,
               forward: sketchDetails.zAxis,

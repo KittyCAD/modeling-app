@@ -449,7 +449,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           disabled: (state) => state.matches('Sketch no face'),
           isActive: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ||
-            state.matches({ Sketch: 'circle3PointToolSelect' }),
+            state.matches({ Sketch: 'Circle three point tool' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
           showTitle: false,
@@ -463,9 +463,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               type: 'change tool',
               data: {
                 tool: !modelingState.matches({
-                  Sketch: 'circleThreePointToolSelect',
+                  Sketch: 'Circle three point tool',
                 })
-                  ? 'circleThreePoint'
+                  ? 'circleThreePointNeo'
                   : 'none',
               },
             }),

@@ -44,6 +44,13 @@ interface ArcSegmentInput {
   center: [number, number]
   radius: number
 }
+/** Inputs for three point circle */
+interface CircleThreePointSegmentInput {
+  type: 'circle-three-point-segment'
+  p1: [number, number]
+  p2: [number, number]
+  p3: [number, number]
+}
 
 /**
  * SegmentInputs is a union type that can be either a StraightSegmentInput or an ArcSegmentInput.
@@ -51,7 +58,10 @@ interface ArcSegmentInput {
  * - StraightSegmentInput: Represents a straight segment with a starting point (from) and an ending point (to).
  * - ArcSegmentInput: Represents an arc segment with a starting point (from), a center point, and a radius.
  */
-export type SegmentInputs = StraightSegmentInput | ArcSegmentInput
+export type SegmentInputs =
+  | StraightSegmentInput
+  | ArcSegmentInput
+  | CircleThreePointSegmentInput
 
 /**
  * Interface for adding or replacing a sketch stblib call expression to a sketch.
@@ -84,6 +94,9 @@ export type InputArgKeys =
   | 'intersectTag'
   | 'radius'
   | 'center'
+  | 'p1'
+  | 'p2'
+  | 'p3'
 export interface SingleValueInput<T> {
   type: 'singleValue'
   argType: LineInputsType

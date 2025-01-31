@@ -20,6 +20,7 @@ import {
   SourceRange,
   sketchFromKclValue,
   isPathToNodeNumber,
+  parse,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -49,6 +50,7 @@ import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { KclExpressionWithVariable } from 'lib/commandTypes'
 import { Artifact, getPathsFromArtifact } from './std/artifactGraph'
+import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -316,7 +318,6 @@ export function extrudeSketch(
   const lastSketchNodePath =
     orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
 
-  console.log('lastSketchNodePath', lastSketchNodePath, orderedSketchNodePaths)
   const sketchIndexInBody = Number(lastSketchNodePath[1][0])
   _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
 
@@ -1507,4 +1508,20 @@ export function splitPipedProfile(
     pathToProfile,
     pathToPlane,
   }
+}
+
+export function createNodeFromExprSnippet(
+  strings: TemplateStringsArray,
+  ...expressions: any[]
+): Node<BodyItem> | Error {
+  const code = strings.reduce(
+    (acc, str, i) => acc + str + (expressions[i] || ''),
+    ''
+  )
+  let program = parse(code)
+  if (err(program)) return program
+  console.log('code', code, program)
+  const node = program.program?.body[0]
+  if (!node) return new Error('No node found')
+  return node
 }

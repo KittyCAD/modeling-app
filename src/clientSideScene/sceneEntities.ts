@@ -85,6 +85,7 @@ import {
   createCallExpressionStdLib,
   createIdentifier,
   createLiteral,
+  createNodeFromExprSnippet,
   createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
@@ -134,6 +135,13 @@ export const TANGENTIAL_ARC_TO__SEGMENT_DASH =
   'tangential-arc-to-segment-body-dashed'
 export const TANGENTIAL_ARC_TO_SEGMENT = 'tangential-arc-to-segment'
 export const TANGENTIAL_ARC_TO_SEGMENT_BODY = 'tangential-arc-to-segment-body'
+export const CIRCLE_THREE_POINT_SEGMENT = 'circle-three-point-segment'
+export const CIRCLE_THREE_POINT_SEGMENT_BODY = 'circle-segment-body'
+export const CIRCLE_THREE_POINT_SEGMENT_DASH =
+  'circle-three-point-segment-body-dashed'
+export const CIRCLE_THREE_POINT_HANDLE1 = 'circle-three-point-handle1'
+export const CIRCLE_THREE_POINT_HANDLE2 = 'circle-three-point-handle2'
+export const CIRCLE_THREE_POINT_HANDLE3 = 'circle-three-point-handle3'
 export const CIRCLE_SEGMENT = 'circle-segment'
 export const CIRCLE_SEGMENT_BODY = 'circle-segment-body'
 export const CIRCLE_SEGMENT_DASH = 'circle-segment-body-dashed'
@@ -145,6 +153,7 @@ export const SEGMENT_BODIES = [
   STRAIGHT_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT,
   CIRCLE_SEGMENT,
+  CIRCLE_THREE_POINT_SEGMENT,
 ]
 export const SEGMENT_BODIES_PLUS_PROFILE_START = [
   ...SEGMENT_BODIES,
@@ -161,7 +170,6 @@ export class SceneEntities {
   scene: Scene
   sceneProgramMemory: ProgramMemory = ProgramMemory.empty()
   activeSegments: { [key: string]: Group } = {}
-  sketchTools: SketchTool[]
   intersectionPlane: Mesh | null = null
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
@@ -219,6 +227,20 @@ export class SceneEntities {
           from: segment.userData.from,
           center: segment.userData.center,
           radius: segment.userData.radius,
+        }
+      }
+      if (
+        segment.userData.p1 &&
+        segment.userData.p2 &&
+        segment.userData.p3 &&
+        segment.userData.type === CIRCLE_THREE_POINT_SEGMENT
+      ) {
+        update = segmentUtils.circleThreePoint.update
+        input = {
+          type: 'circle-three-point-segment',
+          p1: segment.userData.p1,
+          p2: segment.userData.p2,
+          p3: segment.userData.p3,
         }
       }
 
@@ -584,8 +606,6 @@ export class SceneEntities {
       programMemory,
     })
 
-    this.sketchTools = []
-
     this.sceneProgramMemory = programMemory
     const group = new Group()
     position && group.position.set(...position)
@@ -606,7 +626,10 @@ export class SceneEntities {
         maybeModdedAst,
         sourceRangeFromRust(sketch.start.__geoMeta.sourceRange)
       )
-      if (['Circle', 'CircleThreePoint'].includes(sketch?.paths?.[0]?.type) === false) {
+      if (
+        ['Circle', 'CircleThreePoint'].includes(sketch?.paths?.[0]?.type) ===
+        false
+      ) {
         const _profileStart = createProfileStartHandle({
           from: sketch.start.from,
           id: sketch.start.__geoMeta.id,
@@ -670,28 +693,13 @@ export class SceneEntities {
         if (err(_node1)) return
         const callExpName = _node1.node?.callee?.name
 
-        if (segment.type === 'CircleThreePoint') {
-          const circleThreePoint = new CircleThreePoint({
-            scene: group,
-            intersectionPlane: this.intersectionPlane,
-            startSketchOnASTNodePath: segPathToNode,
-            maybeExistingNodePath: _node1.deepPath,
-            sketchNodePaths: sketch.paths,
-            metadata: segment,
-            forward: new Vector3(...forward),
-            up: new Vector3(...up),
-            sketchOrigin: new Vector3(...position),
-          })
-          circleThreePoint.init()
-          this.sketchTools.push(circleThreePoint)
-          return
-        }
-
         const initSegment =
           segment.type === 'TangentialArcTo'
             ? segmentUtils.tangentialArcTo.init
             : segment.type === 'Circle'
             ? segmentUtils.circle.init
+            : segment.type === 'CircleThreePoint'
+            ? segmentUtils.circleThreePoint.init
             : segmentUtils.straight.init
         const input: SegmentInputs =
           segment.type === 'Circle'
@@ -700,6 +708,13 @@ export class SceneEntities {
                 from: segment.from,
                 center: segment.center,
                 radius: segment.radius,
+              }
+            : segment.type === 'CircleThreePoint'
+            ? {
+                type: 'circle-three-point-segment',
+                p1: segment.p1,
+                p2: segment.p2,
+                p3: segment.p3,
               }
             : {
                 type: 'straight-segment',
@@ -1399,6 +1414,185 @@ export class SceneEntities {
     })
     return { updatedEntryNodePath, updatedSketchNodePaths }
   }
+  setupDraftCircleThreePoint = async (
+    sketchEntryNodePath: PathToNode,
+    sketchNodePaths: PathToNode[],
+    planeNodePath: PathToNode,
+    forward: [number, number, number],
+    up: [number, number, number],
+    sketchOrigin: [number, number, number],
+    point1: [x: number, y: number],
+    point2: [x: number, y: number]
+  ): Promise<SketchDetailsUpdate | Error> => {
+    let _ast = structuredClone(kclManager.ast)
+
+    const varDec = getNodeFromPath<VariableDeclarator>(
+      _ast,
+      planeNodePath,
+      'VariableDeclarator'
+    )
+
+    if (err(varDec)) return varDec
+    if (varDec.node.type !== 'VariableDeclarator') return new Error('not a var')
+
+    const varName = findUniqueName(_ast, 'profile')
+
+    const thirdPointCloseToWhereUserLastClicked = `[${point2[0] + 0.1}, ${
+      point2[1] + 0.1
+    }]`
+    const newExpression = createNodeFromExprSnippet`${varName} = circleThreePoint({
+  p1 = [${point1[0]}, ${point1[1]}],
+  p2 = [${point2[0]}, ${point2[1]}],
+  p3 = ${thirdPointCloseToWhereUserLastClicked}},
+  ${varDec.node.id.name}
+)`
+    if (err(newExpression)) return newExpression
+    const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
+
+    _ast.body.splice(insertIndex, 0, newExpression)
+    const { updatedEntryNodePath, updatedSketchNodePaths } =
+      updateSketchNodePathsWithInsertIndex({
+        insertIndex,
+        insertType: 'end',
+        sketchNodePaths,
+      })
+
+    const pResult = parse(recast(_ast))
+    if (trap(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
+    _ast = pResult.program
+
+    // do a quick mock execution to get the program memory up-to-date
+    await kclManager.executeAstMock(_ast)
+
+    const { programMemoryOverride, truncatedAst } = await this.setupSketch({
+      sketchEntryNodePath: updatedEntryNodePath,
+      sketchNodePaths: updatedSketchNodePaths,
+      forward,
+      up,
+      position: sketchOrigin,
+      maybeModdedAst: _ast,
+      draftExpressionsIndices: { start: 0, end: 0 },
+    })
+
+    sceneInfra.setCallbacks({
+      onMove: async (args) => {
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          structuredClone(updatedEntryNodePath)
+        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
+          Number(planeNodePath[1][0]) -
+          1
+        const _node = getNodeFromPath<VariableDeclaration>(
+          truncatedAst,
+          nodePathWithCorrectedIndexForTruncatedAst,
+          'VariableDeclaration'
+        )
+        let modded = structuredClone(truncatedAst)
+        if (trap(_node)) return
+        const sketchInit = _node.node.declaration.init
+
+        if (sketchInit.type === 'CallExpression') {
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.programMemory,
+            {
+              type: 'path',
+              pathToNode: nodePathWithCorrectedIndexForTruncatedAst,
+            },
+            {
+              type: 'circle-three-point-segment',
+              p1: [point1[0], point1[1]],
+              p2: [point2[0], point2[1]],
+              p3: [
+                args.intersectionPoint.twoD.x,
+                args.intersectionPoint.twoD.y,
+              ],
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+        }
+
+        const { execState } = await executeAst({
+          ast: modded,
+          engineCommandManager: this.engineCommandManager,
+          // We make sure to send an empty program memory to denote we mean mock mode.
+          programMemoryOverride,
+        })
+        const programMemory = execState.memory
+        this.sceneProgramMemory = programMemory
+        const sketch = sketchFromKclValue(programMemory.get(varName), varName)
+        if (err(sketch)) return
+        const sgPaths = sketch.paths
+        const orthoFactor = orthoScale(sceneInfra.camControls.camera)
+
+        const varDecIndex = Number(updatedEntryNodePath[1][0])
+
+        this.updateSegment(
+          sketch.start,
+          0,
+          varDecIndex,
+          _ast,
+          orthoFactor,
+          sketch
+        )
+        sgPaths.forEach((seg, index) =>
+          this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
+        )
+      },
+      onClick: async (args) => {
+        // If there is a valid camera interaction that matches, do that instead
+        const interaction = sceneInfra.camControls.getInteractionType(
+          args.mouseEvent
+        )
+        if (interaction !== 'none') return
+        // Commit the rectangle to the full AST/code and return to sketch.idle
+        const cornerPoint = args.intersectionPoint?.twoD
+        if (!cornerPoint || args.mouseEvent.button !== 0) return
+
+        const _node = getNodeFromPath<VariableDeclaration>(
+          _ast,
+          updatedEntryNodePath || [],
+          'VariableDeclaration'
+        )
+        if (trap(_node)) return
+        const sketchInit = _node.node?.declaration.init
+
+        let modded = structuredClone(_ast)
+        if (sketchInit.type === 'CallExpression') {
+          const moddedResult = changeSketchArguments(
+            modded,
+            kclManager.programMemory,
+            {
+              type: 'path',
+              pathToNode: updatedEntryNodePath,
+            },
+            {
+              type: 'circle-three-point-segment',
+              p1: [point1[0], point1[1]],
+              p2: [point2[0], point2[1]],
+              p3: [cornerPoint.x || 0, cornerPoint.y || 0],
+            }
+          )
+          if (err(moddedResult)) return
+          modded = moddedResult.modifiedAst
+
+          const newCode = recast(modded)
+          if (err(newCode)) return
+          const pResult = parse(newCode)
+          if (trap(pResult) || !resultIsOk(pResult))
+            return Promise.reject(pResult)
+          _ast = pResult.program
+
+          // Update the primary AST and unequip the rectangle tool
+          await kclManager.executeAstMock(_ast)
+          sceneInfra.modelingSend({ type: 'Finish circle three point' })
+          await codeManager.updateEditorWithAstAndWriteToFile(_ast)
+        }
+      },
+    })
+    return { updatedEntryNodePath, updatedSketchNodePaths }
+  }
   setupDraftCircle = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
@@ -1790,7 +1984,13 @@ export class SceneEntities {
     )
 
     const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
-    const subGroup = getParentGroup(object, [ARROWHEAD, CIRCLE_CENTER_HANDLE])
+    const subGroup = getParentGroup(object, [
+      ARROWHEAD,
+      CIRCLE_CENTER_HANDLE,
+      CIRCLE_THREE_POINT_HANDLE1,
+      CIRCLE_THREE_POINT_HANDLE2,
+      CIRCLE_THREE_POINT_HANDLE3,
+    ])
     if (!group) return
     const pathToNode: PathToNode = structuredClone(group.userData.pathToNode)
     const varDecIndex = pathToNode[1][0]
@@ -1802,8 +2002,8 @@ export class SceneEntities {
     }
 
     const from: [number, number] = [
-      group.userData.from[0],
-      group.userData.from[1],
+      group.userData?.from?.[0],
+      group.userData?.from?.[1],
     ]
     const dragTo: [number, number] = [snappedPoint.x, snappedPoint.y]
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
@@ -1858,6 +2058,29 @@ export class SceneEntities {
           center: dragTo,
           radius: group.userData.radius,
         }
+      if (
+        subGroup?.name &&
+        [
+          CIRCLE_THREE_POINT_HANDLE1,
+          CIRCLE_THREE_POINT_HANDLE2,
+          CIRCLE_THREE_POINT_HANDLE3,
+        ].includes(subGroup?.name)
+      ) {
+        const input: SegmentInputs = {
+          type: 'circle-three-point-segment',
+          p1: group.userData.p1,
+          p2: group.userData.p2,
+          p3: group.userData.p3,
+        }
+        if (subGroup?.name === CIRCLE_THREE_POINT_HANDLE1) {
+          input.p1 = dragTo
+        } else if (subGroup?.name === CIRCLE_THREE_POINT_HANDLE2) {
+          input.p2 = dragTo
+        } else if (subGroup?.name === CIRCLE_THREE_POINT_HANDLE3) {
+          input.p3 = dragTo
+        }
+        return input
+      }
 
       // straight segment is the default
       return {
@@ -2011,6 +2234,18 @@ export class SceneEntities {
         center: segment.center,
         radius: segment.radius,
       }
+    } else if (
+      type === CIRCLE_THREE_POINT_SEGMENT &&
+      'type' in segment &&
+      segment.type === 'CircleThreePoint'
+    ) {
+      update = segmentUtils.circleThreePoint.update
+      input = {
+        type: 'circle-three-point-segment',
+        p1: segment.p1,
+        p2: segment.p2,
+        p3: segment.p3,
+      }
     }
     const callBack =
       update &&
@@ -2060,9 +2295,6 @@ export class SceneEntities {
     })
 
     // Remove all sketch tools
-    for (let tool of this.sketchTools) {
-      await tool.destroy()
-    }
 
     if (this.axisGroup && removeAxis) this.scene.remove(this.axisGroup)
     const sketchSegments = this.scene.children.find(

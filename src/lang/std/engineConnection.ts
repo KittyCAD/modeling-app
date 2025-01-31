@@ -2091,7 +2091,7 @@ export class EngineCommandManager extends EventTarget {
     ast: Node<Program>,
     artifactCommands: ArtifactCommand[],
     execStateArtifacts: ExecState['artifacts'],
-    isPartialExecution?: true
+    isPartialExecution?: boolean
   ) {
     const newGraphArtifacts = createArtifactGraph({
       artifactCommands,

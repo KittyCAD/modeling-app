@@ -61,6 +61,9 @@ const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
 )
 const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
+const CIRCLE_THREE_POINT_SEGMENT_ERR = new Error(
+  'Invalid input, expected "circle-three-point-segment"'
+)
 
 export type Coords2d = [number, number]
 
@@ -1130,6 +1133,287 @@ export const circle: SketchLineHelper = {
     ]
   },
 }
+export const circleThreePoint: SketchLineHelper = {
+  add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
+    if (segmentInput.type !== 'circle-three-point-segment')
+      return CIRCLE_THREE_POINT_SEGMENT_ERR
+
+    const { p1, p2, p3 } = segmentInput
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: pipe } = nodeMeta
+
+    const createRoundedLiteral = (val: number) =>
+      createLiteral(roundOff(val, 2))
+    if (replaceExistingCallback) {
+      const result = replaceExistingCallback([
+        {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p1',
+          argType: 'xAbsolute',
+          expr: createRoundedLiteral(p1[0]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p1',
+          argType: 'yAbsolute',
+          expr: createRoundedLiteral(p1[1]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p2',
+          argType: 'xAbsolute',
+          expr: createRoundedLiteral(p2[0]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p2',
+          argType: 'yAbsolute',
+          expr: createRoundedLiteral(p2[1]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p3',
+          argType: 'xAbsolute',
+          expr: createRoundedLiteral(p3[0]),
+        },
+        {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p3',
+          argType: 'yAbsolute',
+          expr: createRoundedLiteral(p3[1]),
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      pipe.body[callIndex] = callExp
+
+      return {
+        modifiedAst: _node,
+        pathToNode,
+        valueUsedInTransform,
+      }
+    }
+    return new Error('not implemented')
+  },
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'circle-three-point-segment')
+      return CIRCLE_THREE_POINT_SEGMENT_ERR
+    const { p1, p2, p3 } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: callExpression, shallowPath } = nodeMeta
+    const createRounded2DPointArr = (point: [number, number]) =>
+      createArrayExpression([
+        createLiteral(roundOff(point[0], 2)),
+        createLiteral(roundOff(point[1], 2)),
+      ])
+
+    const firstArg = callExpression.arguments?.[0]
+    const newP1 = createRounded2DPointArr(p1)
+    const newP2 = createRounded2DPointArr(p2)
+    const newP3 = createRounded2DPointArr(p3)
+    mutateObjExpProp(firstArg, newP1, 'p1')
+    mutateObjExpProp(firstArg, newP2, 'p2')
+    mutateObjExpProp(firstArg, newP3, 'p3')
+
+    return {
+      modifiedAst: _node,
+      pathToNode: shallowPath,
+    }
+  },
+  getTag: getTag(),
+  addTag: addTag(),
+  getConstraintInfo: (callExp: CallExpression, code, pathToNode) => {
+    if (callExp.type !== 'CallExpression') return []
+    const firstArg = callExp.arguments?.[0]
+    if (firstArg.type !== 'ObjectExpression') return []
+    const p1Details = getObjExprProperty(firstArg, 'p1')
+    const p2Details = getObjExprProperty(firstArg, 'p2')
+    const p3Details = getObjExprProperty(firstArg, 'p3')
+    if (!p1Details || !p2Details || !p3Details) return []
+    if (
+      p1Details.expr.type !== 'ArrayExpression' ||
+      p2Details.expr.type !== 'ArrayExpression' ||
+      p3Details.expr.type !== 'ArrayExpression'
+    )
+      return []
+
+    const pathToP1ArrayExpression: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+      ['properties', 'ObjectExpression'],
+      [p1Details.index, 'index'],
+      ['value', 'Property'],
+      ['elements', 'ArrayExpression'],
+    ]
+    const pathToP2ArrayExpression: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+      ['properties', 'ObjectExpression'],
+      [p2Details.index, 'index'],
+      ['value', 'Property'],
+      ['elements', 'ArrayExpression'],
+    ]
+    const pathToP3ArrayExpression: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+      ['properties', 'ObjectExpression'],
+      [p3Details.index, 'index'],
+      ['value', 'Property'],
+      ['elements', 'ArrayExpression'],
+    ]
+
+    const pathToP1XArg: PathToNode = [...pathToP1ArrayExpression, [0, 'index']]
+    const pathToP1YArg: PathToNode = [...pathToP1ArrayExpression, [1, 'index']]
+    const pathToP2XArg: PathToNode = [...pathToP2ArrayExpression, [0, 'index']]
+    const pathToP2YArg: PathToNode = [...pathToP2ArrayExpression, [1, 'index']]
+    const pathToP3XArg: PathToNode = [...pathToP3ArrayExpression, [0, 'index']]
+    const pathToP3YArg: PathToNode = [...pathToP3ArrayExpression, [1, 'index']]
+
+    return [
+      {
+        stdLibFnName: 'circle',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p1Details.expr.elements[0]),
+        sourceRange: [
+          p1Details.expr.elements[0].start,
+          p1Details.expr.elements[0].end,
+          true,
+        ],
+        pathToNode: pathToP1XArg,
+        value: code.slice(
+          p1Details.expr.elements[0].start,
+          p1Details.expr.elements[0].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p1',
+        },
+      },
+      {
+        stdLibFnName: 'circle',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p1Details.expr.elements[1]),
+        sourceRange: [
+          p1Details.expr.elements[1].start,
+          p1Details.expr.elements[1].end,
+          true,
+        ],
+        pathToNode: pathToP1YArg,
+        value: code.slice(
+          p1Details.expr.elements[1].start,
+          p1Details.expr.elements[1].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p1',
+        },
+      },
+      {
+        stdLibFnName: 'circle',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p2Details.expr.elements[0]),
+        sourceRange: [
+          p2Details.expr.elements[0].start,
+          p2Details.expr.elements[0].end,
+          true,
+        ],
+        pathToNode: pathToP2XArg,
+        value: code.slice(
+          p2Details.expr.elements[0].start,
+          p2Details.expr.elements[0].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p2',
+        },
+      },
+      {
+        stdLibFnName: 'circle',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p2Details.expr.elements[1]),
+        sourceRange: [
+          p2Details.expr.elements[1].start,
+          p2Details.expr.elements[1].end,
+          true,
+        ],
+        pathToNode: pathToP2YArg,
+        value: code.slice(
+          p2Details.expr.elements[1].start,
+          p2Details.expr.elements[1].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p2',
+        },
+      },
+      {
+        stdLibFnName: 'circle',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p3Details.expr.elements[0]),
+        sourceRange: [
+          p3Details.expr.elements[0].start,
+          p3Details.expr.elements[0].end,
+          true,
+        ],
+        pathToNode: pathToP3XArg,
+        value: code.slice(
+          p3Details.expr.elements[0].start,
+          p3Details.expr.elements[0].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 0,
+          key: 'p3',
+        },
+      },
+      {
+        stdLibFnName: 'circle',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(p3Details.expr.elements[1]),
+        sourceRange: [
+          p3Details.expr.elements[1].start,
+          p3Details.expr.elements[1].end,
+          true,
+        ],
+        pathToNode: pathToP3YArg,
+        value: code.slice(
+          p3Details.expr.elements[1].start,
+          p3Details.expr.elements[1].end
+        ),
+        argPosition: {
+          type: 'arrayInObject',
+          index: 1,
+          key: 'p3',
+        },
+      },
+    ]
+  },
+}
 export const angledLine: SketchLineHelper = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
@@ -1898,6 +2182,7 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineThatIntersects,
   tangentialArcTo,
   circle,
+  circleThreePoint,
 } as const
 
 export function changeSketchArguments(
