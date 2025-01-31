@@ -5,7 +5,8 @@ use std::sync::Arc;
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::{
-    exec::IdGenerator, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId, OldAstState, Point2d, Program,
+    exec::IdGenerator, pretty::NumericSuffix, CacheInformation, CoreDump, EngineManager, ExecState, ModuleId,
+    OldAstState, Point2d, Program,
 };
 use tokio::sync::RwLock;
 use tower_lsp::{LspService, Server};
@@ -249,6 +250,14 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 
     let program: Program = serde_json::from_str(json_str).map_err(JsError::from)?;
     Ok(JsValue::from_serde(&program.recast())?)
+}
+
+#[wasm_bindgen]
+pub fn format_number(value: f64, suffix_json: &str) -> Result<String, JsError> {
+    console_error_panic_hook::set_once();
+
+    let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
+    Ok(kcl_lib::pretty::format_number(value, suffix))
 }
 
 #[wasm_bindgen]
