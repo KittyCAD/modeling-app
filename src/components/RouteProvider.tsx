@@ -2,10 +2,12 @@ import { useEffect, useState, createContext, ReactNode } from 'react'
 import { useNavigation, useLocation } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { markOnce } from 'lib/performance'
+import { useAuthNavigation } from 'hooks/useAuthNavigation'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
+  useAuthNavigation()
   const [first, setFirstState] = useState(true)
   const navigation = useNavigation()
   const location = useLocation()
