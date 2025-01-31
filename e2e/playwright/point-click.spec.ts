@@ -1961,7 +1961,61 @@ radius = 8.69
     await cmdBar.progressCmdBar()
 
     const newCodeToFind = `revolve001 = revolve({angle = 360, axis = getOppositeEdge(rectangleSegmentA001)}, sketch002) `
-    await new Promise((resolve, reject) => {})
+    expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
+  })
+  test('revolve sketch circle around line segment from startProfileAt sketch', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `
+    sketch002 = startSketchOn('XY')
+      |> startProfileAt([-2.02, 1.79], %)
+      |> xLine(2.6, %)
+    sketch001 = startSketchOn('-XY')
+      |> startProfileAt([-0.48, 1.25], %)
+      |> angledLine([0, 2.38], %, $rectangleSegmentA001)
+      |> angledLine([segAng(rectangleSegmentA001) - 90, 2.4], %, $rectangleSegmentB001)
+      |> angledLine([
+        segAng(rectangleSegmentA001),
+          -segLen(rectangleSegmentA001)
+      ], %, $rectangleSegmentC001)
+      |> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> close(%)
+    extrude001 = extrude(5, sketch001)
+    sketch003 = startSketchOn(extrude001, 'START')
+      |> circle({
+        center = [-0.69, 0.56],
+        radius = 0.28
+      }, %)
+`
+
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    // select line of code
+    const codeToSelecton = `center = [-0.69, 0.56]`
+    // revolve
+    await page.getByText(codeToSelecton).click()
+    await toolbar.revolveButton.click()
+    await page.getByText('Edge', { exact: true }).click()
+    const lineCodeToSelection = `|> xLine(2.6, %)`
+    await page.getByText(lineCodeToSelection).click()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+
+    const newCodeToFind = `revolve001 = revolve({ angle = 360, axis = seg01 }, sketch003)`
     expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
   })
 })
