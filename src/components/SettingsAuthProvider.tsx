@@ -2,10 +2,7 @@ import { trap } from 'lib/trap'
 import { useMachine, useSelector } from '@xstate/react'
 import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
 import { PATHS, BROWSER_PATH } from 'lib/paths'
-import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
-import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useState } from 'react'
-import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import {
@@ -16,7 +13,6 @@ import {
 } from 'lib/theme'
 import decamelize from 'decamelize'
 import { Actor, AnyStateMachine, ContextFrom, Prop, StateFrom } from 'xstate'
-import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import {
   kclManager,
   sceneInfra,
@@ -50,7 +46,6 @@ type MachineContext<T extends AnyStateMachine> = {
 }
 
 type SettingsAuthContextType = {
-  auth: MachineContext<typeof authMachine>
   settings: MachineContext<typeof settingsMachine>
 }
 
@@ -370,40 +365,9 @@ export const SettingsAuthProviderBase = ({
     )
   }, [settingsState.context.textEditor.blinkingCursor.current])
 
-  // Auth machine setup
-  const [authState, authSend, authActor] = useMachine(
-    authMachine.provide({
-      actions: {
-        goToSignInPage: () => {
-          navigate(PATHS.SIGN_IN)
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          logout()
-        },
-        goToIndexPage: () => {
-          if (location.pathname.includes(PATHS.SIGN_IN)) {
-            navigate(PATHS.INDEX)
-          }
-        },
-      },
-    })
-  )
-
-  useStateMachineCommands({
-    machineId: 'auth',
-    state: authState,
-    send: authSend,
-    commandBarConfig: authCommandBarConfig,
-    actor: authActor,
-  })
-
   return (
     <SettingsAuthContext.Provider
       value={{
-        auth: {
-          state: authState,
-          context: authState.context,
-          send: authSend,
-        },
         settings: {
           state: settingsState,
           context: settingsState.context,
@@ -417,12 +381,3 @@ export const SettingsAuthProviderBase = ({
 }
 
 export default SettingsAuthProvider
-
-export async function logout() {
-  localStorage.removeItem(TOKEN_PERSIST_KEY)
-  if (isDesktop()) return Promise.resolve(null)
-  return fetch(withBaseUrl('/logout'), {
-    method: 'POST',
-    credentials: 'include',
-  })
-}
