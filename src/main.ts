@@ -489,17 +489,12 @@ function parseCLIArgs(): minimist.ParsedArgs {
 
 function registerStartupListeners() {
   // Linux and Windows from https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app
-  const gotTheLock = app.requestSingleInstanceLock()
-  if (!gotTheLock) {
-    app.quit()
-  } else {
-    app.on('second-instance', (event, commandLine, workingDirectory) => {
-      // Deep Link: second instance for Windows and Linux
-      const url = commandLine.pop()?.slice(0, -1)
-      console.log('Retrieved deep link from commandLine', url)
-      createWindow(url)
-    })
-  }
+  app.on('second-instance', (event, commandLine, workingDirectory) => {
+    // Deep Link: second instance for Windows and Linux
+    const url = commandLine.pop()?.slice(0, -1)
+    console.log('Retrieved deep link from commandLine', url)
+    createWindow(url)
+  })
 
   /**
    * macOS: when someone drops a file to the not-yet running VSCode, the open-file event fires even before
