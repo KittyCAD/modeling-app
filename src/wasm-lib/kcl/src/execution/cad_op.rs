@@ -2,9 +2,8 @@ use indexmap::IndexMap;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use super::{ArtifactId, KclValue};
 use crate::{docs::StdLibFn, std::get_stdlib_fn, SourceRange};
-
-use super::KclValue;
 
 /// A CAD modeling operation for display in the feature tree, AKA operations
 /// timeline.
@@ -60,16 +59,34 @@ impl Operation {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct OpArg {
-    /// The runtime value of the argument.
-    value: KclValue,
+    /// The runtime value of the argument, only if it's a non-composite
+    /// primitive value.  We don't include all values since they can be quite
+    /// large, and we don't actually need them.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    value: Option<KclValue>,
+    /// The artifact ID of the value.  This will be `None` for primitive values,
+    /// and `Some` for values that have `ArtifactId`s.  If the value is an
+    /// array, this will be the artifact IDs of the elements.  Only one level of
+    /// nesting is supported.  If the value is an array of arrays, for example,
+    /// this will be an empty array.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    artifact_ids: Option<Vec<ArtifactId>>,
     /// The KCL code expression for the argument.  This is used in the UI so
     /// that the user can edit the expression.
     source_range: SourceRange,
 }
 
 impl OpArg {
-    pub(crate) fn new(value: KclValue, source_range: SourceRange) -> Self {
-        Self { value, source_range }
+    pub(crate) fn new(
+        value: Option<KclValue>,
+        artifact_ids: Option<Vec<ArtifactId>>,
+        source_range: SourceRange,
+    ) -> Self {
+        Self {
+            value,
+            artifact_ids,
+            source_range,
+        }
     }
 }
 
