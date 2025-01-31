@@ -15,14 +15,13 @@ use kittycad_modeling_cmds as kcmc;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use super::ExecutorContext;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, ImportedGeometry},
     fs::FileSystem,
     source_range::SourceRange,
 };
-
-use super::ExecutorContext;
 
 // Zoo co-ordinate system.
 //
