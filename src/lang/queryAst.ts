@@ -21,6 +21,7 @@ import {
   topLevelRange,
   VariableDeclaration,
   VariableDeclarator,
+  recast,
 } from './wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
@@ -71,7 +72,28 @@ export function getNodeFromPath<T>(
           deepPath: successfulPaths,
         }
       }
-      return new Error('not an object')
+      const stackTraceError = new Error()
+      const sourceCode = recast(node)
+      const levels = stackTraceError.stack?.split('\n')
+      const aFewFunctionNames: string[] = []
+      let tree = ''
+      levels?.forEach((val, index) => {
+        const fnName = val.trim().split(' ')[1]
+        const ending = index === levels.length - 1 ? ' ' : ' > '
+        tree += fnName + ending
+        if (index < 3) {
+          aFewFunctionNames.push(fnName)
+        }
+      })
+      const error = new Error(
+        `Failed to stopAt ${stopAt}, ${aFewFunctionNames
+          .filter((a) => a)
+          .join(' > ')}`
+      )
+      console.error(tree)
+      console.error(sourceCode)
+      console.error(error.stack)
+      return error
     }
     currentNode = currentNode?.[pathItem[0]]
     successfulPaths.push(pathItem)

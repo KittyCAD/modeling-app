@@ -11,12 +11,11 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::execution::{Artifact, ArtifactId};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSet, SketchSurface,
-        Solid, TagEngineInfo, TagIdentifier,
+        Artifact, ArtifactId, BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch,
+        SketchSet, SketchSurface, Solid, TagEngineInfo, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     std::{
@@ -2250,7 +2249,10 @@ mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{execution::TagIdentifier, std::sketch::PlaneData, std::utils::calculate_circle_center};
+    use crate::{
+        execution::TagIdentifier,
+        std::{sketch::PlaneData, utils::calculate_circle_center},
+    };
 
     #[test]
     fn test_deserialize_plane_data() {
