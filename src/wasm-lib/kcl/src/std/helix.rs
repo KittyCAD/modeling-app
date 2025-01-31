@@ -140,7 +140,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
-                    radius: data.radius,
+                    radius: LengthUnit(data.radius),
                     is_clockwise: !data.ccw,
                     length: LengthUnit(length),
                     revolutions: data.revolutions,
@@ -157,7 +157,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
-                    radius: data.radius,
+                    radius: LengthUnit(data.radius),
                     is_clockwise: !data.ccw,
                     length: data.length.map(LengthUnit),
                     revolutions: data.revolutions,
