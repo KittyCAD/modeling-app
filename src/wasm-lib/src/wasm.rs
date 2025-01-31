@@ -617,7 +617,7 @@ pub fn calculate_circle_from_3_points(ax: f64, ay: f64, bx: f64, by: f64, cx: f6
 
 /// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
 #[wasm_bindgen]
-pub async fn change_kcl_units(code: &str, settings_str: &str) -> Result<String, String> {
+pub async fn change_kcl_settings(code: &str, settings_str: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
     let settings: kcl_lib::MetaSettings = serde_json::from_str(settings_str).map_err(|e| e.to_string())?;
