@@ -197,10 +197,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        let execution_kind = self.execution_kind();
-        if execution_kind.is_isolated() {
-            return Err(KclError::Semantic(KclErrorDetails { message: "Cannot send modeling commands while importing. Wrap your code in a function if you want to import the file.".to_owned(), source_ranges: vec![source_range] }));
-        }
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
