@@ -186,38 +186,9 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
   {
     "labeledArgs": {
       "data": {
-        "value": {
-          "type": "Plane",
-          "value": {
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "Custom",
-            "origin": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 20.0
-            },
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0
-            },
-            "units": {
-              "type": "Mm"
-            },
-            "__meta": []
-          }
-        },
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           172,
           186,

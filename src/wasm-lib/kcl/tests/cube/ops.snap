@@ -14,46 +14,7 @@ description: Operations executed cube.kcl
     "unlabeledArg": null,
     "labeledArgs": {
       "center": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    418,
-                    419,
-                    0
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "Number",
-              "value": 0.0,
-              "__meta": [
-                {
-                  "sourceRange": [
-                    421,
-                    422,
-                    0
-                  ]
-                }
-              ]
-            }
-          ],
-          "__meta": [
-            {
-              "sourceRange": [
-                417,
-                423,
-                0
-              ]
-            }
-          ]
-        },
+        "artifactIds": [],
         "sourceRange": [
           417,
           423,
