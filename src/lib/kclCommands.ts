@@ -113,8 +113,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
                 sampleName: data.sample.split('/')[0] + FILE_EXT,
                 code,
                 method: data.method,
-                sampleUnits:
-                  projectSettingsPayload.modeling?.defaultUnit,
+                sampleUnits: projectSettingsPayload.modeling?.defaultUnit,
               }
             }
           )
