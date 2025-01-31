@@ -1525,7 +1525,7 @@ extrude001 = extrude(200, sketch001)`)
 test(
   'Opening a project should successfully load the stream, (regression test that this also works when switching between projects)',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, cmdBar, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await Promise.all([
         fsp.mkdir(path.join(dir, 'router-template-slate'), { recursive: true }),
@@ -1563,11 +1563,38 @@ test(
 
     const pointOnModel = { x: 630, y: 280 }
 
-    await test.step('Opening the bracket project should load the stream', async () => {
-      // expect to see the text bracket
-      await expect(page.getByText('bracket')).toBeVisible()
+    await test.step('Opening the bracket project via command palette should load the stream', async () => {
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'bracket',
+            fileCount: 1,
+          },
+          {
+            title: 'router-template-slate',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
 
-      await page.getByText('bracket').click()
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('open project')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Open project',
+        currentArgKey: 'name',
+        currentArgValue: '',
+        headerArguments: {
+          Name: '',
+        },
+        highlightedHeaderArg: 'name',
+      })
+      await cmdBar.argumentInput.fill('brac')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
 
       await u.waitForPageLoad()
 
@@ -1588,7 +1615,7 @@ test(
       await expect(page.getByText('Create project')).toBeVisible()
     })
 
-    await test.step('Opening the router-template project should load the stream', async () => {
+    await test.step('Opening the router-template project via link should load the stream', async () => {
       // expect to see the text bracket
       await expect(page.getByText('router-template-slate')).toBeVisible()
 
@@ -1605,16 +1632,26 @@ test(
         .toBeLessThan(15)
     })
 
-    await test.step('Opening the router-template project should load the stream', async () => {
+    await test.step('The projects on the home page should still be normal', async () => {
       await page.getByTestId('project-sidebar-toggle').click()
       await expect(
         page.getByRole('button', { name: 'Go to Home' })
       ).toBeVisible()
       await page.getByRole('button', { name: 'Go to Home' }).click()
 
-      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
-      await expect(page.getByText('router-template-slate')).toBeVisible()
-      await expect(page.getByText('Create project')).toBeVisible()
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'bracket',
+            fileCount: 1,
+          },
+          {
+            title: 'router-template-slate',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
     })
   }
 )
