@@ -4,12 +4,12 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment, useMemo, useState } from 'react'
 import { PATHS } from 'lib/paths'
 import { Models } from '@kittycad/lib'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useAbsoluteFilePath } from 'hooks/useAbsoluteFilePath'
 import Tooltip from './Tooltip'
 import usePlatform from 'hooks/usePlatform'
 import { isDesktop } from 'lib/isDesktop'
 import { CustomIcon } from './CustomIcon'
+import { authActor } from 'machines/appMachine'
 
 type User = Models['User_type']
 
@@ -20,7 +20,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
   const displayedName = getDisplayName(user)
   const [imageLoadFailed, setImageLoadFailed] = useState(false)
   const navigate = useNavigate()
-  const send = useSettingsAuthContext()?.auth?.send
+  const send = authActor.send
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const userMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
