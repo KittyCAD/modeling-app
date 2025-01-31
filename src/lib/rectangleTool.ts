@@ -10,13 +10,19 @@ import {
   createTagDeclarator,
   createUnaryExpression,
 } from 'lang/modifyAst'
-import { ArrayExpression, CallExpression, PipeExpression } from 'lang/wasm'
+import {
+  ArrayExpression,
+  CallExpression,
+  PipeExpression,
+  recast,
+} from 'lang/wasm'
 import { roundOff } from 'lib/utils'
 import {
   isCallExpression,
   isArrayExpression,
   isLiteral,
   isBinaryExpression,
+  isLiteralValueNumber,
 } from 'lang/util'
 
 /**
@@ -144,10 +150,12 @@ export function updateCenterRectangleSketch(
     if (isArrayExpression(arrayExpression)) {
       const literal = arrayExpression.elements[0]
       if (isLiteral(literal)) {
-        callExpression.arguments[0] = createArrayExpression([
-          createLiteral(literal.value),
-          createLiteral(Math.abs(twoX)),
-        ])
+        if (isLiteralValueNumber(literal.value)) {
+          callExpression.arguments[0] = createArrayExpression([
+            createLiteral(literal.value),
+            createLiteral(Math.abs(twoX)),
+          ])
+        }
       }
     }
   }

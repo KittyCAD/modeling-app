@@ -8,6 +8,8 @@ import {
   ArtifactGraph,
   CallExpressionKw,
   Expr,
+  LiteralValue,
+  NumericSuffix,
 } from './wasm'
 import { filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
@@ -110,4 +112,16 @@ export function findKwArgAnyIndex(
 
 export function isAbsolute(call: CallExpressionKw): boolean {
   return findKwArgAny(['endAbsolute'], call) !== undefined
+}
+
+export function isLiteralValueNumber(
+  e: LiteralValue
+): e is { value: number; suffix: NumericSuffix } {
+  return (
+    typeof e === 'object' &&
+    'value' in e &&
+    typeof e.value === 'number' &&
+    'suffix' in e &&
+    typeof e.suffix === 'string'
+  )
 }

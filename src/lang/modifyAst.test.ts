@@ -5,6 +5,8 @@ import {
   Identifier,
   SourceRange,
   topLevelRange,
+  LiteralValue,
+  Literal,
 } from './wasm'
 import {
   createLiteral,
@@ -37,10 +39,26 @@ beforeAll(async () => {
 })
 
 describe('Testing createLiteral', () => {
-  it('should create a literal', () => {
+  it('should create a literal number without units', () => {
     const result = createLiteral(5)
     expect(result.type).toBe('Literal')
     expect((result as any).value.value).toBe(5)
+    expect((result as any).value.suffix).toBe('None')
+    expect((result as Literal).raw).toBe('5')
+  })
+  it('should create a literal number with units', () => {
+    const lit: LiteralValue = { value: 5, suffix: 'Mm' }
+    const result = createLiteral(lit)
+    expect(result.type).toBe('Literal')
+    expect((result as any).value.value).toBe(5)
+    expect((result as any).value.suffix).toBe('Mm')
+    expect((result as Literal).raw).toBe('5mm')
+  })
+  it('should create a literal boolean', () => {
+    const result = createLiteral(false)
+    expect(result.type).toBe('Literal')
+    expect((result as Literal).value).toBe(false)
+    expect((result as Literal).raw).toBe('false')
   })
 })
 describe('Testing createIdentifier', () => {

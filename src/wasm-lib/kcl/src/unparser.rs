@@ -8,6 +8,7 @@ use crate::parsing::{
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
         PipeExpression, Program, TagDeclarator, UnaryExpression, VariableDeclaration, VariableKind,
     },
+    token::NumericSuffix,
     PIPE_OPERATOR,
 };
 
@@ -368,6 +369,11 @@ impl VariableDeclaration {
         );
         output
     }
+}
+
+// Used by TS.
+pub fn format_number(value: f64, suffix: NumericSuffix) -> String {
+    format!("{value}{suffix}")
 }
 
 impl Literal {
