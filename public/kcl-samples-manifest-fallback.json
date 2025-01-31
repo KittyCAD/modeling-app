@@ -123,7 +123,7 @@
     "pathFromProjectDirectoryToFirstFile": "lego/main.kcl",
     "multipleFiles": false,
     "title": "Lego Brick",
-    "description": "A standard Lego brick. This is a small, plastic construction block toy that can be interlocked with other blocks to build various structures, models, and figures. There are a lot of hacks used in this cod"
+    "description": "A standard Lego brick. This is a small, plastic construction block toy that can be interlocked with other blocks to build various structures, models, and figures. There are a lot of hacks used in this code."
   },
   {
     "file": "main.kcl",
