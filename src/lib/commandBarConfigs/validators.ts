@@ -92,7 +92,7 @@ export const revolveAxisValidator = async ({
         angle: angleInDegrees,
         edge_id: edgeSelection,
         target: sketchSelection,
-        tolerance: 0.0001,
+        tolerance: 1e-7,
       },
     })
   }
