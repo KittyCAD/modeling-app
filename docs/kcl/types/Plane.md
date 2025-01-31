@@ -17,6 +17,7 @@ A plane.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `id` |`string`| The id of the plane. | No |
+| `artifactId` |[`ArtifactId`](/docs/kcl/types/ArtifactId)| The artifact ID. | No |
 | `value` |[`PlaneType`](/docs/kcl/types/PlaneType)| A plane. | No |
 | `origin` |[`Point3d`](/docs/kcl/types/Point3d)| Origin of the plane. | No |
 | `xAxis` |[`Point3d`](/docs/kcl/types/Point3d)| What should the plane’s X axis be? | No |
