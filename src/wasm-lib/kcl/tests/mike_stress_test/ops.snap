@@ -20088,6 +20088,7 @@ description: Operations executed mike_stress_test.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -20133,6 +20134,7 @@ description: Operations executed mike_stress_test.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

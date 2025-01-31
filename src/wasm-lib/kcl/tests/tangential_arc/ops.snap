@@ -101,6 +101,7 @@ description: Operations executed tangential_arc.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -146,6 +147,7 @@ description: Operations executed tangential_arc.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

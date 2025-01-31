@@ -167,6 +167,7 @@ description: Operations executed sketch_in_object.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -212,6 +213,7 @@ description: Operations executed sketch_in_object.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -406,6 +408,7 @@ description: Operations executed sketch_in_object.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -451,6 +454,7 @@ description: Operations executed sketch_in_object.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

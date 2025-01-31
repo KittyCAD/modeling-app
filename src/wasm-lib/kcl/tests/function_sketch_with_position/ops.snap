@@ -164,6 +164,7 @@ description: Operations executed function_sketch_with_position.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -209,6 +210,7 @@ description: Operations executed function_sketch_with_position.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

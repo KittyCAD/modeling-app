@@ -94,6 +94,7 @@ description: Operations executed circle_three_point.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -139,6 +140,7 @@ description: Operations executed circle_three_point.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

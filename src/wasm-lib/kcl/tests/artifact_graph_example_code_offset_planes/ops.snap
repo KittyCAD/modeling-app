@@ -166,6 +166,7 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 0.0,

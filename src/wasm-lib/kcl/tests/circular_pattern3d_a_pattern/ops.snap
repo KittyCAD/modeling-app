@@ -148,6 +148,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XZ",
               "origin": {
                 "x": 0.0,
@@ -193,6 +194,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -331,6 +333,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -465,6 +468,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XZ",
                 "origin": {
                   "x": 0.0,
@@ -510,6 +514,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -731,6 +736,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             {
               "type": "Solid",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": [
                 {
                   "faceId": "[uuid]",
@@ -865,6 +871,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "on": {
                   "type": "plane",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": "XZ",
                   "origin": {
                     "x": 0.0,
@@ -910,6 +917,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                     ]
                   }
                 },
+                "artifactId": "[uuid]",
                 "units": {
                   "type": "Mm"
                 },
@@ -942,6 +950,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             {
               "type": "Solid",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": [
                 {
                   "faceId": "[uuid]",
@@ -1076,6 +1085,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "on": {
                   "type": "plane",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": "XZ",
                   "origin": {
                     "x": 0.0,
@@ -1121,6 +1131,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                     ]
                   }
                 },
+                "artifactId": "[uuid]",
                 "units": {
                   "type": "Mm"
                 },
@@ -1153,6 +1164,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             {
               "type": "Solid",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": [
                 {
                   "faceId": "[uuid]",
@@ -1287,6 +1299,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "on": {
                   "type": "plane",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": "XZ",
                   "origin": {
                     "x": 0.0,
@@ -1332,6 +1345,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                     ]
                   }
                 },
+                "artifactId": "[uuid]",
                 "units": {
                   "type": "Mm"
                 },
@@ -1364,6 +1378,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             {
               "type": "Solid",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": [
                 {
                   "faceId": "[uuid]",
@@ -1498,6 +1513,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "on": {
                   "type": "plane",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": "XZ",
                   "origin": {
                     "x": 0.0,
@@ -1543,6 +1559,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                     ]
                   }
                 },
+                "artifactId": "[uuid]",
                 "units": {
                   "type": "Mm"
                 },
@@ -1575,6 +1592,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             {
               "type": "Solid",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": [
                 {
                   "faceId": "[uuid]",
@@ -1709,6 +1727,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "on": {
                   "type": "plane",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": "XZ",
                   "origin": {
                     "x": 0.0,
@@ -1754,6 +1773,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                     ]
                   }
                 },
+                "artifactId": "[uuid]",
                 "units": {
                   "type": "Mm"
                 },
@@ -1786,6 +1806,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             {
               "type": "Solid",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": [
                 {
                   "faceId": "[uuid]",
@@ -1920,6 +1941,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "on": {
                   "type": "plane",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": "XZ",
                   "origin": {
                     "x": 0.0,
@@ -1965,6 +1987,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                     ]
                   }
                 },
+                "artifactId": "[uuid]",
                 "units": {
                   "type": "Mm"
                 },
@@ -1997,6 +2020,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
             {
               "type": "Solid",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": [
                 {
                   "faceId": "[uuid]",
@@ -2131,6 +2155,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                 "on": {
                   "type": "plane",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": "XZ",
                   "origin": {
                     "x": 0.0,
@@ -2176,6 +2201,7 @@ description: Operations executed circular_pattern3d_a_pattern.kcl
                     ]
                   }
                 },
+                "artifactId": "[uuid]",
                 "units": {
                   "type": "Mm"
                 },

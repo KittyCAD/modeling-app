@@ -178,6 +178,7 @@ description: Operations executed pipe_as_arg.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -223,6 +224,7 @@ description: Operations executed pipe_as_arg.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

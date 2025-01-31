@@ -462,6 +462,7 @@ description: Operations executed poop_chute.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "YZ",
               "origin": {
                 "x": 0.0,
@@ -553,6 +554,7 @@ description: Operations executed poop_chute.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -920,6 +922,7 @@ description: Operations executed poop_chute.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "YZ",
               "origin": {
                 "x": 0.0,
@@ -1011,6 +1014,7 @@ description: Operations executed poop_chute.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

@@ -153,6 +153,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XZ",
               "origin": {
                 "x": 0.0,
@@ -244,6 +245,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -282,6 +284,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -415,6 +418,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XZ",
                 "origin": {
                   "x": 0.0,
@@ -521,6 +525,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -747,6 +752,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -766,6 +772,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -899,6 +906,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XZ",
                     "origin": {
                       "x": 0.0,
@@ -1005,6 +1013,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -1066,6 +1075,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -1104,6 +1114,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -1227,6 +1238,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg01",
                 "xAxis": {
                   "x": 1.0,
@@ -1246,6 +1258,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -1379,6 +1392,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XZ",
                       "origin": {
                         "x": 0.0,
@@ -1485,6 +1499,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1546,6 +1561,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1730,6 +1746,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -1749,6 +1766,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -1872,6 +1890,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                   "on": {
                     "type": "face",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "seg01",
                     "xAxis": {
                       "x": 1.0,
@@ -1891,6 +1910,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                     "solid": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
@@ -2024,6 +2044,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                         "on": {
                           "type": "plane",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "XZ",
                           "origin": {
                             "x": 0.0,
@@ -2130,6 +2151,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -2191,6 +2213,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -2298,6 +2321,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -2336,6 +2360,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -2469,6 +2494,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -2488,6 +2514,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -2611,6 +2638,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "seg01",
                       "xAxis": {
                         "x": 1.0,
@@ -2630,6 +2658,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                       "solid": {
                         "type": "Solid",
                         "id": "[uuid]",
+                        "artifactId": "[uuid]",
                         "value": [
                           {
                             "faceId": "[uuid]",
@@ -2763,6 +2792,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                           "on": {
                             "type": "plane",
                             "id": "[uuid]",
+                            "artifactId": "[uuid]",
                             "value": "XZ",
                             "origin": {
                               "x": 0.0,
@@ -2869,6 +2899,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                               ]
                             }
                           },
+                          "artifactId": "[uuid]",
                           "units": {
                             "type": "Mm"
                           },
@@ -2930,6 +2961,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -3052,6 +3084,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -3278,6 +3311,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,
@@ -3297,6 +3331,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -3430,6 +3465,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                   "on": {
                     "type": "face",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -3449,6 +3485,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                     "solid": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
@@ -3572,6 +3609,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                         "on": {
                           "type": "face",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "seg01",
                           "xAxis": {
                             "x": 1.0,
@@ -3591,6 +3629,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                           "solid": {
                             "type": "Solid",
                             "id": "[uuid]",
+                            "artifactId": "[uuid]",
                             "value": [
                               {
                                 "faceId": "[uuid]",
@@ -3724,6 +3763,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                               "on": {
                                 "type": "plane",
                                 "id": "[uuid]",
+                                "artifactId": "[uuid]",
                                 "value": "XZ",
                                 "origin": {
                                   "x": 0.0,
@@ -3830,6 +3870,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                                   ]
                                 }
                               },
+                              "artifactId": "[uuid]",
                               "units": {
                                 "type": "Mm"
                               },
@@ -3891,6 +3932,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -4013,6 +4055,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -4074,6 +4117,7 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

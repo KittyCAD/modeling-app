@@ -203,6 +203,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -382,6 +383,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -481,6 +483,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -707,6 +710,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -931,6 +935,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1053,6 +1058,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -1279,6 +1285,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -1503,6 +1510,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1566,6 +1574,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -1792,6 +1801,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -2016,6 +2026,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2278,6 +2289,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -2297,6 +2309,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -2523,6 +2536,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XY",
                     "origin": {
                       "x": 0.0,
@@ -2747,6 +2761,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -2824,6 +2839,7 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

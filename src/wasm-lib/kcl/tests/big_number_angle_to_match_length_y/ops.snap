@@ -133,6 +133,7 @@ description: Operations executed big_number_angle_to_match_length_y.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -224,6 +225,7 @@ description: Operations executed big_number_angle_to_match_length_y.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

@@ -178,6 +178,7 @@ description: Operations executed artifact_graph_example_code1.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -313,6 +314,7 @@ description: Operations executed artifact_graph_example_code1.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -459,6 +461,7 @@ description: Operations executed artifact_graph_example_code1.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -633,6 +636,7 @@ description: Operations executed artifact_graph_example_code1.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -798,6 +802,7 @@ description: Operations executed artifact_graph_example_code1.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -852,6 +857,7 @@ description: Operations executed artifact_graph_example_code1.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -1026,6 +1032,7 @@ description: Operations executed artifact_graph_example_code1.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -1191,6 +1198,7 @@ description: Operations executed artifact_graph_example_code1.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1426,6 +1434,7 @@ description: Operations executed artifact_graph_example_code1.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,
@@ -1445,6 +1454,7 @@ description: Operations executed artifact_graph_example_code1.kcl
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -1619,6 +1629,7 @@ description: Operations executed artifact_graph_example_code1.kcl
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XY",
                     "origin": {
                       "x": 0.0,
@@ -1784,6 +1795,7 @@ description: Operations executed artifact_graph_example_code1.kcl
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -1854,6 +1866,7 @@ description: Operations executed artifact_graph_example_code1.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

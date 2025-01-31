@@ -5708,6 +5708,7 @@ description: Operations executed kittycad_svg.kcl
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XY",
               "origin": {
                 "x": 0.0,
@@ -5753,6 +5754,7 @@ description: Operations executed kittycad_svg.kcl
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

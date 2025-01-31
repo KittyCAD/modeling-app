@@ -72,6 +72,7 @@ description: Operations executed import_whole.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -119,6 +120,7 @@ description: Operations executed import_whole.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -164,6 +166,7 @@ description: Operations executed import_whole.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Inches"
               },
