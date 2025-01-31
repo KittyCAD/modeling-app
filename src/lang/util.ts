@@ -73,7 +73,13 @@ export function isBinaryExpression(e: any): e is BinaryExpression {
 }
 
 export function isLiteralValueNotStringAndBoolean(
-  e: any
+  e: LiteralValue
 ): e is { value: number; suffix: NumericSuffix } {
-  return e && 'value' in e && 'suffix' in e
+  return (
+    typeof e !== 'string' &&
+    typeof e !== 'boolean' &&
+    e &&
+    'value' in e &&
+    'suffix' in e
+  )
 }
