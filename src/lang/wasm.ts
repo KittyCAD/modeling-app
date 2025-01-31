@@ -2,6 +2,7 @@ import {
   init,
   parse_wasm,
   recast_wasm,
+  format_number,
   execute,
   kcl_lint,
   modify_ast_for_sketch_wasm,
@@ -54,6 +55,7 @@ import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
 import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -90,6 +92,7 @@ export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
 export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
 export type { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+export type { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
 
 export type SyntaxType =
   | 'Program'
@@ -566,9 +569,19 @@ export function sketchFromKclValue(
   return result
 }
 
+/**
+ * Execute a KCL program.
+ * @param node The AST of the program to execute.
+ * @param path The full path of the file being executed.  Use `null` for
+ * expressions that don't have a file, like expressions in the command bar.
+ * @param programMemoryOverride If this is not `null`, this will be used as the
+ * initial program memory, and the execution will be engineless (AKA mock
+ * execution).
+ */
 export const executor = async (
   node: Node<Program>,
   engineCommandManager: EngineCommandManager,
+  path?: string,
   programMemoryOverride: ProgramMemory | Error | null = null
 ): Promise<ExecState> => {
   if (programMemoryOverride !== null && err(programMemoryOverride))
@@ -590,6 +603,7 @@ export const executor = async (
     }
     const execOutcome: RustExecOutcome = await execute(
       JSON.stringify(node),
+      path,
       JSON.stringify(programMemoryOverride?.toRaw() || null),
       JSON.stringify({ settings: jsAppSettings }),
       engineCommandManager,
@@ -625,6 +639,13 @@ export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
 
 export const recast = (ast: Program): string | Error => {
   return recast_wasm(JSON.stringify(ast))
+}
+
+/**
+ * Format a number with suffix as KCL.
+ */
+export function formatNumber(value: number, suffix: NumericSuffix): string {
+  return format_number(value, JSON.stringify(suffix))
 }
 
 export const makeDefaultPlanes = async (

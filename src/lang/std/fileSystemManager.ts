@@ -31,6 +31,9 @@ class FileSystemManager {
   }
 
   async join(dir: string, path: string): Promise<string> {
+    if (path.startsWith(dir)) {
+      path = path.slice(dir.length)
+    }
     return Promise.resolve(window.electron.path.join(dir, path))
   }
 

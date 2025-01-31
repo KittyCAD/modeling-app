@@ -1,3 +1,4 @@
+@settings(defaultLengthUnit = in)
 import one from "input.kcl"
 
 export fn three = () => { return one() + one() + one() }
