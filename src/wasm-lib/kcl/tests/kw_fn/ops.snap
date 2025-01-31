@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed kw_fn.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -32,6 +31,19 @@ snapshot_kind: text
       0
     ],
     "unlabeledArg": {
+      "value": {
+        "type": "Number",
+        "value": 1.0,
+        "__meta": [
+          {
+            "sourceRange": [
+              110,
+              111,
+              0
+            ]
+          }
+        ]
+      },
       "sourceRange": [
         110,
         111,
@@ -40,6 +52,19 @@ snapshot_kind: text
     },
     "labeledArgs": {
       "delta": {
+        "value": {
+          "type": "Number",
+          "value": 2.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                121,
+                122,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           121,
           122,

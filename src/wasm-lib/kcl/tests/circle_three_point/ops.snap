@@ -1,13 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
-assertion_line: 108
 description: Operations executed circle_three_point.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                26,
+                30,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           26,
           30,
@@ -27,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                117,
+                119,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           117,
           119,
@@ -34,6 +58,101 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    37,
+                    98,
+                    0
+                  ]
+                },
+                "ccw": true,
+                "center": [
+                  24.749999999999996,
+                  19.749999999999996
+                ],
+                "from": [
+                  30.0059,
+                  19.75
+                ],
+                "radius": 5.255949010407163,
+                "tag": null,
+                "to": [
+                  30.0059,
+                  19.75
+                ],
+                "type": "Circle"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XY",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "units": {
+                "type": "Mm"
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                30.00594901040716,
+                19.749999999999996
+              ],
+              "to": [
+                30.00594901040716,
+                19.749999999999996
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  37,
+                  98,
+                  0
+                ]
+              }
+            },
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  37,
+                  98,
+                  0
+                ]
+              }
+            ]
+          }
+        },
         "sourceRange": [
           121,
           130,

@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed neg_xz_plane.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "-XZ",
+          "__meta": [
+            {
+              "sourceRange": [
+                24,
+                29,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           24,
           29,
@@ -26,6 +38,26 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 12.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                141,
+                142,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                145,
+                146,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           141,
           146,
@@ -33,6 +65,135 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    67,
+                    88,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  100.0,
+                  100.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    94,
+                    113,
+                    0
+                  ]
+                },
+                "from": [
+                  100.0,
+                  100.0
+                ],
+                "tag": null,
+                "to": [
+                  100.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    119,
+                    127,
+                    0
+                  ]
+                },
+                "from": [
+                  100.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XZ",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": -1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "units": {
+                "type": "Mm"
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  36,
+                  61,
+                  0
+                ]
+              }
+            },
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  36,
+                  61,
+                  0
+                ]
+              }
+            ]
+          }
+        },
         "sourceRange": [
           148,
           149,

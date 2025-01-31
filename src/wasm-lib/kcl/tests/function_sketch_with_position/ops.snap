@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed function_sketch_with_position.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -23,6 +22,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                45,
+                49,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           45,
           49,
@@ -42,6 +54,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 3.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                225,
+                226,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           180,
           181,
@@ -49,6 +74,155 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    86,
+                    101,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  6.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    109,
+                    124,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  6.0
+                ],
+                "tag": null,
+                "to": [
+                  10.0,
+                  6.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    132,
+                    148,
+                    0
+                  ]
+                },
+                "from": [
+                  10.0,
+                  6.0
+                ],
+                "tag": null,
+                "to": [
+                  10.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    156,
+                    164,
+                    0
+                  ]
+                },
+                "from": [
+                  10.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XY",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "units": {
+                "type": "Mm"
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  58,
+                  78,
+                  0
+                ]
+              }
+            },
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  58,
+                  78,
+                  0
+                ]
+              }
+            ]
+          }
+        },
         "sourceRange": [
           183,
           184,

@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_in_object.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -23,6 +22,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                35,
+                39,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           35,
           39,
@@ -45,6 +57,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": -10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                415,
+                418,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           415,
           418,
@@ -52,6 +77,155 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    81,
+                    96,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  1.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    104,
+                    119,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  1.0
+                ],
+                "tag": null,
+                "to": [
+                  1.0,
+                  1.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    127,
+                    143,
+                    0
+                  ]
+                },
+                "from": [
+                  1.0,
+                  1.0
+                ],
+                "tag": null,
+                "to": [
+                  1.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    151,
+                    159,
+                    0
+                  ]
+                },
+                "from": [
+                  1.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XY",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "units": {
+                "type": "Mm"
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  48,
+                  73,
+                  0
+                ]
+              }
+            },
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  48,
+                  73,
+                  0
+                ]
+              }
+            ]
+          }
+        },
         "sourceRange": [
           420,
           421,
@@ -87,6 +261,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                231,
+                235,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           231,
           235,
@@ -109,6 +296,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                467,
+                469,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           467,
           469,
@@ -116,6 +316,155 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    285,
+                    300,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  1.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    312,
+                    327,
+                    0
+                  ]
+                },
+                "from": [
+                  0.0,
+                  1.0
+                ],
+                "tag": null,
+                "to": [
+                  1.0,
+                  1.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    339,
+                    355,
+                    0
+                  ]
+                },
+                "from": [
+                  1.0,
+                  1.0
+                ],
+                "tag": null,
+                "to": [
+                  1.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    367,
+                    375,
+                    0
+                  ]
+                },
+                "from": [
+                  1.0,
+                  0.0
+                ],
+                "tag": null,
+                "to": [
+                  0.0,
+                  0.0
+                ],
+                "type": "ToPoint"
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "value": "XY",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "units": {
+                "type": "Mm"
+              },
+              "__meta": []
+            },
+            "start": {
+              "from": [
+                0.0,
+                0.0
+              ],
+              "to": [
+                0.0,
+                0.0
+              ],
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  248,
+                  273,
+                  0
+                ]
+              }
+            },
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  248,
+                  273,
+                  0
+                ]
+              }
+            ]
+          }
+        },
         "sourceRange": [
           471,
           472,

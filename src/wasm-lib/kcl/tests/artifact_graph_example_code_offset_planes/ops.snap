@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed artifact_graph_example_code_offset_planes.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "offset": {
+        "value": {
+          "type": "Number",
+          "value": 20.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                35,
+                37,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           35,
           37,
@@ -14,6 +26,19 @@ snapshot_kind: text
         ]
       },
       "std_plane": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                29,
+                33,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           29,
           33,
@@ -33,6 +58,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "offset": {
+        "value": {
+          "type": "Number",
+          "value": -50.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                74,
+                77,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           74,
           77,
@@ -40,6 +78,19 @@ snapshot_kind: text
         ]
       },
       "std_plane": {
+        "value": {
+          "type": "String",
+          "value": "XZ",
+          "__meta": [
+            {
+              "sourceRange": [
+                68,
+                72,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           68,
           72,
@@ -59,6 +110,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "offset": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                114,
+                116,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           114,
           116,
@@ -66,6 +130,19 @@ snapshot_kind: text
         ]
       },
       "std_plane": {
+        "value": {
+          "type": "String",
+          "value": "YZ",
+          "__meta": [
+            {
+              "sourceRange": [
+                108,
+                112,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           108,
           112,
@@ -85,6 +162,37 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Plane",
+          "value": {
+            "id": "[uuid]",
+            "value": "Custom",
+            "origin": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 20.0
+            },
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": []
+          }
+        },
         "sourceRange": [
           145,
           159,
