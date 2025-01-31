@@ -9,6 +9,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const [first, setFirstState] = useState(true)
   const navigation = useNavigation()
   const location = useLocation()
+
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
     // it sends an idle event first.

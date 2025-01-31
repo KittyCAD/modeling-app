@@ -1,16 +1,16 @@
 ---
 source: kcl/src/simulation_tests.rs
-description: Result of parsing import_cycle1.kcl
+description: Result of parsing import_function_not_sketch.kcl
 snapshot_kind: text
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 69,
+        "end": 68,
         "path": {
           "type": "Kcl",
-          "filename": "import_cycle2.kcl"
+          "filename": "my_functions.kcl"
         },
         "selector": {
           "type": "List",
@@ -35,11 +35,11 @@ snapshot_kind: text
       },
       {
         "declaration": {
-          "end": 109,
+          "end": 108,
           "id": {
-            "end": 84,
+            "end": 83,
             "name": "one",
-            "start": 81,
+            "start": 80,
             "type": "Identifier"
           },
           "init": {
@@ -47,25 +47,25 @@ snapshot_kind: text
               "body": [
                 {
                   "argument": {
-                    "end": 107,
+                    "end": 106,
                     "left": {
                       "arguments": [],
                       "callee": {
-                        "end": 101,
+                        "end": 100,
                         "name": "two",
-                        "start": 98,
+                        "start": 97,
                         "type": "Identifier"
                       },
-                      "end": 103,
-                      "start": 98,
+                      "end": 102,
+                      "start": 97,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
                     "operator": "-",
                     "right": {
-                      "end": 107,
+                      "end": 106,
                       "raw": "1",
-                      "start": 106,
+                      "start": 105,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -73,43 +73,43 @@ snapshot_kind: text
                         "suffix": "None"
                       }
                     },
-                    "start": 98,
+                    "start": 97,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 107,
-                  "start": 91,
+                  "end": 106,
+                  "start": 90,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 109,
-              "start": 87
+              "end": 108,
+              "start": 86
             },
-            "end": 109,
+            "end": 108,
             "params": [],
-            "start": 84,
+            "start": 83,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 81,
+          "start": 80,
           "type": "VariableDeclarator"
         },
-        "end": 109,
+        "end": 108,
         "kind": "fn",
-        "start": 71,
+        "start": 70,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       }
     ],
-    "end": 110,
+    "end": 109,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 71,
-            "start": 69,
+            "end": 70,
+            "start": 68,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
