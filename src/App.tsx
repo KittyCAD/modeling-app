@@ -29,6 +29,7 @@ import { writeProjectThumbnailFile } from 'lib/desktop'
 import { useRouteLoaderData } from 'react-router-dom'
 import { useEngineCommands } from 'components/EngineCommands'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -70,8 +71,8 @@ export function App() {
 
   useHotKeyListener()
 
-  const { auth, settings } = useSettingsAuthContext()
-  const token = auth?.context?.token
+  const { settings } = useSettingsAuthContext()
+  const token = useToken()
 
   const coreDumpManager = useMemo(
     () => new CoreDumpManager(engineCommandManager, codeManager, token),

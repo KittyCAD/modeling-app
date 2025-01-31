@@ -20,6 +20,7 @@ import { useSelector } from '@xstate/react'
 import { copyFileShareLink } from 'lib/links'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { DEV } from 'env'
+import { useToken } from 'machines/appMachine'
 
 const ProjectSidebarMenu = ({
   project,
@@ -103,7 +104,8 @@ function ProjectMenuPopover({
   const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
-  const { settings, auth } = useSettingsAuthContext()
+  const { settings } = useSettingsAuthContext()
+  const token = useToken()
   const machineManager = useContext(MachineManagerContext)
   const commands = useSelector(commandBarActor, commandsSelector)
 
@@ -194,7 +196,7 @@ function ProjectMenuPopover({
           disabled: !DEV,
           onClick: async () => {
             await copyFileShareLink({
-              token: auth?.context.token || '',
+              token: token ?? '',
               code: codeManager.code,
               name: project?.name || '',
               units: settings.context.modeling.defaultUnit.current,
