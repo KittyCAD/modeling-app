@@ -2,6 +2,7 @@ import {
   init,
   parse_wasm,
   recast_wasm,
+  format_number,
   execute,
   kcl_lint,
   modify_ast_for_sketch_wasm,
@@ -54,6 +55,7 @@ import { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
 import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifact'
 import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -90,6 +92,7 @@ export type { Literal } from '../wasm-lib/kcl/bindings/Literal'
 export type { LiteralValue } from '../wasm-lib/kcl/bindings/LiteralValue'
 export type { ArrayExpression } from '../wasm-lib/kcl/bindings/ArrayExpression'
 export type { SourceRange } from 'wasm-lib/kcl/bindings/SourceRange'
+export type { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
 
 export type SyntaxType =
   | 'Program'
@@ -636,6 +639,13 @@ export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
 
 export const recast = (ast: Program): string | Error => {
   return recast_wasm(JSON.stringify(ast))
+}
+
+/**
+ * Format a number with suffix as KCL.
+ */
+export function formatNumber(value: number, suffix: NumericSuffix): string {
+  return format_number(value, JSON.stringify(suffix))
 }
 
 export const makeDefaultPlanes = async (
