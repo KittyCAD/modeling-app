@@ -37,7 +37,6 @@ import { KclContextProvider } from 'lang/KclProvider'
 import { ASK_TO_OPEN_QUERY_PARAM, BROWSER_PROJECT_NAME } from 'lib/constants'
 import { CoreDumpManager } from 'lib/coredump'
 import { codeManager, engineCommandManager } from 'lib/singletons'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import useHotkeyWrapper from 'lib/hotkeyWrapper'
 import toast from 'react-hot-toast'
 import { coreDump } from 'lang/wasm'
@@ -47,6 +46,7 @@ import { reportRejection } from 'lib/trap'
 import { RouteProvider } from 'components/RouteProvider'
 import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
 import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
+import { useToken } from 'machines/appMachine'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -203,8 +203,7 @@ export const Router = () => {
 }
 
 function CoreDump() {
-  const { auth } = useSettingsAuthContext()
-  const token = auth?.context?.token
+  const token = useToken()
   const coreDumpManager = useMemo(
     () => new CoreDumpManager(engineCommandManager, codeManager, token),
     []
