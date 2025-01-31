@@ -1183,7 +1183,7 @@ extrude001 = extrude(-12, sketch001)
       currentArgKey: 'radius',
       currentArgValue: '5',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Radius: '',
       },
       stage: 'arguments',
@@ -1192,7 +1192,7 @@ extrude001 = extrude(-12, sketch001)
     await cmdBar.expectState({
       commandName: 'Fillet',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Radius: '5',
       },
       stage: 'review',
@@ -1398,7 +1398,7 @@ extrude001 = extrude(-12, sketch001)
       currentArgKey: 'length',
       currentArgValue: '5',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Length: '',
       },
       stage: 'arguments',
@@ -1407,7 +1407,7 @@ extrude001 = extrude(-12, sketch001)
     await cmdBar.expectState({
       commandName: 'Chamfer',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Length: '5',
       },
       stage: 'review',
