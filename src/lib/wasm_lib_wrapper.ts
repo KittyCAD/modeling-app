@@ -26,6 +26,7 @@ import {
   default_project_settings as DefaultProjectSettings,
   base64_decode as Base64Decode,
   clear_scene_and_bust_cache as ClearSceneAndBustCache,
+  change_kcl_settings as ChangeKclSettings,
 } from '../wasm-lib/pkg/wasm_lib'
 
 type ModuleType = typeof import('../wasm-lib/pkg/wasm_lib')
@@ -109,4 +110,7 @@ export const clear_scene_and_bust_cache: typeof ClearSceneAndBustCache = (
   ...args
 ) => {
   return getModule().clear_scene_and_bust_cache(...args)
+}
+export const change_kcl_settings: typeof ChangeKclSettings = (...args) => {
+  return getModule().change_kcl_settings(...args)
 }

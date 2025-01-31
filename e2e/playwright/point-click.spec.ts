@@ -1078,7 +1078,7 @@ sketch002 = startSketchOn('XZ')
     await page.waitForTimeout(500)
     await cmdBar.progressCmdBar()
     await expect(
-      page.getByText('Unable to sweep with the provided selection')
+      page.getByText('Unable to sweep with the current selection. Reason:')
     ).toBeVisible()
   })
 })
@@ -1183,7 +1183,7 @@ extrude001 = extrude(-12, sketch001)
       currentArgKey: 'radius',
       currentArgValue: '5',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Radius: '',
       },
       stage: 'arguments',
@@ -1192,7 +1192,7 @@ extrude001 = extrude(-12, sketch001)
     await cmdBar.expectState({
       commandName: 'Fillet',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Radius: '5',
       },
       stage: 'review',
@@ -1398,7 +1398,7 @@ extrude001 = extrude(-12, sketch001)
       currentArgKey: 'length',
       currentArgValue: '5',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Length: '',
       },
       stage: 'arguments',
@@ -1407,7 +1407,7 @@ extrude001 = extrude(-12, sketch001)
     await cmdBar.expectState({
       commandName: 'Chamfer',
       headerArguments: {
-        Selection: '1 face',
+        Selection: '1 segment',
         Length: '5',
       },
       stage: 'review',
@@ -1846,7 +1846,7 @@ sweep001 = sweep({ path = sketch002 }, sketch001)
     await page.waitForTimeout(500)
     await cmdBar.progressCmdBar()
     await expect(
-      page.getByText('Unable to shell with the provided selection')
+      page.getByText('Unable to shell with the current selection. Reason:')
     ).toBeVisible()
     await page.waitForTimeout(1000)
   })
