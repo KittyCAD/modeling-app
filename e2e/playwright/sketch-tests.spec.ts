@@ -99,6 +99,7 @@ test.describe('Sketch tests', () => {
   test('Can delete most of a sketch and the line tool will still work', async ({
     page,
     homePage,
+    scene,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -112,12 +113,13 @@ test.describe('Sketch tests', () => {
     })
 
     await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
 
     await expect(async () => {
       await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
-      ).toBeEnabled({ timeout: 1000 })
+      ).toBeEnabled({ timeout: 2000 })
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
     }).toPass({ timeout: 40_000, intervals: [1_000] })
 

@@ -6,6 +6,8 @@ import {
   ArrayExpression,
   BinaryExpression,
   ArtifactGraph,
+  LiteralValue,
+  NumericSuffix,
 } from './wasm'
 import { filterArtifacts } from 'lang/std/artifactGraph'
 import { isOverlap } from 'lib/utils'
@@ -68,4 +70,16 @@ export function isLiteral(e: any): e is Literal {
 
 export function isBinaryExpression(e: any): e is BinaryExpression {
   return e && e.type === 'BinaryExpression'
+}
+
+export function isLiteralValueNumber(
+  e: LiteralValue
+): e is { value: number; suffix: NumericSuffix } {
+  return (
+    typeof e === 'object' &&
+    'value' in e &&
+    typeof e.value === 'number' &&
+    'suffix' in e &&
+    typeof e.suffix === 'string'
+  )
 }
