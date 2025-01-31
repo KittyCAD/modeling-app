@@ -15,6 +15,7 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
+  FILE_EXT,
 } from './constants'
 import { DeepPartial } from './types'
 import { ProjectConfiguration } from 'wasm-lib/kcl/bindings/ProjectConfiguration'
@@ -624,4 +625,16 @@ export const getUser = async (
     console.error(e)
   }
   return Promise.reject(new Error('unreachable'))
+}
+
+export const isPathAKCLFile = (path: string): boolean => {
+  return path.endsWith(FILE_EXT)
+}
+
+export const isPathASettingsFile = (path: string): boolean => {
+  return path.endsWith(SETTINGS_FILE_NAME)
+}
+
+export const isPathAProjectSettingsFile = (path: string): boolean => {
+  return path.endsWith(PROJECT_SETTINGS_FILE_NAME)
 }
