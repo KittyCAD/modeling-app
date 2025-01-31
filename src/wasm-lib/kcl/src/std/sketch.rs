@@ -1118,6 +1118,7 @@ async fn start_sketch_on_face(
 
     Ok(Box::new(Face {
         id: extrude_plane_id,
+        artifact_id: extrude_plane_id.into(),
         value: tag.to_string(),
         // TODO: get this from the extrude plane data.
         x_axis: solid.sketch.on.x_axis(),

@@ -896,6 +896,8 @@ pub struct DefaultPlanes {
 pub struct Face {
     /// The id of the face.
     pub id: uuid::Uuid,
+    /// The artifact ID.
+    pub artifact_id: ArtifactId,
     /// The tag of the face.
     pub value: String,
     /// What should the face’s X axis be?
