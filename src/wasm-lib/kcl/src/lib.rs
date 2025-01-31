@@ -121,8 +121,7 @@ pub mod std_utils {
 }
 
 pub mod pretty {
-    pub use crate::parsing::token::NumericSuffix;
-    pub use crate::unparser::format_number;
+    pub use crate::{parsing::token::NumericSuffix, unparser::format_number};
 }
 
 use serde::{Deserialize, Serialize};
@@ -160,6 +159,11 @@ impl Program {
 
     pub fn compute_digest(&mut self) -> parsing::ast::digest::Digest {
         self.ast.compute_digest()
+    }
+
+    /// Get the meta settings for the kcl file from the annotations.
+    pub fn get_meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
+        self.ast.get_meta_settings()
     }
 
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {

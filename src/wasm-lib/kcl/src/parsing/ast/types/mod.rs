@@ -17,7 +17,6 @@ use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, Range as LspRange, SymbolKind,
 };
 
-use super::digest::Digest;
 pub use crate::parsing::ast::types::{
     condition::{ElseIf, IfExpression},
     literal_value::LiteralValue,
@@ -26,7 +25,8 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{KclValue, Metadata, TagIdentifier},
+    execution::{annotations, KclValue, Metadata, TagIdentifier},
+    parsing::ast::digest::Digest,
     parsing::PIPE_OPERATOR,
     source_range::{ModuleId, SourceRange},
 };
@@ -253,6 +253,24 @@ impl Node<Program> {
             findings.append(&mut self.lint(rule)?);
         }
         Ok(findings)
+    }
+
+    /// Get the annotations for the meta settings from the kcl file.
+    pub fn get_meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
+        let annotations = self
+            .non_code_meta
+            .start_nodes
+            .iter()
+            .filter_map(|n| n.annotation().map(|result| (result, n.as_source_range())));
+        for (annotation, source_range) in annotations {
+            if annotation.annotation_name() == Some(annotations::SETTINGS) {
+                let mut meta_settings = crate::execution::MetaSettings::default();
+                meta_settings.update_from_annotation(annotation, source_range)?;
+                return Ok(Some(meta_settings));
+            }
+        }
+
+        Ok(None)
     }
 }
 
@@ -3755,5 +3773,21 @@ const cylinder = startSketchOn('-XZ')
         };
 
         assert_eq!(l.raw, "false");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_inch() {
+        let some_program_string = r#"@settings(defaultLengthUnit = inch)
+
+startSketchOn('XY')"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.get_meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(
+            meta_settings.default_length_units,
+            crate::execution::kcl_value::UnitLen::Inches
+        );
     }
 }

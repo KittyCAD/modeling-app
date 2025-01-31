@@ -7,7 +7,7 @@ use crate::{
     KclError, SourceRange,
 };
 
-pub(super) const SETTINGS: &str = "settings";
+pub(crate) const SETTINGS: &str = "settings";
 pub(super) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(super) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 

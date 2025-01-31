@@ -581,10 +581,11 @@ impl KclValue {
 }
 
 // TODO called UnitLen so as not to clash with UnitLength in settings)
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
+#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum UnitLen {
+    #[default]
     Mm,
     Cm,
     M,
