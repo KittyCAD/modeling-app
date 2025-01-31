@@ -43,34 +43,8 @@ mindmap
           SweepEdge Adjacent
         Sweep Extrusion
           Wall
-            Path
-              Segment
-                Wall
-                SweepEdge Opposite
-                SweepEdge Adjacent
-                EdgeCut Fillet
-              Segment
-              Sweep Extrusion
-                Wall
-                Cap End
-                SweepEdge Opposite
-                SweepEdge Adjacent
-              Solid2d
           Wall
           Wall
-            Path
-              Segment
-                Wall
-                SweepEdge Opposite
-                SweepEdge Adjacent
-                EdgeCut Fillet
-              Segment
-              Sweep Extrusion
-                Wall
-                Cap End
-                SweepEdge Opposite
-                SweepEdge Adjacent
-              Solid2d
           Cap Start
           Cap End
           SweepEdge Opposite
