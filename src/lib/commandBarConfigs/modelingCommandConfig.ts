@@ -376,8 +376,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
-        warningMessage:
-          'The revolve workflow is new and under tested. Please break it and report issues.',
       },
       axisOrEdge: {
         inputType: 'options',
