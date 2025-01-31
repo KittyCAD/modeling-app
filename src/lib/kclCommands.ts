@@ -9,6 +9,7 @@ import { err, reportRejection } from './trap'
 import { projectConfigurationToSettingsPayload } from './settings/settingsUtils'
 import { copyFileShareLink } from './links'
 import { IndexLoaderData } from './types'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 
 interface OnSubmitProps {
   sampleName: string
@@ -171,6 +172,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
     {
       name: 'share-file-link',
       displayName: 'Share file',
+      hide: IS_NIGHTLY_OR_DEBUG ? undefined : 'desktop',
       description: 'Create a link that contains a copy of the current file.',
       groupId: 'code',
       needsReview: false,
