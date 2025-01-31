@@ -30,6 +30,7 @@ import {
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { markOnce } from 'lib/performance'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -48,7 +49,9 @@ export const FileMachineProvider = ({
 }) => {
   const navigate = useNavigate()
   const { settings } = useSettingsAuthContext()
-  const { project, file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const token = useToken()
+  const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { project, file } = projectData
   const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
     []
   )
@@ -295,40 +298,47 @@ export const FileMachineProvider = ({
 
   const kclCommandMemo = useMemo(
     () =>
-      kclCommands(
-        async (data) => {
-          if (data.method === 'overwrite') {
-            codeManager.updateCodeStateEditor(data.code)
-            await kclManager.executeCode(true)
-            await codeManager.writeToFile()
-          } else if (data.method === 'newFile' && isDesktop()) {
-            send({
-              type: 'Create file',
-              data: {
-                name: data.sampleName,
-                content: data.code,
-                makeDir: false,
-              },
-            })
-          }
-
-          // Either way, we want to overwrite the defaultUnit project setting
-          // with the sample's setting.
-          if (data.sampleUnits) {
-            settings.send({
-              type: 'set.modeling.defaultUnit',
-              data: {
-                level: 'project',
-                value: data.sampleUnits,
-              },
-            })
-          }
+      kclCommands({
+        authToken: token ?? '',
+        projectData,
+        settings: {
+          defaultUnit: settings?.context?.modeling.defaultUnit.current ?? 'mm',
         },
-        kclSamples.map((sample) => ({
-          value: sample.pathFromProjectDirectoryToFirstFile,
-          name: sample.title,
-        }))
-      ).filter(
+        specialPropsForSampleCommand: {
+          onSubmit: async (data) => {
+            if (data.method === 'overwrite') {
+              codeManager.updateCodeStateEditor(data.code)
+              await kclManager.executeCode(true)
+              await codeManager.writeToFile()
+            } else if (data.method === 'newFile' && isDesktop()) {
+              send({
+                type: 'Create file',
+                data: {
+                  name: data.sampleName,
+                  content: data.code,
+                  makeDir: false,
+                },
+              })
+            }
+
+            // Either way, we want to overwrite the defaultUnit project setting
+            // with the sample's setting.
+            if (data.sampleUnits) {
+              settings.send({
+                type: 'set.modeling.defaultUnit',
+                data: {
+                  level: 'project',
+                  value: data.sampleUnits,
+                },
+              })
+            }
+          },
+          providedOptions: kclSamples.map((sample) => ({
+            value: sample.pathFromProjectDirectoryToFirstFile,
+            name: sample.title,
+          })),
+        },
+      }).filter(
         (command) => kclSamples.length || command.name !== 'open-kcl-example'
       ),
     [codeManager, kclManager, send, kclSamples]

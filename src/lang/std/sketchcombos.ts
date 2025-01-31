@@ -22,11 +22,8 @@ import {
   SourceRange,
   LiteralValue,
 } from '../wasm'
-import {
-  getNodeFromPath,
-  getNodeFromPathCurry,
-  getNodePathFromSourceRange,
-} from '../queryAst'
+import { getNodeFromPath, getNodeFromPathCurry } from '../queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   createArrayExpression,
   createBinaryExpression,

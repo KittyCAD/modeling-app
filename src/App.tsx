@@ -22,13 +22,29 @@ import Gizmo from 'components/Gizmo'
 import { CoreDumpManager } from 'lib/coredump'
 import { UnitsMenu } from 'components/UnitsMenu'
 import { CameraProjectionToggle } from 'components/CameraProjectionToggle'
+import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { maybeWriteToDisk } from 'lib/telemetry'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+
+  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
+  useCreateFileLinkQuery((argDefaultValues) => {
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Import file from URL',
+        argDefaultValues,
+      },
+    })
+  })
+
   useRefreshSettings(PATHS.FILE + 'SETTINGS')
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
@@ -45,8 +61,8 @@ export function App() {
 
   useHotKeyListener()
 
-  const { auth, settings } = useSettingsAuthContext()
-  const token = auth?.context?.token
+  const { settings } = useSettingsAuthContext()
+  const token = useToken()
 
   const coreDumpManager = useMemo(
     () => new CoreDumpManager(engineCommandManager, codeManager, token),

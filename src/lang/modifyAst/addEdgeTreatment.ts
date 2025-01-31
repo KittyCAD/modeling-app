@@ -20,10 +20,10 @@ import {
 } from '../modifyAst'
 import {
   getNodeFromPath,
-  getNodePathFromSourceRange,
   hasSketchPipeBeenExtruded,
   traverse,
 } from '../queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
   getTagFromCallExpression,

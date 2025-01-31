@@ -75,7 +75,7 @@ pub mod std;
 pub mod test_server;
 mod thread;
 mod unparser;
-mod walk;
+pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
@@ -118,6 +118,11 @@ pub mod native_engine {
 
 pub mod std_utils {
     pub use crate::std::utils::{get_tangential_arc_to_info, is_points_ccw_wasm, TangentialArcInfoInput};
+}
+
+pub mod pretty {
+    pub use crate::parsing::token::NumericSuffix;
+    pub use crate::unparser::format_number;
 }
 
 use serde::{Deserialize, Serialize};

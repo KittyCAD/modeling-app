@@ -68,11 +68,8 @@ import {
   startSketchOnDefault,
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
-import {
-  artifactIsPlaneWithPaths,
-  getNodePathFromSourceRange,
-  isSingleCursorInPipe,
-} from 'lang/queryAst'
+import { artifactIsPlaneWithPaths, isSingleCursorInPipe } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
@@ -92,6 +89,7 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
 import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -113,7 +111,6 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const {
-    auth,
     settings: {
       context: {
         app: { theme, enableSSAO, allowOrbitInSketchMode },
@@ -130,7 +127,7 @@ export const ModelingMachineProvider = ({
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
-  const token = auth?.context?.token
+  const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
