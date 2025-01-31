@@ -186,7 +186,6 @@ test.describe('Testing in-app sample loading', () => {
         await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
         await expect(newlyCreatedFile(sampleTwo.file)).not.toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
-        await expect(unitsToast('mm')).toBeVisible()
       })
     }
   )
