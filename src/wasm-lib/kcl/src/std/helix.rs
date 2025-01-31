@@ -114,6 +114,7 @@ async fn inner_helix(data: HelixData, exec_state: &mut ExecState, args: Args) ->
 
     let helix_result = Box::new(HelixValue {
         value: id,
+        artifact_id: id.into(),
         revolutions: data.revolutions,
         angle_start: data.angle_start,
         ccw: data.ccw,
