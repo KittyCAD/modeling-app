@@ -3883,7 +3883,9 @@ startSketchOn('XY')"#;
             formatted,
             r#"@settings(defaultLengthUnit = mm)
 
-startSketchOn('XY')"#
+
+startSketchOn('XY')
+"#
         );
     }
 }
