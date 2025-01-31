@@ -52,7 +52,7 @@ test.describe('Sketch tests', () => {
   |> hole(screwHole, %)
   |> extrude(length = thickness)
 
-    part002 = startSketchOn('-XZ')
+  part002 = startSketchOn('-XZ')
   ${startProfileAt3}
   |> xLine(width / 4, %)
   |> tangentialArcTo([width / 2, 0], %)
@@ -1408,5 +1408,48 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
         highlightedCode: 'arcTo({end = [4, 2], interior = [1, 2]}, %)',
       })
     })
+  })
+})
+
+// Regression test for https://github.com/KittyCAD/modeling-app/issues/4372
+test.describe('Redirecting to home page and back to the original file should clear sketch DOM elements', () => {
+  test('Can redirect to home page and back to original file and have a cleared DOM', async ({
+    context,
+    page,
+    scene,
+    toolbar,
+    editor,
+    homePage,
+  }) => {
+    // We seed the scene with a single offset plane
+    await context.addInitScript(() => {
+      localStorage.setItem(
+        'persistCode',
+        ` sketch001 = startSketchOn('XZ')
+|> startProfileAt([256.85, 14.41], %)
+|> lineTo([0, 211.07], %)
+`
+      )
+    })
+    await homePage.goToModelingScene()
+    await scene.waitForExecutionDone()
+
+    const [objClick] = scene.makeMouseHelpers(634, 274)
+    await objClick()
+
+    // Enter sketch mode
+    await toolbar.editSketch()
+
+    await expect(page.getByText('323.49')).toBeVisible()
+
+    // Open navigation side bar
+    await page.getByTestId('project-sidebar-toggle').click()
+    const goToHome = page.getByRole('button', {
+      name: 'Go to Home',
+    })
+
+    await goToHome.click()
+    await homePage.openProject('testDefault')
+    await expect(page.getByText('323.49')).not.toBeVisible()
   })
 })
