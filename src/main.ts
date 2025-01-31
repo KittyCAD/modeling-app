@@ -31,15 +31,9 @@ let mainWindow: BrowserWindow | null = null
 // Check the command line arguments for a project path
 const args = parseCLIArgs()
 
-// If it's not set, scream.
 // @ts-ignore: TS1343
 const viteEnv = import.meta.env
-console.log('viteEnv', viteEnv)
 const NODE_ENV = process.env.NODE_ENV || viteEnv.MODE
-if (!process.env.NODE_ENV)
-  console.warn(
-    `*FOX SCREAM* process.env.NODE_ENV is not explicitly set!, defaulting to vite mode ${viteEnv.MODE}`
-  )
 
 // dotenv override when present
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
@@ -55,6 +49,9 @@ process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
 process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
 process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
   viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
+
+// Likely convenient to keep for debugging
+console.log('process.env', process.env)
 
 /// Register our application to handle all "zoo-studio:" protocols.
 if (process.defaultApp) {
