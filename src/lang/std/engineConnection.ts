@@ -1999,7 +1999,7 @@ export class EngineCommandManager extends EventTarget {
       .catch((e) => {
         // TODO: Previously was never caught, we are not rejecting these pendingCommands but this needs to be handled at some point.
         /*noop*/
-        return null
+        return e
       })
   }
   /**

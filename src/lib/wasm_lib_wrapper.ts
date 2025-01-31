@@ -10,6 +10,7 @@
 import {
   parse_wasm as ParseWasm,
   recast_wasm as RecastWasm,
+  format_number as FormatNumber,
   execute as Execute,
   kcl_lint as KclLint,
   modify_ast_for_sketch_wasm as ModifyAstForSketch,
@@ -25,6 +26,7 @@ import {
   default_project_settings as DefaultProjectSettings,
   base64_decode as Base64Decode,
   clear_scene_and_bust_cache as ClearSceneAndBustCache,
+  change_kcl_settings as ChangeKclSettings,
 } from '../wasm-lib/pkg/wasm_lib'
 
 type ModuleType = typeof import('../wasm-lib/pkg/wasm_lib')
@@ -50,6 +52,9 @@ export const parse_wasm: typeof ParseWasm = (...args) => {
 }
 export const recast_wasm: typeof RecastWasm = (...args) => {
   return getModule().recast_wasm(...args)
+}
+export const format_number: typeof FormatNumber = (...args) => {
+  return getModule().format_number(...args)
 }
 export const execute: typeof Execute = (...args) => {
   return getModule().execute(...args)
@@ -105,4 +110,7 @@ export const clear_scene_and_bust_cache: typeof ClearSceneAndBustCache = (
   ...args
 ) => {
   return getModule().clear_scene_and_bust_cache(...args)
+}
+export const change_kcl_settings: typeof ChangeKclSettings = (...args) => {
+  return getModule().change_kcl_settings(...args)
 }

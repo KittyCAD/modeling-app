@@ -84,7 +84,7 @@ pub use engine::{EngineManager, ExecutionKind};
 pub use errors::{CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs};
 pub use execution::{
     cache::{CacheInformation, OldAstState},
-    ExecState, ExecutorContext, ExecutorSettings, Point2d,
+    ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
@@ -118,6 +118,10 @@ pub mod native_engine {
 
 pub mod std_utils {
     pub use crate::std::utils::{get_tangential_arc_to_info, is_points_ccw_wasm, TangentialArcInfoInput};
+}
+
+pub mod pretty {
+    pub use crate::{parsing::token::NumericSuffix, unparser::format_number};
 }
 
 use serde::{Deserialize, Serialize};
@@ -155,6 +159,18 @@ impl Program {
 
     pub fn compute_digest(&mut self) -> parsing::ast::digest::Digest {
         self.ast.compute_digest()
+    }
+
+    /// Get the meta settings for the kcl file from the annotations.
+    pub fn get_meta_settings(&self) -> Result<Option<crate::MetaSettings>, KclError> {
+        self.ast.get_meta_settings()
+    }
+
+    /// Change the meta settings for the kcl file.
+    pub fn change_meta_settings(&mut self, settings: crate::MetaSettings) -> Result<Self, KclError> {
+        Ok(Self {
+            ast: self.ast.change_meta_settings(settings)?,
+        })
     }
 
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
