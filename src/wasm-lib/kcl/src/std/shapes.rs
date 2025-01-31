@@ -328,7 +328,7 @@ async fn inner_polygon(
 
     // Draw all the lines with unique IDs and modified tags
     for vertex in vertices.iter().skip(1) {
-        let from = sketch.current_pen_position()?;
+        let from = sketch.current_pen_position();
         let id = exec_state.next_uuid();
 
         args.batch_modeling_cmd(
@@ -363,7 +363,7 @@ async fn inner_polygon(
     }
 
     // Close the polygon by connecting back to the first vertex with a new ID
-    let from = sketch.current_pen_position()?;
+    let from = sketch.current_pen_position();
     let close_id = exec_state.next_uuid();
 
     args.batch_modeling_cmd(

@@ -96,7 +96,6 @@ pub const NEW_TAG_KW: &str = "tag";
 
 /// Draw a line to a point.
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // let (to, sketch, tag): ([f64; 2], Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
     let sketch = args.get_unlabeled_kw_arg("sketch")?;
     let end = args.get_kw_arg_opt("end")?;
     let end_absolute = args.get_kw_arg_opt("endAbsolute")?;
@@ -201,12 +200,12 @@ async fn straight_line(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
+    let from = sketch.current_pen_position();
     let (point, is_absolute) = match (end_absolute, end) {
         (Some(_), Some(_)) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You cannot give both `end` and `end_absolute` params, you have to choose one or the other"
+                message: "You cannot give both `end` and `endAbsolute` params, you have to choose one or the other"
                     .to_owned(),
             }));
         }
@@ -215,7 +214,7 @@ async fn straight_line(
         (None, None) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You must supply either `end` or `end_absolute` arguments".to_owned(),
+                message: "You must supply either `end` or `endAbsolute` arguments".to_owned(),
             }));
         }
     };
@@ -235,7 +234,7 @@ async fn straight_line(
     let end = if is_absolute {
         point
     } else {
-        let from = sketch.current_pen_position()?;
+        let from = sketch.current_pen_position();
         [from.x + point[0], from.y + point[1]]
     };
 
@@ -261,113 +260,14 @@ async fn straight_line(
     Ok(new_sketch)
 }
 
-/// Draw a line to a point on the x-axis.
-pub async fn x_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
-
-    let new_sketch = inner_x_line_to(to, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(new_sketch),
-    })
-}
-
-/// Draw a line parallel to the X axis, that ends at the given X.
-/// E.g. if the previous line ended at (1, 1),
-/// then xLineTo(4) draws a line from (1, 1) to (4, 1)
-///
-/// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
-///   |> xLineTo(15, %)
-///   |> angledLine({
-///     angle = 80,
-///     length = 15,
-///   }, %)
-///   |> line(end = [8, -10])
-///   |> xLineTo(40, %)
-///   |> angledLine({
-///     angle = 135,
-///     length = 30,
-///   }, %)
-///   |> xLineTo(10, %)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "xLineTo",
-}]
-async fn inner_x_line_to(
-    to: f64,
-    sketch: Sketch,
-    tag: Option<TagNode>,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
-
-    let new_sketch = straight_line(
-        StraightLineParams::absolute([to, from.y], sketch, tag),
-        exec_state,
-        args,
-    )
-    .await?;
-
-    Ok(new_sketch)
-}
-
-/// Draw a line to a point on the y-axis.
-pub async fn y_line_to(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (to, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
-
-    let new_sketch = inner_y_line_to(to, sketch, tag, exec_state, args).await?;
-    Ok(KclValue::Sketch {
-        value: Box::new(new_sketch),
-    })
-}
-
-/// Draw a line parallel to the Y axis, that ends at the given Y.
-/// E.g. if the previous line ended at (1, 1),
-/// then yLineTo(4) draws a line from (1, 1) to (1, 4)
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 50,
-///     length = 45,
-///   }, %)
-///   |> yLineTo(0, %)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "yLineTo",
-}]
-async fn inner_y_line_to(
-    to: f64,
-    sketch: Sketch,
-    tag: Option<TagNode>,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
-
-    let new_sketch = straight_line(
-        StraightLineParams::absolute([from.x, to], sketch, tag),
-        exec_state,
-        args,
-    )
-    .await?;
-    Ok(new_sketch)
-}
-
 /// Draw a line on the x-axis.
 pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
+    let sketch = args.get_unlabeled_kw_arg("sketch")?;
+    let length = args.get_kw_arg_opt("length")?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_x_line(length, sketch, tag, exec_state, args).await?;
+    let new_sketch = inner_x_line(sketch, length, end_absolute, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -397,16 +297,32 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "xLine",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?"},
+        end_absolute = { docs = "Which absolute X value should this line go to? Incompatible with `end`."},
+        length = { docs = "How far away (along the X axis) should this line go? Incompatible with `endAbsolute`.", include_in_snippet = true},
+        tag = { docs = "Create a new tag which refers to this line"},
+    }
 }]
 async fn inner_x_line(
-    length: f64,
     sketch: Sketch,
+    length: Option<f64>,
+    end_absolute: Option<f64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    let end_absolute = end_absolute.map(|x| [x, sketch.current_pen_position().y]);
+    let end = length.map(|x| [x, 0.0]);
     straight_line(
-        StraightLineParams::relative([length, 0.0], sketch, tag),
+        StraightLineParams {
+            sketch,
+            end_absolute,
+            end,
+            tag,
+        },
         exec_state,
         args,
     )
@@ -415,9 +331,12 @@ async fn inner_x_line(
 
 /// Draw a line on the y-axis.
 pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (length, sketch, tag): (f64, Sketch, Option<TagNode>) = args.get_data_and_sketch_and_tag()?;
+    let sketch = args.get_unlabeled_kw_arg("sketch")?;
+    let length = args.get_kw_arg_opt("length")?;
+    let end_absolute = args.get_kw_arg_opt("endAbsolute")?;
+    let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
-    let new_sketch = inner_y_line(length, sketch, tag, exec_state, args).await?;
+    let new_sketch = inner_y_line(sketch, length, end_absolute, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -444,14 +363,22 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     name = "yLine",
 }]
 async fn inner_y_line(
-    length: f64,
     sketch: Sketch,
+    length: Option<f64>,
+    end_absolute: Option<f64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
+    let end_absolute = end_absolute.map(|y| [sketch.current_pen_position().x, y]);
+    let end = length.map(|y| [0.0, y]);
     straight_line(
-        StraightLineParams::relative([0.0, length], sketch, tag),
+        StraightLineParams {
+            sketch,
+            end_absolute,
+            end,
+            tag,
+        },
         exec_state,
         args,
     )
@@ -511,7 +438,7 @@ async fn inner_angled_line(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
+    let from = sketch.current_pen_position();
     let (angle, length) = match data {
         AngledLineData::AngleAndLengthNamed { angle, length } => (angle, length),
         AngledLineData::AngleAndLengthPair(pair) => (pair[0], pair[1]),
@@ -665,7 +592,7 @@ async fn inner_angled_line_to_x(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
+    let from = sketch.current_pen_position();
     let AngledLineToData { angle, to: x_to } = data;
 
     if angle.abs() == 270.0 {
@@ -791,7 +718,7 @@ async fn inner_angled_line_to_y(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
+    let from = sketch.current_pen_position();
     let AngledLineToData { angle, to: y_to } = data;
 
     if angle.abs() == 0.0 {
@@ -882,7 +809,7 @@ async fn inner_angled_line_that_intersects(
         })
     })?;
 
-    let from = sketch.current_pen_position()?;
+    let from = sketch.current_pen_position();
     let to = intersection_with_parallel_line(
         &[path.get_from().into(), path.get_to().into()],
         data.offset.unwrap_or_default(),
@@ -1504,7 +1431,7 @@ pub(crate) async fn inner_close(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
+    let from = sketch.current_pen_position();
     let to: Point2d = sketch.start.from.into();
 
     let id = exec_state.next_uuid();
@@ -1626,7 +1553,7 @@ pub(crate) async fn inner_arc(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from: Point2d = sketch.current_pen_position()?;
+    let from: Point2d = sketch.current_pen_position();
 
     let (center, angle_start, angle_end, radius, end) = match &data {
         ArcData::AnglesAndRadius {
@@ -1731,7 +1658,7 @@ pub(crate) async fn inner_arc_to(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from: Point2d = sketch.current_pen_position()?;
+    let from: Point2d = sketch.current_pen_position();
     let id = exec_state.next_uuid();
 
     // The start point is taken from the path you are extending.
@@ -1873,7 +1800,7 @@ async fn inner_tangential_arc(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from: Point2d = sketch.current_pen_position()?;
+    let from: Point2d = sketch.current_pen_position();
     // next set of lines is some undocumented voodoo from get_tangential_arc_to_info
     let tangent_info = sketch.get_tangential_info_from_paths(); //this function desperately needs some documentation
     let tan_previous_point = tangent_info.tan_previous_point(from.into());
@@ -2003,7 +1930,7 @@ async fn inner_tangential_arc_to(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from: Point2d = sketch.current_pen_position()?;
+    let from: Point2d = sketch.current_pen_position();
     let tangent_info = sketch.get_tangential_info_from_paths();
     let tan_previous_point = tangent_info.tan_previous_point(from.into());
     let [to_x, to_y] = to;
@@ -2069,7 +1996,7 @@ async fn inner_tangential_arc_to_relative(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from: Point2d = sketch.current_pen_position()?;
+    let from: Point2d = sketch.current_pen_position();
     let to = [from.x + delta[0], from.y + delta[1]];
     let tangent_info = sketch.get_tangential_info_from_paths();
     let tan_previous_point = tangent_info.tan_previous_point(from.into());
@@ -2176,7 +2103,7 @@ async fn inner_bezier_curve(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let from = sketch.current_pen_position()?;
+    let from = sketch.current_pen_position();
 
     let relative = true;
     let delta = data.to;

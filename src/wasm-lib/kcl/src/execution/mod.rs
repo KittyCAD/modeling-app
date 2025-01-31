@@ -1098,13 +1098,13 @@ impl Sketch {
     /// The "pen" is an imaginary pen drawing the path.
     /// This gets the current point the pen is hovering over, i.e. the point
     /// where the last path segment ends, and the next path segment will begin.
-    pub(crate) fn current_pen_position(&self) -> Result<Point2d, KclError> {
+    pub(crate) fn current_pen_position(&self) -> Point2d {
         let Some(path) = self.latest_path() else {
-            return Ok(self.start.to.into());
+            return self.start.to.into();
         };
 
         let base = path.get_base();
-        Ok(base.to.into())
+        base.to.into()
     }
 
     pub(crate) fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
