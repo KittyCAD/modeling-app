@@ -114,7 +114,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
                 code,
                 method: data.method,
                 sampleUnits:
-                  projectSettingsPayload.modeling?.defaultUnit || 'mm',
+                  projectSettingsPayload.modeling?.defaultUnit,
               }
             }
           )
