@@ -2623,13 +2623,27 @@ fn typecheck(spec_arg: &crate::docs::StdLibFnArg, arg: &&Expr) -> PResult<()> {
                     .map_err(|e| ErrMode::Cut(ContextError::from(e)))?;
             }
             e => {
+                let actual_type = e.human_friendly_type();
+                let suggestion = match e {
+                    Expr::Literal(lit) => {
+                        if let LiteralValue::String(s) = &lit.inner.value {
+                            &format!(". Instead of `'{s}'` try `${s}`")
+                        } else {
+                            ""
+                        }
+                    }
+                    Expr::Identifier(id) => &format!(". Instead of `{}` try `${}`", id.name, id.name),
+                    _ => "",
+                };
+                let article = if actual_type.starts_with(['a', 'e', 'i', 'o', 'u']) {
+                    "an"
+                } else {
+                    "a"
+                };
                 return Err(ErrMode::Cut(
                     CompilationError::fatal(
                         SourceRange::from(*arg),
-                        format!(
-                            "Expected a tag declarator like `$name`, found {}",
-                            e.human_friendly_type()
-                        ),
+                        format!("Expected a tag declarator like `$name`, found {article} {actual_type}{suggestion}",),
                     )
                     .into(),
                 ));
