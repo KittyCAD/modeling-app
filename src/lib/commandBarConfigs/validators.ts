@@ -92,6 +92,7 @@ export const revolveAxisValidator = async ({
         angle: angleInDegrees,
         edge_id: edgeSelection,
         target: sketchSelection,
+        // Gotcha: Playwright will fail with larger tolerances, need to use a smaller one.
         tolerance: 1e-7,
       },
     })
