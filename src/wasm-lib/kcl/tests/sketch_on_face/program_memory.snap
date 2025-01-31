@@ -91,6 +91,7 @@ description: Program memory after executing sketch_on_face.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -235,6 +236,7 @@ description: Program memory after executing sketch_on_face.kcl
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -341,6 +343,7 @@ description: Program memory after executing sketch_on_face.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -376,6 +379,7 @@ description: Program memory after executing sketch_on_face.kcl
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -529,6 +533,7 @@ description: Program memory after executing sketch_on_face.kcl
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -673,6 +678,7 @@ description: Program memory after executing sketch_on_face.kcl
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -779,6 +785,7 @@ description: Program memory after executing sketch_on_face.kcl
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -840,6 +847,7 @@ description: Program memory after executing sketch_on_face.kcl
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

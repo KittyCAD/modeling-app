@@ -353,6 +353,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -487,6 +488,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XY",
                 "origin": {
                   "x": 0.0,
@@ -532,6 +534,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -567,6 +570,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -720,6 +724,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -854,6 +859,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XY",
                       "origin": {
                         "x": 0.0,
@@ -899,6 +905,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -960,6 +967,7 @@ description: Program memory after executing sketch_on_face_end_negative_extrude.
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },

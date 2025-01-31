@@ -31,6 +31,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -164,6 +165,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "on": {
                 "type": "plane",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "XZ",
                 "origin": {
                   "x": 0.0,
@@ -270,6 +272,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -305,6 +308,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -447,6 +451,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -580,6 +585,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "on": {
                       "type": "plane",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "XZ",
                       "origin": {
                         "x": 0.0,
@@ -686,6 +692,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -747,6 +754,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -782,6 +790,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -934,6 +943,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -1076,6 +1086,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "solid": {
                         "type": "Solid",
                         "id": "[uuid]",
+                        "artifactId": "[uuid]",
                         "value": [
                           {
                             "faceId": "[uuid]",
@@ -1209,6 +1220,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "on": {
                             "type": "plane",
                             "id": "[uuid]",
+                            "artifactId": "[uuid]",
                             "value": "XZ",
                             "origin": {
                               "x": 0.0,
@@ -1315,6 +1327,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               ]
                             }
                           },
+                          "artifactId": "[uuid]",
                           "units": {
                             "type": "Mm"
                           },
@@ -1376,6 +1389,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -1498,6 +1512,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -1533,6 +1548,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
           "value": {
             "type": "Solid",
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": [
               {
                 "faceId": "[uuid]",
@@ -1675,6 +1691,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
+                  "artifactId": "[uuid]",
                   "value": [
                     {
                       "faceId": "[uuid]",
@@ -1827,6 +1844,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       "solid": {
                         "type": "Solid",
                         "id": "[uuid]",
+                        "artifactId": "[uuid]",
                         "value": [
                           {
                             "faceId": "[uuid]",
@@ -1969,6 +1987,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             "solid": {
                               "type": "Solid",
                               "id": "[uuid]",
+                              "artifactId": "[uuid]",
                               "value": [
                                 {
                                   "faceId": "[uuid]",
@@ -2102,6 +2121,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                 "on": {
                                   "type": "plane",
                                   "id": "[uuid]",
+                                  "artifactId": "[uuid]",
                                   "value": "XZ",
                                   "origin": {
                                     "x": 0.0,
@@ -2208,6 +2228,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                     ]
                                   }
                                 },
+                                "artifactId": "[uuid]",
                                 "units": {
                                   "type": "Mm"
                                 },
@@ -2269,6 +2290,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               ]
                             }
                           },
+                          "artifactId": "[uuid]",
                           "units": {
                             "type": "Mm"
                           },
@@ -2391,6 +2413,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         ]
                       }
                     },
+                    "artifactId": "[uuid]",
                     "units": {
                       "type": "Mm"
                     },
@@ -2452,6 +2475,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   ]
                 }
               },
+              "artifactId": "[uuid]",
               "units": {
                 "type": "Mm"
               },
@@ -2697,6 +2721,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "XZ",
               "origin": {
                 "x": 0.0,
@@ -2803,6 +2828,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -2926,6 +2952,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -3059,6 +3086,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "on": {
                     "type": "plane",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "XZ",
                     "origin": {
                       "x": 0.0,
@@ -3165,6 +3193,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -3226,6 +3255,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -3354,6 +3384,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -3496,6 +3527,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "solid": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
@@ -3629,6 +3661,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "on": {
                           "type": "plane",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "XZ",
                           "origin": {
                             "x": 0.0,
@@ -3735,6 +3768,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -3796,6 +3830,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -3918,6 +3953,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
@@ -4041,6 +4077,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": [
                   {
                     "faceId": "[uuid]",
@@ -4193,6 +4230,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "solid": {
                       "type": "Solid",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": [
                         {
                           "faceId": "[uuid]",
@@ -4335,6 +4373,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "solid": {
                             "type": "Solid",
                             "id": "[uuid]",
+                            "artifactId": "[uuid]",
                             "value": [
                               {
                                 "faceId": "[uuid]",
@@ -4468,6 +4507,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                               "on": {
                                 "type": "plane",
                                 "id": "[uuid]",
+                                "artifactId": "[uuid]",
                                 "value": "XZ",
                                 "origin": {
                                   "x": 0.0,
@@ -4574,6 +4614,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                                   ]
                                 }
                               },
+                              "artifactId": "[uuid]",
                               "units": {
                                 "type": "Mm"
                               },
@@ -4635,6 +4676,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                             ]
                           }
                         },
+                        "artifactId": "[uuid]",
                         "units": {
                           "type": "Mm"
                         },
@@ -4757,6 +4799,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                       ]
                     }
                   },
+                  "artifactId": "[uuid]",
                   "units": {
                     "type": "Mm"
                   },
@@ -4818,6 +4861,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },

@@ -30,6 +30,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 0.0,
@@ -61,6 +62,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 0.0,
@@ -92,6 +94,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
           "type": "Plane",
           "value": {
             "id": "[uuid]",
+            "artifactId": "[uuid]",
             "value": "Custom",
             "origin": {
               "x": 10.0,
@@ -149,6 +152,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
             "on": {
               "type": "plane",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "Custom",
               "origin": {
                 "x": 0.0,
@@ -194,6 +198,7 @@ description: Program memory after executing artifact_graph_example_code_offset_p
                 ]
               }
             },
+            "artifactId": "[uuid]",
             "units": {
               "type": "Mm"
             },
