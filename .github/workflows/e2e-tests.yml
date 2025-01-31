@@ -125,7 +125,7 @@ jobs:
       run: yarn build:wasm
     - name: build electron
       shell: bash
-      run: yarn tronb:package:dev
+      run: yarn tronb:vite:dev
     - name: Run ubuntu/chrome snapshots
       if: ${{ matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 }}
       shell: bash
