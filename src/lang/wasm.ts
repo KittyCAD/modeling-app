@@ -18,8 +18,8 @@ import {
   default_project_settings,
   base64_decode,
   clear_scene_and_bust_cache,
-    change_kcl_settings,
-  reloadModule
+  change_kcl_settings,
+  reloadModule,
 } from 'lib/wasm_lib_wrapper'
 
 import { KCLError } from './errors'
@@ -851,10 +851,10 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
 /// Returns the new kcl string with the updated settings.
 export function changeKclSettings(
   kcl: string,
-  settings:MetaSettings
+  settings: MetaSettings
 ): string | Error {
   try {
-  return change_kcl_settings(kcl, JSON.stringify(settings))
+    return change_kcl_settings(kcl, JSON.stringify(settings))
   } catch (e) {
     console.error('Caught error changing kcl settings: ' + e)
     return new Error('Caught error changing kcl settings: ' + e)
