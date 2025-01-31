@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed big_number_angle_to_match_length_y.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                24,
+                28,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           24,
           28,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                200,
+                202,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           200,
           202,

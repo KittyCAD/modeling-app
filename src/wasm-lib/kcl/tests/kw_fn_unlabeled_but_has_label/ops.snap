@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed kw_fn_unlabeled_but_has_label.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -15,6 +14,19 @@ snapshot_kind: text
     "unlabeledArg": null,
     "labeledArgs": {
       "x": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                45,
+                46,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           45,
           46,

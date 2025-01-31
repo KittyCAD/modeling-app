@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed riddle_small.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -45,6 +44,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ",
+          "__meta": [
+            {
+              "sourceRange": [
+                155,
+                159,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           155,
           159,
@@ -64,6 +76,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                304,
+                305,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           304,
           305,

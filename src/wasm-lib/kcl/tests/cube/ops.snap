@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed cube.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -15,6 +14,46 @@ snapshot_kind: text
     "unlabeledArg": null,
     "labeledArgs": {
       "center": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Number",
+              "value": 0.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    418,
+                    419,
+                    0
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Number",
+              "value": 0.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    421,
+                    422,
+                    0
+                  ]
+                }
+              ]
+            }
+          ],
+          "__meta": [
+            {
+              "sourceRange": [
+                417,
+                423,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           417,
           423,
@@ -22,6 +61,19 @@ snapshot_kind: text
         ]
       },
       "sideLength": {
+        "value": {
+          "type": "Number",
+          "value": 40.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                404,
+                406,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           404,
           406,
@@ -38,6 +90,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 40.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                404,
+                406,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           362,
           372,

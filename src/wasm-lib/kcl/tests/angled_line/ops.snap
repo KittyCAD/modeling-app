@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed angled_line.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                24,
+                28,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           24,
           28,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                287,
+                288,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           287,
           288,

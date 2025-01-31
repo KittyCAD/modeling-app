@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed function_sketch_with_position.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -23,6 +22,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                45,
+                49,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           45,
           49,
@@ -42,6 +54,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 3.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                240,
+                241,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           198,
           199,

@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed mike_stress_test.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                24,
+                28,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           24,
           28,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                77119,
+                77120,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           77119,
           77120,

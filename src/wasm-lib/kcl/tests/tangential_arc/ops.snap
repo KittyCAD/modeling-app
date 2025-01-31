@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed tangential_arc.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                158,
+                160,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           158,
           160,

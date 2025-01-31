@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed neg_xz_plane.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "-XZ",
+          "__meta": [
+            {
+              "sourceRange": [
+                24,
+                29,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           24,
           29,
@@ -26,6 +38,26 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 12.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                168,
+                169,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                172,
+                173,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           168,
           173,

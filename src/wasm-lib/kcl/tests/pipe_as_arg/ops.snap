@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed pipe_as_arg.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -42,6 +41,26 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 400.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                441,
+                444,
+                0
+              ]
+            },
+            {
+              "sourceRange": [
+                394,
+                395,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           355,
           361,

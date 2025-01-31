@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed parametric_with_tan_arc.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 11.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                34,
+                36,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           612,
           617,

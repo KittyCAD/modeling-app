@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed cube_with_error.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -23,6 +22,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 40.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                379,
+                381,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           354,
           360,

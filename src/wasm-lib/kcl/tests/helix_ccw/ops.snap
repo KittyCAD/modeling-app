@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed helix_ccw.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                24,
+                28,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           24,
           28,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                101,
+                103,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           101,
           103,
@@ -45,6 +70,59 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "angleStart": {
+              "type": "Number",
+              "value": 0.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    174,
+                    175,
+                    0
+                  ]
+                }
+              ]
+            },
+            "ccw": {
+              "type": "Bool",
+              "value": true,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    190,
+                    194,
+                    0
+                  ]
+                }
+              ]
+            },
+            "revolutions": {
+              "type": "Number",
+              "value": 16.0,
+              "__meta": [
+                {
+                  "sourceRange": [
+                    150,
+                    152,
+                    0
+                  ]
+                }
+              ]
+            }
+          },
+          "__meta": [
+            {
+              "sourceRange": [
+                127,
+                201,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           127,
           201,
@@ -52,6 +130,136 @@ snapshot_kind: text
         ]
       },
       "solid": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "type": "Solid",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": [
+              {
+                "faceId": "[uuid]",
+                "id": "[uuid]",
+                "sourceRange": [
+                  35,
+                  78,
+                  0
+                ],
+                "tag": null,
+                "type": "extrudeArc"
+              }
+            ],
+            "sketch": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": [
+                      35,
+                      78,
+                      0
+                    ]
+                  },
+                  "ccw": true,
+                  "center": [
+                    5.0,
+                    5.0
+                  ],
+                  "from": [
+                    15.0,
+                    5.0
+                  ],
+                  "radius": 10.0,
+                  "tag": null,
+                  "to": [
+                    15.0,
+                    5.0
+                  ],
+                  "type": "Circle"
+                }
+              ],
+              "on": {
+                "type": "plane",
+                "id": "[uuid]",
+                "artifactId": "[uuid]",
+                "value": "XY",
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0
+                },
+                "units": {
+                  "type": "Mm"
+                },
+                "__meta": []
+              },
+              "start": {
+                "from": [
+                  15.0,
+                  5.0
+                ],
+                "to": [
+                  15.0,
+                  5.0
+                ],
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    35,
+                    78,
+                    0
+                  ]
+                }
+              },
+              "artifactId": "[uuid]",
+              "units": {
+                "type": "Mm"
+              },
+              "__meta": [
+                {
+                  "sourceRange": [
+                    35,
+                    78,
+                    0
+                  ]
+                }
+              ]
+            },
+            "height": 10.0,
+            "startCapId": "[uuid]",
+            "endCapId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            },
+            "__meta": [
+              {
+                "sourceRange": [
+                  35,
+                  78,
+                  0
+                ]
+              }
+            ]
+          }
+        },
         "sourceRange": [
           203,
           204,

@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed parametric.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                242,
+                246,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           242,
           246,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 9.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                34,
+                35,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           482,
           487,
