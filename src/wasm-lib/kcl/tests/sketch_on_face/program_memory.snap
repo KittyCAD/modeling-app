@@ -514,6 +514,7 @@ description: Program memory after executing sketch_on_face.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "here",
                 "xAxis": {
                   "x": 1.0,

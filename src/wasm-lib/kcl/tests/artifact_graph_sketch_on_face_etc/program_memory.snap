@@ -432,6 +432,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg01",
                 "xAxis": {
                   "x": 1.0,
@@ -924,6 +925,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,
@@ -1067,6 +1069,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "seg01",
                       "xAxis": {
                         "x": 1.0,
@@ -1672,6 +1675,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg02",
                 "xAxis": {
                   "x": 1.0,
@@ -1825,6 +1829,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                     "on": {
                       "type": "face",
                       "id": "[uuid]",
+                      "artifactId": "[uuid]",
                       "value": "end",
                       "xAxis": {
                         "x": 1.0,
@@ -1968,6 +1973,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                           "on": {
                             "type": "face",
                             "id": "[uuid]",
+                            "artifactId": "[uuid]",
                             "value": "seg01",
                             "xAxis": {
                               "x": 1.0,
@@ -2933,6 +2939,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg01",
               "xAxis": {
                 "x": 1.0,
@@ -3365,6 +3372,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "end",
               "xAxis": {
                 "x": 1.0,
@@ -3508,6 +3516,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "on": {
                     "type": "face",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "seg01",
                     "xAxis": {
                       "x": 1.0,
@@ -4058,6 +4067,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,
@@ -4211,6 +4221,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                   "on": {
                     "type": "face",
                     "id": "[uuid]",
+                    "artifactId": "[uuid]",
                     "value": "end",
                     "xAxis": {
                       "x": 1.0,
@@ -4354,6 +4365,7 @@ description: Program memory after executing artifact_graph_sketch_on_face_etc.kc
                         "on": {
                           "type": "face",
                           "id": "[uuid]",
+                          "artifactId": "[uuid]",
                           "value": "seg01",
                           "xAxis": {
                             "x": 1.0,

@@ -922,6 +922,7 @@ description: Program memory after executing sketch_on_face_start.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "start",
                 "xAxis": {
                   "x": 1.0,

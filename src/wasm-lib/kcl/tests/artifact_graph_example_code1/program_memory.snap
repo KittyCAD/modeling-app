@@ -541,6 +541,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg02",
                 "xAxis": {
                   "x": 1.0,
@@ -1514,6 +1515,7 @@ description: Program memory after executing artifact_graph_example_code1.kcl
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg02",
               "xAxis": {
                 "x": 1.0,

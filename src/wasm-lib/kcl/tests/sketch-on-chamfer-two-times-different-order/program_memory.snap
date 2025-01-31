@@ -797,6 +797,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg03",
                 "xAxis": {
                   "x": 1.0,
@@ -2760,6 +2761,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg03",
               "xAxis": {
                 "x": 1.0,
@@ -3705,6 +3707,7 @@ description: Program memory after executing sketch-on-chamfer-two-times-differen
             "on": {
               "type": "face",
               "id": "[uuid]",
+              "artifactId": "[uuid]",
               "value": "seg04",
               "xAxis": {
                 "x": 1.0,

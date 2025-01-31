@@ -705,6 +705,7 @@ description: Program memory after executing sketch_on_face_end.kcl
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "end",
                 "xAxis": {
                   "x": 1.0,

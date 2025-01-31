@@ -975,6 +975,7 @@ description: Program memory after executing sketch_on_face_after_fillets_referen
               "on": {
                 "type": "face",
                 "id": "[uuid]",
+                "artifactId": "[uuid]",
                 "value": "seg01",
                 "xAxis": {
                   "x": 1.0,
