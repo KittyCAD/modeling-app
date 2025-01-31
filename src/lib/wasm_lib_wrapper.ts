@@ -10,6 +10,7 @@
 import {
   parse_wasm as ParseWasm,
   recast_wasm as RecastWasm,
+  format_number as FormatNumber,
   execute as Execute,
   kcl_lint as KclLint,
   modify_ast_for_sketch_wasm as ModifyAstForSketch,
@@ -50,6 +51,9 @@ export const parse_wasm: typeof ParseWasm = (...args) => {
 }
 export const recast_wasm: typeof RecastWasm = (...args) => {
   return getModule().recast_wasm(...args)
+}
+export const format_number: typeof FormatNumber = (...args) => {
+  return getModule().format_number(...args)
 }
 export const execute: typeof Execute = (...args) => {
   return getModule().execute(...args)

@@ -4,12 +4,17 @@ import {
   assertParse,
   topLevelRange,
   VariableDeclaration,
+  initPromise,
 } from 'lang/wasm'
 import { updateCenterRectangleSketch } from './rectangleTool'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { getNodeFromPath } from 'lang/queryAst'
 import { findUniqueName } from 'lang/modifyAst'
 import { err, trap } from './trap'
+
+beforeAll(async () => {
+  await initPromise
+})
 
 describe('library rectangleTool helper functions', () => {
   describe('updateCenterRectangleSketch', () => {

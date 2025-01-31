@@ -20,7 +20,7 @@ import {
   isArrayExpression,
   isLiteral,
   isBinaryExpression,
-  isLiteralValueNotStringAndBoolean,
+  isLiteralValueNumber,
 } from 'lang/util'
 
 /**
@@ -146,9 +146,9 @@ export function updateCenterRectangleSketch(
     if (isArrayExpression(arrayExpression)) {
       const literal = arrayExpression.elements[0]
       if (isLiteral(literal)) {
-        if (isLiteralValueNotStringAndBoolean(literal.value)) {
+        if (isLiteralValueNumber(literal.value)) {
           callExpression.arguments[0] = createArrayExpression([
-            JSON.parse(JSON.stringify(literal)),
+            createLiteral(literal.value),
             createLiteral(Math.abs(twoX)),
           ])
         }
