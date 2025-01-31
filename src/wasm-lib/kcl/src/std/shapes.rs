@@ -55,6 +55,20 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     })
 }
 
+/// three point sketch circle
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+// TODO: make sure the docs on the args below are correct.
+pub struct CircleThreePointData {
+    /// first point
+    pub p1: [f64; 2],
+    /// second point
+    pub p2: [f64; 2],
+    /// third point
+    pub p3: [f64; 2],
+}
+
 /// Construct a 2-dimensional circle, of the specified radius, centered at
 /// the provided (x, y) origin point.
 ///
@@ -150,13 +164,11 @@ async fn inner_circle(
 
 /// Sketch a 3-point circle.
 pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let p1 = args.get_kw_arg("p1")?;
-    let p2 = args.get_kw_arg("p2")?;
-    let p3 = args.get_kw_arg("p3")?;
-    let sketch_surface_or_group = args.get_unlabeled_kw_arg("sketch_surface_or_group")?;
+    let (data, sketch_surface_or_group, tag): (CircleThreePointData, SketchOrSurface, Option<TagNode>) =
+        args.get_circle_three_point_args()?;
     let tag = args.get_kw_arg_opt("tag");
 
-    let sketch = inner_circle_three_point(p1, p2, p3, sketch_surface_or_group, tag, exec_state, args).await?;
+    let sketch = inner_circle_three_point(data, sketch_surface_or_group, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(sketch),
     })
@@ -172,12 +184,10 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 /// ```
 #[stdlib {
     name = "circleThreePoint",
-    keywords = true,
+    keywords = false,
     unlabeled_first = true,
     arg_docs = {
-        p1 = "1st point to derive the circle.",
-        p2 = "2nd point to derive the circle.",
-        p3 = "3rd point to derive the circle.",
+        data = "Data containing the three points to derive the circle.",
         sketch_surface_or_group = "Plane or surface to sketch on.",
         tag = "Identifier for the circle to reference elsewhere.",
     }
@@ -186,17 +196,15 @@ pub async fn circle_three_point(exec_state: &mut ExecState, args: Args) -> Resul
 /// Similar to inner_circle, but needs to retain 3-point information in the
 /// path so it can be used for other features, otherwise it's lost.
 async fn inner_circle_three_point(
-    p1: [f64; 2],
-    p2: [f64; 2],
-    p3: [f64; 2],
+    data: CircleThreePointData,
     sketch_surface_or_group: SketchOrSurface,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
-    let center = calculate_circle_center(p1, p2, p3);
+    let center = calculate_circle_center(data.p1, data.p2, data.p3);
     // It can be the distance to any of the 3 points - they all lay on the circumference.
-    let radius = distance(center.into(), p2.into());
+    let radius = distance(center.into(), data.p2.into());
 
     let sketch_surface = match sketch_surface_or_group {
         SketchOrSurface::SketchSurface(surface) => surface,
@@ -242,9 +250,9 @@ async fn inner_circle_three_point(
                 metadata: args.source_range.into(),
             },
         },
-        p1,
-        p2,
-        p3,
+        p1: data.p1,
+        p2: data.p2,
+        p3: data.p3,
     };
 
     let mut new_sketch = sketch.clone();
@@ -259,7 +267,6 @@ async fn inner_circle_three_point(
 
     Ok(new_sketch)
 }
-
 
 /// Type of the polygon
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Default)]
