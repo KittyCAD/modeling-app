@@ -1,12 +1,13 @@
 import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
 import { Command, CommandArgumentOption } from './commandTypes'
-import { kclManager } from './singletons'
+import { codeManager, kclManager } from './singletons'
 import { isDesktop } from './isDesktop'
 import { FILE_EXT } from './constants'
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { reportRejection } from './trap'
 import { IndexLoaderData } from './types'
 import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
+import { copyFileShareLink } from './links'
 
 interface OnSubmitProps {
   sampleName: string
