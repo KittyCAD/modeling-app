@@ -594,6 +594,19 @@ pub enum UnitLen {
     Yards,
 }
 
+impl std::fmt::Display for UnitLen {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UnitLen::Mm => write!(f, "mm"),
+            UnitLen::Cm => write!(f, "cm"),
+            UnitLen::M => write!(f, "m"),
+            UnitLen::Inches => write!(f, "in"),
+            UnitLen::Feet => write!(f, "ft"),
+            UnitLen::Yards => write!(f, "yd"),
+        }
+    }
+}
+
 impl TryFrom<NumericSuffix> for UnitLen {
     type Error = ();
 
@@ -643,6 +656,15 @@ pub enum UnitAngle {
     #[default]
     Degrees,
     Radians,
+}
+
+impl std::fmt::Display for UnitAngle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UnitAngle::Degrees => write!(f, "deg"),
+            UnitAngle::Radians => write!(f, "rad"),
+        }
+    }
 }
 
 impl TryFrom<NumericSuffix> for UnitAngle {

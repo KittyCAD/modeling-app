@@ -8,8 +8,8 @@ use crate::{
 };
 
 pub(crate) const SETTINGS: &str = "settings";
-pub(super) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
-pub(super) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
+pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
+pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub(super) enum AnnotationScope {

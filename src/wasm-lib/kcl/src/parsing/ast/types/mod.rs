@@ -274,7 +274,31 @@ impl Node<Program> {
     }
 
     pub fn change_meta_settings(&mut self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
-        // TODO: @nrc
+        let mut new_program = self.clone();
+        let mut found = false;
+        for node in &mut new_program.non_code_meta.start_nodes {
+            if let Some(annotation) = node.annotation() {
+                if annotation.annotation_name() == Some(annotations::SETTINGS) {
+                    let annotation = NonCodeValue::new_from_meta_settings(&settings);
+                    *node = Node::no_src(NonCodeNode {
+                        value: annotation,
+                        digest: None,
+                    });
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if !found {
+            let annotation = NonCodeValue::new_from_meta_settings(&settings);
+            new_program.non_code_meta.start_nodes.push(Node::no_src(NonCodeNode {
+                value: annotation,
+                digest: None,
+            }));
+        }
+
+        Ok(new_program)
     }
 }
 
@@ -1098,6 +1122,24 @@ impl NonCodeValue {
         match self {
             NonCodeValue::Annotation { name, .. } => Some(&name.name),
             _ => None,
+        }
+    }
+
+    pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> NonCodeValue {
+        let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
+            Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
+            Expr::Identifier(Box::new(Identifier::new(&settings.default_length_units.to_string()))),
+        )];
+
+        if settings.default_angle_units != Default::default() {
+            properties.push(ObjectProperty::new(
+                Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
+                Expr::Identifier(Box::new(Identifier::new(&settings.default_angle_units.to_string()))),
+            ));
+        }
+        NonCodeValue::Annotation {
+            name: Identifier::new(annotations::SETTINGS),
+            properties: Some(properties),
         }
     }
 }
@@ -2359,6 +2401,14 @@ impl Node<ObjectProperty> {
 }
 
 impl ObjectProperty {
+    pub fn new(key: Node<Identifier>, value: Expr) -> Node<Self> {
+        Node::no_src(Self {
+            key,
+            value,
+            digest: None,
+        })
+    }
+
     /// Returns a hover value that includes the given character position.
     pub fn get_hover_value_for_position(&self, pos: usize, code: &str) -> Option<Hover> {
         let value_source_range: SourceRange = self.value.clone().into();
@@ -3792,6 +3842,48 @@ startSketchOn('XY')"#;
         assert_eq!(
             meta_settings.default_length_units,
             crate::execution::kcl_value::UnitLen::Inches
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_inch_to_mm() {
+        let some_program_string = r#"@settings(defaultLengthUnit = inch)
+
+startSketchOn('XY')"#;
+        let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
+        let result = program.get_meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(
+            meta_settings.default_length_units,
+            crate::execution::kcl_value::UnitLen::Inches
+        );
+
+        // Edit the ast.
+        let new_program = program
+            .change_meta_settings(crate::execution::MetaSettings {
+                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                ..Default::default()
+            })
+            .unwrap();
+
+        let result = new_program.get_meta_settings().unwrap();
+        assert!(result.is_some());
+        let meta_settings = result.unwrap();
+
+        assert_eq!(
+            meta_settings.default_length_units,
+            crate::execution::kcl_value::UnitLen::Mm
+        );
+
+        let formatted = new_program.recast(&Default::default(), 0);
+
+        assert_eq!(
+            formatted,
+            r#"@settings(defaultLengthUnit = mm)
+
+startSketchOn('XY')"#
         );
     }
 }
