@@ -148,7 +148,7 @@ export function updateCenterRectangleSketch(
       if (isLiteral(literal)) {
         if (isLiteralValueNotStringAndBoolean(literal.value)) {
           callExpression.arguments[0] = createArrayExpression([
-            JSON.parse(JSON.stringify(literal)),
+            createLiteral(literal.value),
             createLiteral(Math.abs(twoX)),
           ])
         }
