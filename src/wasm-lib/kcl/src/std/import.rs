@@ -118,9 +118,6 @@ pub async fn import(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// Note: The import command currently only works when using the native
 /// Modeling App.
 ///
-/// For importing KCL functions using the `import` statement, see the docs on
-/// [KCL modules](/docs/kcl/modules).
-///
 /// ```no_run
 /// model = import("tests/inputs/cube.obj")
 /// ```

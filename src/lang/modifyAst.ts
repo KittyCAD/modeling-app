@@ -20,6 +20,7 @@ import {
   SourceRange,
   sketchFromKclValue,
   isPathToNodeNumber,
+  formatNumber,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
@@ -744,10 +745,25 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
   return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
+/**
+ * Note: This depends on WASM, but it's not async.  Callers are responsible for
+ * awaiting init of the WASM module.
+ */
 export function createLiteral(value: LiteralValue | number): Node<Literal> {
-  const raw = `${value}`
   if (typeof value === 'number') {
     value = { value, suffix: 'None' }
+  }
+  let raw: string
+  if (typeof value === 'string') {
+    // TODO: Should we handle escape sequences?
+    raw = `${value}`
+  } else if (typeof value === 'boolean') {
+    raw = `${value}`
+  } else if (typeof value.value === 'number' && value.suffix === 'None') {
+    // Fast path for numbers when there are no units.
+    raw = `${value.value}`
+  } else {
+    raw = formatNumber(value.value, value.suffix)
   }
   return {
     type: 'Literal',
