@@ -55,7 +55,6 @@ process.env.VITE_KC_SITE_APP_URL ??= viteEnv.VITE_KC_SITE_APP_URL
 process.env.VITE_KC_SKIP_AUTH ??= viteEnv.VITE_KC_SKIP_AUTH
 process.env.VITE_KC_CONNECTION_TIMEOUT_MS ??=
   viteEnv.VITE_KC_CONNECTION_TIMEOUT_MS
-console.log('process.env post force', process.env)
 
 /// Register our application to handle all "zoo-studio:" protocols.
 if (process.defaultApp) {
