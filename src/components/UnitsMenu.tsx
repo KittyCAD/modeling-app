@@ -1,13 +1,31 @@
 import { Popover } from '@headlessui/react'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
+import { changeKclSettings, unitLengthToUnitLen } from 'lang/wasm'
 import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
+import { err } from 'lib/trap'
+import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
 export function UnitsMenu() {
   const { settings } = useSettingsAuthContext()
-  const lengthSetting =
+  const [hasPerFileLengthUnit, setHasPerFileLengthUnit] = useState(
+    Boolean(kclManager.fileSettings.defaultLengthUnit)
+  )
+  const [lengthSetting, setLengthSetting] = useState(
     kclManager.fileSettings.defaultLengthUnit ||
-    settings.context.modeling.defaultUnit.current
+      settings.context.modeling.defaultUnit.current
+  )
+  useEffect(() => {
+    setHasPerFileLengthUnit(Boolean(kclManager.fileSettings.defaultLengthUnit))
+    setLengthSetting(
+      kclManager.fileSettings.defaultLengthUnit ||
+        settings.context.modeling.defaultUnit.current
+    )
+  }, [
+    kclManager.fileSettings.defaultLengthUnit,
+    settings.context.modeling.defaultUnit.current,
+  ])
   return (
     <Popover className="relative pointer-events-auto">
       {({ close }) => (
@@ -35,13 +53,34 @@ export function UnitsMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      settings.send({
-                        type: 'set.modeling.defaultUnit',
-                        data: {
-                          level: 'project',
-                          value: unit,
-                        },
-                      })
+                      if (hasPerFileLengthUnit) {
+                        const newCode = changeKclSettings(codeManager.code, {
+                          defaultLengthUnits: unitLengthToUnitLen(unit),
+                          defaultAngleUnits: { type: 'Degrees' },
+                        })
+                        if (err(newCode)) {
+                          toast.error(
+                            `Failed to set per-file units: ${newCode.message}`
+                          )
+                        } else {
+                          codeManager.updateCodeStateEditor(newCode)
+                          Promise.all([
+                            codeManager.writeToFile(),
+                            kclManager.executeCode(),
+                          ]).then(() => {
+                            toast.success(`Updated per-file units to ${unit}`)
+                          })
+                        }
+                        console.log('new code is', newCode)
+                      } else {
+                        settings.send({
+                          type: 'set.modeling.defaultUnit',
+                          data: {
+                            level: 'project',
+                            value: unit,
+                          },
+                        })
+                      }
                       close()
                     }}
                   >

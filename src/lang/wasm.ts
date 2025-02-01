@@ -58,6 +58,8 @@ import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
 import { MetaSettings } from 'wasm-lib/kcl/bindings/MetaSettings'
+import { UnitLength } from 'wasm-lib/kcl/bindings/ModelingCmd'
+import { UnitLen } from 'wasm-lib/kcl/bindings/UnitLen'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -163,8 +165,8 @@ export const wasmUrl = () => {
   const fullUrl = document.location.protocol.includes('http')
     ? document.location.origin + '/wasm_lib_bg.wasm'
     : document.location.protocol +
-      document.location.pathname.split('/').slice(0, -1).join('/') +
-      '/wasm_lib_bg.wasm'
+    document.location.pathname.split('/').slice(0, -1).join('/') +
+    '/wasm_lib_bg.wasm'
 
   return fullUrl
 }
@@ -858,5 +860,25 @@ export function changeKclSettings(
   } catch (e) {
     console.error('Caught error changing kcl settings: ' + e)
     return new Error('Caught error changing kcl settings: ' + e)
+  }
+}
+
+/**
+ * Convert a `UnitLength_type` to a `UnitLen`
+ */
+export function unitLengthToUnitLen(input: UnitLength): UnitLen {
+  switch (input) {
+    case 'm':
+      return { type: 'M' }
+    case 'cm':
+      return { type: 'Cm' }
+    case 'yd':
+      return { type: 'Yards' }
+    case 'ft':
+      return { type: 'Feet' }
+    case 'in':
+      return { type: 'Inches' }
+    default:
+      return { type: 'Mm' }
   }
 }

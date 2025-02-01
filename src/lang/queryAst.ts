@@ -800,13 +800,13 @@ export function getObjExprProperty(
  * Given an AST, returns the settings annotation object if it exists.
  */
 export function getSettingsAnnotation(
-  node: Node<Program>
+  node?: Node<Program>
 ): KclSettingsAnnotation {
   const settings: KclSettingsAnnotation = {}
-  const maybeAnnotations = node.nonCodeMeta.startNodes.filter(
+  const maybeAnnotations = node?.nonCodeMeta?.startNodes?.filter(
     (n) => n.value.type === 'annotation' && n.value.name.name === 'settings'
   )
-  if (!maybeAnnotations.length) return settings
+  if (!maybeAnnotations?.length) return settings
 
   // Use the last settings annotation
   // we could merge all settings annotations, but that's not necessary for now
