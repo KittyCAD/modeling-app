@@ -308,7 +308,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     description:
       'Create a 3D body by moving a sketch region along an arbitrary path.',
     icon: 'sweep',
-    status: 'development',
     needsReview: false,
     args: {
       target: {
@@ -317,8 +316,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: true,
         skip: true,
         multiple: false,
-        warningMessage:
-          'The sweep workflow is new and under tested. Please break it and report issues.',
       },
       trajectory: {
         inputType: 'selection',
@@ -368,7 +365,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Revolve: {
     description: 'Create a 3D body by rotating a sketch region about an axis.',
     icon: 'revolve',
-    status: 'development',
     needsReview: true,
     args: {
       selection: {
@@ -377,8 +373,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
-        warningMessage:
-          'The revolve workflow is new and under tested. Please break it and report issues.',
       },
       axisOrEdge: {
         inputType: 'options',

@@ -886,7 +886,7 @@ test.describe('Sketch tests', () => {
     // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
     await expect(
-      page.getByRole('button', { name: 'selection : 1 face', exact: false })
+      page.getByRole('button', { name: 'selection : 1 segment', exact: false })
     ).toBeVisible({
       timeout: 10_000,
     })

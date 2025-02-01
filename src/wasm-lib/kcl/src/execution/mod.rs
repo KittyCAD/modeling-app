@@ -13,8 +13,7 @@ use kcmc::{
     websocket::{ModelingSessionData, OkWebSocketResponseData},
     ImageFormat, ModelingCmd,
 };
-use kittycad_modeling_cmds::length_unit::LengthUnit;
-use kittycad_modeling_cmds::{self as kcmc, websocket::WebSocketResponse};
+use kittycad_modeling_cmds::{self as kcmc, length_unit::LengthUnit, websocket::WebSocketResponse};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -27,14 +26,18 @@ pub(crate) use import::{import_foreign, send_to_engine as send_import_to_engine,
 pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use uuid::Uuid;
 
-mod annotations;
+pub(crate) mod annotations;
 mod artifact;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
 mod function_param;
 mod import;
-mod kcl_value;
+pub(crate) mod kcl_value;
+
+// Re-exports.
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+pub use cad_op::Operation;
 
 use crate::{
     engine::{EngineManager, ExecutionKind},
@@ -51,10 +54,6 @@ use crate::{
     walk::Node as WalkNode,
     ExecError, KclErrorWithOutputs, Program,
 };
-
-// Re-exports.
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
-pub use cad_op::Operation;
 
 /// State for executing a program.
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -247,7 +246,7 @@ impl ModuleState {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
@@ -256,7 +255,11 @@ pub struct MetaSettings {
 }
 
 impl MetaSettings {
-    fn update_from_annotation(&mut self, annotation: &NonCodeValue, source_range: SourceRange) -> Result<(), KclError> {
+    pub fn update_from_annotation(
+        &mut self,
+        annotation: &NonCodeValue,
+        source_range: SourceRange,
+    ) -> Result<(), KclError> {
         let properties = annotations::expect_properties(annotations::SETTINGS, annotation, source_range)?;
 
         for p in properties {

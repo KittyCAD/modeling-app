@@ -5,7 +5,11 @@ import {
   PathToNode,
   Identifier,
   topLevelRange,
+  PipeExpression,
+  CallExpression,
+  VariableDeclarator,
 } from './wasm'
+import { ProgramMemory } from 'lang/wasm'
 import {
   findAllPreviousVariables,
   isNodeSafeToReplace,
@@ -25,9 +29,11 @@ import {
   createCallExpression,
   createLiteral,
   createPipeSubstitution,
+  createCallExpressionStdLib,
 } from './modifyAst'
 import { err } from 'lib/trap'
 import { codeRefFromRange } from './std/artifactGraph'
+import { addCallExpressionsToPipe, addCloseToPipe } from 'lang/std/sketch'
 
 beforeAll(async () => {
   await initPromise
@@ -678,5 +684,117 @@ myNestedVar = [
       topLevelRange(literalIndex + 2, literalIndex + 2)
     )
     expect(pathToNode).toEqual(pathToNode2)
+  })
+})
+
+describe('Testing specific sketch getNodeFromPath workflow', () => {
+  it('should parse the code', () => {
+    const openSketch = `sketch001 = startSketchOn('XZ')
+|> startProfileAt([0.02, 0.22], %)
+|> xLine(0.39, %)
+|> line([0.02, -0.17], %)
+|> yLine(-0.15, %)
+|> line([-0.21, -0.02], %)
+|> xLine(-0.15, %)
+|> line([-0.02, 0.21], %)
+|> line([-0.08, 0.05], %)`
+    const ast = assertParse(openSketch)
+    expect(ast.start).toEqual(0)
+    expect(ast.end).toEqual(227)
+  })
+  it('should find the location to add new lineTo', () => {
+    const openSketch = `sketch001 = startSketchOn('XZ')
+|> startProfileAt([0.02, 0.22], %)
+|> xLine(0.39, %)
+|> line([0.02, -0.17], %)
+|> yLine(-0.15, %)
+|> line([-0.21, -0.02], %)
+|> xLine(-0.15, %)
+|> line([-0.02, 0.21], %)
+|> line([-0.08, 0.05], %)`
+    const ast = assertParse(openSketch)
+
+    const sketchSnippet = `startProfileAt([0.02, 0.22], %)`
+    const sketchRange = topLevelRange(
+      openSketch.indexOf(sketchSnippet),
+      openSketch.indexOf(sketchSnippet) + sketchSnippet.length
+    )
+    const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
+    const modifiedAst = addCallExpressionsToPipe({
+      node: ast,
+      programMemory: ProgramMemory.empty(),
+      pathToNode: sketchPathToNode,
+      expressions: [
+        createCallExpressionStdLib(
+          'lineTo', // We are forcing lineTo!
+          [
+            createArrayExpression([
+              createCallExpressionStdLib('profileStartX', [
+                createPipeSubstitution(),
+              ]),
+              createCallExpressionStdLib('profileStartY', [
+                createPipeSubstitution(),
+              ]),
+            ]),
+            createPipeSubstitution(),
+          ]
+        ),
+      ],
+    })
+    if (err(modifiedAst)) throw modifiedAst
+    const recasted = recast(modifiedAst)
+    const expectedCode = `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0.02, 0.22], %)
+  |> xLine(0.39, %)
+  |> line([0.02, -0.17], %)
+  |> yLine(-0.15, %)
+  |> line([-0.21, -0.02], %)
+  |> xLine(-0.15, %)
+  |> line([-0.02, 0.21], %)
+  |> line([-0.08, 0.05], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+`
+    expect(recasted).toEqual(expectedCode)
+  })
+  it('it should find the location to add close', () => {
+    const openSketch = `sketch001 = startSketchOn('XZ')
+|> startProfileAt([0.02, 0.22], %)
+|> xLine(0.39, %)
+|> line([0.02, -0.17], %)
+|> yLine(-0.15, %)
+|> line([-0.21, -0.02], %)
+|> xLine(-0.15, %)
+|> line([-0.02, 0.21], %)
+|> line([-0.08, 0.05], %)
+|> lineTo([profileStartX(%), profileStartY(%)], %)
+`
+    const ast = assertParse(openSketch)
+    const sketchSnippet = `startProfileAt([0.02, 0.22], %)`
+    const sketchRange = topLevelRange(
+      openSketch.indexOf(sketchSnippet),
+      openSketch.indexOf(sketchSnippet) + sketchSnippet.length
+    )
+    const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
+    const modifiedAst = addCloseToPipe({
+      node: ast,
+      programMemory: ProgramMemory.empty(),
+      pathToNode: sketchPathToNode,
+    })
+
+    if (err(modifiedAst)) throw modifiedAst
+    const recasted = recast(modifiedAst)
+    const expectedCode = `sketch001 = startSketchOn('XZ')
+  |> startProfileAt([0.02, 0.22], %)
+  |> xLine(0.39, %)
+  |> line([0.02, -0.17], %)
+  |> yLine(-0.15, %)
+  |> line([-0.21, -0.02], %)
+  |> xLine(-0.15, %)
+  |> line([-0.02, 0.21], %)
+  |> line([-0.08, 0.05], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+`
+    expect(recasted).toEqual(expectedCode)
   })
 })

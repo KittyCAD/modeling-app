@@ -18,6 +18,7 @@ import {
   default_project_settings,
   base64_decode,
   clear_scene_and_bust_cache,
+  change_kcl_settings,
   reloadModule,
 } from 'lib/wasm_lib_wrapper'
 
@@ -56,6 +57,7 @@ import { ArtifactGraph as RustArtifactGraph } from 'wasm-lib/kcl/bindings/Artifa
 import { Artifact } from './std/artifactGraph'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { NumericSuffix } from 'wasm-lib/kcl/bindings/NumericSuffix'
+import { MetaSettings } from 'wasm-lib/kcl/bindings/MetaSettings'
 
 export type { Artifact } from 'wasm-lib/kcl/bindings/Artifact'
 export type { ArtifactCommand } from 'wasm-lib/kcl/bindings/Artifact'
@@ -846,5 +848,19 @@ export function base64Decode(base64: string): ArrayBuffer | Error {
   } catch (e) {
     console.error('Caught error decoding base64 string: ' + e)
     return new Error('Caught error decoding base64 string: ' + e)
+  }
+}
+
+/// Change the meta settings for the kcl file.
+/// Returns the new kcl string with the updated settings.
+export function changeKclSettings(
+  kcl: string,
+  settings: MetaSettings
+): string | Error {
+  try {
+    return change_kcl_settings(kcl, JSON.stringify(settings))
+  } catch (e) {
+    console.error('Caught error changing kcl settings: ' + e)
+    return new Error('Caught error changing kcl settings: ' + e)
   }
 }

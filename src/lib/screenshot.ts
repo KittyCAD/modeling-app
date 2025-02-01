@@ -1,4 +1,4 @@
-function takeScreenshotOfVideoStreamCanvas() {
+export function takeScreenshotOfVideoStreamCanvas() {
   const canvas = document.querySelector('[data-engine]')
   const video = document.getElementById('video-stream')
   if (

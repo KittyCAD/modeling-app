@@ -1452,13 +1452,14 @@ export const modelingMachine = setup({
       unknown,
       ModelingCommandSchema['Extrude'] | undefined
     >(async ({ input }) => {
-      if (!input) return new Error('No input provided')
+      if (!input) return Promise.reject('No input provided')
       const { selection, distance } = input
       let ast = structuredClone(kclManager.ast)
-      let extrudeName: string | undefined = undefined
 
-      const sourceRange = selection.graphSelections[0]?.codeRef.range
-      const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        selection.graphSelections[0]?.codeRef.range
+      )
       // Add an extrude statement to the AST
       const extrudeSketchRes = extrudeSketch(
         ast,
@@ -1468,7 +1469,7 @@ export const modelingMachine = setup({
           ? distance.variableIdentifierAst
           : distance.valueAst
       )
-      if (err(extrudeSketchRes)) return extrudeSketchRes
+      if (err(extrudeSketchRes)) return Promise.reject(extrudeSketchRes)
       const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
 
       // Insert the distance variable if the user has provided a variable name
@@ -2559,7 +2560,7 @@ export const modelingMachine = setup({
 
         'Delete segment': {
           reenter: false,
-          actions: ['Delete segment', 'Set sketchDetails'],
+          actions: ['Delete segment', 'Set sketchDetails', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
       },
