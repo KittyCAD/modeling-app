@@ -370,10 +370,6 @@ export class KclManager {
     }
 
     this.fileSettings = getSettingsAnnotation(ast)
-    console.log('fileSettings', {
-      ast,
-      fileSettings: this.fileSettings,
-    })
 
     this.logs = logs
     this.errors = errors

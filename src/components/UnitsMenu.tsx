@@ -3,7 +3,7 @@ import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { changeKclSettings, unitLengthToUnitLen } from 'lang/wasm'
 import { baseUnitLabels, baseUnitsUnion } from 'lib/settings/settingsTypes'
 import { codeManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
+import { err, reportRejection } from 'lib/trap'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -67,11 +67,12 @@ export function UnitsMenu() {
                           Promise.all([
                             codeManager.writeToFile(),
                             kclManager.executeCode(),
-                          ]).then(() => {
-                            toast.success(`Updated per-file units to ${unit}`)
-                          })
+                          ])
+                            .then(() => {
+                              toast.success(`Updated per-file units to ${unit}`)
+                            })
+                            .catch(reportRejection)
                         }
-                        console.log('new code is', newCode)
                       } else {
                         settings.send({
                           type: 'set.modeling.defaultUnit',

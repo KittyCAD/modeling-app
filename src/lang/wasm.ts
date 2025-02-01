@@ -165,8 +165,8 @@ export const wasmUrl = () => {
   const fullUrl = document.location.protocol.includes('http')
     ? document.location.origin + '/wasm_lib_bg.wasm'
     : document.location.protocol +
-    document.location.pathname.split('/').slice(0, -1).join('/') +
-    '/wasm_lib_bg.wasm'
+      document.location.pathname.split('/').slice(0, -1).join('/') +
+      '/wasm_lib_bg.wasm'
 
   return fullUrl
 }
