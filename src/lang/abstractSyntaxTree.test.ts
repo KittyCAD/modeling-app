@@ -53,7 +53,9 @@ describe('parsing errors', () => {
     const result = parse(code)
     if (err(result)) throw result
     const error = result.errors[0]
-    expect(error.message).toBe('Array is missing a closing bracket(`]`)')
-    expect(error.sourceRange).toEqual([28, 29, 0])
+    expect(error.message).toBe(
+      'Unexpected character encountered. You might be missing a comma in between elements.'
+    )
+    expect(error.sourceRange).toEqual([29, 31, 0])
   })
 })
