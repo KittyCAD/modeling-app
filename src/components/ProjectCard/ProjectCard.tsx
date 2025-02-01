@@ -2,7 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from 'react'
 import { PATHS } from 'lib/paths'
 import { Link } from 'react-router-dom'
 import { ActionButton } from '../ActionButton'
-import { FILE_EXT } from 'lib/constants'
+import { FILE_EXT, PROJECT_IMAGE_NAME } from 'lib/constants'
 import { useHotkeys } from 'react-hotkeys-hook'
 import Tooltip from '../Tooltip'
 import { DeleteConfirmationDialog } from './DeleteProjectDialog'
@@ -29,7 +29,7 @@ function ProjectCard({
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const [numberOfFiles, setNumberOfFiles] = useState(1)
   const [numberOfFolders, setNumberOfFolders] = useState(0)
-  // const [imageUrl, setImageUrl] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
 
   let inputRef = useRef<HTMLInputElement>(null)
 
@@ -53,18 +53,21 @@ function ProjectCard({
       setNumberOfFolders(project.directory_count)
     }
 
-    // async function setupImageUrl() {
-    //   const projectImagePath = await join(project.file.path, PROJECT_IMAGE_NAME)
-    //   if (await exists(projectImagePath)) {
-    //     const imageData = await readFile(projectImagePath)
-    //     const blob = new Blob([imageData], { type: 'image/jpg' })
-    //     const imageUrl = URL.createObjectURL(blob)
-    //     setImageUrl(imageUrl)
-    //   }
-    // }
+    async function setupImageUrl() {
+      const projectImagePath = window.electron.path.join(
+        project.path,
+        PROJECT_IMAGE_NAME
+      )
+      if (await window.electron.exists(projectImagePath)) {
+        const imageData = await window.electron.readFile(projectImagePath)
+        const blob = new Blob([imageData], { type: 'image/png' })
+        const imageUrl = URL.createObjectURL(blob)
+        setImageUrl(imageUrl)
+      }
+    }
 
     void getNumberOfFiles()
-    // void setupImageUrl()
+    void setupImageUrl()
   }, [project.kcl_file_count, project.directory_count])
 
   useEffect(() => {
@@ -84,7 +87,7 @@ function ProjectCard({
         to={`${PATHS.FILE}/${encodeURIComponent(project.default_file)}`}
         className="flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 group-hover:!hue-rotate-0 min-h-[5em] divide-y divide-primary/40 dark:divide-chalkboard-80 group-hover:!divide-primary"
       >
-        {/* <div className="h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm">
+        <div className="h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm">
           {imageUrl && (
             <img
               src={imageUrl}
@@ -92,7 +95,7 @@ function ProjectCard({
               className="h-full w-full transition-transform group-hover:scale-105 object-cover"
             />
           )}
-        </div> */}
+        </div>
         <div className="pb-2 flex flex-col flex-grow flex-auto gap-2 rounded-b-sm">
           {isEditing ? (
             <ProjectCardRenameForm
