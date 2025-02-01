@@ -685,9 +685,9 @@ impl ExecutorContext {
 
     /// Execute an AST's program and build auxiliary outputs like the artifact
     /// graph.
-    async fn execute_and_build_graph<'a>(
+    async fn execute_and_build_graph(
         &self,
-        program: NodeRef<'a, crate::parsing::ast::types::Program>,
+        program: NodeRef<'_, crate::parsing::ast::types::Program>,
         exec_state: &mut ExecState,
     ) -> Result<Option<KclValue>, KclError> {
         // Don't early return!  We need to build other outputs regardless of

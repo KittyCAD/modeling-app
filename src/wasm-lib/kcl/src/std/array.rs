@@ -72,9 +72,9 @@ async fn inner_map<'a>(
     Ok(new_array)
 }
 
-async fn call_map_closure<'a>(
+async fn call_map_closure(
     input: KclValue,
-    map_fn: &FunctionParam<'a>,
+    map_fn: &FunctionParam<'_>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
@@ -199,10 +199,10 @@ async fn inner_reduce<'a>(
     Ok(reduced)
 }
 
-async fn call_reduce_closure<'a>(
+async fn call_reduce_closure(
     elem: KclValue,
     start: KclValue,
-    reduce_fn: &FunctionParam<'a>,
+    reduce_fn: &FunctionParam<'_>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<KclValue, KclError> {
