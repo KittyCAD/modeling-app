@@ -426,8 +426,10 @@ pub enum CameraProjectionType {
 pub enum CameraOrbitType {
     /// Orbit using a spherical camera movement.
     #[default]
+    #[display("spherical")]
     Spherical,
     /// Orbit using a trackball camera movement.
+    #[display("trackball")]
     Trackball,
 }
 
