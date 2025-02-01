@@ -745,7 +745,7 @@ defaultProjectName = "projects-$nnn"
                     modeling: ModelingSettings {
                         base_unit: UnitLength::Yd,
                         camera_projection: Default::default(),
-                        camera_orbit: CameraOrbitType::Trackball,
+                        camera_orbit: CameraOrbitType::Spherical,
                         mouse_controls: Default::default(),
                         highlight_edges: Default::default(),
                         show_debug_panel: true,
