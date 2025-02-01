@@ -773,7 +773,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
             context: vec![],
             cause: Some(CompilationError::fatal(
                 start_range,
-                "Array is missing a comma in between elements",
+                "Unexpected character encountered. You might be missing a comma in between elements.",
             )),
         };
         return Err(ErrMode::Cut(e));
@@ -964,7 +964,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
             context: vec![],
             cause: Some(CompilationError::fatal(
                 start_range,
-                "Object is missing a comma in between properties",
+                "Unexpected character encountered. You might be missing a comma in between properties.",
             )),
         };
         return Err(ErrMode::Cut(e));
@@ -4074,7 +4074,7 @@ z(-[["#,
         assert_err(
             r#"zz({{{{{{{{)iegAng{{{{{{{##"#,
             "Object is missing a closing brace(`}`)",
-            [2, 3],
+            [3, 4],
         );
     }
 
@@ -4627,8 +4627,18 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
 sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
         assert_err(
             some_program_string,
-            "Array is missing a comma in between elements",
+            "Unexpected character encountered. You might be missing a comma in between elements.",
             [52, 65],
+        );
+    }
+    #[test]
+    fn test_parse_array_random_brace() {
+        let some_program_string = r#"
+sketch001 = startSketchOn('XZ') |> startProfileAt([}], %)"#;
+        assert_err(
+            some_program_string,
+            "Unexpected character encountered. You might be missing a comma in between elements.",
+            [52, 54],
         );
     }
 
@@ -4650,8 +4660,19 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
 
         assert_err(
             some_program_string,
-            "Object is missing a comma in between properties",
+            "Unexpected character encountered. You might be missing a comma in between properties.",
             [37, 78],
+        );
+    }
+
+    #[test]
+    fn test_parse_object_random_bracket() {
+        let some_program_string = r#"{]}"#;
+
+        assert_err(
+            some_program_string,
+            "Unexpected character encountered. You might be missing a comma in between properties.",
+            [1, 3],
         );
     }
 
@@ -4667,7 +4688,7 @@ bar = 1
 
         assert_err(
             some_program_string,
-            "Object is missing a comma in between properties",
+            "Unexpected character encountered. You might be missing a comma in between properties.",
             [54, 89],
         );
     }
