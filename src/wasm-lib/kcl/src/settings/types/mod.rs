@@ -709,7 +709,6 @@ themeColor = "138"
 
 [settings.modeling]
 defaultUnit = "yd"
-cameraOrbit = "trackball"
 showDebugPanel = true
 
 [settings.textEditor]
