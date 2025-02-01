@@ -2561,7 +2561,7 @@ export const modelingMachine = setup({
 
         'Delete segment': {
           reenter: false,
-          actions: ['Delete segment', 'Set sketchDetails'],
+          actions: ['Delete segment', 'Set sketchDetails', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
       },
