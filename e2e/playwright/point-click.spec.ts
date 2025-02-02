@@ -1872,7 +1872,7 @@ segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
 ], %, $rectangleSegmentC001)
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-|> close(%)
+|> close()
 extrude001 = extrude(sketch001, length = 200)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
 |> startProfileAt([-66.77, 84.81], %)
@@ -1931,7 +1931,7 @@ segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
 ], %, $rectangleSegmentC001)
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-|> close(%)
+|> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
 |> circle({
@@ -1985,8 +1985,8 @@ radius = 8.69
           -segLen(rectangleSegmentA001)
       ], %, $rectangleSegmentC001)
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-      |> close(%)
-    extrude001 = extrudsketch001, length = e(5)
+      |> close()
+    extrude001 = extrude(sketch001, length = 5)
     sketch003 = startSketchOn(extrude001, 'START')
       |> circle({
         center = [-0.69, 0.56],
