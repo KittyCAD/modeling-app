@@ -793,7 +793,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
   |> line([-0.02, 0.21], %)
   |> line([-0.08, 0.05], %)
   |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> close()
 `
     expect(recasted).toEqual(expectedCode)
   })
