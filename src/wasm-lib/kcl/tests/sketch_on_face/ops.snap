@@ -90,66 +90,6 @@ description: Operations executed sketch_on_face.kcl
         ]
       },
       "tag": {
-        "value": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "here",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  74,
-                  105,
-                  0
-                ]
-              },
-              "from": [
-                11.19,
-                28.35
-              ],
-              "tag": {
-                "end": 104,
-                "start": 99,
-                "type": "TagDeclarator",
-                "value": "here"
-              },
-              "to": [
-                39.86,
-                15.100000000000001
-              ],
-              "type": "ToPoint"
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                74,
-                105,
-                0
-              ],
-              "tag": {
-                "end": 104,
-                "start": 99,
-                "type": "TagDeclarator",
-                "value": "here"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                99,
-                104,
-                0
-              ]
-            }
-          ]
-        },
         "sourceRange": [
           233,
           237,

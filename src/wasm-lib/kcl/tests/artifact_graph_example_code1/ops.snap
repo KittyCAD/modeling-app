@@ -119,66 +119,6 @@ description: Operations executed artifact_graph_example_code1.kcl
         ]
       },
       "tag": {
-        "value": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "seg02",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  125,
-                  150,
-                  0
-                ]
-              },
-              "from": [
-                5.550000000000001,
-                5.0
-              ],
-              "tag": {
-                "end": 149,
-                "start": 143,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "to": [
-                5.550000000000001,
-                -5.0
-              ],
-              "type": "ToPoint"
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                125,
-                150,
-                0
-              ],
-              "tag": {
-                "end": 149,
-                "start": 143,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                143,
-                149,
-                0
-              ]
-            }
-          ]
-        },
         "sourceRange": [
           340,
           345,
