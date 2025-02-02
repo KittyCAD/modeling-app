@@ -73,7 +73,7 @@ filletSketch = startSketchOn('XZ')
      }, %)
 
 // Sketch the bend
-filletExtrude = extrude(-width, filletSketch)
+filletExtrude = extrude(filletSketch, length = -width)
 
 // Create a custom plane for the leg that sits on the wall
 customPlane = {
@@ -102,7 +102,7 @@ bracketLeg2Sketch = startSketchOn(customPlane)
      }, %), %)
 
 // Extrude the second leg
-bracketLeg2Extrude = extrude(-thickness, bracketLeg2Sketch)
+bracketLeg2Extrude = extrude(bracketLeg2Sketch, length = -thickness)
   |> fillet({
        radius = extFilletRadius,
        tags = [
