@@ -31,7 +31,6 @@ import { engineCommandManager, kclManager } from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { isOverlap } from 'lib/utils'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
-import { c } from 'vite/dist/node/types.d-aGj9QkWt'
 
 beforeAll(async () => {
   await initPromise
