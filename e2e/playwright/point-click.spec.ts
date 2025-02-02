@@ -1442,12 +1442,12 @@ fillet04 = fillet({  radius = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)
       })
       await test.step('Verify piped fillet is deleted but non-piped is not (in the scene)', async () => {
         await scene.expectPixelColor(
-          edgeColorWhite,
+          edgeColorWhite, // you see edge because fillet is deleted
           pipedFilletEdgeLocation,
           lowTolerance
         )
         await scene.expectPixelColor(
-          backgroundColor,
+          backgroundColor, // you see background because fillet is not deleted
           standaloneFilletEdgeLocation,
           lowTolerance
         )
@@ -1830,12 +1830,12 @@ chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001
       })
       await test.step('Verify piped chamfer is deleted but non-piped is not (in the scene)', async () => {
         await scene.expectPixelColor(
-          edgeColorWhite,
+          edgeColorWhite, // you see edge color because chamfer is deleted
           pipedChamferEdgeLocation,
           lowTolerance
         )
         await scene.expectPixelColor(
-          backgroundColor,
+          backgroundColor, // you see background color instead of edge because it's chamfered
           standaloneChamferEdgeLocation,
           lowTolerance
         )
