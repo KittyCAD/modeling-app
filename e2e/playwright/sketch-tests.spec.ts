@@ -1427,7 +1427,7 @@ test.describe('Redirecting to home page and back to the original file should cle
         'persistCode',
         ` sketch001 = startSketchOn('XZ')
 |> startProfileAt([256.85, 14.41], %)
-|> lineTo([0, 211.07], %)
+|> line(endAbsolute = [0, 211.07])
 `
       )
     })
