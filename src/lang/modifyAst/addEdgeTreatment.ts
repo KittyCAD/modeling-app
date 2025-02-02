@@ -735,10 +735,11 @@ export async function deleteEdgeTreatment(
    * Handles both standalone treatments
    * and those within a PipeExpression.
    *
-   * Variations:
-   * [+] fillet or chamfer
-   * [+] fillet is in pipe or not
-   * [-] fillet with one or multiple tags
+   * Supported cases:
+   * [+] fillet and chamfer
+   * [+] piped and non-piped edge treatments
+   * [-] delete single tag from array of tags (currently whole expression is deleted)
+   * [-] multiple selections with different edge treatments (currently single selection is supported)
    */
 
   // 1. Validate Selection Type
