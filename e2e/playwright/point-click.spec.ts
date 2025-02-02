@@ -1871,7 +1871,7 @@ sketch001 = startSketchOn('XZ')
 segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
 ], %, $rectangleSegmentC001)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close(%)
 extrude001 = extrude(200, sketch001)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
@@ -1885,8 +1885,8 @@ segAng(rectangleSegmentA002) - 90,
 segAng(rectangleSegmentA002),
 -segLen(rectangleSegmentA002)
 ], %, $rectangleSegmentC002)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
-|> close(%)
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> close()
 `
 
     await context.addInitScript((initialCode) => {
@@ -1930,7 +1930,7 @@ segAng(rectangleSegmentA001) - 90,
 segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
 ], %, $rectangleSegmentC001)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close(%)
 extrude001 = extrude(50, sketch001)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
@@ -1984,7 +1984,7 @@ radius = 8.69
         segAng(rectangleSegmentA001),
           -segLen(rectangleSegmentA001)
       ], %, $rectangleSegmentC001)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close(%)
     extrude001 = extrude(5, sketch001)
     sketch003 = startSketchOn(extrude001, 'START')
