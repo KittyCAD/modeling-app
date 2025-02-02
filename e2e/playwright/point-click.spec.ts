@@ -1344,7 +1344,6 @@ test(`Fillet point-and-click delete`, async ({
   scene,
   editor,
   toolbar,
-  cmdBar,
 }) => {
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
@@ -1723,6 +1722,149 @@ chamfer01 = chamfer({ length = 5, tags = [getOppositeEdge(seg02)] }, extrude001)
     await page.waitForTimeout(500)
     await scene.expectPixelColor(edgeColorWhite, secondEdgeLocation, 15) // deleted
     await scene.expectPixelColor(chamferColor, firstEdgeLocation, 15) // stayed
+  })
+})
+
+test(`Chamfer point-and-click delete`, async ({
+  context,
+  page,
+  homePage,
+  scene,
+  editor,
+  toolbar,
+}) => {
+  // Code samples
+  const initialCode = `sketch001 = startSketchOn('XY')
+  |> startProfileAt([-12, -6], %)
+  |> line([0, 12], %)
+  |> line([24, 0], %, $seg02)
+  |> line([0, -12], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg01)
+  |> close(%)
+extrude001 = extrude(-12, sketch001)
+  |> chamfer({ length = 5, tags = [seg01] }, %) // chamfer01
+  |> chamfer({ length = 5, tags = [seg02] }, %) // chamfer02
+chamfer03 = chamfer({  length = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)
+chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)
+`
+  const pipedChamferDeclaration = 'chamfer({ length = 5, tags = [seg01] }, %)'
+  const secondPipedChamferDeclaration =
+    'chamfer({ length = 5, tags = [seg02] }, %)'
+  const standaloneChamferDeclaration =
+    'chamfer03 = chamfer({  length = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)'
+  const secondStandaloneChamferDeclaration =
+    'chamfer04 = chamfer({  length = 5,  tags = [getOppositeEdge(seg02)]}, extrude001)'
+
+  // Locators
+  const pipedChamferEdgeLocation = { x: 600, y: 193 }
+  const standaloneChamferEdgeLocation = { x: 600, y: 383 }
+  const bodyLocation = { x: 630, y: 290 }
+
+  // Colors
+  const edgeColorWhite: [number, number, number] = [248, 248, 248]
+  const bodyColor: [number, number, number] = [155, 155, 155]
+  const chamferColor: [number, number, number] = [168, 168, 168]
+  const backgroundColor: [number, number, number] = [30, 30, 30]
+  const lowTolerance = 20
+  const highTolerance = 40
+
+  // Setup
+  await test.step(`Initial test setup`, async () => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+
+    // verify modeling scene is loaded
+    await scene.expectPixelColor(
+      backgroundColor,
+      standaloneChamferEdgeLocation,
+      lowTolerance
+    )
+
+    // wait for stream to load
+    await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+  })
+
+  // Test
+  await test.step('Delete chamfer via feature tree selection', async () => {
+    await test.step('Open Feature Tree Pane', async () => {
+      await toolbar.openPane('feature-tree')
+      await page.waitForTimeout(500)
+    })
+
+    await test.step('Delete piped chamfer via feature tree selection', async () => {
+      await test.step('Verify all chamfers are present in the editor', async () => {
+        await editor.expectEditor.toContain(pipedChamferDeclaration)
+        await editor.expectEditor.toContain(secondPipedChamferDeclaration)
+        await editor.expectEditor.toContain(standaloneChamferDeclaration)
+        await editor.expectEditor.toContain(secondStandaloneChamferDeclaration)
+      })
+      await test.step('Verify test chamfers are present in the scene', async () => {
+        await scene.expectPixelColor(
+          chamferColor,
+          pipedChamferEdgeLocation,
+          lowTolerance
+        )
+        await scene.expectPixelColor(
+          backgroundColor,
+          standaloneChamferEdgeLocation,
+          lowTolerance
+        )
+      })
+      await test.step('Delete piped chamfer', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Chamfer',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Backspace')
+        await page.waitForTimeout(500)
+      })
+      await test.step('Verify piped chamfer is deleted but other chamfers are not (in the editor)', async () => {
+        await editor.expectEditor.not.toContain(pipedChamferDeclaration)
+        await editor.expectEditor.toContain(secondPipedChamferDeclaration)
+        await editor.expectEditor.toContain(standaloneChamferDeclaration)
+        await editor.expectEditor.toContain(secondStandaloneChamferDeclaration)
+      })
+      await test.step('Verify piped chamfer is deleted but non-piped is not (in the scene)', async () => {
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          pipedChamferEdgeLocation,
+          lowTolerance
+        )
+        await scene.expectPixelColor(
+          backgroundColor,
+          standaloneChamferEdgeLocation,
+          lowTolerance
+        )
+      })
+    })
+
+    await test.step('Delete non-piped chamfer via feature tree selection', async () => {
+      await test.step('Delete non-piped chamfer', async () => {
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'Chamfer',
+          1
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Backspace')
+        await page.waitForTimeout(500)
+      })
+      await test.step('Verify non-piped chamfer is deleted but other two chamfers are not (in the editor)', async () => {
+        await editor.expectEditor.toContain(secondPipedChamferDeclaration)
+        await editor.expectEditor.not.toContain(standaloneChamferDeclaration)
+        await editor.expectEditor.toContain(secondStandaloneChamferDeclaration)
+      })
+      await test.step('Verify non-piped chamfer is deleted but piped is not (in the scene)', async () => {
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          standaloneChamferEdgeLocation,
+          lowTolerance
+        )
+      })
+    })
   })
 })
 
