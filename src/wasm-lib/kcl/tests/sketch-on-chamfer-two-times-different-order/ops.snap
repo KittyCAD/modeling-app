@@ -125,13 +125,6 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
         ]
       },
       "tag": {
-        "value": {
-          "end": 626,
-          "start": 620,
-          "type": "TagDeclarator",
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
         "sourceRange": [
           620,
           626,
@@ -168,13 +161,6 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
         ]
       },
       "tag": {
-        "value": {
-          "end": 683,
-          "start": 677,
-          "type": "TagDeclarator",
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
         "sourceRange": [
           677,
           683,
@@ -204,42 +190,6 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
         ]
       },
       "tag": {
-        "value": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "seg04",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": null,
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                633,
-                684,
-                0
-              ],
-              "tag": {
-                "end": 683,
-                "start": 677,
-                "type": "TagDeclarator",
-                "value": "seg04"
-              },
-              "type": "chamfer"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                677,
-                683,
-                0
-              ]
-            }
-          ]
-        },
         "sourceRange": [
           724,
           729,
@@ -269,42 +219,6 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
         ]
       },
       "tag": {
-        "value": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "seg03",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": null,
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                540,
-                627,
-                0
-              ],
-              "tag": {
-                "end": 626,
-                "start": 620,
-                "type": "TagDeclarator",
-                "value": "seg03"
-              },
-              "type": "chamfer"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                620,
-                626,
-                0
-              ]
-            }
-          ]
-        },
         "sourceRange": [
           1172,
           1177,

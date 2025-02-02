@@ -89,66 +89,6 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
         ]
       },
       "tag": {
-        "value": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  92,
-                  125,
-                  0
-                ]
-              },
-              "from": [
-                4.0,
-                8.0
-              ],
-              "tag": {
-                "end": 124,
-                "start": 118,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                9.0,
-                0.0
-              ],
-              "type": "ToPoint"
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                92,
-                125,
-                0
-              ],
-              "tag": {
-                "end": 124,
-                "start": 118,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                118,
-                124,
-                0
-              ]
-            }
-          ]
-        },
         "sourceRange": [
           283,
           288,
@@ -302,66 +242,6 @@ description: Operations executed artifact_graph_sketch_on_face_etc.kcl
         ]
       },
       "tag": {
-        "value": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "seg02",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  577,
-                  611,
-                  0
-                ]
-              },
-              "from": [
-                1.0,
-                1.5
-              ],
-              "tag": {
-                "end": 610,
-                "start": 604,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "to": [
-                1.5,
-                3.5
-              ],
-              "type": "ToPoint"
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                577,
-                611,
-                0
-              ],
-              "tag": {
-                "end": 610,
-                "start": 604,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                604,
-                610,
-                0
-              ]
-            }
-          ]
-        },
         "sourceRange": [
           794,
           799,

@@ -138,66 +138,6 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
         ]
       },
       "tag": {
-        "value": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1099,
-                  1142,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                6.0
-              ],
-              "tag": {
-                "end": 1141,
-                "start": 1135,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                -8.0,
-                6.0
-              ],
-              "type": "ToPoint"
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1099,
-                1142,
-                0
-              ],
-              "tag": {
-                "end": 1141,
-                "start": 1135,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1135,
-                1141,
-                0
-              ]
-            }
-          ]
-        },
         "sourceRange": [
           1571,
           1576,

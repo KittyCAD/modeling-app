@@ -96,66 +96,6 @@ description: Operations executed pentagon_fillet_sugar.kcl
         ]
       },
       "tag": {
-        "value": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "c",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  317,
-                  373,
-                  0
-                ]
-              },
-              "from": [
-                -249.99999999999994,
-                433.01270189221935
-              ],
-              "tag": {
-                "end": 372,
-                "start": 370,
-                "type": "TagDeclarator",
-                "value": "c"
-              },
-              "to": [
-                0.00000000000011368683772161603,
-                0.00000000000005684341886080802
-              ],
-              "type": "ToPoint"
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                317,
-                373,
-                0
-              ],
-              "tag": {
-                "end": 372,
-                "start": 370,
-                "type": "TagDeclarator",
-                "value": "c"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                370,
-                372,
-                0
-              ]
-            }
-          ]
-        },
         "sourceRange": [
           459,
           463,
@@ -265,66 +205,6 @@ description: Operations executed pentagon_fillet_sugar.kcl
         ]
       },
       "tag": {
-        "value": {
-          "type": "TagIdentifier",
-          "type": "TagIdentifier",
-          "value": "a",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  194,
-                  249,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": {
-                "end": 248,
-                "start": 246,
-                "type": "TagDeclarator",
-                "value": "a"
-              },
-              "to": [
-                250.00000000000006,
-                433.0127018922193
-              ],
-              "type": "ToPoint"
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                194,
-                249,
-                0
-              ],
-              "tag": {
-                "end": 248,
-                "start": 246,
-                "type": "TagDeclarator",
-                "value": "a"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                246,
-                248,
-                0
-              ]
-            }
-          ]
-        },
         "sourceRange": [
           459,
           463,
