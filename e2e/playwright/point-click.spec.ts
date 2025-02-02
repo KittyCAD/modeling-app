@@ -1100,7 +1100,7 @@ test(`Fillet point-and-click`, async ({
   |> line(end = [0, -12])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(-12, sketch001)
+extrude001 = extrude(sketch001, length = -12)
 `
   const firstFilletDeclaration = 'fillet({ radius = 5, tags = [seg01] }, %)'
   const secondFilletDeclaration =
