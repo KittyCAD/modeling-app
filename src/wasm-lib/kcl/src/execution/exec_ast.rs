@@ -938,7 +938,7 @@ impl Node<CallExpressionKw> {
                         .collect();
                     Some(Operation::StdLibCall {
                         std_lib_fn: (&func).into(),
-                        unlabeled_arg: args.kw_args.unlabeled.as_ref().map(|arg| {
+                        unlabeled_arg: args.get_unlabeled_kw_arg_unconverted().map(|arg| {
                             OpArg::new(
                                 arg.value.operation_value(),
                                 arg.value.operation_artifact_ids(),
