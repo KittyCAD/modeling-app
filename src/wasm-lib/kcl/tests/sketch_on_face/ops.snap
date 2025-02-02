@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_on_face.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                24,
+                28,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           24,
           28,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                193,
+                194,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           193,
           194,
@@ -33,6 +58,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           196,
           197,
@@ -52,6 +80,9 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           224,
           231,
@@ -78,6 +109,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                364,
+                365,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           364,
           365,
@@ -85,6 +129,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           367,
           368,

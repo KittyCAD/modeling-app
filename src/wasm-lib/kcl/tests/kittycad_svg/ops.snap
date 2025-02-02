@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed kittycad_svg.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                20,
+                24,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           20,
           24,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                15826,
+                15827,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           15826,
           15827,
@@ -33,6 +58,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           15829,
           15830,

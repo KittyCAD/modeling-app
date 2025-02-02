@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed cube.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -23,6 +22,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 40.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                338,
+                340,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           310,
           316,
@@ -30,6 +42,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           318,
           319,

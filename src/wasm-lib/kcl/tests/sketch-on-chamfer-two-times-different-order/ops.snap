@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ",
+          "__meta": [
+            {
+              "sourceRange": [
+                26,
+                30,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           26,
           30,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 100.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                447,
+                450,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           447,
           450,
@@ -33,6 +58,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           452,
           461,
@@ -59,6 +87,9 @@ snapshot_kind: text
         ]
       },
       "solid": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           508,
           509,
@@ -85,6 +116,9 @@ snapshot_kind: text
         ]
       },
       "solid": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           593,
           594,
@@ -118,6 +152,9 @@ snapshot_kind: text
         ]
       },
       "solid": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           650,
           651,
@@ -144,6 +181,9 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           688,
           698,
@@ -170,6 +210,9 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1127,
           1137,
@@ -196,6 +239,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 50.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                1563,
+                1565,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1563,
           1565,
@@ -203,6 +259,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1567,
           1576,

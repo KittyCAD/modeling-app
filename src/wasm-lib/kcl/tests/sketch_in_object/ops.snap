@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_in_object.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -23,6 +22,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                35,
+                39,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           35,
           39,
@@ -45,6 +57,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": -10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                415,
+                418,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           415,
           418,
@@ -52,6 +77,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           420,
           421,
@@ -87,6 +115,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                231,
+                235,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           231,
           235,
@@ -109,6 +150,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                467,
+                469,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           467,
           469,
@@ -116,6 +170,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           471,
           472,

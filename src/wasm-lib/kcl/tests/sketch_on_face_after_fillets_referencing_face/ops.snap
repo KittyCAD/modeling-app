@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_on_face_after_fillets_referencing_face.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                1006,
+                1010,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1006,
           1010,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 6.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                594,
+                595,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1280,
           1285,
@@ -33,6 +58,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1287,
           1288,
@@ -59,6 +87,9 @@ snapshot_kind: text
         ]
       },
       "solid": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1384,
           1385,
@@ -85,6 +116,9 @@ snapshot_kind: text
         ]
       },
       "solid": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1493,
           1494,
@@ -104,6 +138,9 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1523,
           1530,
@@ -130,6 +167,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                1740,
+                1742,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1740,
           1742,
@@ -137,6 +187,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1744,
           1745,

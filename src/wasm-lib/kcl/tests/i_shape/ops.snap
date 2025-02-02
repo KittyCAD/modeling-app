@@ -1,12 +1,14 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed i_shape.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "hole_sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           2348,
           2353,
@@ -14,6 +16,9 @@ snapshot_kind: text
         ]
       },
       "sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           2355,
           2356,
@@ -33,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 3.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                2371,
+                2374,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           2371,
           2374,
@@ -40,6 +58,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           2376,
           2377,

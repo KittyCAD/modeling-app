@@ -1,12 +1,24 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed fillet-and-shell.kcl
-snapshot_kind: text
 ---
 [
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                764,
+                768,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           764,
           768,
@@ -26,6 +38,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 8.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                165,
+                166,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           963,
           973,
@@ -33,6 +58,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           975,
           976,
@@ -59,6 +87,9 @@ snapshot_kind: text
         ]
       },
       "solid": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1191,
           1192,
@@ -94,6 +125,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                1247,
+                1251,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1247,
           1251,
@@ -113,6 +157,9 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "hole_sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1350,
           1395,
@@ -120,6 +167,9 @@ snapshot_kind: text
         ]
       },
       "sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1397,
           1398,
@@ -139,6 +189,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                77,
+                78,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1415,
           1421,
@@ -146,6 +209,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1423,
           1424,
@@ -184,6 +250,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                1247,
+                1251,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1247,
           1251,
@@ -203,6 +282,9 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "hole_sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1350,
           1395,
@@ -210,6 +292,9 @@ snapshot_kind: text
         ]
       },
       "sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1397,
           1398,
@@ -229,6 +314,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                77,
+                78,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1415,
           1421,
@@ -236,6 +334,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1423,
           1424,
@@ -274,6 +375,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                1247,
+                1251,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1247,
           1251,
@@ -293,6 +407,9 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "hole_sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1350,
           1395,
@@ -300,6 +417,9 @@ snapshot_kind: text
         ]
       },
       "sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1397,
           1398,
@@ -319,6 +439,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                77,
+                78,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1415,
           1421,
@@ -326,6 +459,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1423,
           1424,
@@ -364,6 +500,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                1247,
+                1251,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1247,
           1251,
@@ -383,6 +532,9 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "hole_sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1350,
           1395,
@@ -390,6 +542,9 @@ snapshot_kind: text
         ]
       },
       "sketch": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1397,
           1398,
@@ -409,6 +564,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                77,
+                78,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           1415,
           1421,
@@ -416,6 +584,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           1423,
           1424,
@@ -445,6 +616,9 @@ snapshot_kind: text
         ]
       },
       "solid_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           2018,
           2022,

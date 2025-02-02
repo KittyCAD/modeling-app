@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed sketch_on_face_start.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -23,6 +22,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "value": {
+          "type": "String",
+          "value": "XY",
+          "__meta": [
+            {
+              "sourceRange": [
+                43,
+                47,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           43,
           47,
@@ -45,6 +57,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 20.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                230,
+                232,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           230,
           232,
@@ -52,6 +77,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           234,
           235,
@@ -71,6 +99,9 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "data": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           269,
           272,
@@ -78,6 +109,19 @@ snapshot_kind: text
         ]
       },
       "tag": {
+        "value": {
+          "type": "String",
+          "value": "start",
+          "__meta": [
+            {
+              "sourceRange": [
+                274,
+                281,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           274,
           281,
@@ -97,6 +141,19 @@ snapshot_kind: text
   {
     "labeledArgs": {
       "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                408,
+                409,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           408,
           409,
@@ -104,6 +161,9 @@ snapshot_kind: text
         ]
       },
       "sketch_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           411,
           412,

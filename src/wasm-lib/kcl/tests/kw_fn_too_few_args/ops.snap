@@ -1,7 +1,6 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed kw_fn_too_few_args.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -15,6 +14,19 @@ snapshot_kind: text
     "unlabeledArg": null,
     "labeledArgs": {
       "x": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "__meta": [
+            {
+              "sourceRange": [
+                49,
+                50,
+                0
+              ]
+            }
+          ]
+        },
         "sourceRange": [
           49,
           50,

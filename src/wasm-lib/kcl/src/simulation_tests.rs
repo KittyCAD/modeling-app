@@ -105,7 +105,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
                 });
             });
             assert_snapshot(test_name, "Operations executed", || {
-                insta::assert_json_snapshot!("ops", exec_state.mod_local.operations);
+                insta::assert_json_snapshot!("ops", exec_state.mod_local.operations, {
+                    "[].unlabeledArg.*.value.**[].from[]" => rounded_redaction(4),
+                    "[].unlabeledArg.*.value.**[].to[]" => rounded_redaction(4),
+                    "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
+                    "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
+                });
             });
             assert_snapshot(test_name, "Artifact commands", || {
                 insta::assert_json_snapshot!("artifact_commands", exec_state.global.artifact_commands, {
@@ -154,7 +159,12 @@ async fn execute(test_name: &str, render_to_png: bool) {
                     });
 
                     assert_snapshot(test_name, "Operations executed", || {
-                        insta::assert_json_snapshot!("ops", error.operations);
+                        insta::assert_json_snapshot!("ops", error.operations, {
+                            "[].unlabeledArg.*.value.**[].from[]" => rounded_redaction(4),
+                            "[].unlabeledArg.*.value.**[].to[]" => rounded_redaction(4),
+                            "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
+                            "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
+                        });
                     });
 
                     assert_snapshot(test_name, "Artifact commands", || {

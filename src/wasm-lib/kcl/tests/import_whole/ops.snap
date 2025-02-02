@@ -13,6 +13,9 @@ description: Operations executed import_whole.kcl
         ]
       },
       "solid_set": {
+        "artifactIds": [
+          "[uuid]"
+        ],
         "sourceRange": [
           128,
           129,
