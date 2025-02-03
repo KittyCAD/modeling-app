@@ -2273,10 +2273,6 @@ radius = 8.69
     const lineCodeToSelection = `|> angledLine([0, 202.6], %, $rectangleSegmentA001)`
     await page.getByText(lineCodeToSelection).click()
     await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
 
     const newCodeToFind = `revolve001 = revolve({angle = 360, axis = getOppositeEdge(rectangleSegmentA001)}, sketch002) `
     expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
@@ -2327,10 +2323,6 @@ radius = 8.69
     await page.getByText('Edge', { exact: true }).click()
     const lineCodeToSelection = `|> xLine(2.6, %)`
     await page.getByText(lineCodeToSelection).click()
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
 
     const newCodeToFind = `revolve001 = revolve({ angle = 360, axis = seg01 }, sketch003)`
