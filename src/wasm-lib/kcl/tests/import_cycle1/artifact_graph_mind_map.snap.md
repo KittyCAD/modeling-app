@@ -1,0 +1,4 @@
+```mermaid
+mindmap
+  root
+```

@@ -9,6 +9,7 @@ import {
   UnitAngle_type,
   UnitLength_type,
 } from '@kittycad/lib/dist/types/src/models'
+import { CameraOrbitType } from 'wasm-lib/kcl/bindings/CameraOrbitType'
 
 export interface SettingsViaQueryString {
   pool: string | null
@@ -17,6 +18,7 @@ export interface SettingsViaQueryString {
   enableSSAO: boolean
   showScaleGrid: boolean
   cameraProjection: CameraProjectionType
+  cameraOrbit: CameraOrbitType
 }
 
 export enum UnitSystem {

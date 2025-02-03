@@ -572,7 +572,7 @@ test(
       fs.utimesSync(`${dir}/lego/main.kcl`, _1995, _1995)
     })
 
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 600 })
 
     page.on('console', console.log)
 

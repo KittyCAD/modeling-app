@@ -26,7 +26,7 @@ export const FILE_EXT = '.kcl'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
-export const PROJECT_IMAGE_NAME = `main.jpg` as const
+export const PROJECT_IMAGE_NAME = `thumbnail.png` as const
 /** The localStorage key for last-opened projects */
 export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
@@ -68,8 +68,6 @@ export const KCL_DEFAULT_DEGREE = `360`
 /** localStorage key for the playwright test-specific app settings file */
 export const TEST_SETTINGS_FILE_KEY = 'playwright-test-settings'
 
-export const DEFAULT_HOST = 'https://api.zoo.dev'
-export const PROD_APP_URL = 'https://app.zoo.dev'
 export const SETTINGS_FILE_NAME = 'settings.toml'
 export const TOKEN_FILE_NAME = 'token.txt'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
@@ -145,7 +143,7 @@ export const VIEW_NAMES_SEMANTIC = {
 export const SIDEBAR_BUTTON_SUFFIX = '-pane-button'
 
 /** Custom URL protocol our desktop registers */
-export const ZOO_STUDIO_PROTOCOL = 'zoo-studio:'
+export const ZOO_STUDIO_PROTOCOL = 'zoo-studio'
 
 /**
  * A query parameter that triggers a modal

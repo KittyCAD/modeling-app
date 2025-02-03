@@ -75,3 +75,6 @@ publish:
     channel: latest
 releaseInfo:
   releaseNotesFile: release-notes.md
+protocols:
+  - name: Zoo Studio
+    schemes: ['zoo-studio']

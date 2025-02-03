@@ -108,17 +108,17 @@ jobs:
         run: yarn files:set-notes
 
       - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v2.1.7'
+        uses: 'google-github-actions/auth@v2.1.8'
         with:
           credentials_json: '${{ secrets.GOOGLE_CLOUD_DL_SA }}'
 
       - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2.1.2
+        uses: google-github-actions/setup-gcloud@v2.1.4
         with:
           project_id: ${{ env.GOOGLE_CLOUD_PROJECT_ID }}
 
       - name: Upload release files to public bucket
-        uses: google-github-actions/upload-cloud-storage@v2.2.1
+        uses: google-github-actions/upload-cloud-storage@v2.2.2
         with:
           path: out
           glob: '*'
