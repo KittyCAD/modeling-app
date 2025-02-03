@@ -1585,9 +1585,10 @@ impl Path {
             }
             Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
             Self::CircleThreePoint { p1, p2, p3, .. } => {
-              let circle_params = crate::std::utils::calculate_circle_from_3_points([p1.into(), p2.into(), p3.into()]);
-              2.0 * std::f64::consts::PI * circle_params.radius
-            },
+                let circle_params =
+                    crate::std::utils::calculate_circle_from_3_points([p1.into(), p2.into(), p3.into()]);
+                2.0 * std::f64::consts::PI * circle_params.radius
+            }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
                 linear_distance(self.get_from(), self.get_to())
@@ -1624,16 +1625,15 @@ impl Path {
                 ccw: *ccw,
                 radius: *radius,
             },
-            Path::CircleThreePoint {
-                p1, p2, p3, ..
-            } => {
-              let circle_params = crate::std::utils::calculate_circle_from_3_points([p1.into(), p2.into(), p3.into()]);
-              GetTangentialInfoFromPathsResult::Circle {
-                center: circle_params.center.into(),
-                ccw: true,
-                radius: circle_params.radius,
-              }
-            },
+            Path::CircleThreePoint { p1, p2, p3, .. } => {
+                let circle_params =
+                    crate::std::utils::calculate_circle_from_3_points([p1.into(), p2.into(), p3.into()]);
+                GetTangentialInfoFromPathsResult::Circle {
+                    center: circle_params.center.into(),
+                    ccw: true,
+                    radius: circle_params.radius,
+                }
+            }
             Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)
