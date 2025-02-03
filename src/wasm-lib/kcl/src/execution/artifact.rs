@@ -186,6 +186,9 @@ pub struct Wall {
     pub sweep_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
+    /// This is for the sketch-on-face plane, not for the wall itself.  Traverse
+    /// to the extrude and/or segment to get the wall's code_ref.
+    pub face_code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -199,6 +202,9 @@ pub struct Cap {
     pub sweep_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub path_ids: Vec<ArtifactId>,
+    /// This is for the sketch-on-face plane, not for the cap itself.  Traverse
+    /// to the extrude and/or segment to get the cap's code_ref.
+    pub face_code_ref: CodeRef,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -608,6 +614,17 @@ fn artifacts_to_update(
                         edge_cut_edge_ids: wall.edge_cut_edge_ids.clone(),
                         sweep_id: wall.sweep_id,
                         path_ids: wall.path_ids.clone(),
+                        face_code_ref: wall.face_code_ref.clone(),
+                    })]);
+                }
+                Some(Artifact::Cap(cap)) => {
+                    return Ok(vec![Artifact::Cap(Cap {
+                        id: current_plane_id.into(),
+                        sub_type: cap.sub_type,
+                        edge_cut_edge_ids: cap.edge_cut_edge_ids.clone(),
+                        sweep_id: cap.sweep_id,
+                        path_ids: cap.path_ids.clone(),
+                        face_code_ref: cap.face_code_ref.clone(),
                     })]);
                 }
                 Some(_) | None => {
@@ -654,6 +671,7 @@ fn artifacts_to_update(
                     edge_cut_edge_ids: wall.edge_cut_edge_ids.clone(),
                     sweep_id: wall.sweep_id,
                     path_ids: vec![id],
+                    face_code_ref: wall.face_code_ref.clone(),
                 }));
             }
             return Ok(return_arr);
@@ -776,13 +794,15 @@ fn artifacts_to_update(
                         "Expected a sweep ID on the path when processing Solid3dGetExtrusionFaceInfo command, but we have none: {id:?}, {path:?}"
                     ))
                 })?;
-                return_arr.push(Artifact::Wall(Wall {
+                let extraArtifacts = ;
+                let wall = Wall {
                     id: face_id,
                     seg_id: curve_id,
                     edge_cut_edge_ids: Vec::new(),
                     sweep_id: path_sweep_id,
                     path_ids: vec![],
-                }));
+                };
+                return_arr.push(Artifact::Wall(wall));
                 let mut new_seg = seg.clone();
                 new_seg.surface_id = Some(face_id);
                 return_arr.push(Artifact::Segment(new_seg));
