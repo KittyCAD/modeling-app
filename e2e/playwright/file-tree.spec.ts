@@ -19,7 +19,7 @@ test.describe('integrations tests', () => {
         )
       })
 
-      const [clickObj] = await scene.makeMouseHelpers(600, 300)
+      const [clickObj] = await scene.makeMouseHelpers(726, 272)
 
       await test.step('setup test', async () => {
         await homePage.expectState({
@@ -61,6 +61,7 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
+        await scene.waitForExecutionDone()
         await clickObj()
         await scene.moveNoWhere()
         await editor.expectState({
