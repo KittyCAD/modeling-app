@@ -2,7 +2,7 @@
 
 use std::{
     cell::RefCell,
-    collections::HashMap,
+    collections::{BTreeMap, HashMap},
     fmt,
     ops::{Deref, DerefMut, RangeInclusive},
     rc::Rc,
@@ -1175,7 +1175,7 @@ impl NonCodeValue {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct NonCodeMeta {
-    pub non_code_nodes: HashMap<usize, NodeList<NonCodeNode>>,
+    pub non_code_nodes: BTreeMap<usize, NodeList<NonCodeNode>>,
     pub start_nodes: NodeList<NonCodeNode>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1214,7 +1214,7 @@ impl<'de> Deserialize<'de> for NonCodeMeta {
             .non_code_nodes
             .into_iter()
             .map(|(key, value)| Ok((key.parse().map_err(serde::de::Error::custom)?, value)))
-            .collect::<Result<HashMap<_, _>, _>>()?;
+            .collect::<Result<BTreeMap<_, _>, _>>()?;
         Ok(NonCodeMeta {
             non_code_nodes,
             start_nodes: helper.start_nodes,
