@@ -1527,34 +1527,32 @@ test(
   { tag: '@electron' },
   async ({ context, page, cmdBar, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
-      await Promise.all([
-        fsp.mkdir(path.join(dir, 'router-template-slate'), { recursive: true }),
-        fsp.mkdir(path.join(dir, 'bracket'), { recursive: true }),
-      ])
-      await Promise.all([
-        fsp.copyFile(
-          path.join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs',
-            'router-template-slate.kcl'
-          ),
-          path.join(dir, 'router-template-slate', 'main.kcl')
+      await fsp.mkdir(path.join(dir, 'router-template-slate'), {
+        recursive: true,
+      })
+      await fsp.copyFile(
+        path.join(
+          'src',
+          'wasm-lib',
+          'tests',
+          'executor',
+          'inputs',
+          'router-template-slate.kcl'
         ),
-        fsp.copyFile(
-          path.join(
-            'src',
-            'wasm-lib',
-            'tests',
-            'executor',
-            'inputs',
-            'focusrite_scarlett_mounting_braket.kcl'
-          ),
-          path.join(dir, 'bracket', 'main.kcl')
+        path.join(dir, 'router-template-slate', 'main.kcl')
+      )
+      await fsp.mkdir(path.join(dir, 'bracket'), { recursive: true })
+      await fsp.copyFile(
+        path.join(
+          'src',
+          'wasm-lib',
+          'tests',
+          'executor',
+          'inputs',
+          'focusrite_scarlett_mounting_braket.kcl'
         ),
-      ])
+        path.join(dir, 'bracket', 'main.kcl')
+      )
     })
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })

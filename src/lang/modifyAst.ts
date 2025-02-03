@@ -52,6 +52,7 @@ import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { KclExpressionWithVariable } from 'lib/commandTypes'
 import { Artifact, getPathsFromArtifact } from './std/artifactGraph'
 import { BodyItem } from 'wasm-lib/kcl/bindings/BodyItem'
+import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -1363,6 +1364,8 @@ export async function deleteFromSelection(
     }
     // await prom
     return astClone
+  } else if (selection.artifact?.type === 'edgeCut') {
+    return deleteEdgeTreatment(astClone, selection)
   } else if (varDec.node.init.type === 'PipeExpression') {
     const pipeBody = varDec.node.init.body
     if (
