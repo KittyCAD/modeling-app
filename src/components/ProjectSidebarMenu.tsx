@@ -19,7 +19,6 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useSelector } from '@xstate/react'
 import { copyFileShareLink } from 'lib/links'
 import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
 import { useToken } from 'machines/appMachine'
 
 const ProjectSidebarMenu = ({
@@ -193,8 +192,8 @@ function ProjectMenuPopover({
         {
           id: 'share-link',
           Element: 'button',
-          children: 'Share link to file',
-          disabled: IS_NIGHTLY_OR_DEBUG || !findCommand(shareCommandInfo),
+          children: 'Share a copy through Zoo',
+          disabled: !findCommand(shareCommandInfo),
           onClick: async () => {
             await copyFileShareLink({
               token: token ?? '',
