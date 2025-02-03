@@ -11,8 +11,8 @@ use crate::{
         cad_op::{OpArg, Operation},
         memory,
         state::ModuleState,
-        BodyType, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata, ProgramMemory, TagEngineInfo,
-        TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, MemoryFunction, Metadata,
+        ProgramMemory, TagEngineInfo, TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
@@ -114,20 +114,21 @@ impl ExecutorContext {
 
                     match &import_stmt.selector {
                         ImportSelector::List { items } => {
-                            let (_, module_memory, module_exports) = self
+                            let (_, env_ref, module_exports) = self
                                 .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
                                 .await?;
                             for import_item in items {
                                 // Extract the item from the module.
-                                let item =
-                                    module_memory
-                                        .get(&import_item.name.name, import_item.into())
-                                        .map_err(|_err| {
-                                            KclError::UndefinedValue(KclErrorDetails {
-                                                message: format!("{} is not defined in module", import_item.name.name),
-                                                source_ranges: vec![SourceRange::from(&import_item.name)],
-                                            })
-                                        })?;
+                                let item = exec_state
+                                    .memory()
+                                    .get_from(&import_item.name.name, env_ref.unwrap(), import_item.into())
+                                    .map_err(|_err| {
+                                        KclError::UndefinedValue(KclErrorDetails {
+                                            message: format!("{} is not defined in module", import_item.name.name),
+                                            source_ranges: vec![SourceRange::from(&import_item.name)],
+                                        })
+                                    })?
+                                    .clone();
                                 // Check that the item is allowed to be imported.
                                 if !module_exports.contains(&import_item.name.name) {
                                     return Err(KclError::Semantic(KclErrorDetails {
@@ -142,7 +143,7 @@ impl ExecutorContext {
                                 // Add the item to the current module.
                                 exec_state.mut_memory().add(
                                     import_item.identifier(),
-                                    item.clone(),
+                                    item,
                                     SourceRange::from(&import_item.name),
                                 )?;
 
@@ -155,17 +156,21 @@ impl ExecutorContext {
                             }
                         }
                         ImportSelector::Glob(_) => {
-                            let (_, module_memory, module_exports) = self
+                            let (_, env_ref, module_exports) = self
                                 .exec_module(module_id, exec_state, ExecutionKind::Isolated, source_range)
                                 .await?;
                             for name in module_exports.iter() {
-                                let item = module_memory.get(name, source_range).map_err(|_err| {
-                                    KclError::Internal(KclErrorDetails {
-                                        message: format!("{} is not defined in module (but was exported?)", name),
-                                        source_ranges: vec![source_range],
-                                    })
-                                })?;
-                                exec_state.mut_memory().add(name, item.clone(), source_range)?;
+                                let item = exec_state
+                                    .memory()
+                                    .get_from(name, env_ref.unwrap(), source_range)
+                                    .map_err(|_err| {
+                                        KclError::Internal(KclErrorDetails {
+                                            message: format!("{} is not defined in module (but was exported?)", name),
+                                            source_ranges: vec![source_range],
+                                        })
+                                    })?
+                                    .clone();
+                                exec_state.mut_memory().add(name, item, source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
                                     exec_state.mod_local.module_exports.push(name.clone());
@@ -325,7 +330,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         exec_kind: ExecutionKind,
         source_range: SourceRange,
-    ) -> Result<(Option<KclValue>, ProgramMemory, Vec<String>), KclError> {
+    ) -> Result<(Option<KclValue>, Option<EnvironmentRef>, Vec<String>), KclError> {
         let old_units = exec_state.length_unit();
         // TODO It sucks that we have to clone the whole module AST here
         let info = exec_state.global.module_infos[&module_id].clone();
@@ -350,6 +355,7 @@ impl ExecutorContext {
                 let mut local_state = ModuleState::new(&self.settings);
                 exec_state.global.mod_loader.enter_module(&info.path);
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                exec_state.mut_memory().push_new_root_env();
                 let original_execution = self.engine.replace_execution_kind(exec_kind);
 
                 let result = self
@@ -358,6 +364,7 @@ impl ExecutorContext {
 
                 let new_units = exec_state.length_unit();
                 std::mem::swap(&mut exec_state.mod_local, &mut local_state);
+                let env_ref = exec_state.mut_memory().pop_env();
                 exec_state.global.mod_loader.leave_module(&info.path);
                 if !exec_kind.is_isolated() && new_units != old_units {
                     self.engine.set_units(old_units.into(), Default::default()).await?;
@@ -380,11 +387,11 @@ impl ExecutorContext {
                     }
                 })?;
 
-                Ok((result, local_state.memory, local_state.module_exports))
+                Ok((result, Some(env_ref), local_state.module_exports))
             }
             ModuleRepr::Foreign(geom) => {
                 let geom = super::import::send_to_engine(geom.clone(), self).await?;
-                Ok((Some(KclValue::ImportedGeometry(geom)), ProgramMemory::new(), Vec::new()))
+                Ok((Some(KclValue::ImportedGeometry(geom)), None, Vec::new()))
             }
         }
     }
@@ -426,17 +433,12 @@ impl ExecutorContext {
                 }
             }
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
-            Expr::FunctionExpression(function_expression) => {
-                // Cloning memory here is crucial for semantics so that we close
-                // over variables.  Variables defined lexically later shouldn't
-                // be available to the function body.
-                KclValue::Function {
-                    expression: function_expression.clone(),
-                    meta: vec![metadata.to_owned()],
-                    func: None,
-                    memory: Box::new(exec_state.memory().clone()),
-                }
-            }
+            Expr::FunctionExpression(function_expression) => KclValue::Function {
+                expression: function_expression.clone(),
+                meta: vec![metadata.to_owned()],
+                func: None,
+                memory: exec_state.mut_memory().snapshot(),
+            },
             Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
@@ -928,7 +930,6 @@ impl Node<CallExpressionKw> {
                 // Clone the function so that we can use a mutable reference to
                 // exec_state.
                 let func = exec_state.memory().get(fn_name, source_range)?.clone();
-                let fn_dynamic_state = exec_state.mod_local.dynamic_state.merge(exec_state.memory());
 
                 // Track call operation.
                 let op_labeled_args = args
@@ -948,20 +949,14 @@ impl Node<CallExpressionKw> {
                         source_range: callsite,
                     });
 
-                let return_value = {
-                    let previous_dynamic_state =
-                        std::mem::replace(&mut exec_state.mod_local.dynamic_state, fn_dynamic_state);
-                    let result = func
-                        .call_fn_kw(args, exec_state, ctx.clone(), callsite)
-                        .await
-                        .map_err(|e| {
-                            // Add the call expression to the source ranges.
-                            // TODO currently ignored by the frontend
-                            e.add_source_ranges(vec![source_range])
-                        });
-                    exec_state.mod_local.dynamic_state = previous_dynamic_state;
-                    result?
-                };
+                let return_value = func
+                    .call_fn_kw(args, exec_state, ctx.clone(), callsite)
+                    .await
+                    .map_err(|e| {
+                        // Add the call expression to the source ranges.
+                        // TODO currently ignored by the frontend
+                        e.add_source_ranges(vec![source_range])
+                    })?;
 
                 let result = return_value.ok_or_else(move || {
                     let mut source_ranges: Vec<SourceRange> = vec![source_range];
@@ -1036,7 +1031,9 @@ impl Node<CallExpression> {
                 );
                 let mut return_value = {
                     // Don't early-return in this block.
+                    exec_state.mut_memory().push_new_env_for_rust_call();
                     let result = func.std_lib_fn()(exec_state, args).await;
+                    exec_state.mut_memory().pop_env();
 
                     if let Some(mut op) = op {
                         op.set_std_lib_call_is_error(result.is_err());
@@ -1059,7 +1056,6 @@ impl Node<CallExpression> {
                 // Clone the function so that we can use a mutable reference to
                 // exec_state.
                 let func = exec_state.memory().get(fn_name, source_range)?.clone();
-                let fn_dynamic_state = exec_state.mod_local.dynamic_state.merge(exec_state.memory());
 
                 // Track call operation.
                 exec_state
@@ -1074,17 +1070,11 @@ impl Node<CallExpression> {
                         source_range: callsite,
                     });
 
-                let return_value = {
-                    let previous_dynamic_state =
-                        std::mem::replace(&mut exec_state.mod_local.dynamic_state, fn_dynamic_state);
-                    let result = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
-                        // Add the call expression to the source ranges.
-                        // TODO currently ignored by the frontend
-                        e.add_source_ranges(vec![source_range])
-                    });
-                    exec_state.mod_local.dynamic_state = previous_dynamic_state;
-                    result?
-                };
+                let return_value = func.call_fn(fn_args, exec_state, ctx.clone()).await.map_err(|e| {
+                    // Add the call expression to the source ranges.
+                    // TODO currently ignored by the frontend
+                    e.add_source_ranges(vec![source_range])
+                })?;
 
                 let result = return_value.ok_or_else(move || {
                     let mut source_ranges: Vec<SourceRange> = vec![source_range];
@@ -1563,7 +1553,7 @@ fn assign_args_to_params_kw(
 
 pub(crate) async fn call_user_defined_function(
     args: Vec<Arg>,
-    memory: &ProgramMemory,
+    memory: EnvironmentRef,
     function_expression: NodeRef<'_, FunctionExpression>,
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
@@ -1571,33 +1561,32 @@ pub(crate) async fn call_user_defined_function(
     // Create a new environment to execute the function body in so that local
     // variables shadow variables in the parent scope.  The new environment's
     // parent should be the environment of the closure.
-    let mut fn_memory = memory.clone();
-    fn_memory.push_new_env_for_call();
-    assign_args_to_params(function_expression, args, &mut fn_memory)?;
+    exec_state.mut_memory().push_new_env_for_call(memory);
+    if let Err(e) = assign_args_to_params(function_expression, args, exec_state.mut_memory()) {
+        exec_state.mut_memory().pop_env();
+        return Err(e);
+    }
 
     // Execute the function body using the memory we just created.
-    let (result, fn_memory) = {
-        let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
-        let result = ctx
-            .exec_program(&function_expression.body, exec_state, BodyType::Block)
-            .await;
-        // Restore the previous memory.
-        let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
-
-        (result, fn_memory)
-    };
-
-    result.map(|_| {
-        fn_memory
+    let result = ctx
+        .exec_program(&function_expression.body, exec_state, BodyType::Block)
+        .await;
+    let result = result.map(|_| {
+        exec_state
+            .memory()
             .get(memory::RETURN_NAME, function_expression.as_source_range())
             .ok()
             .cloned()
-    })
+    });
+    // Restore the previous memory.
+    exec_state.mut_memory().pop_env();
+
+    result
 }
 
 pub(crate) async fn call_user_defined_function_kw(
     args: crate::std::args::KwArgs,
-    memory: &ProgramMemory,
+    memory: EnvironmentRef,
     function_expression: NodeRef<'_, FunctionExpression>,
     exec_state: &mut ExecState,
     ctx: &ExecutorContext,
@@ -1605,35 +1594,34 @@ pub(crate) async fn call_user_defined_function_kw(
     // Create a new environment to execute the function body in so that local
     // variables shadow variables in the parent scope.  The new environment's
     // parent should be the environment of the closure.
-    let mut fn_memory = memory.clone();
-    fn_memory.push_new_env_for_call();
-    assign_args_to_params_kw(function_expression, args, &mut fn_memory)?;
+    exec_state.mut_memory().push_new_env_for_call(memory);
+    if let Err(e) = assign_args_to_params_kw(function_expression, args, exec_state.mut_memory()) {
+        exec_state.mut_memory().pop_env();
+        return Err(e);
+    }
 
     // Execute the function body using the memory we just created.
-    let (result, fn_memory) = {
-        let previous_memory = std::mem::replace(&mut exec_state.mod_local.memory, fn_memory);
-        let result = ctx
-            .exec_program(&function_expression.body, exec_state, BodyType::Block)
-            .await;
-        // Restore the previous memory.
-        let fn_memory = std::mem::replace(&mut exec_state.mod_local.memory, previous_memory);
-
-        (result, fn_memory)
-    };
-
-    result.map(|_| {
-        fn_memory
+    let result = ctx
+        .exec_program(&function_expression.body, exec_state, BodyType::Block)
+        .await;
+    let result = result.map(|_| {
+        exec_state
+            .memory()
             .get(memory::RETURN_NAME, function_expression.as_source_range())
             .ok()
             .cloned()
-    })
+    });
+    // Restore the previous memory.
+    exec_state.mut_memory().pop_env();
+
+    result
 }
 
 /// A function being used as a parameter into a stdlib function.  This is a
 /// closure, plus everything needed to execute it.
 pub struct FunctionParam<'a> {
     pub inner: Option<&'a MemoryFunction>,
-    pub memory: ProgramMemory,
+    pub memory: EnvironmentRef,
     pub fn_expr: crate::parsing::ast::types::BoxNode<FunctionExpression>,
     pub meta: Vec<Metadata>,
     pub ctx: ExecutorContext,
@@ -1644,7 +1632,7 @@ impl FunctionParam<'_> {
         if let Some(inner) = self.inner {
             inner(
                 args,
-                self.memory.clone(),
+                self.memory,
                 self.fn_expr.clone(),
                 self.meta.clone(),
                 exec_state,
@@ -1652,7 +1640,7 @@ impl FunctionParam<'_> {
             )
             .await
         } else {
-            call_user_defined_function(args, &self.memory, self.fn_expr.as_ref(), exec_state, &self.ctx).await
+            call_user_defined_function(args, self.memory, self.fn_expr.as_ref(), exec_state, &self.ctx).await
         }
     }
 }

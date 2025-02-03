@@ -255,11 +255,16 @@ impl Args {
                 ids.extend(
                     exec_state
                         .memory()
-                        .find_solids_on_sketch(solid.sketch.id)
-                        .iter()
-                        .flat_map(|eg| eg.get_all_edge_cut_ids()),
+                        .walk_call_stack()
+                        .filter(|v| match v {
+                            KclValue::Solid { value } if value.sketch.id == sketch_id => true,
+                            _ => false,
+                        })
+                        .flat_map(|v| match v {
+                            KclValue::Solid { value } => value.get_all_edge_cut_ids(),
+                            _ => unreachable!(),
+                        }),
                 );
-                ids.extend(exec_state.mod_local.dynamic_state.edge_cut_ids_on_sketch(sketch_id));
                 traversed_sketches.push(sketch_id);
             }
 

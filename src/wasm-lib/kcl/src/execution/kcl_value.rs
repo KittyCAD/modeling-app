@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclErrorDetails,
-    exec::{ProgramMemory, Sketch},
+    exec::Sketch,
     execution::{
         Face, Helix, ImportedGeometry, MemoryFunction, Metadata, Plane, SketchSet, Solid, SolidSet, TagIdentifier,
     },
@@ -17,6 +17,8 @@ use crate::{
     std::{args::Arg, FnAsArg},
     ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
 };
+
+use super::memory::EnvironmentRef;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
@@ -94,7 +96,7 @@ pub enum KclValue {
         func: Option<MemoryFunction>,
         #[schemars(skip)]
         expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
-        memory: Box<ProgramMemory>,
+        memory: EnvironmentRef,
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -105,6 +107,12 @@ pub enum KclValue {
     },
     KclNone {
         value: KclNone,
+        #[serde(rename = "__meta")]
+        meta: Vec<Metadata>,
+    },
+    // Only used for memory management. Should never be visible outside of the memory module.
+    Tombstone {
+        value: (),
         #[serde(rename = "__meta")]
         meta: Vec<Metadata>,
     },
@@ -166,6 +174,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Module { meta, .. } => to_vec_sr(&meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
+            KclValue::Tombstone { .. } => unreachable!(),
         }
     }
 }
@@ -197,6 +206,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Object { meta, .. } => to_vec_sr(meta),
             KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
+            KclValue::Tombstone { .. } => unreachable!(),
         }
     }
 }
@@ -224,6 +234,7 @@ impl KclValue {
             KclValue::Function { meta, .. } => meta.clone(),
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
+            KclValue::Tombstone { .. } => unreachable!(),
         }
     }
 
@@ -291,6 +302,7 @@ impl KclValue {
             KclValue::Object { .. } => "object",
             KclValue::Module { .. } => "module",
             KclValue::KclNone { .. } => "None",
+            KclValue::Tombstone { .. } => "TOMBSTONE",
         }
     }
 
@@ -454,7 +466,7 @@ impl KclValue {
         Some(FnAsArg {
             func: func.as_ref(),
             expr: expression.to_owned(),
-            memory: memory.to_owned(),
+            memory: *memory,
         })
     }
 
@@ -518,24 +530,19 @@ impl KclValue {
         } = &self
         else {
             return Err(KclError::Semantic(KclErrorDetails {
-                message: "not a in memory function".to_string(),
+                message: "not an in-memory function".to_string(),
                 source_ranges: vec![],
             }));
         };
         if let Some(func) = func {
-            func(
-                args,
-                closure_memory.as_ref().clone(),
-                expression.clone(),
-                meta.clone(),
-                exec_state,
-                ctx,
-            )
-            .await
+            exec_state.mut_memory().push_new_env_for_call(*closure_memory);
+            let result = func(args, *closure_memory, expression.clone(), meta.clone(), exec_state, ctx).await;
+            exec_state.mut_memory().pop_env();
+            result
         } else {
             crate::execution::exec_ast::call_user_defined_function(
                 args,
-                closure_memory.as_ref(),
+                *closure_memory,
                 expression.as_ref(),
                 exec_state,
                 &ctx,
@@ -570,7 +577,7 @@ impl KclValue {
         } else {
             crate::execution::exec_ast::call_user_defined_function_kw(
                 args.kw_args,
-                closure_memory.as_ref(),
+                *closure_memory,
                 expression.as_ref(),
                 exec_state,
                 &ctx,

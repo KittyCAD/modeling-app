@@ -564,8 +564,8 @@ pub struct Solid {
 }
 
 impl Solid {
-    pub(crate) fn get_all_edge_cut_ids(&self) -> Vec<uuid::Uuid> {
-        self.edge_cuts.iter().map(|foc| foc.id()).collect()
+    pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
+        self.edge_cuts.iter().map(|foc| foc.id())
     }
 }
 

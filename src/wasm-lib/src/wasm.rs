@@ -410,7 +410,7 @@ pub fn get_tangential_arc_to_info(
 pub fn program_memory_init() -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let memory = kcl_lib::exec::ProgramMemory::default();
+    let memory = kcl_lib::exec::ProgramMemory::new();
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.

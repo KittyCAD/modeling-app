@@ -2507,7 +2507,10 @@ function prepareTruncatedMemoryAndAst(
     if (!memoryItem) {
       continue
     }
-    const error = programMemoryOverride.insert(name, structuredClone(memoryItem))
+    const error = programMemoryOverride.insert(
+      name,
+      structuredClone(memoryItem)
+    )
     if (err(error)) return error
   }
   return {

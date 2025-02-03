@@ -3,17 +3,8 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
-pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
-pub use cache::bust_cache;
 use cache::OldAstState;
-pub use cad_op::Operation;
-pub use exec_ast::FunctionParam;
-pub use geometry::*;
-pub(crate) use import::{
-    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
-};
 use indexmap::IndexMap;
-pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -21,10 +12,8 @@ use kcmc::{
     ImageFormat, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
-pub use memory::ProgramMemory;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-pub use state::{ExecState, IdGenerator, MetaSettings};
 
 use crate::{
     engine::EngineManager,
@@ -41,6 +30,18 @@ use crate::{
     ExecError, KclErrorWithOutputs,
 };
 
+pub use artifact::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
+pub use cache::bust_cache;
+pub use cad_op::Operation;
+pub use exec_ast::FunctionParam;
+pub use geometry::*;
+pub(crate) use import::{
+    import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
+};
+pub use kcl_value::{KclObjectFields, KclValue, UnitAngle, UnitLen};
+pub use memory::{EnvironmentRef, ProgramMemory};
+pub use state::{ExecState, IdGenerator, MetaSettings};
+
 pub(crate) mod annotations;
 mod artifact;
 pub(crate) mod cache;
@@ -53,7 +54,7 @@ mod memory;
 mod state;
 
 /// Outcome of executing a program.  This is used in TS.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
@@ -133,7 +134,7 @@ impl std::hash::Hash for TagIdentifier {
 pub type MemoryFunction =
     fn(
         s: Vec<Arg>,
-        memory: ProgramMemory,
+        memory: EnvironmentRef,
         expression: crate::parsing::ast::types::BoxNode<FunctionExpression>,
         metadata: Vec<Metadata>,
         exec_state: &ExecState,
@@ -501,7 +502,7 @@ impl ExecutorContext {
 
         let mut exec_state = ExecState::new(&self.settings);
         if let Some(program_memory_override) = program_memory_override {
-            exec_state.mod_local.memory = program_memory_override;
+            *exec_state.mut_memory() = program_memory_override;
         }
 
         self.inner_run(&program.ast, &mut exec_state).await?;

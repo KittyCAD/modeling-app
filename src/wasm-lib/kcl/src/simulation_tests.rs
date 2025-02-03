@@ -103,7 +103,7 @@ async fn execute(test_name: &str, render_to_png: bool) {
                 twenty_twenty::assert_image(format!("tests/{test_name}/rendered_model.png"), &png, 0.99);
             }
             assert_snapshot(test_name, "Program memory after executing", || {
-                insta::assert_json_snapshot!("program_memory", exec_state.mod_local.memory, {
+                insta::assert_json_snapshot!("program_memory", exec_state.memory(), {
                     ".environments[].**[].from[]" => rounded_redaction(4),
                     ".environments[].**[].to[]" => rounded_redaction(4),
                     ".environments[].**[].x[]" => rounded_redaction(4),
