@@ -350,11 +350,11 @@ async fn inner_pattern_transform_2d<'a>(
     execute_pattern_transform(transform, solid_set, exec_state, args).await
 }
 
-async fn execute_pattern_transform<'a, T: GeometryTrait>(
+async fn execute_pattern_transform<T: GeometryTrait>(
     transforms: Vec<Vec<Transform>>,
     geo_set: T::Set,
     exec_state: &mut ExecState,
-    args: &'a Args,
+    args: &Args,
 ) -> Result<Vec<T>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not flush these, then you won't be able to pattern something with fillets.
@@ -414,9 +414,9 @@ async fn send_pattern_transform<T: GeometryTrait>(
     Ok(geometries)
 }
 
-async fn make_transform<'a, T: GeometryTrait>(
+async fn make_transform<T: GeometryTrait>(
     i: u32,
-    transform_function: &FunctionParam<'a>,
+    transform_function: &FunctionParam<'_>,
     source_range: SourceRange,
     exec_state: &mut ExecState,
 ) -> Result<Vec<Transform>, KclError> {
