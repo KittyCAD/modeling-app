@@ -2,13 +2,13 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[35, 60, 0]"]
-    3["Segment<br>[66, 87, 0]"]
-    4["Segment<br>[93, 112, 0]"]
-    5["Segment<br>[118, 126, 0]"]
+    3["Segment<br>[66, 96, 0]"]
+    4["Segment<br>[102, 130, 0]"]
+    5["Segment<br>[136, 144, 0]"]
     6[Solid2d]
   end
   1["Plane<br>[10, 29, 0]"]
-  7["Sweep Extrusion<br>[132, 149, 0]"]
+  7["Sweep Extrusion<br>[150, 173, 0]"]
   8[Wall]
   9[Wall]
   10[Wall]

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
+    "noErrorTruncation": true,
     "paths": {
       "@kittycad/codemirror-lsp-client": [
         "../packages/codemirror-lsp-client/src/index.ts"

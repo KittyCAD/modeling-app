@@ -78,7 +78,7 @@ flowchart LR
   57["SweepEdge Opposite"]
   58["SweepEdge Adjacent"]
   59["Plane<br>[966, 986, 0]"]
-  75["Sweep Extrusion<br>[1593, 1625, 0]"]
+  75["Sweep Extrusion<br>[1593, 1631, 0]"]
   76[Wall]
   77[Wall]
   78[Wall]

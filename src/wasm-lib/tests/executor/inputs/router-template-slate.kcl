@@ -30,9 +30,9 @@ const sketch001 = startSketchOn('XZ')
        angleStart: 180,
        radius: radius - templateGap
      }, %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude001 = extrude(5, sketch001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude001 = extrude(sketch001, length = 5)
 const sketch002 = startSketchOn(extrude001, 'START')
   |> startProfileAt([
        -slateWidthHalf,
@@ -47,9 +47,9 @@ const sketch002 = startSketchOn(extrude001, 'START')
        segAng(rectangleSegmentA001, %),
        -segLen(rectangleSegmentA001, %)
      ], %, $rectangleSegmentC001)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude002 = extrude(7.5, sketch002)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude002 = extrude(sketch002, length = 7.5)
 const sketch003 = startSketchOn(extrude001, 'START')
   |> startProfileAt([
        slateWidthHalf,
@@ -64,6 +64,6 @@ const sketch003 = startSketchOn(extrude001, 'START')
        segAng(rectangleSegmentA002, %),
        -segLen(rectangleSegmentA002, %)
      ], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-const extrude003 = extrude(7.5, sketch003)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+const extrude003 = extrude(sketch003, length = 7.5)

@@ -37,12 +37,12 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   66,
-                  90,
+                  99,
                   0
                 ],
                 "tag": {
-                  "end": 89,
-                  "start": 83,
+                  "end": 98,
+                  "start": 92,
                   "type": "TagDeclarator",
                   "value": "thing"
                 },
@@ -52,8 +52,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  96,
-                  112,
+                  105,
+                  124,
                   0
                 ],
                 "tag": null,
@@ -63,13 +63,13 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  118,
-                  144,
+                  130,
+                  165,
                   0
                 ],
                 "tag": {
-                  "end": 143,
-                  "start": 136,
+                  "end": 164,
+                  "start": 157,
                   "type": "TagDeclarator",
                   "value": "thing2"
                 },
@@ -79,13 +79,13 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  150,
-                  167,
+                  171,
+                  191,
                   0
                 ],
                 "tag": {
-                  "end": 166,
-                  "start": 159,
+                  "end": 190,
+                  "start": 183,
                   "type": "TagDeclarator",
                   "value": "thing3"
                 },
@@ -101,7 +101,7 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       66,
-                      90,
+                      99,
                       0
                     ]
                   },
@@ -110,8 +110,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 89,
-                    "start": 83,
+                    "end": 98,
+                    "start": 92,
                     "type": "TagDeclarator",
                     "value": "thing"
                   },
@@ -125,8 +125,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      96,
-                      112,
+                      105,
+                      124,
                       0
                     ]
                   },
@@ -145,8 +145,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      118,
-                      144,
+                      130,
+                      165,
                       0
                     ]
                   },
@@ -155,8 +155,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                     10.0
                   ],
                   "tag": {
-                    "end": 143,
-                    "start": 136,
+                    "end": 164,
+                    "start": 157,
                     "type": "TagDeclarator",
                     "value": "thing2"
                   },
@@ -170,8 +170,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      150,
-                      167,
+                      171,
+                      191,
                       0
                     ]
                   },
@@ -180,8 +180,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 166,
-                    "start": 159,
+                    "end": 190,
+                    "start": 183,
                     "type": "TagDeclarator",
                     "value": "thing3"
                   },
@@ -253,7 +253,7 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                         "id": "[uuid]",
                         "sourceRange": [
                           66,
-                          90,
+                          99,
                           0
                         ]
                       },
@@ -262,8 +262,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 89,
-                        "start": 83,
+                        "end": 98,
+                        "start": 92,
                         "type": "TagDeclarator",
                         "value": "thing"
                       },
@@ -278,12 +278,12 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                       "id": "[uuid]",
                       "sourceRange": [
                         66,
-                        90,
+                        99,
                         0
                       ],
                       "tag": {
-                        "end": 89,
-                        "start": 83,
+                        "end": 98,
+                        "start": 92,
                         "type": "TagDeclarator",
                         "value": "thing"
                       },
@@ -293,8 +293,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        83,
-                        89,
+                        92,
+                        98,
                         0
                       ]
                     }
@@ -311,8 +311,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          118,
-                          144,
+                          130,
+                          165,
                           0
                         ]
                       },
@@ -321,8 +321,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                         10.0
                       ],
                       "tag": {
-                        "end": 143,
-                        "start": 136,
+                        "end": 164,
+                        "start": 157,
                         "type": "TagDeclarator",
                         "value": "thing2"
                       },
@@ -336,13 +336,13 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        118,
-                        144,
+                        130,
+                        165,
                         0
                       ],
                       "tag": {
-                        "end": 143,
-                        "start": 136,
+                        "end": 164,
+                        "start": 157,
                         "type": "TagDeclarator",
                         "value": "thing2"
                       },
@@ -352,8 +352,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        136,
-                        143,
+                        157,
+                        164,
                         0
                       ]
                     }
@@ -370,8 +370,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          150,
-                          167,
+                          171,
+                          191,
                           0
                         ]
                       },
@@ -380,8 +380,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                         0.0
                       ],
                       "tag": {
-                        "end": 166,
-                        "start": 159,
+                        "end": 190,
+                        "start": 183,
                         "type": "TagDeclarator",
                         "value": "thing3"
                       },
@@ -395,13 +395,13 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        150,
-                        167,
+                        171,
+                        191,
                         0
                       ],
                       "tag": {
-                        "end": 166,
-                        "start": 159,
+                        "end": 190,
+                        "start": 183,
                         "type": "TagDeclarator",
                         "value": "thing3"
                       },
@@ -411,8 +411,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                   "__meta": [
                     {
                       "sourceRange": [
-                        159,
-                        166,
+                        183,
+                        190,
                         0
                       ]
                     }
@@ -478,7 +478,7 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   66,
-                  90,
+                  99,
                   0
                 ]
               },
@@ -487,8 +487,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                 0.0
               ],
               "tag": {
-                "end": 89,
-                "start": 83,
+                "end": 98,
+                "start": 92,
                 "type": "TagDeclarator",
                 "value": "thing"
               },
@@ -503,12 +503,12 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
               "id": "[uuid]",
               "sourceRange": [
                 66,
-                90,
+                99,
                 0
               ],
               "tag": {
-                "end": 89,
-                "start": 83,
+                "end": 98,
+                "start": 92,
                 "type": "TagDeclarator",
                 "value": "thing"
               },
@@ -518,8 +518,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
           "__meta": [
             {
               "sourceRange": [
-                83,
-                89,
+                92,
+                98,
                 0
               ]
             }
@@ -537,8 +537,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  118,
-                  144,
+                  130,
+                  165,
                   0
                 ]
               },
@@ -547,8 +547,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                 10.0
               ],
               "tag": {
-                "end": 143,
-                "start": 136,
+                "end": 164,
+                "start": 157,
                 "type": "TagDeclarator",
                 "value": "thing2"
               },
@@ -562,13 +562,13 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                118,
-                144,
+                130,
+                165,
                 0
               ],
               "tag": {
-                "end": 143,
-                "start": 136,
+                "end": 164,
+                "start": 157,
                 "type": "TagDeclarator",
                 "value": "thing2"
               },
@@ -578,8 +578,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
           "__meta": [
             {
               "sourceRange": [
-                136,
-                143,
+                157,
+                164,
                 0
               ]
             }
@@ -597,8 +597,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  150,
-                  167,
+                  171,
+                  191,
                   0
                 ]
               },
@@ -607,8 +607,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
                 0.0
               ],
               "tag": {
-                "end": 166,
-                "start": 159,
+                "end": 190,
+                "start": 183,
                 "type": "TagDeclarator",
                 "value": "thing3"
               },
@@ -622,13 +622,13 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                150,
-                167,
+                171,
+                191,
                 0
               ],
               "tag": {
-                "end": 166,
-                "start": 159,
+                "end": 190,
+                "start": 183,
                 "type": "TagDeclarator",
                 "value": "thing3"
               },
@@ -638,8 +638,8 @@ description: Program memory after executing basic_fillet_cube_close_opposite.kcl
           "__meta": [
             {
               "sourceRange": [
-                159,
-                166,
+                183,
+                190,
                 0
               ]
             }

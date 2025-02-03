@@ -9,7 +9,7 @@ const sketch002 = startSketchOn('XZ')
        segAng(rectangleSegmentA001),
        -segLen(rectangleSegmentA001)
      ], %)
-  |> close(%)
+  |> close()
 const sketch001 = startSketchOn('XZ')
   |> circle({
        center = [318.33, 168.1],

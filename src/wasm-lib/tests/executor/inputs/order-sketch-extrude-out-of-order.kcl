@@ -19,10 +19,10 @@ const plane94894440791888 = {
 // create a sketch with UID 94894440902176
 const sketch94894440902176 = startSketchOn('-XZ')
   |> startProfileAt([-0.005, -0.005], %)
-  |> line([0.01, 0.0], %, $line94894439494384)
-  |> line([0.0, 0.01], %, $line94894439429616)
-  |> line([-0.01, 0.0], %, $line94894439638160)
-  |> line([0.0, -0.01], %, $line94894439971808)
+  |> line(end = [0.01, 0.0], tag = $line94894439494384)
+  |> line(end = [0.0, 0.01], tag = $line94894439429616)
+  |> line(end = [-0.01, 0.0], tag = $line94894439638160)
+  |> line(end = [0.0, -0.01], tag = $line94894439971808)
 
 // create a sketch with UID 94894439448464
 const sketch94894439448464 = startSketchOn(plane94894440791888)
@@ -30,10 +30,10 @@ const sketch94894439448464 = startSketchOn(plane94894440791888)
        0.00074557205559017,
        0.00306415853984399
      ], %)
-  |> line([0.004999999999999999, 0.0], %, $line94894440230336)
-  |> line([0.0, -0.005], %, $line94894439497168)
-  |> line([-0.004999999999999999, 0.0], %, $line94894439496768)
-  |> line([0.0, 0.005], %, $line94894440231952)
+  |> line(end = [0.004999999999999999, 0.0], tag = $line94894440230336)
+  |> line(end = [0.0, -0.005], tag = $line94894439497168)
+  |> line(end = [-0.004999999999999999, 0.0], tag = $line94894439496768)
+  |> line(end = [0.0, 0.005], tag = $line94894440231952)
 
 // create an extrusion with UID 94894439487136
-const extrude94894439487136 = extrude(0.01, sketch94894440902176)
+const extrude94894439487136 = extrude(sketch94894440902176, length = 0.01)

@@ -9,30 +9,30 @@ export fn triangle() {
   return startSketchOn('XZ')
     |> startProfileAt([0, 0], %)
     |> xLine(10, %)
-    |> line([-10, -5], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
+    |> line(end = [-10, -5])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
 }
 
 length001 = timesFive(1) * 5
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([20, 10], %)
-  |> line([10, 10], %)
+  |> line(end = [10, 10])
   |> angledLine([-45, length001], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
 revolve001 = revolve({ axis = "X" }, sketch001)
 triangle()
-  |> extrude(30, %)
+  |> extrude(length = 30)
 plane001 = offsetPlane('XY', 10)
 sketch002 = startSketchOn(plane001)
   |> startProfileAt([-20, 0], %)
-  |> line([5, -15], %)
+  |> line(end = [5, -15])
   |> xLine(-10, %)
-  |> lineTo([-40, 0], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
-  |> close(%)
-extrude001 = extrude(10, sketch002)
+  |> line(endAbsolute = [-40, 0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch002, length = 10)
 `
 
 test.describe('Feature Tree pane', () => {
@@ -97,7 +97,7 @@ test.describe('Feature Tree pane', () => {
       await testViewSource({
         operationName: 'Extrude',
         operationIndex: 1,
-        expectedActiveLine: 'extrude001 = extrude(10, sketch002)',
+        expectedActiveLine: 'extrude001 = extrude(sketch002, length = 10)',
       })
       await testViewSource({
         operationName: 'Revolve',

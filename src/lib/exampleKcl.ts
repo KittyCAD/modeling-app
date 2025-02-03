@@ -25,10 +25,10 @@ thickness = sqrt(moment * factorOfSafety * 6 / (sigmaAllow * width)) // this is 
 // Sketch the bracket body and fillet the inner and outer edges of the bend
 bracketLeg1Sketch = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> line([shelfMountL - filletRadius, 0], %, $fillet1)
-  |> line([0, width], %, $fillet2)
-  |> line([-shelfMountL + filletRadius, 0], %)
-  |> close(%)
+  |> line(end = [shelfMountL - filletRadius, 0], tag = $fillet1)
+  |> line(end = [0, width], tag = $fillet2)
+  |> line(end = [-shelfMountL + filletRadius, 0])
+  |> close()
   |> hole(circle({
        center = [1, 1],
        radius = mountingHoleDiameter / 2
@@ -47,7 +47,7 @@ bracketLeg1Sketch = startSketchOn('XY')
      }, %), %)
 
 // Extrude the leg 2 bracket sketch
-bracketLeg1Extrude = extrude(thickness, bracketLeg1Sketch)
+bracketLeg1Extrude = extrude(bracketLeg1Sketch, length = thickness)
   |> fillet({
        radius = extFilletRadius,
        tags = [
@@ -59,13 +59,13 @@ bracketLeg1Extrude = extrude(thickness, bracketLeg1Sketch)
 // Sketch the fillet arc
 filletSketch = startSketchOn('XZ')
   |> startProfileAt([0, 0], %)
-  |> line([0, thickness], %)
+  |> line(end = [0, thickness])
   |> arc({
        angleEnd = 180,
        angleStart = 90,
        radius = filletRadius + thickness
      }, %)
-  |> line([thickness, 0], %)
+  |> line(end = [thickness, 0])
   |> arc({
        angleEnd = 90,
        angleStart = 180,
@@ -73,7 +73,7 @@ filletSketch = startSketchOn('XZ')
      }, %)
 
 // Sketch the bend
-filletExtrude = extrude(-width, filletSketch)
+filletExtrude = extrude(filletSketch, length = -width)
 
 // Create a custom plane for the leg that sits on the wall
 customPlane = {
@@ -88,10 +88,10 @@ customPlane = {
 // Create a sketch for the second leg
 bracketLeg2Sketch = startSketchOn(customPlane)
   |> startProfileAt([0, -filletRadius], %)
-  |> line([width, 0], %)
-  |> line([0, -wallMountL], %, $fillet3)
-  |> line([-width, 0], %, $fillet4)
-  |> close(%)
+  |> line(end = [width, 0])
+  |> line(end = [0, -wallMountL], tag = $fillet3)
+  |> line(end = [-width, 0], tag = $fillet4)
+  |> close()
   |> hole(circle({
        center = [1, -1.5],
        radius = mountingHoleDiameter / 2
@@ -102,7 +102,7 @@ bracketLeg2Sketch = startSketchOn(customPlane)
      }, %), %)
 
 // Extrude the second leg
-bracketLeg2Extrude = extrude(-thickness, bracketLeg2Sketch)
+bracketLeg2Extrude = extrude(bracketLeg2Sketch, length = -thickness)
   |> fillet({
        radius = extFilletRadius,
        tags = [

@@ -264,63 +264,63 @@ test.describe('Testing selections', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
       |> startProfileAt([-79.26, 95.04], %)
-      |> line([112.54, 127.64], %, $seg02)
-      |> line([170.36, -121.61], %, $seg01)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
-      |> close(%)
-  extrude001 = extrude(50, sketch001)
+      |> line(end = [112.54, 127.64], tag = $seg02)
+      |> line(end = [170.36, -121.61], tag = $seg01)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+  extrude001 = extrude(sketch001, length = 50)
   sketch005 = startSketchOn(extrude001, 'END')
     |> startProfileAt([23.24, 136.52], %)
-    |> line([-8.44, 36.61], %)
-    |> line([49.4, 2.05], %)
-    |> line([29.69, -46.95], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
+    |> line(end = [-8.44, 36.61])
+    |> line(end = [49.4, 2.05])
+    |> line(end = [29.69, -46.95])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
   sketch003 = startSketchOn(extrude001, seg01)
     |> startProfileAt([21.23, 17.81], %)
-    |> line([51.97, 21.32], %)
-    |> line([4.07, -22.75], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
+    |> line(end = [51.97, 21.32])
+    |> line(end = [4.07, -22.75])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
   sketch002 = startSketchOn(extrude001, seg02)
     |> startProfileAt([-100.54, 16.99], %)
-    |> line([0, 20.03], %)
-    |> line([62.61, 0], %, $seg03)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude002 = extrude(50, sketch002)
+    |> line(end = [0, 20.03])
+    |> line(end = [62.61, 0], tag = $seg03)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude002 = extrude(sketch002, length = 50)
   sketch004 = startSketchOn(extrude002, seg03)
     |> startProfileAt([57.07, 134.77], %)
-    |> line([-4.72, 22.84], %)
-    |> line([28.8, 6.71], %)
-    |> line([9.19, -25.33], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude003 = extrude(20, sketch004)
+    |> line(end = [-4.72, 22.84])
+    |> line(end = [28.8, 6.71])
+    |> line(end = [9.19, -25.33])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude003 = extrude(sketch004, length = 20)
   pipeLength = 40
   pipeSmallDia = 10
   pipeLargeDia = 20
   thickness = 0.5
   part009 = startSketchOn('XY')
     |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
-    |> line([thickness, 0], %)
-    |> line([0, -1], %)
+    |> line(end = [thickness, 0])
+    |> line(end = [0, -1])
     |> angledLineToX({
      angle = 60,
      to = pipeSmallDia + thickness
    }, %)
-    |> line([0, -pipeLength], %)
+    |> line(end = [0, -pipeLength])
     |> angledLineToX({
      angle = -60,
      to = pipeLargeDia + thickness
    }, %)
-    |> line([0, -1], %)
-    |> line([-thickness, 0], %)
-    |> line([0, 1], %)
+    |> line(end = [0, -1])
+    |> line(end = [-thickness, 0])
+    |> line(end = [0, 1])
     |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
-    |> line([0, pipeLength], %)
+    |> line(end = [0, pipeLength])
     |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
-    |> close(%)
+    |> close()
   rev = revolve({ axis: 'y' }, part009)
   `
       )
@@ -362,7 +362,7 @@ test.describe('Testing selections', () => {
     await page.mouse.click(revolve.x, revolve.y)
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toHaveText(
-      '|> line([0, -pipeLength], %)'
+      '|> line(end = [0, -pipeLength])'
     )
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')
@@ -377,14 +377,14 @@ test.describe('Testing selections', () => {
     await page.mouse.click(parentExtrude.x, parentExtrude.y)
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toHaveText(
-      '|> line([170.36, -121.61], %, $seg01)'
+      '|> line(end = [170.36, -121.61], tag = $seg01)'
     )
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(
-      `extrude001 = extrude(50, sketch001)`
+      `extrude001 = extrude(sketch001, length = 50)`
     )
     await expect(u.codeLocator).toContainText(`sketch005 = startSketchOn({
      plane = {
@@ -433,18 +433,18 @@ test.describe('Testing selections', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([-79.26, 95.04], %)
-    |> line([112.54, 127.64], %, $seg02)
-    |> line([170.36, -121.61], %, $seg01)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude001 = extrude(50, sketch001)
+    |> line(end = [112.54, 127.64], tag = $seg02)
+    |> line(end = [170.36, -121.61], tag = $seg01)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude001 = extrude(sketch001, length = 50)
   launderExtrudeThroughVar = extrude001
   sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
     |> startProfileAt([-100.54, 16.99], %)
-    |> line([0, 20.03], %)
-    |> line([62.61, 0], %, $seg03)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
+    |> line(end = [0, 20.03])
+    |> line(end = [62.61, 0], tag = $seg03)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
   `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -481,7 +481,7 @@ test.describe('Testing selections', () => {
     await page.mouse.click(930, 139)
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-activeLine')).toHaveText(
-      '|> line([170.36, -121.61], %, $seg01)'
+      '|> line(end = [170.36, -121.61], tag = $seg01)'
     )
     await u.clearCommandLogs()
     await page.keyboard.press('Backspace')
@@ -500,9 +500,9 @@ test.describe('Testing selections', () => {
         'persistCode',
         `part001 = startSketchOn('XZ')
   |> startProfileAt([20, 0], %)
-  |> line([7.13, 4 + 0], %)
+  |> line(end = [7.13, 4 + 0])
   |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
-  |> lineTo([20.14 + 0, -0.14 + 0], %)
+  |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
   |> xLineTo(29 + 0, %)
   |> yLine(-3.14 + 0, %, $a)
   |> xLine(1.63, %)
@@ -516,8 +516,8 @@ test.describe('Testing selections', () => {
         offset = 0
       }, %)
   |> tangentialArcTo([13.14 + 0, 13.14], %)
-  |> close(%)
-  |> extrude(5 + 7, %)
+  |> close()
+  |> extrude(length = 5 + 7)
     `
       )
     }, KCL_DEFAULT_LENGTH)
@@ -646,14 +646,14 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'flatExtrusionFace',
       flatExtrusionFace,
-      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)extrude(5+7,%)`,
+      `angledLineThatIntersects({angle=3.14,intersectTag=a,offset=0},%)extrude(length=5+7)`,
       '}, %)'
     )
 
     await checkCodeAtHoverPosition(
       'tangentialArcTo',
       tangentialArcTo,
-      'tangentialArcTo([13.14+0,13.14],%)extrude(5+7,%)',
+      'tangentialArcTo([13.14+0,13.14],%)extrude(length=5+7)',
       'tangentialArcTo([13.14 + 0, 13.14], %)'
     )
     await checkCodeAtHoverPosition(
@@ -678,26 +678,21 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'close',
       close,
-      'close(%)extrude(5+7,%)',
-      'close(%)'
+      'close()extrude(length=5+7)',
+      'close()'
     )
-    await checkCodeAtHoverPosition(
-      'closeEdge',
-      closeEdge,
-      `close(%)`,
-      'close(%)'
-    )
+    await checkCodeAtHoverPosition('closeEdge', closeEdge, `close()`, 'close()')
     await checkCodeAtHoverPosition(
       'closeAdjacentEdge',
       closeAdjacentEdge,
-      `close(%)`,
-      'close(%)'
+      `close()`,
+      'close()'
     )
     await checkCodeAtHoverPosition(
       'closeOppositeEdge',
       closeOppositeEdge,
-      `close(%)`,
-      'close(%)'
+      `close()`,
+      'close()'
     )
 
     await checkCodeAtHoverPosition(
@@ -733,9 +728,9 @@ test.describe('Testing selections', () => {
      segAng(rectangleSegmentA001),
      -segLen(rectangleSegmentA001)
    ], %, $yo)
-    |> lineTo([profileStartX(%), profileStartY(%)], %, $seg02)
-    |> close(%)
-  extrude001 = extrude(100, sketch001)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+    |> close()
+  extrude001 = extrude(sketch001, length = 100)
     |> chamfer({
      length = 30,
      tags = [
@@ -820,7 +815,7 @@ test.describe('Testing selections', () => {
     await checkCodeAtHoverPosition(
       'adjacentChamfer1',
       adjacentChamfer1,
-      `lineTo([profileStartX(%),profileStartY(%)],%,$seg02)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
+      `line(endAbsolute=[profileStartX(%),profileStartY(%)],tag=$seg02)chamfer({length=30,tags=[seg01,getNextAdjacentEdge(yo),getNextAdjacentEdge(seg02),getOppositeEdge(seg01)]},%)`,
       '}, %)'
     )
 
@@ -843,18 +838,18 @@ test.describe('Testing selections', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([3.29, 7.86], %)
-    |> line([2.48, 2.44], %)
-    |> line([2.66, 1.17], %)
-    |> line([3.75, 0.46], %)
-    |> line([4.99, -0.46], %, $seg01)
-    |> line([3.3, -2.12], %)
-    |> line([2.16, -3.33], %)
-    |> line([0.85, -3.08], %)
-    |> line([-0.18, -3.36], %)
-    |> line([-3.86, -2.73], %)
-    |> line([-17.67, 0.85], %)
-    |> close(%)
-  extrude001 = extrude(10, sketch001)
+    |> line(end = [2.48, 2.44])
+    |> line(end = [2.66, 1.17])
+    |> line(end = [3.75, 0.46])
+    |> line(end = [4.99, -0.46], tag = $seg01)
+    |> line(end = [3.3, -2.12])
+    |> line(end = [2.16, -3.33])
+    |> line(end = [0.85, -3.08])
+    |> line(end = [-0.18, -3.36])
+    |> line(end = [-3.86, -2.73])
+    |> line(end = [-17.67, 0.85])
+    |> close()
+  extrude001 = extrude(sketch001, length = 10)
     `
       )
     })
@@ -869,8 +864,8 @@ test.describe('Testing selections', () => {
     await u.closeDebugPanel()
 
     const selectUnExtrudable = async () => {
-      await editor.scrollToText(`line([4.99, -0.46], %, $seg01)`)
-      await page.getByText(`line([4.99, -0.46], %, $seg01)`).click()
+      await editor.scrollToText(`line(end = [4.99, -0.46], tag = $seg01)`)
+      await page.getByText(`line(end = [4.99, -0.46], tag = $seg01)`).click()
     }
     const clickEmpty = () => page.mouse.click(700, 460)
     await selectUnExtrudable()
@@ -886,10 +881,10 @@ test.describe('Testing selections', () => {
     const codeToAdd = `${await u.codeLocator.allInnerTexts()}
   sketch002 = startSketchOn(extrude001, $seg01)
     |> startProfileAt([-12.94, 6.6], %)
-    |> line([2.45, -0.2], %)
-    |> line([-2, -1.25], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
+    |> line(end = [2.45, -0.2])
+    |> line(end = [-2, -1.25])
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
   `
     await u.codeLocator.fill(codeToAdd)
 
@@ -921,7 +916,7 @@ test.describe('Testing selections', () => {
     const cases = [
       {
         pos: [694, 185],
-        expectedCode: 'line([74.36, 130.4], %, $seg01)',
+        expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
       },
       {
         pos: [816, 244],
@@ -940,9 +935,9 @@ test.describe('Testing selections', () => {
   part001 = startSketchOn('XZ')
     |> startProfileAt([-7.54, -26.74], %)
     |> ${cases[0].expectedCode}
-    |> line([-3.19, -138.43], %)
+    |> line(end = [-3.19, -138.43])
     |> ${cases[1].expectedCode}
-    |> line([41.19, 28.97 + 5], %)
+    |> line(end = [41.19, 28.97 + 5])
     |> ${cases[2].expectedCode}`
         )
       },
@@ -991,11 +986,11 @@ test.describe('Testing selections', () => {
         'persistCode',
         `sketch001 = startSketchOn('XZ')
     |> startProfileAt([-79.26, 95.04], %)
-    |> line([112.54, 127.64], %)
-    |> line([170.36, -121.61], %, $seg01)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude001 = extrude(50, sketch001)
+    |> line(end = [112.54, 127.64])
+    |> line(end = [170.36, -121.61], tag = $seg01)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+  extrude001 = extrude(sketch001, length = 50)
       `
       )
     })
@@ -1025,7 +1020,7 @@ test.describe('Testing selections', () => {
     let selectColor: [number, number, number] = [155, 155, 105]
 
     const extrudeWall = { x: 670, y: 275 }
-    const extrudeText = `line([170.36, -121.61], %, $seg01)`
+    const extrudeText = `line(end = [170.36, -121.61], tag = $seg01)`
 
     const cap = { x: 594, y: 283 }
     const capText = `startProfileAt([-79.26, 95.04], %)`
@@ -1105,33 +1100,33 @@ test.describe('Testing selections', () => {
           'persistCode',
           `part001 = startSketchOn('XZ')
   ${extrudeAndEditBlocked}
-  |> line([25.96, 2.93], %)
-  |> line([5.25, -5.72], %)
-  |> line([-2.01, -10.35], %)
-  |> line([-27.65, -2.78], %)
-  |> close(%)
-  |> extrude(5, %)
+  |> line(end = [25.96, 2.93])
+  |> line(end = [5.25, -5.72])
+  |> line(end = [-2.01, -10.35])
+  |> line(end = [-27.65, -2.78])
+  |> close()
+  |> extrude(length = 5)
     sketch002 = startSketchOn('XZ')
   ${extrudeAndEditAllowed}
-  |> line([10.32, 6.47], %)
-  |> line([9.71, -6.16], %)
-  |> line([-3.08, -9.86], %)
-  |> line([-12.02, -1.54], %)
-  |> close(%)
+  |> line(end = [10.32, 6.47])
+  |> line(end = [9.71, -6.16])
+  |> line(end = [-3.08, -9.86])
+  |> line(end = [-12.02, -1.54])
+  |> close()
     sketch003 = startSketchOn('XZ')
   ${editOnly}
-  |> line([27.55, -1.65], %)
-  |> line([4.95, -8], %)
-  |> line([-20.38, -10.12], %)
-  |> line([-15.79, 17.08], %)
+  |> line(end = [27.55, -1.65])
+  |> line(end = [4.95, -8])
+  |> line(end = [-20.38, -10.12])
+  |> line(end = [-15.79, 17.08])
   
     fn yohey = (pos) => {
   sketch004 = startSketchOn('XZ')
   ${extrudeAndEditBlockedInFunction}
-  |> line([27.55, -1.65], %)
-  |> line([4.95, -10.53], %)
-  |> line([-20.38, -8], %)
-  |> line([-15.79, 17.08], %)
+  |> line(end = [27.55, -1.65])
+  |> line(end = [4.95, -10.53])
+  |> line(end = [-20.38, -8])
+  |> line(end = [-15.79, 17.08])
   return ''
     }
   

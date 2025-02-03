@@ -859,6 +859,34 @@ impl Expr {
             _ => false,
         }
     }
+
+    /// Describe this expression's type for a human, for typechecking.
+    /// This is a best-effort function, it's OK to give a shitty string here (but we should work on improving it)
+    pub fn human_friendly_type(&self) -> &'static str {
+        match self {
+            Expr::Literal(node) => match node.inner.value {
+                LiteralValue::Number { .. } => "number",
+                LiteralValue::String(_) => "string (text)",
+                LiteralValue::Bool(_) => "boolean (true/false value)",
+            },
+            Expr::Identifier(_) => "named constant",
+            Expr::TagDeclarator(_) => "tag declarator",
+            Expr::BinaryExpression(_) => "expression",
+            Expr::FunctionExpression(_) => "function definition",
+            Expr::CallExpression(_) => "function call",
+            Expr::CallExpressionKw(_) => "function call",
+            Expr::PipeExpression(_) => "pipeline of function calls",
+            Expr::PipeSubstitution(_) => "left-hand side of a |> pipeline",
+            Expr::ArrayExpression(_) => "array",
+            Expr::ArrayRangeExpression(_) => "array",
+            Expr::ObjectExpression(_) => "object",
+            Expr::MemberExpression(_) => "property of an object/array",
+            Expr::UnaryExpression(_) => "expression",
+            Expr::IfExpression(_) => "if expression",
+            Expr::LabelledExpression(_) => "labelled expression",
+            Expr::None(_) => "none",
+        }
+    }
 }
 
 impl From<Expr> for SourceRange {

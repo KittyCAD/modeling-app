@@ -188,7 +188,7 @@ test.describe('Test network and connection issues', () => {
       .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
   |> xLine(12.34, %)
-  |> line([-12.34, 12.34], %)
+  |> line(end = [-12.34, 12.34])
 
 `)
     await page.waitForTimeout(100)
@@ -198,7 +198,7 @@ test.describe('Test network and connection issues', () => {
       .toBe(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([12.34, -12.34], %)
   |> xLine(12.34, %)
-  |> line([-12.34, 12.34], %)
+  |> line(end = [-12.34, 12.34])
   |> xLine(-12.34, %)
 
 `)

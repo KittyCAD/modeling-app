@@ -7,7 +7,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
     "body": [
       {
         "declaration": {
-          "end": 163,
+          "end": 178,
           "id": {
             "end": 13,
             "name": "exampleSketch",
@@ -91,40 +91,41 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 79,
-                        "raw": "0",
-                        "start": 78,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 85,
+                          "raw": "0",
+                          "start": 84,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 88,
+                          "raw": "2",
+                          "start": 87,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
                         }
-                      },
-                      {
-                        "end": 82,
-                        "raw": "2",
-                        "start": 81,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 83,
-                    "start": 77,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 86,
-                    "start": 85,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                      ],
+                      "end": 89,
+                      "start": 83,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -133,171 +134,178 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                   "start": 72,
                   "type": "Identifier"
                 },
-                "end": 87,
+                "end": 90,
                 "start": 72,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 100,
-                        "raw": "3",
-                        "start": 99,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 3.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "end": 103,
-                        "raw": "1",
-                        "start": 102,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.0,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 104,
-                    "start": 98,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 107,
-                    "start": 106,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 97,
-                  "name": "line",
-                  "start": 93,
-                  "type": "Identifier"
-                },
-                "end": 108,
-                "start": 93,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "end": 121,
-                        "raw": "0",
-                        "start": 120,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "argument": {
-                          "end": 125,
-                          "raw": "4",
-                          "start": 124,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 109,
+                          "raw": "3",
+                          "start": 108,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 4.0,
+                            "value": 3.0,
                             "suffix": "None"
                           }
                         },
-                        "end": 125,
-                        "operator": "-",
-                        "start": 123,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
-                    "end": 126,
-                    "start": 119,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 129,
-                    "start": 128,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 118,
-                  "name": "line",
-                  "start": 114,
-                  "type": "Identifier"
-                },
-                "end": 130,
-                "start": 114,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "end": 143,
-                    "start": 142,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 141,
-                  "name": "close",
-                  "start": 136,
-                  "type": "Identifier"
-                },
-                "end": 144,
-                "start": 136,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "end": 159,
-                    "raw": "1",
-                    "start": 158,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
+                        {
+                          "end": 112,
+                          "raw": "1",
+                          "start": 111,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 113,
+                      "start": 107,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
                     }
-                  },
+                  }
+                ],
+                "callee": {
+                  "end": 100,
+                  "name": "line",
+                  "start": 96,
+                  "type": "Identifier"
+                },
+                "end": 114,
+                "start": 96,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
                   {
-                    "end": 162,
-                    "start": 161,
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "end"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 133,
+                          "raw": "0",
+                          "start": 132,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "argument": {
+                            "end": 137,
+                            "raw": "4",
+                            "start": 136,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 4.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 137,
+                          "operator": "-",
+                          "start": 135,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        }
+                      ],
+                      "end": 138,
+                      "start": 131,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 124,
+                  "name": "line",
+                  "start": 120,
+                  "type": "Identifier"
+                },
+                "end": 139,
+                "start": 120,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "end": 152,
+                    "start": 151,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 157,
-                  "name": "extrude",
-                  "start": 150,
+                  "end": 150,
+                  "name": "close",
+                  "start": 145,
                   "type": "Identifier"
                 },
-                "end": 163,
-                "start": 150,
+                "end": 153,
+                "start": 145,
                 "type": "CallExpression",
                 "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "type": "Identifier",
+                      "name": "length"
+                    },
+                    "arg": {
+                      "end": 177,
+                      "raw": "1",
+                      "start": 176,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 1.0,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 166,
+                  "name": "extrude",
+                  "start": 159,
+                  "type": "Identifier"
+                },
+                "end": 178,
+                "start": 159,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
-            "end": 163,
+            "end": 178,
             "start": 16,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -305,7 +313,7 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 163,
+        "end": 178,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -313,34 +321,34 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
       },
       {
         "declaration": {
-          "end": 261,
+          "end": 276,
           "id": {
-            "end": 171,
+            "end": 186,
             "name": "pattn1",
-            "start": 165,
+            "start": 180,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 245,
+                "end": 260,
                 "properties": [
                   {
-                    "end": 210,
+                    "end": 225,
                     "key": {
-                      "end": 198,
+                      "end": 213,
                       "name": "axis",
-                      "start": 194,
+                      "start": 209,
                       "type": "Identifier"
                     },
-                    "start": 194,
+                    "start": 209,
                     "type": "ObjectProperty",
                     "value": {
                       "elements": [
                         {
-                          "end": 203,
+                          "end": 218,
                           "raw": "1",
-                          "start": 202,
+                          "start": 217,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -349,9 +357,9 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           }
                         },
                         {
-                          "end": 206,
+                          "end": 221,
                           "raw": "0",
-                          "start": 205,
+                          "start": 220,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -360,9 +368,9 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           }
                         },
                         {
-                          "end": 209,
+                          "end": 224,
                           "raw": "0",
-                          "start": 208,
+                          "start": 223,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -371,26 +379,26 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           }
                         }
                       ],
-                      "end": 210,
-                      "start": 201,
+                      "end": 225,
+                      "start": 216,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   },
                   {
-                    "end": 227,
+                    "end": 242,
                     "key": {
-                      "end": 223,
+                      "end": 238,
                       "name": "instances",
-                      "start": 214,
+                      "start": 229,
                       "type": "Identifier"
                     },
-                    "start": 214,
+                    "start": 229,
                     "type": "ObjectProperty",
                     "value": {
-                      "end": 227,
+                      "end": 242,
                       "raw": "7",
-                      "start": 226,
+                      "start": 241,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -400,19 +408,19 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                     }
                   },
                   {
-                    "end": 243,
+                    "end": 258,
                     "key": {
-                      "end": 239,
+                      "end": 254,
                       "name": "distance",
-                      "start": 231,
+                      "start": 246,
                       "type": "Identifier"
                     },
-                    "start": 231,
+                    "start": 246,
                     "type": "ObjectProperty",
                     "value": {
-                      "end": 243,
+                      "end": 258,
                       "raw": "6",
-                      "start": 242,
+                      "start": 257,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -422,68 +430,68 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                     }
                   }
                 ],
-                "start": 190,
+                "start": 205,
                 "type": "ObjectExpression",
                 "type": "ObjectExpression"
               },
               {
-                "end": 260,
+                "end": 275,
                 "name": "exampleSketch",
-                "start": 247,
+                "start": 262,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 189,
+              "end": 204,
               "name": "patternLinear3d",
-              "start": 174,
+              "start": 189,
               "type": "Identifier"
             },
-            "end": 261,
-            "start": 174,
+            "end": 276,
+            "start": 189,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 165,
+          "start": 180,
           "type": "VariableDeclarator"
         },
-        "end": 261,
+        "end": 276,
         "kind": "const",
-        "start": 165,
+        "start": 180,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 415,
+          "end": 430,
           "id": {
-            "end": 269,
+            "end": 284,
             "name": "pattn2",
-            "start": 263,
+            "start": 278,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 406,
+                "end": 421,
                 "properties": [
                   {
-                    "end": 310,
+                    "end": 325,
                     "key": {
-                      "end": 298,
+                      "end": 313,
                       "name": "axis",
-                      "start": 294,
+                      "start": 309,
                       "type": "Identifier"
                     },
-                    "start": 294,
+                    "start": 309,
                     "type": "ObjectProperty",
                     "value": {
                       "elements": [
                         {
-                          "end": 303,
+                          "end": 318,
                           "raw": "0",
-                          "start": 302,
+                          "start": 317,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -492,9 +500,9 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           }
                         },
                         {
-                          "end": 306,
+                          "end": 321,
                           "raw": "0",
-                          "start": 305,
+                          "start": 320,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -503,9 +511,9 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           }
                         },
                         {
-                          "end": 309,
+                          "end": 324,
                           "raw": "1",
-                          "start": 308,
+                          "start": 323,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -514,29 +522,29 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                           }
                         }
                       ],
-                      "end": 310,
-                      "start": 301,
+                      "end": 325,
+                      "start": 316,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   },
                   {
-                    "end": 338,
+                    "end": 353,
                     "key": {
-                      "end": 320,
+                      "end": 335,
                       "name": "center",
-                      "start": 314,
+                      "start": 329,
                       "type": "Identifier"
                     },
-                    "start": 314,
+                    "start": 329,
                     "type": "ObjectProperty",
                     "value": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 327,
+                            "end": 342,
                             "raw": "20",
-                            "start": 325,
+                            "start": 340,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -544,17 +552,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 327,
+                          "end": 342,
                           "operator": "-",
-                          "start": 324,
+                          "start": 339,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
                           "argument": {
-                            "end": 332,
+                            "end": 347,
                             "raw": "20",
-                            "start": 330,
+                            "start": 345,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -562,17 +570,17 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 332,
+                          "end": 347,
                           "operator": "-",
-                          "start": 329,
+                          "start": 344,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
                           "argument": {
-                            "end": 337,
+                            "end": 352,
                             "raw": "20",
-                            "start": 335,
+                            "start": 350,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -580,33 +588,33 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 337,
+                          "end": 352,
                           "operator": "-",
-                          "start": 334,
+                          "start": 349,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 338,
-                      "start": 323,
+                      "end": 353,
+                      "start": 338,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   },
                   {
-                    "end": 356,
+                    "end": 371,
                     "key": {
-                      "end": 351,
+                      "end": 366,
                       "name": "instances",
-                      "start": 342,
+                      "start": 357,
                       "type": "Identifier"
                     },
-                    "start": 342,
+                    "start": 357,
                     "type": "ObjectProperty",
                     "value": {
-                      "end": 356,
+                      "end": 371,
                       "raw": "41",
-                      "start": 354,
+                      "start": 369,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -616,19 +624,19 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                     }
                   },
                   {
-                    "end": 376,
+                    "end": 391,
                     "key": {
-                      "end": 370,
+                      "end": 385,
                       "name": "arcDegrees",
-                      "start": 360,
+                      "start": 375,
                       "type": "Identifier"
                     },
-                    "start": 360,
+                    "start": 375,
                     "type": "ObjectProperty",
                     "value": {
-                      "end": 376,
+                      "end": 391,
                       "raw": "360",
-                      "start": 373,
+                      "start": 388,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -638,65 +646,65 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
                     }
                   },
                   {
-                    "end": 404,
+                    "end": 419,
                     "key": {
-                      "end": 396,
+                      "end": 411,
                       "name": "rotateDuplicates",
-                      "start": 380,
+                      "start": 395,
                       "type": "Identifier"
                     },
-                    "start": 380,
+                    "start": 395,
                     "type": "ObjectProperty",
                     "value": {
-                      "end": 404,
+                      "end": 419,
                       "raw": "false",
-                      "start": 399,
+                      "start": 414,
                       "type": "Literal",
                       "type": "Literal",
                       "value": false
                     }
                   }
                 ],
-                "start": 290,
+                "start": 305,
                 "type": "ObjectExpression",
                 "type": "ObjectExpression"
               },
               {
-                "end": 414,
+                "end": 429,
                 "name": "pattn1",
-                "start": 408,
+                "start": 423,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 289,
+              "end": 304,
               "name": "patternCircular3d",
-              "start": 272,
+              "start": 287,
               "type": "Identifier"
             },
-            "end": 415,
-            "start": 272,
+            "end": 430,
+            "start": 287,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 263,
+          "start": 278,
           "type": "VariableDeclarator"
         },
-        "end": 415,
+        "end": 430,
         "kind": "const",
-        "start": 263,
+        "start": 278,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 416,
+    "end": 431,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 165,
-            "start": 163,
+            "end": 180,
+            "start": 178,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -705,8 +713,8 @@ description: Result of parsing circular_pattern3d_a_pattern.kcl
         ],
         "1": [
           {
-            "end": 263,
-            "start": 261,
+            "end": 278,
+            "start": 276,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

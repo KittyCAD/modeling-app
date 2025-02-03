@@ -116,8 +116,8 @@ fn test_stdlib_line_to() {
     let (item, errors) = do_stdlib(
         quote! {
             name = "lineTo",
-            arg_docs = {
-                sketch = "the sketch you're adding the line to"
+            args = {
+                sketch = { docs = "the sketch you're adding the line to" }
             }
         },
         quote! {

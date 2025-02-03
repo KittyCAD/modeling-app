@@ -172,6 +172,7 @@ impl crate::docs::StdLibFn for LineTo {
                 required: true,
                 label_required: true,
                 description: String::new().to_string(),
+                include_in_snippet: true,
             },
             crate::docs::StdLibFnArg {
                 name: "sketch".to_string(),
@@ -180,6 +181,7 @@ impl crate::docs::StdLibFn for LineTo {
                 required: true,
                 label_required: true,
                 description: "the sketch you're adding the line to".to_string(),
+                include_in_snippet: true,
             },
         ]
     }
@@ -196,6 +198,7 @@ impl crate::docs::StdLibFn for LineTo {
             required: true,
             label_required: true,
             description: String::new(),
+            include_in_snippet: true,
         })
     }
 

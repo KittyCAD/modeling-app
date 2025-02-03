@@ -113,6 +113,7 @@ impl crate::docs::StdLibFn for Show {
             required: true,
             label_required: true,
             description: String::new().to_string(),
+            include_in_snippet: true,
         }]
     }
 
@@ -128,6 +129,7 @@ impl crate::docs::StdLibFn for Show {
             required: true,
             label_required: true,
             description: String::new(),
+            include_in_snippet: true,
         })
     }
 

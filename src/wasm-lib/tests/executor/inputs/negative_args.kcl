@@ -5,11 +5,11 @@ const length = 12
 fn box = (sk1, sk2, scale) => {
   const boxSketch = startSketchOn('XY')
     |> startProfileAt([sk1, sk2], %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
-    |> close(%)
-    |> extrude(scale, %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
   return boxSketch
 }
 

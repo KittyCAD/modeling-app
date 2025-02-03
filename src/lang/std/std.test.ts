@@ -9,8 +9,8 @@ describe('testing angledLineThatIntersects', () => {
   it('angledLineThatIntersects should intersect with another line', async () => {
     const code = (offset: string) => `part001 = startSketchOn('XY')
   |> startProfileAt([0, 0], %)
-  |> lineTo([2, 2], %, $yo)
-  |> lineTo([3, 1], %)
+  |> line(endAbsolute = [2, 2], tag = $yo)
+  |> line(endAbsolute = [3, 1])
   |> angledLineThatIntersects({
   angle: 180,
   intersectTag: yo,

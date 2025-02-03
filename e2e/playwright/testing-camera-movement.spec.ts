@@ -229,10 +229,10 @@ test.describe('Testing Camera Movement', () => {
       code += `\n  |> startProfileAt([8.12, -12.98], %)`
       // await expect(u.codeLocator).toHaveText(code)
       await u.canvasLocator.click({ position: { x, y } })
-      code += `\n  |> line([11.18, 0], %)`
+      code += `\n  |> line(end = [11.18, 0])`
       // await expect(u.codeLocator).toHaveText(code)
       await u.canvasLocator.click({ position: { x, y: 275 } })
-      code += `\n  |> line([0, 6.99], %)`
+      code += `\n  |> line(end = [0, 6.99])`
       // await expect(u.codeLocator).toHaveText(code)
 
       // click the line button

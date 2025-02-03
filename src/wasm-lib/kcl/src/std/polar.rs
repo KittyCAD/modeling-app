@@ -36,13 +36,13 @@ pub async fn polar(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```no_run
 /// exampleSketch = startSketchOn('XZ')
 ///   |> startProfileAt([0, 0], %)
-///   |> line(polar({angle: 30, length: 5}), %, $thing)
-///   |> line([0, 5], %)
-///   |> line([segEndX(thing), 0], %)
-///   |> line([-20, 10], %)
-///   |> close(%)
+///   |> line(end = polar({angle: 30, length: 5}), tag = $thing)
+///   |> line(end = [0, 5])
+///   |> line(end = [segEndX(thing), 0])
+///   |> line(end = [-20, 10])
+///   |> close()
 ///  
-/// example = extrude(5, exampleSketch)
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 #[stdlib {
     name = "polar",

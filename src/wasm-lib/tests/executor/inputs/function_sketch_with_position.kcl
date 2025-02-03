@@ -1,11 +1,11 @@
 fn box = (p, h, l, w) => {
  const myBox = startSketchOn('XY')
     |> startProfileAt(p, %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
-    |> close(%)
-    |> extrude(h, %)
+    |> line(end = [0, l])
+    |> line(end = [w, 0])
+    |> line(end = [0, -l])
+    |> close()
+    |> extrude(length = h)
 
   return myBox
 }

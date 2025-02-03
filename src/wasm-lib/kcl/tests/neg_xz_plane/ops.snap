@@ -27,23 +27,16 @@ snapshot_kind: text
     "labeledArgs": {
       "length": {
         "sourceRange": [
-          141,
-          146,
-          0
-        ]
-      },
-      "sketch_set": {
-        "sourceRange": [
-          148,
-          149,
+          168,
+          173,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      133,
-      150,
+      151,
+      174,
       0
     ],
     "type": "StdLibCall",

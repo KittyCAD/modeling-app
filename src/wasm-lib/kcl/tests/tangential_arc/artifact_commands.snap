@@ -363,7 +363,7 @@ snapshot_kind: text
     "cmdId": "[uuid]",
     "range": [
       39,
-      55,
+      58,
       0
     ],
     "command": {
@@ -383,8 +383,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      61,
-      106,
+      64,
+      109,
       0
     ],
     "command": {
@@ -403,8 +403,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      112,
-      129,
+      115,
+      135,
       0
     ],
     "command": {
@@ -424,8 +424,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -444,8 +444,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -458,8 +458,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -469,8 +469,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -481,8 +481,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -494,8 +494,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -508,8 +508,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -522,8 +522,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -536,8 +536,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -550,8 +550,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
@@ -564,8 +564,8 @@ snapshot_kind: text
   {
     "cmdId": "[uuid]",
     "range": [
-      135,
-      149,
+      141,
+      161,
       0
     ],
     "command": {
