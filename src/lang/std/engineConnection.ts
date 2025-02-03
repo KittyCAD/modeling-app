@@ -1282,7 +1282,7 @@ class EngineConnection extends EventTarget {
     if (closedPc && closedUDC && closedWS) {
       // Do not notify the rest of the program that we have cut off anything.
       this.state = { type: EngineConnectionStateType.Disconnected }
-      that.triggeredStart = false
+      this.triggeredStart = false
     }
   }
 }
