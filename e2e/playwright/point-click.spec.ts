@@ -1327,12 +1327,12 @@ test(`Fillet point-and-click delete`, async ({
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
-  |> line([0, 12], %)
-  |> line([24, 0], %, $seg02)
-  |> line([0, -12], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg01)
-  |> close(%)
-extrude001 = extrude(-12, sketch001)
+  |> line(end = [0, 12])
+  |> line(end = [24, 0], tag = $seg02)
+  |> line(end = [0, -12])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(sketch001, length = -12)
   |> fillet({ radius = 5, tags = [seg01] }, %) // fillet01
   |> fillet({ radius = 5, tags = [seg02] }, %) // fillet02
 fillet03 = fillet({  radius = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)
@@ -1699,12 +1699,12 @@ test(`Chamfer point-and-click delete`, async ({
   // Code samples
   const initialCode = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-12, -6], %)
-  |> line([0, 12], %)
-  |> line([24, 0], %, $seg02)
-  |> line([0, -12], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %, $seg01)
-  |> close(%)
-extrude001 = extrude(-12, sketch001)
+  |> line(end = [0, 12])
+  |> line(end = [24, 0], tag = $seg02)
+  |> line(end = [0, -12])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(sketch001, length = -12)
   |> chamfer({ length = 5, tags = [seg01] }, %) // chamfer01
   |> chamfer({ length = 5, tags = [seg02] }, %) // chamfer02
 chamfer03 = chamfer({  length = 5,  tags = [getOppositeEdge(seg01)]}, extrude001)
