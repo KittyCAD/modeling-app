@@ -27,7 +27,12 @@ import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createLiteral } from 'lang/modifyAst'
 import { err } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
-import { codeManager, editorManager, engineCommandManager, kclManager } from 'lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  engineCommandManager,
+  kclManager,
+} from 'lib/singletons'
 import { VITE_KC_DEV_TOKEN } from 'env'
 import { isOverlap } from 'lib/utils'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
@@ -297,7 +302,12 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   }
 
   // apply edge treatment to selection
-  const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters, dependencies)
+  const result = modifyAstWithEdgeTreatmentAndTag(
+    ast,
+    selection,
+    parameters,
+    dependencies
+  )
   if (err(result)) {
     return result
   }

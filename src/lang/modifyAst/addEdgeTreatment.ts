@@ -69,7 +69,12 @@ export async function applyEdgeTreatmentToSelection(
   }
 ): Promise<void | Error> {
   // 1. clone and modify with edge treatment and tag
-  const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters, dependencies)
+  const result = modifyAstWithEdgeTreatmentAndTag(
+    ast,
+    selection,
+    parameters,
+    dependencies
+  )
   if (err(result)) return result
   const { modifiedAst, pathToEdgeTreatmentNode } = result
 
@@ -312,11 +317,17 @@ async function updateAstAndFocus(
     codeManager: CodeManager
   }
 ): Promise<void> {
-  const updatedAst = await dependencies.kclManager.updateAst(modifiedAst, true, {
-    focusPath: pathToEdgeTreatmentNode,
-  })
+  const updatedAst = await dependencies.kclManager.updateAst(
+    modifiedAst,
+    true,
+    {
+      focusPath: pathToEdgeTreatmentNode,
+    }
+  )
 
-  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
+    updatedAst.newAst
+  )
 
   if (updatedAst?.selections) {
     dependencies.editorManager.selectRange(updatedAst?.selections)

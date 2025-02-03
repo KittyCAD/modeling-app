@@ -1681,7 +1681,7 @@ export const modelingMachine = setup({
         // Extract inputs
         const ast = kclManager.ast
         const { selection, thickness } = input
-        const dependencies = { 
+        const dependencies = {
           kclManager,
           engineCommandManager,
           editorManager,
@@ -1712,7 +1712,7 @@ export const modelingMachine = setup({
             'variableName' in thickness
               ? thickness.variableIdentifierAst
               : thickness.valueAst,
-          dependencies
+          dependencies,
         })
         if (err(shellResult)) {
           return err(shellResult)

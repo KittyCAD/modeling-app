@@ -24,24 +24,23 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 import EditorManager from 'editor/manager'
 import CodeManager from 'lang/codeManager'
 
-
 export function addShell({
   node,
   selection,
   artifactGraph,
   thickness,
-  dependencies
+  dependencies,
 }: {
   node: Node<Program>
   selection: Selections
   artifactGraph: ArtifactGraph
   thickness: Expr
   dependencies: {
-      kclManager: KclManager
-      engineCommandManager: EngineCommandManager
-      editorManager: EditorManager
-      codeManager: CodeManager
-    }
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(node)
 
