@@ -369,7 +369,12 @@ export class KclManager {
       await this.disableSketchMode()
     }
 
-    this.fileSettings = getSettingsAnnotation(ast)
+    let fileSettings = getSettingsAnnotation(ast)
+    if (err(fileSettings)) {
+      console.error(fileSettings)
+      fileSettings = {}
+    }
+    this.fileSettings = fileSettings
 
     this.logs = logs
     this.errors = errors

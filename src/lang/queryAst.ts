@@ -22,6 +22,9 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   recast,
+  kclSettings,
+  unitLenToUnitLength,
+  unitAngToUnitAngle,
 } from './wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
@@ -35,9 +38,6 @@ import {
 import { err, Reason } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { codeRefFromRange } from './std/artifactGraph'
-import { ATTRIBUTE_NAME_ANGLE, ATTRIBUTE_NAME_LENGTH } from 'lib/constants'
-import { UnitLength } from 'wasm-lib/kcl/bindings/UnitLength'
-import { UnitAngle_type } from '@kittycad/lib/dist/types/src/models'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
 
 /**
@@ -797,41 +797,22 @@ export function getObjExprProperty(
 }
 
 /**
- * Given an AST, returns the settings annotation object if it exists.
+ * Given KCL, returns the settings annotation object if it exists.
  */
 export function getSettingsAnnotation(
-  node?: Node<Program>
-): KclSettingsAnnotation {
+  kcl: string | Node<Program>
+): KclSettingsAnnotation | Error {
+  const metaSettings = kclSettings(kcl)
+  if (err(metaSettings)) return metaSettings
+
   const settings: KclSettingsAnnotation = {}
-  const maybeAnnotations = node?.nonCodeMeta?.startNodes?.filter(
-    (n) => n.value.type === 'annotation' && n.value.name.name === 'settings'
+  // No settings in the KCL.
+  if (!metaSettings) return settings
+
+  settings.defaultLengthUnit = unitLenToUnitLength(
+    metaSettings.defaultLengthUnits
   )
-  if (!maybeAnnotations?.length) return settings
-
-  // Use the last settings annotation
-  // we could merge all settings annotations, but that's not necessary for now
-  const annotation = maybeAnnotations.pop()
-
-  // For tsc
-  if (
-    !(
-      annotation?.value.type == 'annotation' &&
-      annotation.value.name.name === 'settings' &&
-      annotation.value.properties !== null
-    )
-  ) {
-    return settings
-  }
-
-  annotation.value.properties.forEach((prop) => {
-    if ('name' in prop.value) {
-      if (prop.key.name === ATTRIBUTE_NAME_LENGTH) {
-        settings[ATTRIBUTE_NAME_LENGTH] = prop.value.name as UnitLength
-      } else if (prop.key.name === ATTRIBUTE_NAME_ANGLE) {
-        settings[ATTRIBUTE_NAME_ANGLE] = prop.value.name as UnitAngle_type
-      }
-    }
-  })
+  settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
 
   return settings
 }
