@@ -625,6 +625,58 @@ export function addOffsetPlane({
 }
 
 /**
+ * Append a helix to the AST
+ */
+export function addHelix({
+  node,
+  revolutions,
+  angleStart,
+  counterClockWise,
+  radius,
+  axis,
+  length,
+}: {
+  node: Node<Program>
+  revolutions: Expr
+  angleStart: Expr
+  counterClockWise: boolean
+  radius: Expr
+  axis: string
+  length: Expr
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const newHelixName = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.HELIX)
+
+  const newPlane = createVariableDeclaration(
+    newHelixName,
+    createCallExpressionStdLib('helix', [
+      createObjectExpression({
+        revolutions,
+        angleStart,
+        counterClockWise: createLiteral(counterClockWise),
+        radius,
+        axis: createLiteral(axis),
+        length,
+      }),
+    ])
+  )
+
+  modifiedAst.body.push(newPlane)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [modifiedAst.body.length - 1, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpression'],
+    [0, 'index'],
+  ]
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
  * Return a modified clone of an AST with a named constant inserted into the body
  */
 export function insertNamedConstant({
