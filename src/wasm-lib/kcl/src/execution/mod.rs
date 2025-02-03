@@ -1431,6 +1431,19 @@ pub enum Path {
         /// This is used to compute the tangential angle.
         ccw: bool,
     },
+    CircleThreePoint {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Point 1 of the circle
+        #[ts(type = "[number, number]")]
+        p1: [f64; 2],
+        /// Point 2 of the circle
+        #[ts(type = "[number, number]")]
+        p2: [f64; 2],
+        /// Point 3 of the circle
+        #[ts(type = "[number, number]")]
+        p3: [f64; 2],
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -1473,6 +1486,7 @@ enum PathType {
     TangentialArc,
     TangentialArcTo,
     Circle,
+    CircleThreePoint,
     Horizontal,
     AngledLineTo,
     Arc,
@@ -1485,6 +1499,7 @@ impl From<&Path> for PathType {
             Path::TangentialArcTo { .. } => Self::TangentialArcTo,
             Path::TangentialArc { .. } => Self::TangentialArc,
             Path::Circle { .. } => Self::Circle,
+            Path::CircleThreePoint { .. } => Self::CircleThreePoint,
             Path::Horizontal { .. } => Self::Horizontal,
             Path::AngledLineTo { .. } => Self::AngledLineTo,
             Path::Base { .. } => Self::Base,
@@ -1503,6 +1518,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.geo_meta.id,
             Path::TangentialArc { base, .. } => base.geo_meta.id,
             Path::Circle { base, .. } => base.geo_meta.id,
+            Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
         }
     }
@@ -1516,6 +1532,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base.tag.clone(),
             Path::TangentialArc { base, .. } => base.tag.clone(),
             Path::Circle { base, .. } => base.tag.clone(),
+            Path::CircleThreePoint { base, .. } => base.tag.clone(),
             Path::Arc { base, .. } => base.tag.clone(),
         }
     }
@@ -1529,6 +1546,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => base,
             Path::TangentialArc { base, .. } => base,
             Path::Circle { base, .. } => base,
+            Path::CircleThreePoint { base, .. } => base,
             Path::Arc { base, .. } => base,
         }
     }
@@ -1566,6 +1584,11 @@ impl Path {
                 linear_distance(self.get_from(), self.get_to())
             }
             Self::Circle { radius, .. } => 2.0 * std::f64::consts::PI * radius,
+            Self::CircleThreePoint { p1, p2, p3, .. } => {
+                let circle_params =
+                    crate::std::utils::calculate_circle_from_3_points([p1.into(), p2.into(), p3.into()]);
+                2.0 * std::f64::consts::PI * circle_params.radius
+            }
             Self::Arc { .. } => {
                 // TODO: Call engine utils to figure this out.
                 linear_distance(self.get_from(), self.get_to())
@@ -1582,6 +1605,7 @@ impl Path {
             Path::TangentialArcTo { base, .. } => Some(base),
             Path::TangentialArc { base, .. } => Some(base),
             Path::Circle { base, .. } => Some(base),
+            Path::CircleThreePoint { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
         }
     }
@@ -1601,6 +1625,15 @@ impl Path {
                 ccw: *ccw,
                 radius: *radius,
             },
+            Path::CircleThreePoint { p1, p2, p3, .. } => {
+                let circle_params =
+                    crate::std::utils::calculate_circle_from_3_points([p1.into(), p2.into(), p3.into()]);
+                GetTangentialInfoFromPathsResult::Circle {
+                    center: circle_params.center.into(),
+                    ccw: true,
+                    radius: circle_params.radius,
+                }
+            }
             Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {
                 let base = self.get_base();
                 GetTangentialInfoFromPathsResult::PreviousPoint(base.from)

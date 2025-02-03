@@ -27,6 +27,7 @@ export type ToolTip =
   | 'angledLineThatIntersects'
   | 'tangentialArcTo'
   | 'circle'
+  | 'circleThreePoint'
 
 export const toolTips: Array<ToolTip> = [
   'line',
@@ -69,7 +70,6 @@ export async function executeAst({
       : executor(ast, engineCommandManager, path))
 
     await engineCommandManager.waitForAllCommands()
-
     return {
       logs: [],
       errors: [],

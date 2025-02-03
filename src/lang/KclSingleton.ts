@@ -38,6 +38,7 @@ import { Operation } from 'wasm-lib/kcl/bindings/Operation'
 interface ExecuteArgs {
   ast?: Node<Program>
   zoomToFit?: boolean
+  isPartialExecution?: boolean
   executionId?: number
   zoomOnRangeAndType?: {
     range: SourceRange
@@ -378,12 +379,10 @@ export class KclManager {
     }
     this.ast = { ...ast }
     // updateArtifactGraph relies on updated executeState/programMemory
-    this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
+    await this.engineCommandManager.updateArtifactGraph(execState.artifactGraph)
     this._executeCallback()
-    if (!isInterrupted) {
+    if (!isInterrupted)
       sceneInfra.modelingSend({ type: 'code edit during sketch' })
-    }
-
     this.engineCommandManager.addCommandLog({
       type: 'execution-done',
       data: null,
@@ -443,6 +442,7 @@ export class KclManager {
 
     this._logs = logs
     this.addDiagnostics(kclErrorsToDiagnostics(errors))
+
     this._execState = execState
     this._programMemory = execState.memory
     if (!errors.length) {
@@ -455,7 +455,7 @@ export class KclManager {
     // problem this solves, but either way we should strive to remove it.
     Array.from(this.engineCommandManager.artifactGraph).forEach(
       ([commandId, artifact]) => {
-        if (!('codeRef' in artifact)) return
+        if (!('codeRef' in artifact && artifact.codeRef)) return
         const _node1 = getNodeFromPath<Node<CallExpression>>(
           this.ast,
           artifact.codeRef.pathToNode,
@@ -482,7 +482,10 @@ export class KclManager {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(zoomToFit?: boolean): Promise<void> {
+  async executeCode(opts?: {
+    zoomToFit?: true
+    isPartialExecution?: true
+  }): Promise<void> {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
@@ -490,10 +493,10 @@ export class KclManager {
       return
     }
 
-    zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, zoomToFit)
+    // zoomToFit = this.tryToZoomToFitOnCodeUpdate(ast, opts?.zoomToFit)
 
     this.ast = { ...ast }
-    return this.executeAst({ zoomToFit })
+    return this.executeAst(opts)
   }
   /**
    * This will override the zoom to fit to zoom into the model if the previous AST was empty.

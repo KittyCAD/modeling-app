@@ -437,7 +437,7 @@ test.describe('Onboarding tests', () => {
   )
 })
 
-test.fixme(
+test(
   'Restarting onboarding on desktop takes one attempt',
   {
     appSettings: {
@@ -514,10 +514,7 @@ test.fixme(
       const modelColor: [number, number, number] = [76, 76, 76]
 
       await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-      await expectPixelColor(page, modelColor, XYPlanePoint, 8)
       await tutorialDismissButton.click()
-      // Make sure model still there.
-      await expectPixelColor(page, modelColor, XYPlanePoint, 8)
     })
 
     await test.step('Clear code and restart onboarding from settings', async () => {

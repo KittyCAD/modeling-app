@@ -69,33 +69,34 @@ test.describe('Testing selections', () => {
       const startXPx = 600
       await u.closeDebugPanel()
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-      |> startProfileAt(${commonPoints.startAt}, %)`)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      )
 
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 10)
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-      |> startProfileAt(${commonPoints.startAt}, %)
-      |> xLine(${commonPoints.num1}, %)`)
+        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+    |> xLine(${commonPoints.num1}, %)`)
 
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-      |> startProfileAt(${commonPoints.startAt}, %)
-      |> xLine(${commonPoints.num1}, %)
-      |> yLine(${commonPoints.num1 + 0.01}, %)`)
+        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
+        commonPoints.startAt
+      }, sketch001)
+    |> xLine(${commonPoints.num1}, %)
+    |> yLine(${commonPoints.num1 + 0.01}, %)`)
       await page.waitForTimeout(100)
       await page.mouse.click(startXPx, 500 - PUR * 20)
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
-      |> startProfileAt(${commonPoints.startAt}, %)
-      |> xLine(${commonPoints.num1}, %)
-      |> yLine(${commonPoints.num1 + 0.01}, %)
-      |> xLine(${commonPoints.num2 * -1}, %)`)
+        .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
+        commonPoints.startAt
+      }, sketch001)
+    |> xLine(${commonPoints.num1}, %)
+    |> yLine(${commonPoints.num1 + 0.01}, %)
+    |> xLine(${commonPoints.num2 * -1}, %)`)
 
       // deselect line tool
       await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -263,66 +264,88 @@ test.describe('Testing selections', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-      |> startProfileAt([-79.26, 95.04], %)
-      |> line([112.54, 127.64], %, $seg02)
-      |> line([170.36, -121.61], %, $seg01)
-      |> lineTo([profileStartX(%), profileStartY(%)], %)
-      |> close(%)
-  extrude001 = extrude(50, sketch001)
-  sketch005 = startSketchOn(extrude001, 'END')
-    |> startProfileAt([23.24, 136.52], %)
-    |> line([-8.44, 36.61], %)
-    |> line([49.4, 2.05], %)
-    |> line([29.69, -46.95], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  sketch003 = startSketchOn(extrude001, seg01)
-    |> startProfileAt([21.23, 17.81], %)
-    |> line([51.97, 21.32], %)
-    |> line([4.07, -22.75], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  sketch002 = startSketchOn(extrude001, seg02)
-    |> startProfileAt([-100.54, 16.99], %)
-    |> line([0, 20.03], %)
-    |> line([62.61, 0], %, $seg03)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude002 = extrude(50, sketch002)
-  sketch004 = startSketchOn(extrude002, seg03)
-    |> startProfileAt([57.07, 134.77], %)
-    |> line([-4.72, 22.84], %)
-    |> line([28.8, 6.71], %)
-    |> line([9.19, -25.33], %)
-    |> lineTo([profileStartX(%), profileStartY(%)], %)
-    |> close(%)
-  extrude003 = extrude(20, sketch004)
-  pipeLength = 40
-  pipeSmallDia = 10
-  pipeLargeDia = 20
-  thickness = 0.5
-  part009 = startSketchOn('XY')
-    |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
-    |> line([thickness, 0], %)
-    |> line([0, -1], %)
-    |> angledLineToX({
-     angle = 60,
-     to = pipeSmallDia + thickness
-   }, %)
-    |> line([0, -pipeLength], %)
-    |> angledLineToX({
-     angle = -60,
-     to = pipeLargeDia + thickness
-   }, %)
-    |> line([0, -1], %)
-    |> line([-thickness, 0], %)
-    |> line([0, 1], %)
-    |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
-    |> line([0, pipeLength], %)
-    |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
-    |> close(%)
-  rev = revolve({ axis: 'y' }, part009)
-  `
+        |> startProfileAt([-79.26, 95.04], %)
+        |> line([112.54, 127.64], %, $seg02)
+        |> line([170.36, -121.61], %, $seg01)
+        |> lineTo([profileStartX(%), profileStartY(%)], %)
+        |> close(%)
+extrude001 = extrude(50, sketch001)
+sketch005 = startSketchOn(extrude001, 'END')
+  |> startProfileAt([23.24, 136.52], %)
+  |> line([-8.44, 36.61], %)
+  |> line([49.4, 2.05], %)
+  |> line([29.69, -46.95], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+sketch003 = startSketchOn(extrude001, seg01)
+  |> startProfileAt([21.23, 17.81], %)
+  |> line([51.97, 21.32], %)
+  |> line([4.07, -22.75], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+sketch002 = startSketchOn(extrude001, seg02)
+  |> startProfileAt([-100.54, 16.99], %)
+  |> line([0, 20.03], %)
+  |> line([62.61, 0], %, $seg03)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude002 = extrude(50, sketch002)
+sketch004 = startSketchOn(extrude002, seg03)
+  |> startProfileAt([57.07, 134.77], %)
+  |> line([-4.72, 22.84], %)
+  |> line([28.8, 6.71], %)
+  |> line([9.19, -25.33], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude003 = extrude(20, sketch004)
+pipeLength = 40
+pipeSmallDia = 10
+pipeLargeDia = 20
+thickness = 0.5
+part009 = startSketchOn('XY')
+  |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
+  |> line([thickness, 0], %)
+  |> line([0, -1], %)
+  |> angledLineToX({
+       angle = 60,
+       to = pipeSmallDia + thickness
+     }, %)
+  |> line([0, -pipeLength], %)
+  |> angledLineToX({
+       angle = -60,
+       to = pipeLargeDia + thickness
+     }, %)
+  |> line([0, -1], %)
+  |> line([-thickness, 0], %)
+  |> line([0, 1], %)
+  |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
+  |> line([0, pipeLength], %)
+  |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
+  |> close(%)
+rev = revolve({ axis = 'y' }, part009)
+sketch006 = startSketchOn('XY')
+profile001 = circle({
+  center = [42.91, -70.42],
+  radius = 17.96
+}, sketch006)
+profile002 = startProfileAt([86.92, -63.81], sketch006)
+  |> angledLine([0, 63.81], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       17.05
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile003 = startProfileAt([40.16, -120.48], sketch006)
+  |> line([26.95, 24.21], %)
+  |> line([20.91, -28.61], %)
+  |> line([32.46, 18.71], %)
+
+`
       )
     }, KCL_DEFAULT_LENGTH)
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -354,9 +377,10 @@ test.describe('Testing selections', () => {
     })
     await page.waitForTimeout(100)
 
-    const revolve = { x: 646, y: 248 }
+    const revolve = { x: 635, y: 253 }
     const parentExtrude = { x: 915, y: 133 }
     const solid2d = { x: 770, y: 167 }
+    const individualProfile = { x: 694, y: 432 }
 
     // DELETE REVOLVE
     await page.mouse.click(revolve.x, revolve.y)
@@ -422,6 +446,20 @@ test.describe('Testing selections', () => {
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(`sketch005 = startSketchOn({`)
+
+    // Delete a single profile
+    await page.mouse.click(individualProfile.x, individualProfile.y)
+    await page.waitForTimeout(100)
+    const codeToBeDeletedSnippet =
+      'profile003 = startProfileAt([40.16, -120.48], sketch006)'
+    await expect(page.locator('.cm-activeLine')).toHaveText(
+      '  |> line([20.91, -28.61], %)'
+    )
+    await u.clearCommandLogs()
+    await page.keyboard.press('Backspace')
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+    await page.waitForTimeout(200)
+    await expect(u.codeLocator).not.toContainText(codeToBeDeletedSnippet)
   })
   test("Deleting solid that the AST mod can't handle results in a toast message", async ({
     page,
@@ -1226,12 +1264,15 @@ test.describe('Testing selections', () => {
 
     await page.waitForTimeout(600)
 
+    const firstClickCoords = { x: 650, y: 200 } as const
     // Place a point because the line tool will exit if no points are pressed
-    await page.mouse.click(650, 200)
+    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
     await page.waitForTimeout(600)
 
     // Code before exiting the tool
-    let previousCodeContent = await page.locator('.cm-content').innerText()
+    let previousCodeContent = (
+      await page.locator('.cm-content').innerText()
+    ).replace(/\s+/g, '')
 
     // deselect the line tool by clicking it
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -1243,13 +1284,22 @@ test.describe('Testing selections', () => {
     await page.mouse.click(750, 200)
     await page.waitForTimeout(100)
 
-    // expect no change
-    await expect(page.locator('.cm-content')).toHaveText(previousCodeContent)
+    await expect
+      .poll(async () => {
+        let str = await page.locator('.cm-content').innerText()
+        str = str.replace(/\s+/g, '')
+        return str
+      })
+      .toBe(previousCodeContent)
 
     // select line tool again
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
 
     await u.closeDebugPanel()
+
+    // Click to continue profile
+    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
+    await page.waitForTimeout(100)
 
     // line tool should work as expected again
     await page.mouse.click(700, 200)

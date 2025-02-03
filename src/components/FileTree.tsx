@@ -21,7 +21,6 @@ import { ContextMenu, ContextMenuItem } from './ContextMenu'
 import usePlatform from 'hooks/usePlatform'
 import { FileEntry } from 'lib/project'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { normalizeLineEndings } from 'lib/codeEditor'
 import { reportRejection } from 'lib/trap'
 
 function getIndentationCSS(level: number) {
@@ -188,24 +187,25 @@ const FileTreeItem = ({
   // Because subtrees only render when they are opened, that means this
   // only listens when they open. Because this acts like a useEffect, when
   // the ReactNodes are destroyed, so is this listener :)
-  useFileSystemWatcher(
-    async (eventType, path) => {
-      // Prevents a cyclic read / write causing editor problems such as
-      // misplaced cursor positions.
-      if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
-        codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-        return
-      }
+  /** Disabling this in favor of faster file writes until we fix file writing **/
+  /* useFileSystemWatcher(
+   *   async (eventType, path) => {
+   *     // Prevents a cyclic read / write causing editor problems such as
+   *     // misplaced cursor positions.
+   *     if (codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
+   *       codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
+   *       return
+   *     }
 
-      if (isCurrentFile && eventType === 'change') {
-        let code = await window.electron.readFile(path, { encoding: 'utf-8' })
-        code = normalizeLineEndings(code)
-        codeManager.updateCodeStateEditor(code)
-      }
-      fileSend({ type: 'Refresh' })
-    },
-    [fileOrDir.path]
-  )
+   *     if (isCurrentFile && eventType === 'change') {
+   *       let code = await window.electron.readFile(path, { encoding: 'utf-8' })
+   *       code = normalizeLineEndings(code)
+   *       codeManager.updateCodeStateEditor(code)
+   *     }
+   *     fileSend({ type: 'Refresh' })
+   *   },
+   *   [fileOrDir.path]
+   * ) */
 
   const showNewTreeEntry =
     newTreeEntry !== undefined &&
@@ -261,7 +261,7 @@ const FileTreeItem = ({
       await codeManager.writeToFile()
 
       // Prevent seeing the model built one piece at a time when changing files
-      await kclManager.executeCode(true)
+      await kclManager.executeCode({ zoomToFit: true })
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)

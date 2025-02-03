@@ -7,6 +7,7 @@ import {
   getMovementUtils,
   getUtils,
   PERSIST_MODELING_CONTEXT,
+  TEST_COLORS,
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 
@@ -98,25 +99,28 @@ test.describe('Sketch tests', () => {
   })
   test('Can delete most of a sketch and the line tool will still work', async ({
     page,
-    homePage,
     scene,
+    homePage,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn('XZ')
-    |> startProfileAt([4.61, -14.01], %)
-    |> xLine(12.73, %)
-    |> tangentialArcTo([24.95, -5.38], %)`
+  |> startProfileAt([2.61, -4.01], %)
+  |> xLine(8.73, %)
+  |> tangentialArcTo([8.33, -1.31], %)`
       )
     })
 
     await homePage.goToModelingScene()
     await scene.waitForExecutionDone()
 
+    await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 587, y: 270 }, 15)
+
     await expect(async () => {
-      await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+      await page.mouse.click(700, 200)
+      await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
       await expect(
         page.getByRole('button', { name: 'Edit Sketch' })
       ).toBeEnabled({ timeout: 2000 })
@@ -125,7 +129,7 @@ test.describe('Sketch tests', () => {
 
     await page.waitForTimeout(600) // wait for animation
 
-    await page.getByText('tangentialArcTo([24.95, -5.38], %)').click()
+    await page.getByText('tangentialArcTo([8.33, -1.31], %)').click()
     await page.keyboard.press('End')
     await page.keyboard.down('Shift')
     await page.keyboard.press('ArrowUp')
@@ -137,23 +141,23 @@ test.describe('Sketch tests', () => {
     await page.waitForTimeout(100)
 
     await page.getByRole('button', { name: 'line Line', exact: true }).click()
+    await page.waitForTimeout(500)
+    // click start profileAt handle to continue profile
+    await page.mouse.click(702, 406, { delay: 500 })
     await page.waitForTimeout(100)
+    await page.mouse.move(800, 150)
 
     await expect(async () => {
-      await page.mouse.move(700, 200, { steps: 25 })
+      // click to add segment
       await page.mouse.click(700, 200)
 
-      await expect
-        .poll(u.crushKclCodeIntoOneLineAndThenMaybeSome, { timeout: 1000 })
-        .toBe(
-          `sketch001 = startSketchOn('XZ')
-  |> startProfileAt([4.61,-14.01], %)
-  |> yLine(15.95, %)
-`
-            .replaceAll(' ', '')
-            .replaceAll('\n', '')
-        )
-    }).toPass({ timeout: 40_000, intervals: [1_000] })
+      await expect.poll(u.normalisedEditorCode, { timeout: 1000 })
+        .toBe(`sketch002 = startSketchOn('XZ')
+sketch001 = startProfileAt([12.34, -12.34], sketch002)
+  |> yLine(12.34, %)
+
+`)
+    }).toPass({ timeout: 5_000, intervals: [1_000] })
   })
 
   test('Can exit selection of face', async ({ page, homePage }) => {
@@ -671,7 +675,7 @@ test.describe('Sketch tests', () => {
     await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
     await click00r(0, 0)
-    codeStr += `  |> startProfileAt(${toSU([0, 0])}, %)`
+    codeStr += `profile001 = startProfileAt(${toSU([0, 0])}, sketch001)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(50, 0)
@@ -707,7 +711,7 @@ test.describe('Sketch tests', () => {
     await u.closeDebugPanel()
 
     await click00r(30, 0)
-    codeStr += `  |> startProfileAt([2.03, 0], %)`
+    codeStr += `profile002 = startProfileAt([2.03, 0], sketch002)`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // TODO: I couldn't use `toSU` here because of some rounding error causing
@@ -743,7 +747,9 @@ test.describe('Sketch tests', () => {
       await u.openDebugPanel()
 
       const code = `sketch001 = startSketchOn('-XZ')
-    |> startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(scale * 34.8)}], %)
+profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
+        scale * 34.8
+      )}], sketch001)
     |> xLine(${roundOff(scale * 139.19)}, %)
     |> yLine(-${roundOff(scale * 139.2)}, %)
     |> lineTo([profileStartX(%), profileStartY(%)], %)
@@ -809,11 +815,17 @@ test.describe('Sketch tests', () => {
       await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
       prevContent = await page.locator('.cm-content').innerText()
 
-      await expect(page.locator('.cm-content')).toHaveText(code)
-      // Assert the tool was unequipped
+      await expect
+        .poll(async () => {
+          const text = await page.locator('.cm-content').innerText()
+          return text.replace(/\s/g, '')
+        })
+        .toBe(code.replace(/\s/g, ''))
+
+      // Assert the tool stays equipped after a profile is closed (ready for the next one)
       await expect(
         page.getByRole('button', { name: 'line Line', exact: true })
-      ).not.toHaveAttribute('aria-pressed', 'true')
+      ).toHaveAttribute('aria-pressed', 'true')
 
       // exit sketch
       await u.openAndClearDebugPanel()
@@ -1230,7 +1242,7 @@ test.describe('Sketch mode should be toleratant to syntax errors', () => {
 
       const [objClick] = scene.makeMouseHelpers(600, 250)
       const arrowHeadLocation = { x: 706, y: 129 } as const
-      const arrowHeadWhite: [number, number, number] = [255, 255, 255]
+      const arrowHeadWhite = TEST_COLORS.WHITE
       const backgroundGray: [number, number, number] = [28, 28, 28]
       const verifyArrowHeadColor = async (c: [number, number, number]) =>
         scene.expectPixelColor(c, arrowHeadLocation, 15)
@@ -1323,6 +1335,999 @@ test.describe(`Sketching with offset planes`, () => {
         })
       })
     })
+  })
+})
+
+test.describe('multi-profile sketching', () => {
+  test('Can add multiple profiles to a sketch (all tool types)', async ({
+    scene,
+    toolbar,
+    editor,
+    page,
+    homePage,
+  }) => {
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+
+    const [startProfile1] = scene.makeMouseHelpers(568, 70)
+    const [endLineStartTanArc] = scene.makeMouseHelpers(701, 78)
+    const [endArcStartLine] = scene.makeMouseHelpers(745, 189)
+
+    const [startProfile2] = scene.makeMouseHelpers(782, 80)
+    const [profile2Point2] = scene.makeMouseHelpers(921, 90)
+    const [profile2Point3] = scene.makeMouseHelpers(953, 178)
+
+    const [circle1Center] = scene.makeMouseHelpers(842, 147)
+    const [circle1Radius] = scene.makeMouseHelpers(870, 171)
+
+    const [circle2Center] = scene.makeMouseHelpers(850, 222)
+    const [circle2Radius] = scene.makeMouseHelpers(843, 230)
+
+    const [crnRect1point1] = scene.makeMouseHelpers(583, 205)
+    const [crnRect1point2] = scene.makeMouseHelpers(618, 320)
+
+    const [crnRect2point1] = scene.makeMouseHelpers(663, 215)
+    const [crnRect2point2] = scene.makeMouseHelpers(744, 276)
+
+    const [cntrRect1point1] = scene.makeMouseHelpers(624, 387)
+    const [cntrRect1point2] = scene.makeMouseHelpers(676, 355)
+
+    const [cntrRect2point1] = scene.makeMouseHelpers(785, 332)
+    const [cntrRect2point2] = scene.makeMouseHelpers(808, 286)
+
+    await toolbar.startSketchPlaneSelection()
+    await selectXZPlane()
+    // timeout wait for engine animation is unavoidable
+    await page.waitForTimeout(600)
+    await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')`)
+    await test.step('Create a close profile stopping mid profile to equip the tangential arc, and than back to the line tool', async () => {
+      await startProfile1()
+      await editor.expectEditor.toContain(
+        `profile001 = startProfileAt([4.61, 12.21], sketch001)`
+      )
+
+      await endLineStartTanArc()
+      await editor.expectEditor.toContain(`|> line([9.02, -0.55], %)`)
+      await toolbar.tangentialArcBtn.click()
+      await page.waitForTimeout(300)
+      await page.mouse.click(745, 359)
+      await page.waitForTimeout(300)
+      await endLineStartTanArc({ delay: 544 })
+
+      await endArcStartLine()
+      await editor.expectEditor.toContain(
+        `|> tangentialArcTo([16.61, 4.14], %)`
+      )
+      await toolbar.lineBtn.click()
+      await page.waitForTimeout(300)
+      await endArcStartLine()
+
+      await page.mouse.click(572, 110)
+      await editor.expectEditor.toContain(`|> line([-11.73, 5.35], %)`)
+      await startProfile1()
+      await editor.expectEditor.toContain(
+        `|> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`,
+        { shouldNormalise: true }
+      )
+      await page.waitForTimeout(300)
+    })
+
+    await test.step('Without unequipping from the last step, make another profile, and one that is not closed', async () => {
+      await startProfile2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        `profile002 = startProfileAt([19.12, 11.53], sketch001)`
+      )
+      await profile2Point2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(`|> line([9.43, -0.68], %)`)
+      await profile2Point3()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(`|> line([2.17, -5.97], %)`)
+    })
+
+    await test.step('create two circles in a row without unequip', async () => {
+      await toolbar.circleBtn.click()
+
+      await circle1Center()
+      await page.waitForTimeout(300)
+      await circle1Radius({ delay: 500 })
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        `profile003 = circle({ center = [23.19, 6.98], radius = 2.5 }, sketch001)`
+      )
+
+      await test.step('hover in empty space to wait for overlays to get out of the way', async () => {
+        await page.mouse.move(951, 223)
+        await page.waitForTimeout(1000)
+      })
+
+      await circle2Center()
+      await page.waitForTimeout(300)
+      await circle2Radius()
+      await editor.expectEditor.toContain(
+        `profile004 = circle({ center = [23.74, 1.9], radius = 0.72 }, sketch001)`
+      )
+    })
+    await test.step('create two corner rectangles in a row without unequip', async () => {
+      await page.screenshot({ path: 'rectangle.png' })
+      await toolbar.rectangleBtn.click()
+
+      await crnRect1point1()
+      await editor.expectEditor.toContain(
+        `profile005 = startProfileAt([5.63, 3.05], sketch001)`
+      )
+      await crnRect1point2()
+      await editor.expectEditor.toContain(
+        `|> angledLine([0, 2.37], %, $rectangleSegmentA001)
+  |> angledLine([segAng(rectangleSegmentA001) - 90, 7.8], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`.replaceAll('\n', '')
+      )
+
+      await crnRect2point1()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        `profile006 = startProfileAt([11.05, 2.37], sketch001)`
+      )
+      await crnRect2point2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        `|> angledLine([0, 5.49], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       4.14
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`.replaceAll('\n', '')
+      )
+    })
+
+    await test.step('create two center rectangles in a row without unequip', async () => {
+      await toolbar.selectCenterRectangle()
+
+      await cntrRect1point1()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        `profile007 = startProfileAt([8.41, -9.29], sketch001)`
+      )
+      await cntrRect1point2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        `|> angledLine([0, 7.06], %, $rectangleSegmentA003)
+  |> angledLine([
+       segAng(rectangleSegmentA003) + 90,
+       4.34
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA003),
+       -segLen(rectangleSegmentA003)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`.replaceAll('\n', '')
+      )
+      await page.waitForTimeout(300)
+
+      await cntrRect2point1()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        `profile008 = startProfileAt([19.33, -5.56], sketch001)`
+      )
+      await cntrRect2point2()
+      await page.waitForTimeout(300)
+      await editor.expectEditor.toContain(
+        `|> angledLine([0, 3.12], %, $rectangleSegmentA004)
+  |> angledLine([
+       segAng(rectangleSegmentA004) + 90,
+       6.24
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA004),
+       -segLen(rectangleSegmentA004)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`.replaceAll('\n', '')
+      )
+    })
+  })
+
+  test('Can edit a sketch with multiple profiles, dragging segments to edit them, and adding one new profile', async ({
+    homePage,
+    scene,
+    toolbar,
+    editor,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([6.24, 4.54], sketch001)
+  |> line([-0.41, 6.99], %)
+  |> line([8.61, 0.74], %)
+  |> line([10.99, -5.22], %)
+profile002 = startProfileAt([11.19, 5.02], sketch001)
+  |> angledLine([0, 10.78], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       4.14
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [pointOnSegment] = scene.makeMouseHelpers(590, 141)
+    const [profileEnd] = scene.makeMouseHelpers(970, 105)
+    const profileEndMv = scene.makeMouseHelpers(951, 101)[1]
+    const [newProfileEnd] = scene.makeMouseHelpers(764, 104)
+    const dragSegmentTo = scene.makeMouseHelpers(850, 104)[1]
+
+    const rectHandle = scene.makeMouseHelpers(901, 150)[1]
+    const rectDragTo = scene.makeMouseHelpers(901, 180)[1]
+
+    const circleEdge = scene.makeMouseHelpers(691, 331)[1]
+    const dragCircleTo = scene.makeMouseHelpers(720, 331)[1]
+
+    const [rectStart] = scene.makeMouseHelpers(794, 322)
+    const [rectEnd] = scene.makeMouseHelpers(757, 395)
+
+    await test.step('enter sketch and setup', async () => {
+      await page.screenshot({ path: 'toolbar1.png' })
+      await pointOnSegment({ shouldDbClick: true })
+      await page.waitForTimeout(600)
+
+      await page.screenshot({ path: 'toolbar2.png' })
+      await toolbar.lineBtn.click()
+      await page.waitForTimeout(100)
+    })
+
+    await test.step('extend existing profile', async () => {
+      await profileEnd()
+      await page.waitForTimeout(100)
+      await newProfileEnd()
+      await editor.expectEditor.toContain(`|> line([-11.4, 0.71], %)`)
+      await toolbar.lineBtn.click()
+      await page.waitForTimeout(100)
+    })
+
+    await test.step('edit existing profile', async () => {
+      await profileEndMv()
+      await page.mouse.down()
+      await dragSegmentTo()
+      await page.mouse.up()
+      await editor.expectEditor.toContain(`line([4.16, -4.51], %)`)
+    })
+
+    await test.step('edit existing rect', async () => {
+      await rectHandle()
+      await page.mouse.down()
+      await rectDragTo()
+      await page.mouse.up()
+      await editor.expectEditor.toContain(
+        `angledLine([-7, 10.2], %, $rectangleSegmentA001)`
+      )
+    })
+
+    await test.step('edit existing circl', async () => {
+      await circleEdge()
+      await page.mouse.down()
+      await dragCircleTo()
+      await page.mouse.up()
+      await editor.expectEditor.toContain(
+        `profile003 = circle({ center = [6.92, -4.2], radius = 4.77 }, sketch001)`
+      )
+    })
+
+    await test.step('add new profile', async () => {
+      await toolbar.rectangleBtn.click()
+      await page.waitForTimeout(100)
+      await rectStart()
+      await editor.expectEditor.toContain(
+        `profile004 = startProfileAt([15.62, -3.83], sketch001)`
+      )
+      await page.waitForTimeout(100)
+      await rectEnd()
+      await editor.expectEditor.toContain(
+        `|> angledLine([180, 1.97], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) + 90,
+       3.88
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)`.replaceAll('\n', '')
+      )
+    })
+  })
+  test('Can delete a profile in the editor while is sketch mode, and sketch mode does not break, can ctrl+z to undo after constraint with variable was added', async ({
+    scene,
+    toolbar,
+    editor,
+    cmdBar,
+    page,
+    homePage,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([6.24, 4.54], sketch001)
+  |> line([-0.41, 6.99], %)
+  |> line([8.61, 0.74], %)
+  |> line([10.99, -5.22], %)
+profile002 = startProfileAt([11.19, 5.02], sketch001)
+  |> angledLine([0, 10.78], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       4.14
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile003 = circle({ center = [6.92, -4.2], radius = 3.16 }, sketch001)
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [pointOnSegment] = scene.makeMouseHelpers(590, 141)
+    const [segment1Click] = scene.makeMouseHelpers(616, 131)
+    const sketchIsDrawnProperly = async () => {
+      await test.step('check the sketch is still drawn properly', async () => {
+        await page.waitForTimeout(200)
+        await scene.expectPixelColor([255, 255, 255], { x: 617, y: 163 }, 15)
+        await scene.expectPixelColor([255, 255, 255], { x: 629, y: 331 }, 15)
+      })
+    }
+
+    await test.step('enter sketch and setup', async () => {
+      await pointOnSegment({ shouldDbClick: true })
+      await page.waitForTimeout(600)
+
+      await toolbar.lineBtn.click()
+      await page.waitForTimeout(100)
+    })
+
+    await test.step('select and delete code for a profile', async () => {})
+    await page.getByText('close(%)').click()
+    await page.keyboard.down('Shift')
+    for (let i = 0; i < 11; i++) {
+      await page.keyboard.press('ArrowUp')
+    }
+    await page.keyboard.press('Home')
+    await page.keyboard.up('Shift')
+    await page.keyboard.press('Backspace')
+
+    await sketchIsDrawnProperly()
+
+    await test.step('add random new var between profiles', async () => {
+      await page.keyboard.type('myVar = 5')
+      await page.keyboard.press('Enter')
+      await page.waitForTimeout(600)
+    })
+
+    await sketchIsDrawnProperly()
+
+    await test.step('Adding a constraint with a variable, and than ctrl-z-ing which will remove the variable again does not break sketch mode', async () => {
+      await expect(async () => {
+        await segment1Click()
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: ['|>line([-0.41,6.99],%)'],
+          highlightedCode: 'line([-0.41,6.99],%)',
+        })
+      }).toPass({ timeout: 5_000, intervals: [500] })
+
+      await toolbar.lengthConstraintBtn.click()
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain('length001 = 7')
+
+      // wait for execute defer
+      await page.waitForTimeout(600)
+      await sketchIsDrawnProperly()
+
+      await page.keyboard.down('Meta')
+      await page.keyboard.press('KeyZ')
+      await page.keyboard.up('Meta')
+
+      await editor.expectEditor.not.toContain('length001 = 7')
+      await sketchIsDrawnProperly()
+    })
+  })
+
+  test('can enter sketch when there is an extrude', async ({
+    homePage,
+    scene,
+    toolbar,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([-63.43, 193.08], sketch001)
+  |> line([168.52, 149.87], %)
+  |> line([190.29, -39.18], %)
+  |> tangentialArcTo([319.63, 129.65], %)
+  |> line([-217.65, -21.76], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile003 = startProfileAt([16.79, 38.24], sketch001)
+  |> angledLine([0, 182.82], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       105.71
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile004 = circle({
+  center = [280.45, 47.57],
+  radius = 55.26
+}, sketch001)
+extrude002 = extrude(50, profile001)
+extrude001 = extrude(5, profile003)
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [pointOnSegment] = scene.makeMouseHelpers(574, 207)
+
+    await pointOnSegment()
+    await toolbar.editSketch()
+    // wait for engine animation
+    await page.waitForTimeout(600)
+
+    await test.step('check the sketch is still drawn properly', async () => {
+      await scene.expectPixelColor([255, 255, 255], { x: 591, y: 167 }, 15)
+      await scene.expectPixelColor([255, 255, 255], { x: 638, y: 222 }, 15)
+      await scene.expectPixelColor([255, 255, 255], { x: 756, y: 214 }, 15)
+    })
+  })
+  test('exit new sketch without drawing anything should not be a problem', async ({
+    homePage,
+    scene,
+    toolbar,
+    editor,
+    cmdBar,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem('persistCode', `myVar = 5`)
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+
+    await toolbar.startSketchPlaneSelection()
+    await selectXZPlane()
+    // timeout wait for engine animation is unavoidable
+    await page.waitForTimeout(600)
+
+    await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')`)
+    await toolbar.exitSketchBtn.click()
+
+    await editor.expectEditor.not.toContain(`sketch001 = startSketchOn('XZ')`)
+
+    await test.step("still renders code, hasn't got into a weird state", async () => {
+      await editor.replaceCode(
+        'myVar = 5',
+        `myVar = 5
+  sketch001 = startSketchOn('XZ')
+  profile001 = circle({
+    center = [12.41, 3.87],
+    radius = myVar
+  }, sketch001)`
+      )
+
+      await scene.expectPixelColor([255, 255, 255], { x: 633, y: 211 }, 15)
+    })
+  })
+  test('A sketch with only "startProfileAt" and no segments should still be able to be continued', async ({
+    homePage,
+    scene,
+    toolbar,
+    editor,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([85.19, 338.59], sketch001)
+  |> line([213.3, -94.52], %)
+  |> line([-230.09, -55.34], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+sketch002 = startSketchOn('XY')
+profile002 = startProfileAt([85.81, 52.55], sketch002)
+
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [startProfileAt] = scene.makeMouseHelpers(606, 184)
+    const [nextPoint] = scene.makeMouseHelpers(763, 130)
+    await page.getByText('startProfileAt([85.81, 52.55], sketch002)').click()
+    await toolbar.editSketch()
+    // timeout wait for engine animation is unavoidable
+    await page.waitForTimeout(600)
+
+    // equip line tool
+    await toolbar.lineBtn.click()
+    await page.waitForTimeout(100)
+    await startProfileAt()
+    await page.waitForTimeout(100)
+    await nextPoint()
+    await editor.expectEditor.toContain(`|> line([126.05, 44.12], %)`)
+  })
+  test('old style sketch all in one pipe (with extrude) will break up to allow users to add a new profile to the same sketch', async ({
+    homePage,
+    scene,
+    toolbar,
+    editor,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `thePart = startSketchOn('XZ')
+  |> startProfileAt([7.53, 10.51], %)
+  |> line([12.54, 1.83], %)
+  |> line([6.65, -6.91], %)
+  |> line([-6.31, -8.69], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(75, thePart)
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [objClick] = scene.makeMouseHelpers(565, 343)
+    const [profilePoint1] = scene.makeMouseHelpers(609, 289)
+    const [profilePoint2] = scene.makeMouseHelpers(714, 389)
+
+    await test.step('enter sketch and setup', async () => {
+      await objClick()
+      await toolbar.editSketch()
+      // timeout wait for engine animation is unavoidable
+      await page.waitForTimeout(600)
+    })
+
+    await test.step('expect code to match initial conditions still', async () => {
+      await editor.expectEditor.toContain(
+        `thePart = startSketchOn('XZ')  |> startProfileAt([7.53, 10.51], %)`
+      )
+    })
+
+    await test.step('equiping the line tool should break up the pipe expression', async () => {
+      await toolbar.lineBtn.click()
+      await editor.expectEditor.toContain(
+        `sketch001 = startSketchOn('XZ')thePart = startProfileAt([7.53, 10.51], sketch001)`
+      )
+    })
+
+    await test.step('can continue on to add a new profile to this sketch', async () => {
+      await profilePoint1()
+      await editor.expectEditor.toContain(
+        `profile001 = startProfileAt([19.77, -7.08], sketch001)`
+      )
+      await profilePoint2()
+      await editor.expectEditor.toContain(`|> line([19.05, -18.14], %)`)
+    })
+  })
+  test('Can enter sketch on sketch of wall and cap for segment, solid2d, extrude-wall, extrude-cap selections', async ({
+    homePage,
+    scene,
+    toolbar,
+    editor,
+    page,
+  }) => {
+    // TODO this test should include a test for selecting revolve walls and caps
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([6.71, -3.66], sketch001)
+  |> line([2.65, 9.02], %, $seg02)
+  |> line([3.73, -9.36], %, $seg01)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude001 = extrude(20, profile001)
+sketch002 = startSketchOn(extrude001, seg01)
+profile002 = startProfileAt([0.75, 13.46], sketch002)
+  |> line([4.52, 3.79], %)
+  |> line([5.98, -2.81], %)
+profile003 = startProfileAt([3.19, 13.3], sketch002)
+  |> angledLine([0, 6.64], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       2.81
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile004 = startProfileAt([3.15, 9.39], sketch002)
+  |> xLine(6.92, %)
+  |> line([-7.41, -2.85], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile005 = circle({ center = [5.15, 4.34], radius = 1.66 }, sketch002)
+profile006 = startProfileAt([9.65, 3.82], sketch002)
+  |> line([2.38, 5.62], %)
+  |> line([2.13, -5.57], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+revolve001 = revolve({
+  angle = 45,
+  axis = getNextAdjacentEdge(seg01)
+}, profile004)
+extrude002 = extrude(4, profile006)
+sketch003 = startSketchOn('-XZ')
+profile007 = startProfileAt([4.8, 7.55], sketch003)
+  |> line([7.39, 2.58], %)
+  |> line([7.02, -2.85], %)
+profile008 = startProfileAt([5.54, 5.49], sketch003)
+  |> line([6.34, 2.64], %)
+  |> line([6.33, -2.96], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile009 = startProfileAt([5.23, 1.95], sketch003)
+  |> line([6.8, 2.17], %)
+  |> line([7.34, -2.75], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+profile010 = circle({
+  center = [7.18, -2.11],
+  radius = 2.67
+}, sketch003)
+profile011 = startProfileAt([5.07, -6.39], sketch003)
+  |> angledLine([0, 4.54], %, $rectangleSegmentA002)
+  |> angledLine([
+       segAng(rectangleSegmentA002) - 90,
+       4.17
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA002),
+       -segLen(rectangleSegmentA002)
+     ], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+extrude003 = extrude(2.5, profile011)
+revolve002 = revolve({ angle = 45, axis = seg02 }, profile008)
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const camPositionForSelectingSketchOnWallProfiles = () =>
+      scene.moveCameraTo(
+        { x: 834, y: -680, z: 534 },
+        { x: -54, y: -476, z: 148 }
+      )
+    const camPositionForSelectingSketchOnCapProfiles = () =>
+      scene.moveCameraTo({ x: 404, y: 690, z: 38 }, { x: 16, y: -140, z: -10 })
+    const wallSelectionOptions = [
+      {
+        title: 'select wall segment',
+        selectClick: scene.makeMouseHelpers(598, 211)[0],
+      },
+      {
+        title: 'select wall solid 2d',
+        selectClick: scene.makeMouseHelpers(677, 236)[0],
+      },
+      {
+        title: 'select wall circle',
+        selectClick: scene.makeMouseHelpers(811, 247)[0],
+      },
+      {
+        title: 'select wall extrude wall',
+        selectClick: scene.makeMouseHelpers(793, 136)[0],
+      },
+      {
+        title: 'select wall extrude cap',
+        selectClick: scene.makeMouseHelpers(836, 103)[0],
+      },
+    ] as const
+    const capSelectionOptions = [
+      {
+        title: 'select cap segment',
+        selectClick: scene.makeMouseHelpers(688, 91)[0],
+      },
+      {
+        title: 'select cap solid 2d',
+        selectClick: scene.makeMouseHelpers(733, 204)[0],
+      },
+      // TODO keeps failing
+      // {
+      //   title: 'select cap circle',
+      //   selectClick: scene.makeMouseHelpers(679, 290)[0],
+      // },
+      {
+        title: 'select cap extrude wall',
+        selectClick: scene.makeMouseHelpers(649, 402)[0],
+      },
+      {
+        title: 'select cap extrude cap',
+        selectClick: scene.makeMouseHelpers(693, 408)[0],
+      },
+    ] as const
+
+    const verifyWallProfilesAreDrawn = async () =>
+      test.step('verify wall profiles are drawn', async () => {
+        // open polygon
+        await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 599, y: 168 }, 15)
+        // closed polygon
+        await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 656, y: 171 }, 15)
+        // revolved profile
+        await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 655, y: 264 }, 15)
+        // extruded profile
+        await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 808, y: 396 }, 15)
+        // circle
+        await scene.expectPixelColor(
+          [
+            TEST_COLORS.WHITE,
+            TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
+          ],
+          { x: 742, y: 386 },
+          15
+        )
+      })
+
+    const verifyCapProfilesAreDrawn = async () =>
+      test.step('verify wall profiles are drawn', async () => {
+        // open polygon
+        await scene.expectPixelColor(
+          TEST_COLORS.WHITE,
+          // TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
+          { x: 620, y: 58 },
+          15
+        )
+        // revolved profile
+        await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 641, y: 110 }, 15)
+        // closed polygon
+        await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 632, y: 200 }, 15)
+        // extruded profile
+        await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 628, y: 410 }, 15)
+        // circle
+        await scene.expectPixelColor(
+          [
+            TEST_COLORS.WHITE,
+            TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
+          ],
+          { x: 681, y: 303 },
+          15
+        )
+      })
+
+    await test.step('select wall profiles', async () => {
+      for (const { title, selectClick } of wallSelectionOptions) {
+        await test.step(title, async () => {
+          await camPositionForSelectingSketchOnWallProfiles()
+          await selectClick()
+          await toolbar.editSketch()
+          await page.waitForTimeout(600)
+          await verifyWallProfilesAreDrawn()
+          await toolbar.exitSketchBtn.click()
+          await page.waitForTimeout(100)
+        })
+      }
+    })
+
+    await test.step('select cap profiles', async () => {
+      for (const { title, selectClick } of capSelectionOptions) {
+        await test.step(title, async () => {
+          await camPositionForSelectingSketchOnCapProfiles()
+          await page.waitForTimeout(100)
+          await selectClick()
+          await page.waitForTimeout(100)
+          await toolbar.editSketch()
+          await page.waitForTimeout(600)
+          await verifyCapProfilesAreDrawn()
+          await toolbar.exitSketchBtn.click()
+          await page.waitForTimeout(100)
+        })
+      }
+    })
+  })
+  test('Can enter sketch loft edges, base and continue sketch', async ({
+    homePage,
+    scene,
+    toolbar,
+    editor,
+    page,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([34, 42.66], sketch001)
+  |> line([102.65, 151.99], %)
+  |> line([76, -138.66], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+plane001 = offsetPlane('XZ', 50)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfileAt([39.43, 172.21], sketch002)
+  |> xLine(183.99, %)
+  |> line([-77.95, -145.93], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+loft([profile001, profile002])
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [baseProfileEdgeClick] = scene.makeMouseHelpers(621, 292)
+
+    const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
+    const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
+
+    await baseProfileEdgeClick()
+    await toolbar.editSketch()
+    await page.waitForTimeout(600)
+    await scene.expectPixelColor(TEST_COLORS.WHITE, { x: 562, y: 172 }, 15)
+
+    await toolbar.rectangleBtn.click()
+    await page.waitForTimeout(100)
+    await rect1Crn1()
+    await editor.expectEditor.toContain(
+      `profile003 = startProfileAt([50.72, -18.19], sketch001)`
+    )
+    await rect1Crn2()
+    await editor.expectEditor.toContain(
+      `angledLine([0, 113.01], %, $rectangleSegmentA001)`
+    )
+  })
+  test('Can enter sketch loft edges offsetPlane and continue sketch', async ({
+    scene,
+    toolbar,
+    editor,
+    page,
+    homePage,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XZ')
+profile001 = startProfileAt([34, 42.66], sketch001)
+  |> line([102.65, 151.99], %)
+  |> line([76, -138.66], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+plane001 = offsetPlane('XZ', 50)
+sketch002 = startSketchOn(plane001)
+profile002 = startProfileAt([39.43, 172.21], sketch002)
+  |> xLine(183.99, %)
+  |> line([-77.95, -145.93], %)
+  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> close(%)
+
+loft([profile001, profile002])
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const topProfileEdgeClickCoords = { x: 602, y: 185 } as const
+    const [topProfileEdgeClick] = scene.makeMouseHelpers(
+      topProfileEdgeClickCoords.x,
+      topProfileEdgeClickCoords.y
+    )
+    const [sideProfileEdgeClick] = scene.makeMouseHelpers(788, 188)
+
+    const [rect1Crn1] = scene.makeMouseHelpers(592, 283)
+    const [rect1Crn2] = scene.makeMouseHelpers(797, 268)
+
+    await scene.moveCameraTo(
+      { x: 8171, y: -7740, z: 1624 },
+      { x: 3302, y: -627, z: 2892 }
+    )
+
+    await topProfileEdgeClick()
+    await page.waitForTimeout(300)
+    await toolbar.editSketch()
+    await page.waitForTimeout(600)
+    await sideProfileEdgeClick()
+    await page.waitForTimeout(300)
+    await scene.expectPixelColor(TEST_COLORS.BLUE, { x: 788, y: 188 }, 15)
+
+    await toolbar.rectangleBtn.click()
+    await page.waitForTimeout(100)
+    await rect1Crn1()
+    await editor.expectEditor.toContain(
+      `profile003 = startProfileAt([47.76, -17.13], plane001)`
+    )
+    await rect1Crn2()
+    await editor.expectEditor.toContain(
+      `angledLine([0, 106.42], %, $rectangleSegmentA001)`
+    )
   })
 })
 
