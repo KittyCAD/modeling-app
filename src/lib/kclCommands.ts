@@ -1,11 +1,13 @@
 import { CommandBarOverwriteWarning } from 'components/CommandBarOverwriteWarning'
 import { Command, CommandArgumentOption } from './commandTypes'
-import { kclManager } from './singletons'
+import { codeManager, kclManager } from './singletons'
 import { isDesktop } from './isDesktop'
 import { FILE_EXT } from './constants'
 import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import { reportRejection } from './trap'
 import { IndexLoaderData } from './types'
+import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
+import { copyFileShareLink } from './links'
 
 interface OnSubmitProps {
   sampleName: string
@@ -132,21 +134,22 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         },
       },
     },
-    // {
-    //   name: 'share-file-link',
-    //   displayName: 'Share file',
-    //   description: 'Create a link that contains a copy of the current file.',
-    //   groupId: 'code',
-    //   needsReview: false,
-    //   icon: 'link',
-    //   onSubmit: () => {
-    //     copyFileShareLink({
-    //       token: commandProps.authToken,
-    //       code: codeManager.code,
-    //       name: commandProps.projectData.project?.name || '',
-    //       units: commandProps.settings.defaultUnit,
-    //     }).catch(reportRejection)
-    //   },
-    // },
+    {
+      name: 'share-file-link',
+      displayName: 'Share file',
+      hide: IS_NIGHTLY_OR_DEBUG ? undefined : 'desktop',
+      description: 'Create a link that contains a copy of the current file.',
+      groupId: 'code',
+      needsReview: false,
+      icon: 'link',
+      onSubmit: () => {
+        copyFileShareLink({
+          token: commandProps.authToken,
+          code: codeManager.code,
+          name: commandProps.projectData.project?.name || '',
+          units: commandProps.settings.defaultUnit,
+        }).catch(reportRejection)
+      },
+    },
   ]
 }
