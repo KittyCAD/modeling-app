@@ -312,32 +312,40 @@ test.describe('Sketch tests', () => {
       |> line([1.97, 2.06], %)
       |> close(%)`)
     }
-    test('code pane open at start-handles', async ({ page, homePage }, { tag: ['@skipWin'] }) => {
-      // Load the app with the code panes
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'store',
-          JSON.stringify({
-            state: {
-              openPanes: ['code'],
-            },
-            version: 0,
-          })
-        )
-      })
-      await doEditSegmentsByDraggingHandle(page, homePage, ['code'])
-    })
+    test(
+      'code pane open at start-handles',
+      { tag: ['@skipWin'] },
+      async ({ page, homePage }) => {
+        // Load the app with the code panes
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'store',
+            JSON.stringify({
+              state: {
+                openPanes: ['code'],
+              },
+              version: 0,
+            })
+          )
+        })
+        await doEditSegmentsByDraggingHandle(page, homePage, ['code'])
+      }
+    )
 
-    test('code pane closed at start-handles', async ({ page, homePage }, { tag: ['@skipWin'] }) => {
-      // Load the app with the code panes
-      await page.addInitScript(async (persistModelingContext) => {
-        localStorage.setItem(
-          persistModelingContext,
-          JSON.stringify({ openPanes: [] })
-        )
-      }, PERSIST_MODELING_CONTEXT)
-      await doEditSegmentsByDraggingHandle(page, homePage, [])
-    })
+    test(
+      'code pane closed at start-handles',
+      { tag: ['@skipWin'] },
+      async ({ page, homePage }) => {
+        // Load the app with the code panes
+        await page.addInitScript(async (persistModelingContext) => {
+          localStorage.setItem(
+            persistModelingContext,
+            JSON.stringify({ openPanes: [] })
+          )
+        }, PERSIST_MODELING_CONTEXT)
+        await doEditSegmentsByDraggingHandle(page, homePage, [])
+      }
+    )
   })
 
   test('Can edit a circle center and radius by dragging its handles', async ({
