@@ -645,12 +645,15 @@ class EngineConnection extends EventTarget {
           }, 3000)
         }
         this.pc?.addEventListener?.('icecandidate', this.onIceCandidate)
-        this.pc?.addEventListener?.('icegatheringstatechange', function (_event) {
-          console.log('icegatheringstatechange', this.iceGatheringState)
+        this.pc?.addEventListener?.(
+          'icegatheringstatechange',
+          function (_event) {
+            console.log('icegatheringstatechange', this.iceGatheringState)
 
-          if (this.iceGatheringState !== 'complete') return
-          initiateConnectingExclusive()
-        })
+            if (this.iceGatheringState !== 'complete') return
+            initiateConnectingExclusive()
+          }
+        )
 
         this.pc?.addEventListener?.(
           'iceconnectionstatechange',
