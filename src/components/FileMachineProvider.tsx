@@ -125,9 +125,10 @@ export const FileMachineProvider = ({
           let createdPath: string
 
           if (
-            (await window.electron.statIsDirectory(
-              input.targetPathToClone ?? ''
-            )) ||
+            (input.targetPathToClone &&
+              (await window.electron.statIsDirectory(
+                input.targetPathToClone
+              ))) ||
             input.makeDir
           ) {
             let { name, path } = getNextDirName({
