@@ -31,8 +31,8 @@ import { useEngineCommands } from 'components/EngineCommands'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 maybeWriteToDisk()
-  .then(() => { })
-  .catch(() => { })
+  .then(() => {})
+  .catch(() => {})
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
@@ -104,7 +104,11 @@ export function App() {
 
   // Generate thumbnail.png when loading the app
   useEffect(() => {
-    if (isDesktop() && !capturedCanvas && lastCommandType === 'execution-done') {
+    if (
+      isDesktop() &&
+      !capturedCanvas &&
+      lastCommandType === 'execution-done'
+    ) {
       setTimeout(() => {
         const projectDirectoryWithoutEndingSlash = loaderData?.project?.path
         if (!projectDirectoryWithoutEndingSlash) {
@@ -113,7 +117,7 @@ export function App() {
         const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
         // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
         writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
-          .then(() => { })
+          .then(() => {})
           .catch((e) => {
             console.error(
               `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
