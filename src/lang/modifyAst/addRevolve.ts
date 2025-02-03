@@ -28,7 +28,9 @@ export function revolveSketch(
   ast: Node<Program>,
   pathToSketchNode: PathToNode,
   angle: Expr = createLiteral(4),
-  axis: Selections,
+  axisOrEdge: string,
+  axis: string,
+  edge: Selections,
   artifact?: Artifact
 ):
   | {

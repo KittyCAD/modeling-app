@@ -56,7 +56,7 @@ export type ModelingCommandSchema = {
   Revolve: {
     selection: Selections
     angle: KclCommandValue
-    axisOrEdge: string
+    axisOrEdge: 'Axis' | 'Edge'
     axis: string
     edge: Selections
   }

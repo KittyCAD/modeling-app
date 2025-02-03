@@ -700,7 +700,8 @@ export const modelingMachine = setup({
             : angle.valueAst,
           axisOrEdge,
           axis,
-          edge
+          edge,
+          selection.graphSelections[0]?.artifact
         )
         if (trap(revolveSketchRes)) return
         const { modifiedAst, pathToRevolveArg } = revolveSketchRes
@@ -1604,7 +1605,6 @@ export const modelingMachine = setup({
       if (!input) return Promise.reject('No input provided')
       const { selection, distance } = input
       let ast = structuredClone(kclManager.ast)
-      let extrudeName: string | undefined = undefined
 
       const pathToNode = getNodePathFromSourceRange(
         ast,
@@ -1614,7 +1614,7 @@ export const modelingMachine = setup({
       const extrudeSketchRes = extrudeSketch(
         ast,
         pathToNode,
-        false,
+        selection.graphSelections[0].artifact,
         'variableName' in distance
           ? distance.variableIdentifierAst
           : distance.valueAst

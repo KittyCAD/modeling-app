@@ -287,7 +287,7 @@ export function getEventForSegmentSelection(
         artifact,
         codeRef: {
           pathToNode: group?.userData?.pathToNode,
-          range: [node.node.start, node.node.end, true],
+          range: [node.node.start, node.node.end, 0],
         },
       },
     },

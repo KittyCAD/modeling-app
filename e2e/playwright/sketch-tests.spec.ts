@@ -101,7 +101,6 @@ test.describe('Sketch tests', () => {
     page,
     scene,
     homePage,
-    scene,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {

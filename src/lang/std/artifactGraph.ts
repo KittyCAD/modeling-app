@@ -240,6 +240,7 @@ export function expandSegment(
   if (err(path)) return path
   if (err(surf)) return surf
   if (err(edgeCut)) return edgeCut
+  if (!surf) return new Error('Segment does not have a surface')
 
   return {
     type: 'segment',
@@ -435,7 +436,7 @@ function getPlaneFromSegment(
   return getPlaneFromPath(path, graph)
 }
 function getPlaneFromSolid2D(
-  solid2D: Solid2DArtifact,
+  solid2D: Solid2D,
   graph: ArtifactGraph
 ): PlaneArtifact | WallArtifact | CapArtifact | Error {
   const path = getArtifactOfTypes(
@@ -490,7 +491,7 @@ export function getPlaneFromArtifact(
   if (artifact.type === 'plane') return artifact
   if (artifact.type === 'path') return getPlaneFromPath(artifact, graph)
   if (artifact.type === 'segment') return getPlaneFromSegment(artifact, graph)
-  if (artifact.type === 'solid2D') return getPlaneFromSolid2D(artifact, graph)
+  if (artifact.type === 'solid2d') return getPlaneFromSolid2D(artifact, graph)
   if (artifact.type === 'cap') return getPlaneFromCap(artifact, graph)
   if (artifact.type === 'wall') return getPlaneFromWall(artifact, graph)
   if (artifact.type === 'sweepEdge')

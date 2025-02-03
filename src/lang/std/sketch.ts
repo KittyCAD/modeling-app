@@ -1304,7 +1304,7 @@ export const circleThreePoint: SketchLineHelper = {
         sourceRange: [
           p1Details.expr.elements[0].start,
           p1Details.expr.elements[0].end,
-          true,
+          0,
         ],
         pathToNode: pathToP1XArg,
         value: code.slice(
@@ -1325,7 +1325,7 @@ export const circleThreePoint: SketchLineHelper = {
         sourceRange: [
           p1Details.expr.elements[1].start,
           p1Details.expr.elements[1].end,
-          true,
+          0,
         ],
         pathToNode: pathToP1YArg,
         value: code.slice(
@@ -1346,7 +1346,7 @@ export const circleThreePoint: SketchLineHelper = {
         sourceRange: [
           p2Details.expr.elements[0].start,
           p2Details.expr.elements[0].end,
-          true,
+          0,
         ],
         pathToNode: pathToP2XArg,
         value: code.slice(
@@ -1367,7 +1367,7 @@ export const circleThreePoint: SketchLineHelper = {
         sourceRange: [
           p2Details.expr.elements[1].start,
           p2Details.expr.elements[1].end,
-          true,
+          0,
         ],
         pathToNode: pathToP2YArg,
         value: code.slice(
@@ -1388,7 +1388,7 @@ export const circleThreePoint: SketchLineHelper = {
         sourceRange: [
           p3Details.expr.elements[0].start,
           p3Details.expr.elements[0].end,
-          true,
+          0,
         ],
         pathToNode: pathToP3XArg,
         value: code.slice(
@@ -1409,7 +1409,7 @@ export const circleThreePoint: SketchLineHelper = {
         sourceRange: [
           p3Details.expr.elements[1].start,
           p3Details.expr.elements[1].end,
-          true,
+          0,
         ],
         pathToNode: pathToP3YArg,
         value: code.slice(

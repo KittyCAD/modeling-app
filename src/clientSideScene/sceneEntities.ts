@@ -724,7 +724,7 @@ export class SceneEntities {
               }
         const startRange = _node1.node.start
         const endRange = _node1.node.end
-        const sourceRange: SourceRange = [startRange, endRange, true]
+        const sourceRange: SourceRange = [startRange, endRange, 0]
         const selection: Selections = computeSelectionFromSourceRangeAndAST(
           sourceRange,
           maybeModdedAst
@@ -793,7 +793,7 @@ export class SceneEntities {
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
     const nextAst = await kclManager.updateAst(modifiedAst, false)
-    await this.tearDownSketch({ removeAxis: false })
+    this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,
@@ -859,7 +859,7 @@ export class SceneEntities {
 
     const draftExpressionsIndices = { start: index, end: index }
 
-    if (shouldTearDown) await this.tearDownSketch({ removeAxis: false })
+    if (shouldTearDown) this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
 
     const { truncatedAst, programMemoryOverride } = await this.setupSketch({
@@ -1797,7 +1797,7 @@ export class SceneEntities {
     sceneInfra.setCallbacks({
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
-          await this.tearDownSketch({ removeAxis: false })
+          this.tearDownSketch({ removeAxis: false })
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.setupSketch({
             sketchEntryNodePath,
@@ -1868,7 +1868,7 @@ export class SceneEntities {
             if (trap(mod)) return
 
             await kclManager.executeAstMock(mod.modifiedAst)
-            await this.tearDownSketch({ removeAxis: false })
+            this.tearDownSketch({ removeAxis: false })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
               sketchEntryNodePath: pathToNode,
@@ -2289,7 +2289,7 @@ export class SceneEntities {
   removeSketchGrid() {
     if (this.axisGroup) this.scene.remove(this.axisGroup)
   }
-  async tearDownSketch({ removeAxis = true }: { removeAxis?: boolean }) {
+  tearDownSketch({ removeAxis = true }: { removeAxis?: boolean }) {
     // Remove all draft groups
     this.draftPointGroups.forEach((draftPointGroup) => {
       this.scene.remove(draftPointGroup)

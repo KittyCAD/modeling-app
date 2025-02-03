@@ -767,8 +767,9 @@ export const ModelingMachineProvider = ({
               sketchPathToNode: sketchPathToNode || [],
             })
             if (err(sketchPaths)) return Promise.reject(sketchPaths)
-            if (!plane.codeRef)
-              return Promise.reject(new Error('No plane codeRef'))
+            const noCodeRefErr = new Error('No plane codeRef')
+            if (!('codeRef' in plane)) return Promise.reject(noCodeRefErr)
+            if (!plane.codeRef) return Promise.reject(noCodeRefErr)
             return {
               sketchEntryNodePath: sketchPathToNode || [],
               sketchNodePaths: sketchPaths,
@@ -1314,7 +1315,7 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result = await sceneEntitiesManager.setupDraftCircle(
               sketchDetails.sketchEntryNodePath,
@@ -1335,7 +1336,7 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result =
               await sceneEntitiesManager.setupDraftCircleThreePoint(
@@ -1358,7 +1359,7 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result = await sceneEntitiesManager.setupDraftRectangle(
               sketchDetails.sketchEntryNodePath,
@@ -1379,7 +1380,7 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            await sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftCenterRectangle(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,

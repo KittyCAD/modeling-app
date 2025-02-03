@@ -950,10 +950,10 @@ extrude001 = extrude(5, part001)
     const ast = assertParse(codeBefore)
 
     const codeOfInterest = `startSketchOn('XZ')`
-    const range: [number, number, boolean] = [
+    const range: [number, number, number] = [
       codeBefore.indexOf(codeOfInterest),
       codeBefore.indexOf(codeOfInterest) + codeOfInterest.length,
-      true,
+      0,
     ]
     const pathToPipe = getNodePathFromSourceRange(ast, range)
 
@@ -977,10 +977,10 @@ extrude001 = extrude(5, part001)
     const ast = assertParse(codeBefore)
 
     const codeOfInterest = `startProfileAt([1, 2], sketch001)`
-    const range: [number, number, boolean] = [
+    const range: [number, number, number] = [
       codeBefore.indexOf(codeOfInterest),
       codeBefore.indexOf(codeOfInterest) + codeOfInterest.length,
-      true,
+      0,
     ]
     const pathToPipe = getNodePathFromSourceRange(ast, range)
 

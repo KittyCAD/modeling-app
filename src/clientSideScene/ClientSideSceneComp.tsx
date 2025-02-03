@@ -124,14 +124,7 @@ export const ClientSideScene = ({
         'mouseup',
         toSync(sceneInfra.onMouseUp, reportRejection)
       )
-      sceneEntitiesManager
-        .tearDownSketch()
-        .then(() => {
-          // no op
-        })
-        .catch((e) => {
-          console.error(e)
-        })
+      sceneEntitiesManager.tearDownSketch({ removeAxis: true })
     }
   }, [])
 

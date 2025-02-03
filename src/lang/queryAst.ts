@@ -21,6 +21,7 @@ import {
   VariableDeclaration,
   VariableDeclarator,
   recast,
+  ArtifactGraph,
 } from './wasm'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { createIdentifier, splitPathAtLastIndex } from './modifyAst'
@@ -33,7 +34,7 @@ import {
 } from './std/sketchcombos'
 import { err, Reason } from 'lib/trap'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
-import { ArtifactGraph, codeRefFromRange } from './std/artifactGraph'
+import { codeRefFromRange } from './std/artifactGraph'
 import { FunctionExpression } from 'wasm-lib/kcl/bindings/FunctionExpression'
 
 /**
