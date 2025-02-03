@@ -136,8 +136,6 @@ jobs:
           max_attempts: 3
           command: yarn install
 
-      - run: yarn tronb:vite
-
       - name: Prepare certificate and variables (Windows only)
         if: ${{ (env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true') && matrix.os == 'windows-2022' }}
         run: |
@@ -167,8 +165,8 @@ jobs:
       - name: Build the app (debug)
         if: ${{ env.IS_RELEASE == 'false' && env.IS_NIGHTLY == 'false' }}
         # electron-builder doesn't have a concept of release vs debug,
-        # this is just not doing any codesign or release yml generation
-        run: yarn electron-builder --config
+        # this is just not doing any codesign or release yml generation, and points to dev infra
+        run: yarn tronb:package:dev
 
       - name: Build the app (release)
         if: ${{ env.IS_RELEASE == 'true' || env.IS_NIGHTLY == 'true' }}
@@ -187,7 +185,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn electron-builder --config --publish always
+          command: yarn tronb:package:prod
 
       - name: List artifacts in out/
         run: ls -R out
@@ -248,7 +246,7 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: yarn electron-builder --config --publish always
+          command: yarn tronb:package:prod
 
       - uses: actions/upload-artifact@v4
         if: ${{ env.IS_RELEASE == 'true' }}
