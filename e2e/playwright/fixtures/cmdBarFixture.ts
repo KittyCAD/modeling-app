@@ -4,7 +4,6 @@ import { expect } from '@playwright/test'
 type CmdBarSerialised =
   | {
       stage: 'commandBarClosed'
-      // TODO no more properties needed but needs to be implemented in _serialiseCmdBar
     }
   | {
       stage: 'pickCommand'
@@ -37,6 +36,9 @@ export class CmdBarFixture {
   }
 
   private _serialiseCmdBar = async (): Promise<CmdBarSerialised> => {
+    if (!(await this.page.getByTestId('command-bar-wrapper').isVisible())) {
+      return { stage: 'commandBarClosed' }
+    }
     const reviewForm = this.page.locator('#review-form')
     const getHeaderArgs = async () => {
       const inputs = await this.page.getByTestId('cmd-bar-input-tab').all()
@@ -150,5 +152,12 @@ export class CmdBarFixture {
 
   chooseCommand = async (commandName: string) => {
     await this.cmdOptions.getByText(commandName).click()
+  }
+
+  /**
+   * Select an option from the command bar
+   */
+  selectOption = (options: Parameters<typeof this.page.getByRole>[1]) => {
+    return this.page.getByRole('option', options)
   }
 }

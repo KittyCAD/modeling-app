@@ -20,16 +20,17 @@ import {
   SourceRange,
   sketchFromKclValue,
   isPathToNodeNumber,
+  formatNumber,
 } from './wasm'
 import {
   isNodeSafeToReplacePath,
   findAllPreviousVariables,
   findAllPreviousVariablesPath,
   getNodeFromPath,
-  getNodePathFromSourceRange,
   isNodeSafeToReplace,
   traverse,
 } from './queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { addTagForSketchOnFace, getConstraintInfo } from './std/sketch'
 import {
   PathToNodeMap,
@@ -46,6 +47,7 @@ import { Models } from '@kittycad/lib'
 import { ExtrudeFacePlane } from 'machines/modelingMachine'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { KclExpressionWithVariable } from 'lib/commandTypes'
+import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -743,10 +745,25 @@ export function splitPathAtPipeExpression(pathToNode: PathToNode): {
   return splitPathAtPipeExpression(pathToNode.slice(0, -1))
 }
 
+/**
+ * Note: This depends on WASM, but it's not async.  Callers are responsible for
+ * awaiting init of the WASM module.
+ */
 export function createLiteral(value: LiteralValue | number): Node<Literal> {
-  const raw = `${value}`
   if (typeof value === 'number') {
     value = { value, suffix: 'None' }
+  }
+  let raw: string
+  if (typeof value === 'string') {
+    // TODO: Should we handle escape sequences?
+    raw = `${value}`
+  } else if (typeof value === 'boolean') {
+    raw = `${value}`
+  } else if (typeof value.value === 'number' && value.suffix === 'None') {
+    // Fast path for numbers when there are no units.
+    raw = `${value.value}`
+  } else {
+    raw = formatNumber(value.value, value.suffix)
   }
   return {
     type: 'Literal',
@@ -1355,6 +1372,8 @@ export async function deleteFromSelection(
     }
     // await prom
     return astClone
+  } else if (selection.artifact?.type === 'edgeCut') {
+    return deleteEdgeTreatment(astClone, selection)
   } else if (varDec.node.init.type === 'PipeExpression') {
     const pipeBody = varDec.node.init.body
     if (

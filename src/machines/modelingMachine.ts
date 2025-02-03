@@ -16,10 +16,8 @@ import {
 } from 'lib/selections'
 import { assign, fromPromise, fromCallback, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import {
-  isNodeSafeToReplacePath,
-  getNodePathFromSourceRange,
-} from 'lang/queryAst'
+import { isNodeSafeToReplacePath } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   kclManager,
   sceneInfra,
@@ -585,6 +583,13 @@ export const modelingMachine = setup({
   },
   // end guards
   actions: {
+    toastError: ({ event }) => {
+      if ('output' in event && event.output instanceof Error) {
+        toast.error(event.output.message)
+      } else if ('data' in event && event.data instanceof Error) {
+        toast.error(event.data.message)
+      }
+    },
     'assign tool in context': assign({
       currentTool: ({ event }) =>
         'data' in event && event.data && 'tool' in event.data
@@ -639,56 +644,6 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'AST extrude': ({ context: { store }, event }) => {
-      if (event.type !== 'Extrude') return
-      ;(async () => {
-        if (!event.data) return
-        const { selection, distance } = event.data
-        let ast = kclManager.ast
-        if (
-          'variableName' in distance &&
-          distance.variableName &&
-          distance.insertIndex !== undefined
-        ) {
-          const newBody = [...ast.body]
-          newBody.splice(
-            distance.insertIndex,
-            0,
-            distance.variableDeclarationAst
-          )
-          ast.body = newBody
-        }
-        const pathToNode = getNodePathFromSourceRange(
-          ast,
-          selection.graphSelections[0]?.codeRef.range
-        )
-        const extrudeSketchRes = extrudeSketch(
-          ast,
-          pathToNode,
-          false,
-          'variableName' in distance
-            ? distance.variableIdentifierAst
-            : distance.valueAst
-        )
-        if (trap(extrudeSketchRes)) return
-        const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
-
-        const updatedAst = await kclManager.updateAst(modifiedAst, true, {
-          focusPath: [pathToExtrudeArg],
-          zoomToFit: true,
-          zoomOnRangeAndType: {
-            range: selection.graphSelections[0]?.codeRef.range,
-            type: 'path',
-          },
-        })
-
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-        if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
-        }
-      })().catch(reportRejection)
-    },
     'AST revolve': ({ context: { store }, event }) => {
       if (event.type !== 'Revolve') return
       ;(async () => {
@@ -1493,6 +1448,63 @@ export const modelingMachine = setup({
         return {} as SetSelections
       }
     ),
+    extrudeAstMod: fromPromise<
+      void,
+      ModelingCommandSchema['Extrude'] | undefined
+    >(async ({ input }) => {
+      if (!input) return Promise.reject('No input provided')
+      const { selection, distance } = input
+      let ast = structuredClone(kclManager.ast)
+      let extrudeName: string | undefined = undefined
+
+      const pathToNode = getNodePathFromSourceRange(
+        ast,
+        selection.graphSelections[0]?.codeRef.range
+      )
+      // Add an extrude statement to the AST
+      const extrudeSketchRes = extrudeSketch(
+        ast,
+        pathToNode,
+        false,
+        'variableName' in distance
+          ? distance.variableIdentifierAst
+          : distance.valueAst
+      )
+      if (err(extrudeSketchRes)) return Promise.reject(extrudeSketchRes)
+      const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
+
+      // Insert the distance variable if the user has provided a variable name
+      if (
+        'variableName' in distance &&
+        distance.variableName &&
+        typeof pathToExtrudeArg[1][0] === 'number'
+      ) {
+        const insertIndex = Math.min(
+          pathToExtrudeArg[1][0],
+          distance.insertIndex
+        )
+        const newBody = [...modifiedAst.body]
+        newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
+        modifiedAst.body = newBody
+        // Since we inserted a new variable, we need to update the path to the extrude argument
+        pathToExtrudeArg[1][0]++
+      }
+
+      const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+        focusPath: [pathToExtrudeArg],
+        zoomToFit: true,
+        zoomOnRangeAndType: {
+          range: selection.graphSelections[0]?.codeRef.range,
+          type: 'path',
+        },
+      })
+
+      await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+
+      if (updatedAst?.selections) {
+        editorManager.selectRange(updatedAst?.selections)
+      }
+    }),
     offsetPlaneAstMod: fromPromise(
       async ({
         input,
@@ -1823,9 +1835,8 @@ export const modelingMachine = setup({
         ],
 
         Extrude: {
-          target: 'idle',
-          actions: ['AST extrude'],
-          reenter: false,
+          target: 'Applying extrude',
+          reenter: true,
         },
 
         Revolve: {
@@ -2550,7 +2561,7 @@ export const modelingMachine = setup({
 
         'Delete segment': {
           reenter: false,
-          actions: ['Delete segment', 'Set sketchDetails'],
+          actions: ['Delete segment', 'Set sketchDetails', 'reset selections'],
         },
         'code edit during sketch': '.clean slate',
       },
@@ -2618,6 +2629,22 @@ export const modelingMachine = setup({
             'set new sketch metadata',
             'enter sketching mode',
           ],
+        },
+      },
+    },
+
+    'Applying extrude': {
+      invoke: {
+        src: 'extrudeAstMod',
+        id: 'extrudeAstMod',
+        input: ({ event }) => {
+          if (event.type !== 'Extrude') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
         },
       },
     },

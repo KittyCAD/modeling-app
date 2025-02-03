@@ -1,4 +1,4 @@
-import { useMachine } from '@xstate/react'
+import { useMachine, useSelector } from '@xstate/react'
 import React, {
   createContext,
   useEffect,
@@ -11,6 +11,7 @@ import {
   AnyStateMachine,
   ContextFrom,
   Prop,
+  SnapshotFrom,
   StateFrom,
   assign,
   fromPromise,
@@ -67,18 +68,14 @@ import {
   startSketchOnDefault,
 } from 'lang/modifyAst'
 import { PathToNode, Program, parse, recast, resultIsOk } from 'lang/wasm'
-import {
-  artifactIsPlaneWithPaths,
-  getNodePathFromSourceRange,
-  isSingleCursorInPipe,
-} from 'lang/queryAst'
+import { artifactIsPlaneWithPaths, isSingleCursorInPipe } from 'lang/queryAst'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { exportFromEngine } from 'lib/exportFromEngine'
 import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap } from 'lib/trap'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import {
   ExportIntent,
   EngineConnectionStateType,
@@ -91,6 +88,8 @@ import { IndexLoaderData } from 'lib/types'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
 import { promptToEditFlow } from 'lib/promptToEdit'
 import { kclEditorActor } from 'machines/kclEditorMachine'
+import { commandBarActor } from 'machines/commandBarMachine'
+import { useToken } from 'machines/appMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -102,13 +101,16 @@ export const ModelingMachineContext = createContext(
   {} as MachineContext<typeof modelingMachine>
 )
 
+const commandBarIsClosedSelector = (
+  state: SnapshotFrom<typeof commandBarActor>
+) => state.matches('Closed')
+
 export const ModelingMachineProvider = ({
   children,
 }: {
   children: React.ReactNode
 }) => {
   const {
-    auth,
     settings: {
       context: {
         app: { theme, enableSSAO, allowOrbitInSketchMode },
@@ -117,6 +119,7 @@ export const ModelingMachineProvider = ({
           cameraProjection,
           highlightEdges,
           showScaleGrid,
+          cameraOrbit,
         },
       },
     },
@@ -125,15 +128,17 @@ export const ModelingMachineProvider = ({
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
-  const token = auth?.context?.token
+  const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
 
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
-  const { commandBarState, commandBarSend } = useCommandsContext()
-
+  const isCommandBarClosed = useSelector(
+    commandBarActor,
+    commandBarIsClosedSelector
+  )
   // Settings machine setup
   // const retrievedSettings = useRef(
   // localStorage?.getItem(MODELING_PERSIST_KEY) || '{}'
@@ -388,7 +393,16 @@ export const ModelingMachineProvider = ({
             }
 
             if (setSelections.selectionType === 'completeSelection') {
-              editorManager.selectRange(setSelections.selection)
+              const codeMirrorSelection = editorManager.createEditorSelection(
+                setSelections.selection
+              )
+              kclEditorActor.send({
+                type: 'setLastSelectionEvent',
+                data: {
+                  codeMirrorSelection,
+                  scrollIntoView: false,
+                },
+              })
               if (!sketchDetails)
                 return {
                   selectionRanges: setSelections.selection,
@@ -529,7 +543,6 @@ export const ModelingMachineProvider = ({
             trimmedPrompt,
             fileMachineSend,
             navigate,
-            commandBarSend,
             context,
             token,
             settings: {
@@ -543,7 +556,7 @@ export const ModelingMachineProvider = ({
         'has valid selection for deletion': ({
           context: { selectionRanges },
         }) => {
-          if (!commandBarState.matches('Closed')) return false
+          if (!isCommandBarClosed) return false
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
         },
@@ -1142,6 +1155,7 @@ export const ModelingMachineProvider = ({
       enableSSAO: enableSSAO.current,
       showScaleGrid: showScaleGrid.current,
       cameraProjection: cameraProjection.current,
+      cameraOrbit: cameraOrbit.current,
     },
     token
   )
@@ -1170,6 +1184,13 @@ export const ModelingMachineProvider = ({
   useEffect(() => {
     editorManager.selectionRanges = modelingState.context.selectionRanges
   }, [modelingState.context.selectionRanges])
+
+  // When changing camera modes reset the camera to the default orientation to correct
+  // the up vector otherwise the conconical orientation for the camera modes will be
+  // wrong
+  useEffect(() => {
+    sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
+  }, [cameraOrbit.current])
 
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {

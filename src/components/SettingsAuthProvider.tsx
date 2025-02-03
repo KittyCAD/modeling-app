@@ -2,10 +2,7 @@ import { trap } from 'lib/trap'
 import { useMachine, useSelector } from '@xstate/react'
 import { useNavigate, useRouteLoaderData, useLocation } from 'react-router-dom'
 import { PATHS, BROWSER_PATH } from 'lib/paths'
-import { authMachine, TOKEN_PERSIST_KEY } from '../machines/authMachine'
-import withBaseUrl from '../lib/withBaseURL'
 import React, { createContext, useEffect, useState } from 'react'
-import useStateMachineCommands from '../hooks/useStateMachineCommands'
 import { settingsMachine } from 'machines/settingsMachine'
 import { toast } from 'react-hot-toast'
 import {
@@ -16,7 +13,6 @@ import {
 } from 'lib/theme'
 import decamelize from 'decamelize'
 import { Actor, AnyStateMachine, ContextFrom, Prop, StateFrom } from 'xstate'
-import { authCommandBarConfig } from 'lib/commandBarConfigs/authCommandConfig'
 import {
   kclManager,
   sceneInfra,
@@ -29,7 +25,6 @@ import {
   createSettingsCommand,
   settingsWithCommandConfigs,
 } from 'lib/commandBarConfigs/settingsCommandConfig'
-import { useCommandsContext } from 'hooks/useCommandsContext'
 import { Command } from 'lib/commandTypes'
 import { BaseUnit } from 'lib/settings/settingsTypes'
 import {
@@ -42,6 +37,7 @@ import { isDesktop } from 'lib/isDesktop'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { codeManager } from 'lib/singletons'
 import { createRouteCommands } from 'lib/commandBarConfigs/routeCommandConfig'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -50,7 +46,6 @@ type MachineContext<T extends AnyStateMachine> = {
 }
 
 type SettingsAuthContextType = {
-  auth: MachineContext<typeof authMachine>
   settings: MachineContext<typeof settingsMachine>
 }
 
@@ -109,7 +104,6 @@ export const SettingsAuthProviderBase = ({
 }) => {
   const location = useLocation()
   const navigate = useNavigate()
-  const { commandBarSend } = useCommandsContext()
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined
   )
@@ -278,10 +272,10 @@ export const SettingsAuthProviderBase = ({
       )
       .filter((c) => c !== null) as Command[]
 
-    commandBarSend({ type: 'Add commands', data: { commands: commands } })
+    commandBarActor.send({ type: 'Add commands', data: { commands: commands } })
 
     return () => {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Remove commands',
         data: { commands },
       })
@@ -290,7 +284,7 @@ export const SettingsAuthProviderBase = ({
     settingsState,
     settingsSend,
     settingsActor,
-    commandBarSend,
+    commandBarActor.send,
     settingsWithCommandConfigs,
   ])
 
@@ -303,7 +297,7 @@ export const SettingsAuthProviderBase = ({
       encodeURIComponent(loadedProject?.file?.path || BROWSER_PATH)
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
-    commandBarSend({
+    commandBarActor.send({
       type: 'Remove commands',
       data: {
         commands: [
@@ -314,12 +308,12 @@ export const SettingsAuthProviderBase = ({
       },
     })
     if (location.pathname === PATHS.HOME) {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Add commands',
         data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
       })
     } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarSend({
+      commandBarActor.send({
         type: 'Add commands',
         data: {
           commands: [
@@ -371,40 +365,9 @@ export const SettingsAuthProviderBase = ({
     )
   }, [settingsState.context.textEditor.blinkingCursor.current])
 
-  // Auth machine setup
-  const [authState, authSend, authActor] = useMachine(
-    authMachine.provide({
-      actions: {
-        goToSignInPage: () => {
-          navigate(PATHS.SIGN_IN)
-          // eslint-disable-next-line @typescript-eslint/no-floating-promises
-          logout()
-        },
-        goToIndexPage: () => {
-          if (location.pathname.includes(PATHS.SIGN_IN)) {
-            navigate(PATHS.INDEX)
-          }
-        },
-      },
-    })
-  )
-
-  useStateMachineCommands({
-    machineId: 'auth',
-    state: authState,
-    send: authSend,
-    commandBarConfig: authCommandBarConfig,
-    actor: authActor,
-  })
-
   return (
     <SettingsAuthContext.Provider
       value={{
-        auth: {
-          state: authState,
-          context: authState.context,
-          send: authSend,
-        },
         settings: {
           state: settingsState,
           context: settingsState.context,
@@ -418,12 +381,3 @@ export const SettingsAuthProviderBase = ({
 }
 
 export default SettingsAuthProvider
-
-export async function logout() {
-  localStorage.removeItem(TOKEN_PERSIST_KEY)
-  if (isDesktop()) return Promise.resolve(null)
-  return fetch(withBaseUrl('/logout'), {
-    method: 'POST',
-    credentials: 'include',
-  })
-}
