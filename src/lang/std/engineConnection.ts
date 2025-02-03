@@ -1391,6 +1391,7 @@ export class EngineCommandManager extends EventTarget {
           enableSSAO: true,
           showScaleGrid: false,
           cameraProjection: 'perspective',
+          cameraOrbit: 'spherical',
         }
   }
 
@@ -1439,6 +1440,7 @@ export class EngineCommandManager extends EventTarget {
       enableSSAO: true,
       showScaleGrid: false,
       cameraProjection: 'orthographic',
+      cameraOrbit: 'spherical',
     },
     // When passed, use a completely separate connecting code path that simply
     // opens a websocket and this is a function that is called when connected.
@@ -2001,7 +2003,7 @@ export class EngineCommandManager extends EventTarget {
       .catch((e) => {
         // TODO: Previously was never caught, we are not rejecting these pendingCommands but this needs to be handled at some point.
         /*noop*/
-        return null
+        return e
       })
   }
   /**

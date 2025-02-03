@@ -26,7 +26,7 @@ export const FILE_EXT = '.kcl'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
-export const PROJECT_IMAGE_NAME = `main.jpg` as const
+export const PROJECT_IMAGE_NAME = `thumbnail.png` as const
 /** The localStorage key for last-opened projects */
 export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
