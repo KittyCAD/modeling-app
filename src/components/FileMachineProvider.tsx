@@ -124,18 +124,29 @@ export const FileMachineProvider = ({
           let createdName = input.name.trim() || DEFAULT_FILE_NAME
           let createdPath: string
 
-          if (input.makeDir) {
+          if (
+            (await window.electron.statIsDirectory(input.targetPathToClone ?? '')) ||
+            input.makeDir
+          ) {
             let { name, path } = getNextDirName({
-              entryName: createdName,
-              baseDir: input.selectedDirectory.path,
+              entryName: input.targetPathToClone
+                ? window.electron.path.basename(input.targetPathToClone)
+                : createdName,
+              baseDir: input.targetPathToClone
+                ? window.electron.path.dirname(input.targetPathToClone)
+                : input.selectedDirectory.path,
             })
             createdName = name
             createdPath = path
             await window.electron.mkdir(createdPath)
           } else {
             const { name, path } = getNextFileName({
-              entryName: createdName,
-              baseDir: input.selectedDirectory.path,
+              entryName: input.targetPathToClone
+                ? window.electron.path.basename(input.targetPathToClone)
+                : createdName,
+              baseDir: input.targetPathToClone
+                ? window.electron.path.dirname(input.targetPathToClone)
+                : input.selectedDirectory.path,
             })
             createdName = name
             createdPath = path
