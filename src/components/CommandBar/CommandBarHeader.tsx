@@ -156,6 +156,7 @@ function CommandBarHeader({ children }: React.PropsWithChildren<{}>) {
                     )}
                     {arg.inputType === 'kcl' &&
                       !!argValue &&
+                      typeof argValue === 'object' &&
                       'variableName' in (argValue as KclCommandValue) && (
                         <>
                           <CustomIcon

@@ -1,12 +1,14 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager, engineCommandManager } from 'lib/singletons'
+import { kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { ProgramMemory, Expr, parse, resultIsOk } from 'lang/wasm'
+import { Expr } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
-import { executeAst } from 'lang/langHelpers'
-import { err, trap } from 'lib/trap'
+import {
+  getCalculatedKclExpressionValue,
+  programMemoryFromVariables,
+} from './kclHelpers'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -86,37 +88,25 @@ export function useCalculateKclExpression({
 
   useEffect(() => {
     const execAstAndSetResult = async () => {
-      const _code = `const __result__ = ${value}`
-      const pResult = parse(_code)
-      if (err(pResult) || !resultIsOk(pResult)) return
-      const ast = pResult.program
-
-      const _programMem: ProgramMemory = ProgramMemory.empty()
-      for (const { key, value } of availableVarInfo.variables) {
-        const error = _programMem.set(key, {
-          type: 'String',
-          value,
-          __meta: [],
-        })
-        if (trap(error, { suppress: true })) return
-      }
-      const { execState } = await executeAst({
-        ast,
-        engineCommandManager,
-        // We make sure to send an empty program memory to denote we mean mock mode.
-        programMemoryOverride: kclManager.programMemory.clone(),
-      })
-      const resultDeclaration = ast.body.find(
-        (a) =>
-          a.type === 'VariableDeclaration' &&
-          a.declaration.id?.name === '__result__'
+      const programMemory = programMemoryFromVariables(
+        availableVarInfo.variables
       )
-      const init =
-        resultDeclaration?.type === 'VariableDeclaration' &&
-        resultDeclaration?.declaration.init
-      const result = execState.memory?.get('__result__')?.value
-      setCalcResult(typeof result === 'number' ? String(result) : 'NAN')
-      init && setValueNode(init)
+      if (programMemory instanceof Error) {
+        setCalcResult('NAN')
+        setValueNode(null)
+        return
+      }
+      const result = await getCalculatedKclExpressionValue({
+        value,
+        programMemory,
+      })
+      if (result instanceof Error || 'errors' in result) {
+        setCalcResult('NAN')
+        setValueNode(null)
+        return
+      }
+      setCalcResult(result?.valueAsString || 'NAN')
+      result?.astNode && setValueNode(result.astNode)
     }
     if (!value) return
     execAstAndSetResult().catch(() => {
