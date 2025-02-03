@@ -34,13 +34,11 @@ import { err, trap } from 'lib/trap'
 import { Selection, Selections } from 'lib/selections'
 import { KclCommandValue } from 'lib/commandTypes'
 import { Artifact, getSweepFromSuspectedPath } from 'lang/std/artifactGraph'
-import {
-  kclManager,
-  engineCommandManager,
-  editorManager,
-  codeManager,
-} from 'lib/singletons'
 import { Node } from 'wasm-lib/kcl/bindings/Node'
+import { KclManager } from 'lang/KclSingleton'
+import { EngineCommandManager } from 'lang/std/engineConnection'
+import EditorManager from 'editor/manager'
+import CodeManager from 'lang/codeManager'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -62,21 +60,33 @@ export type EdgeTreatmentParameters = ChamferParameters | FilletParameters
 export async function applyEdgeTreatmentToSelection(
   ast: Node<Program>,
   selection: Selections,
-  parameters: EdgeTreatmentParameters
+  parameters: EdgeTreatmentParameters,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 ): Promise<void | Error> {
   // 1. clone and modify with edge treatment and tag
-  const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters)
+  const result = modifyAstWithEdgeTreatmentAndTag(ast, selection, parameters, dependencies)
   if (err(result)) return result
   const { modifiedAst, pathToEdgeTreatmentNode } = result
 
   // 2. update ast
-  await updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode)
+  await updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode, dependencies)
 }
 
 export function modifyAstWithEdgeTreatmentAndTag(
   ast: Node<Program>,
   selections: Selections,
-  parameters: EdgeTreatmentParameters
+  parameters: EdgeTreatmentParameters,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 ):
   | { modifiedAst: Node<Program>; pathToEdgeTreatmentNode: Array<PathToNode> }
   | Error {
@@ -86,7 +96,7 @@ export function modifyAstWithEdgeTreatmentAndTag(
   const astResult = insertParametersIntoAst(clonedAst, parameters)
   if (err(astResult)) return astResult
 
-  const artifactGraph = engineCommandManager.artifactGraph
+  const artifactGraph = dependencies.engineCommandManager.artifactGraph
 
   // Step 1: modify ast with tags and group them by extrude nodes (bodies)
   const extrudeToTagsMap: Map<
@@ -99,7 +109,8 @@ export function modifyAstWithEdgeTreatmentAndTag(
     const result = getPathToExtrudeForSegmentSelection(
       clonedAstForGetExtrude,
       selection,
-      artifactGraph
+      artifactGraph,
+      dependencies
     )
     if (err(result)) return result
     const { pathToSegmentNode, pathToExtrudeNode } = result
@@ -252,7 +263,13 @@ function insertParametersIntoAst(
 export function getPathToExtrudeForSegmentSelection(
   ast: Program,
   selection: Selection,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 ): { pathToSegmentNode: PathToNode; pathToExtrudeNode: PathToNode } | Error {
   const pathToSegmentNode = getNodePathFromSourceRange(
     ast,
@@ -268,7 +285,7 @@ export function getPathToExtrudeForSegmentSelection(
   const sketchVar = varDecNode.node.declaration.id.name
 
   const sketch = sketchFromKclValue(
-    kclManager.programMemory.get(sketchVar),
+    dependencies.kclManager.programMemory.get(sketchVar),
     sketchVar
   )
   if (trap(sketch)) return sketch
@@ -287,16 +304,22 @@ export function getPathToExtrudeForSegmentSelection(
 
 async function updateAstAndFocus(
   modifiedAst: Node<Program>,
-  pathToEdgeTreatmentNode: Array<PathToNode>
+  pathToEdgeTreatmentNode: Array<PathToNode>,
+  dependencies: {
+    kclManager: KclManager
+    engineCommandManager: EngineCommandManager
+    editorManager: EditorManager
+    codeManager: CodeManager
+  }
 ): Promise<void> {
-  const updatedAst = await kclManager.updateAst(modifiedAst, true, {
+  const updatedAst = await dependencies.kclManager.updateAst(modifiedAst, true, {
     focusPath: pathToEdgeTreatmentNode,
   })
 
-  await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
+  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
 
   if (updatedAst?.selections) {
-    editorManager.selectRange(updatedAst?.selections)
+    dependencies.editorManager.selectRange(updatedAst?.selections)
   }
 }
 
