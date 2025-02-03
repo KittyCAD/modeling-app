@@ -125,7 +125,9 @@ export const FileMachineProvider = ({
           let createdPath: string
 
           if (
-            (await window.electron.statIsDirectory(input.targetPathToClone ?? '')) ||
+            (await window.electron.statIsDirectory(
+              input.targetPathToClone ?? ''
+            )) ||
             input.makeDir
           ) {
             let { name, path } = getNextDirName({
@@ -150,7 +152,14 @@ export const FileMachineProvider = ({
             })
             createdName = name
             createdPath = path
-            await window.electron.writeFile(createdPath, input.content ?? '')
+            if (input.targetPathToClone) {
+              await window.electron.copyFile(
+                input.targetPathToClone,
+                createdPath
+              )
+            } else {
+              await window.electron.writeFile(createdPath, input.content ?? '')
+            }
           }
 
           return {
